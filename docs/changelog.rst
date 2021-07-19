@@ -7,9 +7,40 @@ Changelog
 
 
 ******************
-0.1.3 (unreleased)
+0.1.6 (unreleased)
 ******************
 
+
+******************
+0.1.5 (2021-07-19)
+******************
+
+Documentation
+=============
+- Update project setup instructions from Atlassian to Gitlab workflows (:issue:`2`, :merge:`4`). By `Kyle Brindley`_.
+
+Internal Changes
+================
+- Convert README from markdown to restructured text (:issue:`2`, :merge:`4`). By `Kyle Brindley`_.
+- Separate Abaqus integration test setup from Abaqus integration ctest declaration. Enables documentation build
+  dependencies on Abaqus integration test input files without requiring Abaqus test execution on systems with no Abaqus
+  installation (:issue:`2`, :merge:`4`). By `Kyle Brindley`_.
+
+
+******************
+0.1.4 (2021-07-13)
+******************
+
+Internal Changes
+================
+- Upstream project settings update to set default merge-request branch. By `Kyle Brindley`_.
+
+******************
+0.1.3 (2021-07-13)
+******************
+
+- Migrate from ddw-bibucket.lanl.gov to re-git.lanl.gov and convert to Gitlab CI/CD (:issue:`1`, :merge:`1`). By `Kyle
+  Brindley`_.
 
 ******************
 0.1.2 (2021-07-01)

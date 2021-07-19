@@ -4,8 +4,11 @@ project(cpp_stub)
 
 # Set common project paths relative to project root directory
 set(CPP_SRC_PATH "src/cpp")
+set(CPP_TEST_PATH "${CPP_SRC_PATH}/tests")
 set(CMAKE_SRC_PATH "src/cmake")
 set(ABAQUS_SRC_PATH "src/abaqus")
+set(ABAQUS_TEST_PATH "${ABAQUS_SRC_PATH}/tests")
+set(DOCUMENTATION_SRC_PATH "docs")
 # Set some Abaqus integration variables
 set(UMAT "cpp_stub_umat")
 set(MISSING_INTEGRATION_DEPS_MESSAGE "Abaqus integration tests will be skipped.")
@@ -91,7 +94,7 @@ endforeach(package)
 #=============================================================================================== ADD PROJECT TARGETS ===
 # MUST COME AFTER DEPENDENCY LOCATING
 # Add project source directories
-include_directories("${CPP_SRC_PATH}")
+include_directories(${CPP_SRC_PATH})
 add_subdirectory(${CPP_SRC_PATH})
 
 # Only add tests and documentation for current project builds. Protects downstream project builds.
@@ -99,11 +102,12 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # Find Boost. Required for tests
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
     # Add c++ tests and docs
-    add_subdirectory("${CPP_SRC_PATH}/tests")
-    add_subdirectory("docs")
+    add_subdirectory(${CPP_TEST_PATH})
+    add_subdirectory(${DOCUMENTATION_SRC_PATH})
+    add_subdirectory(${ABAQUS_SRC_PATH})
     # Abaqus integration tests
     if(BASH_PROGRAM AND ABAQUS_PROGRAM)
-        add_subdirectory("${ABAQUS_SRC_PATH}/tests")
+        add_subdirectory(${ABAQUS_TEST_PATH})
     endif()
 endif()
 

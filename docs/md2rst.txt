@@ -1,9 +1,4 @@
 .. note::
 
    This is a duplicate of the content found in the README with a manual
-   conversion to ReST syntax. Markdown files can be included in ReST documents
-   with a conda python environment module addition ``myst-parser`` completed in TOOL-389.
-   Reference: https://stackoverflow.com/questions/46278683/include-my-markdown-readme-into-sphinx
-
-   However, the README.md is broken into many separate subsections for the HTML documentation. Consequently, the
-   duplicated information can't be reduced unless the README file is split up.
+   conversion to ReST syntax. 

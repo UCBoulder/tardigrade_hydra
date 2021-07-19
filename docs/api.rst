@@ -28,11 +28,11 @@ Abaqus interface
 ****************
 
 cpp_stub_umat.cpp
-========
+=================
 
 .. doxygenfile:: cpp_stub_umat.cpp
 
 cpp_stub_umat.h
-======
+===============
 
 .. doxygenfile:: cpp_stub_umat.h

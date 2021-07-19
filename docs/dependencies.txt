@@ -52,15 +52,12 @@ C++ Libraries
 
 * `Eigen`_ >= 3.3.7
 * `BOOST`_ >= 1.59.0
-
-"Internal" project libraries
-============================
-
-* error\_tools: https://xcp-stash.lanl.gov/projects/MM/repos/error_tools
-* vector\_tools: https://xcp-stash.lanl.gov/projects/MM/repos/vector_tools
-* stress\_tools: https://xcp-stash.lanl.gov/projects/MM/repos/stress_tools
-* solver\_tools: https://xcp-stash.lanl.gov/projects/MM/repos/solver_tools
-* constitutive\_tools: https://xcp-stash.lanl.gov/projects/MM/repos/consitutive_tools
+* error\_tools: https://re-git.lanl.gov/aea/material-models/error_tools
+* vector\_tools: https://re-git.lanl.gov/aea/material-models/vector_tools
+* abaqus\_tools: https://re-git.lanl.gov/aea/material-models/abaqus_tools
+* constitutive\_tools: https://re-git.lanl.gov/aea/material-models/constitutive_tools
+* stress\_tools: https://re-git.lanl.gov/aea/material-models/stress_tools
+* solver\_tools: https://re-git.lanl.gov/aea/material-models/solver_tools
 
 All of the ``{error,vector,stress,solver,constitutive}_tools`` libraries are
 pulled from their git repos by branch name and built with their respective cmake

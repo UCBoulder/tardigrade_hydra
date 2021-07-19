@@ -2,8 +2,7 @@
 Contribution Guidelines
 ***********************
 
-W-13 python projects, including the |project| project, use the Atlassian `Forking
-Workflow`_ and `Gitflow Workflow`_ models.
+W-13 python projects, including the |project| project, use the `Gitlab Flow`_ workflow model.
 
 Git Commit Message
 ==================
@@ -95,13 +94,13 @@ When adding a new feature (with moderate to high complexity), even before
 creating a pull request, the developer should:
 
 1. Decide on and document intended behavior before creating any branches used
-   for pull requests.  Depending upon complexity, `xcp-jira`_ or `xcp-confluence`_
-   can be used, where `xcp-confluence`_ is recommended for broader discussion
-   prior to implementation.
+   for pull requests. Depending upon complexity, the `Gitlab project issues`_ or
+   `xcp-confluence`_ can be used, where `xcp-confluence`_ is recommended for
+   broader discussion prior to implementation.
 2. Discuss challenging features with other developers before implementation in
-   a pull request.
+   a merge request.
 
-Pull request reviewers are advised to
+Merge request reviewers are advised to
 
 1. Schedule a Skype/WebEx meeting with |project| developers to discuss improvement
    before negatively commenting on the online pull request.
@@ -121,7 +120,8 @@ The following items are general topic recommendations for pull request reviews:
    - Changes to methods, and especially classes, have updated doc strings that parse well
      to html pages
    - Comments applied for complex blocks
-   - Missing tutorials or tests in code are documented by a relevant `xcp-jira`_ issue
+   - Missing tutorials or tests in code are documented by a relevant `Gitlab
+     project issues`_
 
 * Regression and integration (unit) testing
 

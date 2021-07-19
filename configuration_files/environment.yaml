@@ -8,7 +8,6 @@ dependencies:
   - breathe>=4.18.1
   - cython
   - eigen>=3.3.7
-  - myst-parser
   - numpy
   - pip
   - pytest

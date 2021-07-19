@@ -127,7 +127,7 @@ Convenience build wrappers
 Two build scripts have been created for convenience, ``new_build.sh`` and
 ``build_docs.sh``. The first will build everything including the library binary,
 the test binary, and the documentation. This is the same build script used by
-``jenkins_build.sh`` for CI builds and testing. The ``build_docs.sh`` script
+``CD.sh`` for Gitlab CD builds and testing. The ``build_docs.sh`` script
 only builds the documentation. Both build scripts clobber existing build
 directories, reset any bash environment variables, and run the cmake
 configuration from scratch.
@@ -149,7 +149,8 @@ configuration from scratch.
       $ ./build/src/cpp/tests/test_cpp_stub
 
       # Build and perform tests
-      $ ./jenkins_build.sh
+      $ ./BUILD.sh
+      $ ./TEST.sh
 
 3) View test results
 
@@ -158,7 +159,7 @@ configuration from scratch.
       # As built directly to PWD
       $ cat results.tex
 
-      # As built by jenkins_build.sh
+      # As built by BUILD.sh and TEST.sh
       $ cat build/src/cpp/tests/*_results.tex
       $ cat *results.tex
 
