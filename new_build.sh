@@ -19,7 +19,6 @@ cmake_build_type=$1
 
 # Debugging
 whoami
-groups
 ls -l $HOME/include || true
 ls -l $HOME/.local/include || true
 

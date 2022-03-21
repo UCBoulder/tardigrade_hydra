@@ -8,7 +8,8 @@ set(CPP_TEST_PATH "${CPP_SRC_PATH}/tests")
 set(CMAKE_SRC_PATH "src/cmake")
 set(ABAQUS_SRC_PATH "src/abaqus")
 set(ABAQUS_TEST_PATH "${ABAQUS_SRC_PATH}/tests")
-set(DOCUMENTATION_SRC_PATH "docs")
+set(DOXYGEN_SRC_PATH "docs/doxygen")
+set(SPHINX_SRC_PATH "docs/sphinx")
 # Set some Abaqus integration variables
 set(UMAT "cpp_stub_umat")
 set(MISSING_INTEGRATION_DEPS_MESSAGE "Abaqus integration tests will be skipped.")
@@ -31,7 +32,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Set the c++ standard
 set(CMAKE_CXX_STANDARD 11)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "-Wall -ansi -pedantic -O3 -fmax-errors=5 -ggdb")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -ansi -pedantic -lrt")
 
 # Enable CTest
 enable_testing()
@@ -103,12 +104,9 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
     # Add c++ tests and docs
     add_subdirectory(${CPP_TEST_PATH})
-    add_subdirectory(${DOCUMENTATION_SRC_PATH})
+    add_subdirectory(${DOXYGEN_SRC_PATH})
+    add_subdirectory(${SPHINX_SRC_PATH})
     add_subdirectory(${ABAQUS_SRC_PATH})
-    # Abaqus integration tests
-    if(BASH_PROGRAM AND ABAQUS_PROGRAM)
-        add_subdirectory(${ABAQUS_TEST_PATH})
-    endif()
 endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===

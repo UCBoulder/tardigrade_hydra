@@ -118,6 +118,6 @@ The material definition from an integration test input file is included below fo
    For calibrated material parameters, see the cpp_stub entry for materials found in the `Granta/MIMS`_ `Material
    Database`_ :cite:`MIMS`.
 
-.. literalinclude:: ../src/abaqus/single_element_c3d8.inp
+.. literalinclude:: ../../src/abaqus/single_element_c3d8.inp
    :linenos:
    :lines: 42-50

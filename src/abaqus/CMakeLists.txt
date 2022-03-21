@@ -15,3 +15,8 @@ add_custom_command(TARGET ${ABAQUS_TEST_NAME} PRE_BUILD
                    DEPENDS ${ABAQUS_INPUT_FILES} ${ABAQUS_INTEGRATION_TEST}
                    COMMENT "Preparing the ${PROJECT_NAME} Abaqus integration test files"
                   )
+
+# Abaqus integration tests
+if(BASH_PROGRAM AND ABAQUS_PROGRAM)
+    add_subdirectory(./tests)
+endif()

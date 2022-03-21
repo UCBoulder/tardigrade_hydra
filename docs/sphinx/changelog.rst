@@ -7,8 +7,34 @@ Changelog
 
 
 ******************
-0.1.6 (unreleased)
+0.1.7 (unreleased)
 ******************
+
+
+******************
+0.1.6 (2022-03-21)
+******************
+
+Bug fixes
+=========
+- Update the documentation ``cmake`` command to match the new documentation directory structure (:merge:`10`). By `Kyle
+  Brindley`_.
+- Re-enabled the Abaqus integration tests (:merge:`14`). By `Nathan Miller`_.
+
+Documentation
+=============
+- Deploy both ``master`` and ``dev`` branch documentation (:issue:`4`, :merge:`8`). By `Kyle Brindley`_.
+- Fix broken documentation URLs in README (:merge:`11`). By `Kyle Brindley`_.
+- Fix broken Gitlab documentation URLs in Gitlab setup (:merge:`12`). By `Kyle Brindley`_.
+- Fix broken ``rename`` command in Gitlab setup (:merge:`13`). By `Kyle Brindley`_.
+
+Internal Changes
+================
+- Removed unused myst-parser extension from the Sphinx configuration (:issue:`9`, :merge:`15`). By `Kyle Brindley`_.
+- Update the build configuration to handle conda environments than manage cpp compilers and libraries (:issue:`11`
+  :merge:`16`). By `Kyle Brindley`_.
+- Add back compiler flags related to code warnings for the project wide compile options (:issue:`12`, :merge:`18`). By
+  `Kyle Brindley`_.
 
 
 ******************

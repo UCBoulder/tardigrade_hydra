@@ -16,4 +16,4 @@ rm -rf build/
 mkdir build
 cd build
 ${cmake_exec} ..
-${cmake_exec} --build docs --verbose
+${cmake_exec} --build docs/sphinx --verbose

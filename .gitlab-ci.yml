@@ -45,9 +45,22 @@ pages:
   variables:
     GIT_STRATEGY: clone
   script:
-    - ./BUILD.sh
-    - mkdir public
-    - cp -r build/docs/sphinx/html/* public/
+    - rm -rf public && mkdir -p public
+    - cp docs/html/index.html public
+    # Every documentation version must be re-built for *every* gitlab-pages job execution
+    # Reference: https://gitlab.com/gitlab-org/gitlab/-/issues/33822
+    - git fetch origin
+    - git branch -a
+    - documentation_branches="master dev"
+    - |
+        for ref in ${documentation_branches}; do
+            git checkout $ref
+            git reset --hard origin/$ref
+            mkdir -p public/$ref/doxygen
+            ./BUILD.sh
+            cp -r build/docs/sphinx/html/* public/$ref
+            cp -r build/docs/doxygen/html/* public/$ref/doxygen
+        done
   artifacts:
     paths:
       # It MUST be called public
@@ -56,3 +69,4 @@ pages:
     - sstelmo-shell-aea
   only:
     - master
+    - dev

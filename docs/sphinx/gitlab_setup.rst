@@ -7,8 +7,8 @@ Prerequisites
 2. Set up your profile on `ASC RE Gitlab`_ with ssh keys. You can follow the
    instructions on the `ASC RE Gitlab User Documentation`_:
 
-   * https://re-git.lanl.gov/help/ssh/README.md#generate-an-ssh-key-pair
-   * https://re-git.lanl.gov/help/ssh/README.md#add-an-ssh-key-to-your-gitlab-account
+   * https://re-git.lanl.gov/help/ssh/index.md#generate-an-ssh-key-pair
+   * https://re-git.lanl.gov/help/ssh/index.md#add-an-ssh-key-to-your-gitlab-account
 
 ***************************************
 Clone cpp\_stub into a local repository
@@ -451,7 +451,7 @@ Update project name
 
    .. code-block:: bash
 
-      $ rename 's/cpp_stub/myproject/' $(find . -type d \( -name .git -o -name build \) -prune -false -o -name "*cpp_stub*")
+      $ rename cpp_stub myproject $(find . -type d \( -name .git -o -name build \) -prune -false -o -name "*cpp_stub*")
 
 8. Commit and push your changes to your "remote" or "fork" repository
 
