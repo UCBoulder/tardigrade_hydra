@@ -7,8 +7,19 @@ Changelog
 
 
 ******************
-0.1.7 (unreleased)
+0.1.8 (unreleased)
 ******************
+
+
+******************
+0.1.7 (2022-03-24)
+******************
+
+Internal Changes
+================
+- Test and deploy against the "aea-release" and "aea-beta" environments for pending AEA Compute Environment changes:
+  https://ddw-confluence.lanl.gov/display/PYT/2022/02/08/AEA+Compute+environment+updates+coming+March+31%2C+2022
+  (:merge:`21`). By `Kyle Brindley`_.
 
 
 ******************

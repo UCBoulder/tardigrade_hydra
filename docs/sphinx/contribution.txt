@@ -132,7 +132,7 @@ The following items are general topic recommendations for pull request reviews:
 * Platform independence
 
    - Paths are OS agnostic
-   - No new warnings on release and beta environments
+   - No new warnings on aea-release and aea-beta environments
 
 * Code performance
 

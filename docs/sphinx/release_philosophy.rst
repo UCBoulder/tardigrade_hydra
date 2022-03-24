@@ -15,21 +15,21 @@ sstelmo, and any local linux machines with home and project drives mapped from t
 Python 3 environments with installed packages required for W-13 software development and engineering analysis. There are
 two versions of the W-13 Python Environments:
 
-1) release
-2) beta
+1) aea-release
+2) aea-beta
 
-The release environment contains the deployed final release versions of W-13 software projects, e.g. Toolbox and ECMF,
-as tested against the installed Python packages. The beta environment contains the deployed developer release of W-13
-software projects. While the deployed projects in beta have been unit and integration tested, the beta environment may
-include updated or new Python modules that result in less stable behavior. The beta environment is used to test W-13
+The aea-release environment contains the deployed production release versions of W-13 software projects, e.g. Toolbox and ECMF,
+as tested against the installed Python packages. The aea-beta environment contains the deployed developer release of W-13
+software projects. While the deployed projects in aea-beta have been unit and integration tested, the aea-beta environment may
+include updated or new Python modules that result in less stable behavior. The aea-beta environment is used to test W-13
 software projects against an updated Python environment before releasing the new environment.
 
 Version Numbers
 ===============
 
 The |project| project follows the `PEP-440`_ standard for version numbering. The
-final release version number uses the three component ("major.minor.micro")
-scheme. The developer (a.k.a. dev or beta) version number follows the final
+production release version number uses the three component ("major.minor.micro")
+scheme. The developer (a.k.a. dev or aea-beta) version number follows the production 
 release number with an appended "+dev" local version number. The version numbers
 correspond to git tags in the `upstream repository`_ which point to a static
 release of the |project| project.
@@ -39,7 +39,7 @@ against development work, the version number found in the developer version
 contains additional information. During deployment, the developer version number
 is appended with the git information from the most recent build. This
 information contains the most recent git tag ("major.minor.micro+dev") followed
-by the number of commits since the last final release and a short hash.
+by the number of commits since the last production release and a short hash.
 
 Major Number
 ------------
@@ -64,7 +64,7 @@ Micro Number
 ------------
 
 The micro number is automatically incremented after any merge from the
-development (dev) branch into the release (master) branch. The micro version
+development (dev) branch into the production (master) branch. The micro version
 number indicates the following changes:
 
 * Bug fixes

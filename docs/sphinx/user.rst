@@ -32,14 +32,14 @@ Where the appropriate path can be found with
 
    $ find path/to/conda/environment -name "libcpp_stub.so"
 
-For instance, with the W-13 "release" environment on ``sstelmo``
+For instance, with the W-13 "aea-release" environment on ``sstelmo``
 
 .. code:: bash
 
-   $ find /projects/python/release -name "libcpp_stub.so"
-   /projects/python/release/lib64/libcpp_stub.so
-   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/python/release/lib64
-   $ abaqus -job <my_input_file> -user /projects/python/release/lib64/cpp_stub_umat.o
+   $ find /projects/python/aea-release -name "libcpp_stub.so"
+   /projects/python/aea-release/lib64/libcpp_stub.so
+   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/python/aea-release/lib64
+   $ abaqus -job <my_input_file> -user /projects/python/aea-release/lib64/cpp_stub_umat.o
 
 As a convenience, the following code may be used to determine the correct, active Conda environment at Abaqus execution.
 The following bash code is provided as an example for end users and not supported by this project. End users who wish to
