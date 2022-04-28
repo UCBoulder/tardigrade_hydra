@@ -5,6 +5,7 @@ workflow:
     - when: always
 
 stages:
+  - version
   - test
   - deploy
 
@@ -22,6 +23,10 @@ before_script:
   - echo "${environment}"
   - module help "${environment}"
   - module load "${environment}"
+  # Determine the CMake3 command
+  - cmake_program='cmake'
+  - if [[ "$(command -v cmake3)" ]]; then cmake_program='cmake3'; fi
+  - echo ${cmake_program}
   # Environment troubleshooting information
   - echo $PATH
   - echo $PYTHONPATH
@@ -29,6 +34,29 @@ before_script:
   - echo $LD_LIBRARY_PATH
   - conda info
   - env | grep -i proxy
+
+microbump:
+  stage: version
+  variables:
+    GIT_STRATEGY: clone
+  script:
+    # Build VERSION file from GetVersionFromGit.cmake without a full CMake configuration
+    - ${cmake_program} -D PROJECT_NAME=cpp_stub -D VERSION_UPDATE_FROM_GIT=True -P src/cmake/GetVersionFromGitTag.cmake
+    # GetVersionFromGit.cmake bumps micro/patch version. Retrieve next release from VERSION
+    - production_version=$(cut -f 1 -d '*' VERSION)
+    - developer_version=${production_version}+dev
+    # Tag production commit and previous developer commit. Continue if already tagged.
+    - git config user.name "${GITLAB_USER_NAME}"
+    - git config user.email "${GITLAB_USER_EMAIL}"
+    - git remote add oauth2-origin https://gitlab-ci-token:${GITLAB_ACCESS_TOKEN}@re-git.lanl.gov/${CI_PROJECT_PATH}.git
+    - git tag -a ${production_version} -m "production release ${production_version}" || true
+    - last_merge_hash=$(git log --pretty=format:"%H" --merges -n 2 | tail -n 1)  # Assume last merge was dev->master. Pick previous
+    - git tag -a ${developer_version} -m "developer release ${developer_version}" ${last_merge_hash} || true
+    - git push oauth2-origin --tags
+  tags:
+    - sstelmo-shell-aea
+  only:
+    - main
 
 test_build:
   stage: test
@@ -45,17 +73,6 @@ test_build:
       - build/results.tex
   tags:
     - sstelmo-shell-aea
-
-deploy_build:
-  stage: deploy
-  variables:
-    GIT_STRATEGY: clone
-  script: ./CD.sh
-  tags:
-    - sstelmo-shell-aea
-  only:
-    - master
-    - dev
 
 # It MUST be called pages
 pages:

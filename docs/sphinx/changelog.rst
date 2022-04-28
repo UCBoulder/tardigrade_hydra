@@ -7,8 +7,21 @@ Changelog
 
 
 ******************
-0.1.8 (unreleased)
+0.1.9 (unreleased)
 ******************
+
+
+******************
+0.1.8 (2022-04-28)
+******************
+
+Internal Changes
+================
+- Remove the package deployment Gitlab-CI job because the AEA Compute environment no longer allows projects to directly
+  update the environment. Instead, projects must request that their package is added to the AEA Compute environment
+  build (:issue:`18`, :merge:`23`). By `Kyle Brindley`_.
+- Move the production release automatic microbumping to a dedicated Gitlab-CI job (:issue:`18`, :merge:`23`). By `Kyle
+  Brindley`_.
 
 
 ******************
