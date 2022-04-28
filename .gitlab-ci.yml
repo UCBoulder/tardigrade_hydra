@@ -56,7 +56,7 @@ microbump:
   tags:
     - sstelmo-shell-aea
   only:
-    - main
+    - master
 
 test_build:
   stage: test
