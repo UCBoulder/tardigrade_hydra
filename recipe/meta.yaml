@@ -1,0 +1,36 @@
+package:
+  name: cpp_stub
+  version: {{ VERSION }}
+
+source:
+  path: '..'
+
+build:
+  script: {{ PYTHON }} setup.py install
+  script_env:
+    - VERSION
+  ignore_run_exports:
+    - python_abi
+
+requirements:
+  build:
+    - python {{ python }}
+    - git
+    - boost
+    - doxygen
+  host:
+    - python
+  run:
+    - python
+    - boost
+
+test:
+  requires:
+    - pytest
+  source_files:
+    - python_stub/pytest.ini
+    - python_stub/tests/*.py
+  commands:
+    - cd python_stub
+    - pytest
+    - cd ..
