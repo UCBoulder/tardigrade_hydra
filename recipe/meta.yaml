@@ -11,6 +11,7 @@ build:
     - cd build
     - cmake .. -DCMAKE_BUILD_TYPE=Release
     - cmake --build . --target cpp_stub cpp_stub_umat
+    - cmake --install . --prefix ${PREFIX}
   script_env:
     - VERSION
   ignore_run_exports:
