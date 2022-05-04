@@ -6,7 +6,11 @@ source:
   path: '..'
 
 build:
-  script: {{ PYTHON }} setup.py install
+  script:
+    - mkdir build
+    - cd build
+    - cmake .. -DCMAKE_BUILD_TYPE=Release
+    - cmake --build . --target cpp_stub cpp_stub_umat
   script_env:
     - VERSION
   ignore_run_exports:
@@ -18,6 +22,7 @@ requirements:
     - git
     - boost
     - doxygen
+    - cmake >=3.14
   host:
     - python
   run:
@@ -26,11 +31,11 @@ requirements:
 
 test:
   requires:
-    - pytest
+    - cmake
   source_files:
-    - python_stub/pytest.ini
-    - python_stub/tests/*.py
+    - cpp_stub/tests/*.py
   commands:
-    - cd python_stub
-    - pytest
-    - cd ..
+    - mkdir build
+    - cd build
+    - cmake --build . --target test_cpp_stub abaqus_integration_test
+    - ctest --output-on-failure
