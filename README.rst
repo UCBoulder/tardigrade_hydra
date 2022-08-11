@@ -114,7 +114,7 @@ from an existing anaconda installation with the following commands.
 
 .. code-block:: bash
 
-   $ conda env create --file configuration_files/environment.yaml
+   $ conda create --file environment.txt
 
 You can learn more about Anaconda Python environment creation and management in
 the `Anaconda Documentation`_.
