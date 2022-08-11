@@ -156,8 +156,7 @@ Build on sstelmo
 
    .. code-block:: bash
 
-      $ module load python/2020.07-python-3.8
-      $ sv3r
+      $ module load cpp_stub-env 
 
 2) Create a build directory
 
