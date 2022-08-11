@@ -98,19 +98,9 @@ Executables
 Conda Environment
 =================
 
-For convenience, the minimal Python environment requirements for the
-documentation build are included in ``configuration_files/environment.yaml``.
-This file was created from the `pipreqs`_ command line tool and Sphinx
-configuration inspection, e.g. the extension packages.
-
-.. code-block:: bash
-
-   $ pwd
-   path/to/cpp_stub/
-   $ pipreqs --use-local --print --no-pin .
-
-A minimal anaconda environment for building the documentation can be created
-from an existing anaconda installation with the following commands.
+For convenience, the minimal Conda environment requirements for project development are included in ``environment.txt``.
+A minimal anaconda environment for building the documentation can be created from an existing anaconda installation with
+the following commands.
 
 .. code-block:: bash
 
