@@ -37,7 +37,7 @@ from an existing anaconda installation with the following commands.
 
 .. code:: bash
 
-   $ conda create --file environment.txt
+   $ conda create --name cpp_stub-env --file environment.txt --channel file:///projects/aea_compute/aea-conda
 
 You can learn more about Anaconda Python environment creation and management in
 the `Anaconda Documentation`_.
