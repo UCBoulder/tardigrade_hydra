@@ -13,6 +13,8 @@ Changelog
 Internal Changes
 ================
 - Added SSL workaround to Pages job (:issue:`23`, :merge:`29`). By `Sergio Cordova`_.
+- Build, package, and deploy as a Conda package to the AEA Conda channel (:issue:`20`, :merge:`27`). By `Kyle Brindley`_.
+
 
 ******************
 0.1.8 (2022-04-28)
