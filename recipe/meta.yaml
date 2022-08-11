@@ -12,7 +12,7 @@ build:
     - mkdir build-package
     - cd build-package
     - cmake .. -DCMAKE_BUILD_TYPE=Release
-    - cmake --build . --target cpp_stub
+    - cmake --build . --target cpp_stub cpp_stub_umat
     - cmake --install . --prefix $PREFIX
   ignore_run_exports:
     - python_abi
