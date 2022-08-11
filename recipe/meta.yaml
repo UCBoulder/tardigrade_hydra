@@ -1,5 +1,6 @@
 package:
   name: cpp_stub
+  # TODO: setup and use pyproject.toml and a Conda build Jinja template
   version: {{ VERSION }}
 
 source:
@@ -7,36 +8,49 @@ source:
 
 build:
   script:
-    - mkdir build
-    - cd build
+    - tree
+    - mkdir build-package
+    - cd build-package
     - cmake .. -DCMAKE_BUILD_TYPE=Release
-    - cmake --build . --target cpp_stub cpp_stub_umat
-    - cmake --install . --prefix ${PREFIX}
-  script_env:
-    - VERSION
+    - cmake --build . --target cpp_stub
+    - cmake --install . --prefix $PREFIX
   ignore_run_exports:
     - python_abi
 
 requirements:
+  # TODO: need to pin the Python version, or at least build a variant to match (3.8.3)
   build:
     - python {{ python }}
-    - git
-    - boost
+    - {{ compiler('cxx') }}
+    - boost >=1.59
+    - cmake >=3.17
     - doxygen
-    - cmake >=3.14
+    - eigen >=3.3.7
+    - error_tools
+    - vector_tools
+    - abaqus_tools
   host:
     - python
+    - boost
+    - eigen >=3.3.7
   run:
     - python
+    - {{ compiler('cxx') }}
     - boost
+    - eigen >=3.3.7
+    - error_tools
+    - vector_tools
+    - abaqus_tools
 
 test:
-  requires:
-    - cmake
   source_files:
-    - cpp_stub/tests/*.py
+    - CMakeLists.txt
+    - src/cpp/tests/CMakeLists.txt
+    - src/cpp/tests/test_cpp_stub.cpp
   commands:
-    - mkdir build
-    - cd build
-    - cmake --build . --target test_cpp_stub abaqus_integration_test
-    - ctest --output-on-failure
+    - tree
+    - mkdir build-package
+    - cd build-package
+    - cmake ..
+    - cmake --build . --target test_cpp_stub
+    - ctest -R test_cpp_stub
