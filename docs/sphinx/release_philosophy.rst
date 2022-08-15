@@ -13,7 +13,7 @@ Release and Deployment
 The |project| project is built and installed as a c++ library in the `AEA compute environment`_ available on sstelmo,
 sstbigbird, and any local linux machines with home and project drives mapped from the W-13 NFS server. These are
 Anaconda Python 3 environments with installed packages required for W-13 software development and engineering analysis.
-There are two versions of the `AEA compute environments`_:
+There are two versions of the `AEA compute environment`_:
 
 1) aea-release
 2) aea-beta
