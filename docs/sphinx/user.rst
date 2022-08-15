@@ -8,7 +8,7 @@ User Manual
 Quick Start
 ***********
 
-This stub repo contains hooks for writing Abaqus :cite:`ABAQUS2019` subroutines, like those found in the `Abaqus UMAT
+This stub repo contains hooks for writing Abaqus :cite:`ABAQUS2022` subroutines, like those found in the `Abaqus UMAT
 documentation`_, and a template UMAT c++ interface. However, this template repository does not yet have a meaningful c++
 constitutive model to be the subject of a user manual.
 
