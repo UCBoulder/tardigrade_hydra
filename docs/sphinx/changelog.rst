@@ -7,7 +7,7 @@ Changelog
 
 
 ******************
-0.1.9 (unreleased)
+0.2.1 (2022-08-15)
 ******************
 
 Internal Changes
