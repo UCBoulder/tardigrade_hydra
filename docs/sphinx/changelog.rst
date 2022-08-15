@@ -10,6 +10,10 @@ Changelog
 0.2.5 (unreleased)
 ******************
 
+New Features
+============
+- Build a Python 3.9 Conda package (:issue:`26`, :merge:`36`). By `Kyle Brindley`_.
+
 Internal Changes
 ================
 - Consolidate version number checks on ``setuptools_scm`` and the ``pyproject.toml`` configuration file (:issue:`34`,
