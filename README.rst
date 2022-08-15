@@ -92,23 +92,6 @@ Dependencies
 
 .. dependencies-start-do-not-remove
 
-Compilers
-=========
-
-* c++11 compiler (listed version number has been tested at some point)
-
-  * g++ >= GNU 4.8.5
-
-Executables
-===========
-
-* `CMake`_ >= 3.14
-* `Doxygen`_ >= 1.8.5
-* `LaTeX`_ >= 2017
-
-Conda Environment
-=================
-
 For convenience, the minimal Conda environment requirements for project development are included in ``environment.txt``.
 A minimal anaconda environment for building the documentation can be created from an existing anaconda installation with
 the following commands.
@@ -120,28 +103,9 @@ the following commands.
 You can learn more about Anaconda Python environment creation and management in
 the `Anaconda Documentation`_.
 
-C++ Libraries
-=============
-
-    **NOTE**
-
-    Non-admin installations for Eigen and Boost are no longer required.** This
-    project is built and deployed against C++ libraries managed in Conda. See the
-    Conda environment file and README discussion for non-admin environment
-    management.
-
-* `Eigen`_ >= 3.3.7
-* `BOOST`_ >= 1.59.0
-* error\_tools: https://re-git.lanl.gov/aea/material-models/error_tools
-* vector\_tools: https://re-git.lanl.gov/aea/material-models/vector_tools
-* abaqus\_tools: https://re-git.lanl.gov/aea/material-models/abaqus_tools
-* constitutive\_tools: https://re-git.lanl.gov/aea/material-models/constitutive_tools
-* stress\_tools: https://re-git.lanl.gov/aea/material-models/stress_tools
-* solver\_tools: https://re-git.lanl.gov/aea/material-models/solver_tools
-
-If not found on the current system or active Conda environment, all of the
-``*_tools`` libraries are pulled from their git repos by branch name and built
-with their respective cmake files as part of the cmake build for this project.
+The build, test, and run time requirements are subsets of the development environment requirements found in
+``environment.txt``. This project builds and deploys as a Conda package to the `AEA Conda channel`_. The Conda recipe
+and build, test, run time requirements are found in the ``recipe/`` directory.
 
 .. dependencies-end-do-not-remove
 
@@ -190,7 +154,7 @@ Build on sstelmo
 4) Build various portions of the project
 
        Most of the project will re-build only as necessary after source updates. Some portions of the documentation
-       require a ``make clean`` after documentation source file updates to force a re-build.
+       require a ``cmake --build . --target clean`` after documentation source file updates to force a re-build.
 
    .. code-block:: bash
 
@@ -238,7 +202,7 @@ Build on sstelmo
       $ pwd
       /path/to/cpp_stub/build
 
-      $ make clean
+      $ cmake --build . --target clean
 
 Test on sstelmo
 ===============
