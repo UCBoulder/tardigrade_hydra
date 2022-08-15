@@ -9,6 +9,7 @@ set(SPHINX_OUT ${CMAKE_CURRENT_BINARY_DIR}/conf.py)
 
 # Replace variables inside @@ with the current values
 configure_file(${SPHINX_IN} ${SPHINX_OUT} @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/README.rst ${CMAKE_CURRENT_BINARY_DIR}/README.txt COPYONLY)
 
 # Explicit list of documentation source files because globbing won't trigger CMake config on re-builds
 set(DOCUMENTATION_SOURCE

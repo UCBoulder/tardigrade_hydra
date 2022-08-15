@@ -81,6 +81,8 @@ Gitlab CI/CD
 Dependencies
 ************
 
+.. dependencies-start-do-not-remove
+
 Compilers
 =========
 
@@ -132,9 +134,13 @@ If not found on the current system or active Conda environment, all of the
 ``*_tools`` libraries are pulled from their git repos by branch name and built
 with their respective cmake files as part of the cmake build for this project.
 
+.. dependencies-end-do-not-remove
+
 **************
 Build and Test
 **************
+
+.. build-start-do-not-remove
 
 This project is built with `CMake`_ and uses `Sphinx`_ to build the
 documentation with `Doxygen`_ + `Breathe`_ for the c++ API.
@@ -398,9 +404,13 @@ Build the entire before performing the installation.
       # Example install to W-13 CI/CD conda environment performed by CI/CD institutional account
       $ cmake --install . --prefix /projects/python/release
 
+.. build-end-do-not-remove
+
 ***********************
 Contribution Guidelines
 ***********************
+
+.. contribution-start-do-not-remove
 
 Git Commit Message
 ==================
@@ -483,3 +493,5 @@ run.
   .. code-block:: bash
 
      sed -i 's/\([)}\]]\)\([)}\]]\)/\1 \2/g' <list of files to update>
+
+.. contribution-end-do-not-remove

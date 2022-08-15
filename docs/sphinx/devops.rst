@@ -4,8 +4,26 @@
 DevOps Manual
 #############
 
-.. include:: dependencies.txt
+************
+Dependencies
+************
 
-.. include:: build.txt
+.. include:: README.txt
+   :start-after: dependencies-start-do-not-remove
+   :end-before: dependencies-end-do-not-remove
 
-.. include:: contribution.txt
+************************
+Build, Test, and Install
+************************
+
+.. include:: README.txt
+   :start-after: build-start-do-not-remove
+   :end-before: build-end-do-not-remove
+
+***********************
+Contribution Guidelines
+***********************
+
+.. include:: README.txt
+   :start-after: contribution-start-do-not-remove
+   :end-before: contribution-end-do-not-remove
