@@ -151,6 +151,14 @@ Build on sstelmo
       /path/to/cpp_stub/build
       $ cmake3 ..
 
+4) Display target options
+
+   .. code-block:: bash
+
+      $ pwd
+      /path/to/cpp_stub/build
+      $ cmake3 --build . --target help
+
 4) Build various portions of the project
 
        Most of the project will re-build only as necessary after source updates. Some portions of the documentation
@@ -164,7 +172,7 @@ Build on sstelmo
       # Build everything
       $ cmake3 --build .
 
-      # Build only the c++ primary libraries
+      # Build the c++ primary libraries by sub-directory
       $ cmake3 --build src/cpp
 
 5) Locate build files
@@ -240,7 +248,7 @@ Convenience build wrappers
 Two build scripts have been created for convenience, ``new_build.sh`` and
 ``build_docs.sh``. The first will build everything including the library binary,
 the test binary, and the documentation. This is the same build script used by
-``jenkins_build.sh`` for CI builds and testing. The ``build_docs.sh`` script
+``.gitlab-ci.yml`` for CI builds and testing. The ``build_docs.sh`` script
 only builds the documentation. Both build scripts clobber existing build
 directories, reset any bash environment variables, and run the cmake
 configuration from scratch.
@@ -260,19 +268,12 @@ configuration from scratch.
       # Perform tests from PWD
       $ ./build/src/cpp/tests/test_cpp_stub
 
-      # Build and perform tests
-      $ ./jenkins_build.sh
-
 3) View test results
 
    .. code-block:: bash
 
       # As built directly to PWD
       $ cat results.tex
-
-      # As built by jenkins_build.sh
-      $ cat build/src/cpp/tests/*_results.tex
-      $ cat *results.tex
 
 4) Display docs
 
@@ -289,8 +290,7 @@ Building the documentation
 
     **HEALTH WARNING**
 
-    The sphinx API docs are a work-in-progress. The doxygen API is much more
-    useful.
+    The sphinx API docs are a work-in-progress. The doxygen API is much more useful.
 
     * production version (``master`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/doxygen
     * development version (``dev`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/dev/doxygen
@@ -321,7 +321,7 @@ To build just the documentation pick up the steps here:
 
    .. code-block:: bash
 
-      $ cmake3 --build docs/sphinx
+      $ cmake3 --build . --target Sphinx
 
 5) Documentation builds to:
 
@@ -372,10 +372,7 @@ Build the entire before performing the installation.
 
       # Example install to conda environment
       $ conda active my_env
-      $ cmake --install . --prefix ${CONDA_DEFAULT_ENV}
-
-      # Example install to W-13 CI/CD conda environment performed by CI/CD institutional account
-      $ cmake --install . --prefix /projects/python/release
+      $ cmake --install . --prefix ${CONDA_PREFIX}
 
 .. build-end-do-not-remove
 
@@ -417,8 +414,7 @@ doubt use ``feature/<description>``.
 reStructured Text
 =================
 
-`Sphinx`_ reads in docstrings and other special portions of the code as
-reStructured text. Developers should follow
+`Sphinx`_ reads in docstrings and other special portions of the code as reStructured text. Developers should follow
 styles in this `Sphinx style guide
 <https://documentation-style-guide-sphinx.readthedocs.io/en/latest/style-guide.html#>`_.
 
