@@ -10,10 +10,15 @@ Changelog
 0.2.1 (2022-08-15)
 ******************
 
+Documentation
+=============
+- Update URLs for cpp stub repository (:issue:`22`, :merge:`28`). By `Prabhu Khalsa`_.
+
 Internal Changes
 ================
 - Added SSL workaround to Pages job (:issue:`23`, :merge:`29`). By `Sergio Cordova`_.
 - Build, package, and deploy as a Conda package to the AEA Conda channel (:issue:`20`, :merge:`27`). By `Kyle Brindley`_.
+- Added fix to avaid warnings treated as errors introduced in Sphinx 5 (:issue:`25`, :merge:`30`). By `Sergio Cordova`_.
 
 
 ******************
@@ -27,7 +32,6 @@ Internal Changes
   build (:issue:`18`, :merge:`23`). By `Kyle Brindley`_.
 - Move the production release automatic microbumping to a dedicated Gitlab-CI job (:issue:`18`, :merge:`23`). By `Kyle
   Brindley`_.
-- Added fix to avaid warnings treated as errors introduced in Sphinx 5 (:issue:`25`, :merge:`30`). By `Sergio Cordova`_.
 
 
 ******************
@@ -53,7 +57,6 @@ Bug fixes
 
 Documentation
 =============
-- Update URLs for cpp stub repository (:issue:`22`, :merge:`28`). By `Prabhu Khalsa`_.
 - Deploy both ``master`` and ``dev`` branch documentation (:issue:`4`, :merge:`8`). By `Kyle Brindley`_.
 - Fix broken documentation URLs in README (:merge:`11`). By `Kyle Brindley`_.
 - Fix broken Gitlab documentation URLs in Gitlab setup (:merge:`12`). By `Kyle Brindley`_.
