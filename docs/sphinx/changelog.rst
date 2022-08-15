@@ -13,6 +13,7 @@ Changelog
 Documentation
 =============
 - Remove references to deprecated shell scripts in developer manual (:issue:`28`, :merge:`37`). By `Kyle Brindley`_.
+- Refer to the AEA compute environment to simplify the user manual (:issue:`7`, :merge:`39`). By `Kyle Brindley`_.
 
 Internal Changes
 ================

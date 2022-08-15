@@ -8,51 +8,56 @@ User Manual
 Quick Start
 ***********
 
-This stub repo contains hooks for writing Abaqus :cite:`ABAQUS2019` subroutines, like those found in the `Abaqus UMAT
+This stub repo contains hooks for writing Abaqus :cite:`ABAQUS2022` subroutines, like those found in the `Abaqus UMAT
 documentation`_, and a template UMAT c++ interface. However, this template repository does not yet have a meaningful c++
 constitutive model to be the subject of a user manual.
 
-This project is built and deployed to the `AEA compute environment`_ with continuous integration (CI) and continuous
-deployment (CD). Most users will not need to build and install this project from source. Outside of the `AEA compute
-environment`_, users may need to build and install directly from source. In that case, users are directed to the
-:ref:`build` instructions.
+This project is built and deployed to the `AEA Conda channel`_ with continuous integration (CI) and continuous
+deployment (CD). The `AEA compute environment`_ installs this project from the `AEA Conda channel`_. Most users will not
+need to build or install this project from source. Outside of the `AEA compute environment`_, users can install directly
+from the `AEA Conda channel`_. In rare cases, users may need to build from source and are directed to the :ref:`build`
+instructions.
 
-With the `AEA compute environment`_, this project is installed in the Conda environment ``lib64`` and ``include``
-directories, e.g. ``/path/to/my/conda/environment/{lib64,include}``. The template UMAT can be used with the following
-Abaqus options after setting the system environment variable ``LD_LIBRARY_PATH``.
-
-.. code:: bash
-
-   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:path/to/conda/environment/lib64
-   $ abaqus -job <my_input_file> -user path/to/conda/environment/lib64/cpp_stub_umat.o
-
-Where the appropriate path can be found with
+From the `AEA Conda channel`_, this project is installed in the Conda environment ``lib64`` and ``include`` directories,
+e.g. ``${CONDA_PREFIX}/{lib64,include}``. When the `AEA compute environment`_ module files are used for environment
+activation, the template UMAT can be used with the following Abaqus options.
 
 .. code:: bash
 
-   $ find path/to/conda/environment -name "libcpp_stub.so"
+   $ abaqus -job <my_input_file> -user ${CONDA_PREFIX}/lib64/cpp_stub_umat.o
+
+Where the appropriate path can be confirmed with
+
+.. code:: bash
+
+   $ find ${CONDA_PREFIX} -name "libcpp_stub.so"
 
 For instance, with the "aea-release" environment on ``sstelmo``
 
 .. code:: bash
 
-   $ find /projects/python/aea-release -name "libcpp_stub.so"
-   /projects/python/aea-release/lib64/libcpp_stub.so
-   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/projects/python/aea-release/lib64
-   $ abaqus -job <my_input_file> -user /projects/python/aea-release/lib64/cpp_stub_umat.o
+   # See the AEA compute environment documentation to confirm the preferred activation command
+   $ module use /projects/aea_compute/modulefiles
+   $ module load aea-beta
 
-As a convenience, the following code may be used to determine the correct, active Conda environment at Abaqus execution.
-The following bash code is provided as an example for end users and not supported by this project. End users who wish to
-learn more about bash scripting are directed to the online Bash documentation.
+   $ echo ${CONDA_PREFIX}
+   /projects/aea_compute/aea-release
+   $ find ${CONDA_PREFIX} -name "cpp_stub_umat.o"
+   /projects/aea_compute/aea-release/lib64/cpp_stub_umat.o
+   $ abaqus -job <my_input_file> -user ${CONDA_PREFIX}/lib64/cpp_stub_umat.o
+
+If the `AEA compute environment`_ module files are not used, the user must set their ``LD_LIBRARY_PATH`` manually. As a
+convenience, the following code may be used to determine the active Conda environment at Abaqus execution. The following
+bash code is provided as an example for end users and not supported by this project. End users who wish to learn more
+about bash scripting are directed to the online Bash documentation.
 
 .. code:: bash
 
-   # Get current conda environment information
-   conda_env_path=$(conda info | grep "active env location" | cut -f 2 -d :)
    # Export the conda environment library path
-   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${conda_env_path}/lib64
+   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${CONDA_PREFIX}/lib64
+
    # Execute Abaqus with current Conda environment's installation of this project
-   $ abaqus -job <my_input_file> -user ${conda_env_path}/lib64/cpp_stub_umat.o
+   $ abaqus -job <my_input_file> -user ${CONDA_PREFIX}/lib64/cpp_stub_umat.o
 
 ***************************
 Use after build from source
@@ -65,8 +70,8 @@ The template UMAT can be used after build with the following Abaqus options
    $ abaqus -job <my_input_file> -user relative/path/to/cpp_stub/build/src/cpp/cpp_stub_umat.o
 
 It is strongly recommended that anyone building from source make use of the CMake ``--install`` options in a local Conda
-environment. It is also possible to install to more traditional system paths, but this may require significantly more
-background reading in relevant system administration.
+environment as in :ref:`build`. It is also possible to install to more traditional system paths, but this may require
+significantly more background reading in relevant system administration.
 
 Unless the template repository and all upstream c++ libraries are built and installed to a common system path it is
 recommended that the subroutines are left in the project build directory. However, it is possible to copy the shared
