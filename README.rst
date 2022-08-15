@@ -98,23 +98,13 @@ Executables
 Conda Environment
 =================
 
-For convenience, the minimal Python environment requirements for the
-documentation build are included in ``configuration_files/environment.yaml``.
-This file was created from the `pipreqs`_ command line tool and Sphinx
-configuration inspection, e.g. the extension packages.
+For convenience, the minimal Conda environment requirements for project development are included in ``environment.txt``.
+A minimal anaconda environment for building the documentation can be created from an existing anaconda installation with
+the following commands.
 
 .. code-block:: bash
 
-   $ pwd
-   path/to/cpp_stub/
-   $ pipreqs --use-local --print --no-pin .
-
-A minimal anaconda environment for building the documentation can be created
-from an existing anaconda installation with the following commands.
-
-.. code-block:: bash
-
-   $ conda env create --file configuration_files/environment.yaml
+   $ conda create --name cpp_stub-env --file environment.txt --channel file:///projects/aea_compute/aea-conda
 
 You can learn more about Anaconda Python environment creation and management in
 the `Anaconda Documentation`_.
@@ -156,8 +146,7 @@ Build on sstelmo
 
    .. code-block:: bash
 
-      $ module load python/2020.07-python-3.8
-      $ sv3r
+      $ module load cpp_stub-env 
 
 2) Create a build directory
 

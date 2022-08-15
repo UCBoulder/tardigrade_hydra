@@ -21,7 +21,7 @@ Clone cpp\_stub into a local repository
 
    .. code-block:: bash
 
-      ssh://git@re-git.lanl.gov:10022/aea/material-models/cpp_stub.git
+      ssh://git@re-git.lanl.gov:10022/aea/stub-repositories/cpp_stub.git
 
 3. Navigate to your preferred repository directory on your local computer. In a
    terminal, you can follow the example ``sstelmo`` session below
@@ -52,7 +52,7 @@ Clone cpp\_stub into a local repository
       /projects/<moniker>/w13repos
 
       # Clone the stub repository
-      $ git clone ssh://git@re-git.lanl.gov:10022/aea/material-models/cpp_stub.git
+      $ git clone ssh://git@re-git.lanl.gov:10022/aea/stub-repositories/cpp_stub.git
 
 5. Rename the local repository directory for your project.
 
@@ -258,7 +258,7 @@ deploy`` attribute and shell commands indicating the CD job definition, e.g.
 
 The ``pages`` job is a special deploy stage job that builds and deploys
 documentation to your project's Gitlab Pages, e.g.
-https://aea.re-pages.lanl.gov/material-models/cpp_stub. This job should be
+https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub. This job should be
 retained for building and deploying documentation for your project users.
 
 The ``git`` operations automate micro version bumps during master branch

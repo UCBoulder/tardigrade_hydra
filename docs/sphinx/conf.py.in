@@ -55,11 +55,11 @@ breathe_default_project = project
 
 # Links to PRs, Jira issues.
 extlinks = {
-     "merge": ("https://re-git.lanl.gov/aea/material-models/cpp_stub/-/merge_requests/%s", "MERGE-"),
-     "issue": ("https://re-git.lanl.gov/aea/material-models/cpp_stub/-/issues/%s", "ISSUE-"),
+     "merge": ("https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/merge_requests/%s", "MERGE-%s"),
+     "issue": ("https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/issues/%s", "ISSUE-%s"),
      # Maintain the old Atlassian links until the servers don't exist. Required for changelog entries.
-     "pull": ("https://xcp-stash.lanl.gov/projects/MM/repos/cpp_stub/pull-requests/%s/overview", "PR"),
-     "jira": ("https://xcp-jira.lanl.gov/browse/VIP-%s", "VIP-"),
+     "pull": ("https://xcp-stash.lanl.gov/projects/MM/repos/cpp_stub/pull-requests/%s/overview", "PR%s"),
+     "jira": ("https://xcp-jira.lanl.gov/browse/VIP-%s", "VIP-%s"),
 }
 
 # Add any paths that contain templates here, relative to this directory.

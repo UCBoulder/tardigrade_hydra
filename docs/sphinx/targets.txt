@@ -47,8 +47,8 @@
 .. _`Doxygen comments for Fortran`: https://www.doxygen.nl/manual/docblocks.html#fortranblocks
 
 .. Project specific links
-.. _`upstream repository`: https://re-git.lanl.gov/aea/material-models/cpp_stub 
-.. _`Gitlab project issues`: https://re-git.lanl.gov/aea/material-models/cpp_stub/-/issues
+.. _`upstream repository`: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub 
+.. _`Gitlab project issues`: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/issues
 
 .. Abaqus reference links
 .. _`Abaqus Solid Continuum Elements`: http://simulia.lanl.gov:8080/EstProdDocs2019/English/DSSIMULIA_Established.htm?show=SIMACAEELMRefMap/simaelm-c-solidcont.htm
@@ -59,4 +59,5 @@
 .. _`Kyle Brindley`: kbrindley@lanl.gov
 .. _`Nathan Miller`: nathanm@lanl.gov
 .. _`Prabhu Khalsa`: prabhu@lanl.gov
+.. _`Sergio Cordova`: sergioc@lanl.gov
 .. _`w13dev`: w13dev@lanl.gov
