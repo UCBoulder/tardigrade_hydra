@@ -14,7 +14,7 @@
 .. _pipreqs: https://github.com/bndr/pipreqs
 .. _LaTeX: https://www.latex-project.org/help/documentation/
 .. _W-13 DevOps Manual: https://xcp-confluence.lanl.gov/display/COM/W-13+DevOps
-.. _upstream repository: https://re-git.lanl.gov/aea/material-models/cpp_stub
+.. _upstream repository: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub
 .. _Material Models: https://re-git.lanl.gov/aea/material-models
 .. _UNIX group: https://ddw-confluence.lanl.gov/pages/viewpage.action?pageId=150929410
 
@@ -55,10 +55,10 @@ Information
 
 * Documentation
 
-  * production version (``master`` branch): https://aea.re-pages.lanl.gov/material-models/cpp_stub/master
-  * development version (``dev`` branch): https://aea.re-pages.lanl.gov/material-models/cpp_stub/dev
+  * production version (``master`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master
+  * development version (``dev`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/dev
 
-* Wiki: https://re-git.lanl.gov/aea/material-models/cpp_stub/-/wikis/home
+* Wiki: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/wikis/home
 
 Developers
 ==========
@@ -74,7 +74,7 @@ Setting up a new project from this stub repo
 
     The repository setup has moved out of the README and into the HTML
     documentation. You can find the Gitlab project setup guide here:
-    https://aea.re-pages.lanl.gov/material-models/cpp_stub/master/gitlab_setup.html
+    https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/gitlab_setup.html
 
 ************
 Gitlab CI/CD
@@ -84,7 +84,7 @@ Gitlab CI/CD
 
     The repository setup has moved out of the README and into the HTML
     documentation. You can find the Gitlab project setup guide here:
-    https://aea.re-pages.lanl.gov/material-models/cpp_stub/master/gitlab_setup.html
+    https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/gitlab_setup.html
 
 ************
 Dependencies
@@ -328,8 +328,8 @@ Building the documentation
     The sphinx API docs are a work-in-progress. The doxygen API is much more
     useful.
 
-    * production version (``master`` branch): https://aea.re-pages.lanl.gov/material-models/cpp_stub/master/doxygen
-    * development version (``dev`` branch): https://aea.re-pages.lanl.gov/material-models/cpp_stub/dev/doxygen
+    * production version (``master`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/doxygen
+    * development version (``dev`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/dev/doxygen
 
 The documentation can be built with ``build_docs.sh``. The steps used in that
 shell script are repeated here.
