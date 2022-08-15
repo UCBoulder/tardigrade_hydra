@@ -10,10 +10,10 @@ This section discusses topics related to |project| releases and version numberin
 Release and Deployment
 **********************
 
-The |project| project is built and installed as a c++ library in the `W-13 Python Environments`_ available on hamming,
-sstelmo, and any local linux machines with home and project drives mapped from the W-13 NFS server. These are Anaconda
-Python 3 environments with installed packages required for W-13 software development and engineering analysis. There are
-two versions of the W-13 Python Environments:
+The |project| project is built and installed as a c++ library in the `AEA compute environment`_ available on sstelmo,
+sstbigbird, and any local linux machines with home and project drives mapped from the W-13 NFS server. These are
+Anaconda Python 3 environments with installed packages required for W-13 software development and engineering analysis.
+There are two versions of the `AEA compute environments`_:
 
 1) aea-release
 2) aea-beta
@@ -29,7 +29,7 @@ Version Numbers
 
 The |project| project follows the `PEP-440`_ standard for version numbering. The
 production release version number uses the three component ("major.minor.micro")
-scheme. The developer (a.k.a. dev or aea-beta) version number follows the production 
+scheme. The developer (a.k.a. dev or aea-beta) version number follows the production
 release number with an appended "+dev" local version number. The version numbers
 correspond to git tags in the `upstream repository`_ which point to a static
 release of the |project| project.

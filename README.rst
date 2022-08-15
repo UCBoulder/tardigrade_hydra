@@ -1,6 +1,7 @@
 .. targets-start-do-not-remove
 
 .. _`AEA Conda channel`: https://aea.re-pages.lanl.gov/developer-operations/aea_compute_environment/aea-release/aea_compute_environment.html#aea-conda-channel
+.. _`AEA compute environment`: https://aea.re-pages.lanl.gov/developer-operations/aea_compute_environment/aea-beta/aea_compute_environment.html#
 .. _Anaconda Documentation: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
 .. _BOOST: https://www.boost.org/doc/libs/1_53_0/
 .. _`Conda`: https://docs.conda.io/en/latest/
@@ -13,7 +14,6 @@
 .. _PEP-8: https://www.python.org/dev/peps/pep-0008/
 .. _pipreqs: https://github.com/bndr/pipreqs
 .. _LaTeX: https://www.latex-project.org/help/documentation/
-.. _W-13 DevOps Manual: https://xcp-confluence.lanl.gov/display/COM/W-13+DevOps
 .. _upstream repository: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub
 .. _Material Models: https://re-git.lanl.gov/aea/material-models
 .. _UNIX group: https://ddw-confluence.lanl.gov/pages/viewpage.action?pageId=150929410
