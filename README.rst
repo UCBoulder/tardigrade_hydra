@@ -1,5 +1,9 @@
+.. targets-start-do-not-remove
+
+.. _`AEA Conda channel`: https://aea.re-pages.lanl.gov/developer-operations/aea_compute_environment/aea-release/aea_compute_environment.html#aea-conda-channel
 .. _Anaconda Documentation: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
 .. _BOOST: https://www.boost.org/doc/libs/1_53_0/
+.. _`Conda`: https://docs.conda.io/en/latest/
 .. _CMake: https://cmake.org/cmake/help/v3.14/
 .. _CMake add_custom_target: https://cmake.org/cmake/help/latest/command/add_custom_target.html
 .. _Doxygen: https://www.doxygen.nl/manual/docblocks.html
@@ -7,12 +11,14 @@
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
 .. _Breathe: https://breathe.readthedocs.io/en/latest/
 .. _PEP-8: https://www.python.org/dev/peps/pep-0008/
-.. _pipreqs: https://github.com/bndr/pipreqs 
+.. _pipreqs: https://github.com/bndr/pipreqs
 .. _LaTeX: https://www.latex-project.org/help/documentation/
 .. _W-13 DevOps Manual: https://xcp-confluence.lanl.gov/display/COM/W-13+DevOps
 .. _upstream repository: https://re-git.lanl.gov/aea/material-models/cpp_stub
 .. _Material Models: https://re-git.lanl.gov/aea/material-models
 .. _UNIX group: https://ddw-confluence.lanl.gov/pages/viewpage.action?pageId=150929410
+
+.. targets-end-do-not-remove
 
 ###################
 C++ Stub repository
@@ -22,24 +28,27 @@ C++ Stub repository
 Project Description
 *******************
 
+.. project-brief-start-do-not-remove
+
 A stub repository for C++ development projects in W-13.
 
-This repository will contain the necessary setup files to integrate C++ doc
-strings, `CMake`_, `Doxygen`_, `Sphinx`_, and `Breathe`_ for a complete build
-system with integrated documentation. It will also include the necessary hooks
-to commonly used C++ libraries for constitutive modeling. This stub repository
-also includes template hooks for integrating C++ code as Abaqus subroutines.
+This repository will contain the necessary setup files to integrate C++ doc strings, `CMake`_, `Doxygen`_, `Sphinx`_,
+and `Breathe`_ for a complete build system with integrated documentation. It includes template `Conda`_ build, package,
+and deployment to the `AEA Conda channel`_. It includes the necessary hooks to commonly used AEA C++ libraries for
+constitutive modeling. This stub repository also includes template hooks for integrating C++ code as Abaqus subroutines.
 
     **NOTE**
 
     You can use this repo as a stub for fortran projects as well! A step-by-step
     may never happen because c++ is the future of W-13 subroutines.  For now, refer
     to the following references:
-   
+
     * `CMake for Fortran example CMakeLists.txt <https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/languages/fortran/ForFortranExample>`_
     * `CMake documentation starting point <https://cmake.org/cmake/help/v3.14/module/CheckFortranSourceRuns.html>`_
     * `Stack Overflow thread <https://stackoverflow.com/questions/12705562/using-cmake-with-fortran>`_
     * `Doxygen comments for Fortran <https://www.doxygen.nl/manual/docblocks.html#fortranblocks>`_
+
+.. project-brief-end-do-not-remove
 
 Information
 ===========
@@ -152,7 +161,7 @@ Build on sstelmo
 
    .. code-block:: bash
 
-      $ module load cpp_stub-env 
+      $ module load cpp_stub-env
 
 2) Create a build directory
 
@@ -210,7 +219,7 @@ Build on sstelmo
 6) Clean build directory to force a re-build
 
        **HEALTH WARNING**
-      
+
        The abaqus input files and bash scripts used for integration testing are
        built with the `CMake add_custom_target`_ feature. Consequently, the integration
        test target is *always considered out of date*. The integration test target
@@ -220,7 +229,7 @@ Build on sstelmo
        command, e.g. ``cmake --build .`` or ``cmake --build src/abaqus/tests``. This
        operation is computationally inexpensive with respect to building the
        ``cpp_stub`` source code.
-      
+
        Input files are registered in the ``src/abaqus/tests/CMakeLists.txt`` file
        under the ``ABAQUS_INPUT_FILES`` CMake variable.
 
@@ -315,7 +324,7 @@ Building the documentation
 ==========================
 
     **HEALTH WARNING**
-   
+
     The sphinx API docs are a work-in-progress. The doxygen API is much more
     useful.
 

@@ -12,6 +12,8 @@ Dependencies
    :start-after: dependencies-start-do-not-remove
    :end-before: dependencies-end-do-not-remove
 
+.. _build:
+
 ************************
 Build, Test, and Install
 ************************
