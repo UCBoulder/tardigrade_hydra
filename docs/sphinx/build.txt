@@ -125,8 +125,8 @@ Convenience build wrappers
 
 Two build scripts have been created for convenience, ``new_build.sh`` and
 ``build_docs.sh``. The first will build everything including the library binary,
-the test binary, and the documentation. This is the same build script used by
-``CD.sh`` for Gitlab CD builds and testing. The ``build_docs.sh`` script
+the test binary, and the documentation. This is the same build script used
+for Gitlab CD builds and testing. The ``build_docs.sh`` script
 only builds the documentation. Both build scripts clobber existing build
 directories, reset any bash environment variables, and run the cmake
 configuration from scratch.

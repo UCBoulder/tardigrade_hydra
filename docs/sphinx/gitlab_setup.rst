@@ -193,7 +193,7 @@ only a small number of settings must be updated.
 
    * "allowed to push":
 
-     * master: No one 
+     * master: No one
      * dev: No one
 
 5. From the "Project Information" > "Members" item at the top of the left side
@@ -217,54 +217,16 @@ The CI/CD configuration is found in the ``.gitlab-ci.yml`` file. You can read
 more about Gitlab CI/CD configuration in the `ASC RE Gitlab User
 Documentation`_: https://re-git.lanl.gov/help/ci/README.md.
 
-No project configuration is required for CI/CD of Merge-Requests to or deployment of the
-``dev`` branch. As an alternative to full CI/CD configuration, you may remove the
-``git`` operations found in the ``CD.sh`` file, for example found using the
-``grep`` command as
-
-.. code-block::
-
-   $ pwd
-   /projects/<moniker>/w13repos/my_project
-
-   $ grep git CD.sh
-       git config user.name "${GITLAB_USER_NAME}"
-       git config user.email "${GITLAB_USER_EMAIL}"
-       git remote add oauth2-origin https://gitlab-ci-token:${GITLAB_ACCESS_TOKEN}@re-git.lanl.gov/${CI_PROJECT_PATH}.git
-       git tag -a ${production_version} -m "production release ${production_version}" || true
-       last_merge_hash=$(git log --pretty=format:"%H" --merges -n 2 | tail -n 1)  # Assume last merge was dev->master. Pick previous
-       git tag -a ${developer_version} -m "developer release ${developer_version}" ${last_merge_hash} || true
-       git push oauth2-origin --tags
-
-You may also simply remove the ``deploy_build`` job entirely from the
-``.gitlab-ci.yml`` file, an example job definition is included below, but the
-details may change. The key to identifying the deployment job is the ``stage:
-deploy`` attribute and shell commands indicating the CD job definition, e.g.
-``script: ./CD.sh``.
-
-.. code-block::
-   :linenos:
-
-   deploy_build:
-     stage: deploy
-     variables:
-       GIT_STRATEGY: clone
-     script: ./CD.sh
-     tags:
-       - sstelmo-shell-aea
-     only:
-       - master
-       - dev
+No project configuration is required for CI/CD of Merge-Requests to or deployment of the ``dev`` branch. As an
+alternative to full CI/CD configuration, you may remove the ``microbump`` job from the ``version`` stage in the
+``.gitlab-ci.yml`` file, which is the only Gitlab-CI job that requires the project access tokens described in this
+section. The ``git`` operations performed by ``microbump`` automate micro version bumps during master branch deployment
+and are not strictly necessary for CI/CD.
 
 The ``pages`` job is a special deploy stage job that builds and deploys
 documentation to your project's Gitlab Pages, e.g.
 https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub. This job should be
 retained for building and deploying documentation for your project users.
-
-The ``git`` operations automate micro version bumps during master branch
-deployment and are not strictly necessary for CI/CD. The ``deploy_build`` job
-performs the CD process and is not required for CI, which is performed by the
-``test_build`` job.
 
 The only project configuration required to enable the existing Gitlab CI/CD is
 to add a project access token. To add a project access with the naming
