@@ -40,7 +40,7 @@ constitutive modeling. This stub repository also includes template hooks for int
     **NOTE**
 
     You can use this repo as a stub for fortran projects as well! A step-by-step
-    may never happen because c++ is the future of W-13 subroutines.  For now, refer
+    may never happen because c++ is the future of W-13 subroutines. For now, refer
     to the following references:
 
     * `CMake for Fortran example CMakeLists.txt <https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/languages/fortran/ForFortranExample>`_

@@ -45,10 +45,6 @@
 .. _`LaTeX`: https://www.latex-project.org/help/documentation/
 .. _`sphinx\_rtd\_theme`: https://sphinx-rtd-theme.readthedocs.io/en/stable/
 .. _`Doxygen style docstrings`: https://www.doxygen.nl/manual/docblocks.html
-.. _`CMake for Fortran example CMakeLists.txt`: https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/languages/fortran/ForFortranExample
-.. _`CMake documentation starting point`: https://cmake.org/cmake/help/v3.14/module/CheckFortranSourceRuns.html
-.. _`Stack Overflow thread`: https://stackoverflow.com/questions/12705562/using-cmake-with-fortran
-.. _`Doxygen comments for Fortran`: https://www.doxygen.nl/manual/docblocks.html#fortranblocks
 
 .. Project specific links
 .. _`Gitlab project issues`: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/issues
