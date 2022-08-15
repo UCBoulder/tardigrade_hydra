@@ -37,6 +37,8 @@ and `Breathe`_ for a complete build system with integrated documentation. It inc
 and deployment to the `AEA Conda channel`_. It includes the necessary hooks to commonly used AEA C++ libraries for
 constitutive modeling. This stub repository also includes template hooks for integrating C++ code as Abaqus subroutines.
 
+.. project-brief-end-do-not-remove
+
     **NOTE**
 
     You can use this repo as a stub for fortran projects as well! A step-by-step
@@ -47,8 +49,6 @@ constitutive modeling. This stub repository also includes template hooks for int
     * `CMake documentation starting point <https://cmake.org/cmake/help/v3.14/module/CheckFortranSourceRuns.html>`_
     * `Stack Overflow thread <https://stackoverflow.com/questions/12705562/using-cmake-with-fortran>`_
     * `Doxygen comments for Fortran <https://www.doxygen.nl/manual/docblocks.html#fortranblocks>`_
-
-.. project-brief-end-do-not-remove
 
 Information
 ===========
