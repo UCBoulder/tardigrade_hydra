@@ -1,4 +1,0 @@
-.. note::
-
-   This is a duplicate of the content found in the README with a manual
-   conversion to ReST syntax. 

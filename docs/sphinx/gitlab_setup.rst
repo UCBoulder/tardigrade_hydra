@@ -211,7 +211,7 @@ Enable project CI/CD
 
 The ``cpp_stub`` project comes pre-configured to perform continuous integration
 (CI) and continuous deployment (CD) on W-13's compute server ``sstelmo`` with
-testing performed in and deployment to the `W-13 Python Environments`_.
+testing performed in and deployment to the `AEA compute environment`_.
 
 The CI/CD configuration is found in the ``.gitlab-ci.yml`` file. You can read
 more about Gitlab CI/CD configuration in the `ASC RE Gitlab User

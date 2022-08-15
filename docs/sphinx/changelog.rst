@@ -7,12 +7,17 @@ Changelog
 
 
 ******************
-0.2.2 (2022-08-15)
+0.2.2 (unreleased)
 ******************
 
 Documentation
 =============
 - Remove references to deprecated shell scripts in developer manual (:issue:`28`, :merge:`37`). By `Kyle Brindley`_.
+
+Internal Changes
+================
+- Pull developer manual content from the README to avoid duplicated content (:issue:`31`, :merge:`38`). By `Kyle
+  Brindley`_.
 
 
 ******************

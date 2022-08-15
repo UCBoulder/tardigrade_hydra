@@ -12,12 +12,12 @@ This stub repo contains hooks for writing Abaqus :cite:`ABAQUS2019` subroutines,
 documentation`_, and a template UMAT c++ interface. However, this template repository does not yet have a meaningful c++
 constitutive model to be the subject of a user manual.
 
-This project is built and deployed to the `W-13 Python Environments`_ with continuous integration (CI) and continuous
-deployment (CD). Most users will not need to build and install this project from source. Outside of the `W-13 Python
-Environments`_, users may need to build and install directly from source. In that case, users are directed to the
+This project is built and deployed to the `AEA compute environment`_ with continuous integration (CI) and continuous
+deployment (CD). Most users will not need to build and install this project from source. Outside of the `AEA compute
+environment`_, users may need to build and install directly from source. In that case, users are directed to the
 :ref:`build` instructions.
 
-With the `W-13 Python Environments`_, this project is installed in the Conda environment ``lib64`` and ``include``
+With the `AEA compute environment`_, this project is installed in the Conda environment ``lib64`` and ``include``
 directories, e.g. ``/path/to/my/conda/environment/{lib64,include}``. The template UMAT can be used with the following
 Abaqus options after setting the system environment variable ``LD_LIBRARY_PATH``.
 
@@ -32,7 +32,7 @@ Where the appropriate path can be found with
 
    $ find path/to/conda/environment -name "libcpp_stub.so"
 
-For instance, with the W-13 "aea-release" environment on ``sstelmo``
+For instance, with the "aea-release" environment on ``sstelmo``
 
 .. code:: bash
 
