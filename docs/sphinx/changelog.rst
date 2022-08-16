@@ -10,6 +10,12 @@ Changelog
 0.2.3 (unreleased)
 ******************
 
+Internal Changes
+================
+- Remove the deprecated bash build scripts. Contents merged to the relevant build file(s), ``.gitlab-ci.yml`` and
+  ``recipe/meta.yaml``. Documented ``cmake`` example commands match preferred developer build, test, and install usage
+  (:issue:`32`, :merge:`44`). By `Kyle Brindley`_.
+
 
 ******************
 0.2.2 (2022-08-16)

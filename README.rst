@@ -145,6 +145,7 @@ Build on sstelmo
 
    .. code-block:: bash
 
+      $ module use /projects/aea_compute/modulefiles
       $ module load cpp_stub-env
 
 2) Create a build directory
@@ -157,19 +158,17 @@ Build on sstelmo
       $ mkdir build
       $ cd build
 
-3) Configure ``cmake3``
+3) Configure ``cmake``
 
-       This step only needs to be performed once unless you need to specify a
-       new CMake configuration for a re-build. Most command line arguments and
-       environment variables are stored in the CMake cache. Anything found in cache
-       will not be re-configured unless you remove the cache file or clobber the build
-       directory.
+       This step only needs to be performed once unless you need to specify a new CMake configuration for a re-build.
+       Most command line arguments and environment variables are stored in the CMake cache. Anything found in cache will
+       not be re-configured unless you build the ``rebuild_cache`` target or clobber the build directory.
 
    .. code-block:: bash
 
       $ pwd
       /path/to/cpp_stub/build
-      $ cmake3 ..
+      $ cmake ..
 
 4) Display target options
 
@@ -177,7 +176,7 @@ Build on sstelmo
 
       $ pwd
       /path/to/cpp_stub/build
-      $ cmake3 --build . --target help
+      $ cmake --build . --target help
 
 4) Build various portions of the project
 
@@ -189,11 +188,15 @@ Build on sstelmo
       $ pwd
       /path/to/cpp_stub/build
 
-      # Build everything
-      $ cmake3 --build .
+      # Build everything (either or)
+      $ cmake --build .
+      $ cmake --build . --target all
+
+      # Build the c++ primary libraries by target name(s)
+      $ cmake --build . --target cpp_stub cpp_stub_umat
 
       # Build the c++ primary libraries by sub-directory
-      $ cmake3 --build src/cpp
+      $ cmake --build src/cpp
 
 5) Locate build files
 
@@ -242,11 +245,12 @@ Test on sstelmo
       $ pwd
       /path/to/cpp_stub/build
 
-      # Build c++ tests
-      $ cmake3 --build src/cpp/tests
+      # Build c++ and abaqus tests by target name(s)
+      $ cmake --build . --target test_cpp_stub test_abaqus_integration
 
-      # Build Abaqus integration tests
-      $ cmake3 --build src/abaqus/tests
+      # Build c++ and abaqus tests by sub-directories
+      $ cmake --build src/cpp/tests
+      $ cmake --build src/abaqus/tests
 
 5) Run the tests
 
@@ -262,49 +266,6 @@ Test on sstelmo
       # View details of most recent test execution including failure messages
       $ less Testing/Temporary/LastTest.log
 
-Convenience build wrappers
-==========================
-
-Two build scripts have been created for convenience, ``new_build.sh`` and
-``build_docs.sh``. The first will build everything including the library binary,
-the test binary, and the documentation. This is the same build script used by
-``.gitlab-ci.yml`` for CI builds and testing. The ``build_docs.sh`` script
-only builds the documentation. Both build scripts clobber existing build
-directories, reset any bash environment variables, and run the cmake
-configuration from scratch.
-
-2) Build everything and run tests
-
-   .. code-block:: bash
-
-      $ pwd
-      /path/to/cpp_stub/
-
-      # Just perform the build (pick one)
-      $ ./new_build.sh <cmake build type>
-      $ ./new_build.sh None
-      $ ./new_build.sh Release
-
-      # Perform tests from PWD
-      $ ./build/src/cpp/tests/test_cpp_stub
-
-3) View test results
-
-   .. code-block:: bash
-
-      # As built directly to PWD
-      $ cat results.tex
-
-4) Display docs
-
-   .. code-block:: bash
-
-      # Sphinx
-      $ firefox build/docs/sphinx/html/index.html &
-
-      # Doxygen
-      $ firefox build/docs/doxygen/html/index.html &
-
 Building the documentation
 ==========================
 
@@ -314,9 +275,6 @@ Building the documentation
 
     * production version (``master`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/doxygen
     * development version (``dev`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/dev/doxygen
-
-The documentation can be built with ``build_docs.sh``. The steps used in that
-shell script are repeated here.
 
 To build just the documentation pick up the steps here:
 
@@ -329,19 +287,19 @@ To build just the documentation pick up the steps here:
       $ mkdir build/
       $ cd build/
 
-3) Run cmake3 configuration
+3) Run cmake configuration
 
    .. code-block:: bash
 
       $ pwd
       /path/to/cpp_stub/build/
-      $ cmake3 ..
+      $ cmake ..
 
 4) Build the docs
 
    .. code-block:: bash
 
-      $ cmake3 --build . --target Sphinx
+      $ cmake --build . --target Sphinx
 
 5) Documentation builds to:
 
@@ -377,7 +335,7 @@ Build the entire before performing the installation.
 
       $ pwd
       /path/to/cpp_stub/build
-      $ cmake3 --build .
+      $ cmake --build .
 
 5) Install the library
 
@@ -391,7 +349,7 @@ Build the entire before performing the installation.
       $ cmake --install . --prefix /home/$USER/.local
 
       # Example install to conda environment
-      $ conda active my_env
+      $ conda activate my_env
       $ cmake --install . --prefix ${CONDA_PREFIX}
 
 .. build-end-do-not-remove
