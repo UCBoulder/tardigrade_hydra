@@ -7,8 +7,17 @@ Changelog
 
 
 ******************
-0.2.3 (unreleased)
+0.2.4 (unreleased)
 ******************
+
+
+******************
+0.2.3 (2022-08-16)
+******************
+
+Breaking changes
+================
+- Rename the production branch from ``master`` to ``main`` (:issue:`16`, :merge:`46`). By `Kyle Brindley`_.
 
 Internal Changes
 ================

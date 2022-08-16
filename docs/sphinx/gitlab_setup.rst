@@ -132,12 +132,12 @@ Create a new upstream repository
 
 4. Refresh the Gitlab project webpage and verify that the repository code was pushed
    correctly. You should see a list of source files and this Bitbucket parsed
-   ``README.rst`` displayed. You can also review the "master" and "dev" branch from
+   ``README.rst`` displayed. You can also review the "main" and "dev" branch from
    the left hand side bar "Repository" > "Branches" menu and the Git tags from the
    "Repository" > "Tags" menu.
 
 5. Remove any issue branches from the ``cpp_stub`` project on the "Repository" >
-   "Branches" menu. You should keep only the "master" and "dev" branches.
+   "Branches" menu. You should keep only the "main" and "dev" branches.
 
 6. If everything looks correct on Gitlab project, you can clean up your local
    repository.
@@ -153,11 +153,11 @@ Create a new upstream repository
       # Remove the cpp_stub remote
       $ git remote remove old-origin
 
-      # Ensure that you're on the master branch
-      $ git checkout master
+      # Ensure that you're on the main branch
+      $ git checkout main
 
-      # Remove ALL cpp_stub branches except master and dev
-      $ git branch | grep -v "master\|dev" | xargs git branch -D
+      # Remove ALL cpp_stub branches except main and dev
+      $ git branch | grep -v "main\|dev" | xargs git branch -D
 
 ***********************************
 Update upstream repository settings
@@ -177,19 +177,19 @@ only a small number of settings must be updated.
 2. Click on the "Repository" menu item that appears in the left sidebar
 
 3. From the "Default branch" > "Expand" page, update the default branch from
-   "master" to "dev" and click the blue "Save changes" button.
+   "main" to "dev" and click the blue "Save changes" button.
 
-4. From the "Protected branches" > "Expand" page, protect the "master" and "dev"
+4. From the "Protected branches" > "Expand" page, protect the "main" and "dev"
    branches according to the needs of your project. The recommended settings are:
 
    * "allowed to merge"
 
-     * master: Maintainers
+     * main: Maintainers
      * dev: Developers+Maitainers
 
    * "allowed to push":
 
-     * master: No one
+     * main: No one
      * dev: No one
 
 5. From the "Project Information" > "Members" item at the top of the left side
@@ -216,7 +216,7 @@ Documentation`_: https://re-git.lanl.gov/help/ci/README.md.
 No project configuration is required for CI/CD of Merge-Requests to or deployment of the ``dev`` branch. As an
 alternative to full CI/CD configuration, you may remove the ``microbump`` job from the ``version`` stage in the
 ``.gitlab-ci.yml`` file, which is the only Gitlab-CI job that requires the project access tokens described in this
-section. The ``git`` operations performed by ``microbump`` automate micro version bumps during master branch deployment
+section. The ``git`` operations performed by ``microbump`` automate micro version bumps during main branch deployment
 and are not strictly necessary for CI/CD.
 
 The ``pages`` job is a special deploy stage job that builds and deploys
@@ -292,7 +292,7 @@ convention expected by the CI/CD configuration
 15. Expand the "Protected branches" section of the "Repository" webpage.
 
 16. Add the project access token, ``GITLAB_ACCESS_TOKEN``, to the "Allowed to
-    push" drop down menu of the "master" and "dev" branches.
+    push" drop down menu of the "main" and "dev" branches.
 
 *******************
 Update project name
@@ -317,7 +317,7 @@ Update project name
       $ git branch
         dev
       * feature/project-name-updates
-        master
+        main
 
 2. Search for all instances of ``cpp_stub``. The list of occurrences will look
    quite long, but we can search and replace with ``sed`` to avoid manual file
@@ -458,12 +458,12 @@ deployment of the ``dev`` branch.
 
 .. note::
 
-   For Merge-Request and CI/CD of the ``master`` branch, see the previous CI/CD
+   For Merge-Request and CI/CD of the ``main`` branch, see the previous CI/CD
    configuration section in this setup guide.
 
 For continuing development, W-13 workflows recommend that you should keep the
-upstream repository production branches, ``dev`` and ``master``, clean from
-development work and *NEVER* develop directly on the ``dev`` and ``master``
+upstream repository production branches, ``dev`` and ``main``, clean from
+development work and *NEVER* develop directly on the ``dev`` and ``main``
 branches of your local repository. Limit development work to ``feature/thing``
 type branches on your local repo and frequently commit changes and push from the
 local feature branch back to the upstream repository.

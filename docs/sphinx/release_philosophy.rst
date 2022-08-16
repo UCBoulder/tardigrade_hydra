@@ -64,7 +64,7 @@ Micro Number
 ------------
 
 The micro number is automatically incremented after any merge from the
-development (dev) branch into the production (master) branch. The micro version
+development (dev) branch into the production (main) branch. The micro version
 number indicates the following changes:
 
 * Bug fixes
@@ -96,5 +96,5 @@ Steps needed for a release include:
 4. **Major and Minor bumps ONLY**: Manually add the new developer version tag to the "Merge" commit on the ``dev``
    branch.  Reset all numbers to the right of the bump to ``0``, e.g. ``1.2.3`` becomes ``2.0.0+dev`` for a Major version
    bump or ``1.3.0+dev`` for a Minor version bump.
-5. Immediately submit a ``dev->master`` PR after merging the release branch to ``dev``.
-6. Review tests and notes, receive approval, and merge to ``master``.
+5. Immediately submit a ``dev->main`` PR after merging the release branch to ``dev``.
+6. Review tests and notes, receive approval, and merge to ``main``.
