@@ -265,17 +265,14 @@ Test on sstelmo
 Convenience build wrappers
 ==========================
 
-Two build scripts have been created for convenience, ``new_build.sh`` and
-``build_docs.sh``. The first will build everything including the library binary,
-the test binary, and the documentation. This is the same build script used by
-``.gitlab-ci.yml`` for CI builds and testing. The ``build_docs.sh`` script
-only builds the documentation. Both build scripts clobber existing build
-directories, reset any bash environment variables, and run the cmake
-configuration from scratch.
+A build script has been created for convenience, ``new_build.sh``. The first
+will build everything including the library binary, the test binary, and the
+documentation. This is the same build script used for Gitlab-CI build and
+testing.
 
-2) Build everything and run tests
+2) Build everything
 
-   .. code-block:: bash
+   .. code:: bash
 
       $ pwd
       /path/to/cpp_stub/
@@ -285,22 +282,12 @@ configuration from scratch.
       $ ./new_build.sh None
       $ ./new_build.sh Release
 
-      # Perform tests from PWD
-      $ ./build/src/cpp/tests/test_cpp_stub
+3) Display docs
 
-3) View test results
-
-   .. code-block:: bash
-
-      # As built directly to PWD
-      $ cat results.tex
-
-4) Display docs
-
-   .. code-block:: bash
+   .. code:: bash
 
       # Sphinx
-      $ firefox build/docs/sphinx/html/index.html &
+      $ firefox build/docs/sphinx/index.html &
 
       # Doxygen
       $ firefox build/docs/doxygen/html/index.html &
