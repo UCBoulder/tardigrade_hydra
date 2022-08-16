@@ -406,13 +406,15 @@ Update project name
 
    .. note::
 
-      The ``rename`` bash command is common, but not ubiquitous, to UNIX-like
-      operating systems. It's reasonably ubiquitous on the most common linux
-      distributions. You should find it on ``sstelmo``, but probably won't find it on
-      macOS.
+      The ``rename`` bash command is common, but not ubiquitous, to UNIX-like operating systems. If the following
+      ``rename`` command returns an error message, run the find command and manually update file names.
 
    .. code-block:: bash
 
+      # Show files that require a name change
+      find . -type d \( -name .git -o -name build \) -prune -false -o -name "*cpp_stub*"
+
+      # Regex file name change
       $ rename cpp_stub myproject $(find . -type d \( -name .git -o -name build \) -prune -false -o -name "*cpp_stub*")
 
 8. Commit and push your changes to your "remote" or "fork" repository
