@@ -99,7 +99,7 @@ Create a new upstream repository
 1. Navigate to the W-13 `Material Models`_ Gitlab sub-group.
 
 2. Pick a new project name that doesn't clash with existing projects. Email `w13devops`_ with a request for a new
-   project name and in the appropriate AEA Gitlab subgroup.
+   project name. Include the project name and the appropriate AEA Gitlab subgroup.
 
    .. note::
 
