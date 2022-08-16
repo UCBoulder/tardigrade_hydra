@@ -17,11 +17,24 @@ set(MISSING_INTEGRATION_DEPS_MESSAGE "Abaqus integration tests will be skipped."
 # Add the cmake folder to locate project CMake module(s)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_PATH})
 
+# Set build type checks
+string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
+set(upstream_required "")
+set(full_build "true")
+if(cmake_build_type_lower STREQUAL "release")
+    set(upstream_required "REQUIRED")
+elseif(cmake_build_type_lower STREQUAL "test")
+    set(upstream_required "REQUIRED")
+    set(full_build "false")
+endif()
+
 # Get version number from Git
-set(VERSION_UPDATE_FROM_GIT True)
-# FIXME: Figure out why include() doesn't pick up CMAKE_MODULE_PATH correctly
-include(${CMAKE_SRC_PATH}/GetVersionFromGitTag.cmake)
-project(${PROJECT_NAME} VERSION ${${PROJECT_NAME}_VERSION})
+if(${full_build} STREQUAL "true")
+    set(VERSION_UPDATE_FROM_GIT True)
+    # FIXME: Figure out why include() doesn't pick up CMAKE_MODULE_PATH correctly
+    include(${CMAKE_SRC_PATH}/GetVersionFromGitTag.cmake)
+    project(${PROJECT_NAME} VERSION ${${PROJECT_NAME}_VERSION})
+endif()
 
 # Add installation directory variables
 include(GNUInstallDirs)
