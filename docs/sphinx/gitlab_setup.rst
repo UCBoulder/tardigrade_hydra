@@ -98,31 +98,27 @@ Create a new upstream repository
 
 1. Navigate to the W-13 `Material Models`_ Gitlab sub-group.
 
-2. Create a new repository by clicking on the blue "New project" button in the
-   upper right corner of the sub-group main page.
+2. Pick a new project name that doesn't clash with existing projects. Email `w13devops`_ with a request for a new
+   project name. Include the project name and the appropriate AEA Gitlab subgroup.
 
    .. note::
 
-      If you do not have the "Developer" or "Maintainer" role assigned to you in
-      this sub-group, you will not be able to create a new project directly. You can
-      request a role change from the `Material Models`_ sub-group owners. Sub-group
-      owners may prefer to create a project for you and make you the owner of that
-      project. You can check the `Material Models members`_ list for contact
-      information.
+      W-13 staff with "Reporter" permissions cannot create a new project in the `AEA Gitlab group`_ or subgroups directly.
+      Instead, the DevOps team will perform the following actions for you and make you the "Owner" of the new project.
 
-3. On the "Create new project" page, follow the link for "Create blank project".
+      1. Create a new repository by clicking on the blue "New project" button in the
+         upper right corner of the sub-group main page.
 
-   .. note::
+      2. On the "Create new project" page, follow the link for "Create blank project".
 
-      Gitlab offers a feature to create template projects that may make this
-      guide much simpler in the future. Contact the ``cpp_stub`` developers and `AEA
-      Gitlab group`_ owners to discuss progress on simplified repository setup using
-      templates.
+      3. Uncheck the "Initialize repository with a README" box under "Project Configuration".
 
-3. Enter a name for your project in the "Project name" field. Optionally add a
-   "project description" and click the blue "Create project" button.
+      4. Enter a name for your project in the "Project name" field. Optionally add a
+         "project description".
 
-4. Follow the "Push an existing Git repository" instructions at the bottom of
+      5. Click the blue "Create project" button.
+
+3. Follow the "Push an existing Git repository" instructions at the bottom of
    the new project webpage.
 
    .. code-block:: bash
@@ -134,16 +130,16 @@ Create a new upstream repository
       $ git push -u origin --all
       $ git push -u origin --tags
 
-5. Refresh the Gitlab project webpage and verify that the repository code was pushed
+4. Refresh the Gitlab project webpage and verify that the repository code was pushed
    correctly. You should see a list of source files and this Bitbucket parsed
    ``README.rst`` displayed. You can also review the "master" and "dev" branch from
    the left hand side bar "Repository" > "Branches" menu and the Git tags from the
    "Repository" > "Tags" menu.
 
-6. Remove any issue branches from the ``cpp_stub`` project on the "Repository" >
+5. Remove any issue branches from the ``cpp_stub`` project on the "Repository" >
    "Branches" menu. You should keep only the "master" and "dev" branches.
 
-7. If everything looks correct on Gitlab project, you can clean up your local
+6. If everything looks correct on Gitlab project, you can clean up your local
    repository.
 
    .. warning::
