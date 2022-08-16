@@ -25,6 +25,8 @@ Internal Changes
 ================
 - Pull developer manual content from the README to avoid duplicated content (:issue:`31`, :merge:`38`). By `Kyle
   Brindley`_.
+- Perform project unit and integration tests during Conda packaging test phase (:issue:`27`, :merge:`42`). By `Kyle
+  Brindley`_.
 
 
 ******************
