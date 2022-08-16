@@ -7,6 +7,7 @@
 .. _`Conda`: https://docs.conda.io/en/latest/
 .. _CMake: https://cmake.org/cmake/help/v3.14/
 .. _CMake add_custom_target: https://cmake.org/cmake/help/latest/command/add_custom_target.html
+.. _CMake fetch_content: https://cmake.org/cmake/help/latest/module/FetchContent.html
 .. _Doxygen: https://www.doxygen.nl/manual/docblocks.html
 .. _Eigen: https://eigen.tuxfamily.org/dox/
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
@@ -117,6 +118,25 @@ Build and Test
 
 This project is built with `CMake`_ and uses `Sphinx`_ to build the
 documentation with `Doxygen`_ + `Breathe`_ for the c++ API.
+
+Environment variables
+=====================
+
+This project's `CMake`_ configuration accepts two build type strings: 'Release' and 'conda-test'. The first is used
+during the Gitlab-CI ``fast-test`` job to ensure that the project uses installed libraries correctly. The latter is used
+during the Gitlab-CI ``conda-build`` job to limit the test phase to the as-installed project files.
+
+The build type can be set with the ``-DCMAKE_BUILD_TYPE=<build type string>`` during project configuration. Both build
+types will require the upstream dependent libraries
+
+* ``abaqus_tools``: https://re-git.lanl.gov/aea/material-models/abaqus_tools
+* ``error_tools``: https://re-git.lanl.gov/aea/material-models/error_tools
+* ``vector_tools``: https://re-git.lanl.gov/aea/material-models/vector_tools
+
+to be installed and found in the user's environment. If the build type string doesn't match those previously listed, the
+CMake project will build missing upstream libraries with the `CMake fetch_content`_ feature. The 'conda-test' build type
+excludes the project libraries from the build configuration and will attempt to find the project libraries in the user's
+environment to perform the project unit and integration tests against the as-installed project files.
 
 Build on sstelmo
 ================
