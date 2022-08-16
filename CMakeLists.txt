@@ -67,8 +67,12 @@ endif()
 # Set build type checks
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
 set(upstream_required "")
+set(full_build "true")
 if(cmake_build_type_lower STREQUAL "release")
     set(upstream_required "REQUIRED")
+elseif(cmake_build_type_lower STREQUAL "test")
+    set(upstream_required "REQUIRED")
+    set(full_build "false")
 endif()
 
 # Find related, but external, projects in installed environment
@@ -95,40 +99,46 @@ endforeach(package)
 #=============================================================================================== ADD PROJECT TARGETS ===
 # MUST COME AFTER DEPENDENCY LOCATING
 # Add project source directories
-include_directories(${CPP_SRC_PATH})
-add_subdirectory(${CPP_SRC_PATH})
+if(${full_build} STREQUAL "true")
+    include_directories(${CPP_SRC_PATH})
+    add_subdirectory(${CPP_SRC_PATH})
+endif()
 
 # Only add tests and documentation for current project builds. Protects downstream project builds.
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # Find Boost. Required for tests
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
-    # Add c++ tests and docs
     add_subdirectory(${CPP_TEST_PATH})
-    add_subdirectory(${DOXYGEN_SRC_PATH})
-    add_subdirectory(${SPHINX_SRC_PATH})
-    add_subdirectory(${ABAQUS_SRC_PATH})
+    # Add c++ tests and docs
+    if(${full_build} STREQUAL "true")
+        add_subdirectory(${DOXYGEN_SRC_PATH})
+        add_subdirectory(${SPHINX_SRC_PATH})
+        add_subdirectory(${ABAQUS_SRC_PATH})
+    endif()
 endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
-foreach(package ${PROJECT_NAME} ${UMAT})
-    include(CMakePackageConfigHelpers)
-    write_basic_package_version_file("${package}ConfigVersion.cmake"
-                                     VERSION ${PROJECT_VERSION}
-                                     COMPATIBILITY SameMajorVersion)
-    configure_package_config_file(
-      "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
-      "${PROJECT_BINARY_DIR}/${package}Config.cmake"
-      INSTALL_DESTINATION
-      ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+if(${full_build} STREQUAL "true")
+    foreach(package ${PROJECT_NAME} ${UMAT})
+        include(CMakePackageConfigHelpers)
+        write_basic_package_version_file("${package}ConfigVersion.cmake"
+                                         VERSION ${PROJECT_VERSION}
+                                         COMPATIBILITY SameMajorVersion)
+        configure_package_config_file(
+          "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}/Config.cmake.in"
+          "${PROJECT_BINARY_DIR}/${package}Config.cmake"
+          INSTALL_DESTINATION
+          ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
 
-    # CMake won't build the targets for local builds of upstream projects
-    if(cmake_build_type_lower STREQUAL release)
-        install(EXPORT ${package}_Targets
-                FILE ${package}Targets.cmake
+        # CMake won't build the targets for local builds of upstream projects
+        if(cmake_build_type_lower STREQUAL release)
+            install(EXPORT ${package}_Targets
+                    FILE ${package}Targets.cmake
+                    DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+        endif()
+
+        install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
+                      "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
                 DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
-    endif()
-
-    install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
-                  "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
-            DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
-endforeach(package)
+    endforeach(package)
+endif()
