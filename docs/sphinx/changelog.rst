@@ -7,8 +7,17 @@ Changelog
 
 
 ******************
-0.2.4 (unreleased)
+0.2.5 (unreleased)
 ******************
+
+
+******************
+0.2.4 (2022-08-16)
+******************
+
+Bug fixes
+=========
+- Fix the Gitlab-CI pages job that deploys the documentation (:merge:`48`). By `Kyle Brindley`_.
 
 
 ******************
