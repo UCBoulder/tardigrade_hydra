@@ -1,5 +1,5 @@
 #===================================================================================================== PROJECT SETUP ===
-cmake_minimum_required(VERSION 3.14)
+cmake_minimum_required(VERSION 3.18)
 project(cpp_stub)
 
 # Set common project paths relative to project root directory
@@ -27,7 +27,13 @@ if(cmake_build_type_lower STREQUAL "release")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
-    set(project_link_string "$ENV{CONDA_PREFIX}/lib64/lib${PROJECT_NAME}.so")
+    # Find the installed project library
+    find_file(installed_linked_library
+              "lib${PROJECT_NAME}.so"
+              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
+              NO_CACHE
+              REQUIRED)
+    set(project_link_string ${installed_linked_library})
 endif()
 
 # Get version number from Git
