@@ -49,8 +49,8 @@ test:
     - src/cpp/tests/test_cpp_stub.cpp
   commands:
     - tree
-    - mkdir build-package
-    - cd build-package
+    - mkdir build-tests
+    - cd build-tests
     - cmake .. -DCMAKE_BUILD_TYPE=test
     - cmake --build . --target test_cpp_stub
     - ctest -R test_cpp_stub
