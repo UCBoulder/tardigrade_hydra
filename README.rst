@@ -157,7 +157,7 @@ Build on sstelmo
       $ mkdir build
       $ cd build
 
-3) Configure ``cmake3``
+3) Configure ``cmake``
 
        This step only needs to be performed once unless you need to specify a
        new CMake configuration for a re-build. Most command line arguments and
@@ -169,7 +169,7 @@ Build on sstelmo
 
       $ pwd
       /path/to/cpp_stub/build
-      $ cmake3 ..
+      $ cmake ..
 
 4) Display target options
 
@@ -177,7 +177,7 @@ Build on sstelmo
 
       $ pwd
       /path/to/cpp_stub/build
-      $ cmake3 --build . --target help
+      $ cmake --build . --target help
 
 4) Build various portions of the project
 
@@ -190,10 +190,10 @@ Build on sstelmo
       /path/to/cpp_stub/build
 
       # Build everything
-      $ cmake3 --build .
+      $ cmake --build .
 
       # Build the c++ primary libraries by sub-directory
-      $ cmake3 --build src/cpp
+      $ cmake --build src/cpp
 
 5) Locate build files
 
@@ -243,10 +243,10 @@ Test on sstelmo
       /path/to/cpp_stub/build
 
       # Build c++ tests
-      $ cmake3 --build src/cpp/tests
+      $ cmake --build src/cpp/tests
 
       # Build Abaqus integration tests
-      $ cmake3 --build src/abaqus/tests
+      $ cmake --build src/abaqus/tests
 
 5) Run the tests
 
@@ -302,9 +302,6 @@ Building the documentation
     * production version (``master`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/doxygen
     * development version (``dev`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/dev/doxygen
 
-The documentation can be built with ``build_docs.sh``. The steps used in that
-shell script are repeated here.
-
 To build just the documentation pick up the steps here:
 
 2) Create the build directory and move there
@@ -316,19 +313,19 @@ To build just the documentation pick up the steps here:
       $ mkdir build/
       $ cd build/
 
-3) Run cmake3 configuration
+3) Run cmake configuration
 
    .. code-block:: bash
 
       $ pwd
       /path/to/cpp_stub/build/
-      $ cmake3 ..
+      $ cmake ..
 
 4) Build the docs
 
    .. code-block:: bash
 
-      $ cmake3 --build . --target Sphinx
+      $ cmake --build . --target Sphinx
 
 5) Documentation builds to:
 
@@ -364,7 +361,7 @@ Build the entire before performing the installation.
 
       $ pwd
       /path/to/cpp_stub/build
-      $ cmake3 --build .
+      $ cmake --build .
 
 5) Install the library
 
