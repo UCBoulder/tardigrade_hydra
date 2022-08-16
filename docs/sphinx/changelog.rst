@@ -10,6 +10,10 @@ Changelog
 0.2.2 (unreleased)
 ******************
 
+Bug fixes
+=========
+- Fix the file name change staging command for the setup instructions (:issue:`29`, :merge:`41`). By `Kyle Brindley`_.
+
 Documentation
 =============
 - Remove references to deprecated shell scripts in developer manual (:issue:`28`, :merge:`37`). By `Kyle Brindley`_.
