@@ -113,12 +113,15 @@ fast-test:
   variables:
     GIT_STRATEGY: clone
   script:
-    - ./BUILD.sh
-    - ./TEST.sh
+    - workdir=${PWD}
+    - ./new_build.sh Release
+    - cd build
+    - ctest --verbose --output-log results.txt
+    - cd ${workdir}
   artifacts:
     when: always
     paths:
-      - build/results.tex
+      - build/results.txt
   tags:
     - sstelmo-shell-aea
 
@@ -175,8 +178,12 @@ pages:
   variables:
     GIT_STRATEGY: clone
   script:
-    - ./BUILD.sh
+    - workdir=${PWD}
     - mkdir public
+    - mkdir build
+    - cmake ..
+    - cmake --build . --target Sphinx
+    - cd ${workdir}
     - cp -r build/docs/sphinx/html/* public/
   artifacts:
     paths:
