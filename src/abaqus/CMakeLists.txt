@@ -6,8 +6,17 @@ set(ABAQUS_INPUT_FILES
 set(ABAQUS_INTEGRATION_TEST "test_abaqus.sh")
 # Create integration test target and associated dependencies
 set(ABAQUS_TEST_NAME "test_abaqus_integration")
-add_custom_target(${ABAQUS_TEST_NAME} ALL
-                  DEPENDS ${UMAT})
+
+# Set build dependent behavior required for as-installed conda testing
+if(cmake_build_type_lower STREQUAL "conda-test")
+    set(umat_file_string ${installed_umat})
+    add_custom_target(${ABAQUS_TEST_NAME} ALL)
+else()
+    set(umat_file_string $<TARGET_FILE:${UMAT}>)
+    add_custom_target(${ABAQUS_TEST_NAME} ALL
+                      DEPENDS ${UMAT})
+endif()
+
 # Copy abaqus source directory to build directory
 add_custom_command(TARGET ${ABAQUS_TEST_NAME} PRE_BUILD
                    COMMAND ${CMAKE_COMMAND} -E copy_directory
