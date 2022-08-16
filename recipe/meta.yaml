@@ -45,6 +45,7 @@ test:
     - boost >=1.59
   source_files:
     - CMakeLists.txt
+    - src/cmake/GetVersionFromGitTag.cmake
     - src/cpp/tests/CMakeLists.txt
     - src/cpp/tests/test_cpp_stub.cpp
   commands:
