@@ -17,11 +17,6 @@ if [ "$#" -ne 1 ]; then
 fi
 cmake_build_type=$1
 
-# Debugging
-whoami
-ls -l $HOME/include || true
-ls -l $HOME/.local/include || true
-
 # Clean and build repo tests
 rm -rf build/
 mkdir build
