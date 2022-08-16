@@ -54,10 +54,7 @@ constitutive modeling. This stub repository also includes template hooks for int
 Information
 ===========
 
-* Documentation
-
-  * production version (``master`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master
-  * development version (``dev`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/dev
+* Documentation (``main`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/
 
 * Wiki: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/wikis/home
 
@@ -75,7 +72,7 @@ Setting up a new project from this stub repo
 
     The repository setup has moved out of the README and into the HTML
     documentation. You can find the Gitlab project setup guide here:
-    https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/gitlab_setup.html
+    https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/gitlab_setup.html
 
 ************
 Gitlab CI/CD
@@ -85,7 +82,7 @@ Gitlab CI/CD
 
     The repository setup has moved out of the README and into the HTML
     documentation. You can find the Gitlab project setup guide here:
-    https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/gitlab_setup.html
+    https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/gitlab_setup.html
 
 ************
 Dependencies
@@ -273,8 +270,7 @@ Building the documentation
 
     The sphinx API docs are a work-in-progress. The doxygen API is much more useful.
 
-    * production version (``master`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/doxygen
-    * development version (``dev`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/dev/doxygen
+    * Documentation (``main`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/
 
 To build just the documentation pick up the steps here:
 
