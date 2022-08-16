@@ -270,7 +270,7 @@ Building the documentation
 
     The sphinx API docs are a work-in-progress. The doxygen API is much more useful.
 
-    * Documentation (``main`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/
+    * Documentation (``main`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/doxygen
 
 To build just the documentation pick up the steps here:
 
