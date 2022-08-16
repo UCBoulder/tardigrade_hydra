@@ -111,8 +111,12 @@ Create a new upstream repository
 
       2. On the "Create new project" page, follow the link for "Create blank project".
 
-      3. Enter a name for your project in the "Project name" field. Optionally add a
-         "project description" and click the blue "Create project" button.
+      3. Uncheck the "Initialize repository with a README" box under "Project Configuration".
+
+      4. Enter a name for your project in the "Project name" field. Optionally add a
+         "project description".
+
+      5. Click the blue "Create project" button.
 
 3. Follow the "Push an existing Git repository" instructions at the bottom of
    the new project webpage.
