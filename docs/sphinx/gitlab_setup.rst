@@ -402,23 +402,47 @@ Update project name
 
    .. note::
 
-      The ``rename`` bash command is common, but not ubiquitous, to UNIX-like
-      operating systems. It's reasonably ubiquitous on the most common linux
-      distributions. You should find it on ``sstelmo``, but probably won't find it on
-      macOS.
+      The ``rename`` bash command is common, but not ubiquitous, to UNIX-like operating systems. If the following
+      ``rename`` command returns an error message, run the find command and manually update file names.
 
    .. code-block:: bash
 
-      $ rename cpp_stub myproject $(find . -type d \( -name .git -o -name build \) -prune -false -o -name "*cpp_stub*")
+      # Show files that require a name change
+      find . -type d \( -name .git -o -name build \) -prune -false -o -name "*cpp_stub*"
 
-8. Commit and push your changes to your "remote" or "fork" repository
+      # Regex file name change
+      $ rename cpp_stub my_project $(find . -type d \( -name .git -o -name build \) -prune -false -o -name "*cpp_stub*")
+
+8. Stage the file name changes for a commit
 
    .. code-block:: bash
 
       $ pwd
       /projects/<moniker>/w13repos/my_project
-      # Add tracked files and message
-      $ git commit -a -m "FEAT: replace cpp_stub with my_project throughout repository"
+
+      # Track the new files
+      $ git add $(git ls-files --deleted | sed 's/cpp_stub/my_project/g')
+
+      # Stop tracking the old files
+      $ git rm $(git ls-files --deleted)
+
+      # Confirm that Git understands the name change (precise file list may change)
+      $ git status
+      <truncated>
+      Changes to be committed:
+        (use "git restore --staged <file>..." to unstage)
+      renamed:    modulefiles/cpp_stub-env -> modulefiles/my_project-env
+      renamed:    src/cpp/cpp_stub.cpp -> src/cpp/my_project.cpp
+      renamed:    src/cpp/cpp_stub.h -> src/cpp/my_project.h
+      renamed:    src/cpp/cpp_stub_umat.cpp -> src/cpp/my_project_umat.cpp
+      renamed:    src/cpp/cpp_stub_umat.h -> src/cpp/my_project_umat.h
+      renamed:    src/cpp/tests/test_cpp_stub.cpp -> src/cpp/tests/test_my_project.cpp
+
+9. Commit and push your changes to your "remote" or "fork" repository
+
+   .. code-block:: bash
+
+      $ git commit -m "FEAT: replace cpp_stub with my_project throughout repository"
       $ git push origin feature/project-name-updates
 
 You can also perform some cleanup in your documentation directory to remove this
