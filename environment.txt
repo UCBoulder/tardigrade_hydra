@@ -1,7 +1,7 @@
 abaqus_tools
 boost>=1.59
 breathe>=4.30.0
-cmake
+cmake>=3.18
 cython
 doxygen
 eigen>=3.3.7
