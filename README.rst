@@ -145,6 +145,7 @@ Build on sstelmo
 
    .. code-block:: bash
 
+      $ module use /projects/aea_compute/modulefiles
       $ module load cpp_stub-env
 
 2) Create a build directory
@@ -159,11 +160,9 @@ Build on sstelmo
 
 3) Configure ``cmake``
 
-       This step only needs to be performed once unless you need to specify a
-       new CMake configuration for a re-build. Most command line arguments and
-       environment variables are stored in the CMake cache. Anything found in cache
-       will not be re-configured unless you remove the cache file or clobber the build
-       directory.
+       This step only needs to be performed once unless you need to specify a new CMake configuration for a re-build.
+       Most command line arguments and environment variables are stored in the CMake cache. Anything found in cache will
+       not be re-configured unless you build the ``rebuild_cache`` target or clobber the build directory.
 
    .. code-block:: bash
 
@@ -189,8 +188,12 @@ Build on sstelmo
       $ pwd
       /path/to/cpp_stub/build
 
-      # Build everything
+      # Build everything (either or)
       $ cmake --build .
+      $ cmake --build . --target all
+
+      # Build the c++ primary libraries by target name(s)
+      $ cmake --build . --target cpp_stub cpp_stub_umat
 
       # Build the c++ primary libraries by sub-directory
       $ cmake --build src/cpp
@@ -242,10 +245,11 @@ Test on sstelmo
       $ pwd
       /path/to/cpp_stub/build
 
-      # Build c++ tests
-      $ cmake --build src/cpp/tests
+      # Build c++ and abaqus tests by target name(s)
+      $ cmake --build . --target test_cpp_stub test_abaqus_integration
 
-      # Build Abaqus integration tests
+      # Build c++ and abaqus tests by sub-directories
+      $ cmake --build src/cpp/tests
       $ cmake --build src/abaqus/tests
 
 5) Run the tests
@@ -261,36 +265,6 @@ Test on sstelmo
       # Results print to screen
       # View details of most recent test execution including failure messages
       $ less Testing/Temporary/LastTest.log
-
-Convenience build wrappers
-==========================
-
-A build script has been created for convenience, ``new_build.sh``. The first
-will build everything including the library binary, the test binary, and the
-documentation. This is the same build script used for Gitlab-CI build and
-testing.
-
-2) Build everything
-
-   .. code:: bash
-
-      $ pwd
-      /path/to/cpp_stub/
-
-      # Just perform the build (pick one)
-      $ ./new_build.sh <cmake build type>
-      $ ./new_build.sh None
-      $ ./new_build.sh Release
-
-3) Display docs
-
-   .. code:: bash
-
-      # Sphinx
-      $ firefox build/docs/sphinx/index.html &
-
-      # Doxygen
-      $ firefox build/docs/doxygen/html/index.html &
 
 Building the documentation
 ==========================
@@ -375,7 +349,7 @@ Build the entire before performing the installation.
       $ cmake --install . --prefix /home/$USER/.local
 
       # Example install to conda environment
-      $ conda active my_env
+      $ conda activate my_env
       $ cmake --install . --prefix ${CONDA_PREFIX}
 
 .. build-end-do-not-remove
