@@ -10,6 +10,10 @@ Changelog
 0.2.3 (unreleased)
 ******************
 
+Breaking changes
+================
+- Rename the production branch from ``master`` to ``main`` (:issue:`16`, :merge:`46`). By `Kyle Brindley`_.
+
 Internal Changes
 ================
 - Remove the deprecated bash build scripts. Contents merged to the relevant build file(s), ``.gitlab-ci.yml`` and
