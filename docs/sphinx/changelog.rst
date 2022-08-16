@@ -7,6 +7,34 @@ Changelog
 
 
 ******************
+0.2.3 (unreleased)
+******************
+
+
+******************
+0.2.2 (2022-08-16)
+******************
+
+Bug fixes
+=========
+- Fix the file name change staging command for the setup instructions (:issue:`29`, :merge:`41`). By `Kyle Brindley`_.
+
+Documentation
+=============
+- Remove references to deprecated shell scripts in developer manual (:issue:`28`, :merge:`37`). By `Kyle Brindley`_.
+- Refer to the AEA compute environment to simplify the user manual (:issue:`7`, :merge:`39`). By `Kyle Brindley`_.
+- Update the project creation step-by-step to match the roles documented in the AEA Gitlab group wiki (:issue:`8`,
+  :merge:`40`). By `Kyle Brindley`_.
+
+Internal Changes
+================
+- Pull developer manual content from the README to avoid duplicated content (:issue:`31`, :merge:`38`). By `Kyle
+  Brindley`_.
+- Perform project unit and integration tests during Conda packaging test phase (:issue:`27`, :merge:`42`). By `Kyle
+  Brindley`_.
+
+
+******************
 0.2.1 (2022-08-15)
 ******************
 

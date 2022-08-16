@@ -98,31 +98,27 @@ Create a new upstream repository
 
 1. Navigate to the W-13 `Material Models`_ Gitlab sub-group.
 
-2. Create a new repository by clicking on the blue "New project" button in the
-   upper right corner of the sub-group main page.
+2. Pick a new project name that doesn't clash with existing projects. Email `w13devops`_ with a request for a new
+   project name. Include the project name and the appropriate AEA Gitlab subgroup.
 
    .. note::
 
-      If you do not have the "Developer" or "Maintainer" role assigned to you in
-      this sub-group, you will not be able to create a new project directly. You can
-      request a role change from the `Material Models`_ sub-group owners. Sub-group
-      owners may prefer to create a project for you and make you the owner of that
-      project. You can check the `Material Models members`_ list for contact
-      information.
+      W-13 staff with "Reporter" permissions cannot create a new project in the `AEA Gitlab group`_ or subgroups directly.
+      Instead, the DevOps team will perform the following actions for you and make you the "Owner" of the new project.
 
-3. On the "Create new project" page, follow the link for "Create blank project".
+      1. Create a new repository by clicking on the blue "New project" button in the
+         upper right corner of the sub-group main page.
 
-   .. note::
+      2. On the "Create new project" page, follow the link for "Create blank project".
 
-      Gitlab offers a feature to create template projects that may make this
-      guide much simpler in the future. Contact the ``cpp_stub`` developers and `AEA
-      Gitlab group`_ owners to discuss progress on simplified repository setup using
-      templates.
+      3. Uncheck the "Initialize repository with a README" box under "Project Configuration".
 
-3. Enter a name for your project in the "Project name" field. Optionally add a
-   "project description" and click the blue "Create project" button.
+      4. Enter a name for your project in the "Project name" field. Optionally add a
+         "project description".
 
-4. Follow the "Push an existing Git repository" instructions at the bottom of
+      5. Click the blue "Create project" button.
+
+3. Follow the "Push an existing Git repository" instructions at the bottom of
    the new project webpage.
 
    .. code-block:: bash
@@ -134,16 +130,16 @@ Create a new upstream repository
       $ git push -u origin --all
       $ git push -u origin --tags
 
-5. Refresh the Gitlab project webpage and verify that the repository code was pushed
+4. Refresh the Gitlab project webpage and verify that the repository code was pushed
    correctly. You should see a list of source files and this Bitbucket parsed
    ``README.rst`` displayed. You can also review the "master" and "dev" branch from
    the left hand side bar "Repository" > "Branches" menu and the Git tags from the
    "Repository" > "Tags" menu.
 
-6. Remove any issue branches from the ``cpp_stub`` project on the "Repository" >
+5. Remove any issue branches from the ``cpp_stub`` project on the "Repository" >
    "Branches" menu. You should keep only the "master" and "dev" branches.
 
-7. If everything looks correct on Gitlab project, you can clean up your local
+6. If everything looks correct on Gitlab project, you can clean up your local
    repository.
 
    .. warning::
@@ -193,7 +189,7 @@ only a small number of settings must be updated.
 
    * "allowed to push":
 
-     * master: No one 
+     * master: No one
      * dev: No one
 
 5. From the "Project Information" > "Members" item at the top of the left side
@@ -211,60 +207,22 @@ Enable project CI/CD
 
 The ``cpp_stub`` project comes pre-configured to perform continuous integration
 (CI) and continuous deployment (CD) on W-13's compute server ``sstelmo`` with
-testing performed in and deployment to the `W-13 Python Environments`_.
+testing performed in and deployment to the `AEA compute environment`_.
 
 The CI/CD configuration is found in the ``.gitlab-ci.yml`` file. You can read
 more about Gitlab CI/CD configuration in the `ASC RE Gitlab User
 Documentation`_: https://re-git.lanl.gov/help/ci/README.md.
 
-No project configuration is required for CI/CD of Merge-Requests to or deployment of the
-``dev`` branch. As an alternative to full CI/CD configuration, you may remove the
-``git`` operations found in the ``CD.sh`` file, for example found using the
-``grep`` command as
-
-.. code-block::
-
-   $ pwd
-   /projects/<moniker>/w13repos/my_project
-
-   $ grep git CD.sh
-       git config user.name "${GITLAB_USER_NAME}"
-       git config user.email "${GITLAB_USER_EMAIL}"
-       git remote add oauth2-origin https://gitlab-ci-token:${GITLAB_ACCESS_TOKEN}@re-git.lanl.gov/${CI_PROJECT_PATH}.git
-       git tag -a ${production_version} -m "production release ${production_version}" || true
-       last_merge_hash=$(git log --pretty=format:"%H" --merges -n 2 | tail -n 1)  # Assume last merge was dev->master. Pick previous
-       git tag -a ${developer_version} -m "developer release ${developer_version}" ${last_merge_hash} || true
-       git push oauth2-origin --tags
-
-You may also simply remove the ``deploy_build`` job entirely from the
-``.gitlab-ci.yml`` file, an example job definition is included below, but the
-details may change. The key to identifying the deployment job is the ``stage:
-deploy`` attribute and shell commands indicating the CD job definition, e.g.
-``script: ./CD.sh``.
-
-.. code-block::
-   :linenos:
-
-   deploy_build:
-     stage: deploy
-     variables:
-       GIT_STRATEGY: clone
-     script: ./CD.sh
-     tags:
-       - sstelmo-shell-aea
-     only:
-       - master
-       - dev
+No project configuration is required for CI/CD of Merge-Requests to or deployment of the ``dev`` branch. As an
+alternative to full CI/CD configuration, you may remove the ``microbump`` job from the ``version`` stage in the
+``.gitlab-ci.yml`` file, which is the only Gitlab-CI job that requires the project access tokens described in this
+section. The ``git`` operations performed by ``microbump`` automate micro version bumps during master branch deployment
+and are not strictly necessary for CI/CD.
 
 The ``pages`` job is a special deploy stage job that builds and deploys
 documentation to your project's Gitlab Pages, e.g.
 https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub. This job should be
 retained for building and deploying documentation for your project users.
-
-The ``git`` operations automate micro version bumps during master branch
-deployment and are not strictly necessary for CI/CD. The ``deploy_build`` job
-performs the CD process and is not required for CI, which is performed by the
-``test_build`` job.
 
 The only project configuration required to enable the existing Gitlab CI/CD is
 to add a project access token. To add a project access with the naming
@@ -444,23 +402,47 @@ Update project name
 
    .. note::
 
-      The ``rename`` bash command is common, but not ubiquitous, to UNIX-like
-      operating systems. It's reasonably ubiquitous on the most common linux
-      distributions. You should find it on ``sstelmo``, but probably won't find it on
-      macOS.
+      The ``rename`` bash command is common, but not ubiquitous, to UNIX-like operating systems. If the following
+      ``rename`` command returns an error message, run the find command and manually update file names.
 
    .. code-block:: bash
 
-      $ rename cpp_stub myproject $(find . -type d \( -name .git -o -name build \) -prune -false -o -name "*cpp_stub*")
+      # Show files that require a name change
+      find . -type d \( -name .git -o -name build \) -prune -false -o -name "*cpp_stub*"
 
-8. Commit and push your changes to your "remote" or "fork" repository
+      # Regex file name change
+      $ rename cpp_stub my_project $(find . -type d \( -name .git -o -name build \) -prune -false -o -name "*cpp_stub*")
+
+8. Stage the file name changes for a commit
 
    .. code-block:: bash
 
       $ pwd
       /projects/<moniker>/w13repos/my_project
-      # Add tracked files and message
-      $ git commit -a -m "FEAT: replace cpp_stub with my_project throughout repository"
+
+      # Track the new files
+      $ git add $(git ls-files --deleted | sed 's/cpp_stub/my_project/g')
+
+      # Stop tracking the old files
+      $ git rm $(git ls-files --deleted)
+
+      # Confirm that Git understands the name change (precise file list may change)
+      $ git status
+      <truncated>
+      Changes to be committed:
+        (use "git restore --staged <file>..." to unstage)
+      renamed:    modulefiles/cpp_stub-env -> modulefiles/my_project-env
+      renamed:    src/cpp/cpp_stub.cpp -> src/cpp/my_project.cpp
+      renamed:    src/cpp/cpp_stub.h -> src/cpp/my_project.h
+      renamed:    src/cpp/cpp_stub_umat.cpp -> src/cpp/my_project_umat.cpp
+      renamed:    src/cpp/cpp_stub_umat.h -> src/cpp/my_project_umat.h
+      renamed:    src/cpp/tests/test_cpp_stub.cpp -> src/cpp/tests/test_my_project.cpp
+
+9. Commit and push your changes to your "remote" or "fork" repository
+
+   .. code-block:: bash
+
+      $ git commit -m "FEAT: replace cpp_stub with my_project throughout repository"
       $ git push origin feature/project-name-updates
 
 You can also perform some cleanup in your documentation directory to remove this

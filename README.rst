@@ -1,18 +1,25 @@
+.. targets-start-do-not-remove
+
+.. _`AEA Conda channel`: https://aea.re-pages.lanl.gov/developer-operations/aea_compute_environment/aea-release/aea_compute_environment.html#aea-conda-channel
+.. _`AEA compute environment`: https://aea.re-pages.lanl.gov/developer-operations/aea_compute_environment/aea-beta/aea_compute_environment.html#
 .. _Anaconda Documentation: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
 .. _BOOST: https://www.boost.org/doc/libs/1_53_0/
+.. _`Conda`: https://docs.conda.io/en/latest/
 .. _CMake: https://cmake.org/cmake/help/v3.14/
 .. _CMake add_custom_target: https://cmake.org/cmake/help/latest/command/add_custom_target.html
+.. _CMake fetch_content: https://cmake.org/cmake/help/latest/module/FetchContent.html
 .. _Doxygen: https://www.doxygen.nl/manual/docblocks.html
 .. _Eigen: https://eigen.tuxfamily.org/dox/
 .. _Sphinx: https://www.sphinx-doc.org/en/master/
 .. _Breathe: https://breathe.readthedocs.io/en/latest/
 .. _PEP-8: https://www.python.org/dev/peps/pep-0008/
-.. _pipreqs: https://github.com/bndr/pipreqs 
+.. _pipreqs: https://github.com/bndr/pipreqs
 .. _LaTeX: https://www.latex-project.org/help/documentation/
-.. _W-13 DevOps Manual: https://xcp-confluence.lanl.gov/display/COM/W-13+DevOps
-.. _upstream repository: https://re-git.lanl.gov/aea/material-models/cpp_stub
+.. _upstream repository: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub
 .. _Material Models: https://re-git.lanl.gov/aea/material-models
 .. _UNIX group: https://ddw-confluence.lanl.gov/pages/viewpage.action?pageId=150929410
+
+.. targets-end-do-not-remove
 
 ###################
 C++ Stub repository
@@ -22,20 +29,23 @@ C++ Stub repository
 Project Description
 *******************
 
+.. project-brief-start-do-not-remove
+
 A stub repository for C++ development projects in W-13.
 
-This repository will contain the necessary setup files to integrate C++ doc
-strings, `CMake`_, `Doxygen`_, `Sphinx`_, and `Breathe`_ for a complete build
-system with integrated documentation. It will also include the necessary hooks
-to commonly used C++ libraries for constitutive modeling. This stub repository
-also includes template hooks for integrating C++ code as Abaqus subroutines.
+This repository will contain the necessary setup files to integrate C++ doc strings, `CMake`_, `Doxygen`_, `Sphinx`_,
+and `Breathe`_ for a complete build system with integrated documentation. It includes template `Conda`_ build, package,
+and deployment to the `AEA Conda channel`_. It includes the necessary hooks to commonly used AEA C++ libraries for
+constitutive modeling. This stub repository also includes template hooks for integrating C++ code as Abaqus subroutines.
+
+.. project-brief-end-do-not-remove
 
     **NOTE**
 
     You can use this repo as a stub for fortran projects as well! A step-by-step
-    may never happen because c++ is the future of W-13 subroutines.  For now, refer
+    may never happen because c++ is the future of W-13 subroutines. For now, refer
     to the following references:
-   
+
     * `CMake for Fortran example CMakeLists.txt <https://gitlab.kitware.com/cmake/community/-/wikis/doc/cmake/languages/fortran/ForFortranExample>`_
     * `CMake documentation starting point <https://cmake.org/cmake/help/v3.14/module/CheckFortranSourceRuns.html>`_
     * `Stack Overflow thread <https://stackoverflow.com/questions/12705562/using-cmake-with-fortran>`_
@@ -46,10 +56,10 @@ Information
 
 * Documentation
 
-  * production version (``master`` branch): https://aea.re-pages.lanl.gov/material-models/cpp_stub/master
-  * development version (``dev`` branch): https://aea.re-pages.lanl.gov/material-models/cpp_stub/dev
+  * production version (``master`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master
+  * development version (``dev`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/dev
 
-* Wiki: https://re-git.lanl.gov/aea/material-models/cpp_stub/-/wikis/home
+* Wiki: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/wikis/home
 
 Developers
 ==========
@@ -65,7 +75,7 @@ Setting up a new project from this stub repo
 
     The repository setup has moved out of the README and into the HTML
     documentation. You can find the Gitlab project setup guide here:
-    https://aea.re-pages.lanl.gov/material-models/cpp_stub/master/gitlab_setup.html
+    https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/gitlab_setup.html
 
 ************
 Gitlab CI/CD
@@ -75,28 +85,13 @@ Gitlab CI/CD
 
     The repository setup has moved out of the README and into the HTML
     documentation. You can find the Gitlab project setup guide here:
-    https://aea.re-pages.lanl.gov/material-models/cpp_stub/master/gitlab_setup.html
+    https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/gitlab_setup.html
 
 ************
 Dependencies
 ************
 
-Compilers
-=========
-
-* c++11 compiler (listed version number has been tested at some point)
-
-  * g++ >= GNU 4.8.5
-
-Executables
-===========
-
-* `CMake`_ >= 3.14
-* `Doxygen`_ >= 1.8.5
-* `LaTeX`_ >= 2017
-
-Conda Environment
-=================
+.. dependencies-start-do-not-remove
 
 For convenience, the minimal Conda environment requirements for project development are included in ``environment.txt``.
 A minimal anaconda environment for building the documentation can be created from an existing anaconda installation with
@@ -109,35 +104,39 @@ the following commands.
 You can learn more about Anaconda Python environment creation and management in
 the `Anaconda Documentation`_.
 
-C++ Libraries
-=============
+The build, test, and run time requirements are subsets of the development environment requirements found in
+``environment.txt``. This project builds and deploys as a Conda package to the `AEA Conda channel`_. The Conda recipe
+and build, test, run time requirements are found in the ``recipe/`` directory.
 
-    **NOTE**
-
-    Non-admin installations for Eigen and Boost are no longer required.** This
-    project is built and deployed against C++ libraries managed in Conda. See the
-    Conda environment file and README discussion for non-admin environment
-    management.
-
-* `Eigen`_ >= 3.3.7
-* `BOOST`_ >= 1.59.0
-* error\_tools: https://re-git.lanl.gov/aea/material-models/error_tools
-* vector\_tools: https://re-git.lanl.gov/aea/material-models/vector_tools
-* abaqus\_tools: https://re-git.lanl.gov/aea/material-models/abaqus_tools
-* constitutive\_tools: https://re-git.lanl.gov/aea/material-models/constitutive_tools
-* stress\_tools: https://re-git.lanl.gov/aea/material-models/stress_tools
-* solver\_tools: https://re-git.lanl.gov/aea/material-models/solver_tools
-
-If not found on the current system or active Conda environment, all of the
-``*_tools`` libraries are pulled from their git repos by branch name and built
-with their respective cmake files as part of the cmake build for this project.
+.. dependencies-end-do-not-remove
 
 **************
 Build and Test
 **************
 
+.. build-start-do-not-remove
+
 This project is built with `CMake`_ and uses `Sphinx`_ to build the
 documentation with `Doxygen`_ + `Breathe`_ for the c++ API.
+
+Environment variables
+=====================
+
+This project's `CMake`_ configuration accepts two build type strings: 'Release' and 'conda-test'. The first is used
+during the Gitlab-CI ``fast-test`` job to ensure that the project uses installed libraries correctly. The latter is used
+during the Gitlab-CI ``conda-build`` job to limit the test phase to the as-installed project files.
+
+The build type can be set with the ``-DCMAKE_BUILD_TYPE=<build type string>`` during project configuration. Both build
+types will require the upstream dependent libraries
+
+* ``abaqus_tools``: https://re-git.lanl.gov/aea/material-models/abaqus_tools
+* ``error_tools``: https://re-git.lanl.gov/aea/material-models/error_tools
+* ``vector_tools``: https://re-git.lanl.gov/aea/material-models/vector_tools
+
+to be installed and found in the user's environment. If the build type string doesn't match those previously listed, the
+CMake project will build missing upstream libraries with the `CMake fetch_content`_ feature. The 'conda-test' build type
+excludes the project libraries from the build configuration and will attempt to find the project libraries in the user's
+environment to perform the project unit and integration tests against the as-installed project files.
 
 Build on sstelmo
 ================
@@ -146,7 +145,7 @@ Build on sstelmo
 
    .. code-block:: bash
 
-      $ module load cpp_stub-env 
+      $ module load cpp_stub-env
 
 2) Create a build directory
 
@@ -172,10 +171,18 @@ Build on sstelmo
       /path/to/cpp_stub/build
       $ cmake3 ..
 
+4) Display target options
+
+   .. code-block:: bash
+
+      $ pwd
+      /path/to/cpp_stub/build
+      $ cmake3 --build . --target help
+
 4) Build various portions of the project
 
        Most of the project will re-build only as necessary after source updates. Some portions of the documentation
-       require a ``make clean`` after documentation source file updates to force a re-build.
+       require a ``cmake --build . --target clean`` after documentation source file updates to force a re-build.
 
    .. code-block:: bash
 
@@ -185,7 +192,7 @@ Build on sstelmo
       # Build everything
       $ cmake3 --build .
 
-      # Build only the c++ primary libraries
+      # Build the c++ primary libraries by sub-directory
       $ cmake3 --build src/cpp
 
 5) Locate build files
@@ -204,7 +211,7 @@ Build on sstelmo
 6) Clean build directory to force a re-build
 
        **HEALTH WARNING**
-      
+
        The abaqus input files and bash scripts used for integration testing are
        built with the `CMake add_custom_target`_ feature. Consequently, the integration
        test target is *always considered out of date*. The integration test target
@@ -214,7 +221,7 @@ Build on sstelmo
        command, e.g. ``cmake --build .`` or ``cmake --build src/abaqus/tests``. This
        operation is computationally inexpensive with respect to building the
        ``cpp_stub`` source code.
-      
+
        Input files are registered in the ``src/abaqus/tests/CMakeLists.txt`` file
        under the ``ABAQUS_INPUT_FILES`` CMake variable.
 
@@ -223,7 +230,7 @@ Build on sstelmo
       $ pwd
       /path/to/cpp_stub/build
 
-      $ make clean
+      $ cmake --build . --target clean
 
 Test on sstelmo
 ===============
@@ -261,7 +268,7 @@ Convenience build wrappers
 Two build scripts have been created for convenience, ``new_build.sh`` and
 ``build_docs.sh``. The first will build everything including the library binary,
 the test binary, and the documentation. This is the same build script used by
-``jenkins_build.sh`` for CI builds and testing. The ``build_docs.sh`` script
+``.gitlab-ci.yml`` for CI builds and testing. The ``build_docs.sh`` script
 only builds the documentation. Both build scripts clobber existing build
 directories, reset any bash environment variables, and run the cmake
 configuration from scratch.
@@ -281,19 +288,12 @@ configuration from scratch.
       # Perform tests from PWD
       $ ./build/src/cpp/tests/test_cpp_stub
 
-      # Build and perform tests
-      $ ./jenkins_build.sh
-
 3) View test results
 
    .. code-block:: bash
 
       # As built directly to PWD
       $ cat results.tex
-
-      # As built by jenkins_build.sh
-      $ cat build/src/cpp/tests/*_results.tex
-      $ cat *results.tex
 
 4) Display docs
 
@@ -309,12 +309,11 @@ Building the documentation
 ==========================
 
     **HEALTH WARNING**
-   
-    The sphinx API docs are a work-in-progress. The doxygen API is much more
-    useful.
 
-    * production version (``master`` branch): https://aea.re-pages.lanl.gov/material-models/cpp_stub/master/doxygen
-    * development version (``dev`` branch): https://aea.re-pages.lanl.gov/material-models/cpp_stub/dev/doxygen
+    The sphinx API docs are a work-in-progress. The doxygen API is much more useful.
+
+    * production version (``master`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/master/doxygen
+    * development version (``dev`` branch): https://aea.re-pages.lanl.gov/stub-repositories/cpp_stub/dev/doxygen
 
 The documentation can be built with ``build_docs.sh``. The steps used in that
 shell script are repeated here.
@@ -342,7 +341,7 @@ To build just the documentation pick up the steps here:
 
    .. code-block:: bash
 
-      $ cmake3 --build docs/sphinx
+      $ cmake3 --build . --target Sphinx
 
 5) Documentation builds to:
 
@@ -393,14 +392,15 @@ Build the entire before performing the installation.
 
       # Example install to conda environment
       $ conda active my_env
-      $ cmake --install . --prefix ${CONDA_DEFAULT_ENV}
+      $ cmake --install . --prefix ${CONDA_PREFIX}
 
-      # Example install to W-13 CI/CD conda environment performed by CI/CD institutional account
-      $ cmake --install . --prefix /projects/python/release
+.. build-end-do-not-remove
 
 ***********************
 Contribution Guidelines
 ***********************
+
+.. contribution-start-do-not-remove
 
 Git Commit Message
 ==================
@@ -434,8 +434,7 @@ doubt use ``feature/<description>``.
 reStructured Text
 =================
 
-`Sphinx`_ reads in docstrings and other special portions of the code as
-reStructured text. Developers should follow
+`Sphinx`_ reads in docstrings and other special portions of the code as reStructured text. Developers should follow
 styles in this `Sphinx style guide
 <https://documentation-style-guide-sphinx.readthedocs.io/en/latest/style-guide.html#>`_.
 
@@ -483,3 +482,5 @@ run.
   .. code-block:: bash
 
      sed -i 's/\([)}\]]\)\([)}\]]\)/\1 \2/g' <list of files to update>
+
+.. contribution-end-do-not-remove

@@ -8,12 +8,11 @@ source:
 
 build:
   script:
-    - tree
     - mkdir build-package
     - cd build-package
     - cmake .. -DCMAKE_BUILD_TYPE=Release
     - cmake --build . --target cpp_stub cpp_stub_umat
-    - cmake --install . --prefix $PREFIX
+    - cmake --install . --prefix ${PREFIX}
   ignore_run_exports:
     - python_abi
 
@@ -22,8 +21,7 @@ requirements:
   build:
     - python {{ python }}
     - {{ compiler('cxx') }}
-    - boost >=1.59
-    - cmake >=3.17
+    - cmake >=3.18
     - doxygen
     - eigen >=3.3.7
     - error_tools
@@ -31,26 +29,32 @@ requirements:
     - abaqus_tools
   host:
     - python
-    - boost
     - eigen >=3.3.7
   run:
     - python
     - {{ compiler('cxx') }}
-    - boost
     - eigen >=3.3.7
     - error_tools
     - vector_tools
     - abaqus_tools
 
 test:
+  requires:
+    - cmake >=3.18
+    - boost >=1.59
   source_files:
     - CMakeLists.txt
     - src/cpp/tests/CMakeLists.txt
     - src/cpp/tests/test_cpp_stub.cpp
+    - src/abaqus/CMakeLists.txt
+    - src/abaqus/single_element_c3d8.inp
+    - src/abaqus/tests/CMakeLists.txt
+    - src/abaqus/tests/test_abaqus.sh
   commands:
-    - tree
-    - mkdir build-package
-    - cd build-package
-    - cmake ..
-    - cmake --build . --target test_cpp_stub
-    - ctest -R test_cpp_stub
+    - mkdir build-tests
+    - cd build-tests
+    - installed_linked_library_parent="$(dirname $(find ${PREFIX} -name libcpp_stub.so))"
+    - export LD_LIBRARY_PATH="${installed_linked_library_parent}:${LD_LIBRARY_PATH}"
+    - cmake .. -DCMAKE_BUILD_TYPE=conda-test
+    - cmake --build . --verbose
+    - ctest --output-on-failure
