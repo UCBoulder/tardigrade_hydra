@@ -11,7 +11,7 @@ set(ABAQUS_TEST_PATH "${ABAQUS_SRC_PATH}/tests")
 set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
 # Set some Abaqus integration variables
-set(UMAT "cpp_stub_umat")
+set(UMAT "${PROJECT_NAME}_umat")
 set(MISSING_INTEGRATION_DEPS_MESSAGE "Abaqus integration tests will be skipped.")
 
 # Add the cmake folder to locate project CMake module(s)
@@ -34,6 +34,12 @@ elseif(cmake_build_type_lower STREQUAL "conda-test")
               NO_CACHE
               REQUIRED)
     set(project_link_string ${installed_linked_library})
+    # Find the installed project umat
+    find_file(installed_umat
+              "lib${UMAT}.so"
+              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
+              NO_CACHE
+              REQUIRED)
 endif()
 
 # Get version number from Git
