@@ -21,11 +21,13 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_P
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
 set(upstream_required "")
 set(full_build "true")
+set(project_link_string ${PROJECT_NAME})
 if(cmake_build_type_lower STREQUAL "release")
     set(upstream_required "REQUIRED")
 elseif(cmake_build_type_lower STREQUAL "test")
     set(upstream_required "REQUIRED")
     set(full_build "false")
+    set(project_link_string "lib${PROJECT_NAME}.so")
 endif()
 
 # Get version number from Git
