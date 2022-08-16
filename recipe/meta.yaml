@@ -51,6 +51,6 @@ test:
     - tree
     - mkdir build-package
     - cd build-package
-    - cmake ..
+    - cmake .. -DCMAKE_BUILD_TYPE=test
     - cmake --build . --target test_cpp_stub
     - ctest -R test_cpp_stub
