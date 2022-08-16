@@ -51,6 +51,6 @@ test:
     - tree
     - mkdir build-tests
     - cd build-tests
-    - cmake .. -DCMAKE_BUILD_TYPE=test
+    - cmake .. -DCMAKE_BUILD_TYPE=conda-test
     - cmake --build . --target test_cpp_stub --verbose
     - ctest -R test_cpp_stub

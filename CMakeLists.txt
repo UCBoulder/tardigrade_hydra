@@ -20,18 +20,18 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_P
 # Set build type checks
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
 set(upstream_required "")
-set(full_build "true")
+set(not_conda_test "true")
 set(project_link_string ${PROJECT_NAME})
 if(cmake_build_type_lower STREQUAL "release")
     set(upstream_required "REQUIRED")
-elseif(cmake_build_type_lower STREQUAL "test")
+elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
-    set(full_build "false")
-    set(project_link_string "lib${PROJECT_NAME}.so")
+    set(not_conda_test "false")
+    set(project_link_string "$ENV{CONDA_PREFIX}/lib64/lib${PROJECT_NAME}.so")
 endif()
 
 # Get version number from Git
-if(${full_build} STREQUAL "true")
+if(${not_conda_test} STREQUAL "true")
     set(VERSION_UPDATE_FROM_GIT True)
     # FIXME: Figure out why include() doesn't pick up CMAKE_MODULE_PATH correctly
     include(${CMAKE_SRC_PATH}/GetVersionFromGitTag.cmake)
@@ -79,17 +79,6 @@ else()
     message(STATUS "Abaqus not found. ${MISSING_INTEGRATION_DEPS_MESSAGE}")
 endif()
 
-# Set build type checks
-string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
-set(upstream_required "")
-set(full_build "true")
-if(cmake_build_type_lower STREQUAL "release")
-    set(upstream_required "REQUIRED")
-elseif(cmake_build_type_lower STREQUAL "test")
-    set(upstream_required "REQUIRED")
-    set(full_build "false")
-endif()
-
 # Find related, but external, projects in installed environment
 include(FetchContent)
 set(upstream_packages "error_tools" "vector_tools" "abaqus_tools")
@@ -114,7 +103,7 @@ endforeach(package)
 #=============================================================================================== ADD PROJECT TARGETS ===
 # MUST COME AFTER DEPENDENCY LOCATING
 # Add project source directories
-if(${full_build} STREQUAL "true")
+if(${not_conda_test} STREQUAL "true")
     include_directories(${CPP_SRC_PATH})
     add_subdirectory(${CPP_SRC_PATH})
 endif()
@@ -125,7 +114,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
     add_subdirectory(${CPP_TEST_PATH})
     # Add c++ tests and docs
-    if(${full_build} STREQUAL "true")
+    if(${not_conda_test} STREQUAL "true")
         add_subdirectory(${DOXYGEN_SRC_PATH})
         add_subdirectory(${SPHINX_SRC_PATH})
         add_subdirectory(${ABAQUS_SRC_PATH})
@@ -133,7 +122,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
 endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
-if(${full_build} STREQUAL "true")
+if(${not_conda_test} STREQUAL "true")
     foreach(package ${PROJECT_NAME} ${UMAT})
         include(CMakePackageConfigHelpers)
         write_basic_package_version_file("${package}ConfigVersion.cmake"
