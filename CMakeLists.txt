@@ -36,7 +36,7 @@ elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(project_link_string ${installed_linked_library})
     # Find the installed project umat
     find_file(installed_umat
-              "lib${UMAT}.so"
+              "${UMAT}.o"
               PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
               NO_CACHE
               REQUIRED)
