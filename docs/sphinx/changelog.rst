@@ -7,8 +7,23 @@ Changelog
 
 
 ******************
-0.2.3 (unreleased)
+0.2.4 (unreleased)
 ******************
+
+
+******************
+0.2.3 (2022-08-16)
+******************
+
+Breaking changes
+================
+- Rename the production branch from ``master`` to ``main`` (:issue:`16`, :merge:`46`). By `Kyle Brindley`_.
+
+Internal Changes
+================
+- Remove the deprecated bash build scripts. Contents merged to the relevant build file(s), ``.gitlab-ci.yml`` and
+  ``recipe/meta.yaml``. Documented ``cmake`` example commands match preferred developer build, test, and install usage
+  (:issue:`32`, :merge:`44`). By `Kyle Brindley`_.
 
 
 ******************

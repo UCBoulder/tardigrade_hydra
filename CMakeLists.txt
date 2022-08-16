@@ -102,7 +102,7 @@ foreach(package ${upstream_packages})
     else()
         # Find related, but external, projects using FetchContent and building locally
         message(WARNING "Did not find an installed ${package} package. Attempting local build with FetchContent.")
-        # TODO: Decide how to handle master/dev build differences. bash env variables for GIT TAG?
+        # TODO: Decide how to handle main/dev build differences. bash env variables for GIT TAG?
         FetchContent_Declare(
             ${package}
             GIT_REPOSITORY ssh://git@re-git.lanl.gov:10022/aea/material-models/${package}.git
