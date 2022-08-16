@@ -47,6 +47,10 @@ test:
     - CMakeLists.txt
     - src/cpp/tests/CMakeLists.txt
     - src/cpp/tests/test_cpp_stub.cpp
+    - src/abaqus/CMakeLists.txt
+    - src/abaqus/single_element_c3d8.inp
+    - src/abaqus/tests/CMakeLists.txt
+    - src/abaqus/tests/test_abaqus.sh
   commands:
     - tree
     - mkdir build-tests
