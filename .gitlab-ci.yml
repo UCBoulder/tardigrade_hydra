@@ -183,6 +183,7 @@ pages:
     - workdir=${PWD}
     - mkdir -p public/doxygen
     - mkdir build
+    - cd build
     - cmake ..
     - cmake --build . --target Sphinx
     - cd ${workdir}
