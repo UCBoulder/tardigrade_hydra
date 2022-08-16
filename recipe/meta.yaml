@@ -41,7 +41,7 @@ requirements:
 
 test:
   requires:
-    - cmake >=3.17
+    - cmake >=3.18
     - boost >=1.59
   source_files:
     - CMakeLists.txt
