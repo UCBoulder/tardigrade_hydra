@@ -8,7 +8,6 @@ source:
 
 build:
   script:
-    - tree
     - mkdir build-package
     - cd build-package
     - cmake .. -DCMAKE_BUILD_TYPE=Release
@@ -52,7 +51,6 @@ test:
     - src/abaqus/tests/CMakeLists.txt
     - src/abaqus/tests/test_abaqus.sh
   commands:
-    - tree
     - mkdir build-tests
     - cd build-tests
     - cmake .. -DCMAKE_BUILD_TYPE=conda-test
