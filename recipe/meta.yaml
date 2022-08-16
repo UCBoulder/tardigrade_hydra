@@ -22,7 +22,6 @@ requirements:
   build:
     - python {{ python }}
     - {{ compiler('cxx') }}
-    - boost >=1.59
     - cmake >=3.17
     - doxygen
     - eigen >=3.3.7
@@ -31,18 +30,19 @@ requirements:
     - abaqus_tools
   host:
     - python
-    - boost
     - eigen >=3.3.7
   run:
     - python
     - {{ compiler('cxx') }}
-    - boost
     - eigen >=3.3.7
     - error_tools
     - vector_tools
     - abaqus_tools
 
 test:
+  requires:
+    - cmake >=3.17
+    - boost >=1.59
   source_files:
     - CMakeLists.txt
     - src/cpp/tests/CMakeLists.txt
