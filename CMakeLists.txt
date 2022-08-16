@@ -125,11 +125,11 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # Find Boost. Required for tests
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
     add_subdirectory(${CPP_TEST_PATH})
+    add_subdirectory(${ABAQUS_SRC_PATH})
     # Add c++ tests and docs
     if(${not_conda_test} STREQUAL "true")
         add_subdirectory(${DOXYGEN_SRC_PATH})
         add_subdirectory(${SPHINX_SRC_PATH})
-        add_subdirectory(${ABAQUS_SRC_PATH})
     endif()
 endif()
 
