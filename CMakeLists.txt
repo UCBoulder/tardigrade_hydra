@@ -44,9 +44,9 @@ endif()
 
 # Get version number from Git
 if(${not_conda_test} STREQUAL "true")
-    set(VERSION_UPDATE_FROM_GIT True)
-    # FIXME: Figure out why include() doesn't pick up CMAKE_MODULE_PATH correctly
-    include(${CMAKE_SRC_PATH}/GetVersionFromGitTag.cmake)
+    execute_process(COMMAND python -m setuptools_scm
+		            OUTPUT_VARIABLE ${PROJECT_NAME}_VERSION_STRING_FULL)
+    string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+" ${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_VERSION_STRING_FULL})
     project(${PROJECT_NAME} VERSION ${${PROJECT_NAME}_VERSION})
 endif()
 
