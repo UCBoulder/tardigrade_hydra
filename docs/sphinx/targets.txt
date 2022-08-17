@@ -23,6 +23,7 @@
 .. _`Python 2`: https://docs.python.org/2.7/
 .. _`PEP-8`: https://www.python.org/dev/peps/pep-0008/
 .. _`PEP-440`: https://www.python.org/dev/peps/pep-0440/
+.. _`setuptools_scm`: https://github.com/pypa/setuptools_scm
 .. _`sphinx`: https://www.sphinx-doc.org/en/master/
 .. _`xcp-confluence`: https://xcp-confluence.lanl.gov/
 .. _`Cubit`: https://cubit.sandia.gov/public/documentation.html

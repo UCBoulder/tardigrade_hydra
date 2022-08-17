@@ -24,12 +24,16 @@ requirements:
     - cmake >=3.18
     - doxygen
     - eigen >=3.3.7
+    - setuptools
+    - setuptools_scm
     - error_tools
     - vector_tools
     - abaqus_tools
   host:
     - python
     - eigen >=3.3.7
+    - setuptools
+    - setuptools_scm
   run:
     - python
     - {{ compiler('cxx') }}
