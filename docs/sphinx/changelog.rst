@@ -10,6 +10,11 @@ Changelog
 0.2.5 (unreleased)
 ******************
 
+Internal Changes
+================
+- Consolidate version number checks on ``setuptools_scm`` and the ``pyproject.toml`` configuration file (:issue:`34`,
+  :merge:`50`). By `Kyle Brindley`_.
+
 
 ******************
 0.2.4 (2022-08-16)
