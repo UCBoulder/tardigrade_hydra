@@ -1,6 +1,4 @@
 # Project files
-# Managed by GetVersionFromGitTag.cmake
-VERSION
 _version.py
 conda_build_artifacts
 conda-build-artifacts
