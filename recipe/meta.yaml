@@ -7,7 +7,6 @@ source:
   path: '..'
 
 build:
-  noarch: python
   script:
     - mkdir build-package
     - cd build-package
@@ -18,9 +17,7 @@ build:
     - python_abi
 
 requirements:
-  # TODO: need to pin the Python version, or at least build a variant to match (3.8.3)
   build:
-    - python {{ python }}
     - {{ compiler('cxx') }}
     - cmake >=3.18
     - doxygen
@@ -31,7 +28,6 @@ requirements:
     - vector_tools
     - abaqus_tools
   host:
-    - python
     - eigen >=3.3.7
     - setuptools
     - setuptools_scm
