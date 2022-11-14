@@ -70,7 +70,7 @@ environment:
       - "modulefiles/*"
       - "environment.txt"
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
 
 microbump:
   stage: version
@@ -102,7 +102,7 @@ microbump:
     - git tag -a ${developer_version} -m "developer pre-release ${developer_version}" ${last_merge_hash} || true
     - git push oauth2-origin --tags
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
   only:
     - main
 
@@ -125,7 +125,7 @@ fast-test:
     paths:
       - build/results.txt
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
 
 conda-build:
   stage: build
@@ -146,7 +146,7 @@ conda-build:
     paths:
       - conda-build-artifacts/linux-64/cpp_stub-*-*.tar.bz2
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
   only:
     - merge_requests
     - main
@@ -169,7 +169,7 @@ deploy:
     # Troubleshooting conda channel deploy and index update
     - conda search --channel file://${aea_conda_channel}/ --override-channels cpp_stub
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
   only:
     - main
     - dev
@@ -194,6 +194,6 @@ pages:
       # It MUST be called public
       - public
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
   only:
     - main
