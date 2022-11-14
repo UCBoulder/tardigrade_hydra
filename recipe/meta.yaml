@@ -36,7 +36,6 @@ requirements:
     - setuptools
     - setuptools_scm
   run:
-    - python
     - {{ compiler('cxx') }}
     - eigen >=3.3.7
     - error_tools
