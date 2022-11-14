@@ -15,6 +15,8 @@ Internal Changes
 - Consolidate version number checks on ``setuptools_scm`` and the ``pyproject.toml`` configuration file (:issue:`34`,
   :merge:`50`). By `Kyle Brindley`_.
 - Use any available AEA server for CI jobs (:issue:`36`, :merge:`53`). By `Kyle Brindley`_.
+- Remove Python dependence from the Conda package. This is presently a pure c++ package (:issue:`26`, :merge:`36`). By
+  `Kyle Brindley`_.
 
 
 ******************
