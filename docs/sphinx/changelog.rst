@@ -18,6 +18,7 @@ Internal Changes
 - Remove Python dependence from the Conda package. This is presently a pure c++ package (:issue:`26`, :merge:`36`). By
   `Kyle Brindley`_.
 - Remove the upper bound on compiler version in the shared development environment (:merge:`37`). By `Kyle Brindley`_.
+- Build Conda packages against multiple compiler versions (:merge:`38`). By `Kyle Brindley`_.
 
 
 ******************
