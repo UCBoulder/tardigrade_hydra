@@ -17,6 +17,7 @@ Internal Changes
 - Use any available AEA server for CI jobs (:issue:`36`, :merge:`53`). By `Kyle Brindley`_.
 - Remove Python dependence from the Conda package. This is presently a pure c++ package (:issue:`26`, :merge:`36`). By
   `Kyle Brindley`_.
+- Remove the upper bound on compiler version in the shared development environment (:merge:`37`). By `Kyle Brindley`_.
 
 
 ******************
