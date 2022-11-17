@@ -21,6 +21,8 @@ Internal Changes
 - Build Conda packages against multiple compiler versions (:merge:`38`). By `Kyle Brindley`_.
 - Update the minimum CMake version and suppress CMP0110 warning (:issue:`38`, :merge:`57`). By `Kyle Brindley`_.
 - Address Doxygen deprecation warnings (:issue:`38`, :merge:`57`). By `Kyle Brindley`_.
+- Fix the Conda build requirements to explicitly require everything required by the CMake configuration (:issue:`39`,
+  :merge:`56`). By `Kyle Brindley`_.
 
 
 ******************
