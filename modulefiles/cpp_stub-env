@@ -53,7 +53,7 @@ set environment_man "$environment_path/share/man"
 set cubit_bin "$cubit_path/bin"
 set cubit_bin_python "$cubit_path/bin/python3"
 
-set environment_lib "$environment_path/lib64"
+set environment_lib "$environment_path/lib:$environment_path/lib64"
 # Do the following only on RHEL 7 machines
 set release_file "/etc/redhat-release"
 if { [file exists $release_file] == 1} {
