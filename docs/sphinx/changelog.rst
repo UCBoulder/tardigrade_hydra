@@ -19,6 +19,7 @@ Internal Changes
   `Kyle Brindley`_.
 - Remove the upper bound on compiler version in the shared development environment (:merge:`37`). By `Kyle Brindley`_.
 - Build Conda packages against multiple compiler versions (:merge:`38`). By `Kyle Brindley`_.
+- Update the minimum CMake version and suppress CMP0110 warning (:issue:`38`, :merge:`57`). By `Kyle Brindley`_.
 
 
 ******************
