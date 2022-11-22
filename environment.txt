@@ -6,7 +6,7 @@ doxygen>=1.9
 eigen>=3.3.7
 error_tools
 gxx_linux-64>=7.3.0
-setuptools_scm
+setuptools_scm>=6.2
 sphinx>=3.0.4
 sphinx_rtd_theme>=0.4.3
 sphinxcontrib-bibtex
