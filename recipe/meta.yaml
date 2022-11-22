@@ -20,6 +20,7 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - cmake >=3.18
+    - setuptools_scm >=6.2
     - eigen >=3.3.7
     - error_tools
     - vector_tools
