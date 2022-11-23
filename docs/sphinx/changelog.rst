@@ -10,6 +10,9 @@ Changelog
 0.2.6 (unreleased)
 ******************
 
+Documentation
+=============
+- Add brief note and reference for Gitlab-CI scheduled pipelines (:issue:`41`, :merge:`60`). By `Kyle Brindley`_.
 
 ******************
 0.2.5 (2022-11-23)
