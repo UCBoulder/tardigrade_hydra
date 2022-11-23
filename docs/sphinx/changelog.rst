@@ -7,7 +7,12 @@ Changelog
 
 
 ******************
-0.2.5 (unreleased)
+0.2.6 (unreleased)
+******************
+
+
+******************
+0.2.5 (2022-11-23)
 ******************
 
 Internal Changes
@@ -23,6 +28,8 @@ Internal Changes
 - Address Doxygen deprecation warnings (:issue:`38`, :merge:`57`). By `Kyle Brindley`_.
 - Fix the Conda build requirements to explicitly require everything required by the CMake configuration (:issue:`39`,
   :merge:`56`). By `Kyle Brindley`_.
+- Protect deploy type Gitlab-CI jobs from scheduled pipeline execution. Avoids build and deploy for scheduled pipelines
+  (:issue:`37`, :merge:`58`). By `Kyle Brindley`_.
 
 
 ******************
