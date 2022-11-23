@@ -7,8 +7,29 @@ Changelog
 
 
 ******************
-0.2.5 (unreleased)
+0.2.6 (unreleased)
 ******************
+
+
+******************
+0.2.5 (2022-11-23)
+******************
+
+Internal Changes
+================
+- Consolidate version number checks on ``setuptools_scm`` and the ``pyproject.toml`` configuration file (:issue:`34`,
+  :merge:`50`). By `Kyle Brindley`_.
+- Use any available AEA server for CI jobs (:issue:`36`, :merge:`53`). By `Kyle Brindley`_.
+- Remove Python dependence from the Conda package. This is presently a pure c++ package (:issue:`26`, :merge:`36`). By
+  `Kyle Brindley`_.
+- Remove the upper bound on compiler version in the shared development environment (:merge:`37`). By `Kyle Brindley`_.
+- Build Conda packages against multiple compiler versions (:merge:`38`). By `Kyle Brindley`_.
+- Update the minimum CMake version and suppress CMP0110 warning (:issue:`38`, :merge:`57`). By `Kyle Brindley`_.
+- Address Doxygen deprecation warnings (:issue:`38`, :merge:`57`). By `Kyle Brindley`_.
+- Fix the Conda build requirements to explicitly require everything required by the CMake configuration (:issue:`39`,
+  :merge:`56`). By `Kyle Brindley`_.
+- Protect deploy type Gitlab-CI jobs from scheduled pipeline execution. Avoids build and deploy for scheduled pipelines
+  (:issue:`37`, :merge:`58`). By `Kyle Brindley`_.
 
 
 ******************

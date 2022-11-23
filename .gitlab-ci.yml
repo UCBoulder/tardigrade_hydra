@@ -20,7 +20,8 @@ before_script:
   - aea_modulefiles=${aea_deploy_directory}/modulefiles
   - environment='cpp_stub-env'
   - environment_path="${aea_deploy_directory}/${environment}"
-  - conda_options="--yes --channel ${aea_conda_channel} --channel conda-forge"
+  - conda_options="--yes --channel file://${aea_conda_channel}/ --channel conda-forge"
+  - conda_artifact_directory='conda-build-artifacts'
   # Activate the project specific environment from the project specific modulefile
   - module use ${PWD}/modulefiles
   - module load ${environment}
@@ -52,6 +53,11 @@ environment:
   stage: environment
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "dev"
+      changes:
+        - "modulefiles/*"
+        - "environment.txt"
   script:
     - export ALL_PROXY="proxyout.lanl.gov:8080"
     - export HTTP_PROXY="http://$ALL_PROXY"
@@ -62,13 +68,6 @@ environment:
     - chmod -R 755 ${environment_path}
     # place the common modulefiles in an accessible location
     - cp ${PWD}/modulefiles/* ${aea_modulefiles}
-  only:
-    refs:
-      - main
-      - dev
-    changes:
-      - "modulefiles/*"
-      - "environment.txt"
   tags:
     - sstelmo-shell-aea
 
@@ -76,6 +75,10 @@ microbump:
   stage: version
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
   script:
     # Conditionally "bump" micro version number. setuptools_scm already bumps number, just need to strip local version.
     - old_version=$(python -m setuptools_scm)
@@ -102,16 +105,17 @@ microbump:
     - git tag -a ${developer_version} -m "developer pre-release ${developer_version}" ${last_merge_hash} || true
     - git push oauth2-origin --tags
   tags:
-    - sstelmo-shell-aea
-  only:
-    - main
+    - shell-aea
 
 fast-test:
   stage: test
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
   script:
     - workdir=${PWD}
     - mkdir build
@@ -125,12 +129,17 @@ fast-test:
     paths:
       - build/results.txt
   tags:
-    - sstelmo-shell-aea
+    - shell-aea
 
 conda-build:
   stage: build
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
   script:
     # Set the LANL internal proxies
     - export ALL_PROXY="proxyout.lanl.gov:8080"
@@ -138,29 +147,29 @@ conda-build:
     - export HTTPS_PROXY=$HTTP_PROXY
     # Override default permissions. Set group to rx with no write permissions.
     - umask 0022
-    - output_folder='conda-build-artifacts'
-    - mkdir ${output_folder}
-    - VERSION=$(python -m setuptools_scm) conda build recipe --channel file://${aea_conda_channel} --channel conda-forge --no-anaconda-upload --croot /scratch/${USER}/conda-build --output-folder ${output_folder}
+    - mkdir ${conda_artifact_directory}
+    - VERSION=$(python -m setuptools_scm) conda build recipe --channel file://${aea_conda_channel} --channel conda-forge --no-anaconda-upload --croot /scratch/${USER}/conda-build --output-folder ${conda_artifact_directory}
   artifacts:
     expire_in: '2 hrs'
     paths:
       - conda-build-artifacts/linux-64/cpp_stub-*-*.tar.bz2
   tags:
-    - sstelmo-shell-aea
-  only:
-    - merge_requests
-    - main
-    - dev
+    - shell-aea
 
 deploy:
   stage: deploy
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
   script:
     # Override default permissions. Set group to rx with no write permissions.
     - umask 0022
     # Copy Conda package to AEA Conda Channel
-    - cp conda-build-artifacts/linux-64/cpp_stub-*-*.tar.bz2 ${aea_conda_channel}/linux-64
+    - cp ${conda_artifact_directory}/linux-64/cpp_stub-*-*.tar.bz2 ${aea_conda_channel}/linux-64
     # Change group for access by all W-13 staff and prevent accidental modification by institutional account in CI jobs
     - chgrp w13users ${aea_conda_channel}/linux-64/cpp_stub-*-*.tar.bz2 || true
     - chmod 555 ${aea_conda_channel}/linux-64/cpp_stub-*-*.tar.bz2 || true
@@ -170,15 +179,17 @@ deploy:
     - conda search --channel file://${aea_conda_channel}/ --override-channels cpp_stub
   tags:
     - sstelmo-shell-aea
-  only:
-    - main
-    - dev
 
 # It MUST be called pages
 pages:
   stage: deploy
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
   script:
     - workdir=${PWD}
     - mkdir -p public/doxygen
@@ -194,6 +205,4 @@ pages:
       # It MUST be called public
       - public
   tags:
-    - sstelmo-shell-aea
-  only:
-    - main
+    - shell-aea

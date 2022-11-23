@@ -1,5 +1,6 @@
 #===================================================================================================== PROJECT SETUP ===
-cmake_minimum_required(VERSION 3.18)
+cmake_minimum_required(VERSION 3.19)
+cmake_policy(SET CMP0110 NEW)
 project(cpp_stub)
 
 # Set common project paths relative to project root directory
@@ -44,9 +45,11 @@ endif()
 
 # Get version number from Git
 if(${not_conda_test} STREQUAL "true")
-    set(VERSION_UPDATE_FROM_GIT True)
-    # FIXME: Figure out why include() doesn't pick up CMAKE_MODULE_PATH correctly
-    include(${CMAKE_SRC_PATH}/GetVersionFromGitTag.cmake)
+    find_package(Python COMPONENTS Interpreter REQUIRED)
+    execute_process(COMMAND ${Python_EXECUTABLE} -m setuptools_scm
+		            OUTPUT_VARIABLE ${PROJECT_NAME}_VERSION_STRING_FULL
+                    OUTPUT_STRIP_TRAILING_WHITESPACE)
+    string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+" ${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_VERSION_STRING_FULL})
     project(${PROJECT_NAME} VERSION ${${PROJECT_NAME}_VERSION})
 endif()
 
