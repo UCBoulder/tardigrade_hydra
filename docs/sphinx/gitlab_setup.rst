@@ -205,13 +205,15 @@ only a small number of settings must be updated.
 Enable project CI/CD
 ********************
 
-The ``cpp_stub`` project comes pre-configured to perform continuous integration
-(CI) and continuous deployment (CD) on W-13's compute server ``sstelmo`` with
-testing performed in and deployment to the `AEA compute environment`_.
+The ``cpp_stub`` project comes pre-configured to perform continuous integration (CI) and continuous deployment (CD) on
+W-13's compute servers ``sstelmo`` and ``sstbigbird`` with testing performed in a shared development environment and
+deployment to the `AEA Conda channel`_.
 
-The CI/CD configuration is found in the ``.gitlab-ci.yml`` file. You can read
-more about Gitlab CI/CD configuration in the `ASC RE Gitlab User
-Documentation`_: https://re-git.lanl.gov/help/ci/README.md.
+The CI/CD configuration is found in the ``.gitlab-ci.yml`` file. You can read more about Gitlab CI/CD configuration in
+the `ASC RE Gitlab User Documentation`_: https://re-git.lanl.gov/help/ci/README.md.
+
+Merge Requests and Merge Event triggers
+=======================================
 
 No project configuration is required for CI/CD of Merge-Requests to or deployment of the ``dev`` branch. As an
 alternative to full CI/CD configuration, you may remove the ``microbump`` job from the ``version`` stage in the
@@ -293,6 +295,14 @@ convention expected by the CI/CD configuration
 
 16. Add the project access token, ``GITLAB_ACCESS_TOKEN``, to the "Allowed to
     push" drop down menu of the "main" and "dev" branches.
+
+Scheduled Triggers
+==================
+
+The ``.gitlab-ci.yml`` file ``test`` job includes the ``scheduled`` trigger for scheduled pipelines:
+https://docs.gitlab.com/ee/ci/pipelines/schedules.html. You can read more in the Gitlab documentation for how to
+schedule a pipeline from the Gitlab webpage GUI. This project recommends a quarterly or monthly scheduled test for the
+``main`` branch for any project with infrequent or intermittent development activity.
 
 *******************
 Update project name
@@ -460,6 +470,10 @@ deployment of the ``dev`` branch.
 
    For Merge-Request and CI/CD of the ``main`` branch, see the previous CI/CD
    configuration section in this setup guide.
+
+***********
+Final Notes
+***********
 
 For continuing development, W-13 workflows recommend that you should keep the
 upstream repository production branches, ``dev`` and ``main``, clean from

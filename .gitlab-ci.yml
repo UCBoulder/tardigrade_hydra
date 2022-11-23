@@ -135,6 +135,7 @@ conda-build:
   stage: build
   variables:
     GIT_STRATEGY: clone
+  dependencies: []
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
     - if: $CI_PIPELINE_SOURCE == "merge_request_event"
@@ -160,6 +161,8 @@ deploy:
   stage: deploy
   variables:
     GIT_STRATEGY: clone
+  dependencies:
+    - conda-build
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -185,6 +188,7 @@ pages:
   stage: deploy
   variables:
     GIT_STRATEGY: clone
+  dependencies: []
   rules:
     - if: $CI_PIPELINE_SOURCE == "schedule"
       when: never
@@ -193,7 +197,7 @@ pages:
   script:
     - workdir=${PWD}
     - mkdir -p public/doxygen
-    - mkdir build
+    - mkdir -p build
     - cd build
     - cmake ..
     - cmake --build . --target Sphinx
