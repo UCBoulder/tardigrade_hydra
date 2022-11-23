@@ -193,7 +193,7 @@ pages:
   script:
     - workdir=${PWD}
     - mkdir -p public/doxygen
-    - mkdir build
+    - mkdir -p build
     - cd build
     - cmake ..
     - cmake --build . --target Sphinx
@@ -204,5 +204,7 @@ pages:
     paths:
       # It MUST be called public
       - public
+  # Don't download artifacts from previous jobs
+  dependencies: []
   tags:
     - shell-aea
