@@ -20,7 +20,8 @@ before_script:
   - aea_modulefiles=${aea_deploy_directory}/modulefiles
   - environment='cpp_stub-env'
   - environment_path="${aea_deploy_directory}/${environment}"
-  - conda_options="--yes --channel ${aea_conda_channel} --channel conda-forge"
+  - conda_options="--yes --channel file://${aea_conda_channel}/ --channel conda-forge"
+  - conda_artifact_directory='conda-build-artifacts'
   # Activate the project specific environment from the project specific modulefile
   - module use ${PWD}/modulefiles
   - module load ${environment}
@@ -138,9 +139,8 @@ conda-build:
     - export HTTPS_PROXY=$HTTP_PROXY
     # Override default permissions. Set group to rx with no write permissions.
     - umask 0022
-    - output_folder='conda-build-artifacts'
-    - mkdir ${output_folder}
-    - VERSION=$(python -m setuptools_scm) conda build recipe --channel file://${aea_conda_channel} --channel conda-forge --no-anaconda-upload --croot /scratch/${USER}/conda-build --output-folder ${output_folder}
+    - mkdir ${conda_artifact_directory}
+    - VERSION=$(python -m setuptools_scm) conda build recipe --channel file://${aea_conda_channel} --channel conda-forge --no-anaconda-upload --croot /scratch/${USER}/conda-build --output-folder ${conda_artifact_directory}
   artifacts:
     expire_in: '2 hrs'
     paths:
@@ -160,7 +160,7 @@ deploy:
     # Override default permissions. Set group to rx with no write permissions.
     - umask 0022
     # Copy Conda package to AEA Conda Channel
-    - cp conda-build-artifacts/linux-64/cpp_stub-*-*.tar.bz2 ${aea_conda_channel}/linux-64
+    - cp ${conda_artifact_directory}/linux-64/cpp_stub-*-*.tar.bz2 ${aea_conda_channel}/linux-64
     # Change group for access by all W-13 staff and prevent accidental modification by institutional account in CI jobs
     - chgrp w13users ${aea_conda_channel}/linux-64/cpp_stub-*-*.tar.bz2 || true
     - chmod 555 ${aea_conda_channel}/linux-64/cpp_stub-*-*.tar.bz2 || true
