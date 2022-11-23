@@ -23,6 +23,8 @@ Internal Changes
 - Address Doxygen deprecation warnings (:issue:`38`, :merge:`57`). By `Kyle Brindley`_.
 - Fix the Conda build requirements to explicitly require everything required by the CMake configuration (:issue:`39`,
   :merge:`56`). By `Kyle Brindley`_.
+- Protect deploy type Gitlab-CI jobs from scheduled pipeline execution. Avoids build and deploy for scheduled pipelines
+  (:issue:`37`, :merge:`58`). By `Kyle Brindley`_.
 
 
 ******************
