@@ -53,6 +53,11 @@ environment:
   stage: environment
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule" || $CI_COMMIT_BRANCH == "main" || $CI_COMMIT_BRANCH == "dev"
+      changes:
+        - "modulefiles/*"
+        - "environment.txt"
   script:
     - export ALL_PROXY="proxyout.lanl.gov:8080"
     - export HTTP_PROXY="http://$ALL_PROXY"
@@ -63,13 +68,6 @@ environment:
     - chmod -R 755 ${environment_path}
     # place the common modulefiles in an accessible location
     - cp ${PWD}/modulefiles/* ${aea_modulefiles}
-  only:
-    refs:
-      - main
-      - dev
-    changes:
-      - "modulefiles/*"
-      - "environment.txt"
   tags:
     - sstelmo-shell-aea
 
@@ -77,6 +75,10 @@ microbump:
   stage: version
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
   script:
     # Conditionally "bump" micro version number. setuptools_scm already bumps number, just need to strip local version.
     - old_version=$(python -m setuptools_scm)
@@ -104,15 +106,16 @@ microbump:
     - git push oauth2-origin --tags
   tags:
     - shell-aea
-  only:
-    - main
 
 fast-test:
   stage: test
-  rules:
-    - if: '$CI_PIPELINE_SOURCE == "merge_request_event"'
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
   script:
     - workdir=${PWD}
     - mkdir build
@@ -132,6 +135,11 @@ conda-build:
   stage: build
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+    - if: $CI_PIPELINE_SOURCE == "merge_request_event"
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
   script:
     # Set the LANL internal proxies
     - export ALL_PROXY="proxyout.lanl.gov:8080"
@@ -147,15 +155,16 @@ conda-build:
       - conda-build-artifacts/linux-64/cpp_stub-*-*.tar.bz2
   tags:
     - shell-aea
-  only:
-    - merge_requests
-    - main
-    - dev
 
 deploy:
   stage: deploy
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
   script:
     # Override default permissions. Set group to rx with no write permissions.
     - umask 0022
@@ -170,15 +179,17 @@ deploy:
     - conda search --channel file://${aea_conda_channel}/ --override-channels cpp_stub
   tags:
     - sstelmo-shell-aea
-  only:
-    - main
-    - dev
 
 # It MUST be called pages
 pages:
   stage: deploy
   variables:
     GIT_STRATEGY: clone
+  rules:
+    - if: $CI_PIPELINE_SOURCE == "schedule"
+      when: never
+    - if: $CI_COMMIT_BRANCH == "main"
+    - if: $CI_COMMIT_BRANCH == "dev"
   script:
     - workdir=${PWD}
     - mkdir -p public/doxygen
@@ -195,5 +206,3 @@ pages:
       - public
   tags:
     - shell-aea
-  only:
-    - main
