@@ -23,7 +23,6 @@ requirements:
     - setuptools_scm >=6.2
     - eigen >=3.3.7
     - error_tools
-    - vector_tools
     - abaqus_tools
     - boost >=1.59  # TODO: Separate the package/test configuration to make BOOST an optional build dependency
     - doxygen >=1.9  # TODO: Separate the package/documentation configuration to make Doxygen an optional build dependency
@@ -35,7 +34,6 @@ requirements:
     - {{ compiler('cxx') }}
     - eigen >=3.3.7
     - error_tools
-    - vector_tools
     - abaqus_tools
 
 test:

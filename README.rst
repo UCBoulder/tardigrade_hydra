@@ -128,7 +128,6 @@ types will require the upstream dependent libraries
 
 * ``abaqus_tools``: https://re-git.lanl.gov/aea/material-models/abaqus_tools
 * ``error_tools``: https://re-git.lanl.gov/aea/material-models/error_tools
-* ``vector_tools``: https://re-git.lanl.gov/aea/material-models/vector_tools
 
 to be installed and found in the user's environment. If the build type string doesn't match those previously listed, the
 CMake project will build missing upstream libraries with the `CMake fetch_content`_ feature. The 'conda-test' build type

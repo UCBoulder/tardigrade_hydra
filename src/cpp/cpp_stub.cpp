@@ -135,7 +135,7 @@ namespace cppStub{
             result->addNext( error );
             error->print( true );
             //If an error was thrown, but the ratio of new/current time increment is not updated, it was a fatal error.
-            if ( vectorTools::fuzzyEquals( PNEWDT, 1. ) ){
+            if ( PNEWDT >= 1. ){
                 throw std::runtime_error( message.str( ) );
             }
         }
