@@ -19,7 +19,6 @@ if(NOT cmake_build_type_lower STREQUAL "release")
     target_include_directories(${PROJECT_NAME} PUBLIC
                                "${error_tools_SOURCE_DIR}/${CPP_SRC_PATH}"
                                "${abaqus_tools_SOURCE_DIR}/${CPP_SRC_PATH}")
-    target_include_directories(${UMAT} PUBLIC
 endif()
 
 foreach(package ${PROJECT_NAME} ${UMAT})
