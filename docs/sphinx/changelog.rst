@@ -20,6 +20,11 @@ Bug fixes
 - Fix the fatal error check logic to account for possibility of ``PNEWDT`` greater than 1 (:issue:`43`, :merge:`64`). By
   `Kyle Brindley`_.
 
+Internal Changes
+================
+- Remove ``vector_tools`` environment and references. No longer used directly by this project (:issue:`43`,
+  :merge:`64`). By `Kyle Brindley`_.
+
 
 ******************
 0.2.6 (2022-11-23)
