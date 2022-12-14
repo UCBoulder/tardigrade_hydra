@@ -12,7 +12,6 @@
 #include<sstream>
 
 #include<error_tools.h>
-#include<vector_tools.h>
 #include<abaqus_tools.h>
 
 namespace cppStub{
