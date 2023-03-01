@@ -10,6 +10,9 @@ Changelog
 0.2.8 (unreleased)
 ******************
 
+Internal Changes
+================
+- Build a GCC 11 conda package variant (:issue:`47`, :merge:`67`). By `Kyle Brindley`_.
 
 ******************
 0.2.7 (2022-12-14)
