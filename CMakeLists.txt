@@ -86,7 +86,8 @@ endif()
 # Find Abaqus (Required for abaqus integration tests)
 find_program(ABAQUS_PROGRAM
              NAMES abaqus abq2022 abq2021 abq2020 abq2019 abq2018 abq2017
-             HINTS /apps/abaqus/Commands
+             # AEA path, HPC path
+             HINTS /apps/abaqus/Commands /usr/projects/ea/abaqus/Commands
             )
 if(ABAQUS_PROGRAM)
     message(STATUS "Found Abaqus: ${ABAQUS_PROGRAM}")
