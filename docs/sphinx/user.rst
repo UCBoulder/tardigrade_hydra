@@ -54,7 +54,7 @@ about bash scripting are directed to the online Bash documentation.
 .. code:: bash
 
    # Export the conda environment library path
-   $ export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:${CONDA_PREFIX}/lib64
+   $ export LD_LIBRARY_PATH=${CONDA_PREFIX}/lib:${CONDA_PREFIX}/lib64:$LD_LIBRARY_PATH
 
    # Execute Abaqus with current Conda environment's installation of this project
    $ abaqus -job <my_input_file> -user ${CONDA_PREFIX}/lib64/cpp_stub_umat.o
