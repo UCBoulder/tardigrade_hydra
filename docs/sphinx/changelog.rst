@@ -10,9 +10,15 @@ Changelog
 0.2.8 (unreleased)
 ******************
 
+Documentation
+=============
+- Update the ``LD_LIBRARY_PATH`` requirements in the user manual (:issue:`50`, :merge:`69`). By `Kyle Brindley`_.
+
 Internal Changes
 ================
 - Build a GCC 11 conda package variant (:issue:`47`, :merge:`67`). By `Kyle Brindley`_.
+- Update ``LD_LIBRARY_PATH`` usage to avoid changing this environment variable in the CI environment. Instead, implement
+  directly in the abaqus integration test command (:issue:`50`, :merge:`69`). By `Kyle Brindley`_.
 
 ******************
 0.2.7 (2022-12-14)
