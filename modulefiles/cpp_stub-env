@@ -54,6 +54,9 @@ prepend-path MANPATH "$environment_man"
 # Set the bash environment variables for commonly used AEA software
 append-path PATH "$abaqus_path"
 
+# Set the bash environment variables for deployed AEA libraries
+prepend-path LD_LIBRARY_PATH "$environment_lib"
+
 # Set some aliases similarly to W-13 compute servers
 # Reference - sstelmo.lanl.gov:/usr/share/Modules/modulefiles/python/2020.07-python-3.8
 set-alias ipy "ipython"
@@ -108,6 +111,8 @@ proc ModulesHelp {} {
 
     puts stderr "\n\nModifies environment variables"
     puts stderr "PATH prepended with: $environment_bin:$anaconda_bin"
+    puts stderr "PATH appended with: $abaqus_path"
+    puts stderr "LD_LIBRARY_PATH prepended with: $environment_lib"
     puts stderr "MANPATH prepended with: $environment_man"
 
     puts stderr "\n\nSets aliases:"
