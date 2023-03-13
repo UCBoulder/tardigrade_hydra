@@ -27,13 +27,6 @@ if(cmake_build_type_lower STREQUAL "release")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
-    # Find the installed project library
-    find_file(installed_linked_library
-              "lib${PROJECT_NAME}.so"
-              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
-              NO_CACHE
-              REQUIRED)
-    set(project_link_string ${installed_linked_library})
     # Find the installed project umat
     find_file(installed_umat
               "${UMAT}.o"
