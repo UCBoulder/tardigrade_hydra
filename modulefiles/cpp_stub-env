@@ -44,7 +44,6 @@ set environment_path "$projects/aea_compute/$environment"
 set environment_bin "$environment_path/bin"
 set environment_man "$environment_path/share/man"
 
-set environment_lib "$environment_path/lib"
 
 # Set the bash environment variables similarly to HPC anaconda module
 # Reference - sn-rfe.lanl.gov:/usr/projects/hpcsoft/modulefiles/toss3/snow/tools/python/3.8-anaconda-2020.07
@@ -53,9 +52,6 @@ prepend-path MANPATH "$environment_man"
 
 # Set the bash environment variables for commonly used AEA software
 append-path PATH "$abaqus_path"
-
-# Set the bash environment variables for deployed AEA libraries
-prepend-path LD_LIBRARY_PATH "$environment_lib"
 
 # Set some aliases similarly to W-13 compute servers
 # Reference - sstelmo.lanl.gov:/usr/share/Modules/modulefiles/python/2020.07-python-3.8
@@ -95,7 +91,6 @@ proc ModulesHelp {} {
     global environment_path
     global environment_bin
     global environment_man
-    global environment_lib
     global abaqus_path
 
     puts stderr "\ncpp_stub modulefiles debugging information"
@@ -112,7 +107,6 @@ proc ModulesHelp {} {
     puts stderr "\n\nModifies environment variables"
     puts stderr "PATH prepended with: $environment_bin:$anaconda_bin"
     puts stderr "PATH appended with: $abaqus_path"
-    puts stderr "LD_LIBRARY_PATH prepended with: $environment_lib"
     puts stderr "MANPATH prepended with: $environment_man"
 
     puts stderr "\n\nSets aliases:"
