@@ -53,8 +53,6 @@ test:
   commands:
     - mkdir build-tests
     - cd build-tests
-    - installed_linked_library_parent="$(dirname $(find ${PREFIX} -name libcpp_stub.so))"
-    - export LD_LIBRARY_PATH="${installed_linked_library_parent}:${LD_LIBRARY_PATH}"
     - cmake .. -DCMAKE_BUILD_TYPE=conda-test
     - cmake --build . --verbose
     - ctest --output-on-failure
