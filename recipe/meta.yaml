@@ -50,8 +50,6 @@ test:
     - src/abaqus/tests/CMakeLists.txt
     - src/abaqus/tests/test_abaqus.sh
   commands:
-    - dylib='so'
-    - if [ $(uname) = 'Darwin' ]; then dylib='dylib'; fi
     - mkdir build-tests
     - cd build-tests
     - cmake .. -DCMAKE_BUILD_TYPE=conda-test
