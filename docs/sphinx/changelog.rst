@@ -27,6 +27,8 @@ Internal Changes
   :merge:`70`). By `Kyle Brindley`_.
 - Project configuration and conda build recipe changes to allow macOS builds and conda-build test stage (:merge:`65`).
   By `Kyle Brindley`_.
+- Use the Abaqus built in option for overwriting existing files during Abaqus integration tests (:issue:`49`,
+  :merge:`73`). By `Kyle Brindley`_.
 
 ******************
 0.2.7 (2022-12-14)
