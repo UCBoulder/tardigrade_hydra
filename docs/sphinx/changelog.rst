@@ -21,6 +21,8 @@ Internal Changes
   directly in the abaqus integration test command (:issue:`50`, :merge:`69`). By `Kyle Brindley`_.
 - Add mamba to CI environment and switch to mamba builds while troubleshooting conda issues (:merge:`72`). By `Kyle
   Brindley`_.
+- Work around CI failures due to conda-build bug or partially corrupt environment by using mamba for packaging
+  operations (:issue:`51`, :merge:`71`). By `Kyle Brindley`_.
 
 ******************
 0.2.7 (2022-12-14)
