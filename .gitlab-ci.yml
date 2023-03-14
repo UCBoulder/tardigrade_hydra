@@ -162,7 +162,7 @@ conda-build:
     # Override default permissions. Set group to rx with no write permissions.
     - umask 0022
     - mkdir ${conda_artifact_directory}
-    # TODO: Return to 'conda build' after tracing conda issue: https://re-git.lanl.gov/aea/material-models/error_tools/-/issues/11
+    # TODO: Return to 'conda build' after tracing conda issue: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/issues/52
     - VERSION=$(python -m setuptools_scm) mamba build recipe --channel file://${aea_conda_channel} --channel conda-forge --no-anaconda-upload --croot /scratch/${USER}/conda-build --output-folder ${conda_artifact_directory} ${variants}
   artifacts:
     expire_in: '2 hrs'
@@ -191,7 +191,7 @@ deploy:
     - chgrp w13users ${aea_conda_channel}/linux-64/cpp_stub-*-*.tar.bz2 || true
     - chmod 555 ${aea_conda_channel}/linux-64/cpp_stub-*-*.tar.bz2 || true
     # Update the AEA Conda Channel index
-    # TODO: Return to 'conda index/search' after tracing conda issue: https://re-git.lanl.gov/aea/material-models/error_tools/-/issues/11
+    # TODO: Return to 'conda index/search' after tracing conda issue: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/issues/52
     - mamba index ${aea_conda_channel}
     - mamba search --channel file://${aea_conda_channel}/ --override-channels cpp_stub
   tags:
