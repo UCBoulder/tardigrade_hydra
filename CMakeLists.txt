@@ -22,19 +22,11 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_P
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
 set(upstream_required "")
 set(not_conda_test "true")
-set(project_link_string ${PROJECT_NAME})
 if(cmake_build_type_lower STREQUAL "release")
     set(upstream_required "REQUIRED")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
-    # Find the installed project library
-    find_file(installed_linked_library
-              "lib${PROJECT_NAME}.so"
-              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
-              NO_CACHE
-              REQUIRED)
-    set(project_link_string ${installed_linked_library})
     # Find the installed project umat
     find_file(installed_umat
               "${UMAT}.o"
@@ -98,6 +90,10 @@ endif()
 # Find related, but external, projects in installed environment
 include(FetchContent)
 set(upstream_packages "error_tools" "abaqus_tools")
+if(${not_conda_test} STREQUAL "false")
+    # During conda-build testing, we must find the installed project files as if they were an external project
+    set(upstream_packages ${upstream_packages} ${PROJECT_NAME})
+endif()
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
     find_package(${package} ${upstream_required} CONFIG)
