@@ -25,6 +25,8 @@ Internal Changes
   operations (:issue:`51`, :merge:`71`). By `Kyle Brindley`_.
 - Perform conda-build testing against the as-installed package as if it were an external project (:issue:`48`,
   :merge:`70`). By `Kyle Brindley`_.
+- Project configuration and conda build recipe changes to allow macOS builds and conda-build test stage (:merge:`65`).
+  By `Kyle Brindley`_.
 
 ******************
 0.2.7 (2022-12-14)
