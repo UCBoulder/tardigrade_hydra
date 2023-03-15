@@ -35,6 +35,8 @@ Internal Changes
   :merge:`73`). By `Kyle Brindley`_.
 - Update the compiler version requirement in the build section of the conda-build recipe (:issue:`53`, :merge:`74`). By
   `Kyle Brindley`_.
+- For the CI environment, force a self-consistent compiler/stdlib channel by overriding the channels to exclude the
+  defaults channel (:issue:`55`, :merge:`76`). By `Kyle Brindley`_.
 
 ******************
 0.2.7 (2022-12-14)
