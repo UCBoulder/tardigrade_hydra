@@ -10,6 +10,10 @@ Changelog
 0.2.8 (unreleased)
 ******************
 
+Breaking changes
+================
+- Drop GCC 7 conda-build variant (:issue:`53`, :merge:`74`). By `Kyle Brindley`_.
+
 Documentation
 =============
 - Update the ``LD_LIBRARY_PATH`` requirements in the user manual (:issue:`50`, :merge:`69`). By `Kyle Brindley`_.
@@ -29,6 +33,8 @@ Internal Changes
   By `Kyle Brindley`_.
 - Use the Abaqus built in option for overwriting existing files during Abaqus integration tests (:issue:`49`,
   :merge:`73`). By `Kyle Brindley`_.
+- Update the compiler version requirement in the build section of the conda-build recipe (:issue:`53`, :merge:`74`). By
+  `Kyle Brindley`_.
 
 ******************
 0.2.7 (2022-12-14)
