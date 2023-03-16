@@ -130,6 +130,9 @@ fast-test:
     - mkdir build
     - cd build
     - cmake .. -DCMAKE_BUILD_TYPE=Release
+    # FIXME: Hacking out the spurious ``-ansi`` option to prove the build works without it
+    # https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/issues/54
+    - sed -i 's/-ansi//g' $(grep -riIEe "-ansi" . --exclude-dir=.git -l)
     - cmake --build . --target all --verbose
     - ctest --verbose --output-log results.txt
     - cd ${workdir}
@@ -213,6 +216,9 @@ pages:
     - mkdir -p build
     - cd build
     - cmake ..
+    # FIXME: Hacking out the spurious ``-ansi`` option to prove the build works without it
+    # https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/issues/54
+    - sed -i 's/-ansi//g' $(grep -riIEe "-ansi" . --exclude-dir=.git -l)
     - cmake --build . --target Sphinx
     - cd ${workdir}
     - cp -r build/docs/sphinx/html/* public/
