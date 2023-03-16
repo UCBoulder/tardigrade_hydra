@@ -37,6 +37,7 @@ Internal Changes
   `Kyle Brindley`_.
 - For the CI environment, force a self-consistent compiler/stdlib channel by overriding the channels to exclude the
   defaults channel (:issue:`55`, :merge:`76`). By `Kyle Brindley`_.
+- OS-agnostic compiler spec for CI environment file (:merge:`77`). By `Kyle Brindley`_.
 
 ******************
 0.2.7 (2022-12-14)
