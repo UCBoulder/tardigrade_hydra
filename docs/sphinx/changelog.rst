@@ -6,8 +6,17 @@ Changelog
 #########
 
 ******************
-0.3.2 (unreleased)
+0.3.3 (unreleased)
 ******************
+
+******************
+0.3.2 (2023-03-16)
+******************
+
+Internal Changes
+================
+- Update minimum versions of upstream packages ``{error,abaqus}_tools`` for their c++17 standard version (:issue:`56`,
+  :merge:`79`). By `Kyle Brindley`_.
 
 ******************
 0.3.1 (2023-03-16)
