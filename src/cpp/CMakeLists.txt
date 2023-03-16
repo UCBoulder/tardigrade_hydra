@@ -1,14 +1,12 @@
 # Project
 add_library (${PROJECT_NAME} SHARED "${PROJECT_NAME}.cpp" "${PROJECT_NAME}.h")
-set_target_properties(${PROJECT_NAME} PROPERTIES CXX_STANDARD 11
-                                                 PUBLIC_HEADER ${PROJECT_NAME}.h)
+set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${PROJECT_NAME}.h)
 target_link_libraries(${PROJECT_NAME} error_tools)
 target_compile_options(${PROJECT_NAME} PUBLIC)
 
 # Abaqus UMAT interface
 add_library(${UMAT} SHARED "${UMAT}.cpp" "${UMAT}.h")
-set_target_properties(${UMAT} PROPERTIES CXX_STANDARD 11
-                              PUBLIC_HEADER ${UMAT}.h
+set_target_properties(${UMAT} PROPERTIES PUBLIC_HEADER ${UMAT}.h
                               PREFIX ""
                               SUFFIX ".o")
 target_compile_options(${UMAT} PUBLIC)

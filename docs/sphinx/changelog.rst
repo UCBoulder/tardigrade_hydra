@@ -5,11 +5,43 @@
 Changelog
 #########
 
+******************
+0.3.2 (unreleased)
+******************
 
 ******************
-0.2.8 (unreleased)
+0.3.1 (2023-03-16)
 ******************
 
+Breaking changes
+================
+- Drop GCC 7 conda-build variant (:issue:`53`, :merge:`74`). By `Kyle Brindley`_.
+
+Documentation
+=============
+- Update the ``LD_LIBRARY_PATH`` requirements in the user manual (:issue:`50`, :merge:`69`). By `Kyle Brindley`_.
+
+Internal Changes
+================
+- Build a GCC 11 conda package variant (:issue:`47`, :merge:`67`). By `Kyle Brindley`_.
+- Update ``LD_LIBRARY_PATH`` usage to avoid changing this environment variable in the CI environment. Instead, implement
+  directly in the abaqus integration test command (:issue:`50`, :merge:`69`). By `Kyle Brindley`_.
+- Add mamba to CI environment and switch to mamba builds while troubleshooting conda issues (:merge:`72`). By `Kyle
+  Brindley`_.
+- Work around CI failures due to conda-build bug or partially corrupt environment by using mamba for packaging
+  operations (:issue:`51`, :merge:`71`). By `Kyle Brindley`_.
+- Perform conda-build testing against the as-installed package as if it were an external project (:issue:`48`,
+  :merge:`70`). By `Kyle Brindley`_.
+- Project configuration and conda build recipe changes to allow macOS builds and conda-build test stage (:merge:`65`).
+  By `Kyle Brindley`_.
+- Use the Abaqus built in option for overwriting existing files during Abaqus integration tests (:issue:`49`,
+  :merge:`73`). By `Kyle Brindley`_.
+- Update the compiler version requirement in the build section of the conda-build recipe (:issue:`53`, :merge:`74`). By
+  `Kyle Brindley`_.
+- For the CI environment, force a self-consistent compiler/stdlib channel by overriding the channels to exclude the
+  defaults channel (:issue:`55`, :merge:`76`). By `Kyle Brindley`_.
+- OS-agnostic compiler spec for CI environment file (:merge:`77`). By `Kyle Brindley`_.
+- Fix the c++ standard specification to use c++17 (:issue:`54`, :merge:`75`). By `Kyle Brindley`_.
 
 ******************
 0.2.7 (2022-12-14)

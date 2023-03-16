@@ -32,8 +32,6 @@ else
     # Strip paths and extension for abaqus
     basename="${input##*/}"
     job="${basename%.*}"
-    # Clean up any abaqus output files in local directory
-    rm ${job}.{com,dat,log,msg,odb,prt,sim,sta,inp} || true
     # Copy input file to local directory
     cp ${input} .
 fi
@@ -46,7 +44,7 @@ fi
 
 # Run abaqus against the input file and redirect interactive output to log file
 # Use interactive to avoid sleep and wait statements
-${abaqus_program} -job ${job} -user ${user} -interactive >> ${job}.log 2>&1
+${abaqus_program} -job ${job} -user ${user} -interactive -ask_delete OFF >> ${job}.log 2>&1
 
 # Test the output
 grep "Hello Abaqus" ${job}.log 

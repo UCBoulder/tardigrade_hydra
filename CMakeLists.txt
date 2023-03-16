@@ -22,19 +22,11 @@ set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_P
 string(TOLOWER "${CMAKE_BUILD_TYPE}" cmake_build_type_lower)
 set(upstream_required "")
 set(not_conda_test "true")
-set(project_link_string ${PROJECT_NAME})
 if(cmake_build_type_lower STREQUAL "release")
     set(upstream_required "REQUIRED")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
-    # Find the installed project library
-    find_file(installed_linked_library
-              "lib${PROJECT_NAME}.so"
-              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
-              NO_CACHE
-              REQUIRED)
-    set(project_link_string ${installed_linked_library})
     # Find the installed project umat
     find_file(installed_umat
               "${UMAT}.o"
@@ -60,9 +52,12 @@ include(GNUInstallDirs)
 set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 
 # Set the c++ standard
-set(CMAKE_CXX_STANDARD 11)
+set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -ansi -pedantic -lrt")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lrt")
+endif()
 
 # Enable CTest
 enable_testing()
@@ -86,7 +81,8 @@ endif()
 # Find Abaqus (Required for abaqus integration tests)
 find_program(ABAQUS_PROGRAM
              NAMES abaqus abq2022 abq2021 abq2020 abq2019 abq2018 abq2017
-             HINTS /apps/abaqus/Commands
+             # AEA path, HPC path
+             HINTS /apps/abaqus/Commands /usr/projects/ea/abaqus/Commands
             )
 if(ABAQUS_PROGRAM)
     message(STATUS "Found Abaqus: ${ABAQUS_PROGRAM}")
@@ -97,6 +93,10 @@ endif()
 # Find related, but external, projects in installed environment
 include(FetchContent)
 set(upstream_packages "error_tools" "abaqus_tools")
+if(${not_conda_test} STREQUAL "false")
+    # During conda-build testing, we must find the installed project files as if they were an external project
+    set(upstream_packages ${upstream_packages} ${PROJECT_NAME})
+endif()
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
     find_package(${package} ${upstream_required} CONFIG)
