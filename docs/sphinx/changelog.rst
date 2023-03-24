@@ -9,6 +9,10 @@ Changelog
 0.3.3 (unreleased)
 ******************
 
+Internal Changes
+================
+- Build a GCC 10 conda package variant (:issue:`58`, :merge:`81`). By `Sergio Cordova`_.
+
 ******************
 0.3.2 (2023-03-16)
 ******************
