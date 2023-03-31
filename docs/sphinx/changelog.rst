@@ -12,6 +12,8 @@ Changelog
 Internal Changes
 ================
 - Build a GCC 10 conda package variant (:issue:`58`, :merge:`81`). By `Sergio Cordova`_.
+- Perform full conda-build for merge requests to the production (``main``) branch (:issue:`59`, :merge:`82`). By `Kyle
+  Brindley`_.
 
 ******************
 0.3.2 (2023-03-16)
