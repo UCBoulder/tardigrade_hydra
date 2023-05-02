@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * \file cpp_stub_umat.cpp
+  * \file hydra_umat.cpp
   ******************************************************************************
   * The Abaqus UMAT c++ interface template
   ******************************************************************************
   */
 
-#include<cpp_stub_umat.h>
+#include<hydra_umat.h>
 
 extern "C" void umat_( double *STRESS,       double *STATEV,       double *DDSDDE,       double &SSE,          double &SPD,
                        double &SCD,          double &RPL,          double *DDSDDT,       double *DRPLDE,       double &DRPLDT,
@@ -67,7 +67,7 @@ extern "C" void umat_( double *STRESS,       double *STATEV,       double *DDSDD
 
      //Add switching logic to handle more than one UMAT.
      //Call the appropriate UMAT interface
-     cppStub::abaqusInterface( STRESS, STATEV, DDSDDE,    SSE,    SPD,
+     hydra::abaqusInterface( STRESS, STATEV, DDSDDE,    SSE,    SPD,
                                   SCD,    RPL, DDSDDT, DRPLDE, DRPLDT,
                                 STRAN, DSTRAN,   TIME,  DTIME,   TEMP,
                                 DTEMP, PREDEF,  DPRED, CMNAME,    NDI,

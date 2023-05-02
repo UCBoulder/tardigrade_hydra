@@ -11,28 +11,28 @@
 .. toctree::
     :maxdepth: 2
 
-.. _cpp_stub_source:
+.. _hydra_source:
 
-cpp_stub.cpp
+hydra.cpp
 ============
 
-.. doxygenfile:: cpp_stub.cpp
+.. doxygenfile:: hydra.cpp
 
-cpp_stub.h
+hydra.h
 ==========
 
-.. doxygenfile:: cpp_stub.h
+.. doxygenfile:: hydra.h
 
 ****************
 Abaqus interface
 ****************
 
-cpp_stub_umat.cpp
+hydra_umat.cpp
 =================
 
-.. doxygenfile:: cpp_stub_umat.cpp
+.. doxygenfile:: hydra_umat.cpp
 
-cpp_stub_umat.h
+hydra_umat.h
 ===============
 
-.. doxygenfile:: cpp_stub_umat.h
+.. doxygenfile:: hydra_umat.h

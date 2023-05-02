@@ -1,14 +1,14 @@
 /**
-  * \file test_cpp_stub.cpp
+  * \file test_hydra.cpp
   *
-  * Tests for cpp_stub
+  * Tests for hydra
   */
 
-#include<cpp_stub.h>
+#include<hydra.h>
 #include<sstream>
 #include<fstream>
 
-#define BOOST_TEST_MODULE test_cpp_stub
+#define BOOST_TEST_MODULE test_hydra
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -48,7 +48,7 @@ BOOST_AUTO_TEST_CASE( testSayHello ){
     //Check normal operation
     message = "World!";
     answer = "Hello World!\n";
-    error = cppStub::sayHello(message);
+    error = hydra::sayHello(message);
     BOOST_CHECK( ! error );
     BOOST_CHECK( result.is_equal( answer ) );
 
@@ -57,14 +57,14 @@ BOOST_AUTO_TEST_CASE( testSayHello ){
 
     //Check for "George" error
     message = "George";
-    error = cppStub::sayHello(message);
+    error = hydra::sayHello(message);
     BOOST_CHECK( error );
 
 }
 
 BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     /*!
-     * Test the cpp_stub abaqus interface
+     * Test the hydra abaqus interface
      */
 
     double double_scalar = 0.0;
@@ -73,7 +73,7 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     //Create nominally correct variable holders that match expected Abaqus Fortran interface
     //TODO: fill out nominally correct variable shape and values
     //Strings
-    char CMNAME[ ] = "cpp_stub";
+    char CMNAME[ ] = "hydra";
     //Scalar integers
     int NDI = 3;
     int NSHR = 3;
@@ -122,21 +122,21 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     double* DPRED  = dpred.data( );
     std::vector< double > props( NPROPS );
     double* PROPS  = props.data( );
-    //TODO: figure out how to use cpp_stub::spatialDimensions here
+    //TODO: figure out how to use hydra::spatialDimensions here
     std::vector< double > coords( 3 );
     double* COORDS = coords.data( );
-    //TODO: figure out how to use cpp_stub::spatialDimensions here
+    //TODO: figure out how to use hydra::spatialDimensions here
     std::vector< double > drot( 3 * 3);
     double* DROT   = drot.data( );
-    //TODO: figure out how to use cpp_stub::spatialDimensions here
+    //TODO: figure out how to use hydra::spatialDimensions here
     std::vector< double > dfgrd0( 3 * 3);
     double* DFGRD0 = dfgrd0.data( );
-    //TODO: figure out how to use cpp_stub::spatialDimensions here
+    //TODO: figure out how to use hydra::spatialDimensions here
     std::vector< double > dfgrd1( 3 * 3);
     double* DFGRD1 = dfgrd1.data( );
 
     //Sign of life test. Just run to see if any exceptions are thrown.
-    cppStub::abaqusInterface(
+    hydra::abaqusInterface(
         STRESS, STATEV, DDSDDE, SSE,    SPD,
         SCD,    RPL,    DDSDDT, DRPLDE, DRPLDT,
         STRAN,  DSTRAN, TIME,   DTIME,  TEMP,
@@ -151,7 +151,7 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     double* STATEV_incorrect = temp.data( );
     int NSTATV_incorrect = temp.size( );
     BOOST_CHECK_THROW(
-        cppStub::abaqusInterface(
+        hydra::abaqusInterface(
            STRESS, STATEV_incorrect, DDSDDE,           SSE,    SPD,
            SCD,    RPL,              DDSDDT,           DRPLDE, DRPLDT,
            STRAN,  DSTRAN,           TIME,             DTIME,  TEMP,
@@ -168,7 +168,7 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     int NPROPS_incorrect = temp.size( );
 
     BOOST_CHECK_THROW(
-        cppStub::abaqusInterface(
+        hydra::abaqusInterface(
            STRESS, STATEV, DDSDDE, SSE,             SPD,
            SCD,    RPL,    DDSDDT, DRPLDE,          DRPLDT,
            STRAN,  DSTRAN, TIME,   DTIME,           TEMP,
