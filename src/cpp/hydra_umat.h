@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file cpp_stub_umat.h
+  * \file hydra_umat.h
   ******************************************************************************
   * The declarations and definitions required for an Abaqus UMAT c++ interface.
   ******************************************************************************
@@ -9,7 +9,7 @@
 #ifndef UMAT_H
 #define UMAT_H
 
-#include<cpp_stub.h>
+#include<hydra.h>
 
 extern "C" void UMAT( double *STRESS,       double *STATEV,       double *DDSDDE,       double &SSE,          double &SPD,
                       double &SCD,          double &RPL,          double *DDSDDT,       double *DRPLDE,       double &DRPLDT,

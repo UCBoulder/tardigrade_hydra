@@ -1,7 +1,7 @@
 #===================================================================================================== PROJECT SETUP ===
 cmake_minimum_required(VERSION 3.19)
 cmake_policy(SET CMP0110 NEW)
-project(cpp_stub)
+project(hydra)
 
 # Set common project paths relative to project root directory
 set(CPP_SRC_PATH "src/cpp")
