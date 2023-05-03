@@ -28,6 +28,68 @@ struct cout_redirect{
         std::streambuf * old;
 };
 
+namespace hydra{
+
+    namespace unit_test{
+
+        class hydraTester{
+
+            public:
+
+                static void checkTime( hydra &hydra ){
+    
+                    BOOST_CHECK( &hydra._time == hydra.getTime( ) );
+    
+                }
+    
+                static void checkDeltaTime( hydra &hydra ){
+    
+                    BOOST_CHECK( &hydra._deltaTime == hydra.getDeltaTime( ) );
+    
+                }
+    
+                static void checkTemperature( hydra &hydra ){
+    
+                    BOOST_CHECK( &hydra._temperature == hydra.getTemperature( ) );
+    
+                }
+    
+                static void checkPreviousTemperature( hydra &hydra ){
+    
+                    BOOST_CHECK( &hydra._previousTemperature == hydra.getPreviousTemperature( ) );
+    
+                }
+    
+                static void checkDeformationGradient( hydra &hydra ){
+    
+                    BOOST_CHECK( &hydra._deformationGradient == hydra.getDeformationGradient( ) );
+    
+                }
+    
+                static void checkPreviousDeformationGradient( hydra &hydra ){
+    
+                    BOOST_CHECK( &hydra._previousDeformationGradient == hydra.getPreviousDeformationGradient( ) );
+    
+                }
+    
+                static void checkPreviousStateVariables( hydra &hydra ){
+    
+                    BOOST_CHECK( &hydra._previousStateVariables == hydra.getPreviousStateVariables( ) );
+    
+                }
+    
+                static void checkParameters( hydra &hydra ){
+    
+                    BOOST_CHECK( &hydra._parameters == hydra.getParameters( ) );
+    
+                }
+
+        };
+
+    }
+
+}
+
 BOOST_AUTO_TEST_CASE( testSayHello ){
     /*!
      * Test message printed to stdout in sayHello function
@@ -178,5 +240,69 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
            DFGRD1, NOEL,   NPT,    LAYER,           KSPT,
            JSTEP,  KINC ),
         std::exception );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getTime ){
+
+    hydra::hydra hydra;
+
+    hydra::unit_test::hydraTester::checkTime( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getDeltaTime ){
+
+    hydra::hydra hydra;
+
+    hydra::unit_test::hydraTester::checkDeltaTime( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getTemperature ){
+
+    hydra::hydra hydra;
+
+    hydra::unit_test::hydraTester::checkTemperature( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getPreviousTemperature ){
+
+    hydra::hydra hydra;
+
+    hydra::unit_test::hydraTester::checkPreviousTemperature( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getDeformationGradient ){
+
+    hydra::hydra hydra;
+
+    hydra::unit_test::hydraTester::checkDeformationGradient( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getPreviousDeformationGradient ){
+
+    hydra::hydra hydra;
+
+    hydra::unit_test::hydraTester::checkPreviousDeformationGradient( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getPreviousStateVariables ){
+
+    hydra::hydra hydra;
+
+    hydra::unit_test::hydraTester::checkPreviousStateVariables( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getParameters ){
+
+    hydra::hydra hydra;
+
+    hydra::unit_test::hydraTester::checkParameters( hydra );
 
 }
