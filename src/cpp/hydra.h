@@ -16,6 +16,10 @@
 
 namespace hydra{
 
+    namespace unit_test{
+        class hydraTester;
+    }
+
     constexpr const char* str_end(const char *str) {
         /*! Recursively search string for last character
          * \param *str: pointer to string START of UNIX path like string
@@ -54,6 +58,59 @@ namespace hydra{
     typedef double floatType; //!< Define the float values type.
     typedef std::vector< floatType > floatVector; //!< Define a vector of floats
     typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
+
+    class hydra{
+        /*!
+         * Hydra: A base class which can be used to construct finite deformation material models.
+         * 
+         * The hydra class seeks to provide utilities for the construction of finite deformation constitutive models
+         * more rapidly than would be possible previously. The user can define as many different configurations as desired
+         * and provide a calculation of the Cauchy stress.
+         * 
+         * A non-linear problem which is of the size ( dimension**2 * num_configurations + num_ISVs ) will be solved.
+         */
+
+        public:
+
+            // Getter functions
+            const floatType* getTime( ){ return &_time; }
+
+            const floatType* getDeltaTime( ){ return &_deltaTime; }
+
+            const floatType* getTemperature( ){ return &_temperature; };
+
+            const floatType* getPreviousTemperature( ){ return &_previousTemperature; };
+
+            const floatVector* getDeformationGradient( ){ return &_deformationGradient; }
+
+            const floatVector* getPreviousDeformationGradient( ){ return &_previousDeformationGradient; }
+
+            const floatVector* getPreviousStateVariables( ){ return &_previousStateVariables; }
+
+            const floatVector* getParameters( ){ return &_parameters; }
+
+        private:
+
+            // Friend classes
+            friend class unit_test::hydraTester;
+
+            floatType _time;
+
+            floatType _deltaTime;
+
+            floatType _temperature;
+
+            floatType _previousTemperature;
+
+            floatVector _deformationGradient;
+
+            floatVector _previousDeformationGradient;
+
+            floatVector _previousStateVariables;
+
+            floatVector _parameters;
+
+    };
 
     /// Say hello
     /// @param message The message to print
