@@ -231,11 +231,19 @@ namespace hydra{
             //! Get a reference to the previous values of the state variables not used in the unknown vector for the non-linear solve
             const floatVector* getPreviousAdditionalStateVariables( ){ return &_previousAdditionalStateVariables.second; }
 
+            floatVector getSubConfiguration( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+
             floatVector getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getPrecedingConfiguration( const unsigned int &index );
 
             floatVector getFollowingConfiguration( const unsigned int &index );
+
+            floatVector getPreviousSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+
+            floatVector getPreviousPrecedingConfiguration( const unsigned int &index );
+
+            floatVector getPreviousFollowingConfiguration( const unsigned int &index );
 
         private:
 
