@@ -233,6 +233,10 @@ namespace hydra{
 
             floatVector getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
+            floatVector getPrecedingConfiguration( const unsigned int &index );
+
+            floatVector getFollowingConfiguration( const unsigned int &index );
+
         private:
 
             // Friend classes
