@@ -22,6 +22,8 @@ requirements:
     - eigen >=3.3.7
     - error_tools>=0.4
     - vector_tools
+    - constitutive_tools
+    - solver_tools
     - abaqus_tools>=0.3
     - boost >=1.59  # TODO: Separate the package/test configuration to make BOOST an optional build dependency
     - setuptools_scm >=6.2
@@ -38,6 +40,8 @@ requirements:
     - eigen >=3.3.7
     - error_tools>=0.4
     - vector_tools
+    - constitutive_tools
+    - solver_tools
     - abaqus_tools>=0.3
 
 test:

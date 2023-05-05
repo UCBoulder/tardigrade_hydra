@@ -2,12 +2,15 @@ abaqus_tools>=0.3
 boost>=1.59
 breathe>=4.30.0
 cmake>=3.18
+constitutive_tools
 doxygen>=1.9
 eigen>=3.3.7
 error_tools>=0.4
 compilers
 mamba
 setuptools_scm>=6.2
+solver_tools
 sphinx>=3.0.4
 sphinx_rtd_theme>=0.4.3
 sphinxcontrib-bibtex
+vector_tools
