@@ -162,32 +162,67 @@ namespace hydra{
             // Setter functions
 
             // Getter functions
+            //! Get a reference to the current time
             const floatType* getTime( ){ return &_time; }
 
+            //! Get a reference to the change in time
             const floatType* getDeltaTime( ){ return &_deltaTime; }
 
+            //! Get a reference to the current temperature
             const floatType* getTemperature( ){ return &_temperature; };
 
+            //! Get a reference to the previous temperature
             const floatType* getPreviousTemperature( ){ return &_previousTemperature; };
 
+            //! Get a reference to the deformation gradient
             const floatVector* getDeformationGradient( ){ return &_deformationGradient; }
 
+            //! Get a reference to the previous deformation gradient
             const floatVector* getPreviousDeformationGradient( ){ return &_previousDeformationGradient; }
 
+            //! Get a reference to the previous values of the state variables
             const floatVector* getPreviousStateVariables( ){ return &_previousStateVariables; }
 
+            //! Get a reference to the model parameters
             const floatVector* getParameters( ){ return &_parameters; }
 
+            //! Get a reference to the number of configurations
             const unsigned int* getNumConfigurations( ){ return &_numConfigurations; }
 
+            //! Get a reference to the number of state variables involved in the non-linear solve
             const unsigned int* getNumNonLinearSolveStateVariables( ){ return &_numNonLinearSolveStateVariables; }
 
+            //! Get a reference to the dimension
             const unsigned int* getDimension( ){ return &_dimension; }
+
+            //! Get a reference to the configurations
+            const floatMatrix* getConfigurations( ){ return &_configurations.second; }
+
+            //! Get a reference to the previous configurations
+            const floatMatrix* getPreviousConfigurations( ){ return &_previousConfigurations.second; }
+
+            //! Get a reference to the inverse configurations
+            const floatMatrix* getInverseConfigurations( ){ return &_inverseConfigurations.second; }
+
+            //! Get a reference to the previous inverse configurations
+            const floatMatrix* getPreviousInverseConfigurations( ){ return &_previousInverseConfigurations.second; }
+
+            //! Get a reference to the state variables used in the unknown vector of the non-linear solve
+            const floatVector* getNonLinearSolveStateVariables( ){ return &_nonLinearSolveStateVariables.second; }
+
+            //! Get a reference to the previous values of the state variables used in the unknown vector of the non-linear solve
+            const floatVector* getPreviousNonLinearSolveStateVariables( ){ return &_previousNonLinearSolveStateVariables.second; }
+
+            //! Get a reference to the state variables not used in the unknown vector for the non-linear solve
+            const floatVector* getAdditionalStateVariables( ){ return &_additionalStateVariables.second; }
+
+            //! Get a reference to the previous values of the state variables not used in the unknown vector for the non-linear solve
+            const floatVector* getPreviousAdditionalStateVariables( ){ return &_previousAdditionalStateVariables.second; }
 
         private:
 
             // Friend classes
-            friend class unit_test::hydraTester;
+            friend class unit_test::hydraTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
             unsigned int _dimension = 3; //!< The spatial dimension of the problem
 
@@ -210,6 +245,21 @@ namespace hydra{
             unsigned int _numConfigurations; //!< The number of configurations
 
             unsigned int _numNonLinearSolveStateVariables; //!< The number of state variables which will be solved in the Newton-Raphson loop
+            dataStorage< floatMatrix > _configurations; //!< The current values of the configurations
+
+            dataStorage< floatMatrix > _previousConfigurations; //!< The previous values of the configurations
+
+            dataStorage< floatMatrix > _inverseConfigurations; //!< The inverses of the configurations
+
+            dataStorage< floatMatrix > _previousInverseConfigurations; //!< The inverses of the previous configurations
+
+            dataStorage< floatVector > _nonLinearSolveStateVariables; //!< The current values of the state variables involved in the non-linear solve
+            dataStorage< floatVector > _previousNonLinearSolveStateVariables; //!< The previous values of the state variables involved in the non-linear solve
+
+            dataStorage< floatVector > _additionalStateVariables; //!< The current values of the additional state variables
+
+            dataStorage< floatVector > _previousAdditionalStateVariables; //!< The previous values of the additional state variables
+
             virtual void decomposeStateVariableVector( );
 
     };

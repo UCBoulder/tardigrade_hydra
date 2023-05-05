@@ -102,6 +102,54 @@ namespace hydra{
 
                 }
 
+                static void checkConfigurations( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._configurations.second == hydra.getConfigurations( ) );
+
+                }
+
+                static void checkPreviousConfigurations( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._previousConfigurations.second == hydra.getPreviousConfigurations( ) );
+
+                }
+
+                static void checkInverseConfigurations( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._inverseConfigurations.second == hydra.getInverseConfigurations( ) );
+
+                }
+
+                static void checkPreviousInverseConfigurations( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._previousInverseConfigurations.second == hydra.getPreviousInverseConfigurations( ) );
+
+                }
+
+                static void checkNonLinearSolveStateVariables( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._nonLinearSolveStateVariables.second == hydra.getNonLinearSolveStateVariables( ) );
+
+                }
+
+                static void checkPreviousNonLinearSolveStateVariables( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._previousNonLinearSolveStateVariables.second == hydra.getPreviousNonLinearSolveStateVariables( ) );
+
+                }
+
+                static void checkAdditionalStateVariables( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._additionalStateVariables.second == hydra.getAdditionalStateVariables( ) );
+
+                }
+
+                static void checkPreviousAdditionalStateVariables( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._previousAdditionalStateVariables.second == hydra.getPreviousAdditionalStateVariables( ) );
+
+                }
+
         };
 
     }
@@ -338,5 +386,69 @@ BOOST_AUTO_TEST_CASE( test_hydra_getNumNonLinearSolveStateVariables ){
     hydra::hydraBase hydra;
 
     hydra::unit_test::hydraTester::checkNumNonLinearSolveStateVariables( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getConfigurations ){
+
+    hydra::hydraBase hydra;
+
+    hydra::unit_test::hydraTester::checkConfigurations( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getPreviousConfigurations ){
+
+    hydra::hydraBase hydra;
+
+    hydra::unit_test::hydraTester::checkPreviousConfigurations( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getInverseConfigurations ){
+
+    hydra::hydraBase hydra;
+
+    hydra::unit_test::hydraTester::checkInverseConfigurations( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getPreviousInverseConfigurations ){
+
+    hydra::hydraBase hydra;
+
+    hydra::unit_test::hydraTester::checkPreviousInverseConfigurations( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getNonLinearSolveStateVariables ){
+
+    hydra::hydraBase hydra;
+
+    hydra::unit_test::hydraTester::checkNonLinearSolveStateVariables( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getPreviousNonLinearSolveStateVariables ){
+
+    hydra::hydraBase hydra;
+
+    hydra::unit_test::hydraTester::checkPreviousNonLinearSolveStateVariables( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getAdditionalStateVariables ){
+
+    hydra::hydraBase hydra;
+
+    hydra::unit_test::hydraTester::checkAdditionalStateVariables( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getPreviousAdditionalStateVariables ){
+
+    hydra::hydraBase hydra;
+
+    hydra::unit_test::hydraTester::checkPreviousAdditionalStateVariables( hydra );
 
 }
