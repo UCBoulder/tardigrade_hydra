@@ -19,6 +19,40 @@ namespace hydra{
 
     /** \brief Define required number of Abaqus material constants for the Abaqus interface. */
     const int nMaterialParameters = 2;
+    hydraBase::hydraBase( const floatType &time, const floatType &deltaTime,
+                          const floatType &temperature, const floatType &previousTemperature,
+                          const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
+                          const floatVector &previousStateVariables, const floatVector &parameters,
+                          const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
+                          const unsigned int dimension ) : _time( time ), _deltaTime( deltaTime ),
+                                                           _temperature( temperature ), _previousTemperature( previousTemperature ),
+                                                           _deformationGradient( deformationGradient ),
+                                                           _previousDeformationGradient( previousDeformationGradient ),
+                                                           _previousStateVariables( previousStateVariables ),
+                                                           _parameters( parameters ),
+                                                           _numConfigurations( numConfigurations ),
+                                                           _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
+                                                           _dimension( dimension ){
+        /*!
+         * The main constructor for the hydra base class. Inputs are all the required values for most solves.
+         * 
+         * \param &time: The current time
+         * \param &deltaTime: The change in time
+         * \param &temperature: The current temperature
+         * \param &previousTemperature: The previous temperature
+         * \param &deformationGradient: The current deformation gradient
+         * \param &previousDeformationGradient The previous deformation gradient
+         * \param &previousStateVariables: The previous state variables
+         * \param &parameters: The model parameters
+         * \param &numConfigurations: The number of configurations
+         * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the non-linear solve's residual
+         * \param &dimension: The dimension of the problem (defaults to 3)
+         */
+
+        // Decompose the state variable vector initializing all of the configurations
+        decomposeStateVariableVector( );
+
+    }
 
     void hydraBase::decomposeStateVariableVector( ){
         /*!
@@ -129,6 +163,50 @@ namespace hydra{
         _additionalStateVariables.first = true;
 
         _previousAdditionalStateVariables.first = true;
+
+    }
+
+    floatVector hydraBase::getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+        /*!
+         * Get a sub-configuration \f$\bf{F}^{sc}\f$ defined as
+         *
+         * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex}}_{\bar{I}I} \f$
+         * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
+         * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations - 1)
+         */
+
+        if ( upperIndex >= *getNumConfigurations( ) ){
+
+            std::string message = "The upper index must be less than the total number of configurations\n";
+            message            += "  upperIndex      : " + std::to_string( upperIndex ) + "\n";
+            message            += "  # configurations: " + std::to_string( *getNumConfigurations( ) );
+
+            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+        }
+
+        if ( lowerIndex > upperIndex ){
+
+            std::string message = "The upper index must be greater than or equal to the lower index\n";
+            message            += "  lowerIndex: " + std::to_string( lowerIndex ) + "\n";
+            message            += "  upperIndex: " + std::to_string( upperIndex ) + "\n";
+
+            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+        }
+
+        const unsigned int* dim = getDimension( );
+
+        floatVector Fsc( ( *dim ) * ( *dim ), 0 );
+        vectorTools::eye( Fsc );
+
+        for ( unsigned int i = lowerIndex; i <= upperIndex; i++ ){
+
+            Fsc = vectorTools::matrixMultiply( Fsc, ( *getConfigurations( ) )[ i ], ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
+
+        }
+
+        return Fsc;
 
     }
 

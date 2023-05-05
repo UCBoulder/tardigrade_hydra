@@ -167,15 +167,7 @@ namespace hydra{
                        const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                        const floatVector &previousStateVariables, const floatVector &parameters,
                        const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                       const unsigned int dimension=3 ) : _time( time ), _deltaTime( deltaTime ),
-                                                          _temperature( temperature ), _previousTemperature( previousTemperature ),
-                                                          _deformationGradient( deformationGradient ),
-                                                          _previousDeformationGradient( previousDeformationGradient ),
-                                                          _previousStateVariables( previousStateVariables ),
-                                                          _parameters( parameters ),
-                                                          _numConfigurations( numConfigurations ),
-                                                          _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
-                                                          _dimension( dimension ){ }
+                       const unsigned int dimension=3 );
 
             // User defined functions
 
@@ -238,6 +230,8 @@ namespace hydra{
 
             //! Get a reference to the previous values of the state variables not used in the unknown vector for the non-linear solve
             const floatVector* getPreviousAdditionalStateVariables( ){ return &_previousAdditionalStateVariables.second; }
+
+            floatVector getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
         private:
 

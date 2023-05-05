@@ -17,3 +17,4 @@ Internal Changes
 - Updated the environment.txt file to reflect the new recipe (:merge:`5`). By `Nathan Miller`_.
 - Added the decomposition of the incoming state variable vector into the configurations, state variables
   in the non-linear solve, and additional state variables (:merge:`3`). By `Nathan Miller`_.
+- Added function to get a subset of the full deformation gradient (:merge:`6`). By `Nathan Miller`_.
