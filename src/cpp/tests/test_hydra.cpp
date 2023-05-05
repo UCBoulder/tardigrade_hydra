@@ -36,52 +36,70 @@ namespace hydra{
 
             public:
 
-                static void checkTime( hydra &hydra ){
+                static void checkTime( hydraBase &hydra ){
     
                     BOOST_CHECK( &hydra._time == hydra.getTime( ) );
     
                 }
     
-                static void checkDeltaTime( hydra &hydra ){
+                static void checkDeltaTime( hydraBase &hydra ){
     
                     BOOST_CHECK( &hydra._deltaTime == hydra.getDeltaTime( ) );
     
                 }
     
-                static void checkTemperature( hydra &hydra ){
+                static void checkTemperature( hydraBase &hydra ){
     
                     BOOST_CHECK( &hydra._temperature == hydra.getTemperature( ) );
     
                 }
     
-                static void checkPreviousTemperature( hydra &hydra ){
+                static void checkPreviousTemperature( hydraBase &hydra ){
     
                     BOOST_CHECK( &hydra._previousTemperature == hydra.getPreviousTemperature( ) );
     
                 }
     
-                static void checkDeformationGradient( hydra &hydra ){
+                static void checkDeformationGradient( hydraBase &hydra ){
     
                     BOOST_CHECK( &hydra._deformationGradient == hydra.getDeformationGradient( ) );
     
                 }
     
-                static void checkPreviousDeformationGradient( hydra &hydra ){
+                static void checkPreviousDeformationGradient( hydraBase &hydra ){
     
                     BOOST_CHECK( &hydra._previousDeformationGradient == hydra.getPreviousDeformationGradient( ) );
     
                 }
     
-                static void checkPreviousStateVariables( hydra &hydra ){
+                static void checkPreviousStateVariables( hydraBase &hydra ){
     
                     BOOST_CHECK( &hydra._previousStateVariables == hydra.getPreviousStateVariables( ) );
     
                 }
     
-                static void checkParameters( hydra &hydra ){
+                static void checkParameters( hydraBase &hydra ){
     
                     BOOST_CHECK( &hydra._parameters == hydra.getParameters( ) );
     
+                }
+
+                static void checkNumConfigurations( hydraBase &hydra ){
+    
+                    BOOST_CHECK( &hydra._numConfigurations == hydra.getNumConfigurations( ) );
+    
+                }
+
+                static void checkNumNonLinearSolveStateVariables( hydraBase &hydra ){
+    
+                    BOOST_CHECK( &hydra._numNonLinearSolveStateVariables == hydra.getNumNonLinearSolveStateVariables( ) );
+    
+                }
+
+                static void checkDimension( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._dimension == hydra.getDimension( ) );
+
                 }
 
         };
@@ -245,7 +263,7 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
 
 BOOST_AUTO_TEST_CASE( test_hydra_getTime ){
 
-    hydra::hydra hydra;
+    hydra::hydraBase hydra;
 
     hydra::unit_test::hydraTester::checkTime( hydra );
 
@@ -253,7 +271,7 @@ BOOST_AUTO_TEST_CASE( test_hydra_getTime ){
 
 BOOST_AUTO_TEST_CASE( test_hydra_getDeltaTime ){
 
-    hydra::hydra hydra;
+    hydra::hydraBase hydra;
 
     hydra::unit_test::hydraTester::checkDeltaTime( hydra );
 
@@ -261,7 +279,7 @@ BOOST_AUTO_TEST_CASE( test_hydra_getDeltaTime ){
 
 BOOST_AUTO_TEST_CASE( test_hydra_getTemperature ){
 
-    hydra::hydra hydra;
+    hydra::hydraBase hydra;
 
     hydra::unit_test::hydraTester::checkTemperature( hydra );
 
@@ -269,7 +287,7 @@ BOOST_AUTO_TEST_CASE( test_hydra_getTemperature ){
 
 BOOST_AUTO_TEST_CASE( test_hydra_getPreviousTemperature ){
 
-    hydra::hydra hydra;
+    hydra::hydraBase hydra;
 
     hydra::unit_test::hydraTester::checkPreviousTemperature( hydra );
 
@@ -277,7 +295,7 @@ BOOST_AUTO_TEST_CASE( test_hydra_getPreviousTemperature ){
 
 BOOST_AUTO_TEST_CASE( test_hydra_getDeformationGradient ){
 
-    hydra::hydra hydra;
+    hydra::hydraBase hydra;
 
     hydra::unit_test::hydraTester::checkDeformationGradient( hydra );
 
@@ -285,7 +303,7 @@ BOOST_AUTO_TEST_CASE( test_hydra_getDeformationGradient ){
 
 BOOST_AUTO_TEST_CASE( test_hydra_getPreviousDeformationGradient ){
 
-    hydra::hydra hydra;
+    hydra::hydraBase hydra;
 
     hydra::unit_test::hydraTester::checkPreviousDeformationGradient( hydra );
 
@@ -293,7 +311,7 @@ BOOST_AUTO_TEST_CASE( test_hydra_getPreviousDeformationGradient ){
 
 BOOST_AUTO_TEST_CASE( test_hydra_getPreviousStateVariables ){
 
-    hydra::hydra hydra;
+    hydra::hydraBase hydra;
 
     hydra::unit_test::hydraTester::checkPreviousStateVariables( hydra );
 
@@ -301,8 +319,24 @@ BOOST_AUTO_TEST_CASE( test_hydra_getPreviousStateVariables ){
 
 BOOST_AUTO_TEST_CASE( test_hydra_getParameters ){
 
-    hydra::hydra hydra;
+    hydra::hydraBase hydra;
 
     hydra::unit_test::hydraTester::checkParameters( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getNumConfigurations ){
+
+    hydra::hydraBase hydra;
+
+    hydra::unit_test::hydraTester::checkNumConfigurations( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydra_getNumNonLinearSolveStateVariables ){
+
+    hydra::hydraBase hydra;
+
+    hydra::unit_test::hydraTester::checkNumNonLinearSolveStateVariables( hydra );
 
 }

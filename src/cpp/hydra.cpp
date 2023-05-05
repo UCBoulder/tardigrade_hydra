@@ -20,6 +20,48 @@ namespace hydra{
     /** \brief Define required number of Abaqus material constants for the Abaqus interface. */
     const int nMaterialParameters = 2;
 
+    void hydraBase::decomposeStateVariableVector( ){
+        /*!
+         * Decompose the incoming state variable vector setting the different configurations along the way
+         * 
+         * The state variable vector is assumed to be of the form:
+         * 
+         * \f$ \text{ISV} = \left\{\bf{F}^2 - \bf{I}, \bf{F}^3 - \bf{I}, \cdots, \bf{F}^n - \bf{I}, \xi^1, \xi^2, \cdots, \xi^m, \eta^1, \cdots\right\} \f$
+         * 
+         * where the \f$\bf{F}^x\f$ are the different configurations, \f$\xi^y\f$ are the other variables to be solved during the non-linear
+         * solve and \f$\eta^z\f$ are other state variables. Note that we decompose the deformation gradient as
+         * 
+         * \f$\bf{F} = \bf{F}^1 \bf{F}^2 \cdots \bf{F}^n\f$
+         * 
+         * and so because \f$\bf{F}\f$ is provided we can solve for \f$\bf{F}^1\f$. Typically, this configuration would be the elastic
+         * configuration (i.e., the configuration that generates the stress) though we do not insist that users follow convention.
+         */
+
+        const unsigned int* dim = getDimension( );
+
+        const unsigned int* nConfig = getNumConfigurations( );
+
+        const unsigned int* nNLISV  = getNumNonLinearSolveStateVariables( );
+
+        // Extract the previous configurations
+        floatVector eye( ( *dim ) * ( *dim ) );
+        vectorTools::eye( eye );
+
+        if ( getPreviousStateVariables( )->size( ) < ( ( *nConfig ) * ( *dim ) * ( *dim ) + ( *nNLISV ) ) ){
+
+            std::string message = "The number of state variables is less than required for the configurations and\n";
+            message            += "non-linear state variables\n";
+            message            += "  # previousStateVariables  : " + std::to_string( getPreviousStateVariables( )->size( ) ) + "\n";
+            message            += "  # configurations * dim**2 : " + std::to_string( ( *nConfig ) * ( *dim ) * ( *dim ) ) + "\n";
+            message            += "  # non-linear solve ISVs   : " + std::to_string( ( *nNLISV ) ) + "\n";
+            message            += "  # minimum required ISVs   : " + std::to_string( ( *nConfig ) * ( *dim ) * ( *dim ) + ( *nNLISV ) );
+
+            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+        }
+
+    }
+
     /// Say hello
     /// @param message The message to print
     errorOut sayHello( std::string message ) {

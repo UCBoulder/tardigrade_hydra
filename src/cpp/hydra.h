@@ -10,11 +10,17 @@
 #define HYDRA_H
 
 #include<sstream>
+#include<functional>
 
 #include<error_tools.h>
+#define USE_EIGEN
+#include<vector_tools.h>
 #include<abaqus_tools.h>
 
 namespace hydra{
+
+    // forward class definitions
+    class hydraBase;
 
     namespace unit_test{
         class hydraTester;
@@ -59,9 +65,88 @@ namespace hydra{
     typedef std::vector< floatType > floatVector; //!< Define a vector of floats
     typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
 
-    class hydra{
+    typedef void ( hydraBase::*hydraBaseFxn )( ); //!< Typedef for passing pointers to hydraBase functions
+
+    class dataBase{
+
+        public:
+
+            virtual void clear( ){
+                /*!
+                 * The function to erase the current values stored
+                 */
+
+                ERROR_TOOLS_CATCH( throw std::runtime_error( "clear not implemented!" ) );
+
+            }
+
+    };
+
+    template < typename T >
+    class dataStorage : public dataBase{
+
+        public:
+
+            bool first = false; //!The flag for whether the data has been stored
+
+            T second; //!The stored data
+
+            dataStorage( ){ };
+
+            dataStorage( const bool &_first, const T &_second ) : first( _first ), second( _second ) { }
+
+            virtual void clear( ){
+                /*!
+                 * The function to erase the current values stored by setting first to false and clearing second
+                 */
+
+                first = false;
+
+                second.clear( );
+
+            }
+
+    };
+
+    template <>
+    inline void dataStorage< int >::clear( ){
+                /*!
+                 * The function to erase the current values stored by setting first to false and second to zero
+                 */
+
+        first = false;
+
+        second = 0;
+
+    }
+
+    template <>
+    inline void dataStorage< unsigned int >::clear( ){
+                /*!
+                 * The function to erase the current values stored by setting first to false and second to zero
+                 */
+
+        first = false;
+
+        second = 0;
+
+    }
+
+    template <>
+    inline void dataStorage< floatType >::clear( ){
+                /*!
+                 * The function to erase the current values stored by setting first to false and second to zero
+                 */
+
+        first = false;
+
+        second = 0;
+
+    }
+
+    class hydraBase{
         /*!
-         * Hydra: A base class which can be used to construct finite deformation material models.
+         * hydraBase: A base class which can be used to construct finite deformation material models.
          * 
          * The hydra class seeks to provide utilities for the construction of finite deformation constitutive models
          * more rapidly than would be possible previously. The user can define as many different configurations as desired
@@ -71,6 +156,10 @@ namespace hydra{
          */
 
         public:
+
+            // User defined functions
+
+            // Setter functions
 
             // Getter functions
             const floatType* getTime( ){ return &_time; }
@@ -89,26 +178,39 @@ namespace hydra{
 
             const floatVector* getParameters( ){ return &_parameters; }
 
+            const unsigned int* getNumConfigurations( ){ return &_numConfigurations; }
+
+            const unsigned int* getNumNonLinearSolveStateVariables( ){ return &_numNonLinearSolveStateVariables; }
+
+            const unsigned int* getDimension( ){ return &_dimension; }
+
         private:
 
             // Friend classes
             friend class unit_test::hydraTester;
 
-            floatType _time;
+            unsigned int _dimension = 3; //!< The spatial dimension of the problem
 
-            floatType _deltaTime;
+            floatType _time; //!< The current time
 
-            floatType _temperature;
+            floatType _deltaTime; //!< The change in time
 
-            floatType _previousTemperature;
+            floatType _temperature; //!< The current temperature
 
-            floatVector _deformationGradient;
+            floatType _previousTemperature; //!< The previous temperature
 
-            floatVector _previousDeformationGradient;
+            floatVector _deformationGradient; //!< The current deformation gradient
 
-            floatVector _previousStateVariables;
+            floatVector _previousDeformationGradient; //!< The previous deformation gradient
 
-            floatVector _parameters;
+            floatVector _previousStateVariables; //!< The previous state variables
+
+            floatVector _parameters; //!< The model parameters
+
+            unsigned int _numConfigurations; //!< The number of configurations
+
+            unsigned int _numNonLinearSolveStateVariables; //!< The number of state variables which will be solved in the Newton-Raphson loop
+            virtual void decomposeStateVariableVector( );
 
     };
 
