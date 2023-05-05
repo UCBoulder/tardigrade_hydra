@@ -177,6 +177,7 @@ namespace hydra{
          * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
+
         if ( upperIndex > configurations.size( ) ){
 
             std::string message = "The upper index must be less than or equal to the total number of configurations\n";
@@ -209,6 +210,57 @@ namespace hydra{
         }
 
         return Fsc;
+
+    }
+
+    floatMatrix hydraBase::getSubConfigurationGradient( const floatMatrix &configurations, const unsigned int &lowerIndex,
+                                                        const unsigned int &upperIndex ){
+        /*!
+         * Get the gradient a sub-configuration \f$\bf{F}^{sc}\f$ defined as
+         *
+         * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex-1}}_{\bar{I}I} \f$
+         * 
+         * with respect to all of the configurations. The returned matrix will be of size ( dimensions**2, configurations.size( ) * dimensions**2 )
+         * 
+         * \param &configurations: The configurations to operate on
+         * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
+         * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
+         *   Note, the configuration indicated by the index is NOT included in the sub-configuration
+         */
+
+        const unsigned int *dim = getDimension( );
+
+        floatMatrix gradient( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * configurations.size( ), 0 ) );
+
+        for ( unsigned int index = lowerIndex; index < upperIndex; index++ ){
+
+            floatVector Fm, Fp;
+
+            ERROR_TOOLS_CATCH( Fm = getSubConfiguration( configurations, lowerIndex, index ) );
+
+            ERROR_TOOLS_CATCH( Fp = getSubConfiguration( configurations, index + 1, upperIndex ) );
+
+            for ( unsigned int i = 0; i < *dim; i++ ){
+
+                for ( unsigned int I = 0; I < *dim; I++ ){
+
+                    for ( unsigned int a = 0; a < *dim; a++ ){
+
+                        for ( unsigned int A = 0; A < *dim; A++ ){
+
+                            gradient[ ( *dim ) * i + I ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ] = Fm[ ( *dim ) * i + a ] * Fp[ ( *dim ) * A + I ];
+
+                        }
+
+                    }
+
+                }
+
+            } 
+
+        }
+
+        return gradient;
 
     }
 
@@ -281,6 +333,86 @@ namespace hydra{
          */
 
         return getPreviousSubConfiguration( index + 1, *getNumConfigurations( ) );
+
+    }
+
+    floatMatrix hydraBase::getSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+        /*!
+         * Get the gradient of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
+         *
+         * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex-1}}_{\bar{I}I} \f$
+         * 
+         * with respect to the current configurations.
+         *
+         * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
+         * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
+         *   Note, the configuration indicated by the index is NOT included in the sub-configuration
+         */
+
+        return getSubConfigurationGradient( *getConfigurations( ), lowerIndex, upperIndex );
+
+    }
+
+    floatMatrix hydraBase::getPrecedingConfigurationGradient( const unsigned int &index ){
+        /*!
+         * Get the gradient of the sub-configuration preceding but not including the index with respect to the current configurations.
+         * 
+         * \param &index: The index of the configuration immediately following the sub-configuration
+         */
+
+        return getSubConfigurationGradient( 0, index );
+
+    }
+
+    floatMatrix hydraBase::getFollowingConfigurationGradient( const unsigned int &index ){
+        /*!
+         * Get the gradient of the sub-configuration following but not including the index with respect to the current configurations.
+         * 
+         * \param &index: The index of the current configuration immediately before the sub-configuration
+         */
+
+        return getSubConfigurationGradient( index + 1, *getNumConfigurations( ) );
+
+    }
+
+    floatMatrix hydraBase::getPreviousSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+        /*!
+         * Get the gradient of a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
+         *
+         * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex-1}}_{\bar{I}I} \f$
+         * 
+         * with respect to the previous configurations.
+         *
+         * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
+         * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
+         *   Note, the configuration indicated by the index is NOT included in the sub-configuration
+         */
+
+        return getSubConfigurationGradient( *getPreviousConfigurations( ), lowerIndex, upperIndex );
+
+    }
+
+    floatMatrix hydraBase::getPreviousPrecedingConfigurationGradient( const unsigned int &index ){
+        /*!
+         * Get the gradient of the previous sub-configuration preceding but not including the index with
+         * respect to the previous configurations.
+         * 
+         * \param &index: The index of the configuration immediately following the sub-configuration
+         */
+
+        return getPreviousSubConfigurationGradient( 0, index );
+
+    }
+
+    floatMatrix hydraBase::getPreviousFollowingConfigurationGradient( const unsigned int &index ){
+        /*!
+         * Get the gradient of the previous sub-configuration following but not including the index with
+         * respect to the previous configurations
+         * 
+         * \param &index: The index of the current configuration immediately before the sub-configuration
+         */
+
+        return getPreviousSubConfigurationGradient( index + 1, *getNumConfigurations( ) );
 
     }
 

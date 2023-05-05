@@ -233,6 +233,8 @@ namespace hydra{
 
             floatVector getSubConfiguration( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
+            floatMatrix getSubConfigurationGradient( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+
             floatVector getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getPrecedingConfiguration( const unsigned int &index );
@@ -244,6 +246,18 @@ namespace hydra{
             floatVector getPreviousPrecedingConfiguration( const unsigned int &index );
 
             floatVector getPreviousFollowingConfiguration( const unsigned int &index );
+
+            floatMatrix getSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+
+            floatMatrix getPrecedingConfigurationGradient( const unsigned int &index );
+
+            floatMatrix getFollowingConfigurationGradient( const unsigned int &index );
+
+            floatMatrix getPreviousSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+
+            floatMatrix getPreviousPrecedingConfigurationGradient( const unsigned int &index );
+
+            floatMatrix getPreviousFollowingConfigurationGradient( const unsigned int &index );
 
         private:
 
