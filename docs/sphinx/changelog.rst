@@ -28,3 +28,5 @@ Internal Changes
   previous configurations (:merge:`8`). By `Nathan Miller`_.
 - Added the computation of the previous sub-configurations and the previous preceding and following
   sub-configurations given a configuration (:merge:`8`). By `Nathan Miller`_.
+- Added the computation of the gradient of a sub-configuration by all of the configurations (:merge:`9`). By `Nathan Miller`_.
+- Added gradients for the preceding and following sub-configurations for the current and previous configurations (:merge:`9`). By `Nathan Miller`_.
