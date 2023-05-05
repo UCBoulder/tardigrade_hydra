@@ -20,6 +20,118 @@ namespace hydra{
     /** \brief Define required number of Abaqus material constants for the Abaqus interface. */
     const int nMaterialParameters = 2;
 
+    void hydraBase::decomposeStateVariableVector( ){
+        /*!
+         * Decompose the incoming state variable vector setting the different configurations along the way
+         * 
+         * The state variable vector is assumed to be of the form:
+         * 
+         * \f$ \text{ISV} = \left\{\bf{F}^2 - \bf{I}, \bf{F}^3 - \bf{I}, \cdots, \bf{F}^n - \bf{I}, \xi^1, \xi^2, \cdots, \xi^m, \eta^1, \cdots\right\} \f$
+         * 
+         * where the \f$\bf{F}^x\f$ are the different configurations, \f$\xi^y\f$ are the other variables to be solved during the non-linear
+         * solve and \f$\eta^z\f$ are other state variables. Note that we decompose the deformation gradient as
+         * 
+         * \f$\bf{F} = \bf{F}^1 \bf{F}^2 \cdots \bf{F}^n\f$
+         * 
+         * and so because \f$\bf{F}\f$ is provided we can solve for \f$\bf{F}^1\f$. Typically, this configuration would be the elastic
+         * configuration (i.e., the configuration that generates the stress) though we do not insist that users follow convention.
+         */
+
+        const unsigned int* dim = getDimension( );
+
+        const unsigned int* nConfig = getNumConfigurations( );
+
+        const unsigned int* nNLISV  = getNumNonLinearSolveStateVariables( );
+
+        // Extract the previous configurations
+        floatVector eye( ( *dim ) * ( *dim ) );
+        vectorTools::eye( eye );
+
+        if ( getPreviousStateVariables( )->size( ) < ( ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + ( *nNLISV ) ) ){
+
+            std::string message = "The number of state variables is less than required for the configurations and ";
+            message            += "non-linear state variables\n";
+            message            += "  # previousStateVariables          : " + std::to_string( getPreviousStateVariables( )->size( ) ) + "\n";
+            message            += "  # ( configurations - 1 ) * dim**2 : " + std::to_string( ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) ) + "\n";
+            message            += "  # non-linear solve ISVs           : " + std::to_string( ( *nNLISV ) ) + "\n";
+            message            += "  # minimum required ISVs           : " + std::to_string( ( *nConfig ) * ( *dim ) * ( *dim ) + ( *nNLISV ) );
+
+            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+        }
+
+        _previousConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        _configurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        _previousInverseConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        _inverseConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        // Initialize the first configuration with the total deformation gradient
+        _configurations.second[ 0 ] = *getDeformationGradient( );
+
+        _previousConfigurations.second[ 0 ] = *getPreviousDeformationGradient( );
+
+        for ( unsigned int i = ( *nConfig ) - 1; i >= 1; i-- ){
+
+            // Set the current configuration as being equal to the previous
+            _configurations.second[ i ] = floatVector( getPreviousStateVariables( )->begin( ) + ( i - 1 ) * ( *dim ) * ( *dim ),
+                                                       getPreviousStateVariables( )->begin( ) + i * ( *dim ) * ( *dim ) ) + eye;
+
+            // Compute the inverse of the current configuration and store it
+            _inverseConfigurations.second[ i ] = vectorTools::inverse( _configurations.second[ i ], ( *dim ), ( *dim ) );
+
+            // Set the previous configuration
+            _previousConfigurations.second[ i ] = _configurations.second[ i ];
+
+            // Set the previous inverse configuration
+            _previousInverseConfigurations.second[ i ] = _inverseConfigurations.second[ i ];
+
+            // Add contribution of deformation gradient to the first configuration
+            _configurations.second[ 0 ] = vectorTools::matrixMultiply( _configurations.second[ 0 ], _inverseConfigurations.second[ i ],
+                                                                       ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
+
+            // Add the contribution of the deformation gradient to the previous configuration
+            _previousConfigurations.second[ 0 ] = vectorTools::matrixMultiply( _previousConfigurations.second[ 0 ], _previousInverseConfigurations.second[ i ],
+                                                                               ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
+
+        }
+
+        _inverseConfigurations.second[ 0 ] = vectorTools::inverse( _configurations.second[ 0 ], ( *dim ), ( *dim ) );
+
+        _previousInverseConfigurations.second[ 0 ] = vectorTools::inverse( _previousConfigurations.second[ 0 ], ( *dim ), ( *dim ) );
+
+        // Extract the remaining state variables required for the non-linear solve
+        _nonLinearSolveStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ),
+                                                            getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + *nNLISV );
+
+        _previousNonLinearSolveStateVariables.second = _nonLinearSolveStateVariables.second;
+
+        // Extract the additional state variables
+        _additionalStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + *nNLISV,
+                                                        getPreviousStateVariables( )->end( ) );
+
+        _previousAdditionalStateVariables.second = _additionalStateVariables.second;
+
+        _configurations.first = true;
+
+        _previousConfigurations.first = true;
+
+        _inverseConfigurations.first = true;
+
+        _previousInverseConfigurations.first = true;
+
+        _nonLinearSolveStateVariables.first = true;
+
+        _previousNonLinearSolveStateVariables.first = true;
+
+        _additionalStateVariables.first = true;
+
+        _previousAdditionalStateVariables.first = true;
+
+    }
+
     /// Say hello
     /// @param message The message to print
     errorOut sayHello( std::string message ) {
