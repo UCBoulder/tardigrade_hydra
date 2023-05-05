@@ -9,6 +9,10 @@ Changelog
 0.1.0 (unreleased)
 ******************
 
+Breaking Changes
+================
+- Changed getSubConfiguration to not include the upper bound (:merge:`7`). By `Nathan Miller`_.
+
 Internal Changes
 ================
 - Initialized the repository from cpp_stub (:merge:`1`). By `Nathan Miller`_.
@@ -18,3 +22,4 @@ Internal Changes
 - Added the decomposition of the incoming state variable vector into the configurations, state variables
   in the non-linear solve, and additional state variables (:merge:`3`). By `Nathan Miller`_.
 - Added function to get a subset of the full deformation gradient (:merge:`6`). By `Nathan Miller`_.
+- Added functions to get the part of the sub-configuration preceding and following a given configuration (:merge:`7`). By `Nathan Miller`_.

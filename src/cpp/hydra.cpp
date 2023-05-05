@@ -170,14 +170,15 @@ namespace hydra{
         /*!
          * Get a sub-configuration \f$\bf{F}^{sc}\f$ defined as
          *
-         * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex}}_{\bar{I}I} \f$
+         * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex-1}}_{\bar{I}I} \f$
          * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
-         * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations - 1)
+         * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
+         *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        if ( upperIndex >= *getNumConfigurations( ) ){
+        if ( upperIndex > *getNumConfigurations( ) ){
 
-            std::string message = "The upper index must be less than the total number of configurations\n";
+            std::string message = "The upper index must be less than or equal to the total number of configurations\n";
             message            += "  upperIndex      : " + std::to_string( upperIndex ) + "\n";
             message            += "  # configurations: " + std::to_string( *getNumConfigurations( ) );
 
@@ -200,13 +201,35 @@ namespace hydra{
         floatVector Fsc( ( *dim ) * ( *dim ), 0 );
         vectorTools::eye( Fsc );
 
-        for ( unsigned int i = lowerIndex; i <= upperIndex; i++ ){
+        for ( unsigned int i = lowerIndex; i < upperIndex; i++ ){
 
             Fsc = vectorTools::matrixMultiply( Fsc, ( *getConfigurations( ) )[ i ], ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
 
         }
 
         return Fsc;
+
+    }
+
+    floatVector hydraBase::getPrecedingConfiguration( const unsigned int &index ){
+        /*!
+         * Get the sub-configuration preceding but not including the current index
+         * 
+         * \param &index: The index of the current configuration
+         */
+
+        return getSubConfiguration( 0, index );
+
+    }
+
+    floatVector hydraBase::getFollowingConfiguration( const unsigned int &index ){
+        /*!
+         * Get the sub configuration following but not including the current index
+         * 
+         * \param &index: The index of the current configuration
+         */
+
+        return getSubConfiguration( index + 1, *getNumConfigurations( ) );
 
     }
 
