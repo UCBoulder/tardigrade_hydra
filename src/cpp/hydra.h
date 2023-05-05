@@ -23,7 +23,7 @@ namespace hydra{
     class hydraBase;
 
     namespace unit_test{
-        class hydraTester;
+        class hydraBaseTester;
     }
 
     constexpr const char* str_end(const char *str) {
@@ -157,6 +157,26 @@ namespace hydra{
 
         public:
 
+            // Constructors
+            //! Default constructor for hydraBase
+            hydraBase( ){ }
+
+            //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
+            hydraBase( const floatType &time, const floatType &deltaTime,
+                       const floatType &temperature, const floatType &previousTemperature,
+                       const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
+                       const floatVector &previousStateVariables, const floatVector &parameters,
+                       const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
+                       const unsigned int dimension=3 ) : _time( time ), _deltaTime( deltaTime ),
+                                                          _temperature( temperature ), _previousTemperature( previousTemperature ),
+                                                          _deformationGradient( deformationGradient ),
+                                                          _previousDeformationGradient( previousDeformationGradient ),
+                                                          _previousStateVariables( previousStateVariables ),
+                                                          _parameters( parameters ),
+                                                          _numConfigurations( numConfigurations ),
+                                                          _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
+                                                          _dimension( dimension ){ }
+
             // User defined functions
 
             // Setter functions
@@ -222,9 +242,7 @@ namespace hydra{
         private:
 
             // Friend classes
-            friend class unit_test::hydraTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
-
-            unsigned int _dimension = 3; //!< The spatial dimension of the problem
+            friend class unit_test::hydraBaseTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
             floatType _time; //!< The current time
 
@@ -245,6 +263,8 @@ namespace hydra{
             unsigned int _numConfigurations; //!< The number of configurations
 
             unsigned int _numNonLinearSolveStateVariables; //!< The number of state variables which will be solved in the Newton-Raphson loop
+            unsigned int _dimension; //!< The spatial dimension of the problem
+
             dataStorage< floatMatrix > _configurations; //!< The current values of the configurations
 
             dataStorage< floatMatrix > _previousConfigurations; //!< The previous values of the configurations

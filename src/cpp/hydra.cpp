@@ -47,9 +47,9 @@ namespace hydra{
         floatVector eye( ( *dim ) * ( *dim ) );
         vectorTools::eye( eye );
 
-        if ( getPreviousStateVariables( )->size( ) < ( ( *nConfig ) * ( *dim ) * ( *dim ) + ( *nNLISV ) ) ){
+        if ( getPreviousStateVariables( )->size( ) < ( ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + ( *nNLISV ) ) ){
 
-            std::string message = "The number of state variables is less than required for the configurations and\n";
+            std::string message = "The number of state variables is less than required for the configurations and ";
             message            += "non-linear state variables\n";
             message            += "  # previousStateVariables          : " + std::to_string( getPreviousStateVariables( )->size( ) ) + "\n";
             message            += "  # ( configurations - 1 ) * dim**2 : " + std::to_string( ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) ) + "\n";
@@ -64,12 +64,16 @@ namespace hydra{
 
         _configurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
 
+        _previousInverseConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        _inverseConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
         // Initialize the first configuration with the total deformation gradient
         _configurations.second[ 0 ] = *getDeformationGradient( );
 
         _previousConfigurations.second[ 0 ] = *getPreviousDeformationGradient( );
 
-        for ( unsigned int i = 1; i < *nConfig; i++ ){
+        for ( unsigned int i = ( *nConfig ) - 1; i >= 1; i-- ){
 
             // Set the current configuration as being equal to the previous
             _configurations.second[ i ] = floatVector( getPreviousStateVariables( )->begin( ) + ( i - 1 ) * ( *dim ) * ( *dim ),
@@ -96,16 +100,16 @@ namespace hydra{
 
         _inverseConfigurations.second[ 0 ] = vectorTools::inverse( _configurations.second[ 0 ], ( *dim ), ( *dim ) );
 
-        _previousInverseConfigurations.second[ 0 ] = _inverseConfigurations.second[ 0 ];
+        _previousInverseConfigurations.second[ 0 ] = vectorTools::inverse( _previousConfigurations.second[ 0 ], ( *dim ), ( *dim ) );
 
         // Extract the remaining state variables required for the non-linear solve
-        _nonLinearSolveStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( *nConfig ) * ( *dim ) * ( *dim ),
-                                                            getPreviousStateVariables( )->begin( ) + ( *nConfig ) * ( *dim ) * ( *dim ) + *nNLISV );
+        _nonLinearSolveStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ),
+                                                            getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + *nNLISV );
 
         _previousNonLinearSolveStateVariables.second = _nonLinearSolveStateVariables.second;
 
         // Extract the additional state variables
-        _additionalStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( *nConfig ) * ( *dim ) * ( *dim ) + *nNLISV,
+        _additionalStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + *nNLISV,
                                                         getPreviousStateVariables( )->end( ) );
 
         _previousAdditionalStateVariables.second = _additionalStateVariables.second;
