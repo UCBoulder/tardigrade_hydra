@@ -39,7 +39,7 @@ requirements:
     - {{ compiler('cxx') }}
     - eigen >=3.3.7
     - error_tools>=0.4
-    - vector_tools>0.5.3
+    - vector_tools>=0.5.3
     - constitutive_tools
     - solver_tools
     - abaqus_tools>=0.3
