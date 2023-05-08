@@ -13,4 +13,4 @@ solver_tools
 sphinx>=3.0.4
 sphinx_rtd_theme>=0.4.3
 sphinxcontrib-bibtex
-vector_tools
+vector_tools>=0.5.3
