@@ -13,6 +13,10 @@ Breaking Changes
 ================
 - Changed getSubConfiguration to not include the upper bound (:merge:`7`). By `Nathan Miller`_.
 
+New Features
+============
+- Added calculation of the gradients of the current and previous F1 configurations (:merge:`11`). By `Nathan Miller`_.
+
 Internal Changes
 ================
 - Initialized the repository from cpp_stub (:merge:`1`). By `Nathan Miller`_.

@@ -416,6 +416,211 @@ namespace hydra{
 
     }
 
+    void hydraBase::setFirstConfigurationGradients( ){
+        /*!
+         * Get the gradient of the first configuration w.r.t. the deformation gradient (the first entry of the pair)
+         * and the remaining gradients (the second entry) i.e.,
+         * 
+         * \f$\text{return.first} = \frac{\partial F^1}{\partial F}\f$
+         * \f$\text{return.second} = \frac{\partial F^1}{\partial F^n}\f$
+         * 
+         * where \f$F^n = F^2, F^3, \cdots\f$
+         */
+
+        const unsigned int* dim = getDimension( );
+
+        _dF1dF.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        _dF1dFn.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
+
+        floatVector eye( ( *dim ) * ( *dim ) );
+        vectorTools::eye( eye );
+
+        floatVector invFsc = vectorTools::inverse( getFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
+
+        floatMatrix dInvFscdFsc = vectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
+
+        floatMatrix dInvFscdFs = vectorTools::dot( dInvFscdFsc, getFollowingConfigurationGradient( 0 ) );
+
+        // Compute the gradients
+        for ( unsigned int i = 0; i < ( *dim ); i++ ){
+
+            for ( unsigned int barI = 0; barI < ( *dim ); barI++ ){
+
+                for ( unsigned int a = 0; a < ( *dim ); a++ ){
+
+                    for ( unsigned int A = 0; A < ( *dim ); A++ ){
+
+                        _dF1dF.second[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invFsc[ ( *dim ) * A + barI ];
+
+                        for ( unsigned int index = 0; index < ( *getNumConfigurations( ) ) - 1; index++ ){
+
+                            for ( unsigned int J = 0; J < ( *dim ); J++ ){
+
+                                _dF1dFn.second[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
+                                    += ( *getDeformationGradient( ) )[ ( *dim ) * i + J ]
+                                     * dInvFscdFs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        _dF1dF.first = true;
+
+        _dF1dFn.first = true;
+
+        addIterationData( &_dF1dF );
+
+        addIterationData( &_dF1dFn );
+
+    }
+
+    void hydraBase::setPreviousFirstConfigurationGradients( ){
+        /*!
+         * Get the gradient of the previous first configuration w.r.t. the deformation gradient (the first entry of the pair)
+         * and the remaining gradients (the second entry) i.e.,
+         * 
+         * \f$\text{return.first} = \frac{\partial F^1}{\partial F}\f$
+         * \f$\text{return.second} = \frac{\partial F^1}{\partial F^n}\f$
+         * 
+         * where \f$F^n = F^2, F^3, \cdots\f$
+         */
+
+        const unsigned int* dim = getDimension( );
+
+        _previousdF1dF.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        _previousdF1dFn.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
+
+        floatVector eye( ( *dim ) * ( *dim ) );
+        vectorTools::eye( eye );
+
+        floatVector invFsc = vectorTools::inverse( getPreviousFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
+
+        floatMatrix dInvFscdFsc = vectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
+
+        floatMatrix dInvFscdFs = vectorTools::dot( dInvFscdFsc, getPreviousFollowingConfigurationGradient( 0 ) );
+
+        // Compute the gradients
+        for ( unsigned int i = 0; i < ( *dim ); i++ ){
+
+            for ( unsigned int barI = 0; barI < ( *dim ); barI++ ){
+
+                for ( unsigned int a = 0; a < ( *dim ); a++ ){
+
+                    for ( unsigned int A = 0; A < ( *dim ); A++ ){
+
+                        _previousdF1dF.second[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invFsc[ ( *dim ) * A + barI ];
+
+                        for ( unsigned int index = 0; index < ( *getNumConfigurations( ) ) - 1; index++ ){
+
+                            for ( unsigned int J = 0; J < ( *dim ); J++ ){
+
+                                _previousdF1dFn.second[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
+                                    += ( *getPreviousDeformationGradient( ) )[ ( *dim ) * i + J ]
+                                     * dInvFscdFs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        _previousdF1dF.first = true;
+
+        _previousdF1dFn.first = true;
+
+    }
+
+    const floatMatrix* hydraBase::getdF1dF( ){
+        /*!
+         * Get the partial derivative of the first deformation gradient w.r.t. the deformation gradient
+         */
+
+        if ( !_dF1dF.first ){
+
+            ERROR_TOOLS_CATCH( setFirstConfigurationGradients( ) );
+
+        }
+
+        return &_dF1dF.second;
+
+    }
+
+    const floatMatrix* hydraBase::getdF1dFn( ){
+        /*!
+         * Get the partial derivative of the first deformation gradient w.r.t. the other deformation gradients
+         */
+
+        if ( !_dF1dFn.first ){
+
+            ERROR_TOOLS_CATCH( setFirstConfigurationGradients( ) );
+
+        }
+
+        return &_dF1dFn.second;
+
+    }
+
+    const floatMatrix* hydraBase::getPreviousdF1dF( ){
+        /*!
+         * Get the partial derivative of the previous first deformation gradient w.r.t. the deformation gradient
+         */
+
+        if ( !_previousdF1dF.first ){
+
+            ERROR_TOOLS_CATCH( setPreviousFirstConfigurationGradients( ) );
+
+        }
+
+        return &_previousdF1dF.second;
+
+    }
+
+    const floatMatrix* hydraBase::getPreviousdF1dFn( ){
+        /*!
+         * Get the partial derivative of the previous first deformation gradient w.r.t. the other deformation gradients
+         */
+
+        if ( !_previousdF1dFn.first ){
+
+            ERROR_TOOLS_CATCH( setPreviousFirstConfigurationGradients( ) );
+
+        }
+
+        return &_previousdF1dFn.second;
+
+    }
+
+    void hydraBase::resetIterationData( ){
+        /*!
+         * Reset the iteration data to the new base state
+         */
+
+        for ( auto d = _iterationData.begin( ); d != _iterationData.end( ); d++ ){
+
+            ( *d )->clear( );
+
+        }
+
+        _iterationData.clear( );
+
+    }
+
     /// Say hello
     /// @param message The message to print
     errorOut sayHello( std::string message ) {

@@ -259,6 +259,17 @@ namespace hydra{
 
             floatMatrix getPreviousFollowingConfigurationGradient( const unsigned int &index );
 
+            const floatMatrix* getdF1dF( );
+
+            const floatMatrix* getdF1dFn( );
+
+            const floatMatrix* getPreviousdF1dF( );
+
+            const floatMatrix* getPreviousdF1dFn( );
+
+            //! Add data to the vector of values which will be cleared after each iteration
+            void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
+
         private:
 
             // Friend classes
@@ -300,7 +311,23 @@ namespace hydra{
 
             dataStorage< floatVector > _previousAdditionalStateVariables; //!< The previous values of the additional state variables
 
+            dataStorage< floatMatrix > _dF1dF; //!< The partial derivative of the first configuration w.r.t. the deformation gradient
+
+            dataStorage< floatMatrix > _dF1dFn; //!< The partial derivative of the first configuration w.r.t. all the other configurations
+
+            dataStorage< floatMatrix > _previousdF1dF; //!< The partial derivative of the previous first configuration w.r.t. the deformation gradient
+
+            dataStorage< floatMatrix > _previousdF1dFn; //!< The partial derivative of the previous first configuration w.r.t. all the other configurations
+
+            std::vector< dataBase* > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration
+
             virtual void decomposeStateVariableVector( );
+
+            void setFirstConfigurationGradients( );
+
+            void setPreviousFirstConfigurationGradients( );
+
+            void resetIterationData( );
 
     };
 
