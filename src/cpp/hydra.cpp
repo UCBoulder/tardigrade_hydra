@@ -1181,7 +1181,13 @@ namespace hydra{
          * Get the additional derivatives for the non-linear problem
          */
 
-        return vectorTools::inflate( *getFlatAdditionalDerivatives( ), getResidual( )->size( ), getFlatAdditionalDerivatives( )->size( ) / getResidual( )->size( ) );
+        if ( getFlatAdditionalDerivatives( )->size( ) > 0 ){
+
+            return vectorTools::inflate( *getFlatAdditionalDerivatives( ), getResidual( )->size( ), getFlatAdditionalDerivatives( )->size( ) / getResidual( )->size( ) );
+
+        }
+
+        return floatMatrix( 0, floatVector( 0, 0 ) );
 
     }
 

@@ -2377,6 +2377,24 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
             }
 
+            virtual void setAdditionalDerivatives( ){
+
+                floatMatrix additionalDerivatives( *getNumEquations( ), floatVector( 4,  0 ) );
+
+                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+
+                    for ( unsigned int j = 0; j < 4; j++ ){
+
+                        additionalDerivatives[ i ][ j ] = i - 0.7 * j;
+
+                    }
+
+                }
+
+                setAdditionalDerivatives( additionalDerivatives );
+
+            }
+
     };
 
     class hydraBaseMock : public hydra::hydraBase{
