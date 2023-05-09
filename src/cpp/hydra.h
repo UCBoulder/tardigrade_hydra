@@ -151,11 +151,13 @@ namespace hydra{
 
         public:
 
-            residualBase( const hydraBase *_hydra, const unsigned int &_numEquations ) : hydra( _hydra ), numEquations( _numEquations ){ }
+            residualBase( ) : hydra( NULL ), _numEquations( 0 ){ };
 
-            const hydraBase* hydra; //!< The hydra class which owns the residualBase object
+            residualBase( hydraBase *_hydra, const unsigned int &_numEquations ) : hydra( _hydra ), _numEquations( _numEquations ){ }
 
-            const unsigned int numEquations; //!< The number of equations this residual computes
+            residualBase( residualBase &r ) : hydra( r.hydra ), _numEquations( *r.getNumEquations( ) ){ }
+
+            hydraBase* hydra; //!< The hydra class which owns the residualBase object
 
             // User defined setter functions
 
@@ -219,6 +221,8 @@ namespace hydra{
 
             // Getter functions
 
+            const unsigned int* getNumEquations( ){ return &_numEquations; }
+
             const floatVector* getResidual( );
 
             const floatMatrix* getJacobian( );
@@ -236,6 +240,8 @@ namespace hydra{
 
         private:
 
+            unsigned int _numEquations; //!< The number of residual equations
+
             dataStorage< floatVector > _residual; //!< The residual equations
 
             dataStorage< floatMatrix > _jacobian; //!< The jacobian
@@ -247,6 +253,35 @@ namespace hydra{
             dataStorage< floatMatrix > _additionalDerivatives; //!< Additional derivatives of the residual
 
             std::vector< dataBase* > _iterationData; //!< A vector of data storage objects
+
+    };
+
+    class stressResidual : public residualBase{
+
+        public:
+
+            stressResidual( ) : residualBase( ){ }
+
+            stressResidual( hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+
+            stressResidual( stressResidual &r ) : residualBase( r.hydra, *r.getNumEquations( ) ){ }
+
+            virtual void setCauchyStress( ){
+                /*!
+                 * Compute the current Cauchy stress
+                 */
+
+                ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the Cauchy stress is not implemented" ) );
+
+            }
+
+            void setCauchyStress( const floatVector &cauchyStress );
+
+            const floatVector* getCauchyStress( );
+
+        private:
+
+            dataStorage< floatVector > _cauchyStress;
 
     };
 
@@ -373,9 +408,27 @@ namespace hydra{
 
             const floatMatrix* getPreviousdF1dFn( );
 
-//            virtual void evaluateConfigurationResiduals( );
-//
-//            virtual void evaluateStateVariableResiduals( );
+            virtual void setResidualClasses( );
+
+            void setResidualClasses( std::vector< residualBase* > &residualClasses );
+
+            std::vector< residualBase* >* getResidualClasses( );
+
+            const floatVector* getResidual( );
+
+            const floatVector* getFlatJacobian( );
+
+            floatMatrix getJacobian( );
+
+            const floatVector* getFlatdRdF( );
+
+            floatMatrix getdRdF( );
+
+            const floatVector* getdRdT( );
+
+            const floatVector* getFlatAdditionalDerivatives( );
+
+            floatMatrix getAdditionalDerivatives( );
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
@@ -431,11 +484,25 @@ namespace hydra{
 
             std::vector< dataBase* > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration
 
+            dataStorage< std::vector< residualBase* > > _residualClasses; //!< A vector of classes which compute the terms in the residual equation
+
+            dataStorage< floatVector > _residual; //!< The residual vector for the global solve
+
+            dataStorage< floatVector > _jacobian; //!< The jacobian matrix in row-major form for the global solve
+
+            dataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
+
+            dataStorage< floatVector > _dRdT; //!< The gradient of the residual w.r.t. the temperature for the global solve
+
+            dataStorage< floatVector > _additionalDerivatives; //!< Additional derivatives of the residual
+
             virtual void decomposeStateVariableVector( );
 
             void setFirstConfigurationGradients( );
 
             void setPreviousFirstConfigurationGradients( );
+
+            void formNonLinearProblem( );
 
             void resetIterationData( );
 
