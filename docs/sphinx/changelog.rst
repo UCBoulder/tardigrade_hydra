@@ -16,6 +16,7 @@ Breaking Changes
 New Features
 ============
 - Added calculation of the gradients of the current and previous F1 configurations (:merge:`11`). By `Nathan Miller`_.
+- Added residual class for constructing the residual equations (:merge:`12`). By `Nathan Miller`_.
 
 Internal Changes
 ================

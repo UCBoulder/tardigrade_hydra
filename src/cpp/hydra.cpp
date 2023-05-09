@@ -19,6 +19,175 @@ namespace hydra{
 
     /** \brief Define required number of Abaqus material constants for the Abaqus interface. */
     const int nMaterialParameters = 2;
+
+    void residualBase::setResidual( const floatVector &residual ){
+        /*!
+         * Set the value of the residual
+         * 
+         * \param &residual: The current value of the residual
+         */
+
+
+        _residual.second = residual;
+
+        _residual.first = true;
+
+        addIterationData( &_residual );
+
+    }
+
+    void residualBase::setJacobian( const floatMatrix &jacobian ){
+        /*!
+         * Set the value of the jacobian
+         * 
+         * \param &jacobian: The jacobian matrix
+         */
+
+        _jacobian.second = jacobian;
+
+        _jacobian.first = true;
+
+        addIterationData( &_jacobian );
+
+    }
+
+    void residualBase::setdRdF( const floatMatrix &dRdF ){
+        /*!
+         * Set the value of dRdF
+         * 
+         * \param &dRdF: The derivative of the residual w.r.t. the deformation gradient
+         */
+
+        _dRdF.second = dRdF;
+
+        _dRdF.first = true;
+
+        addIterationData( &_dRdF );
+
+    }
+
+    void residualBase::setdRdT( const floatVector &dRdT ){
+        /*!
+         * Set the value of dRdT
+         * 
+         * \param &dRdT: The derivative of the residual w.r.t. the temperature
+         */
+
+        _dRdT.second = dRdT;
+
+        _dRdT.first = true;
+
+        addIterationData( &_dRdT );
+
+    }
+
+    void residualBase::setAdditionalDerivatives( const floatMatrix &additionalDerivatives ){
+        /*!
+         * Set the value of the additional derivatives of the residual
+         * 
+         * \param &additionalDerivatives: Additional derivatives of the residual
+         */
+
+        _additionalDerivatives.second = additionalDerivatives;
+
+        _additionalDerivatives.first = true;
+
+        addIterationData( &_additionalDerivatives );
+
+    }
+
+    const floatVector* residualBase::getResidual( ){
+        /*!
+         * Get the residual equations. Must be of size numEquations
+         */
+
+        if ( !_residual.first ){
+
+            ERROR_TOOLS_CATCH( setResidual( ) );
+
+        }
+
+        return &_residual.second;
+
+    }
+
+    const floatMatrix* residualBase::getJacobian( ){
+        /*!
+         * Get the Jacobian matrix. Must be of size numEquations x numUnknowns
+         * numUnknowns is of the size numConfigurations * dim * dim + numNonLinearSolveStateVariables
+         */
+
+        if ( !_jacobian.first ){
+
+            ERROR_TOOLS_CATCH( setJacobian( ) );
+
+        }
+
+        return &_jacobian.second;
+
+    }
+
+    const floatMatrix* residualBase::getdRdF( ){
+        /*!
+         * Get the derivative of the residual w.r.t. the deformation gradient
+         */
+
+        if ( !_dRdF.first ){
+
+            ERROR_TOOLS_CATCH( setdRdF( ) );
+
+        }
+
+        return &_dRdF.second;
+
+    }
+
+    const floatVector* residualBase::getdRdT( ){
+        /*!
+         * Get the derivative of the residual w.r.t. the temperature
+         */
+
+        if ( !_dRdT.first ){
+
+            ERROR_TOOLS_CATCH( setdRdT( ) );
+
+        }
+
+        return &_dRdT.second;
+
+    }
+
+    const floatMatrix* residualBase::getAdditionalDerivatives( ){
+        /*!
+         * Get the derivative of the residual w.r.t. additional terms
+         */
+
+        if ( !_additionalDerivatives.first ){
+
+            ERROR_TOOLS_CATCH( setAdditionalDerivatives( ) );
+
+        }
+
+        return &_additionalDerivatives.second;
+
+    }
+
+
+    void residualBase::resetIterationData( ){
+        /*!
+         * Reset the data stored in the iteration variable
+         */
+
+        for ( auto d = _iterationData.begin( ); d != _iterationData.end( ); d++ ){
+
+            ( *d )->clear( );
+
+        }
+
+        _iterationData.clear( );
+
+    }
+
     hydraBase::hydraBase( const floatType &time, const floatType &deltaTime,
                           const floatType &temperature, const floatType &previousTemperature,
                           const floatVector &deformationGradient, const floatVector &previousDeformationGradient,

@@ -1900,3 +1900,187 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients ){
     BOOST_CHECK( vectorTools::fuzzyEquals( previousdF1dFn_answer, *hydra.getPreviousdF1dFn( ) ) );
 
 }
+
+BOOST_AUTO_TEST_CASE( test_residualBase_residualBase ){
+
+    hydra::hydraBase hydra;
+
+    unsigned int numEquations = 3;
+
+    hydra::residualBase residual( &hydra, numEquations );
+
+    BOOST_CHECK( residual.hydra == &hydra );
+
+    BOOST_CHECK( residual.numEquations == numEquations );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residualBase_checkDefaults ){
+
+    hydra::hydraBase hydra;
+
+    unsigned int numEquations = 3;
+
+    hydra::residualBase residual( &hydra, numEquations );
+
+    BOOST_CHECK_THROW( residual.setResidual( ), std::nested_exception );
+
+    BOOST_CHECK_THROW( residual.setJacobian( ), std::nested_exception );
+
+    BOOST_CHECK_THROW( residual.setdRdF( ), std::nested_exception );
+
+    BOOST_CHECK_THROW( residual.setdRdT( ), std::nested_exception );
+
+    BOOST_CHECK_NO_THROW( residual.setAdditionalDerivatives( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residualBase_setResidual ){
+
+    class residualBaseMock : public hydra::residualBase{
+
+        public:
+
+            using hydra::residualBase::setResidual;
+
+            floatVector residual = { 1, 2, 3 };
+
+            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+    
+            virtual void setResidual( ){
+    
+                setResidual( residual );
+    
+            }
+
+    };
+
+    hydra::hydraBase hydra;
+
+    unsigned int numEquations = 3;
+
+    residualBaseMock residual( &hydra, numEquations );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getResidual( ), residual.residual ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residualBase_setJacobian ){
+
+    class residualBaseMock : public hydra::residualBase{
+
+        public:
+
+            using hydra::residualBase::setJacobian;
+
+            floatMatrix jacobian = { { 1, 2, 3 }, { 4, 5, 6 } };
+    
+            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+
+            virtual void setJacobian( ){
+    
+                setJacobian( jacobian );
+    
+            }
+
+    };
+
+    hydra::hydraBase hydra;
+
+    unsigned int numEquations = 3;
+
+    residualBaseMock residual( &hydra, numEquations );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getJacobian( ), residual.jacobian ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residualBase_setdRdF ){
+
+    class residualBaseMock : public hydra::residualBase{
+
+        public:
+
+            using hydra::residualBase::setdRdF;
+
+            floatMatrix dRdF = { { 1, 2, 3 }, { 4, 5, 6 } };
+
+            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+    
+            virtual void setdRdF( ){
+    
+                setdRdF( dRdF );
+    
+            }
+
+    };
+
+    hydra::hydraBase hydra;
+
+    unsigned int numEquations = 3;
+
+    residualBaseMock residual( &hydra, numEquations );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getdRdF( ), residual.dRdF ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residualBase_setdRdT ){
+
+    class residualBaseMock : public hydra::residualBase{
+
+        public:
+
+            using hydra::residualBase::setdRdT;
+
+            floatVector dRdT = { 4, 5, 6 };
+
+            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+    
+            virtual void setdRdT( ){
+    
+                setdRdT( dRdT );
+    
+            }
+
+    };
+
+    hydra::hydraBase hydra;
+
+    unsigned int numEquations = 3;
+
+    residualBaseMock residual( &hydra, numEquations );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getdRdT( ), residual.dRdT ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residualBase_setAdditionalDerivatives ){
+
+    class residualBaseMock : public hydra::residualBase{
+
+        public:
+
+            using hydra::residualBase::setAdditionalDerivatives;
+
+            floatMatrix additionalDerivatives = { { 4, 5, 6 } };
+
+            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+    
+            virtual void setAdditionalDerivatives( ){
+    
+                setAdditionalDerivatives( additionalDerivatives );
+    
+            }
+
+    };
+
+    hydra::hydraBase hydra;
+
+    unsigned int numEquations = 3;
+
+    residualBaseMock residual( &hydra, numEquations );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getAdditionalDerivatives( ), residual.additionalDerivatives ) );
+
+}

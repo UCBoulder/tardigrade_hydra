@@ -144,6 +144,112 @@ namespace hydra{
 
     }
 
+    class residualBase{
+        /*!
+         * A class to contain the residual computations associated with some part of a non-linear solve
+         */
+
+        public:
+
+            residualBase( const hydraBase *_hydra, const unsigned int &_numEquations ) : hydra( _hydra ), numEquations( _numEquations ){ }
+
+            const hydraBase* hydra; //!< The hydra class which owns the residualBase object
+
+            const unsigned int numEquations; //!< The number of equations this residual computes
+
+            // User defined setter functions
+
+            virtual void setResidual( ){
+                /*!
+                 * The user-defined residual equation. Must have a size of numEquations
+                 */
+
+                ERROR_TOOLS_CATCH( throw std::logic_error( "The residual is not implemented" ) );
+
+            }
+
+            virtual void setJacobian( ){
+                /*!
+                 * The user-defined jacobian equation. Must have a size of numEquations x numUnknowns
+                 * 
+                 * The order of the unknowns are the cauchy stress, the configurations in order (minus the first one),
+                 * and the state variables solved for in the non-linear solve.
+                 */
+
+                ERROR_TOOLS_CATCH( throw std::logic_error( "The jacobian is not implemented" ) );
+
+            }
+
+            virtual void setdRdF( ){
+                /*!
+                 * The user-defined derivative of the residual w.r.t. the deformation gradient.
+                 */
+
+                ERROR_TOOLS_CATCH( throw std::logic_error( "The derivative of the residual w.r.t. the deformation gradient is not implemented" ) );
+ 
+            }
+
+            virtual void setdRdT( ){
+                /*!
+                 * The user-defined derivative of the residual w.r.t. the temperature
+                 */
+
+                ERROR_TOOLS_CATCH( throw std::logic_error( "The derivative of the residual w.r.t. the temperature is not implemented" ) );
+ 
+            }
+
+            virtual void setAdditionalDerivatives( ){
+                /*!
+                 * The user-defined derivative of the residual w.r.t. additional values
+                 */
+
+            }
+
+            // Setters
+
+            void setResidual( const floatVector &residual );
+
+            void setJacobian( const floatMatrix &jacobian );
+
+            void setdRdF( const floatMatrix &dRdF );
+
+            void setdRdT( const floatVector &dRdT );
+
+            void setAdditionalDerivatives( const floatMatrix &additionalDerivatives );
+
+            // Getter functions
+
+            const floatVector* getResidual( );
+
+            const floatMatrix* getJacobian( );
+
+            const floatMatrix* getdRdF( );
+
+            const floatVector* getdRdT( );
+
+            const floatMatrix* getAdditionalDerivatives( );
+
+            //! Add data to the vector of values which will be cleared after each iteration
+            void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
+
+            void resetIterationData( );
+
+        private:
+
+            dataStorage< floatVector > _residual; //!< The residual equations
+
+            dataStorage< floatMatrix > _jacobian; //!< The jacobian
+
+            dataStorage< floatMatrix > _dRdF; //!< The derivative of the residual w.r.t. the deformation gradient
+
+            dataStorage< floatVector > _dRdT; //!< The derivative of the residual w.r.t. the temperature
+
+            dataStorage< floatMatrix > _additionalDerivatives; //!< Additional derivatives of the residual
+
+            std::vector< dataBase* > _iterationData; //!< A vector of data storage objects
+
+    };
+
     class hydraBase{
         /*!
          * hydraBase: A base class which can be used to construct finite deformation material models.
@@ -266,6 +372,10 @@ namespace hydra{
             const floatMatrix* getPreviousdF1dF( );
 
             const floatMatrix* getPreviousdF1dFn( );
+
+//            virtual void evaluateConfigurationResiduals( );
+//
+//            virtual void evaluateStateVariableResiduals( );
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
