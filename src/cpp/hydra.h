@@ -315,7 +315,7 @@ namespace hydra{
                        const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                        const floatVector &previousStateVariables, const floatVector &parameters,
                        const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                       const unsigned int dimension=3, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxIterations=20, const unsigned int maxLSIterations=5 );
+                       const unsigned int dimension=3, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxIterations=20, const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4 );
 
             // User defined functions
 
@@ -360,6 +360,9 @@ namespace hydra{
 
             //! Get a reference to the absolute tolerance
             const floatType* getAbsoluteTolerance( ){ return &_tola; }
+
+            //! Get a reference to the line-learch alpha
+            const floatType* getLSAlpha( ){ return &_lsAlpha; }
 
             //! Get a reference to the configurations
             const floatMatrix* getConfigurations( ){ return &_configurations.second; }
@@ -413,6 +416,8 @@ namespace hydra{
 
             floatMatrix getPreviousFollowingConfigurationGradient( const unsigned int &index );
 
+            const floatType* getLSResidualNorm( );
+
             const floatMatrix* getdF1dF( );
 
             const floatMatrix* getdF1dFn( );
@@ -448,6 +453,8 @@ namespace hydra{
             const floatVector* getTolerance( );
 
             bool checkConvergence( );
+
+            bool checkLSConvergence( );
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
@@ -485,6 +492,8 @@ namespace hydra{
             unsigned int _maxIterations; //!< The maximum number of allowable iterations
 
             unsigned int _maxLSIterations; //!< The maximum number of line-search iterations
+
+            floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
 
             dataStorage< floatMatrix > _configurations; //!< The current values of the configurations
 
@@ -527,7 +536,13 @@ namespace hydra{
 
             dataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
 
+            dataStorage< floatType > _lsResidualNorm; //!< The reference residual norm for the line-search convergence criteria
+
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
+
+            unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
+
+            floatType _lambda = 1;
 
             virtual void decomposeStateVariableVector( );
 
@@ -547,7 +562,19 @@ namespace hydra{
 
             void incrementIteration( ){ _iteration++; }
 
+            void incrementLSIteration( ){ _LSIteration++; _lambda *= 0.5; }
+
+            void resetLSIteration( ){ _LSIteration = 0; _lambda = 1.0;
+                                      _lsResidualNorm.second = vectorTools::l2norm( *getResidual( ) );
+                                      _lsResidualNorm.first = true; }
+
+            const floatType* getLambda( ){ return &_lambda; }
+
             bool checkIteration( ){ return _iteration < _maxIterations; }
+
+            bool checkLSIteration( ){ return _LSIteration < _maxLSIterations; }
+
+            void updateUnknownVector( );
 
             void resetIterationData( );
 

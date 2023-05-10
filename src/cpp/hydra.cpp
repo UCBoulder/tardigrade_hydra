@@ -222,7 +222,8 @@ namespace hydra{
                           const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                           const floatVector &previousStateVariables, const floatVector &parameters,
                           const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                          const unsigned int dimension, const floatType tolr, const floatType tola, const unsigned int maxIterations, const unsigned int maxLSIterations ) : _time( time ), _deltaTime( deltaTime ),
+                          const unsigned int dimension, const floatType tolr, const floatType tola, const unsigned int maxIterations,
+                          const unsigned int maxLSIterations, const floatType lsAlpha ) : _time( time ), _deltaTime( deltaTime ),
                                                            _temperature( temperature ), _previousTemperature( previousTemperature ),
                                                            _deformationGradient( deformationGradient ),
                                                            _previousDeformationGradient( previousDeformationGradient ),
@@ -230,7 +231,9 @@ namespace hydra{
                                                            _parameters( parameters ),
                                                            _numConfigurations( numConfigurations ),
                                                            _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
-                                                           _dimension( dimension ), _tolr( tolr ), _tola( tola ), _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ){
+                                                           _dimension( dimension ), _tolr( tolr ), _tola( tola ),
+                                                           _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ),
+                                                           _lsAlpha( lsAlpha ){
         /*!
          * The main constructor for the hydra base class. Inputs are all the required values for most solves.
          * 
@@ -249,6 +252,7 @@ namespace hydra{
          * \param &tola: The absolute tolerance (defaults to 1e-9)
          * \param &maxIterations: The maximum number of non-linear iterations (defaults to 20)
          * \param &maxLSIterations: The maximum number of line-search iterations (defaults to 5)
+         * \param &lsAlpha: The alpha term for the line search (defaults to 1e-4)
          */
 
         // Decompose the state variable vector initializing all of the configurations
@@ -1331,6 +1335,36 @@ namespace hydra{
 
     }
 
+    const floatType* hydraBase::getLSResidualNorm( ){
+        /*!
+         * Get the residual norm for the line-search convergence criterion
+         */
+
+        if ( !_lsResidualNorm.first ){
+
+            ERROR_TOOLS_CATCH( resetLSIteration( ) );
+
+        }
+
+        return &_lsResidualNorm.second;
+
+    }
+
+    bool hydraBase::checkLSConvergence( ){
+        /*!
+         * Check the line-search convergence
+         */
+
+        if ( vectorTools::l2norm( *getResidual( ) ) < ( 1 - *getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
@@ -1339,8 +1373,44 @@ namespace hydra{
         // Form the initial unknown vector
         ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
 
+        unsigned int rank;
+
+        floatVector deltaX;
+
+        resetLSIteration( );
+
         while( !checkConvergence( ) && checkIteration( ) ){
 
+            const floatVector *X0 = getUnknownVector( );
+
+            ERROR_TOOLS_CATCH( deltaX = -vectorTools::solveLinearSystem( *getFlatJacobian( ), *getResidual( ),
+                                                                         getResidual( )->size( ), getResidual( )->size( ), rank ) );
+
+            if ( rank != getResidual( )->size( ) ){
+
+                ERROR_TOOLS_CATCH( throw std::runtime_error( "The Jacobian is not full rank" ) );
+
+            }
+
+            updateUnknownVector( *X0 + *getLambda( ) * deltaX );
+
+            while ( !checkLSConvergence( ) && checkLSIteration( ) ){
+
+                setUnknownVector( *X0 + *getLambda( ) * deltaX );
+
+                incrementLSIteration( );
+
+            }
+
+            if ( !checkLSConvergence( ) ){
+
+                std::string message = "Failure in line search";
+
+                ERROR_TOOLS_CATCH( throw convergence_error( message.c_str( ) ) );
+
+            }
+
+            resetLSIteration( );
 
             // Increment the iteration count
             incrementIteration( );

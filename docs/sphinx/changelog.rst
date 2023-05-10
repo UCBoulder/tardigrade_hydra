@@ -19,6 +19,7 @@ New Features
 - Added residual class for constructing the residual equations (:merge:`12`). By `Nathan Miller`_.
 - Added the initialization of the unknown vector (:merge:`14`). By `Nathan Miller`_.
 - Added setting and checking the tolerance of the non-linear solve (:merge:`14`). By `Nathan Miller`_.
+- Added setting and checking the tolerance for the line-search of the non-linear solve (:merge:`14`). By `Nathan Miller`_.
 
 Internal Changes
 ================
