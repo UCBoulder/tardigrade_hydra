@@ -19,6 +19,204 @@ namespace hydra{
 
     /** \brief Define required number of Abaqus material constants for the Abaqus interface. */
     const int nMaterialParameters = 2;
+
+    void residualBase::setResidual( const floatVector &residual ){
+        /*!
+         * Set the value of the residual
+         * 
+         * \param &residual: The current value of the residual
+         */
+
+
+        _residual.second = residual;
+
+        _residual.first = true;
+
+        addIterationData( &_residual );
+
+    }
+
+    void residualBase::setJacobian( const floatMatrix &jacobian ){
+        /*!
+         * Set the value of the jacobian
+         * 
+         * \param &jacobian: The jacobian matrix
+         */
+
+        _jacobian.second = jacobian;
+
+        _jacobian.first = true;
+
+        addIterationData( &_jacobian );
+
+    }
+
+    void residualBase::setdRdF( const floatMatrix &dRdF ){
+        /*!
+         * Set the value of dRdF
+         * 
+         * \param &dRdF: The derivative of the residual w.r.t. the deformation gradient
+         */
+
+        _dRdF.second = dRdF;
+
+        _dRdF.first = true;
+
+        addIterationData( &_dRdF );
+
+    }
+
+    void residualBase::setdRdT( const floatVector &dRdT ){
+        /*!
+         * Set the value of dRdT
+         * 
+         * \param &dRdT: The derivative of the residual w.r.t. the temperature
+         */
+
+        _dRdT.second = dRdT;
+
+        _dRdT.first = true;
+
+        addIterationData( &_dRdT );
+
+    }
+
+    void residualBase::setAdditionalDerivatives( const floatMatrix &additionalDerivatives ){
+        /*!
+         * Set the value of the additional derivatives of the residual
+         * 
+         * \param &additionalDerivatives: Additional derivatives of the residual
+         */
+
+        _additionalDerivatives.second = additionalDerivatives;
+
+        _additionalDerivatives.first = true;
+
+        addIterationData( &_additionalDerivatives );
+
+    }
+
+    void stressResidual::setCauchyStress( const floatVector &cauchyStress ){
+        /*!
+         * Set the value of the Cauchy stress
+         * 
+         * \param &cauchyStress: The Cauchy stress in row-major form
+         */
+
+        _cauchyStress.second = cauchyStress;
+
+        _cauchyStress.first = true;
+
+        addIterationData( &_cauchyStress );
+
+    }
+
+    const floatVector* residualBase::getResidual( ){
+        /*!
+         * Get the residual equations. Must be of size numEquations
+         */
+
+        if ( !_residual.first ){
+
+            ERROR_TOOLS_CATCH( setResidual( ) );
+
+        }
+
+        return &_residual.second;
+
+    }
+
+    const floatMatrix* residualBase::getJacobian( ){
+        /*!
+         * Get the Jacobian matrix. Must be of size numEquations x numUnknowns
+         * numUnknowns is of the size numConfigurations * dim * dim + numNonLinearSolveStateVariables
+         */
+
+        if ( !_jacobian.first ){
+
+            ERROR_TOOLS_CATCH( setJacobian( ) );
+
+        }
+
+        return &_jacobian.second;
+
+    }
+
+    const floatMatrix* residualBase::getdRdF( ){
+        /*!
+         * Get the derivative of the residual w.r.t. the deformation gradient
+         */
+
+        if ( !_dRdF.first ){
+
+            ERROR_TOOLS_CATCH( setdRdF( ) );
+
+        }
+
+        return &_dRdF.second;
+
+    }
+
+    const floatVector* residualBase::getdRdT( ){
+        /*!
+         * Get the derivative of the residual w.r.t. the temperature
+         */
+
+        if ( !_dRdT.first ){
+
+            ERROR_TOOLS_CATCH( setdRdT( ) );
+
+        }
+
+        return &_dRdT.second;
+
+    }
+
+    const floatMatrix* residualBase::getAdditionalDerivatives( ){
+        /*!
+         * Get the derivative of the residual w.r.t. additional terms
+         */
+
+        if ( !_additionalDerivatives.first ){
+
+            ERROR_TOOLS_CATCH( setAdditionalDerivatives( ) );
+
+        }
+
+        return &_additionalDerivatives.second;
+
+    }
+
+    const floatVector* stressResidual::getCauchyStress( ){
+        /*!
+         * Get the Cauchy stress
+         */
+
+        if ( !_cauchyStress.first ){
+
+            ERROR_TOOLS_CATCH( setCauchyStress( ) );
+
+        }
+
+        return &_cauchyStress.second;
+
+    }
+
+    void residualBase::resetIterationData( ){
+        /*!
+         * Reset the data stored in the iteration variable
+         */
+
+        for ( auto d = _iterationData.begin( ); d != _iterationData.end( ); d++ ){
+
+            ( *d )->clear( );
+
+        }
+
+        _iterationData.clear( );
+
+    }
+
     hydraBase::hydraBase( const floatType &time, const floatType &deltaTime,
                           const floatType &temperature, const floatType &previousTemperature,
                           const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
@@ -618,6 +816,378 @@ namespace hydra{
         }
 
         _iterationData.clear( );
+
+    }
+
+    void hydraBase::setResidualClasses( ){
+        /*!
+         * Set the vectors for the residuals.
+         * 
+         * The expected form of the residual vector is cauchy stress, configurations,
+         * state variables though only the residual on the cauchy stress must come
+         * in this specific order if the deconstructSolutionVector function is redefined.
+         * 
+         * The user should define a vector of residualBase objects and use the
+         * setResidualClasses( std::vector< residualBase > & ) function here.
+         * 
+         * The resulting residual should have the form
+         * 
+         * residual = { cauchyResidual, F2residual, ... Fnresidual, xiresidual1, xiresidual2, ... }
+         * 
+         * and can be formed by any number of residual classes. The first residual class must also
+         * have the method `void getCauchyStress( )` defined which will return the current value
+         * of the Cauchy stress.
+         */
+
+    }
+
+    void hydraBase::setResidualClasses( std::vector< residualBase* > &residualClasses ){
+        /*!
+         * Set the residual classes
+         * 
+         * \param &residualClasses: A vector of residual classes which will be used to
+         *     populate the residual and jacobian matrices for the non-linear solve
+         */
+
+        const unsigned int *dim = getDimension( );
+
+        unsigned int numEquations = 0;
+
+        _residualClasses.second = std::vector< residualBase* >( residualClasses.size( ) );
+
+        for ( auto c = residualClasses.begin( ); c != residualClasses.end( ); c++ ){
+
+            numEquations += *( *c )->getNumEquations( );
+
+            _residualClasses.second[ c - residualClasses.begin( ) ] = *c;
+
+        }
+
+        if ( numEquations != ( *getNumConfigurations( ) * ( *dim ) * ( *dim ) + *getNumNonLinearSolveStateVariables( ) ) ){
+
+            std::string message = "The number of equations for the non-linear solve is not equal to the number of equations defined\n";
+            message            += "  expected number of equations: " + std::to_string( ( *getNumConfigurations( ) ) * ( *dim ) * ( *dim ) + *getNumNonLinearSolveStateVariables( ) ) + "\n";
+            message            += "  number of defined equations:  " + std::to_string( numEquations ) + "\n";
+
+            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+        }
+
+        _residualClasses.first = true;
+
+    }
+
+    std::vector< residualBase* >* hydraBase::getResidualClasses( ){
+
+        if ( !_residualClasses.first ){
+
+            ERROR_TOOLS_CATCH( setResidualClasses( ) );
+
+        }
+
+        return &_residualClasses.second;
+
+    }
+
+    void hydraBase::formNonLinearProblem( ){
+        /*!
+         * Form the residual, jacobian, and gradient matrices
+         */
+
+        const unsigned int *dim = getDimension( );
+
+        unsigned int residualSize = ( *getNumConfigurations( ) ) * ( *dim ) * ( *dim ) + *getNumNonLinearSolveStateVariables( );
+
+        _residual.second = floatVector( residualSize, 0 );
+
+        _jacobian.second = floatVector( residualSize * residualSize, 0 );
+
+        _dRdF.second = floatVector( residualSize * ( *dim ) * ( *dim ), 0 );
+
+        _dRdT.second = floatVector( residualSize, 0 );
+
+        _additionalDerivatives.second.clear( );
+
+        unsigned int offset = 0;
+
+        unsigned int numAdditionalDerivatives = 0;
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+            residualBase *residual = ( *residual_ptr );
+
+            // Extract the terms
+
+            const floatVector* localResidual;
+            ERROR_TOOLS_CATCH( localResidual = residual->getResidual( ) );
+
+            const floatMatrix* localJacobian;
+            ERROR_TOOLS_CATCH( localJacobian = residual->getJacobian( ) );
+
+            const floatMatrix* localdRdF;
+            ERROR_TOOLS_CATCH( localdRdF = residual->getdRdF( ) );
+
+            const floatVector* localdRdT;
+            ERROR_TOOLS_CATCH( localdRdT = residual->getdRdT( ) );
+
+            const floatMatrix* localAdditionalDerivatives;
+            ERROR_TOOLS_CATCH( localAdditionalDerivatives = residual->getAdditionalDerivatives( ) );
+
+            // Check the contributions to make sure they are consistent sizes
+
+            if ( localResidual->size( ) != *residual->getNumEquations( ) ){
+
+                std::string message = "The residual for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
+                message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
+                message            += "  actual:   " + std::to_string( localResidual->size( ) ) + "\n";
+
+                ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+            }
+
+            if ( localJacobian->size( ) != *residual->getNumEquations( ) ){
+
+                std::string message = "The jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
+                message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
+                message            += "  actual:   " + std::to_string( localJacobian->size( ) ) + "\n";
+
+                ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+            }
+
+            if ( localdRdF->size( ) != *residual->getNumEquations( ) ){
+
+                std::string message = "dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
+                message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
+                message            += "  actual:   " + std::to_string( localdRdF->size( ) ) + "\n";
+
+                ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+            }
+
+            if ( localdRdT->size( ) != *residual->getNumEquations( ) ){
+
+                std::string message = "dRdT for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
+                message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
+                message            += "  actual:   " + std::to_string( localdRdT->size( ) ) + "\n";
+
+                ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+            }
+
+            if ( localAdditionalDerivatives->size( ) != 0 ){
+
+                if ( localAdditionalDerivatives->size( ) != *residual->getNumEquations( ) ){
+
+                    std::string message = "additionalDerivatives for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
+                    message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
+                    message            += "  actual:   " + std::to_string( localAdditionalDerivatives->size( ) ) + "\n";
+    
+                    ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+                }
+
+                if ( ( *localAdditionalDerivatives )[ 0 ].size( ) != numAdditionalDerivatives ){
+    
+                    if ( ( residual_ptr - getResidualClasses( )->begin( ) ) == 0 ){
+    
+                        numAdditionalDerivatives = ( *localAdditionalDerivatives )[ 0 ].size( );
+    
+                        _additionalDerivatives.second = floatVector( residualSize * numAdditionalDerivatives, 0 );
+    
+                    }
+                    else{
+    
+                        std::string message = "The additional derivatives for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " are not the expected length as determined from the first residual\n";
+                        message            += "  expected: " + std::to_string( numAdditionalDerivatives ) + "\n";
+                        message            += "  actual:   " + std::to_string( ( *localAdditionalDerivatives )[ 0 ].size( ) ) + "\n";
+    
+                        ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+    
+                    }
+    
+                }
+
+            }
+
+            // Store the values in the global quantities
+
+            for ( unsigned int row = 0; row < *residual->getNumEquations( ); row++ ){
+
+                _residual.second[ row + offset ] = ( *localResidual )[ row ];
+
+                if ( ( *localJacobian )[ row ].size( ) != residualSize ){
+
+                    std::string message = "Row " + std::to_string( row ) + " of the jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
+                    message            += "  expected: " + std::to_string( residualSize ) + "\n";
+                    message            += "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n";
+
+                    ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+                }
+
+                for ( unsigned int col = 0; col < residualSize; col++ ){
+                
+                    _jacobian.second[ residualSize * ( row + offset ) + col ] = ( *localJacobian )[ row ][ col ];
+
+                }
+
+                if ( ( *localdRdF )[ row ].size( ) != ( *dim ) * ( *dim ) ){
+
+                    std::string message = "Row " + std::to_string( row ) + " of dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
+                    message            += "  expected: " + std::to_string( ( *dim ) * ( *dim ) ) + "\n";
+                    message            += "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n";
+
+                    ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+                }
+
+                for ( unsigned int col = 0; col < ( *dim ) * ( *dim ); col++ ){
+
+                    _dRdF.second[ ( *dim ) * ( *dim ) * ( row + offset ) + col ] = ( *localdRdF )[ row ][ col ];
+
+                }
+
+                _dRdT.second[ row + offset ] = ( *localdRdT )[ row ];
+
+                for ( unsigned int col = 0; col < numAdditionalDerivatives; col++ ){
+
+                    _additionalDerivatives.second[ numAdditionalDerivatives * ( row + offset ) + col ] = ( *localAdditionalDerivatives )[ row ][ col ];
+
+                }
+
+            }
+
+            offset += *residual->getNumEquations( );
+
+        }
+
+        _residual.first = true;
+
+        _jacobian.first = true;
+
+        _dRdF.first = true;
+
+        _dRdT.first = true;
+
+        _additionalDerivatives.first = true;
+
+        addIterationData( &_residual );
+
+        addIterationData( &_jacobian );
+
+        addIterationData( &_dRdF );
+
+        addIterationData( &_dRdT );
+
+        addIterationData( &_additionalDerivatives );
+
+    }
+
+    const floatVector* hydraBase::getResidual( ){
+        /*!
+         * Get the residual vector for the non-linear problem
+         */
+
+        if ( !_residual.first ){
+
+            ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+
+        }
+
+        return &_residual.second;
+
+    }
+
+    const floatVector* hydraBase::getFlatJacobian( ){
+        /*!
+         * Get the flattened row-major jacobian for the non-linear problem
+         */
+
+        if ( !_jacobian.first ){
+
+            ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+
+        }
+
+        return &_jacobian.second;
+
+    }
+
+    floatMatrix hydraBase::getJacobian( ){
+        /*!
+         * Get the jacobian for the non-linear problem
+         */
+
+        return vectorTools::inflate( *getFlatJacobian( ), getResidual( )->size( ), getResidual( )->size( ) );
+
+    }
+
+    const floatVector* hydraBase::getFlatdRdF( ){
+        /*!
+         * Get the flattened row-major dRdF for the non-linear problem
+         */
+
+        if ( !_dRdF.first ){
+
+            ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+
+        }
+
+        return &_dRdF.second;
+
+    }
+
+    floatMatrix hydraBase::getdRdF( ){
+        /*!
+         * Get dRdF for the non-linear problem
+         */
+
+        return vectorTools::inflate( *getFlatdRdF( ), getResidual( )->size( ), ( *getDimension( ) ) * ( *getDimension( ) ) );
+    }
+
+    const floatVector* hydraBase::getdRdT( ){
+        /*!
+         * Get dRdT for the non-linear problem
+         */
+
+        if ( !_dRdT.first ){
+
+            ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+
+        }
+
+        return &_dRdT.second;
+
+    }
+
+    const floatVector* hydraBase::getFlatAdditionalDerivatives( ){
+        /*!
+         * Get the flattened row-major additional derivatives for the non-linear problem
+         */
+
+        if ( !_additionalDerivatives.first ){
+
+            ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+
+        }
+
+        return &_additionalDerivatives.second;
+
+    }
+
+    floatMatrix hydraBase::getAdditionalDerivatives( ){
+        /*!
+         * Get the additional derivatives for the non-linear problem
+         */
+
+        if ( getFlatAdditionalDerivatives( )->size( ) > 0 ){
+
+            return vectorTools::inflate( *getFlatAdditionalDerivatives( ), getResidual( )->size( ), getFlatAdditionalDerivatives( )->size( ) / getResidual( )->size( ) );
+
+        }
+
+        return floatMatrix( 0, floatVector( 0, 0 ) );
 
     }
 
