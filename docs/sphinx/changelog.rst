@@ -18,6 +18,7 @@ New Features
 - Added calculation of the gradients of the current and previous F1 configurations (:merge:`11`). By `Nathan Miller`_.
 - Added residual class for constructing the residual equations (:merge:`12`). By `Nathan Miller`_.
 - Added the initialization of the unknown vector (:merge:`14`). By `Nathan Miller`_.
+- Added setting and checking the tolerance of the non-linear solve (:merge:`14`). By `Nathan Miller`_.
 
 Internal Changes
 ================

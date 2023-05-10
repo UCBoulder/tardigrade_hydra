@@ -222,7 +222,7 @@ namespace hydra{
                           const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                           const floatVector &previousStateVariables, const floatVector &parameters,
                           const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                          const unsigned int dimension ) : _time( time ), _deltaTime( deltaTime ),
+                          const unsigned int dimension, const floatType tolr, const floatType tola, const unsigned int maxIterations, const unsigned int maxLSIterations ) : _time( time ), _deltaTime( deltaTime ),
                                                            _temperature( temperature ), _previousTemperature( previousTemperature ),
                                                            _deformationGradient( deformationGradient ),
                                                            _previousDeformationGradient( previousDeformationGradient ),
@@ -230,7 +230,7 @@ namespace hydra{
                                                            _parameters( parameters ),
                                                            _numConfigurations( numConfigurations ),
                                                            _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
-                                                           _dimension( dimension ){
+                                                           _dimension( dimension ), _tolr( tolr ), _tola( tola ), _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ){
         /*!
          * The main constructor for the hydra base class. Inputs are all the required values for most solves.
          * 
@@ -245,6 +245,10 @@ namespace hydra{
          * \param &numConfigurations: The number of configurations
          * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the non-linear solve's residual
          * \param &dimension: The dimension of the problem (defaults to 3)
+         * \param &tolr: The relative tolerance (defaults to 1e-9)
+         * \param &tola: The absolute tolerance (defaults to 1e-9)
+         * \param &maxIterations: The maximum number of non-linear iterations (defaults to 20)
+         * \param &maxLSIterations: The maximum number of line-search iterations (defaults to 5)
          */
 
         // Decompose the state variable vector initializing all of the configurations
@@ -1251,6 +1255,82 @@ namespace hydra{
 
     }
 
+    void hydraBase::setTolerance( ){
+        /*!
+         * Set the tolerance
+         * 
+         * \f$ tol = tolr * ( |R_0| + |X| ) + tola \f$
+         */
+
+        floatVector tolerance = vectorTools::abs( *getResidual( ) ) + vectorTools::abs( *getUnknownVector( ) );
+
+        tolerance = *getRelativeTolerance( ) * tolerance + *getAbsoluteTolerance( );
+
+        setTolerance( tolerance );
+
+    }
+
+    void hydraBase::setTolerance( const floatVector &tolerance ){
+        /*!
+         * Set the tolerance
+         *
+         * \param tolerance: The tolerance vector for each value of the residual
+         */
+
+        _tolerance.second = tolerance;
+
+        _tolerance.first = true;
+
+    }
+
+    const floatVector* hydraBase::getTolerance( ){
+        /*!
+         * Get the tolerance
+         */
+
+        if ( !_tolerance.first ){
+
+            ERROR_TOOLS_CATCH( setTolerance( ) );
+
+        }
+
+        return &_tolerance.second;
+
+    }
+
+    bool hydraBase::checkConvergence( ){
+        /*!
+         * Check the convergence
+         */
+
+        const floatVector *tolerance = getTolerance( );
+
+        const floatVector *residual = getResidual( );
+
+        if ( tolerance->size( ) != residual->size( ) ){
+
+            std::string message = "The residual and tolerance vectors don't have the same size\n";
+            message            += "  tolerance: " + std::to_string( tolerance->size( ) ) + "\n";
+            message            += "  residual:  " + std::to_string( residual->size( ) ) + "\n";
+
+            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+        }
+
+        for ( unsigned int i = 0; i < tolerance->size( ); i++ ){
+
+            if ( std::fabs( ( *residual )[ i ] ) > ( *tolerance )[ i ] ){
+
+                return false;
+
+            }
+
+        }
+
+        return true;
+
+    }
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
@@ -1258,6 +1338,25 @@ namespace hydra{
 
         // Form the initial unknown vector
         ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+
+        while( !checkConvergence( ) && checkIteration( ) ){
+
+
+            // Increment the iteration count
+            incrementIteration( );
+
+        }
+
+        if ( !checkConvergence( ) ){
+
+            std::string message = "Failure to converge main loop";
+
+            ERROR_TOOLS_CATCH( throw convergence_error( message.c_str( ) ) );
+
+        }
+
+        // Set the tolerance
+        ERROR_TOOLS_CATCH( setTolerance( ) );
 
     }
 

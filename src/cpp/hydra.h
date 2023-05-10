@@ -144,6 +144,25 @@ namespace hydra{
 
     }
 
+    class convergence_error : public std::exception{
+
+        private:
+            const char * message;
+
+        public:
+
+            using std::exception::exception;
+
+            convergence_error( const char * msg ) : message( msg ) { }
+
+            const char *what( ){
+
+                return message;
+
+            }
+
+    };
+
     class residualBase{
         /*!
          * A class to contain the residual computations associated with some part of a non-linear solve
@@ -296,7 +315,7 @@ namespace hydra{
                        const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                        const floatVector &previousStateVariables, const floatVector &parameters,
                        const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                       const unsigned int dimension=3 );
+                       const unsigned int dimension=3, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxIterations=20, const unsigned int maxLSIterations=5 );
 
             // User defined functions
 
@@ -335,6 +354,12 @@ namespace hydra{
 
             //! Get a reference to the dimension
             const unsigned int* getDimension( ){ return &_dimension; }
+
+            //! Get a reference to the relative tolerance
+            const floatType* getRelativeTolerance( ){ return &_tolr; }
+
+            //! Get a reference to the absolute tolerance
+            const floatType* getAbsoluteTolerance( ){ return &_tola; }
 
             //! Get a reference to the configurations
             const floatMatrix* getConfigurations( ){ return &_configurations.second; }
@@ -420,6 +445,10 @@ namespace hydra{
 
             const floatVector* getUnknownVector( );
 
+            const floatVector* getTolerance( );
+
+            bool checkConvergence( );
+
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
 
@@ -448,6 +477,14 @@ namespace hydra{
 
             unsigned int _numNonLinearSolveStateVariables; //!< The number of state variables which will be solved in the Newton-Raphson loop
             unsigned int _dimension; //!< The spatial dimension of the problem
+
+            floatType _tolr; //!< The relative tolerance
+
+            floatType _tola; //!< The absolute tolerance
+
+            unsigned int _maxIterations; //!< The maximum number of allowable iterations
+
+            unsigned int _maxLSIterations; //!< The maximum number of line-search iterations
 
             dataStorage< floatMatrix > _configurations; //!< The current values of the configurations
 
@@ -488,6 +525,10 @@ namespace hydra{
 
             dataStorage< floatVector > _X; //!< The unknown vector { cauchyStress, F1, ..., Fn, xi1, ..., xim }
 
+            dataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
+
+            unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
+
             virtual void decomposeStateVariableVector( );
 
             void setFirstConfigurationGradients( );
@@ -499,6 +540,14 @@ namespace hydra{
             void solveNonLinearProblem( );
 
             void initializeUnknownVector( );
+
+            virtual void setTolerance( );
+
+            void setTolerance( const floatVector &tolerance );
+
+            void incrementIteration( ){ _iteration++; }
+
+            bool checkIteration( ){ return _iteration < _maxIterations; }
 
             void resetIterationData( );
 
