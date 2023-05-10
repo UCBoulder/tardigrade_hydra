@@ -258,6 +258,63 @@ namespace hydra{
         // Decompose the state variable vector initializing all of the configurations
         decomposeStateVariableVector( );
 
+        // Set the residual classes
+        setResidualClasses( );
+
+    }
+
+    void hydraBase::decomposeUnknownVector( ){
+        /*!
+         * Decompose the unknown vector into the cauchy stress, configurations, and state variables used for the non-linear solve
+         */
+
+        const floatVector *unknownVector = getUnknownVector( );
+
+        const unsigned int* dim = getDimension( );
+
+        const unsigned int* nConfig = getNumConfigurations( );
+
+        // Set the cauchy stress
+        _cauchyStress.second = floatVector( unknownVector->begin( ),
+                                            unknownVector->begin( ) + ( *dim ) * ( *dim ) );
+
+        _cauchyStress.first = true;
+
+        addIterationData( &_cauchyStress );
+
+        // Set the configurations
+        _configurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        // Initialize the first configuration with the total deformation gradient
+        _configurations.second[ 0 ] = *getDeformationGradient( );
+
+        for ( unsigned int i = ( *nConfig ) - 1; i >= 1; i-- ){
+
+            // Set the current configuration as being equal to the previous
+            _configurations.second[ i ] = floatVector( unknownVector->begin( ) + i * ( *dim ) * ( *dim ),
+                                                       unknownVector->begin( ) + ( i + 1 ) * ( *dim ) * ( *dim ) );
+
+            // Compute the inverse of the current configuration and store it
+            _inverseConfigurations.second[ i ] = vectorTools::inverse( _configurations.second[ i ], ( *dim ), ( *dim ) );
+
+            // Add contribution of deformation gradient to the first configuration
+            _configurations.second[ 0 ] = vectorTools::matrixMultiply( _configurations.second[ 0 ], _inverseConfigurations.second[ i ],
+                                                                       ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
+
+        }
+
+        _inverseConfigurations.second[ 0 ] = vectorTools::inverse( _configurations.second[ 0 ], ( *dim ), ( *dim ) );
+
+        // Extract the remaining state variables required for the non-linear solve
+        _nonLinearSolveStateVariables.second = floatVector( unknownVector->begin( ) + ( *nConfig ) * ( *dim ) * ( *dim ),
+                                                            unknownVector->end( ) );
+
+        addIterationData( &_configurations );
+
+        addIterationData( &_inverseConfigurations );
+
+        addIterationData( &_nonLinearSolveStateVariables );
+
     }
 
     void hydraBase::decomposeStateVariableVector( ){
@@ -369,6 +426,12 @@ namespace hydra{
         _additionalStateVariables.first = true;
 
         _previousAdditionalStateVariables.first = true;
+
+        addIterationData( &_configurations );
+
+        addIterationData( &_inverseConfigurations );
+
+        addIterationData( &_nonLinearSolveStateVariables );
 
     }
 
@@ -1210,6 +1273,25 @@ namespace hydra{
         return NULL;
     }
 
+    const floatVector* hydraBase::getCauchyStress( ){
+        /*!
+         * Get the cauchy stress
+         */
+
+        if ( !_cauchyStress.first ){
+
+            ERROR_TOOLS_CATCH( _cauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getCauchyStress( ) );
+
+            _cauchyStress.first = true;
+
+            addIterationData( &_cauchyStress );
+
+        }
+
+        return &_cauchyStress.second;
+
+    }
+
     void hydraBase::initializeUnknownVector( ){
         /*!
          * Initialize the unknown vector for the non-linear solve.
@@ -1220,7 +1302,8 @@ namespace hydra{
          * which returns a pointer to the current value of the Cauchy stress.
          */
 
-        const floatVector *cauchyStress = ( *getResidualClasses( ) )[ 0 ]->getCauchyStress( );
+        const floatVector *cauchyStress;
+        ERROR_TOOLS_CATCH( cauchyStress = getCauchyStress( ) );
 
         const floatMatrix *configurations = getConfigurations( );
 
@@ -1365,6 +1448,26 @@ namespace hydra{
 
     }
 
+    void hydraBase::updateUnknownVector( const floatVector &newUnknownVector ){
+        /*!
+         * Update the unknown vector
+         * 
+         * \param &newUnknownVector: The new unknown vector
+         */
+
+        // Reset all of the iteration data
+        resetIterationData( );
+
+        // Set the unknown vector
+        _X.second = newUnknownVector;
+
+        _X.first = true;
+
+        // Decompose the unknown vector and update the state
+        ERROR_TOOLS_CATCH( decomposeUnknownVector( ) );
+
+    }
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
@@ -1396,7 +1499,7 @@ namespace hydra{
 
             while ( !checkLSConvergence( ) && checkLSIteration( ) ){
 
-                setUnknownVector( *X0 + *getLambda( ) * deltaX );
+                updateUnknownVector( *X0 + *getLambda( ) * deltaX );
 
                 incrementLSIteration( );
 

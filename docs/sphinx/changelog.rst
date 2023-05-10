@@ -20,6 +20,7 @@ New Features
 - Added the initialization of the unknown vector (:merge:`14`). By `Nathan Miller`_.
 - Added setting and checking the tolerance of the non-linear solve (:merge:`14`). By `Nathan Miller`_.
 - Added setting and checking the tolerance for the line-search of the non-linear solve (:merge:`14`). By `Nathan Miller`_.
+- Added the decomposition of the unknown vector and its application to the solution quantities (:merge:`14`). By `Nathan Miller`_.
 
 Internal Changes
 ================

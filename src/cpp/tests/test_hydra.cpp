@@ -159,6 +159,12 @@ namespace hydra{
 
                 }
 
+                static void decomposeUnknownVector( hydraBase &hydra ){
+
+                    ERROR_TOOLS_CATCH( hydra.decomposeUnknownVector( ) );
+
+                }
+
                 static void checkdF1dF( hydraBase &hydra ){
 
                     BOOST_CHECK( std::find( hydra._iterationData.begin( ), hydra._iterationData.end( ), &hydra._dF1dF ) != hydra._iterationData.end( ) );
@@ -2661,7 +2667,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
         public:
 
-            floatVector cauchyStress { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+            floatVector cauchyStress = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
 
             using residualBaseMock::residualBaseMock;
 
@@ -2915,6 +2921,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getLSResidualNorm ){
     floatVector residual = { 1, 2, 3 };
 
     floatType lsResidualNormAnswer = vectorTools::l2norm( residual );
+      hydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getLSResidualNorm( ), lsResidualNormAnswer ) );
 
@@ -2968,14 +2975,92 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkLSConvergence ){
 
     floatVector residual = { 1, 2, -3, 0 };
 
-    hydra::unit_test::hydraBaseTester:set_residual( hydra, residual );
+    hydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
     BOOST_CHECK( !hydra.checkLSConvergence( ) );
 
-    floatVector residual = { 0.1, 2, -3, 0 };
+    residual = { 0.1, 2, -3, 0 };
 
-    hydra::unit_test::hydraBaseTester:set_residual( hydra, residual );
+    hydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
     BOOST_CHECK( hydra.checkLSConvergence( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector ){
+
+    class hydraBaseMock : public hydra::hydraBase {
+
+        public:
+
+            using hydra::hydraBase::hydraBase;
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+                                           0.54506801, 0.34276383, 0.30412079 }; 
+
+    floatVector parameters = { 1, 2, 3, 4, 5 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    floatVector unknownVector = { -0.15564097, -0.82143154, -0.27568448, -0.86079836,  0.07935105,
+                                   0.14494499,  0.24999455,  0.43334209, -0.56655812, -0.30347709,
+                                  -0.6423031 ,  0.31882307, -0.40934079, -0.68385209, -0.93550481,
+                                   0.87222402, -0.44175239, -0.65098503, -0.70008955, -0.42273504,
+                                   0.28778728,  0.04507432,  0.90587052, -0.23518004,  0.1069888 ,
+                                  -0.63207718, -0.3026225 ,  0.21407967,  0.2462129 ,  0.62193457,
+                                   0.88751802, -0.06915571,  0.81058704,  0.87534601,  0.58086916,
+                                   0.68175081,  0.7558753 ,  0.90210319, -0.15050147, -0.83735103,
+                                  -0.8684919 };
+
+    floatVector cauchyStressAnswer = { -0.15564097, -0.82143154, -0.27568448, -0.86079836,  0.07935105,
+                                        0.14494499,  0.24999455,  0.43334209, -0.56655812 };
+
+    floatMatrix configurationsAnswer = {  { -2.51323148, -2.34583945,  1.64112676,  0.66198512,  1.02970651,  0.93612154, -1.30632269,  0.42502445,  2.20594616 },
+                                          { -0.30347709, -0.6423031 ,  0.31882307, -0.40934079, -0.68385209, -0.93550481,  0.87222402, -0.44175239, -0.65098503 },
+                                          { -0.70008955, -0.42273504,  0.28778728,  0.04507432,  0.90587052, -0.23518004,  0.1069888 , -0.63207718, -0.3026225  },
+                                          {  0.21407967,  0.2462129 ,  0.62193457,  0.88751802, -0.06915571,  0.81058704,  0.87534601,  0.58086916,  0.68175081 } };
+
+    floatVector isvAnswer = { 0.7558753 ,  0.90210319, -0.15050147, -0.83735103, -0.8684919 };
+
+    hydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
+
+    hydra::unit_test::hydraBaseTester::decomposeUnknownVector( hydra );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getCauchyStress( ), cauchyStressAnswer ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getConfigurations( ), configurationsAnswer ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getNonLinearSolveStateVariables( ), isvAnswer ) );
 
 }

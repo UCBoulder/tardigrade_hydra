@@ -456,6 +456,8 @@ namespace hydra{
 
             bool checkLSConvergence( );
 
+            const floatVector* getCauchyStress( );
+
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
 
@@ -538,11 +540,15 @@ namespace hydra{
 
             dataStorage< floatType > _lsResidualNorm; //!< The reference residual norm for the line-search convergence criteria
 
+            dataStorage< floatVector > _cauchyStress; //!< The Cauchy stress as determined from the current state
+
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
             unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
 
             floatType _lambda = 1;
+
+            virtual void decomposeUnknownVector( );
 
             virtual void decomposeStateVariableVector( );
 
@@ -574,7 +580,7 @@ namespace hydra{
 
             bool checkLSIteration( ){ return _LSIteration < _maxLSIterations; }
 
-            void updateUnknownVector( );
+            void updateUnknownVector( const floatVector &newUnknownVector );
 
             void resetIterationData( );
 
