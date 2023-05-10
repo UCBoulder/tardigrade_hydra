@@ -173,12 +173,13 @@ namespace hydra{
 
                 static void formNonLinearProblem( hydraBase &hydra ){
 
-                    try{
-                        hydra.formNonLinearProblem( );
-                    }
-                    catch(std::exception &e){
-                        errorTools::printNestedExceptions( e );
-                    }
+                    BOOST_CHECK_NO_THROW( hydra.formNonLinearProblem( ) );
+
+                }
+
+                static void initializeUnknownVector( hydraBase &hydra ){
+
+                    BOOST_CHECK_NO_THROW( hydra.initializeUnknownVector( ) );
 
                 }
 
@@ -2089,17 +2090,17 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setAdditionalDerivatives ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_stressResidual_setCauchyStress ){
+BOOST_AUTO_TEST_CASE( test_residualBase_setCauchyStress ){
 
-    class stressResidualMock : public hydra::stressResidual{
+    class residualBaseMock : public hydra::residualBase{
 
         public:
 
-            using hydra::stressResidual::setCauchyStress;
+            using hydra::residualBase::setCauchyStress;
 
             floatVector cauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            stressResidualMock( hydra::hydraBase *hydra, unsigned int numEquations ) : stressResidual( hydra, numEquations ){ }
+            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
             virtual void setCauchyStress( ){
     
@@ -2113,7 +2114,7 @@ BOOST_AUTO_TEST_CASE( test_stressResidual_setCauchyStress ){
 
     unsigned int numEquations = 3;
 
-    stressResidualMock residual( &hydra, numEquations );
+    residualBaseMock residual( &hydra, numEquations );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getCauchyStress( ), residual.cauchyStress ) );
 
@@ -2493,5 +2494,212 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
     BOOST_CHECK( vectorTools::fuzzyEquals( dRdTAnswer, *hydra.getdRdT( ) ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( additionalDerivativesAnswer, hydra.getAdditionalDerivatives( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
+
+    class residualBaseMock : public hydra::residualBase{
+
+        public:
+
+            unsigned int numVariables = 41;
+
+            using hydra::residualBase::residualBase;
+
+            using hydra::residualBase::setResidual;
+
+            using hydra::residualBase::setJacobian;
+
+            using hydra::residualBase::setdRdF;
+
+            using hydra::residualBase::setdRdT;
+
+            using hydra::residualBase::setAdditionalDerivatives;
+
+            virtual void setResidual( ){
+
+                floatVector residual( *getNumEquations( ), 0 );
+
+                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+
+                    residual[ i ] = i;
+
+                }
+
+                setResidual( residual );
+
+            }
+
+            virtual void setJacobian( ){
+
+                floatMatrix jacobian( *getNumEquations( ), floatVector( numVariables, 0 ) );
+
+                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+
+                    for ( unsigned int j = 0; j < numVariables; j++ ){
+
+                        jacobian[ i ][ j ] = i + 0.1 * j;
+
+                    }
+
+                }
+
+                setJacobian( jacobian );
+
+            }
+
+            virtual void setdRdF( ){
+
+                floatMatrix dRdF( *getNumEquations( ), floatVector( 9, 0 ) );
+
+                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+
+                    for ( unsigned int j = 0; j < 9; j++ ){
+
+                        dRdF[ i ][ j ] = i - 0.1 * j;
+
+                    }
+
+                }
+
+                setdRdF( dRdF );
+
+            }
+
+            virtual void setdRdT( ){
+
+                floatVector dRdT( *getNumEquations( ), 0 );
+
+                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+
+                    dRdT[ i ] = 0.3 * i;
+
+                }
+
+                setdRdT( dRdT );
+
+            }
+
+    };
+
+    class residualBaseMockStress : public residualBaseMock{
+
+        public:
+
+            floatVector cauchyStress { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+
+            using residualBaseMock::residualBaseMock;
+
+            using residualBaseMock::setResidual;
+
+            using residualBaseMock::setJacobian;
+
+            using residualBaseMock::setdRdF;
+
+            using residualBaseMock::setdRdT;
+
+            using residualBaseMock::setAdditionalDerivatives;
+
+            using hydra::residualBase::setCauchyStress;
+
+            virtual void setCauchyStress( ){
+
+                setCauchyStress( cauchyStress );
+
+            }
+
+    };
+
+    class hydraBaseMock : public hydra::hydraBase{
+
+        public:
+
+            residualBaseMockStress r1;
+        
+            residualBaseMock r2;
+        
+            residualBaseMock r3;
+
+            unsigned int s1 = 36;
+
+            unsigned int s2 = 2;
+
+            unsigned int s3 = 3;
+
+            using hydra::hydraBase::hydraBase;
+
+            using hydra::hydraBase::setResidualClasses;
+
+            virtual void setResidualClasses( ){
+
+                r1 = residualBaseMockStress( this, s1 );
+
+                r2 = residualBaseMock( this, s2 );
+
+                r3 = residualBaseMock( this, s3 );
+
+                std::vector< hydra::residualBase* > residuals( 3 );
+
+                residuals[ 0 ] = &r1;
+
+                residuals[ 1 ] = &r2;
+
+                residuals[ 2 ] = &r3;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+                                           0.54506801, 0.34276383, 0.30412079 }; 
+
+    floatVector parameters = { 1, 2, 3, 4, 5 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.setResidualClasses( );
+
+    hydra::unit_test::hydraBaseTester::initializeUnknownVector( hydra );
+
+    floatVector unknownVectorAnswer = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
+                                        1.53155137, 0.53182759, 0.63440096, 0.84943179, 1.72445532, 0.61102351, 0.72244338, 0.32295891, 1.36178866,
+                                        1.22826323, 0.29371405, 0.63097612, 0.09210494, 1.43370117, 0.43086276, 0.4936851 , 0.42583029, 1.31226122,
+                                        1.42635131, 0.89338916, 0.94416002, 0.50183668, 1.62395295, 0.1156184 , 0.31728548, 0.41482621, 1.86630916,
+                                        0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453 };
+                                         
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( unknownVectorAnswer, *hydra.getUnknownVector( ) ) );
 
 }

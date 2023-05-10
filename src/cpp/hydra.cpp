@@ -96,7 +96,7 @@ namespace hydra{
 
     }
 
-    void stressResidual::setCauchyStress( const floatVector &cauchyStress ){
+    void residualBase::setCauchyStress( const floatVector &cauchyStress ){
         /*!
          * Set the value of the Cauchy stress
          * 
@@ -187,7 +187,7 @@ namespace hydra{
 
     }
 
-    const floatVector* stressResidual::getCauchyStress( ){
+    const floatVector* residualBase::getCauchyStress( ){
         /*!
          * Get the Cauchy stress
          */
@@ -1194,6 +1194,65 @@ namespace hydra{
         }
         std::cout << "Hello " << message << std::endl;
         return NULL;
+    }
+
+    void hydraBase::initializeUnknownVector( ){
+        /*!
+         * Initialize the unknown vector for the non-linear solve.
+         * 
+         * \f$X = \left\{ \bf{\sigma}, \bf{F}^2, \bf{F}^3, ..., \bf{F}n, \xi^1, \xi^2, ..., \xi^m \right\} \f$
+         * 
+         * It is assumed that the first residual calculation also has a method `void getCauchyStress( )`
+         * which returns a pointer to the current value of the Cauchy stress.
+         */
+
+        const floatVector *cauchyStress = ( *getResidualClasses( ) )[ 0 ]->getCauchyStress( );
+
+        const floatMatrix *configurations = getConfigurations( );
+
+        const floatVector *nonLinearSolveStateVariables = getNonLinearSolveStateVariables( );
+
+        floatMatrix Xmat( 1 + configurations->size( ) );
+
+        Xmat[ 0 ] = *cauchyStress;
+
+        for ( unsigned int i = 1; i < configurations->size( ); i++ ){
+
+            Xmat[ i ] = ( *configurations )[ i ];
+
+        }
+
+        Xmat[ Xmat.size( ) - 1 ] = *nonLinearSolveStateVariables;
+
+        _X.second = vectorTools::appendVectors( Xmat );
+
+        _X.first = true;
+
+    }
+
+    const floatVector* hydraBase::getUnknownVector( ){
+        /*!
+         * Get the unknown vector
+         */
+
+        if ( !_X.first ){
+
+            ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+
+        }
+
+        return &_X.second;
+
+    }
+
+    void hydraBase::solveNonLinearProblem( ){
+        /*!
+         * Solve the non-linear problem
+         */
+
+        // Form the initial unknown vector
+        ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+
     }
 
     errorOut dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,

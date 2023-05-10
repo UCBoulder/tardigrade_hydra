@@ -207,6 +207,17 @@ namespace hydra{
 
             }
 
+            virtual void setCauchyStress( ){
+                /*!
+                 * Compute the current Cauchy stress
+                 * 
+                 * Only needs to be defined for the first residual
+                 */
+
+                ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the Cauchy stress is not implemented" ) );
+
+            }
+
             // Setters
 
             void setResidual( const floatVector &residual );
@@ -218,6 +229,8 @@ namespace hydra{
             void setdRdT( const floatVector &dRdT );
 
             void setAdditionalDerivatives( const floatMatrix &additionalDerivatives );
+
+            void setCauchyStress( const floatVector &cauchyStress );
 
             // Getter functions
 
@@ -232,6 +245,8 @@ namespace hydra{
             const floatVector* getdRdT( );
 
             const floatMatrix* getAdditionalDerivatives( );
+
+            const floatVector* getCauchyStress( );
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
@@ -252,36 +267,9 @@ namespace hydra{
 
             dataStorage< floatMatrix > _additionalDerivatives; //!< Additional derivatives of the residual
 
+            dataStorage< floatVector > _cauchyStress; //!< The cauchy stress. Only needs to be defined for the first residual
+
             std::vector< dataBase* > _iterationData; //!< A vector of data storage objects
-
-    };
-
-    class stressResidual : public residualBase{
-
-        public:
-
-            stressResidual( ) : residualBase( ){ }
-
-            stressResidual( hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
-
-            stressResidual( stressResidual &r ) : residualBase( r.hydra, *r.getNumEquations( ) ){ }
-
-            virtual void setCauchyStress( ){
-                /*!
-                 * Compute the current Cauchy stress
-                 */
-
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the Cauchy stress is not implemented" ) );
-
-            }
-
-            void setCauchyStress( const floatVector &cauchyStress );
-
-            const floatVector* getCauchyStress( );
-
-        private:
-
-            dataStorage< floatVector > _cauchyStress;
 
     };
 
@@ -430,6 +418,8 @@ namespace hydra{
 
             floatMatrix getAdditionalDerivatives( );
 
+            const floatVector* getUnknownVector( );
+
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
 
@@ -496,6 +486,8 @@ namespace hydra{
 
             dataStorage< floatVector > _additionalDerivatives; //!< Additional derivatives of the residual
 
+            dataStorage< floatVector > _X; //!< The unknown vector { cauchyStress, F1, ..., Fn, xi1, ..., xim }
+
             virtual void decomposeStateVariableVector( );
 
             void setFirstConfigurationGradients( );
@@ -503,6 +495,10 @@ namespace hydra{
             void setPreviousFirstConfigurationGradients( );
 
             void formNonLinearProblem( );
+
+            void solveNonLinearProblem( );
+
+            void initializeUnknownVector( );
 
             void resetIterationData( );
 
