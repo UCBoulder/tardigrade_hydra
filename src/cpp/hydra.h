@@ -452,9 +452,9 @@ namespace hydra{
 
             const floatVector* getTolerance( );
 
-            bool checkConvergence( );
+            virtual bool checkConvergence( );
 
-            bool checkLSConvergence( );
+            virtual bool checkLSConvergence( );
 
             const floatVector* getCauchyStress( );
 
@@ -556,11 +556,11 @@ namespace hydra{
 
             void setPreviousFirstConfigurationGradients( );
 
-            void formNonLinearProblem( );
+            virtual void formNonLinearProblem( );
 
             void solveNonLinearProblem( );
 
-            void initializeUnknownVector( );
+            virtual void initializeUnknownVector( );
 
             virtual void setTolerance( );
 
@@ -568,7 +568,9 @@ namespace hydra{
 
             void incrementIteration( ){ _iteration++; }
 
-            void incrementLSIteration( ){ _LSIteration++; _lambda *= 0.5; }
+            virtual void updateLambda( ){ _lambda *= 0.5; }
+
+            void incrementLSIteration( ){ _LSIteration++; }
 
             void resetLSIteration( ){ _LSIteration = 0; _lambda = 1.0;
                                       _lsResidualNorm.second = vectorTools::l2norm( *getResidual( ) );
@@ -580,7 +582,7 @@ namespace hydra{
 
             bool checkLSIteration( ){ return _LSIteration < _maxLSIterations; }
 
-            void updateUnknownVector( const floatVector &newUnknownVector );
+            virtual void updateUnknownVector( const floatVector &newUnknownVector );
 
             void resetIterationData( );
 

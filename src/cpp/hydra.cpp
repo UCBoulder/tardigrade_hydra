@@ -1484,7 +1484,12 @@ namespace hydra{
 
         while( !checkConvergence( ) && checkIteration( ) ){
 
-            const floatVector *X0 = getUnknownVector( );
+            std::cout << "iteration: " << _iteration << "\n";
+
+            floatVector X0 = *getUnknownVector( );
+
+            std::cout << "jacobian:\n"; vectorTools::print( *getFlatJacobian( ) );
+            std::cout << "residual:\n"; vectorTools::print( *getResidual( ) );
 
             ERROR_TOOLS_CATCH( deltaX = -vectorTools::solveLinearSystem( *getFlatJacobian( ), *getResidual( ),
                                                                          getResidual( )->size( ), getResidual( )->size( ), rank ) );
@@ -1495,13 +1500,20 @@ namespace hydra{
 
             }
 
-            updateUnknownVector( *X0 + *getLambda( ) * deltaX );
+            updateUnknownVector( X0 + *getLambda( ) * deltaX );
 
             while ( !checkLSConvergence( ) && checkLSIteration( ) ){
 
-                updateUnknownVector( *X0 + *getLambda( ) * deltaX );
+                updateLambda( );
 
                 incrementLSIteration( );
+
+                std::cout << "  lsIteration: " << _LSIteration << "\n";
+                std::cout << "  X0: "; vectorTools::print( X0 );
+                std::cout << "  getLambda: " << *getLambda( ) << "\n";
+                std::cout << "  deltaX: "; vectorTools::print( deltaX );
+
+                updateUnknownVector( X0 + *getLambda( ) * deltaX );
 
             }
 

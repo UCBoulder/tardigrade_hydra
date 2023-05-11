@@ -207,17 +207,51 @@ namespace hydra{
 
                 }
 
-                static void set_residual( hydraBase &hydra, floatVector &value ){
+                static void set_residual( hydraBase &hydra, const floatVector &value ){
 
                     hydra._residual.second = value;
                     hydra._residual.first = true;
 
+                    hydra.addIterationData( &hydra._residual );
+
                 }
 
-                static void set_unknownVector( hydraBase &hydra, floatVector &value ){
+                static void set_unknownVector( hydraBase &hydra, const floatVector &value ){
 
                     hydra._X.second = value;
                     hydra._X.first = true;
+
+                }
+
+                static void set_flatJacobian( hydraBase &hydra, const floatVector &value ){
+
+                    hydra._jacobian.second = value;
+                    hydra._jacobian.first = true;
+
+                    hydra.addIterationData( &hydra._jacobian );
+                }
+
+                static unsigned int get_iteration( hydraBase &hydra ){
+
+                    return hydra._iteration;
+
+                }
+
+                static unsigned int get_LSIteration( hydraBase &hydra ){
+
+                    return hydra._LSIteration;
+
+                }
+
+                static void solveNonLinearProblem( hydraBase &hydra ){
+
+                    hydra.solveNonLinearProblem( );
+
+                }
+
+                static void resetIterationData( hydraBase &hydra ){
+
+                    hydra.resetIterationData( );
 
                 }
 
@@ -3062,5 +3096,208 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector ){
     BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getConfigurations( ), configurationsAnswer ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getNonLinearSolveStateVariables( ), isvAnswer ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem ){
+
+    class hydraBaseMock : public hydra::hydraBase {
+
+        public:
+
+            using hydra::hydraBase::hydraBase;
+
+            floatVector initialUnknownVector = { 1, 2, 3 };
+
+            std::vector< unsigned int > numLSIterations = { 1, 2, 1, 3 };
+
+            std::vector< std::vector< floatVector > > residual = {
+                                                                     {
+                                                                       { 1, 2, 3 } 
+                                                                     },
+                                                                     { 
+                                                                       { 4, 5, 6 },
+                                                                       { 7, 8, 9 }
+                                                                     },
+                                                                     { 
+                                                                       { 10, 9, 8 }
+                                                                     },
+                                                                     { 
+                                                                       { 7, 6, 5 },
+                                                                       { 4, 3, 2 },
+                                                                       { 1, 1, 1 }
+                                                                     },
+                                                                 };
+
+            std::vector< std::vector< floatVector > > flatJacobian = {
+                                                                         {
+                                                                           {  0.99951474, -0.18854971, -0.59377647,  0.73798389,  0.50649978,
+                                                                             -0.24789123, -0.32889876, -0.60029673, -0.14211995 } 
+                                                                         },
+                                                                         { 
+                                                                           {  0.39531964, -0.92103617,  0.15529267, -0.88403283, -0.29325643,
+                                                                              0.33220876, -0.86852642,  0.29966728,  0.83480685 },
+                                                                           { -0.52407245,  0.35366894,  0.08551378,  0.70688925, -0.14848006,
+                                                                              0.24923792,  0.67051005, -0.08228108,  0.65747464 }
+                                                                         },
+                                                                         { 
+                                                                           { -0.81643355,  0.85279545, -0.18966435, -0.42616781,  0.53676336,
+                                                                             -0.92714295, -0.624413  ,  0.09900722, -0.01636474 }
+                                                                         },
+                                                                         { 
+                                                                           { -0.2448239 ,  0.74837591,  0.68140055, -0.14194502,  0.67937811,
+                                                                             -0.28307126,  0.01624776,  0.02491045, -0.39841209 },
+                                                                           { -0.65594132, -0.44378971, -0.43630527,  0.13856471,  0.95333808,
+                                                                             -0.89484459, -0.26311552, -0.94030312,  0.69678361 },
+                                                                           { -0.82400549, -0.05626004, -0.17170742,  0.34131108,  0.49817018,
+                                                                             -0.78483747,  0.95727384,  0.23324588, -0.22667228 }
+                                                                         },
+                                                                     };
+
+            std::vector< std::vector< floatVector > > expectedXVectors = {
+                                                                             {
+                                                                               { 17.15005309, -9.55454694, 35.53888217 } 
+                                                                             },
+                                                                             { 
+                                                                               { 18.95259726, -5.57445709, 28.79822658 },
+                                                                               { 18.05132518, -7.56450202, 32.16855437 }
+                                                                             },
+                                                                             { 
+                                                                               { 31.01502518, -5.8216338 , 36.92596115 }
+                                                                             },
+                                                                             { 
+                                                                               { 407.30865444,  77.76786468,  70.0478993  },
+                                                                               { 219.16183981,  35.97311544,  53.48693023 },
+                                                                               { 125.0884325 ,  15.07574082,  45.20644569 }
+                                                                             },
+                                                                         };
+
+        private:
+
+            using hydra::hydraBase::getResidual;
+
+            virtual void initializeUnknownVector( ){
+
+                hydra::unit_test::hydraBaseTester::set_unknownVector( *this, initialUnknownVector );
+
+                hydra::unit_test::hydraBaseTester::set_residual( *this, residual[ 0 ][ 0 ] );
+
+                hydra::unit_test::hydraBaseTester::set_flatJacobian( *this, flatJacobian[ 0 ][ 0 ] );
+
+            }
+
+            virtual bool checkConvergence( ){
+
+                unsigned int iteration = hydra::unit_test::hydraBaseTester::get_iteration( *this );
+
+                if ( iteration < residual.size( ) ){
+
+                    return false;
+
+                }
+
+                return true;
+
+            }
+
+            virtual bool checkLSConvergence( ){
+
+                unsigned int iteration = hydra::unit_test::hydraBaseTester::get_iteration( *this );
+
+                unsigned int LSIteration = hydra::unit_test::hydraBaseTester::get_LSIteration( *this );
+
+                getResidual( );
+
+                if ( LSIteration < residual[ iteration ].size( ) - 1 ){
+
+                    return false;
+
+                }
+
+                return true;
+
+            }
+
+            virtual void formNonLinearProblem( ){
+
+                unsigned int iteration = hydra::unit_test::hydraBaseTester::get_iteration( *this );
+
+                unsigned int LSIteration = hydra::unit_test::hydraBaseTester::get_LSIteration( *this );
+
+                unsigned int iterationOffset = 0;
+
+                unsigned int LSoffset = 0;
+
+                if ( LSIteration < residual[ iteration ].size( ) - 1 ){
+
+                    LSoffset += 1;
+
+                }
+                else if ( iteration < residual.size( ) - 1 ){
+
+                    iterationOffset += 1;
+                    LSIteration = 0;
+
+                }
+
+                hydra::unit_test::hydraBaseTester::set_residual( *this, residual[ iteration + iterationOffset ][ LSIteration + LSoffset ] );
+
+                hydra::unit_test::hydraBaseTester::set_flatJacobian( *this, flatJacobian[ iteration + iterationOffset ][ LSIteration + LSoffset ] );
+
+            }
+
+            virtual void updateUnknownVector( const floatVector &newUnknownVector ){
+
+                hydra::unit_test::hydraBaseTester::resetIterationData( *this );
+
+                unsigned int iteration = hydra::unit_test::hydraBaseTester::get_iteration( *this );
+
+                unsigned int LSIteration = hydra::unit_test::hydraBaseTester::get_LSIteration( *this );
+
+                BOOST_CHECK( vectorTools::fuzzyEquals( expectedXVectors[ iteration ][ LSIteration ], newUnknownVector ) );
+
+                hydra::unit_test::hydraBaseTester::set_unknownVector( *this, newUnknownVector );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+                                           0.54506801, 0.34276383, 0.30412079 }; 
+
+    floatVector parameters = { 1, 2, 3, 4, 5 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra );
 
 }
