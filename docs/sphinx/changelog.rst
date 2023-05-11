@@ -17,6 +17,11 @@ New Features
 ============
 - Added calculation of the gradients of the current and previous F1 configurations (:merge:`11`). By `Nathan Miller`_.
 - Added residual class for constructing the residual equations (:merge:`12`). By `Nathan Miller`_.
+- Added the initialization of the unknown vector (:merge:`14`). By `Nathan Miller`_.
+- Added setting and checking the tolerance of the non-linear solve (:merge:`14`). By `Nathan Miller`_.
+- Added setting and checking the tolerance for the line-search of the non-linear solve (:merge:`14`). By `Nathan Miller`_.
+- Added the decomposition of the unknown vector and its application to the solution quantities (:merge:`14`). By `Nathan Miller`_.
+- Added the solution of the non-linear problem (:merge:`14`). By `Nathan Miller`_.
 
 Internal Changes
 ================
@@ -36,4 +41,4 @@ Internal Changes
 - Added the computation of the gradient of a sub-configuration by all of the configurations (:merge:`9`). By `Nathan Miller`_.
 - Added gradients for the preceding and following sub-configurations for the current and previous configurations (:merge:`9`). By `Nathan Miller`_.
 - Required >= version 0.5.3 of vector_tools (:merge:`10`). By `Nathan Miller`_.
-- Added the construction residual, Jacobian, and other values (:merge:`13`). By `Nathan Miller`_.
+- Added the construction residual, Jacobian, and other values (:merge:`12`). By `Nathan Miller`_.

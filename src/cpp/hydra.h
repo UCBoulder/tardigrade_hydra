@@ -144,6 +144,25 @@ namespace hydra{
 
     }
 
+    class convergence_error : public std::exception{
+
+        private:
+            const char * message;
+
+        public:
+
+            using std::exception::exception;
+
+            convergence_error( const char * msg ) : message( msg ) { }
+
+            const char *what( ){
+
+                return message;
+
+            }
+
+    };
+
     class residualBase{
         /*!
          * A class to contain the residual computations associated with some part of a non-linear solve
@@ -207,6 +226,17 @@ namespace hydra{
 
             }
 
+            virtual void setCauchyStress( ){
+                /*!
+                 * Compute the current Cauchy stress
+                 * 
+                 * Only needs to be defined for the first residual
+                 */
+
+                ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the Cauchy stress is not implemented" ) );
+
+            }
+
             // Setters
 
             void setResidual( const floatVector &residual );
@@ -218,6 +248,8 @@ namespace hydra{
             void setdRdT( const floatVector &dRdT );
 
             void setAdditionalDerivatives( const floatMatrix &additionalDerivatives );
+
+            void setCauchyStress( const floatVector &cauchyStress );
 
             // Getter functions
 
@@ -232,6 +264,8 @@ namespace hydra{
             const floatVector* getdRdT( );
 
             const floatMatrix* getAdditionalDerivatives( );
+
+            const floatVector* getCauchyStress( );
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
@@ -252,36 +286,9 @@ namespace hydra{
 
             dataStorage< floatMatrix > _additionalDerivatives; //!< Additional derivatives of the residual
 
+            dataStorage< floatVector > _cauchyStress; //!< The cauchy stress. Only needs to be defined for the first residual
+
             std::vector< dataBase* > _iterationData; //!< A vector of data storage objects
-
-    };
-
-    class stressResidual : public residualBase{
-
-        public:
-
-            stressResidual( ) : residualBase( ){ }
-
-            stressResidual( hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
-
-            stressResidual( stressResidual &r ) : residualBase( r.hydra, *r.getNumEquations( ) ){ }
-
-            virtual void setCauchyStress( ){
-                /*!
-                 * Compute the current Cauchy stress
-                 */
-
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the Cauchy stress is not implemented" ) );
-
-            }
-
-            void setCauchyStress( const floatVector &cauchyStress );
-
-            const floatVector* getCauchyStress( );
-
-        private:
-
-            dataStorage< floatVector > _cauchyStress;
 
     };
 
@@ -308,7 +315,7 @@ namespace hydra{
                        const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                        const floatVector &previousStateVariables, const floatVector &parameters,
                        const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                       const unsigned int dimension=3 );
+                       const unsigned int dimension=3, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxIterations=20, const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4 );
 
             // User defined functions
 
@@ -347,6 +354,15 @@ namespace hydra{
 
             //! Get a reference to the dimension
             const unsigned int* getDimension( ){ return &_dimension; }
+
+            //! Get a reference to the relative tolerance
+            const floatType* getRelativeTolerance( ){ return &_tolr; }
+
+            //! Get a reference to the absolute tolerance
+            const floatType* getAbsoluteTolerance( ){ return &_tola; }
+
+            //! Get a reference to the line-learch alpha
+            const floatType* getLSAlpha( ){ return &_lsAlpha; }
 
             //! Get a reference to the configurations
             const floatMatrix* getConfigurations( ){ return &_configurations.second; }
@@ -400,6 +416,8 @@ namespace hydra{
 
             floatMatrix getPreviousFollowingConfigurationGradient( const unsigned int &index );
 
+            const floatType* getLSResidualNorm( );
+
             const floatMatrix* getdF1dF( );
 
             const floatMatrix* getdF1dFn( );
@@ -430,6 +448,16 @@ namespace hydra{
 
             floatMatrix getAdditionalDerivatives( );
 
+            const floatVector* getUnknownVector( );
+
+            const floatVector* getTolerance( );
+
+            virtual bool checkConvergence( );
+
+            virtual bool checkLSConvergence( );
+
+            const floatVector* getCauchyStress( );
+
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
 
@@ -458,6 +486,16 @@ namespace hydra{
 
             unsigned int _numNonLinearSolveStateVariables; //!< The number of state variables which will be solved in the Newton-Raphson loop
             unsigned int _dimension; //!< The spatial dimension of the problem
+
+            floatType _tolr; //!< The relative tolerance
+
+            floatType _tola; //!< The absolute tolerance
+
+            unsigned int _maxIterations; //!< The maximum number of allowable iterations
+
+            unsigned int _maxLSIterations; //!< The maximum number of line-search iterations
+
+            floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
 
             dataStorage< floatMatrix > _configurations; //!< The current values of the configurations
 
@@ -496,13 +534,55 @@ namespace hydra{
 
             dataStorage< floatVector > _additionalDerivatives; //!< Additional derivatives of the residual
 
+            dataStorage< floatVector > _X; //!< The unknown vector { cauchyStress, F1, ..., Fn, xi1, ..., xim }
+
+            dataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
+
+            dataStorage< floatType > _lsResidualNorm; //!< The reference residual norm for the line-search convergence criteria
+
+            dataStorage< floatVector > _cauchyStress; //!< The Cauchy stress as determined from the current state
+
+            unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
+
+            unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
+
+            floatType _lambda = 1;
+
+            virtual void decomposeUnknownVector( );
+
             virtual void decomposeStateVariableVector( );
 
             void setFirstConfigurationGradients( );
 
             void setPreviousFirstConfigurationGradients( );
 
-            void formNonLinearProblem( );
+            virtual void formNonLinearProblem( );
+
+            void solveNonLinearProblem( );
+
+            virtual void initializeUnknownVector( );
+
+            virtual void setTolerance( );
+
+            void setTolerance( const floatVector &tolerance );
+
+            void incrementIteration( ){ _iteration++; }
+
+            virtual void updateLambda( ){ _lambda *= 0.5; }
+
+            void incrementLSIteration( ){ _LSIteration++; }
+
+            void resetLSIteration( ){ _LSIteration = 0; _lambda = 1.0;
+                                      _lsResidualNorm.second = vectorTools::l2norm( *getResidual( ) );
+                                      _lsResidualNorm.first = true; }
+
+            const floatType* getLambda( ){ return &_lambda; }
+
+            bool checkIteration( ){ return _iteration < _maxIterations; }
+
+            bool checkLSIteration( ){ return _LSIteration < _maxLSIterations; }
+
+            virtual void updateUnknownVector( const floatVector &newUnknownVector );
 
             void resetIterationData( );
 

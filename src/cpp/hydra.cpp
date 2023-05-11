@@ -96,7 +96,7 @@ namespace hydra{
 
     }
 
-    void stressResidual::setCauchyStress( const floatVector &cauchyStress ){
+    void residualBase::setCauchyStress( const floatVector &cauchyStress ){
         /*!
          * Set the value of the Cauchy stress
          * 
@@ -187,7 +187,7 @@ namespace hydra{
 
     }
 
-    const floatVector* stressResidual::getCauchyStress( ){
+    const floatVector* residualBase::getCauchyStress( ){
         /*!
          * Get the Cauchy stress
          */
@@ -222,7 +222,8 @@ namespace hydra{
                           const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                           const floatVector &previousStateVariables, const floatVector &parameters,
                           const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                          const unsigned int dimension ) : _time( time ), _deltaTime( deltaTime ),
+                          const unsigned int dimension, const floatType tolr, const floatType tola, const unsigned int maxIterations,
+                          const unsigned int maxLSIterations, const floatType lsAlpha ) : _time( time ), _deltaTime( deltaTime ),
                                                            _temperature( temperature ), _previousTemperature( previousTemperature ),
                                                            _deformationGradient( deformationGradient ),
                                                            _previousDeformationGradient( previousDeformationGradient ),
@@ -230,7 +231,9 @@ namespace hydra{
                                                            _parameters( parameters ),
                                                            _numConfigurations( numConfigurations ),
                                                            _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
-                                                           _dimension( dimension ){
+                                                           _dimension( dimension ), _tolr( tolr ), _tola( tola ),
+                                                           _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ),
+                                                           _lsAlpha( lsAlpha ){
         /*!
          * The main constructor for the hydra base class. Inputs are all the required values for most solves.
          * 
@@ -245,10 +248,72 @@ namespace hydra{
          * \param &numConfigurations: The number of configurations
          * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the non-linear solve's residual
          * \param &dimension: The dimension of the problem (defaults to 3)
+         * \param &tolr: The relative tolerance (defaults to 1e-9)
+         * \param &tola: The absolute tolerance (defaults to 1e-9)
+         * \param &maxIterations: The maximum number of non-linear iterations (defaults to 20)
+         * \param &maxLSIterations: The maximum number of line-search iterations (defaults to 5)
+         * \param &lsAlpha: The alpha term for the line search (defaults to 1e-4)
          */
 
         // Decompose the state variable vector initializing all of the configurations
         decomposeStateVariableVector( );
+
+        // Set the residual classes
+        setResidualClasses( );
+
+    }
+
+    void hydraBase::decomposeUnknownVector( ){
+        /*!
+         * Decompose the unknown vector into the cauchy stress, configurations, and state variables used for the non-linear solve
+         */
+
+        const floatVector *unknownVector = getUnknownVector( );
+
+        const unsigned int* dim = getDimension( );
+
+        const unsigned int* nConfig = getNumConfigurations( );
+
+        // Set the cauchy stress
+        _cauchyStress.second = floatVector( unknownVector->begin( ),
+                                            unknownVector->begin( ) + ( *dim ) * ( *dim ) );
+
+        _cauchyStress.first = true;
+
+        addIterationData( &_cauchyStress );
+
+        // Set the configurations
+        _configurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        // Initialize the first configuration with the total deformation gradient
+        _configurations.second[ 0 ] = *getDeformationGradient( );
+
+        for ( unsigned int i = ( *nConfig ) - 1; i >= 1; i-- ){
+
+            // Set the current configuration as being equal to the previous
+            _configurations.second[ i ] = floatVector( unknownVector->begin( ) + i * ( *dim ) * ( *dim ),
+                                                       unknownVector->begin( ) + ( i + 1 ) * ( *dim ) * ( *dim ) );
+
+            // Compute the inverse of the current configuration and store it
+            _inverseConfigurations.second[ i ] = vectorTools::inverse( _configurations.second[ i ], ( *dim ), ( *dim ) );
+
+            // Add contribution of deformation gradient to the first configuration
+            _configurations.second[ 0 ] = vectorTools::matrixMultiply( _configurations.second[ 0 ], _inverseConfigurations.second[ i ],
+                                                                       ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
+
+        }
+
+        _inverseConfigurations.second[ 0 ] = vectorTools::inverse( _configurations.second[ 0 ], ( *dim ), ( *dim ) );
+
+        // Extract the remaining state variables required for the non-linear solve
+        _nonLinearSolveStateVariables.second = floatVector( unknownVector->begin( ) + ( *nConfig ) * ( *dim ) * ( *dim ),
+                                                            unknownVector->end( ) );
+
+        addIterationData( &_configurations );
+
+        addIterationData( &_inverseConfigurations );
+
+        addIterationData( &_nonLinearSolveStateVariables );
 
     }
 
@@ -361,6 +426,12 @@ namespace hydra{
         _additionalStateVariables.first = true;
 
         _previousAdditionalStateVariables.first = true;
+
+        addIterationData( &_configurations );
+
+        addIterationData( &_inverseConfigurations );
+
+        addIterationData( &_nonLinearSolveStateVariables );
 
     }
 
@@ -1200,6 +1271,268 @@ namespace hydra{
         }
         std::cout << "Hello " << message << std::endl;
         return NULL;
+    }
+
+    const floatVector* hydraBase::getCauchyStress( ){
+        /*!
+         * Get the cauchy stress
+         */
+
+        if ( !_cauchyStress.first ){
+
+            ERROR_TOOLS_CATCH( _cauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getCauchyStress( ) );
+
+            _cauchyStress.first = true;
+
+            addIterationData( &_cauchyStress );
+
+        }
+
+        return &_cauchyStress.second;
+
+    }
+
+    void hydraBase::initializeUnknownVector( ){
+        /*!
+         * Initialize the unknown vector for the non-linear solve.
+         * 
+         * \f$X = \left\{ \bf{\sigma}, \bf{F}^2, \bf{F}^3, ..., \bf{F}n, \xi^1, \xi^2, ..., \xi^m \right\} \f$
+         * 
+         * It is assumed that the first residual calculation also has a method `void getCauchyStress( )`
+         * which returns a pointer to the current value of the Cauchy stress.
+         */
+
+        const floatVector *cauchyStress;
+        ERROR_TOOLS_CATCH( cauchyStress = getCauchyStress( ) );
+
+        const floatMatrix *configurations = getConfigurations( );
+
+        const floatVector *nonLinearSolveStateVariables = getNonLinearSolveStateVariables( );
+
+        floatMatrix Xmat( 1 + configurations->size( ) );
+
+        Xmat[ 0 ] = *cauchyStress;
+
+        for ( unsigned int i = 1; i < configurations->size( ); i++ ){
+
+            Xmat[ i ] = ( *configurations )[ i ];
+
+        }
+
+        Xmat[ Xmat.size( ) - 1 ] = *nonLinearSolveStateVariables;
+
+        _X.second = vectorTools::appendVectors( Xmat );
+
+        _X.first = true;
+
+    }
+
+    const floatVector* hydraBase::getUnknownVector( ){
+        /*!
+         * Get the unknown vector
+         */
+
+        if ( !_X.first ){
+
+            ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+
+        }
+
+        return &_X.second;
+
+    }
+
+    void hydraBase::setTolerance( ){
+        /*!
+         * Set the tolerance
+         * 
+         * \f$ tol = tolr * ( |R_0| + |X| ) + tola \f$
+         */
+
+        floatVector tolerance = vectorTools::abs( *getResidual( ) ) + vectorTools::abs( *getUnknownVector( ) );
+
+        tolerance = *getRelativeTolerance( ) * tolerance + *getAbsoluteTolerance( );
+
+        setTolerance( tolerance );
+
+    }
+
+    void hydraBase::setTolerance( const floatVector &tolerance ){
+        /*!
+         * Set the tolerance
+         *
+         * \param tolerance: The tolerance vector for each value of the residual
+         */
+
+        _tolerance.second = tolerance;
+
+        _tolerance.first = true;
+
+    }
+
+    const floatVector* hydraBase::getTolerance( ){
+        /*!
+         * Get the tolerance
+         */
+
+        if ( !_tolerance.first ){
+
+            ERROR_TOOLS_CATCH( setTolerance( ) );
+
+        }
+
+        return &_tolerance.second;
+
+    }
+
+    bool hydraBase::checkConvergence( ){
+        /*!
+         * Check the convergence
+         */
+
+        const floatVector *tolerance = getTolerance( );
+
+        const floatVector *residual = getResidual( );
+
+        if ( tolerance->size( ) != residual->size( ) ){
+
+            std::string message = "The residual and tolerance vectors don't have the same size\n";
+            message            += "  tolerance: " + std::to_string( tolerance->size( ) ) + "\n";
+            message            += "  residual:  " + std::to_string( residual->size( ) ) + "\n";
+
+            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+        }
+
+        for ( unsigned int i = 0; i < tolerance->size( ); i++ ){
+
+            if ( std::fabs( ( *residual )[ i ] ) > ( *tolerance )[ i ] ){
+
+                return false;
+
+            }
+
+        }
+
+        return true;
+
+    }
+
+    const floatType* hydraBase::getLSResidualNorm( ){
+        /*!
+         * Get the residual norm for the line-search convergence criterion
+         */
+
+        if ( !_lsResidualNorm.first ){
+
+            ERROR_TOOLS_CATCH( resetLSIteration( ) );
+
+        }
+
+        return &_lsResidualNorm.second;
+
+    }
+
+    bool hydraBase::checkLSConvergence( ){
+        /*!
+         * Check the line-search convergence
+         */
+
+        if ( vectorTools::l2norm( *getResidual( ) ) < ( 1 - *getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
+    void hydraBase::updateUnknownVector( const floatVector &newUnknownVector ){
+        /*!
+         * Update the unknown vector
+         * 
+         * \param &newUnknownVector: The new unknown vector
+         */
+
+        // Reset all of the iteration data
+        resetIterationData( );
+
+        // Set the unknown vector
+        _X.second = newUnknownVector;
+
+        _X.first = true;
+
+        // Decompose the unknown vector and update the state
+        ERROR_TOOLS_CATCH( decomposeUnknownVector( ) );
+
+    }
+
+    void hydraBase::solveNonLinearProblem( ){
+        /*!
+         * Solve the non-linear problem
+         */
+
+        // Form the initial unknown vector
+        ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+
+        unsigned int rank;
+
+        floatVector deltaX;
+
+        resetLSIteration( );
+
+        while( !checkConvergence( ) && checkIteration( ) ){
+
+            floatVector X0 = *getUnknownVector( );
+
+            ERROR_TOOLS_CATCH( deltaX = -vectorTools::solveLinearSystem( *getFlatJacobian( ), *getResidual( ),
+                                                                         getResidual( )->size( ), getResidual( )->size( ), rank ) );
+
+            if ( rank != getResidual( )->size( ) ){
+
+                ERROR_TOOLS_CATCH( throw std::runtime_error( "The Jacobian is not full rank" ) );
+
+            }
+
+            updateUnknownVector( X0 + *getLambda( ) * deltaX );
+
+            while ( !checkLSConvergence( ) && checkLSIteration( ) ){
+
+                updateLambda( );
+
+                incrementLSIteration( );
+
+                updateUnknownVector( X0 + *getLambda( ) * deltaX );
+
+            }
+
+            if ( !checkLSConvergence( ) ){
+
+                std::string message = "Failure in line search";
+
+                ERROR_TOOLS_CATCH( throw convergence_error( message.c_str( ) ) );
+
+            }
+
+            resetLSIteration( );
+
+            // Increment the iteration count
+            incrementIteration( );
+
+        }
+
+        if ( !checkConvergence( ) ){
+
+            std::string message = "Failure to converge main loop";
+
+            ERROR_TOOLS_CATCH( throw convergence_error( message.c_str( ) ) );
+
+        }
+
+        // Set the tolerance
+        ERROR_TOOLS_CATCH( setTolerance( ) );
+
     }
 
     errorOut dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,
