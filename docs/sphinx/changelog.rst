@@ -42,3 +42,4 @@ Internal Changes
 - Added gradients for the preceding and following sub-configurations for the current and previous configurations (:merge:`9`). By `Nathan Miller`_.
 - Required >= version 0.5.3 of vector_tools (:merge:`10`). By `Nathan Miller`_.
 - Added the construction residual, Jacobian, and other values (:merge:`12`). By `Nathan Miller`_.
+- Clean up conda package CI files after ``conda build`` (:issue:`2`, :merge:`15`). By `Sergio Cordova`_.
