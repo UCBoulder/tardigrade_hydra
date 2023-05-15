@@ -1,5 +1,5 @@
 package:
-  name: hydra
+  name: tardigrade-hydra
   # TODO: setup and use pyproject.toml and a Conda build Jinja template
   version: {{ VERSION }}
 
@@ -11,7 +11,7 @@ build:
     - mkdir build-package
     - cd build-package
     - cmake .. -DCMAKE_BUILD_TYPE=Release
-    - cmake --build . --target hydra hydra_umat
+    - cmake --build . --target tardigrade-hydra tardigrade-hydra_umat
     - cmake --install . --prefix ${PREFIX}
   ignore_run_exports:
     - python_abi
@@ -53,7 +53,7 @@ test:
   source_files:
     - CMakeLists.txt
     - src/cpp/tests/CMakeLists.txt
-    - src/cpp/tests/test_hydra.cpp
+    - src/cpp/tests/test_tardigrade-hydra.cpp
     - src/abaqus/CMakeLists.txt
     - src/abaqus/single_element_c3d8.inp
     - src/abaqus/tests/CMakeLists.txt

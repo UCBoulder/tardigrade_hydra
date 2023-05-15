@@ -21,7 +21,7 @@ Clone cpp\_stub into a local repository
 
    .. code-block:: bash
 
-      ssh://git@re-git.lanl.gov:10022/aea/stub-repositories/hydra.git
+      ssh://git@re-git.lanl.gov:10022/aea/stub-repositories/tardigrade-hydra.git
 
 3. Navigate to your preferred repository directory on your local computer. In a
    terminal, you can follow the example ``sstelmo`` session below
@@ -52,7 +52,7 @@ Clone cpp\_stub into a local repository
       /projects/<moniker>/w13repos
 
       # Clone the stub repository
-      $ git clone ssh://git@re-git.lanl.gov:10022/aea/stub-repositories/hydra.git
+      $ git clone ssh://git@re-git.lanl.gov:10022/aea/stub-repositories/tardigrade-hydra.git
 
 5. Rename the local repository directory for your project.
 
@@ -63,15 +63,15 @@ Clone cpp\_stub into a local repository
       /projects/<moniker>/w13repos
 
       # Observe the stub repo directory name
-      $ ls hydra -d
-      hydra
+      $ ls tardigrade-hydra -d
+      tardigrade-hydra
 
       # Rename the stub repo directory after your project
-      $ mv hydra my_project
+      $ mv tardigrade-hydra my_project
 
       # Observe that the stub repo directory no longer exists
-      $ ls hydra -d
-      ls: cannot access 'hydra': No such file or directory
+      $ ls tardigrade-hydra -d
+      ls: cannot access 'tardigrade-hydra': No such file or directory
 
       # Observe that your project directory exists
       $ ls my_project -d
@@ -136,7 +136,7 @@ Create a new upstream repository
    the left hand side bar "Repository" > "Branches" menu and the Git tags from the
    "Repository" > "Tags" menu.
 
-5. Remove any issue branches from the ``hydra`` project on the "Repository" >
+5. Remove any issue branches from the ``tardigrade-hydra`` project on the "Repository" >
    "Branches" menu. You should keep only the "main" and "dev" branches.
 
 6. If everything looks correct on Gitlab project, you can clean up your local
@@ -146,17 +146,17 @@ Create a new upstream repository
 
       WARNING: the ``-D`` option FORCE deletes branches. Triple check the
       command and use with caution. If you're uncertain about this step, contact the
-      hydra developers for help.
+      tardigrade-hydra developers for help.
 
    .. code-block:: bash
 
-      # Remove the hydra remote
+      # Remove the tardigrade-hydra remote
       $ git remote remove old-origin
 
       # Ensure that you're on the main branch
       $ git checkout main
 
-      # Remove ALL hydra branches except main and dev
+      # Remove ALL tardigrade-hydra branches except main and dev
       $ git branch | grep -v "main\|dev" | xargs git branch -D
 
 ***********************************
@@ -205,7 +205,7 @@ only a small number of settings must be updated.
 Enable project CI/CD
 ********************
 
-The ``hydra`` project comes pre-configured to perform continuous integration (CI) and continuous deployment (CD) on
+The ``tardigrade-hydra`` project comes pre-configured to perform continuous integration (CI) and continuous deployment (CD) on
 W-13's compute servers ``sstelmo`` and ``sstbigbird`` with testing performed in a shared development environment and
 deployment to the `AEA Conda channel`_.
 
@@ -223,7 +223,7 @@ and are not strictly necessary for CI/CD.
 
 The ``pages`` job is a special deploy stage job that builds and deploys
 documentation to your project's Gitlab Pages, e.g.
-https://aea.re-pages.lanl.gov/stub-repositories/hydra. This job should be
+https://aea.re-pages.lanl.gov/stub-repositories/tardigrade-hydra. This job should be
 retained for building and deploying documentation for your project users.
 
 The only project configuration required to enable the existing Gitlab CI/CD is
@@ -333,7 +333,7 @@ Update project name
       * feature/project-name-updates
         main
 
-2. Search for all instances of ``hydra``. The list of occurrences will look
+2. Search for all instances of ``tardigrade-hydra``. The list of occurrences will look
    quite long, but we can search and replace with ``sed`` to avoid manual file
    edits. The session below is an example, the exact output may change but the
    commands should work regardless of project re-organization or evolving features.
@@ -345,23 +345,23 @@ Update project name
       /projects/<moniker>/w13repos/my_project
 
       # Recursive, case-insensitive search and count occurrences
-      $ grep -ri hydra . --exclude-dir={build,.git} | wc -l
+      $ grep -ri tardigrade-hydra . --exclude-dir={build,.git} | wc -l
       57
 
       # Recursive, case-insensitive search and display
-      $ grep -ri hydra . --exclude-dir={build,.git}
+      $ grep -ri tardigrade-hydra . --exclude-dir={build,.git}
       ...
 
       # Clean list of files with project name
-      $ grep -ri hydra . --exclude-dir={build,.git} -l
+      $ grep -ri tardigrade-hydra . --exclude-dir={build,.git} -l
       ./CMakeLists.txt
       ./docs/api.rst
       ./docs/devops.rst
       ./README.md
       ./set_vars.sh
-      ./src/cpp/hydra.cpp
-      ./src/cpp/hydra.h
-      ./src/cpp/tests/test_hydra.cpp
+      ./src/cpp/tardigrade-hydra.cpp
+      ./src/cpp/tardigrade-hydra.h
+      ./src/cpp/tests/test_tardigrade-hydra.cpp
 
 3. Search and replace from command line
 
@@ -371,34 +371,34 @@ Update project name
       /projects/<moniker>/w13repos/my_project
 
       # Replace lower case occurrences in place
-      $ sed -i 's/hydra/my_project/g' $(grep -ri hydra . --exclude-dir={build,.git} -l)
-      $ grep -ri hydra . --exclude-dir={build,.git} -l
-      ./src/cpp/hydra.h
+      $ sed -i 's/tardigrade-hydra/my_project/g' $(grep -ri tardigrade-hydra . --exclude-dir={build,.git} -l)
+      $ grep -ri tardigrade-hydra . --exclude-dir={build,.git} -l
+      ./src/cpp/tardigrade-hydra.h
 
       # Replace upper case occurrences in place
-      $ sed -i 's/HYDRA/MY_PROJECT/g' $(grep -ri hydra . --exclude-dir={build,.git} -l)
+      $ sed -i 's/TARDIGRADE-HYDRA/MY_PROJECT/g' $(grep -ri tardigrade-hydra . --exclude-dir={build,.git} -l)
 
-4. Verify no more occurrences of project name ``hydra``
+4. Verify no more occurrences of project name ``tardigrade-hydra``
 
    .. code-block:: bash
 
       $ pwd
       /projects/<moniker>/w13repos/my_project
-      $ grep -ri hydra . --exclude-dir={build,.git} | wc -l
+      $ grep -ri tardigrade-hydra . --exclude-dir={build,.git} | wc -l
       0
-      $ grep -ri hydra . --exclude-dir={build,.git}
+      $ grep -ri tardigrade-hydra . --exclude-dir={build,.git}
       # no stdout to terminal because no occurrences found
-      $ grep -ri hydra . --exclude-dir={build,.git} -l
+      $ grep -ri tardigrade-hydra . --exclude-dir={build,.git} -l
       # no stdout to terminal because no files found
 
-5. Search and replace camelCase project name occurrences, e.g. ``hydra``.
+5. Search and replace camelCase project name occurrences, e.g. ``tardigrade-hydra``.
 
    .. code-block:: bash
 
-      $ grep -r hydra . --exclude-dir={build,.git}
+      $ grep -r tardigrade-hydra . --exclude-dir={build,.git}
       ...
-      $ sed -i 's/hydra/myProject/g' $(grep -r hydra . --exclude-dir={build,.git} -l)
-      $ grep -r hydra . --exclude-dir={build,.git} -l
+      $ sed -i 's/tardigrade-hydra/myProject/g' $(grep -r tardigrade-hydra . --exclude-dir={build,.git} -l)
+      $ grep -r tardigrade-hydra . --exclude-dir={build,.git} -l
       # no stdout to terminal because no files found
 
 6. Find files containing the project in their file name
@@ -407,10 +407,10 @@ Update project name
 
       $ pwd
       /projects/<moniker>/w13repos/my_project
-      $ find . -type d \( -name .git -o -name build \) -prune -false -o -name "*hydra*"
-      ./src/cpp/hydra.cpp
-      ./src/cpp/hydra.h
-      ./src/cpp/tests/test_hydra.cpp
+      $ find . -type d \( -name .git -o -name build \) -prune -false -o -name "*tardigrade-hydra*"
+      ./src/cpp/tardigrade-hydra.cpp
+      ./src/cpp/tardigrade-hydra.h
+      ./src/cpp/tests/test_tardigrade-hydra.cpp
 
 7. Rename files after current project
 
@@ -422,10 +422,10 @@ Update project name
    .. code-block:: bash
 
       # Show files that require a name change
-      find . -type d \( -name .git -o -name build \) -prune -false -o -name "*hydra*"
+      find . -type d \( -name .git -o -name build \) -prune -false -o -name "*tardigrade-hydra*"
 
       # Regex file name change
-      $ rename hydra my_project $(find . -type d \( -name .git -o -name build \) -prune -false -o -name "*hydra*")
+      $ rename tardigrade-hydra my_project $(find . -type d \( -name .git -o -name build \) -prune -false -o -name "*tardigrade-hydra*")
 
 8. Stage the file name changes for a commit
 
@@ -435,7 +435,7 @@ Update project name
       /projects/<moniker>/w13repos/my_project
 
       # Track the new files
-      $ git add $(git ls-files --deleted | sed 's/hydra/my_project/g')
+      $ git add $(git ls-files --deleted | sed 's/tardigrade-hydra/my_project/g')
 
       # Stop tracking the old files
       $ git rm $(git ls-files --deleted)
@@ -445,18 +445,18 @@ Update project name
       <truncated>
       Changes to be committed:
         (use "git restore --staged <file>..." to unstage)
-      renamed:    modulefiles/hydra-env -> modulefiles/my_project-env
-      renamed:    src/cpp/hydra.cpp -> src/cpp/my_project.cpp
-      renamed:    src/cpp/hydra.h -> src/cpp/my_project.h
-      renamed:    src/cpp/hydra_umat.cpp -> src/cpp/my_project_umat.cpp
-      renamed:    src/cpp/hydra_umat.h -> src/cpp/my_project_umat.h
-      renamed:    src/cpp/tests/test_hydra.cpp -> src/cpp/tests/test_my_project.cpp
+      renamed:    modulefiles/tardigrade-hydra-env -> modulefiles/my_project-env
+      renamed:    src/cpp/tardigrade-hydra.cpp -> src/cpp/my_project.cpp
+      renamed:    src/cpp/tardigrade-hydra.h -> src/cpp/my_project.h
+      renamed:    src/cpp/tardigrade-hydra_umat.cpp -> src/cpp/my_project_umat.cpp
+      renamed:    src/cpp/tardigrade-hydra_umat.h -> src/cpp/my_project_umat.h
+      renamed:    src/cpp/tests/test_tardigrade-hydra.cpp -> src/cpp/tests/test_my_project.cpp
 
 9. Commit and push your changes to your "remote" or "fork" repository
 
    .. code-block:: bash
 
-      $ git commit -m "FEAT: replace hydra with my_project throughout repository"
+      $ git commit -m "FEAT: replace tardigrade-hydra with my_project throughout repository"
       $ git push origin feature/project-name-updates
 
 You can also perform some cleanup in your documentation directory to remove this

@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file hydra_umat.h
+  * \file tardigrade-hydra_umat.h
   ******************************************************************************
   * The declarations and definitions required for an Abaqus UMAT c++ interface.
   ******************************************************************************
@@ -9,7 +9,7 @@
 #ifndef UMAT_H
 #define UMAT_H
 
-#include<hydra.h>
+#include<tardigrade-hydra.h>
 
 extern "C" void UMAT( double *STRESS,       double *STATEV,       double *DDSDDE,       double &SSE,          double &SPD,
                       double &SCD,          double &RPL,          double *DDSDDT,       double *DRPLDE,       double &DRPLDT,

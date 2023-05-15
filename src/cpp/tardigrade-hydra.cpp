@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
-  * \file hydra.cpp
+  * \file tardigrade-hydra.cpp
   ******************************************************************************
   * A C++ library for printing messages to stdout. Used as a stub repo example.
   ******************************************************************************
   */
 
-#include<hydra.h>
+#include<tardigrade-hydra.h>
 
-namespace hydra{
+namespace tardigradeHydra{
 
     //Define hydra global constants in a place that Doxygen can pick up for documentation
     /** \brief Define the expected number of tensor spatial dimensions for the Abaqus interface. */

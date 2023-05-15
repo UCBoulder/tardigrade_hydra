@@ -1,13 +1,13 @@
 /**
   ******************************************************************************
-  * \file hydra.h
+  * \file tardigrade-hydra.h
   ******************************************************************************
   * A C++ library for printing messages to stdout. Used as a stub repo example.
   ******************************************************************************
   */
 
-#ifndef HYDRA_H
-#define HYDRA_H
+#ifndef TARDIGRADE_HYDRA_H
+#define TARDIGRADE_HYDRA_H
 
 #include<sstream>
 #include<functional>
@@ -17,7 +17,7 @@
 #include<vector_tools.h>
 #include<abaqus_tools.h>
 
-namespace hydra{
+namespace tardigradeHydra{
 
     // forward class definitions
     class hydraBase;
