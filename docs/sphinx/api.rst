@@ -11,28 +11,28 @@
 .. toctree::
     :maxdepth: 2
 
-.. _hydra_source:
+.. _tardigrade-hydra_source:
 
-hydra.cpp
-============
+tardigrade-hydra.cpp
+====================
 
-.. doxygenfile:: hydra.cpp
+.. doxygenfile:: tardigrade-hydra.cpp
 
-hydra.h
-==========
+tardigrade-hydra.h
+==================
 
-.. doxygenfile:: hydra.h
+.. doxygenfile:: tardigrade-hydra.h
 
 ****************
 Abaqus interface
 ****************
 
-hydra_umat.cpp
-=================
+tardigrade-hydra_umat.cpp
+=========================
 
-.. doxygenfile:: hydra_umat.cpp
+.. doxygenfile:: tardigrade-hydra_umat.cpp
 
-hydra_umat.h
-===============
+tardigrade-hydra_umat.h
+=======================
 
-.. doxygenfile:: hydra_umat.h
+.. doxygenfile:: tardigrade-hydra_umat.h

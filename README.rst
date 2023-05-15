@@ -15,7 +15,7 @@
 .. _PEP-8: https://www.python.org/dev/peps/pep-0008/
 .. _pipreqs: https://github.com/bndr/pipreqs
 .. _LaTeX: https://www.latex-project.org/help/documentation/
-.. _upstream repository: https://re-git.lanl.gov/aea/stub-repositories/hydra
+.. _upstream repository: https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra
 .. _Material Models: https://re-git.lanl.gov/aea/material-models
 .. _UNIX group: https://ddw-confluence.lanl.gov/pages/viewpage.action?pageId=150929410
 
@@ -54,9 +54,9 @@ constitutive modeling. This stub repository also includes template hooks for int
 Information
 ===========
 
-* Documentation (``main`` branch): https://aea.re-pages.lanl.gov/stub-repositories/hydra/
+* Documentation (``main`` branch): https://aea.re-pages.lanl.gov/stub-repositories/tardigrade-hydra/
 
-* Wiki: https://re-git.lanl.gov/aea/stub-repositories/hydra/-/wikis/home
+* Wiki: https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra/-/wikis/home
 
 Developers
 ==========
@@ -72,7 +72,7 @@ Setting up a new project from this stub repo
 
     The repository setup has moved out of the README and into the HTML
     documentation. You can find the Gitlab project setup guide here:
-    https://aea.re-pages.lanl.gov/stub-repositories/hydra/gitlab_setup.html
+    https://aea.re-pages.lanl.gov/stub-repositories/tardigrade-hydra/gitlab_setup.html
 
 ************
 Gitlab CI/CD
@@ -82,7 +82,7 @@ Gitlab CI/CD
 
     The repository setup has moved out of the README and into the HTML
     documentation. You can find the Gitlab project setup guide here:
-    https://aea.re-pages.lanl.gov/stub-repositories/hydra/gitlab_setup.html
+    https://aea.re-pages.lanl.gov/stub-repositories/tardigrade-hydra/gitlab_setup.html
 
 ************
 Dependencies
@@ -96,7 +96,7 @@ the following commands.
 
 .. code-block:: bash
 
-   $ conda create --name hydra-env --file environment.txt --channel file:///projects/aea_compute/aea-conda
+   $ conda create --name tardigrade-hydra-env --file environment.txt --channel file:///projects/aea_compute/aea-conda
 
 You can learn more about Anaconda Python environment creation and management in
 the `Anaconda Documentation`_.
@@ -142,14 +142,14 @@ Build on sstelmo
    .. code-block:: bash
 
       $ module use /projects/aea_compute/modulefiles
-      $ module load hydra-env
+      $ module load tardigrade-hydra-env
 
 2) Create a build directory
 
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/
+      /path/to/tardigrade-hydra/
 
       $ mkdir build
       $ cd build
@@ -163,7 +163,7 @@ Build on sstelmo
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build
+      /path/to/tardigrade-hydra/build
       $ cmake ..
 
 4) Display target options
@@ -171,7 +171,7 @@ Build on sstelmo
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build
+      /path/to/tardigrade-hydra/build
       $ cmake --build . --target help
 
 4) Build various portions of the project
@@ -182,14 +182,14 @@ Build on sstelmo
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build
+      /path/to/tardigrade-hydra/build
 
       # Build everything (either or)
       $ cmake --build .
       $ cmake --build . --target all
 
       # Build the c++ primary libraries by target name(s)
-      $ cmake --build . --target hydra hydra_umat
+      $ cmake --build . --target tardigrade-hydra tardigrade-hydra_umat
 
       # Build the c++ primary libraries by sub-directory
       $ cmake --build src/cpp
@@ -202,7 +202,7 @@ Build on sstelmo
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build
+      /path/to/tardigrade-hydra/build
 
       # find c++ libraries and ignore intermediate files with similar extensions
       $ find . \( -name "*.o" -o -name "*.so" -o -name "*.a" \) | grep -vE "\.cpp\."
@@ -219,7 +219,7 @@ Build on sstelmo
        performed when the integration test target is requested in the cmake build
        command, e.g. ``cmake --build .`` or ``cmake --build src/abaqus/tests``. This
        operation is computationally inexpensive with respect to building the
-       ``hydra`` source code.
+       ``tardigrade-hydra`` source code.
 
        Input files are registered in the ``src/abaqus/tests/CMakeLists.txt`` file
        under the ``ABAQUS_INPUT_FILES`` CMake variable.
@@ -227,7 +227,7 @@ Build on sstelmo
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build
+      /path/to/tardigrade-hydra/build
 
       $ cmake --build . --target clean
 
@@ -239,10 +239,10 @@ Test on sstelmo
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build
+      /path/to/tardigrade-hydra/build
 
       # Build c++ and abaqus tests by target name(s)
-      $ cmake --build . --target test_hydra test_abaqus_integration
+      $ cmake --build . --target test_tardigrade-hydra test_abaqus_integration
 
       # Build c++ and abaqus tests by sub-directories
       $ cmake --build src/cpp/tests
@@ -253,7 +253,7 @@ Test on sstelmo
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build
+      /path/to/tardigrade-hydra/build
 
       # Run ctest
       $ ctest
@@ -269,7 +269,7 @@ Building the documentation
 
     The sphinx API docs are a work-in-progress. The doxygen API is much more useful.
 
-    * Documentation (``main`` branch): https://aea.re-pages.lanl.gov/stub-repositories/hydra/doxygen
+    * Documentation (``main`` branch): https://aea.re-pages.lanl.gov/stub-repositories/tardigrade-hydra/doxygen
 
 To build just the documentation pick up the steps here:
 
@@ -278,7 +278,7 @@ To build just the documentation pick up the steps here:
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/
+      /path/to/tardigrade-hydra/
       $ mkdir build/
       $ cd build/
 
@@ -287,7 +287,7 @@ To build just the documentation pick up the steps here:
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build/
+      /path/to/tardigrade-hydra/build/
       $ cmake ..
 
 4) Build the docs
@@ -300,14 +300,14 @@ To build just the documentation pick up the steps here:
 
    .. code-block:: bash
 
-      hydra/build/docs/sphinx/html/index.html
+      tardigrade-hydra/build/docs/sphinx/html/index.html
 
 6) Display docs
 
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build/
+      /path/to/tardigrade-hydra/build/
       $ firefox docs/sphinx/html/index.html &
 
 7) While the Sphinx API is still a WIP, try the doxygen API
@@ -315,7 +315,7 @@ To build just the documentation pick up the steps here:
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build/
+      /path/to/tardigrade-hydra/build/
       $ firefox docs/doxygen/html/index.html &
 
 *******************
@@ -329,7 +329,7 @@ Build the entire before performing the installation.
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build
+      /path/to/tardigrade-hydra/build
       $ cmake --build .
 
 5) Install the library
@@ -337,7 +337,7 @@ Build the entire before performing the installation.
    .. code-block:: bash
 
       $ pwd
-      /path/to/hydra/build
+      /path/to/tardigrade-hydra/build
       $ cmake --install . --prefix path/to/root/install
 
       # Example local user (non-admin) Linux install

@@ -1,12 +1,12 @@
 /**
   ******************************************************************************
-  * \file hydra_umat.cpp
+  * \file tardigrade-hydra_umat.cpp
   ******************************************************************************
   * The Abaqus UMAT c++ interface template
   ******************************************************************************
   */
 
-#include<hydra_umat.h>
+#include<tardigrade-hydra_umat.h>
 
 extern "C" void umat_( double *STRESS,       double *STATEV,       double *DDSDDE,       double &SSE,          double &SPD,
                        double &SCD,          double &RPL,          double *DDSDDT,       double *DRPLDE,       double &DRPLDT,
@@ -67,14 +67,14 @@ extern "C" void umat_( double *STRESS,       double *STATEV,       double *DDSDD
 
      //Add switching logic to handle more than one UMAT.
      //Call the appropriate UMAT interface
-     hydra::abaqusInterface( STRESS, STATEV, DDSDDE,    SSE,    SPD,
-                                  SCD,    RPL, DDSDDT, DRPLDE, DRPLDT,
-                                STRAN, DSTRAN,   TIME,  DTIME,   TEMP,
-                                DTEMP, PREDEF,  DPRED, CMNAME,    NDI,
-                                 NSHR,  NTENS, NSTATV,  PROPS, NPROPS,
-                               COORDS,   DROT, PNEWDT, CELENT, DFGRD0,
-                               DFGRD1,   NOEL,    NPT,  LAYER,   KSPT,
-                                JSTEP,   KINC );
+     tardigradeHydra::abaqusInterface( STRESS, STATEV, DDSDDE,    SSE,    SPD,
+                                           SCD,    RPL, DDSDDT, DRPLDE, DRPLDT,
+                                         STRAN, DSTRAN,   TIME,  DTIME,   TEMP,
+                                         DTEMP, PREDEF,  DPRED, CMNAME,    NDI,
+                                          NSHR,  NTENS, NSTATV,  PROPS, NPROPS,
+                                        COORDS,   DROT, PNEWDT, CELENT, DFGRD0,
+                                        DFGRD1,   NOEL,    NPT,  LAYER,   KSPT,
+                                         JSTEP,   KINC );
 
      return;
 }

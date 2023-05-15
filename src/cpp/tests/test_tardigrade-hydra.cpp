@@ -1,22 +1,22 @@
 /**
-  * \file test_hydra.cpp
+  * \file test_tardigrade-hydra.cpp
   *
-  * Tests for hydra
+  * Tests for tardigrade-hydra
   */
 
-#include<hydra.h>
+#include<tardigrade-hydra.h>
 #include<sstream>
 #include<fstream>
 
-#define BOOST_TEST_MODULE test_hydra
+#define BOOST_TEST_MODULE test_tardigrade-hydra
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
 typedef errorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
-typedef hydra::floatType floatType; //!< Redefinition of the floating point type
-typedef hydra::floatVector floatVector; //!< Redefinition of the vector of floating points type
-typedef hydra::floatMatrix floatMatrix; //!< Redefinition of the matrix of floating points type
+typedef tardigradeHydra::floatType floatType; //!< Redefinition of the floating point type
+typedef tardigradeHydra::floatVector floatVector; //!< Redefinition of the vector of floating points type
+typedef tardigradeHydra::floatMatrix floatMatrix; //!< Redefinition of the matrix of floating points type
 
 struct cout_redirect{
     cout_redirect( std::streambuf * new_buffer)
@@ -31,7 +31,7 @@ struct cout_redirect{
         std::streambuf * old;
 };
 
-namespace hydra{
+namespace tardigradeHydra{
 
     namespace unit_test{
 
@@ -281,7 +281,7 @@ BOOST_AUTO_TEST_CASE( testSayHello ){
     //Check normal operation
     message = "World!";
     answer = "Hello World!\n";
-    error = hydra::sayHello(message);
+    error = tardigradeHydra::sayHello(message);
     BOOST_CHECK( ! error );
     BOOST_CHECK( result.is_equal( answer ) );
 
@@ -290,14 +290,14 @@ BOOST_AUTO_TEST_CASE( testSayHello ){
 
     //Check for "George" error
     message = "George";
-    error = hydra::sayHello(message);
+    error = tardigradeHydra::sayHello(message);
     BOOST_CHECK( error );
 
 }
 
 BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     /*!
-     * Test the hydra abaqus interface
+     * Test the tardigrade-hydra abaqus interface
      */
 
     double double_scalar = 0.0;
@@ -306,7 +306,7 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     //Create nominally correct variable holders that match expected Abaqus Fortran interface
     //TODO: fill out nominally correct variable shape and values
     //Strings
-    char CMNAME[ ] = "hydra";
+    char CMNAME[ ] = "tardigrade-hydra";
     //Scalar integers
     int NDI = 3;
     int NSHR = 3;
@@ -355,21 +355,21 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     double* DPRED  = dpred.data( );
     std::vector< double > props( NPROPS );
     double* PROPS  = props.data( );
-    //TODO: figure out how to use hydra::spatialDimensions here
+    //TODO: figure out how to use tardigradeHydra::spatialDimensions here
     std::vector< double > coords( 3 );
     double* COORDS = coords.data( );
-    //TODO: figure out how to use hydra::spatialDimensions here
+    //TODO: figure out how to use tardigradeHydra::spatialDimensions here
     std::vector< double > drot( 3 * 3);
     double* DROT   = drot.data( );
-    //TODO: figure out how to use hydra::spatialDimensions here
+    //TODO: figure out how to use tardigradeHydra::spatialDimensions here
     std::vector< double > dfgrd0( 3 * 3);
     double* DFGRD0 = dfgrd0.data( );
-    //TODO: figure out how to use hydra::spatialDimensions here
+    //TODO: figure out how to use tardigradeHydra::spatialDimensions here
     std::vector< double > dfgrd1( 3 * 3);
     double* DFGRD1 = dfgrd1.data( );
 
     //Sign of life test. Just run to see if any exceptions are thrown.
-    hydra::abaqusInterface(
+    tardigradeHydra::abaqusInterface(
         STRESS, STATEV, DDSDDE, SSE,    SPD,
         SCD,    RPL,    DDSDDT, DRPLDE, DRPLDT,
         STRAN,  DSTRAN, TIME,   DTIME,  TEMP,
@@ -384,7 +384,7 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     double* STATEV_incorrect = temp.data( );
     int NSTATV_incorrect = temp.size( );
     BOOST_CHECK_THROW(
-        hydra::abaqusInterface(
+        tardigradeHydra::abaqusInterface(
            STRESS, STATEV_incorrect, DDSDDE,           SSE,    SPD,
            SCD,    RPL,              DDSDDT,           DRPLDE, DRPLDT,
            STRAN,  DSTRAN,           TIME,             DTIME,  TEMP,
@@ -401,7 +401,7 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     int NPROPS_incorrect = temp.size( );
 
     BOOST_CHECK_THROW(
-        hydra::abaqusInterface(
+        tardigradeHydra::abaqusInterface(
            STRESS, STATEV, DDSDDE, SSE,             SPD,
            SCD,    RPL,    DDSDDT, DRPLDE,          DRPLDT,
            STRAN,  DSTRAN, TIME,   DTIME,           TEMP,
@@ -416,169 +416,169 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getTime ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkTime( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkTime( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getDeltaTime ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkDeltaTime( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkDeltaTime( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getTemperature ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkTemperature( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkTemperature( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousTemperature ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkPreviousTemperature( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkPreviousTemperature( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getDeformationGradient ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkDeformationGradient( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkDeformationGradient( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousDeformationGradient ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkPreviousDeformationGradient( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkPreviousDeformationGradient( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousStateVariables ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkPreviousStateVariables( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkPreviousStateVariables( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getParameters ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkParameters( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkParameters( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getNumConfigurations ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkNumConfigurations( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkNumConfigurations( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getNumNonLinearSolveStateVariables ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkNumNonLinearSolveStateVariables( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkNumNonLinearSolveStateVariables( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getConfigurations ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkConfigurations( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkConfigurations( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousConfigurations ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkPreviousConfigurations( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkPreviousConfigurations( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getInverseConfigurations ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkInverseConfigurations( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkInverseConfigurations( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousInverseConfigurations ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkPreviousInverseConfigurations( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkPreviousInverseConfigurations( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getNonLinearSolveStateVariables ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkNonLinearSolveStateVariables( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkNonLinearSolveStateVariables( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousNonLinearSolveStateVariables ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkPreviousNonLinearSolveStateVariables( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkPreviousNonLinearSolveStateVariables( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getAdditionalStateVariables ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkAdditionalStateVariables( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkAdditionalStateVariables( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousAdditionalStateVariables ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkPreviousAdditionalStateVariables( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkPreviousAdditionalStateVariables( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getRelativeTolerance ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkRelativeTolerance( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkRelativeTolerance( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getAbsoluteTolerance ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkAbsoluteTolerance( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkAbsoluteTolerance( hydra );
 
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getLSAlpha ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
-    hydra::unit_test::hydraBaseTester::checkLSAlpha( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkLSAlpha( hydra );
 
 }
 
@@ -670,10 +670,10 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    hydra::unit_test::hydraBaseTester::decomposeStateVariableVector( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::decomposeStateVariableVector( hydra );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( configurationsAnswer, *hydra.getConfigurations( ) ) );
 
@@ -728,7 +728,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfiguration ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getSubConfiguration( 0, 4 ), *hydra.getDeformationGradient( ) ) );
@@ -776,7 +776,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfiguration ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPrecedingConfiguration( 4 ), *hydra.getDeformationGradient( ) ) );
@@ -834,7 +834,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfiguration ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     floatVector answer1 = { 2.09953091, 1.83604029, 2.3712323 ,
@@ -890,7 +890,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfiguration ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPreviousSubConfiguration( 0, 4 ), *hydra.getPreviousDeformationGradient( ) ) );
@@ -938,7 +938,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfiguration ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPreviousPrecedingConfiguration( 4 ), *hydra.getPreviousDeformationGradient( ) ) );
@@ -996,7 +996,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfiguration ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     floatVector answer1 = { 2.09953091, 1.83604029, 2.3712323 ,
@@ -1052,7 +1052,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     floatMatrix configurations = *hydra.getConfigurations( );
@@ -1163,7 +1163,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient2 ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     floatMatrix configurations = *hydra.getConfigurations( );
@@ -1274,7 +1274,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationGradient ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     floatMatrix configurations = *hydra.getConfigurations( );
@@ -1385,7 +1385,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationGradient ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     floatMatrix configurations = *hydra.getConfigurations( );
@@ -1496,7 +1496,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationGradient ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     floatMatrix configurations = *hydra.getPreviousConfigurations( );
@@ -1607,7 +1607,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationGradient )
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     floatMatrix configurations = *hydra.getPreviousConfigurations( );
@@ -1718,7 +1718,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationGradient )
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     floatMatrix configurations = *hydra.getPreviousConfigurations( );
@@ -1829,7 +1829,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     floatType eps = 1e-6;
@@ -1844,10 +1844,10 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients ){
 
         delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
 
-        hydra::hydraBase hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+        tardigradeHydra::hydraBase hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
                                   previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-        hydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+        tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
                                   previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         floatVector F1_p, F1_m;
@@ -1866,7 +1866,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients ){
 
     BOOST_CHECK( vectorTools::fuzzyEquals( dF1dF_answer, *hydra.getdF1dF( ) ) );
 
-    hydra::unit_test::hydraBaseTester::checkdF1dF( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkdF1dF( hydra );
 
     for ( unsigned int i = 0; i < ( numConfigurations - 1 ) * deformationGradient.size( ); i++ ){
 
@@ -1874,10 +1874,10 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients ){
 
         delta[ i ] += eps * std::fabs( previousStateVariables[ i ] ) + eps;
 
-        hydra::hydraBase hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+        tardigradeHydra::hydraBase hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                   previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-        hydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+        tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                   previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         floatVector F1_p, F1_m;
@@ -1896,7 +1896,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients ){
 
     BOOST_CHECK( vectorTools::fuzzyEquals( dF1dFn_answer, *hydra.getdF1dFn( ) ) );
 
-    hydra::unit_test::hydraBaseTester::checkdF1dFn( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::checkdF1dFn( hydra );
 
 }
 
@@ -1935,7 +1935,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients ){
 
     unsigned int dimension = 3;
 
-    hydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     floatType eps = 1e-6;
@@ -1950,10 +1950,10 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients ){
 
         delta[ i ] = eps * std::fabs( previousDeformationGradient[ i ] ) + eps;
 
-        hydra::hydraBase hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+        tardigradeHydra::hydraBase hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
                                   previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-        hydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+        tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
                                   previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         floatVector F1_p, F1_m;
@@ -1978,10 +1978,10 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients ){
 
         delta[ i ] += eps * std::fabs( previousStateVariables[ i ] ) + eps;
 
-        hydra::hydraBase hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+        tardigradeHydra::hydraBase hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                   previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-        hydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+        tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                   previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         floatVector F1_p, F1_m;
@@ -2004,11 +2004,11 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients ){
 
 BOOST_AUTO_TEST_CASE( test_residualBase_residualBase ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
     unsigned int numEquations = 3;
 
-    hydra::residualBase residual( &hydra, numEquations );
+    tardigradeHydra::residualBase residual( &hydra, numEquations );
 
     BOOST_CHECK( residual.hydra == &hydra );
 
@@ -2018,11 +2018,11 @@ BOOST_AUTO_TEST_CASE( test_residualBase_residualBase ){
 
 BOOST_AUTO_TEST_CASE( test_residualBase_checkDefaults ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
     unsigned int numEquations = 3;
 
-    hydra::residualBase residual( &hydra, numEquations );
+    tardigradeHydra::residualBase residual( &hydra, numEquations );
 
     BOOST_CHECK_THROW( residual.setResidual( ), std::nested_exception );
 
@@ -2038,15 +2038,15 @@ BOOST_AUTO_TEST_CASE( test_residualBase_checkDefaults ){
 
 BOOST_AUTO_TEST_CASE( test_residualBase_setResidual ){
 
-    class residualBaseMock : public hydra::residualBase{
+    class residualBaseMock : public tardigradeHydra::residualBase{
 
         public:
 
-            using hydra::residualBase::setResidual;
+            using tardigradeHydra::residualBase::setResidual;
 
             floatVector residual = { 1, 2, 3 };
 
-            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
             virtual void setResidual( ){
     
@@ -2056,7 +2056,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setResidual ){
 
     };
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
     unsigned int numEquations = 3;
 
@@ -2068,15 +2068,15 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setResidual ){
 
 BOOST_AUTO_TEST_CASE( test_residualBase_setJacobian ){
 
-    class residualBaseMock : public hydra::residualBase{
+    class residualBaseMock : public tardigradeHydra::residualBase{
 
         public:
 
-            using hydra::residualBase::setJacobian;
+            using tardigradeHydra::residualBase::setJacobian;
 
             floatMatrix jacobian = { { 1, 2, 3 }, { 4, 5, 6 } };
     
-            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
 
             virtual void setJacobian( ){
     
@@ -2086,7 +2086,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setJacobian ){
 
     };
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
     unsigned int numEquations = 3;
 
@@ -2098,15 +2098,15 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setJacobian ){
 
 BOOST_AUTO_TEST_CASE( test_residualBase_setdRdF ){
 
-    class residualBaseMock : public hydra::residualBase{
+    class residualBaseMock : public tardigradeHydra::residualBase{
 
         public:
 
-            using hydra::residualBase::setdRdF;
+            using tardigradeHydra::residualBase::setdRdF;
 
             floatMatrix dRdF = { { 1, 2, 3 }, { 4, 5, 6 } };
 
-            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
             virtual void setdRdF( ){
     
@@ -2116,7 +2116,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setdRdF ){
 
     };
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
     unsigned int numEquations = 3;
 
@@ -2128,15 +2128,15 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setdRdF ){
 
 BOOST_AUTO_TEST_CASE( test_residualBase_setdRdT ){
 
-    class residualBaseMock : public hydra::residualBase{
+    class residualBaseMock : public tardigradeHydra::residualBase{
 
         public:
 
-            using hydra::residualBase::setdRdT;
+            using tardigradeHydra::residualBase::setdRdT;
 
             floatVector dRdT = { 4, 5, 6 };
 
-            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
             virtual void setdRdT( ){
     
@@ -2146,7 +2146,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setdRdT ){
 
     };
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
     unsigned int numEquations = 3;
 
@@ -2158,15 +2158,15 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setdRdT ){
 
 BOOST_AUTO_TEST_CASE( test_residualBase_setAdditionalDerivatives ){
 
-    class residualBaseMock : public hydra::residualBase{
+    class residualBaseMock : public tardigradeHydra::residualBase{
 
         public:
 
-            using hydra::residualBase::setAdditionalDerivatives;
+            using tardigradeHydra::residualBase::setAdditionalDerivatives;
 
             floatMatrix additionalDerivatives = { { 4, 5, 6 } };
 
-            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
             virtual void setAdditionalDerivatives( ){
     
@@ -2176,7 +2176,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setAdditionalDerivatives ){
 
     };
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
     unsigned int numEquations = 3;
 
@@ -2188,15 +2188,15 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setAdditionalDerivatives ){
 
 BOOST_AUTO_TEST_CASE( test_residualBase_setCauchyStress ){
 
-    class residualBaseMock : public hydra::residualBase{
+    class residualBaseMock : public tardigradeHydra::residualBase{
 
         public:
 
-            using hydra::residualBase::setCauchyStress;
+            using tardigradeHydra::residualBase::setCauchyStress;
 
             floatVector cauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            residualBaseMock( hydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
             virtual void setCauchyStress( ){
     
@@ -2206,7 +2206,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setCauchyStress ){
 
     };
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
     unsigned int numEquations = 3;
 
@@ -2218,15 +2218,15 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setCauchyStress ){
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses ){
 
-    class hydraBaseMock : public hydra::hydraBase{
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
 
         public:
 
-            hydra::residualBase r1;
+            tardigradeHydra::residualBase r1;
         
-            hydra::residualBase r2;
+            tardigradeHydra::residualBase r2;
         
-            hydra::residualBase r3;
+            tardigradeHydra::residualBase r3;
 
             unsigned int s1 = 36;
 
@@ -2234,19 +2234,19 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses ){
 
             unsigned int s3 = 3;
 
-            using hydra::hydraBase::hydraBase;
+            using tardigradeHydra::hydraBase::hydraBase;
 
-            using hydra::hydraBase::setResidualClasses;
+            using tardigradeHydra::hydraBase::setResidualClasses;
 
             virtual void setResidualClasses( ){
 
-                r1 = hydra::residualBase( this, s1 );
+                r1 = tardigradeHydra::residualBase( this, s1 );
 
-                r2 = hydra::residualBase( this, s2 );
+                r2 = tardigradeHydra::residualBase( this, s2 );
 
-                r3 = hydra::residualBase( this, s3 );
+                r3 = tardigradeHydra::residualBase( this, s3 );
 
-                std::vector< hydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -2308,15 +2308,15 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses ){
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses2 ){
 
-    class hydraBaseMock : public hydra::hydraBase{
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
 
         public:
 
-            hydra::residualBase r1;
+            tardigradeHydra::residualBase r1;
         
-            hydra::residualBase r2;
+            tardigradeHydra::residualBase r2;
         
-            hydra::residualBase r3;
+            tardigradeHydra::residualBase r3;
 
             unsigned int s1 = 2;
 
@@ -2324,19 +2324,19 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses2 ){
 
             unsigned int s3 = 3;
 
-            using hydra::hydraBase::hydraBase;
+            using tardigradeHydra::hydraBase::hydraBase;
 
-            using hydra::hydraBase::setResidualClasses;
+            using tardigradeHydra::hydraBase::setResidualClasses;
 
             virtual void setResidualClasses( ){
 
-                r1 = hydra::residualBase( this, s1 );
+                r1 = tardigradeHydra::residualBase( this, s1 );
 
-                r2 = hydra::residualBase( this, s2 );
+                r2 = tardigradeHydra::residualBase( this, s2 );
 
-                r3 = hydra::residualBase( this, s3 );
+                r3 = tardigradeHydra::residualBase( this, s3 );
 
-                std::vector< hydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -2392,23 +2392,23 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses2 ){
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
-    class residualBaseMock : public hydra::residualBase{
+    class residualBaseMock : public tardigradeHydra::residualBase{
 
         public:
 
             unsigned int numVariables = 41;
 
-            using hydra::residualBase::residualBase;
+            using tardigradeHydra::residualBase::residualBase;
 
-            using hydra::residualBase::setResidual;
+            using tardigradeHydra::residualBase::setResidual;
 
-            using hydra::residualBase::setJacobian;
+            using tardigradeHydra::residualBase::setJacobian;
 
-            using hydra::residualBase::setdRdF;
+            using tardigradeHydra::residualBase::setdRdF;
 
-            using hydra::residualBase::setdRdT;
+            using tardigradeHydra::residualBase::setdRdT;
 
-            using hydra::residualBase::setAdditionalDerivatives;
+            using tardigradeHydra::residualBase::setAdditionalDerivatives;
 
             virtual void setResidual( ){
 
@@ -2494,7 +2494,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
     };
 
-    class hydraBaseMock : public hydra::hydraBase{
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
 
         public:
 
@@ -2510,9 +2510,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
             unsigned int s3 = 3;
 
-            using hydra::hydraBase::hydraBase;
+            using tardigradeHydra::hydraBase::hydraBase;
 
-            using hydra::hydraBase::setResidualClasses;
+            using tardigradeHydra::hydraBase::setResidualClasses;
 
             virtual void setResidualClasses( ){
 
@@ -2522,7 +2522,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
                 r3 = residualBaseMock( this, s3 );
 
-                std::vector< hydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -2597,7 +2597,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
                                                                             *hydraGet.r2.getAdditionalDerivatives( ),
                                                                             *hydraGet.r3.getAdditionalDerivatives( ) } );
 
-    hydra::unit_test::hydraBaseTester::formNonLinearProblem( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::formNonLinearProblem( hydra );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( residualAnswer, *hydra.getResidual( ) ) );
 
@@ -2613,23 +2613,23 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
-    class residualBaseMock : public hydra::residualBase{
+    class residualBaseMock : public tardigradeHydra::residualBase{
 
         public:
 
             unsigned int numVariables = 41;
 
-            using hydra::residualBase::residualBase;
+            using tardigradeHydra::residualBase::residualBase;
 
-            using hydra::residualBase::setResidual;
+            using tardigradeHydra::residualBase::setResidual;
 
-            using hydra::residualBase::setJacobian;
+            using tardigradeHydra::residualBase::setJacobian;
 
-            using hydra::residualBase::setdRdF;
+            using tardigradeHydra::residualBase::setdRdF;
 
-            using hydra::residualBase::setdRdT;
+            using tardigradeHydra::residualBase::setdRdT;
 
-            using hydra::residualBase::setAdditionalDerivatives;
+            using tardigradeHydra::residualBase::setAdditionalDerivatives;
 
             virtual void setResidual( ){
 
@@ -2715,7 +2715,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
             using residualBaseMock::setAdditionalDerivatives;
 
-            using hydra::residualBase::setCauchyStress;
+            using tardigradeHydra::residualBase::setCauchyStress;
 
             virtual void setCauchyStress( ){
 
@@ -2725,7 +2725,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
     };
 
-    class hydraBaseMock : public hydra::hydraBase{
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
 
         public:
 
@@ -2741,9 +2741,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
             unsigned int s3 = 3;
 
-            using hydra::hydraBase::hydraBase;
+            using tardigradeHydra::hydraBase::hydraBase;
 
-            using hydra::hydraBase::setResidualClasses;
+            using tardigradeHydra::hydraBase::setResidualClasses;
 
             virtual void setResidualClasses( ){
 
@@ -2753,7 +2753,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
                 r3 = residualBaseMock( this, s3 );
 
-                std::vector< hydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -2805,7 +2805,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
     hydra.setResidualClasses( );
 
-    hydra::unit_test::hydraBaseTester::initializeUnknownVector( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector( hydra );
 
     floatVector unknownVectorAnswer = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
                                         1.53155137, 0.53182759, 0.63440096, 0.84943179, 1.72445532, 0.61102351, 0.72244338, 0.32295891, 1.36178866,
@@ -2820,11 +2820,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_setTolerance ){
 
-    class hydraBaseMock : public hydra::hydraBase {
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
 
         public:
 
-            using hydra::hydraBase::hydraBase;
+            using tardigradeHydra::hydraBase::hydraBase;
 
     };
 
@@ -2870,9 +2870,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setTolerance ){
 
     floatVector toleranceAnswer = 1e-9 * (vectorTools::abs( residual ) + vectorTools::abs( unknownVector )) + 1e-9;
 
-    hydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
+    tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
-    hydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
+    tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getTolerance( ), toleranceAnswer ) );
 
@@ -2880,11 +2880,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setTolerance ){
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_checkConvergence ){
 
-    class hydraBaseMock : public hydra::hydraBase {
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
 
         public:
 
-            using hydra::hydraBase::hydraBase;
+            using tardigradeHydra::hydraBase::hydraBase;
 
     };
 
@@ -2928,21 +2928,21 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkConvergence ){
 
     floatVector unknownVector = { -2, 5, 10, 0.3 };
 
-    hydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
+    tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
-    hydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
+    tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
 
     BOOST_CHECK( !hydra.checkConvergence( ) );
 
     residual = { 0, 2, -3, 0 };
 
-    hydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
+    tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
     BOOST_CHECK( !hydra.checkConvergence( ) );
 
     residual = { 0, 0, 0, 0 };
 
-    hydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
+    tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
     BOOST_CHECK( hydra.checkConvergence( ) );
 
@@ -2950,12 +2950,12 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkConvergence ){
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getLSResidualNorm ){
 
-    hydra::hydraBase hydra;
+    tardigradeHydra::hydraBase hydra;
 
     floatVector residual = { 1, 2, 3 };
 
     floatType lsResidualNormAnswer = vectorTools::l2norm( residual );
-      hydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
+      tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getLSResidualNorm( ), lsResidualNormAnswer ) );
 
@@ -2963,11 +2963,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getLSResidualNorm ){
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_checkLSConvergence ){
 
-    class hydraBaseMock : public hydra::hydraBase {
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
 
         public:
 
-            using hydra::hydraBase::hydraBase;
+            using tardigradeHydra::hydraBase::hydraBase;
 
     };
 
@@ -3009,13 +3009,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkLSConvergence ){
 
     floatVector residual = { 1, 2, -3, 0 };
 
-    hydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
+    tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
     BOOST_CHECK( !hydra.checkLSConvergence( ) );
 
     residual = { 0.1, 2, -3, 0 };
 
-    hydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
+    tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
     BOOST_CHECK( hydra.checkLSConvergence( ) );
 
@@ -3023,11 +3023,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkLSConvergence ){
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector ){
 
-    class hydraBaseMock : public hydra::hydraBase {
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
 
         public:
 
-            using hydra::hydraBase::hydraBase;
+            using tardigradeHydra::hydraBase::hydraBase;
 
     };
 
@@ -3087,9 +3087,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector ){
 
     floatVector isvAnswer = { 0.7558753 ,  0.90210319, -0.15050147, -0.83735103, -0.8684919 };
 
-    hydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
+    tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
 
-    hydra::unit_test::hydraBaseTester::decomposeUnknownVector( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::decomposeUnknownVector( hydra );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getCauchyStress( ), cauchyStressAnswer ) );
 
@@ -3101,11 +3101,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector ){
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem ){
 
-    class hydraBaseMock : public hydra::hydraBase {
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
 
         public:
 
-            using hydra::hydraBase::hydraBase;
+            using tardigradeHydra::hydraBase::hydraBase;
 
             floatVector initialUnknownVector = { 1, 2, 3 };
 
@@ -3174,21 +3174,21 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem ){
 
         private:
 
-            using hydra::hydraBase::getResidual;
+            using tardigradeHydra::hydraBase::getResidual;
 
             virtual void initializeUnknownVector( ){
 
-                hydra::unit_test::hydraBaseTester::set_unknownVector( *this, initialUnknownVector );
+                tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, initialUnknownVector );
 
-                hydra::unit_test::hydraBaseTester::set_residual( *this, residual[ 0 ][ 0 ] );
+                tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual[ 0 ][ 0 ] );
 
-                hydra::unit_test::hydraBaseTester::set_flatJacobian( *this, flatJacobian[ 0 ][ 0 ] );
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, flatJacobian[ 0 ][ 0 ] );
 
             }
 
             virtual bool checkConvergence( ){
 
-                unsigned int iteration = hydra::unit_test::hydraBaseTester::get_iteration( *this );
+                unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
                 if ( iteration < residual.size( ) ){
 
@@ -3202,9 +3202,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem ){
 
             virtual bool checkLSConvergence( ){
 
-                unsigned int iteration = hydra::unit_test::hydraBaseTester::get_iteration( *this );
+                unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
-                unsigned int LSIteration = hydra::unit_test::hydraBaseTester::get_LSIteration( *this );
+                unsigned int LSIteration = tardigradeHydra::unit_test::hydraBaseTester::get_LSIteration( *this );
 
                 getResidual( );
 
@@ -3220,9 +3220,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem ){
 
             virtual void formNonLinearProblem( ){
 
-                unsigned int iteration = hydra::unit_test::hydraBaseTester::get_iteration( *this );
+                unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
-                unsigned int LSIteration = hydra::unit_test::hydraBaseTester::get_LSIteration( *this );
+                unsigned int LSIteration = tardigradeHydra::unit_test::hydraBaseTester::get_LSIteration( *this );
 
                 unsigned int iterationOffset = 0;
 
@@ -3240,23 +3240,23 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem ){
 
                 }
 
-                hydra::unit_test::hydraBaseTester::set_residual( *this, residual[ iteration + iterationOffset ][ LSIteration + LSoffset ] );
+                tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual[ iteration + iterationOffset ][ LSIteration + LSoffset ] );
 
-                hydra::unit_test::hydraBaseTester::set_flatJacobian( *this, flatJacobian[ iteration + iterationOffset ][ LSIteration + LSoffset ] );
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, flatJacobian[ iteration + iterationOffset ][ LSIteration + LSoffset ] );
 
             }
 
             virtual void updateUnknownVector( const floatVector &newUnknownVector ){
 
-                hydra::unit_test::hydraBaseTester::resetIterationData( *this );
+                tardigradeHydra::unit_test::hydraBaseTester::resetIterationData( *this );
 
-                unsigned int iteration = hydra::unit_test::hydraBaseTester::get_iteration( *this );
+                unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
-                unsigned int LSIteration = hydra::unit_test::hydraBaseTester::get_LSIteration( *this );
+                unsigned int LSIteration = tardigradeHydra::unit_test::hydraBaseTester::get_LSIteration( *this );
 
                 BOOST_CHECK( vectorTools::fuzzyEquals( expectedXVectors[ iteration ][ LSIteration ], newUnknownVector ) );
 
-                hydra::unit_test::hydraBaseTester::set_unknownVector( *this, newUnknownVector );
+                tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, newUnknownVector );
 
             }
 
@@ -3298,6 +3298,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem ){
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    hydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra );
 
 }

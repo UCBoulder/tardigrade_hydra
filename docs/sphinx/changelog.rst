@@ -12,6 +12,7 @@ Changelog
 Breaking Changes
 ================
 - Changed getSubConfiguration to not include the upper bound (:merge:`7`). By `Nathan Miller`_.
+- Change project name to tardigrade-hydra (:merge:`16`). by `Nathan Miller`_.
 
 New Features
 ============
