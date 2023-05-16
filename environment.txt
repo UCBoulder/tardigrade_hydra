@@ -1,8 +1,8 @@
-abaqus_tools>=0.3
+abaqus_tools>=0.4
 boost>=1.59
 breathe>=4.30.0
 cmake>=3.18
-constitutive_tools
+constitutive_tools>=0.5.0
 doxygen>=1.9
 eigen>=3.3.7
 error_tools>=0.4

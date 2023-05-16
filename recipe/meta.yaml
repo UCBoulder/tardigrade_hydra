@@ -22,9 +22,9 @@ requirements:
     - eigen >=3.3.7
     - error_tools>=0.4
     - vector_tools>=0.5.4
-    - constitutive_tools
+    - constitutive_tools>=0.5.0
     - solver_tools
-    - abaqus_tools>=0.3
+    - abaqus_tools>=0.4
     - boost >=1.59  # TODO: Separate the package/test configuration to make BOOST an optional build dependency
     - setuptools_scm >=6.2
     - libcxx <16  # [osx]
@@ -40,9 +40,9 @@ requirements:
     - eigen >=3.3.7
     - error_tools>=0.4
     - vector_tools>=0.5.4
-    - constitutive_tools
+    - constitutive_tools>=0.5.0
     - solver_tools
-    - abaqus_tools>=0.3
+    - abaqus_tools>=0.4
 
 test:
   requires:
