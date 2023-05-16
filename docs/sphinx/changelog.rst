@@ -12,7 +12,7 @@ Changelog
 Breaking Changes
 ================
 - Changed getSubConfiguration to not include the upper bound (:merge:`7`). By `Nathan Miller`_.
-- Change project name to tardigrade-hydra (:merge:`16`). by `Nathan Miller`_.
+- Change project name to tardigrade-hydra (:merge:`17`). by `Nathan Miller`_.
 
 New Features
 ============
@@ -23,6 +23,7 @@ New Features
 - Added setting and checking the tolerance for the line-search of the non-linear solve (:merge:`14`). By `Nathan Miller`_.
 - Added the decomposition of the unknown vector and its application to the solution quantities (:merge:`14`). By `Nathan Miller`_.
 - Added the solution of the non-linear problem (:merge:`14`). By `Nathan Miller`_.
+- Added the evaluation of hydra to compute the required quantities (:merge:`17`). By `Nathan Miller`_.
 
 Internal Changes
 ================

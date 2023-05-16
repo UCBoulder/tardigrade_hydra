@@ -458,6 +458,8 @@ namespace tardigradeHydra{
 
             const floatVector* getCauchyStress( );
 
+            virtual void evaluate( );
+
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
 

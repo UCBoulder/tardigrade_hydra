@@ -1535,6 +1535,15 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::evaluate( ){
+        /*!
+         * Solve the non-linear problem and update the variables
+         */
+
+        ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
+
+    }
+
     errorOut dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,
                                  floatType &SCD,                  floatType &RPL,             floatVector &ddsddt,       floatVector &drplde,       floatType &DRPLDT,
                                  const floatVector &strain,       const floatVector &dstrain, const floatVector &time,   const floatType &DTIME,    const floatType &TEMP,
