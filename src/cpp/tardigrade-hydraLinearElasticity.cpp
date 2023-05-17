@@ -360,7 +360,7 @@ namespace tardigradeHydra{
     
                 for ( unsigned int j = 0; j < ( *dim ); j++ ){
     
-                    jacobian[ ( *dim ) * i + j ][ ( *dim ) * i + j ] = 1;
+                    jacobian[ ( *dim ) * i + j ][ ( *dim ) * i + j ] = -1;
     
                     for ( unsigned int I = 0; I < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( *dim ) * ( *dim ); I++ ){
     
