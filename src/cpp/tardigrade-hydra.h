@@ -2,7 +2,7 @@
   ******************************************************************************
   * \file tardigrade-hydra.h
   ******************************************************************************
-  * A C++ library for printing messages to stdout. Used as a stub repo example.
+  * A C++ library for constructing finite deformation constitutive models.
   ******************************************************************************
   */
 

@@ -2,7 +2,8 @@
   ******************************************************************************
   * \file tardigrade-hydra.cpp
   ******************************************************************************
-  * A C++ library for printing messages to stdout. Used as a stub repo example.
+  * A C++ library for defining frameworks to solve finite deformation material
+  * models.
   ******************************************************************************
   */
 
