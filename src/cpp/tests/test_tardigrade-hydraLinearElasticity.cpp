@@ -153,3 +153,272 @@ BOOST_AUTO_TEST_CASE( test_residual_setEe ){
     BOOST_CHECK( vectorTools::fuzzyEquals( EeAnswer, *R.getEe( ) ) );
 
 }
+
+BOOST_AUTO_TEST_CASE( test_residual_setdEedFe ){
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            tardigradeHydra::linearElasticity::residual elasticity;
+
+            unsigned int elasticitySize = 9;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            virtual void setResidualClasses( ){
+
+                elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 1 );
+
+                residuals[ 0 ] = &elasticity;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { };
+
+    floatVector parameters = { 123.4, 56.7 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    floatVector EeAnswer;
+
+    floatMatrix dEedFeAnswer;
+
+    ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::computeGreenLagrangeStrain( deformationGradient, EeAnswer, dEedFeAnswer ) );
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    tardigradeHydra::linearElasticity::residual R( &hydra, 9, parameters );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( dEedFeAnswer, *R.getdEedFe( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_setPK2Stress ){
+
+    class residualMock : public tardigradeHydra::linearElasticity::residual {
+
+        public:
+
+            using tardigradeHydra::linearElasticity::residual::residual;
+
+            void setEe( floatVector &Ee ){ tardigradeHydra::linearElasticity::residual::setEe( Ee ); }
+
+            floatVector Ee = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        private:
+
+            virtual void setEe( ) override {
+
+                setEe( Ee );
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            residualMock elasticity;
+
+            unsigned int elasticitySize = 9;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            virtual void setResidualClasses( ){
+
+                elasticity = residualMock( this, elasticitySize, *getParameters( ) );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 1 );
+
+                residuals[ 0 ] = &elasticity;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { };
+
+    floatVector parameters = { 123.4, 56.7 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    floatVector PK2StressAnswer = { 1964.4,  226.8,  340.2,
+                                     453.6, 2418. ,  680.4,
+                                     793.8,  907.2, 2871.6 };
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    residualMock R( &hydra, 9, parameters );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( PK2StressAnswer, *R.getPK2Stress( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_setdPK2dEe ){
+
+    class residualMock : public tardigradeHydra::linearElasticity::residual {
+
+        public:
+
+            using tardigradeHydra::linearElasticity::residual::residual;
+
+            void setEe( floatVector &Ee ){ tardigradeHydra::linearElasticity::residual::setEe( Ee ); }
+
+            floatVector Ee = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        private:
+
+            virtual void setEe( ) override {
+
+                setEe( Ee );
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            residualMock elasticity;
+
+            unsigned int elasticitySize = 9;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            virtual void setResidualClasses( ){
+
+                elasticity = residualMock( this, elasticitySize, *getParameters( ) );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 1 );
+
+                residuals[ 0 ] = &elasticity;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { };
+
+    floatVector parameters = { 123.4, 56.7 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    floatVector PK2StressAnswer = { 1964.4,  226.8,  340.2,
+                                     453.6, 2418. ,  680.4,
+                                     793.8,  907.2, 2871.6 };
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    residualMock R( &hydra, 9, parameters );
+
+    floatType eps = 1e-6;
+
+    floatMatrix gradient( R.Ee.size( ), floatVector( R.Ee.size( ), 0 ) );
+
+    for ( unsigned int i = 0; i < R.Ee.size( ); i++ ){
+
+        floatVector delta( R.Ee.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( R.Ee[ i ] ) + eps;
+
+        residualMock Rp( &hydra, 9, parameters );
+
+        residualMock Rm( &hydra, 9, parameters );
+
+        Rp.Ee += delta;
+
+        Rm.Ee -= delta;
+
+        for ( unsigned int j = 0; j < R.Ee.size( ); j++ ){
+
+            gradient[ j ][ i ] = ( ( *Rp.getPK2Stress( ) )[ j ] - ( *Rm.getPK2Stress( ) )[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, *R.getdPK2dEe( ) ) );
+
+}
