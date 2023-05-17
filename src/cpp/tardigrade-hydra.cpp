@@ -286,6 +286,8 @@ namespace tardigradeHydra{
         // Set the configurations
         _configurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
 
+        _inverseConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
         // Initialize the first configuration with the total deformation gradient
         _configurations.second[ 0 ] = *getDeformationGradient( );
 
