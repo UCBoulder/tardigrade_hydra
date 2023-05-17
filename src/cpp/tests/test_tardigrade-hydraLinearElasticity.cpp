@@ -949,3 +949,113 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual2 ){
     BOOST_CHECK( vectorTools::fuzzyEquals( residualAnswer, *R.getResidual( ) ) );
 
 }
+
+BOOST_AUTO_TEST_CASE( test_residual_setJacobian ){
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            tardigradeHydra::linearElasticity::residual elasticity;
+
+            tardigradeHydra::residualBase remainder;
+
+            unsigned int elasticitySize = 9;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            virtual void setResidualClasses( ){
+
+                elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
+
+                remainder = tardigradeHydra::residualBase( this, 18 );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &remainder;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 1.05, 0, 0,
+                                        0.00, 1, 0,
+                                        0.00, 1, 1};
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.1, 0.2, 0.3,  0.2,  0.4, -0.2, 0.3, 0.2, -0.1,
+                                          -0.5, 0.4, 0.2, -0.2, -0.1,  0.1, 0.1, 0.3,  0.4,
+                                           0.11, 0.12, 0.13};
+
+    floatVector parameters = { 123.4, 56.7 };
+
+    unsigned int numConfigurations = 3;
+
+    unsigned int numNonLinearSolveStateVariables = 3;
+
+    unsigned int dimension = 3;
+
+    floatVector unknownVector = {   1,  1,  1,  1,  1,  1,  1,  1,  1,
+                                  1.00, .00, .00, .00, 1.00, .00, .00, .00, 1.00,
+                                  1.00, .00, .00, .00, 1.00, .00, .00, .00, 1.00,
+                                   0.2, -0.3, 0.7 };
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
+    tardigradeHydra::linearElasticity::residual R( &hydra, 9, parameters );
+
+    floatMatrix gradient( 9, floatVector( hydra.getUnknownVector( )->size( ) ) );
+
+    floatType eps = 1e-6;
+
+    for ( unsigned int i = 0; i < ( 9 * numConfigurations + numNonLinearSolveStateVariables ); i++ ){
+
+        floatVector delta( hydra.getUnknownVector( )->size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( ( *hydra.getUnknownVector( ) )[ i ] ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, *hydra.getUnknownVector( ) + delta );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, *hydra.getUnknownVector( ) - delta );
+
+        tardigradeHydra::linearElasticity::residual Rp( &hydrap, 9, parameters );
+
+        tardigradeHydra::linearElasticity::residual Rm( &hydram, 9, parameters );
+
+        for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
+
+            gradient[ j ][ i ] = ( ( *Rp.getResidual( ) )[ j ] - ( *Rm.getResidual( ) )[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, *R.getJacobian( ) ) );
+
+}
