@@ -341,8 +341,8 @@ namespace tardigradeHydra{
              */
     
             const floatVector *cauchyStress = getCauchyStress( );
-    
-            setResidual( *cauchyStress - *hydra->getCauchyStress( ) );
+
+            ERROR_TOOLS_CATCH( setResidual( *cauchyStress - *hydra->getCauchyStress( ) ) );
     
         }
     
