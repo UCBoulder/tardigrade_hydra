@@ -102,7 +102,6 @@ endif()
 # Find related, but external, projects in installed environment
 include(FetchContent)
 set(upstream_packages "error_tools" "vector_tools" "constitutive_tools" "abaqus_tools")
-set(PROJECT_LINK_LIBRARIES ${PROJECT_LINK_LIBRARIES} constitutive_tools)
 if(${not_conda_test} STREQUAL "false")
     # During conda-build testing, we must find the installed project files as if they were an external project
     set(upstream_packages ${upstream_packages} ${PROJECT_NAME})
@@ -137,9 +136,9 @@ endif()
 if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     # Find Boost. Required for tests
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
+    # Add c++ tests and docs
     add_subdirectory(${CPP_TEST_PATH})
     add_subdirectory(${ABAQUS_SRC_PATH})
-    # Add c++ tests and docs
     if(${not_conda_test} STREQUAL "true")
         add_subdirectory(${DOXYGEN_SRC_PATH})
         add_subdirectory(${SPHINX_SRC_PATH})
