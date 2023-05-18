@@ -23,7 +23,8 @@ New Features
 - Added setting and checking the tolerance for the line-search of the non-linear solve (:merge:`14`). By `Nathan Miller`_.
 - Added the decomposition of the unknown vector and its application to the solution quantities (:merge:`14`). By `Nathan Miller`_.
 - Added the solution of the non-linear problem (:merge:`14`). By `Nathan Miller`_.
-- Added the evaluation of hydra to compute the required quantities (:merge:`17`). By `Nathan Miller`_.
+- Added a linear elastic implementation of a residual for use in testing (:merge:`18`). By `Nathan Miller`_.
+- Added the evaluation of hydra to compute the required quantities (:merge:`18`). By `Nathan Miller`_.
 
 Internal Changes
 ================
