@@ -73,15 +73,38 @@ namespace tardigradeHydra{
 
 BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests ){
 
-    class hydraMock : public tardigradeHydra::hydraBase{
+    floatType time = 1.1;
 
-    };
+    floatType deltaTime = 2.2;
 
-    hydraMock hydra;
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { };
 
     floatVector parameters = { 123.4, 56.7 };
 
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                      previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
     tardigradeHydra::linearElasticity::residual R( &hydra, 9, parameters );
+
+    tardigradeHydra::linearElasticity::unit_test::residualTester::runBasicGetTests( R );
 
 }
 
