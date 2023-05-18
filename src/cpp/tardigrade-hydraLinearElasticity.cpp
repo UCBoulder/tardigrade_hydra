@@ -212,7 +212,52 @@ namespace tardigradeHydra{
             return &_dPK2dEe.second;
     
         }
-    
+
+        void residual::setdPK2dFe( ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the elastic
+             * deformation gradient
+             */
+
+             floatMatrix dPK2dFe = vectorTools::dot( *getdPK2dEe( ), *getdEedFe( ) );
+
+             setdPK2dFe( dPK2dFe );
+
+        }
+
+        void residual::setdPK2dFe( const floatMatrix &dPK2dFe ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the elastic
+             * deformation gradient
+             * 
+             * \param &dPK2dFe: The derivative of the second Piola-Kirchhoff stress w.r.t.
+             *     the elastic deformation gradient
+             */
+
+            _dPK2dFe.second = dPK2dFe;
+
+            _dPK2dFe.first = true;
+
+            addIterationData( &_dPK2dFe );
+
+        }
+
+        const floatMatrix* residual::getdPK2dFe( ){
+            /*!
+             * Get the derivative of the second Piola-Kirchhoff stress w.r.t. the elastic
+             * deformation gradient
+             */
+
+            if ( !_dPK2dFe.first ){
+
+                ERROR_TOOLS_CATCH( setdPK2dFe( ) )
+
+            }
+
+            return &_dPK2dFe.second;
+
+        }
+
         void residual::setCauchyStress( ){
             /*!
              * Set the Cauchy stress
@@ -224,15 +269,13 @@ namespace tardigradeHydra{
     
             floatMatrix dFedFn = ( *hydra->getdF1dFn( ) );
     
-            // Compute the gradient of the elastic strain w.r.t. the elastic deformation gradient
-            floatMatrix dEedF = vectorTools::dot( *getdEedFe( ), dFedF );
-    
-            floatMatrix dEedFn = vectorTools::dot( *getdEedFe( ), dFedFn );
-    
+            // Compute the gradient of the PK2 stress w.r.t. the elastic deformation gradient
+            floatMatrix dPK2dFe = *getdPK2dFe( );
+
             // Compute the Second Piola-Kirchhoff stress and it's gradients
-            floatMatrix dPK2dF = vectorTools::dot( *getdPK2dEe( ), dEedF );
+            floatMatrix dPK2dF = vectorTools::dot( *getdPK2dFe( ), dFedF );
     
-            floatMatrix dPK2dFn = vectorTools::dot( *getdPK2dEe( ), dEedFn );
+            floatMatrix dPK2dFn = vectorTools::dot( *getdPK2dFe( ), dFedFn );
     
             // Map the PK2 stress to the current configuration
             floatVector cauchyStress;

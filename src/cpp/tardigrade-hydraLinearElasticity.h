@@ -87,6 +87,8 @@ namespace tardigradeHydra{
                 const floatVector* getPK2Stress( );
     
                 const floatMatrix* getdPK2dEe( );
+
+                const floatMatrix* getdPK2dFe( );
     
                 const floatMatrix* getdCauchyStressdF( );
     
@@ -103,6 +105,8 @@ namespace tardigradeHydra{
                 void setPK2Stress( const floatVector &PK2Stress );
     
                 void setdPK2dEe( const floatMatrix &dPK2dEe );
+
+                void setdPK2dFe( const floatMatrix &dPK2dFe );
     
                 void setdCauchyStressdF( const floatMatrix &dCauchyStressdF );
     
@@ -134,33 +138,37 @@ namespace tardigradeHydra{
                 tardigradeHydra::dataStorage< floatVector > _Ee;
 
                 tardigradeHydra::dataStorage< floatMatrix > _dEedFe;
-        
+
                 tardigradeHydra::dataStorage< floatVector > _PK2Stress;
-        
+
                 tardigradeHydra::dataStorage< floatMatrix > _dPK2dEe;
-        
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPK2dFe;
+
                 tardigradeHydra::dataStorage< floatMatrix > _dCauchyStressdF;
-        
+
                 tardigradeHydra::dataStorage< floatMatrix > _dCauchyStressdFn;
-        
+
                 virtual void setEe( );
-        
+
                 virtual void setdEedFe( );
-        
+ 
                 virtual void setPK2Stress( );            
-    
+
                 virtual void setdPK2dEe( );
 
+                virtual void setdPK2dFe( );
+
                 virtual void setCauchyStress( ) override;
-    
+
                 virtual void setdCauchyStressdF( );
-    
+
                 virtual void setdCauchyStressdFn( );
-   
+
                 virtual void setResidual( ) override;
 
                 virtual void setJacobian( ) override;
- 
+
                 virtual void setdRdT( ) override;
 
                 virtual void setdRdF( ) override;
