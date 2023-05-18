@@ -47,3 +47,4 @@ Internal Changes
 - Added the construction residual, Jacobian, and other values (:merge:`12`). By `Nathan Miller`_.
 - Clean up conda package CI files after ``conda build`` (:issue:`2`, :merge:`15`). By `Sergio Cordova`_.
 - Changed the convergence_error type to use standard strings (:merge:`18`). By `Nathan Miller`_.
+- Changed the version extraction script (:merge:`19`). By `Nathan Miller`_.
