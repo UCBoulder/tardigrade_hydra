@@ -203,18 +203,14 @@ namespace tardigradeHydra{
 
     }
 
-    void residualBase::resetIterationData( ){
+    void residualBase::addIterationData( dataBase *data ){
         /*!
-         * Reset the data stored in the iteration variable
+         * Add data to the vector of values which will be cleared after each iteration
+         * 
+         * \param *data: The dataBase object to be cleared
          */
 
-        for ( auto d = _iterationData.begin( ); d != _iterationData.end( ); d++ ){
-
-            ( *d )->clear( );
-
-        }
-
-        _iterationData.clear( );
+        hydra->addIterationData( data );
 
     }
 
@@ -1512,9 +1508,7 @@ namespace tardigradeHydra{
 
             if ( !checkLSConvergence( ) ){
 
-                std::string message = "Failure in line search";
-
-                ERROR_TOOLS_CATCH( throw convergence_error( message.c_str( ) ) );
+                ERROR_TOOLS_CATCH( throw convergence_error( "Failure in line search" ) );
 
             }
 
@@ -1527,9 +1521,7 @@ namespace tardigradeHydra{
 
         if ( !checkConvergence( ) ){
 
-            std::string message = "Failure to converge main loop";
-
-            ERROR_TOOLS_CATCH( throw convergence_error( message.c_str( ) ) );
+            ERROR_TOOLS_CATCH( throw convergence_error( "Failure to converge main loop" ) );
 
         }
 
