@@ -50,7 +50,11 @@ if(${not_conda_test} STREQUAL "true")
     execute_process(COMMAND ${Python_EXECUTABLE} -m setuptools_scm
                             OUTPUT_VARIABLE ${PROJECT_NAME}_VERSION_STRING_FULL
                     OUTPUT_STRIP_TRAILING_WHITESPACE)
-    string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+" ${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_VERSION_STRING_FULL})
+    if(${${PROJECT_NAME}_VERSION_STRING_FULL} STREQUAL "")
+        set(${PROJECT_NAME}_VERSION 0.0.0)
+    else()
+         string(REGEX MATCH "[0-9]+\.[0-9]+\.[0-9]+" ${PROJECT_NAME}_VERSION ${${PROJECT_NAME}_VERSION_STRING_FULL})
+    endif()
     project(${PROJECT_NAME} VERSION ${${PROJECT_NAME}_VERSION})
 endif()
 
