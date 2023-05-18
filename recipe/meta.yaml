@@ -54,6 +54,7 @@ test:
     - CMakeLists.txt
     - src/cpp/tests/CMakeLists.txt
     - src/cpp/tests/test_tardigrade-hydra.cpp
+    - src/cpp/tests/test_tardigrade-hydraLinearElasticity.cpp
     - src/abaqus/CMakeLists.txt
     - src/abaqus/single_element_c3d8.inp
     - src/abaqus/tests/CMakeLists.txt
