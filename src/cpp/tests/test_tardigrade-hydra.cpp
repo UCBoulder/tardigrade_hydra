@@ -5,6 +5,8 @@
   */
 
 #include<tardigrade-hydra.h>
+#include<tardigrade-hydraLinearElasticity.h>
+#include<constitutive_tools.h>
 #include<sstream>
 #include<fstream>
 
@@ -252,6 +254,12 @@ namespace tardigradeHydra{
                 static void resetIterationData( hydraBase &hydra ){
 
                     hydra.resetIterationData( );
+
+                }
+
+                static void updateUnknownVector( hydraBase &hydra, const floatVector &value ){
+
+                    hydra.updateUnknownVector( value );
 
                 }
 
@@ -3299,5 +3307,91 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem ){
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_setdRdF ){
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            tardigradeHydra::linearElasticity::residual elasticity;
+
+            unsigned int elasticitySize = 9;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            floatVector unknownVector = {   1,  1,  1,  1,  1,  1,  1,  1,  1 };
+
+            virtual void setResidualClasses( ){
+
+                elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 1 );
+
+                residuals[ 0 ] = &elasticity;
+
+                setResidualClasses( residuals );
+
+            }
+
+        private:
+
+            virtual void initializeUnknownVector( ){
+
+                tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( *this, unknownVector );
+
+            }
+
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 1.05, 0, 0,
+                                        0.00, 1, 0,
+                                        0.00, 1, 1};
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { };
+
+    floatVector parameters = { 123.4, 56.7 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    floatVector unknownVector = {   1,  1,  1,  1,  1,  1,  1,  1,  1 };
+
+    floatVector PK2Answer = {  73.836  ,   0.     ,   0.     ,
+                                0.     , 124.72425,  56.7    ,
+                                0.     ,  56.7    ,  68.02425 };
+
+    floatVector cauchyStressAnswer = {  77.5278,   0.    ,   0.    ,
+                                         0.    , 118.785 , 172.785 ,
+                                         0.    , 172.785 , 291.57   };
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    BOOST_CHECK_NO_THROW( hydra.evaluate( ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer, *hydra.elasticity.getPK2Stress( ) ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( cauchyStressAnswer, *hydra.getCauchyStress( ) ) );
 
 }

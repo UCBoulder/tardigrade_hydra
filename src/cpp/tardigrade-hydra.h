@@ -2,7 +2,7 @@
   ******************************************************************************
   * \file tardigrade-hydra.h
   ******************************************************************************
-  * A C++ library for printing messages to stdout. Used as a stub repo example.
+  * A C++ library for constructing finite deformation constitutive models.
   ******************************************************************************
   */
 
@@ -147,17 +147,15 @@ namespace tardigradeHydra{
     class convergence_error : public std::exception{
 
         private:
-            const char * message;
+            std::string message_;
 
         public:
 
-            using std::exception::exception;
+            explicit convergence_error( const std::string& message ) : message_( message ) { }
 
-            convergence_error( const char * msg ) : message( msg ) { }
+            const char *what( ) const noexcept override {
 
-            const char *what( ){
-
-                return message;
+                return message_.c_str( );
 
             }
 
@@ -267,10 +265,7 @@ namespace tardigradeHydra{
 
             const floatVector* getCauchyStress( );
 
-            //! Add data to the vector of values which will be cleared after each iteration
-            void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
-
-            void resetIterationData( );
+            void addIterationData( dataBase *data );
 
         private:
 
@@ -287,8 +282,6 @@ namespace tardigradeHydra{
             dataStorage< floatMatrix > _additionalDerivatives; //!< Additional derivatives of the residual
 
             dataStorage< floatVector > _cauchyStress; //!< The cauchy stress. Only needs to be defined for the first residual
-
-            std::vector< dataBase* > _iterationData; //!< A vector of data storage objects
 
     };
 
@@ -457,6 +450,8 @@ namespace tardigradeHydra{
             virtual bool checkLSConvergence( );
 
             const floatVector* getCauchyStress( );
+
+            virtual void evaluate( );
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }

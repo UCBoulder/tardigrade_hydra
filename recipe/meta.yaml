@@ -21,10 +21,10 @@ requirements:
     - {{ compiler('cxx') }}
     - eigen >=3.3.7
     - error_tools>=0.4
-    - vector_tools>=0.5.3
-    - constitutive_tools
+    - vector_tools>=0.5.4
+    - constitutive_tools>=0.5.0
     - solver_tools
-    - abaqus_tools>=0.3
+    - abaqus_tools>=0.4
     - boost >=1.59  # TODO: Separate the package/test configuration to make BOOST an optional build dependency
     - setuptools_scm >=6.2
     - libcxx <16  # [osx]
@@ -39,10 +39,10 @@ requirements:
     - {{ compiler('cxx') }}
     - eigen >=3.3.7
     - error_tools>=0.4
-    - vector_tools>=0.5.3
-    - constitutive_tools
+    - vector_tools>=0.5.4
+    - constitutive_tools>=0.5.0
     - solver_tools
-    - abaqus_tools>=0.3
+    - abaqus_tools>=0.4
 
 test:
   requires:
@@ -54,6 +54,7 @@ test:
     - CMakeLists.txt
     - src/cpp/tests/CMakeLists.txt
     - src/cpp/tests/test_tardigrade-hydra.cpp
+    - src/cpp/tests/test_tardigrade-hydraLinearElasticity.cpp
     - src/abaqus/CMakeLists.txt
     - src/abaqus/single_element_c3d8.inp
     - src/abaqus/tests/CMakeLists.txt

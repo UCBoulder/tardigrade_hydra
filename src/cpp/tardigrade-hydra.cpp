@@ -2,7 +2,8 @@
   ******************************************************************************
   * \file tardigrade-hydra.cpp
   ******************************************************************************
-  * A C++ library for printing messages to stdout. Used as a stub repo example.
+  * A C++ library for defining frameworks to solve finite deformation material
+  * models.
   ******************************************************************************
   */
 
@@ -202,18 +203,14 @@ namespace tardigradeHydra{
 
     }
 
-    void residualBase::resetIterationData( ){
+    void residualBase::addIterationData( dataBase *data ){
         /*!
-         * Reset the data stored in the iteration variable
+         * Add data to the vector of values which will be cleared after each iteration
+         * 
+         * \param *data: The dataBase object to be cleared
          */
 
-        for ( auto d = _iterationData.begin( ); d != _iterationData.end( ); d++ ){
-
-            ( *d )->clear( );
-
-        }
-
-        _iterationData.clear( );
+        hydra->addIterationData( data );
 
     }
 
@@ -284,6 +281,8 @@ namespace tardigradeHydra{
 
         // Set the configurations
         _configurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        _inverseConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
 
         // Initialize the first configuration with the total deformation gradient
         _configurations.second[ 0 ] = *getDeformationGradient( );
@@ -1509,9 +1508,7 @@ namespace tardigradeHydra{
 
             if ( !checkLSConvergence( ) ){
 
-                std::string message = "Failure in line search";
-
-                ERROR_TOOLS_CATCH( throw convergence_error( message.c_str( ) ) );
+                ERROR_TOOLS_CATCH( throw convergence_error( "Failure in line search" ) );
 
             }
 
@@ -1524,14 +1521,21 @@ namespace tardigradeHydra{
 
         if ( !checkConvergence( ) ){
 
-            std::string message = "Failure to converge main loop";
-
-            ERROR_TOOLS_CATCH( throw convergence_error( message.c_str( ) ) );
+            ERROR_TOOLS_CATCH( throw convergence_error( "Failure to converge main loop" ) );
 
         }
 
         // Set the tolerance
         ERROR_TOOLS_CATCH( setTolerance( ) );
+
+    }
+
+    void hydraBase::evaluate( ){
+        /*!
+         * Solve the non-linear problem and update the variables
+         */
+
+        ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
 
     }
 

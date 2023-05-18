@@ -12,7 +12,7 @@ Changelog
 Breaking Changes
 ================
 - Changed getSubConfiguration to not include the upper bound (:merge:`7`). By `Nathan Miller`_.
-- Change project name to tardigrade-hydra (:merge:`16`). by `Nathan Miller`_.
+- Change project name to tardigrade-hydra (:merge:`17`). by `Nathan Miller`_.
 
 New Features
 ============
@@ -23,6 +23,8 @@ New Features
 - Added setting and checking the tolerance for the line-search of the non-linear solve (:merge:`14`). By `Nathan Miller`_.
 - Added the decomposition of the unknown vector and its application to the solution quantities (:merge:`14`). By `Nathan Miller`_.
 - Added the solution of the non-linear problem (:merge:`14`). By `Nathan Miller`_.
+- Added a linear elastic implementation of a residual for use in testing (:merge:`18`). By `Nathan Miller`_.
+- Added the evaluation of hydra to compute the required quantities (:merge:`18`). By `Nathan Miller`_.
 
 Internal Changes
 ================
@@ -44,3 +46,4 @@ Internal Changes
 - Required >= version 0.5.3 of vector_tools (:merge:`10`). By `Nathan Miller`_.
 - Added the construction residual, Jacobian, and other values (:merge:`12`). By `Nathan Miller`_.
 - Clean up conda package CI files after ``conda build`` (:issue:`2`, :merge:`15`). By `Sergio Cordova`_.
+- Changed the convergence_error type to use standard strings (:merge:`18`). By `Nathan Miller`_.
