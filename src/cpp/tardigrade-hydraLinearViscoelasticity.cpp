@@ -169,6 +169,179 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::decomposeElasticDeformation( ){
+            /*!
+             * Decompose the elastic deformation into volumetric and isochoric parts
+             */
+
+            const unsigned int *dim = hydra->getDimension( );
+
+            floatType Je;
+            floatVector Fehat;
+
+            ERROR_TOOLS_CATCH( Je = vectorTools::determinant( ( *hydra->getConfigurations( ) )[ 0 ], ( *dim ), ( *dim ) ) );
+
+            ERROR_TOOLS_CATCH( Fehat = ( *hydra->getConfigurations( ) )[ 0 ] / std::pow( Je, 1./3 ) );
+            setJe( Je );
+
+            setFehat( Fehat );
+
+        }
+
+        void residual::setJe( const floatType &Je ){
+            /*!
+             * Set the elastic Jacobian of deformation
+             * 
+             * \param &Je: The elastic Jacobian of deformation
+             */
+
+            _Je.second = Je;
+
+            _Je.first = true;
+
+            addIterationData( &_Je );
+
+        }
+
+        void residual::setFehat( const floatVector &Fehat ){
+            /*!
+             * Set the isochoric part of the elastic deformation gradient
+             * 
+             * \param &Fehat: The isochoric part of the elastic deformation gradient
+             */
+
+            _Fehat.second = Fehat;
+
+            _Fehat.first = true;
+
+            addIterationData( &_Fehat );
+
+        }
+
+        const floatType* residual::getJe( ){
+            /*!
+             * Get the elastic Jacobian of deformation
+             */
+
+            if ( !_Je.first ){
+
+                ERROR_TOOLS_CATCH( decomposeElasticDeformation( ) );
+
+            }
+
+            return &_Je.second;
+
+        }
+
+        const floatVector* residual::getFehat( ){
+            /*!
+             * Get the isochoric part of the elastic deformation gradient
+             */
+
+            if ( !_Fehat.first ){
+
+                ERROR_TOOLS_CATCH( decomposeElasticDeformation( ) );
+
+            }
+
+            return &_Fehat.second;
+
+        }
+
+        void residual::setdJedFe( ){
+            /*!
+             * Set the derivative of the elastic Jacobian of deformation w.r.t.
+             * the elastic deformation gradient.
+             */
+
+            const unsigned int* dim = hydra->getDimension( );
+
+            setdJedFe( vectorTools::computeDDetADA( ( *hydra->getConfigurations( ) )[ 0 ], ( *dim ), ( *dim ) ) );
+
+        }
+
+        void residual::setdJedFe( const floatVector &dJedFe ){
+            /*!
+             * Set the derivative of the elastic Jacobian of deformation w.r.t.
+             * the elastic deformation gradient.
+             * 
+             * \param &dJedFe: The derivative of the elastic Jacobian of deformation
+             *     w.r.t. the elastic deformation gradient
+             */
+
+            _dJedFe.second = dJedFe;
+
+            _dJedFe.first = true;
+
+            addIterationData( &_dJedFe );
+
+        }
+
+        const floatVector* residual::getdJedFe( ){
+            /*!
+             * Get the derivative of the elastic Jacobian of deformation w.r.t.
+             * the elastic deformation gradient
+             */
+
+            if ( !_dJedFe.first ){
+
+                ERROR_TOOLS_CATCH( setdJedFe( ) );
+
+            }
+
+            return &_dJedFe.second;
+
+        }
+
+        void residual::setdFehatdFe( ){
+            /*!
+             * Set the derivative of the isochoric part of the elastic deformation gradient
+             * w.r.t. the elastic deformation gradient.
+             */
+
+            const unsigned int* dim = hydra->getDimension( );
+
+            floatMatrix dFehatdFe = vectorTools::eye< floatType >( ( *dim ) * ( *dim ) ) * std::pow( ( *getJe( ) ), -1. / 3 );
+
+            dFehatdFe -= vectorTools::dyadic( ( *hydra->getConfigurations( ) )[ 0 ], *getdJedFe( ) ) * std::pow( ( *getJe( ) ), -4. / 3 ) / 3.;
+
+            setdFehatdFe( dFehatdFe );
+
+        }
+
+        void residual::setdFehatdFe( const floatMatrix &dFehatdFe ){
+            /*!
+             * Set the derivative of the isochoric part of the elastic deformation gradient
+             * w.r.t. the elastic deformation gradient.
+             * 
+             * \param &dFehatdFe: The derivative of the isochoric part of the elastic
+             *     deformation gradient the elastic deformation gradient
+             */
+
+            _dFehatdFe.second = dFehatdFe;
+
+            _dFehatdFe.first = true;
+
+            addIterationData( &_dFehatdFe );
+
+        }
+
+        const floatMatrix* residual::getdFehatdFe( ){
+            /*!
+             * Get the derivative of the isochoric part of the elastic deformation gradient
+             * w.r.t. the elastic deformation gradient
+             */
+
+            if ( !_dFehatdFe.first ){
+
+                ERROR_TOOLS_CATCH( setdFehatdFe( ) );
+
+            }
+
+            return &_dFehatdFe.second;
+
+        }
+
         void residual::setPK2Stress( ){
             /*!
              * Set the second Piola-Kirchhoff stress

@@ -74,7 +74,7 @@ namespace tardigradeHydra{
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests ){
+BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests_and_decomposeParameters ){
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
 
@@ -160,5 +160,159 @@ BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests ){
     BOOST_CHECK( vectorTools::fuzzyEquals( KTaus, *R.getVolumetricTaus( ) ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( GTaus, *R.getIsochoricTaus( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_decomposeElasticDeformation ){
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+        private:
+
+            virtual void setResidualClasses( ){ }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { };
+
+    floatVector parameters = { 2, 3, 123.4, 56.7, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    unsigned int ISVlb = 2;
+
+    unsigned int ISVub = 10;
+
+    floatType JeAnswer = 0.2871738879785901;
+
+    floatVector FehatAnswer = { 0.59558368, -0.64830483, -0.82803222,
+                                0.15555742,  0.66530605, -0.23309781,
+                                1.45740571,  0.56029945, -0.05780372 };
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    tardigradeHydra::linearViscoelasticity::residual R1( &hydra, 9, parameters, ISVlb, ISVub );
+
+    tardigradeHydra::linearViscoelasticity::residual R2( &hydra, 9, parameters, ISVlb, ISVub );
+
+    ERROR_TOOLS_CATCH( vectorTools::fuzzyEquals( JeAnswer, *R1.getJe( ) ) );
+
+    ERROR_TOOLS_CATCH( vectorTools::fuzzyEquals( FehatAnswer, *R2.getFehat( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_gradientsOfDecomposedElasticDeformationGradient ){
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+        private:
+
+            virtual void setResidualClasses( ){ }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { };
+
+    floatVector parameters = { 2, 3, 123.4, 56.7, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    unsigned int ISVlb = 2;
+
+    unsigned int ISVub = 10;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    tardigradeHydra::linearViscoelasticity::residual R( &hydra, 9, parameters, ISVlb, ISVub );
+
+    floatVector gradientJe( deformationGradient.size( ), 0 );
+
+    floatMatrix gradientFehat( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
+
+    floatType eps = 1e-6;
+
+    for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
+
+        floatVector delta( deformationGradient.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+    
+        tardigradeHydra::linearViscoelasticity::residual Rp( &hydrap, 9, parameters, ISVlb, ISVub );
+
+        tardigradeHydra::linearViscoelasticity::residual Rm( &hydram, 9, parameters, ISVlb, ISVub );
+
+        for ( unsigned int j = 0; j < 1; j++ ){
+
+            gradientJe[ i ] = ( ( *Rp.getJe( ) ) - ( *Rm.getJe( ) ) ) / ( 2 * delta[ i ] );
+
+        }
+
+        for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
+
+            gradientFehat[ j ][ i ] = ( ( *Rp.getFehat( ) )[ j ] - ( *Rm.getFehat( ) )[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradientJe, *R.getdJedFe( ) ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradientFehat, *R.getdFehatdFe( ) ) );
 
 }

@@ -110,6 +110,28 @@ namespace tardigradeHydra{
                 //! Get the time constants for the isochoric moduli
                 const floatVector* getIsochoricTaus( ){ return &_isochoricTaus; }
 
+                virtual void decomposeElasticDeformation( );
+
+                void setJe( const floatType &Je );
+
+                const floatType* getJe( );
+
+                void setFehat( const floatVector &Fehat );
+
+                const floatVector* getFehat( );
+
+                virtual void setdJedFe( );
+
+                void setdJedFe( const floatVector &dJedFe );
+
+                const floatVector *getdJedFe( );
+
+                virtual void setdFehatdFe( );
+
+                void setdFehatdFe( const floatMatrix &dFehatdFe );
+
+                const floatMatrix *getdFehatdFe( );
+
             protected:
 
                 virtual void setNumVolumetricViscousTerms( const unsigned int &num );
@@ -154,6 +176,14 @@ namespace tardigradeHydra{
                 friend class tardigradeHydra::linearViscoelasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
         
                 using tardigradeHydra::linearElasticity::residual::residual;
+
+                dataStorage< floatType > _Je;
+
+                dataStorage< floatVector > _Fehat;
+
+                dataStorage< floatVector > _dJedFe;
+
+                dataStorage< floatMatrix > _dFehatdFe;
         
                 dataStorage< floatVector > _currentStateVariables;
 
