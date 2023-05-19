@@ -74,6 +74,20 @@ namespace tardigradeHydra{
 
                         BOOST_CHECK( &R._numStateVariables == R.getNumStateVariables( ) );
 
+                        BOOST_CHECK( &R._volumetricTemperatureParameters == R.getVolumetricTemperatureParameters( ) );
+
+                        BOOST_CHECK( &R._isochoricTemperatureParameters == R.getIsochoricTemperatureParameters( ) );
+
+                        BOOST_CHECK( &R._volumetricRateMultiplier.second == R.getVolumetricRateMultiplier( ) );
+
+                        BOOST_CHECK( &R._previousVolumetricRateMultiplier.second == R.getPreviousVolumetricRateMultiplier( ) );
+
+                        BOOST_CHECK( &R._isochoricRateMultiplier.second == R.getIsochoricRateMultiplier( ) );
+
+                        BOOST_CHECK( &R._previousIsochoricRateMultiplier.second == R.getPreviousIsochoricRateMultiplier( ) );
+
+                        BOOST_CHECK( &R._integrationAlpha == R.getIntegrationAlpha( ) );
+
                     }
     
             };
@@ -116,7 +130,7 @@ BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests_and_decomposeParameters ){
 
     floatVector previousStateVariables = { };
 
-    floatVector parameters = { 2, 3, 123.4, 56.7, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
+    floatVector parameters = { 2, 3, 123.4, 56.7, 1, 2, 293.15, 3, 4, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
 
     unsigned int numConfigurations = 1;
 
@@ -135,6 +149,10 @@ BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests_and_decomposeParameters ){
     floatType KinfAnswer = 123.4;
 
     floatType GinfAnswer = 56.7;
+
+    floatVector volTAnswer = { 1, 2, 293.15 };
+
+    floatVector isoTAnswer = { 3, 4, 293.15 };
 
     floatVector Ks = { 23.4, 25.6 };
 
@@ -171,6 +189,10 @@ BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests_and_decomposeParameters ){
 
     BOOST_CHECK( vectorTools::fuzzyEquals( GTaus, *R.getIsochoricTaus( ) ) );
 
+    BOOST_CHECK( vectorTools::fuzzyEquals( volTAnswer, *R.getVolumetricTemperatureParameters( ) ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( isoTAnswer, *R.getIsochoricTemperatureParameters( ) ) );
+
 }
 
 BOOST_AUTO_TEST_CASE( test_residual_decomposeElasticDeformation ){
@@ -205,7 +227,7 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeElasticDeformation ){
 
     floatVector previousStateVariables = { };
 
-    floatVector parameters = { 2, 3, 123.4, 56.7, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
+    floatVector parameters = { 2, 3, 123.4, 56.7, 1, 2, 293.15, 3, 4, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
 
     unsigned int numConfigurations = 1;
 
@@ -268,7 +290,7 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposePreviousElasticDeformation ){
 
     floatVector previousStateVariables = { };
 
-    floatVector parameters = { 2, 3, 123.4, 56.7, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
+    floatVector parameters = { 2, 3, 123.4, 56.7, 1, 2, 293.15, 3, 4, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
 
     unsigned int numConfigurations = 1;
 
@@ -331,7 +353,7 @@ BOOST_AUTO_TEST_CASE( test_residual_gradientsOfDecomposedElasticDeformationGradi
 
     floatVector previousStateVariables = { };
 
-    floatVector parameters = { 2, 3, 123.4, 56.7, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
+    floatVector parameters = { 2, 3, 123.4, 56.7, 1, 2, 293.15, 3, 4, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
 
     unsigned int numConfigurations = 1;
 
@@ -431,7 +453,7 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeStateVariableVector ){
                                                   12, 13, 14, 15, 16, 17, 18, 19, 20,
                                                   21, 22, 23, 24, 25, 26, 27, 28, 29 };
 
-    floatVector parameters = { 2, 3, 123.4, 56.7, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
+    floatVector parameters = { 2, 3, 123.4, 56.7, 1, 2, 293.15, 3, 4, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
 
     unsigned int numConfigurations = 1;
 
@@ -458,5 +480,75 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeStateVariableVector ){
 
     ERROR_TOOLS_CATCH( vectorTools::fuzzyEquals( isochoricStateVariables,
                                                  isochoricStateVariablesAnswer ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_setRateMultipliers ){
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+        private:
+
+            virtual void setResidualClasses( ){ }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 310.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { -1, 0, 1, 2,
+                                            3,  4,  5,  6,  7,  8,  9, 10, 11,
+                                           12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                           21, 22, 23, 24, 25, 26, 27, 28, 29 };
+
+    floatVector parameters = { 2, 3, 123.4, 56.7, 1, 100, 293.15, 2, 110, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    unsigned int ISVlb = 2;
+
+    unsigned int ISVub = 31;
+
+    floatType volumetricRateMultiplierAnswer = 7.457812578748434;
+
+    floatType previousVolumetricRateMultiplierAnswer = 8.814658257473116;
+
+    floatType isochoricRateMultiplierAnswer = 35.32015484464411;
+
+    floatType previousIsochoricRateMultiplierAnswer = 61.973752329639055;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    tardigradeHydra::linearViscoelasticity::residual R( &hydra, 9, parameters, ISVlb, ISVub );
+
+    ERROR_TOOLS_CATCH( vectorTools::fuzzyEquals( volumetricRateMultiplierAnswer, *R.getVolumetricRateMultiplier( ) ) )
+
+    ERROR_TOOLS_CATCH( vectorTools::fuzzyEquals( previousVolumetricRateMultiplierAnswer, *R.getPreviousVolumetricRateMultiplier( ) ) )
+
+    ERROR_TOOLS_CATCH( vectorTools::fuzzyEquals( isochoricRateMultiplierAnswer, *R.getIsochoricRateMultiplier( ) ) )
+
+    ERROR_TOOLS_CATCH( vectorTools::fuzzyEquals( previousIsochoricRateMultiplierAnswer, *R.getPreviousIsochoricRateMultiplier( ) ) )
 
 }

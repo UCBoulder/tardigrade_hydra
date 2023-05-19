@@ -23,9 +23,9 @@ namespace tardigradeHydra{
    
             const unsigned int *dim = hydra->getDimension( );
  
-            if ( parameters.size( ) < 4 ){
+            if ( parameters.size( ) < 10 ){
     
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "Parameter vector is expected to have a length of at least 4 but has a length of " + std::to_string( parameters.size( ) ) ) );
+                ERROR_TOOLS_CATCH( throw std::runtime_error( "Parameter vector is expected to have a length of at least 10 but has a length of " + std::to_string( parameters.size( ) ) ) );
     
             }
 
@@ -50,7 +50,13 @@ namespace tardigradeHydra{
 
             setGinf( parameters[ 3 ] );
 
-            unsigned int parameterCount = 4 + 2 * ( *getNumVolumetricViscousTerms( ) )
+            setVolumetricTemperatureParameters( floatVector( parameters.begin( ) + 4,
+                                                             parameters.begin( ) + 7 ) );
+
+            setIsochoricTemperatureParameters( floatVector( parameters.begin( ) +  7,
+                                                            parameters.begin( ) + 10 ) );
+
+            unsigned int parameterCount = 10 + 2 * ( *getNumVolumetricViscousTerms( ) )
                                         + 2 * ( *getNumIsochoricViscousTerms( ) );
 
             if ( parameters.size( ) != parameterCount ){
@@ -66,7 +72,7 @@ namespace tardigradeHydra{
 
             }
 
-            unsigned int lb = 4;
+            unsigned int lb = 10;
             unsigned int ub = lb + *getNumVolumetricViscousTerms( );
 
             floatVector Ks( parameters.begin( ) + lb, parameters.begin( ) + ub );
@@ -481,6 +487,225 @@ namespace tardigradeHydra{
              */
 
             _numStateVariables = numStateVariables;
+
+        }
+
+        floatType residual::computeRateMultiplier( const floatVector &variables,
+                                                   const floatVector &parameters ){
+            /*!
+             * Compute the value of the rate multiplier this implementation uses the
+             * WLF function of temperature to compute an increase in evolution rate for
+             * high temperatures and a decrease for low temperatures.
+             * 
+             * \param &variables: The incoming variables { temperature }
+             * \param &parameters: The incoming parameters see constitutiveTools::WLF
+             */
+
+            if ( variables.size( ) != 1 ){
+
+                ERROR_TOOLS_CATCH( throw std::runtime_error( "The incoming variables must have a size 1" ) );
+
+            }
+
+            floatType invRM;
+
+            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::WLF( variables[ 0 ], parameters, invRM ) );
+
+            return 1 / invRM;
+
+        }
+
+        void residual::setVolumetricRateMultiplier( ){
+            /*!
+             * Set the value of the volumetric rate multiplier
+             */
+
+            floatType rateMultiplier;
+
+            ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getTemperature( ) },
+                                                                       *getVolumetricTemperatureParameters( ) ) );
+
+            setVolumetricRateMultiplier( rateMultiplier );
+
+        }
+
+        void residual::setPreviousVolumetricRateMultiplier( ){
+            /*!
+             * Set the previous value of the volumetric rate multiplier
+             */
+
+            floatType rateMultiplier;
+
+            ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
+                                                                       *getVolumetricTemperatureParameters( ) ) );
+
+            setPreviousVolumetricRateMultiplier( rateMultiplier );
+
+        }
+
+        void residual::setIsochoricRateMultiplier( ){
+            /*!
+             * Set the value of the isochoric rate multiplier
+             */
+
+            floatType rateMultiplier;
+
+            ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getTemperature( ) },
+                                                                       *getIsochoricTemperatureParameters( ) ) );
+
+            setIsochoricRateMultiplier( rateMultiplier );
+
+        }
+
+        void residual::setPreviousIsochoricRateMultiplier( ){
+            /*!
+             * Set the previous value of the isochoric rate multiplier
+             */
+
+            floatType rateMultiplier;
+
+            ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
+                                                                       *getIsochoricTemperatureParameters( ) ) );
+
+            setPreviousIsochoricRateMultiplier( rateMultiplier );
+
+        }
+
+        void residual::setVolumetricRateMultiplier( const floatType &rateMultiplier ){
+            /*!
+             * Set the volumetric rate multiplier for the viscous term evolution
+             * 
+             * \param &rateMultiplier: The value of the volumetric rate multiplier
+             */
+
+            _volumetricRateMultiplier.second = rateMultiplier;
+
+            _volumetricRateMultiplier.first = true;
+
+            addIterationData( &_volumetricRateMultiplier );
+
+        }
+
+        void residual::setPreviousVolumetricRateMultiplier( const floatType &previousRateMultiplier ){
+            /*!
+             * Set the previous volumetric rate multiplier for the viscous term evolution
+             * 
+             * \param &previousRateMultiplier: The value of the previous volumetric rate multiplier
+             */
+
+            _previousVolumetricRateMultiplier.second = previousRateMultiplier;
+
+            _previousVolumetricRateMultiplier.first = true;
+
+        }
+
+        void residual::setIsochoricRateMultiplier( const floatType &rateMultiplier ){
+            /*!
+             * Set the isochoric rate multiplier for the viscous term evolution
+             * 
+             * \param &rateMultiplier: The value of the isochoric rate multiplier
+             */
+
+            _isochoricRateMultiplier.second = rateMultiplier;
+
+            _isochoricRateMultiplier.first = true;
+
+            addIterationData( &_isochoricRateMultiplier );
+
+        }
+
+        void residual::setPreviousIsochoricRateMultiplier( const floatType &previousRateMultiplier ){
+            /*!
+             * Set the previous isochoric rate multiplier for the viscous term evolution
+             * 
+             * \param &previousRateMultiplier: The value of the previous isochoric rate multiplier
+             */
+
+            _previousIsochoricRateMultiplier.second = previousRateMultiplier;
+
+            _previousIsochoricRateMultiplier.first = true;
+
+        }
+
+        const floatType* residual::getVolumetricRateMultiplier( ){
+            /*!
+             * Get the current value of the volumetric rate multiplier
+             */
+
+            if ( !_volumetricRateMultiplier.first ){
+
+                ERROR_TOOLS_CATCH( setVolumetricRateMultiplier( ) );
+
+            }
+
+            return &_volumetricRateMultiplier.second;
+
+        }
+
+        const floatType* residual::getPreviousVolumetricRateMultiplier( ){
+            /*!
+             * Get the current value of the previous volumetric rate multiplier
+             */
+
+            if ( !_previousVolumetricRateMultiplier.first ){
+
+                ERROR_TOOLS_CATCH( setPreviousVolumetricRateMultiplier( ) );
+
+            }
+
+            return &_previousVolumetricRateMultiplier.second;
+
+        }
+
+        const floatType* residual::getIsochoricRateMultiplier( ){
+            /*!
+             * Get the current value of the isochoric rate multiplier
+             */
+
+            if ( !_isochoricRateMultiplier.first ){
+
+                ERROR_TOOLS_CATCH( setIsochoricRateMultiplier( ) );
+
+            }
+
+            return &_isochoricRateMultiplier.second;
+
+        }
+
+        const floatType* residual::getPreviousIsochoricRateMultiplier( ){
+            /*!
+             * Get the current value of the previous isochoric rate multiplier
+             */
+
+            if ( !_previousIsochoricRateMultiplier.first ){
+
+                ERROR_TOOLS_CATCH( setPreviousIsochoricRateMultiplier( ) );
+
+            }
+
+            return &_previousIsochoricRateMultiplier.second;
+
+        }
+
+        void residual::setVolumetricTemperatureParameters( const floatVector &parameters ){
+            /*!
+             * Set the volumetric temperature parameters
+             * 
+             * \param &parameters: The parameters for the volumetric temperature dependence
+             */
+
+            _volumetricTemperatureParameters = parameters;
+
+        }
+
+        void residual::setIsochoricTemperatureParameters( const floatVector &parameters ){
+            /*!
+             * Set the isochoric temperature parameters
+             * 
+             * \param &parameters: The parameters for the isochoric temperature dependence
+             */
+
+            _isochoricTemperatureParameters = parameters;
 
         }
 

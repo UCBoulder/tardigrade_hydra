@@ -72,7 +72,8 @@ namespace tardigradeHydra{
 
                 residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters,
                           const unsigned int viscoelasticISVLowerIndex,
-                          const unsigned int viscoelasticISVUpperIndex ) : tardigradeHydra::linearElasticity::residual( hydra, numEquations ), _viscoelasticISVLowerIndex( viscoelasticISVLowerIndex ), _viscoelasticISVUpperIndex( viscoelasticISVUpperIndex ){
+                          const unsigned int viscoelasticISVUpperIndex,
+                          const floatType integrationAlpha=0. ) : tardigradeHydra::linearElasticity::residual( hydra, numEquations ), _viscoelasticISVLowerIndex( viscoelasticISVLowerIndex ), _viscoelasticISVUpperIndex( viscoelasticISVUpperIndex ), _integrationAlpha( integrationAlpha ){
     
                     ERROR_TOOLS_CATCH( decomposeParameterVector( parameters ) );
     
@@ -85,6 +86,8 @@ namespace tardigradeHydra{
 
                 //! Get the upper (but not including) index of the viscoelastic ISVs from the non-nonlinear solve state variable vector
                 const unsigned int* getViscoelasticISVUpperIndex( ){ return &_viscoelasticISVUpperIndex; }
+
+                const floatType* getIntegrationAlpha( ){ return &_integrationAlpha; }
 
                 //! Get the number of volumetric viscous terms
                 const unsigned int* getNumVolumetricViscousTerms( ){ return &_numVolumetricViscousTerms; }
@@ -111,6 +114,10 @@ namespace tardigradeHydra{
                 const floatVector* getIsochoricTaus( ){ return &_isochoricTaus; }
 
                 virtual void decomposeDeformation( const floatVector &Fe, floatType &Je, floatVector &Fehat );
+
+                const floatVector* getVolumetricTemperatureParameters( ){ return &_volumetricTemperatureParameters; }
+
+                const floatVector* getIsochoricTemperatureParameters( ){ return &_isochoricTemperatureParameters; }
 
                 virtual void decomposeElasticDeformation( );
 
@@ -150,6 +157,28 @@ namespace tardigradeHydra{
 
                 virtual void decomposeStateVariableVector( floatVector &volumetricStateVariables, floatVector &isochoricStateVariables );
 
+                virtual floatType computeRateMultiplier( const floatVector &variables, const floatVector &parameters );
+
+                virtual void setVolumetricRateMultiplier( const floatType &rateMultiplier );
+
+                virtual void setPreviousVolumetricRateMultiplier( const floatType &previousRateMultiplier );
+
+                const floatType* getVolumetricRateMultiplier( );
+
+                const floatType* getPreviousVolumetricRateMultiplier( );
+
+                virtual void setIsochoricRateMultiplier( const floatType &rateMultiplier );
+
+                virtual void setPreviousIsochoricRateMultiplier( const floatType &previousRateMultiplier );
+
+                const floatType* getIsochoricRateMultiplier( );
+
+                const floatType* getPreviousIsochoricRateMultiplier( );
+
+                void setVolumetricTemperatureParameters( const floatVector &parameters );
+
+                void setIsochoricTemperatureParameters( const floatVector &parameters );
+
             protected:
 
                 virtual void setNumVolumetricViscousTerms( const unsigned int &num );
@@ -176,6 +205,8 @@ namespace tardigradeHydra{
 
                 const unsigned int _viscoelasticISVUpperIndex; //!< The not-included upper index of the viscoelastic ISVs
 
+                const floatType _integrationAlpha; //!< The parameter for implicit (0) vs explicit (1) integration. Defaults to 0.
+
                 unsigned int _numVolumetricViscousTerms; //!< The number of volumetric viscous terms
 
                 unsigned int _numIsochoricViscousTerms; //!< The number of isochoric viscous terms
@@ -194,6 +225,10 @@ namespace tardigradeHydra{
 
                 floatVector _isochoricTaus; //!< The isochoric time constants
 
+                floatVector _volumetricTemperatureParameters; //!< The temperature parameters for the volumetric viscous elements
+
+                floatVector _isochoricTemperatureParameters; //!< The temperature parameters for the isochoric viscous elements
+
                 // Friend classes
                 friend class tardigradeHydra::linearViscoelasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
         
@@ -208,13 +243,28 @@ namespace tardigradeHydra{
                 dataStorage< floatVector > _dJedFe;
 
                 dataStorage< floatMatrix > _dFehatdFe;
-        
+
+                dataStorage< floatType > _volumetricRateMultiplier;
+
+                dataStorage< floatType > _previousVolumetricRateMultiplier;
+
+                dataStorage< floatType > _isochoricRateMultiplier;
+
+                dataStorage< floatType > _previousIsochoricRateMultiplier;
+
                 dataStorage< floatVector > _currentStateVariables;
 
                 virtual void setPK2Stress( ) override;
     
                 virtual void decomposeParameterVector( const floatVector &parameters );
 
+                void setVolumetricRateMultiplier( );
+
+                void setPreviousVolumetricRateMultiplier( );
+
+                void setIsochoricRateMultiplier( );
+
+                void setPreviousIsochoricRateMultiplier( );
         };
 
     }
