@@ -9,6 +9,7 @@
 
 #include<tardigrade-hydraLinearViscoelasticity.h>
 #include<constitutive_tools.h>
+#include<stress_tools.h>
 
 namespace tardigradeHydra{
 
@@ -752,33 +753,33 @@ namespace tardigradeHydra{
 
             floatVector currentIsochoricStateVariables;
 
-//            // Compute the viscous mean stress
-//
-//            ERROR_TOOLS_CATCH_NODE_POINTER( stressTools::linearViscoelasticity( *hydra->getTime( ), volumetricStrain,
-//                                                                                previousTime, previousVolumetricStrain,
-//                                                                                *getCurrentVolumetricRateModifier( ),
-//                                                                                *getPreviousVolumetricRateModifier( ),
-//                                                                                *getPreviousVolumetricStateVariables( ),
-//                                                                                *getVolumetricParameters( ),
-//                                                                                *getStressIntegrationAlpha( ), deltaPK2MeanStress,
-//                                                                                PK2MeanStress, currentVolumetricStateVariables ) );
-//
-//            // Compute the viscous isochoric stress
-//            ERROR_TOOLS_CATCH_NODE_POINTER( stressTools::linearViscoelasticity( *hydra->getTime( ), isochoricStrain,
-//                                                                                previousTime, previousIsochoricStrain,
-//                                                                                *getCurrentIsochoricRateModifier( ),
-//                                                                                *getPreviousIsochoricRateModifier( ),
-//                                                                                *getPreviousIsochoricStateVariables( ),
-//                                                                                *getIsochoricParameters( ),
-//                                                                                *getStressIntegrationAlpha( ), deltaPK2IsochoricStress,
-//                                                                                PK2IsochoricStress, currentIsochoricStateVariables ) );
-//
-//        floatVector eye( ( *dim ) * ( *dim ), 0 );
-//        vectorTools::eye( eye );
-//
-//        PK2Stress = PK2IsochoricStress + PK2MeanStress[ 0 ] * eye;
-//
-//        setPK2Stress( PK2Stress );
+            // Compute the viscous mean stress
+
+            ERROR_TOOLS_CATCH_NODE_POINTER( stressTools::linearViscoelasticity( *hydra->getTime( ), volumetricStrain,
+                                                                                previousTime, previousVolumetricStrain,
+                                                                                *getCurrentVolumetricRateModifier( ),
+                                                                                *getPreviousVolumetricRateModifier( ),
+                                                                                *getPreviousVolumetricStateVariables( ),
+                                                                                *getVolumetricParameters( ),
+                                                                                *getStressIntegrationAlpha( ), deltaPK2MeanStress,
+                                                                                PK2MeanStress, currentVolumetricStateVariables ) );
+
+            // Compute the viscous isochoric stress
+            ERROR_TOOLS_CATCH_NODE_POINTER( stressTools::linearViscoelasticity( *hydra->getTime( ), isochoricStrain,
+                                                                                previousTime, previousIsochoricStrain,
+                                                                                *getCurrentIsochoricRateModifier( ),
+                                                                                *getPreviousIsochoricRateModifier( ),
+                                                                                *getPreviousIsochoricStateVariables( ),
+                                                                                *getIsochoricParameters( ),
+                                                                                *getStressIntegrationAlpha( ), deltaPK2IsochoricStress,
+                                                                                PK2IsochoricStress, currentIsochoricStateVariables ) );
+
+        floatVector eye( ( *dim ) * ( *dim ), 0 );
+        vectorTools::eye( eye );
+
+        PK2Stress = PK2IsochoricStress + PK2MeanStress[ 0 ] * eye;
+
+        setPK2Stress( PK2Stress );
 
         }
 
