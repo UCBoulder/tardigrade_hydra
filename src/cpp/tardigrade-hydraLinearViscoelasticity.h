@@ -69,7 +69,7 @@ namespace tardigradeHydra{
              */
         
             public:
-    
+
                 residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters,
                           const unsigned int viscoelasticISVLowerIndex,
                           const unsigned int viscoelasticISVUpperIndex ) : tardigradeHydra::linearElasticity::residual( hydra, numEquations ), _viscoelasticISVLowerIndex( viscoelasticISVLowerIndex ), _viscoelasticISVUpperIndex( viscoelasticISVUpperIndex ){
@@ -110,7 +110,11 @@ namespace tardigradeHydra{
                 //! Get the time constants for the isochoric moduli
                 const floatVector* getIsochoricTaus( ){ return &_isochoricTaus; }
 
+                virtual void decomposeDeformation( const floatVector &Fe, floatType &Je, floatVector &Fehat );
+
                 virtual void decomposeElasticDeformation( );
+
+                virtual void decomposePreviousElasticDeformation( );
 
                 void setJe( const floatType &Je );
 
@@ -119,6 +123,14 @@ namespace tardigradeHydra{
                 void setFehat( const floatVector &Fehat );
 
                 const floatVector* getFehat( );
+
+                void setPreviousJe( const floatType &Je );
+
+                const floatType* getPreviousJe( );
+
+                void setPreviousFehat( const floatVector &Fehat );
+
+                const floatVector* getPreviousFehat( );
 
                 virtual void setdJedFe( );
 
@@ -131,6 +143,12 @@ namespace tardigradeHydra{
                 void setdFehatdFe( const floatMatrix &dFehatdFe );
 
                 const floatMatrix *getdFehatdFe( );
+
+                void setNumStateVariables( const unsigned int numStateVariables );
+
+                unsigned int *getNumStateVariables( ){ return &_numStateVariables; }
+
+                virtual void decomposeStateVariableVector( floatVector &volumetricStateVariables, floatVector &isochoricStateVariables );
 
             protected:
 
@@ -152,6 +170,8 @@ namespace tardigradeHydra{
  
             private:
 
+                using tardigradeHydra::linearElasticity::residual::residual;
+
                 const unsigned int _viscoelasticISVLowerIndex; //!< The lower index of the viscoelastic ISVs
 
                 const unsigned int _viscoelasticISVUpperIndex; //!< The not-included upper index of the viscoelastic ISVs
@@ -159,6 +179,8 @@ namespace tardigradeHydra{
                 unsigned int _numVolumetricViscousTerms; //!< The number of volumetric viscous terms
 
                 unsigned int _numIsochoricViscousTerms; //!< The number of isochoric viscous terms
+
+                unsigned int _numStateVariables; //!< The number of state variables required
 
                 floatType _Kinf; //!< The infinite bulk modulus
 
@@ -175,11 +197,13 @@ namespace tardigradeHydra{
                 // Friend classes
                 friend class tardigradeHydra::linearViscoelasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
         
-                using tardigradeHydra::linearElasticity::residual::residual;
-
                 dataStorage< floatType > _Je;
 
                 dataStorage< floatVector > _Fehat;
+
+                dataStorage< floatType > _previousJe;
+
+                dataStorage< floatVector > _previousFehat;
 
                 dataStorage< floatVector > _dJedFe;
 
