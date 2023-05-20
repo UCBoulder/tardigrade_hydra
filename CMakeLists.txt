@@ -106,7 +106,7 @@ endif()
 
 # Find related, but external, projects in installed environment
 include(FetchContent)
-set(upstream_packages "error_tools" "vector_tools" "constitutive_tools" "abaqus_tools")
+set(upstream_packages "error_tools" "vector_tools" "constitutive_tools" "stress_tools" "abaqus_tools")
 if(${not_conda_test} STREQUAL "false")
     # During conda-build testing, we must find the installed project files as if they were an external project
     set(upstream_packages ${upstream_packages} ${PROJECT_NAME})

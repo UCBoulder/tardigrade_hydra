@@ -710,12 +710,54 @@ namespace tardigradeHydra{
 
         }
 
+        floatVector residual::getVolumetricViscoelasticParameters( ){
+            /*!
+             * Get the volumetric viscoelastic parameters prepared for stressTools::linearViscoelasticity
+             */
+
+            floatVector parameters( 1 + 2 * *getNumVolumetricViscousTerms( ), 0 );
+
+            parameters[ 0 ] = *getKinf( );
+
+            for ( unsigned int i = 1; i <= *getNumVolumetricViscousTerms( ); i++ ){
+
+                parameters[ i ] = ( *getVolumetricTaus( ) )[ i - 1 ];
+                parameters[ i + *getNumVolumetricViscousTerms( ) ] = ( *getVolumetricModuli( ) )[ i - 1 ];
+
+            }
+
+            return parameters;
+
+        }
+
+        floatVector residual::getIsochoricViscoelasticParameters( ){
+            /*!
+             * Get the isochoric viscoelastic parameters prepared for stressTools::linearViscoelasticity
+             */
+
+            floatVector parameters( 1 + 2 * *getNumIsochoricViscousTerms( ), 0 );
+
+            parameters[ 0 ] = *getGinf( );
+
+            for ( unsigned int i = 1; i <= *getNumIsochoricViscousTerms( ); i++ ){
+
+                parameters[ i ] = ( *getIsochoricTaus( ) )[ i - 1 ];
+                parameters[ i + *getNumIsochoricViscousTerms( ) ] = ( *getIsochoricModuli( ) )[ i - 1 ];
+
+            }
+
+            return parameters;
+
+        }
+
         void residual::setPK2Stress( ){
             /*!
              * Set the second Piola-Kirchhoff stress
              */
 
             // Initialize required values
+
+            const unsigned int* dim = hydra->getDimension( );
 
             floatType time = *hydra->getTime( );
 
@@ -757,27 +799,27 @@ namespace tardigradeHydra{
 
             ERROR_TOOLS_CATCH_NODE_POINTER( stressTools::linearViscoelasticity( *hydra->getTime( ), volumetricStrain,
                                                                                 previousTime, previousVolumetricStrain,
-                                                                                *getCurrentVolumetricRateModifier( ),
-                                                                                *getPreviousVolumetricRateModifier( ),
-                                                                                *getPreviousVolumetricStateVariables( ),
-                                                                                *getVolumetricParameters( ),
-                                                                                *getStressIntegrationAlpha( ), deltaPK2MeanStress,
+                                                                                *getVolumetricRateMultiplier( ),
+                                                                                *getPreviousVolumetricRateMultiplier( ),
+                                                                                previousVolumetricStateVariables,
+                                                                                getVolumetricViscoelasticParameters( ),
+                                                                                *getIntegrationAlpha( ), deltaPK2MeanStress,
                                                                                 PK2MeanStress, currentVolumetricStateVariables ) );
 
             // Compute the viscous isochoric stress
             ERROR_TOOLS_CATCH_NODE_POINTER( stressTools::linearViscoelasticity( *hydra->getTime( ), isochoricStrain,
                                                                                 previousTime, previousIsochoricStrain,
-                                                                                *getCurrentIsochoricRateModifier( ),
-                                                                                *getPreviousIsochoricRateModifier( ),
-                                                                                *getPreviousIsochoricStateVariables( ),
-                                                                                *getIsochoricParameters( ),
-                                                                                *getStressIntegrationAlpha( ), deltaPK2IsochoricStress,
+                                                                                *getIsochoricRateMultiplier( ),
+                                                                                *getPreviousIsochoricRateMultiplier( ),
+                                                                                previousIsochoricStateVariables,
+                                                                                getIsochoricViscoelasticParameters( ),
+                                                                                *getIntegrationAlpha( ), deltaPK2IsochoricStress,
                                                                                 PK2IsochoricStress, currentIsochoricStateVariables ) );
 
         floatVector eye( ( *dim ) * ( *dim ), 0 );
         vectorTools::eye( eye );
 
-        PK2Stress = PK2IsochoricStress + PK2MeanStress[ 0 ] * eye;
+        floatVector PK2Stress = PK2IsochoricStress + PK2MeanStress[ 0 ] * eye;
 
         setPK2Stress( PK2Stress );
 

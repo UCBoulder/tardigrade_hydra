@@ -179,6 +179,14 @@ namespace tardigradeHydra{
 
                 void setIsochoricTemperatureParameters( const floatVector &parameters );
 
+                virtual floatVector getVolumetricViscoelasticParameters( );
+
+                virtual floatVector getIsochoricViscoelasticParameters( );
+
+                void setPK2Stress( floatVector &PK2Stress ){
+                    tardigradeHydra::linearElasticity::residual::setPK2Stress( PK2Stress );
+                }
+
             protected:
 
                 virtual void setNumVolumetricViscousTerms( const unsigned int &num );
