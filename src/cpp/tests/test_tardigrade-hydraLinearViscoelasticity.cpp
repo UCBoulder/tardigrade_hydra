@@ -602,7 +602,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getViscoelasticParameters ){
 
     floatVector volumetricViscoelasticParametersAnswer = { 123.4, 0.1, 0.2, 23.4, 25.6 };
 
-    floatVector isochoricViscoelasticParametersAnswer = { 56.7, 0.01, 10.0, 100, 12.3, 13.4, 14.5 };
+    floatVector isochoricViscoelasticParametersAnswer = { 113.4, 0.01, 10.0, 100, 24.6, 26.8, 29.0 };
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );

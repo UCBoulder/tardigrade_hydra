@@ -737,12 +737,12 @@ namespace tardigradeHydra{
 
             floatVector parameters( 1 + 2 * *getNumIsochoricViscousTerms( ), 0 );
 
-            parameters[ 0 ] = *getGinf( );
+            parameters[ 0 ] = 2 * ( *getGinf( ) );
 
             for ( unsigned int i = 1; i <= *getNumIsochoricViscousTerms( ); i++ ){
 
                 parameters[ i ] = ( *getIsochoricTaus( ) )[ i - 1 ];
-                parameters[ i + *getNumIsochoricViscousTerms( ) ] = ( *getIsochoricModuli( ) )[ i - 1 ];
+                parameters[ i + *getNumIsochoricViscousTerms( ) ] = 2 * ( *getIsochoricModuli( ) )[ i - 1 ];
 
             }
 
