@@ -750,29 +750,16 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setPK2Stress( ){
+        void residual::setPK2MeanStress( ){
             /*!
-             * Set the second Piola-Kirchhoff stress
+             * Set the mean stress for the Second Piola-Kirchhoff stress
              */
-
-            // Initialize required values
-
-            const unsigned int* dim = hydra->getDimension( );
-
-            floatType time = *hydra->getTime( );
 
             // Compute the strain measures
 
             floatVector volumetricStrain = { ( *getJe( ) - 1 ) };
 
             floatVector previousVolumetricStrain = { ( *getPreviousJe( ) - 1 ) };
-
-            floatVector isochoricStrain, previousIsochoricStrain;
-            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::computeGreenLagrangeStrain( *getFehat( ), isochoricStrain ) );
-
-            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::computeGreenLagrangeStrain( *getPreviousFehat( ), previousIsochoricStrain ) );
-
-            floatType previousTime = time - *hydra->getDeltaTime( );
 
             // Get the previous state variable values
 
@@ -789,16 +776,10 @@ namespace tardigradeHydra{
 
             floatVector currentVolumetricStateVariables;
 
-            floatVector PK2IsochoricStress;
-
-            floatVector deltaPK2IsochoricStress;
-
-            floatVector currentIsochoricStateVariables;
-
             // Compute the viscous mean stress
 
             ERROR_TOOLS_CATCH_NODE_POINTER( stressTools::linearViscoelasticity( *hydra->getTime( ), volumetricStrain,
-                                                                                previousTime, previousVolumetricStrain,
+                                                                                *hydra->getTime( ) - *hydra->getDeltaTime( ), previousVolumetricStrain,
                                                                                 *getVolumetricRateMultiplier( ),
                                                                                 *getPreviousVolumetricRateMultiplier( ),
                                                                                 previousVolumetricStateVariables,
@@ -806,9 +787,72 @@ namespace tardigradeHydra{
                                                                                 *getIntegrationAlpha( ), deltaPK2MeanStress,
                                                                                 PK2MeanStress, currentVolumetricStateVariables ) );
 
+            setPK2MeanStress( PK2MeanStress[ 0 ] );
+
+            setUpdatedVolumetricViscoelasticStateVariables( currentVolumetricStateVariables );
+
+        }
+
+        void residual::setPK2MeanStress( const floatType &PK2MeanStress ){
+            /*!
+             * Set the PK2 mean stress
+             * 
+             * \param &PK2MeanStress: The second Piola-Kirchhoff mean stress
+             */
+
+            _PK2MeanStress.second = PK2MeanStress;
+
+            _PK2MeanStress.first = true;
+
+            addIterationData( &_PK2MeanStress );
+
+        }
+
+        const floatType* residual::getPK2MeanStress( ){
+            /*!
+             * Get the PK2 mean stress
+             */
+
+            if ( !_PK2MeanStress.first ){
+
+                ERROR_TOOLS_CATCH( setPK2MeanStress( ) );
+
+            }
+
+            return &_PK2MeanStress.second;
+
+        }
+
+        void residual::setPK2IsochoricStress( ){
+            /*!
+             * Set the isochoric second Piola-Kirchhoff stress
+             */
+
+            // Compute the strain measures
+
+            floatVector isochoricStrain, previousIsochoricStrain;
+            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::computeGreenLagrangeStrain( *getFehat( ), isochoricStrain ) );
+
+            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::computeGreenLagrangeStrain( *getPreviousFehat( ), previousIsochoricStrain ) );
+
+            // Get the previous state variable values
+
+            floatVector previousVolumetricStateVariables;
+
+            floatVector previousIsochoricStateVariables;
+
+            ERROR_TOOLS_CATCH( decomposeStateVariableVector( previousVolumetricStateVariables,
+                                                             previousIsochoricStateVariables ) );
+
+            floatVector PK2IsochoricStress;
+
+            floatVector deltaPK2IsochoricStress;
+
+            floatVector currentIsochoricStateVariables;
+
             // Compute the viscous isochoric stress
             ERROR_TOOLS_CATCH_NODE_POINTER( stressTools::linearViscoelasticity( *hydra->getTime( ), isochoricStrain,
-                                                                                previousTime, previousIsochoricStrain,
+                                                                                *hydra->getTime( ) - *hydra->getDeltaTime( ), previousIsochoricStrain,
                                                                                 *getIsochoricRateMultiplier( ),
                                                                                 *getPreviousIsochoricRateMultiplier( ),
                                                                                 previousIsochoricStateVariables,
@@ -816,12 +860,133 @@ namespace tardigradeHydra{
                                                                                 *getIntegrationAlpha( ), deltaPK2IsochoricStress,
                                                                                 PK2IsochoricStress, currentIsochoricStateVariables ) );
 
-        floatVector eye( ( *dim ) * ( *dim ), 0 );
-        vectorTools::eye( eye );
+            setPK2IsochoricStress( PK2IsochoricStress );
 
-        floatVector PK2Stress = PK2IsochoricStress + PK2MeanStress[ 0 ] * eye;
+            setUpdatedIsochoricViscoelasticStateVariables( currentIsochoricStateVariables );
 
-        setPK2Stress( PK2Stress );
+        }
+
+        void residual::setUpdatedVolumetricViscoelasticStateVariables( ){
+            /*!
+             * Set the updated values of the volumetric viscoelastic state variables
+             */
+
+           getPK2MeanStress( );
+
+        }
+
+        void residual::setUpdatedVolumetricViscoelasticStateVariables( floatVector &volumetricViscoelasticStateVariables ){
+            /*!
+             * Set the updated values of the volumetric viscoelastic state variables
+             * 
+             * \param &volumetricViscoelasticStateVariables: The updated volumetric viscoelastic state variables
+             */
+
+            _volumetricViscoelasticStateVariables.second = volumetricViscoelasticStateVariables;
+
+            _volumetricViscoelasticStateVariables.first = true;
+
+            addIterationData( &_volumetricViscoelasticStateVariables );
+
+        }
+
+        const floatVector* residual::getUpdatedVolumetricViscoelasticStateVariables( ){
+            /*!
+             * Get the updated values of the volumetric viscoelastic state variables
+             */
+
+            if ( !_volumetricViscoelasticStateVariables.first ){
+
+                ERROR_TOOLS_CATCH( setUpdatedVolumetricViscoelasticStateVariables( ) );
+
+            }
+
+            return &_volumetricViscoelasticStateVariables.second;
+
+        }
+
+        void residual::setUpdatedIsochoricViscoelasticStateVariables( ){
+            /*!
+             * Set the updated values of the isochoric viscoelastic state variables
+             */
+
+           getPK2IsochoricStress( );
+
+        }
+
+        void residual::setUpdatedIsochoricViscoelasticStateVariables( floatVector &isochoricViscoelasticStateVariables ){
+            /*!
+             * Set the updated values of the isochoric viscoelastic state variables
+             * 
+             * \param &isochoricViscoelasticStateVariables: The updated isochoric viscoelastic state variables
+             */
+
+            _isochoricViscoelasticStateVariables.second = isochoricViscoelasticStateVariables;
+
+            _isochoricViscoelasticStateVariables.first = true;
+
+            addIterationData( &_isochoricViscoelasticStateVariables );
+
+        }
+
+        const floatVector* residual::getUpdatedIsochoricViscoelasticStateVariables( ){
+            /*!
+             * Get the updated values of the isochoric viscoelastic state variables
+             */
+
+            if ( !_isochoricViscoelasticStateVariables.first ){
+
+                ERROR_TOOLS_CATCH( setUpdatedIsochoricViscoelasticStateVariables( ) );
+
+            }
+
+            return &_isochoricViscoelasticStateVariables.second;
+
+        }
+
+        void residual::setPK2IsochoricStress( const floatVector &PK2IsochoricStress ){
+            /*!
+             * Set the PK2 isochoric stress
+             * 
+             * \param &PK2MeanStress: The second Piola-Kirchhoff isochoric stress
+             */
+
+            _PK2IsochoricStress.second = PK2IsochoricStress;
+
+            _PK2IsochoricStress.first = true;
+
+            addIterationData( &_PK2IsochoricStress );
+
+        }
+
+        const floatVector* residual::getPK2IsochoricStress( ){
+            /*!
+             * Get the PK2 isochoric stress
+             */
+
+            if ( !_PK2IsochoricStress.first ){
+
+                ERROR_TOOLS_CATCH( setPK2IsochoricStress( ) );
+
+            }
+
+            return &_PK2IsochoricStress.second;
+
+        }
+
+        void residual::setPK2Stress( ){
+            /*!
+             * Set the PK2 stress
+             */
+
+            const unsigned int* dim = hydra->getDimension( );
+
+            floatVector eye( ( *dim ) * ( *dim ), 0 );
+            vectorTools::eye( eye );
+
+            floatVector PK2Stress = ( *getPK2IsochoricStress( ) ) + ( *getPK2MeanStress( ) ) * eye;
+
+            setPK2Stress( PK2Stress );
 
         }
 

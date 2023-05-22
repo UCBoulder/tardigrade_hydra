@@ -9,6 +9,7 @@
 #define BOOST_TEST_MODULE test_tardigrade-hydraLinearElasticity
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
+#include<stress_tools.h>
 
 typedef errorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
@@ -88,6 +89,14 @@ namespace tardigradeHydra{
 
                         BOOST_CHECK( &R._integrationAlpha == R.getIntegrationAlpha( ) );
 
+                        BOOST_CHECK( &R._PK2MeanStress.second == R.getPK2MeanStress( ) );
+
+                        BOOST_CHECK( &R._PK2IsochoricStress.second == R.getPK2IsochoricStress( ) );
+
+                        BOOST_CHECK( &R._volumetricViscoelasticStateVariables.second == R.getUpdatedVolumetricViscoelasticStateVariables( ) );
+
+                        BOOST_CHECK( &R._isochoricViscoelasticStateVariables.second == R.getUpdatedIsochoricViscoelasticStateVariables( ) );
+
                     }
     
             };
@@ -128,7 +137,7 @@ BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests_and_decomposeParameters ){
                                                 -0.12285551, -0.88064421, -0.20391149,
                                                  0.47599081, -0.63501654, -0.64909649 };
 
-    floatVector previousStateVariables = { };
+    floatVector previousStateVariables( 2 + 31, 0 );
 
     floatVector parameters = { 2, 3, 123.4, 56.7, 1, 2, 293.15, 3, 4, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
 
@@ -612,5 +621,206 @@ BOOST_AUTO_TEST_CASE( test_residual_getViscoelasticParameters ){
     BOOST_CHECK( vectorTools::fuzzyEquals( volumetricViscoelasticParametersAnswer, R.getVolumetricViscoelasticParameters( ) ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( isochoricViscoelasticParametersAnswer, R.getIsochoricViscoelasticParameters( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStress ){
+
+    class residualMock : public tardigradeHydra::linearViscoelasticity::residual {
+
+        public:
+
+            floatVector stateVariables = { 0.001, 0.002 };
+
+            floatType Je = 1.1;
+
+            using tardigradeHydra::linearViscoelasticity::residual::residual;
+
+            void setJe( const floatType &Je ){
+
+                tardigradeHydra::linearViscoelasticity::residual::setJe( Je );
+
+            }
+
+            void decomposeStateVariableVector( floatVector &volumetricISVs,
+                                               floatVector &isochoricISVs ){
+
+                volumetricISVs = stateVariables;
+
+            }
+
+        private:
+
+            virtual void decomposeElasticDeformation( ) override {
+
+                setJe( Je );
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+        private:
+
+            virtual void setResidualClasses( ){ }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.0, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector previousStateVariables = { -1, 0, 1e-3, 1e-1,
+                                            3,  4,  5,  6,  7,  8,  9, 10, 11,
+                                           12, 13, 14, 15, 16, 17, 18, 19, 20,
+                                           21, 22, 23, 24, 25, 26, 27, 28, 29 };
+
+    floatVector parameters = { 2, 3, 123.4, 56.7, 10.0, 5.0, 293.15, 2, 110, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    unsigned int ISVlb = 2;
+
+    unsigned int ISVub = 31;
+
+    floatType currentRateModifier;
+    constitutiveTools::WLF( temperature, { parameters[ 4 ], parameters[ 5 ], 293.15 }, currentRateModifier );
+    currentRateModifier = 1. / currentRateModifier;
+
+    floatType previousRateModifier;
+    constitutiveTools::WLF( previousTemperature, { parameters[ 4 ], parameters[ 5 ], 293.15 }, previousRateModifier );
+    previousRateModifier = 1. / previousRateModifier;
+
+    floatVector ISVs = { 1e-3, 2e-3 };
+    floatVector params = { 123.4, 0.1, 0.2, 23.4, 25.6 };
+    floatVector PK2MeanStressAnswer;
+    floatVector updatedISVsAnswer;
+
+    BOOST_CHECK( !stressTools::linearViscoelasticity( 1.1, { 0.1 }, -1.1, { 0.0 }, currentRateModifier, previousRateModifier, ISVs, params, 0.5, PK2MeanStressAnswer, updatedISVsAnswer ) );
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    residualMock R( &hydra, 9, parameters, ISVlb, ISVub, 0.5 );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( PK2MeanStressAnswer[ 0 ], *R.getPK2MeanStress( ) ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( updatedISVsAnswer, *R.getUpdatedVolumetricViscoelasticStateVariables( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStress ){
+
+    class residualMock : public tardigradeHydra::linearViscoelasticity::residual {
+
+        public:
+
+            using tardigradeHydra::linearViscoelasticity::residual::residual;
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+        private:
+
+            virtual void setResidualClasses( ){ }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector previousStateVariables = { -1, 0, 1e-3, 1e-1,
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    floatVector parameters = { 2, 3, 123.4, 56.7, 10.0, 5.0, 293.15, 2, 3, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.1, 1.0, 10.0 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    unsigned int ISVlb = 2;
+
+    unsigned int ISVub = 31;
+
+    floatVector strain;
+    BOOST_CHECK( !constitutiveTools::computeGreenLagrangeStrain( deformationGradient / std::pow( 1.1, 1/3.), strain ) );
+
+    floatVector previousStrain;
+    BOOST_CHECK( !constitutiveTools::computeGreenLagrangeStrain( previousDeformationGradient, previousStrain ) );
+
+    floatType currentRateModifier;
+    constitutiveTools::WLF( temperature, { parameters[ 7 ], parameters[ 8 ], 293.15 }, currentRateModifier );
+    currentRateModifier = 1. / currentRateModifier;
+
+    floatType previousRateModifier;
+    constitutiveTools::WLF( previousTemperature, { parameters[ 7 ], parameters[ 8 ], 293.15 }, previousRateModifier );
+    previousRateModifier = 1. / previousRateModifier;
+
+    floatVector ISVs( previousStateVariables.begin( ) + ISVlb + parameters[ 0 ],
+                      previousStateVariables.end( ) );
+    floatVector params = { 2 * 56.7, 0.1, 1.0, 10.0, 2 * 12.3, 2 * 13.4, 2 * 14.5 };
+    floatVector PK2IsochoricStressAnswer;
+    floatVector updatedISVsAnswer;
+
+    BOOST_CHECK( !stressTools::linearViscoelasticity( 1.1, strain, -1.1, previousStrain, currentRateModifier, previousRateModifier, ISVs, params, 0.5, PK2IsochoricStressAnswer, updatedISVsAnswer ) );
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    residualMock R( &hydra, 9, parameters, ISVlb, ISVub, 0.5 );
+
+    try{
+        R.getPK2IsochoricStress( );
+    }
+    catch(std::exception &e){
+        errorTools::printNestedExceptions( e );
+    }
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( PK2IsochoricStressAnswer, *R.getPK2IsochoricStress( ) ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( updatedISVsAnswer, *R.getUpdatedIsochoricViscoelasticStateVariables( ) ) );
 
 }

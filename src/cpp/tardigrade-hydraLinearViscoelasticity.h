@@ -187,6 +187,22 @@ namespace tardigradeHydra{
                     tardigradeHydra::linearElasticity::residual::setPK2Stress( PK2Stress );
                 }
 
+                void setPK2MeanStress( const floatType &PK2MeanStress );
+
+                void setPK2IsochoricStress( const floatVector &PK2IsochoricStress );
+
+                const floatType* getPK2MeanStress( );
+
+                const floatVector* getPK2IsochoricStress( );
+
+                void setUpdatedVolumetricViscoelasticStateVariables( floatVector &volumetricViscoelasticStateVariables );
+
+                void setUpdatedIsochoricViscoelasticStateVariables( floatVector &isochoricViscoelasticStateVariables );
+
+                const floatVector* getUpdatedVolumetricViscoelasticStateVariables( );
+
+                const floatVector* getUpdatedIsochoricViscoelasticStateVariables( );
+
             protected:
 
                 virtual void setNumVolumetricViscousTerms( const unsigned int &num );
@@ -204,7 +220,7 @@ namespace tardigradeHydra{
                 virtual void setVolumetricTaus( const floatVector &taus );
 
                 virtual void setIsochoricTaus( const floatVector &taus );
- 
+
             private:
 
                 using tardigradeHydra::linearElasticity::residual::residual;
@@ -260,19 +276,36 @@ namespace tardigradeHydra{
 
                 dataStorage< floatType > _previousIsochoricRateMultiplier;
 
+                dataStorage< floatVector > _volumetricViscoelasticStateVariables;
+
+                dataStorage< floatVector > _isochoricViscoelasticStateVariables;
+
                 dataStorage< floatVector > _currentStateVariables;
+
+                dataStorage< floatType > _PK2MeanStress;
+
+                dataStorage< floatVector > _PK2IsochoricStress;
 
                 virtual void setPK2Stress( ) override;
     
                 virtual void decomposeParameterVector( const floatVector &parameters );
 
-                void setVolumetricRateMultiplier( );
+                virtual void setVolumetricRateMultiplier( );
 
-                void setPreviousVolumetricRateMultiplier( );
+                virtual void setPreviousVolumetricRateMultiplier( );
 
-                void setIsochoricRateMultiplier( );
+                virtual void setIsochoricRateMultiplier( );
 
-                void setPreviousIsochoricRateMultiplier( );
+                virtual void setPreviousIsochoricRateMultiplier( );
+
+                virtual void setPK2MeanStress( );
+
+                virtual void setPK2IsochoricStress( );
+
+                virtual void setUpdatedVolumetricViscoelasticStateVariables( );
+
+                virtual void setUpdatedIsochoricViscoelasticStateVariables( );
+
         };
 
     }
