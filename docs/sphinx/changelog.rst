@@ -25,6 +25,7 @@ New Features
 - Added the solution of the non-linear problem (:merge:`14`). By `Nathan Miller`_.
 - Added a linear elastic implementation of a residual for use in testing (:merge:`18`). By `Nathan Miller`_.
 - Added the evaluation of hydra to compute the required quantities (:merge:`18`). By `Nathan Miller`_.
+- Added a linear viscoelastic implementation of a residual (:merge:`20`). By `Nathan Miller`_.
 
 Internal Changes
 ================

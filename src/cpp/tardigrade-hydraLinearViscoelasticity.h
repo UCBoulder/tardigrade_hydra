@@ -201,9 +201,7 @@ namespace tardigradeHydra{
 
                 virtual floatVector getIsochoricViscoelasticParameters( );
 
-                void setPK2Stress( const floatVector &PK2Stress ){
-                    tardigradeHydra::linearElasticity::residual::setPK2Stress( PK2Stress );
-                }
+                void setPK2Stress( const floatVector &PK2Stress );
 
                 void setPK2MeanStress( const floatType &PK2MeanStress );
 
@@ -217,11 +215,13 @@ namespace tardigradeHydra{
 
                 void setdPK2IsochoricStressdT( const floatVector &dPK2IsochoricStressdT );
 
-                void setdPK2StressdFe( const floatMatrix &dPK2StressdFe ){
-                    tardigradeHydra::linearElasticity::residual::setdPK2StressdFe( dPK2StressdFe );
-                }
+                void setdPK2StressdFe( const floatMatrix &dPK2StressdFe );
 
                 void setdPK2StressdT( const floatVector &dPK2StressdT );
+
+                void setdCauchyStressdT( const floatVector &dCauchyStressdT );
+
+                void setdRdT( const floatVector &dRdT );
 
                 const floatType* getPK2MeanStress( );
 
@@ -236,6 +236,8 @@ namespace tardigradeHydra{
                 const floatVector* getdPK2IsochoricStressdT( );
 
                 const floatVector* getdPK2StressdT( );
+
+                const floatVector* getdCauchyStressdT( );
 
                 void setUpdatedVolumetricViscoelasticStateVariables( floatVector &volumetricViscoelasticStateVariables );
 
@@ -346,6 +348,8 @@ namespace tardigradeHydra{
 
                 dataStorage< floatVector > _dPK2StressdT;
 
+                dataStorage< floatVector > _dCauchyStressdT;
+
                 virtual void setPK2Stress( ) override;
     
                 virtual void decomposeParameterVector( const floatVector &parameters );
@@ -381,6 +385,10 @@ namespace tardigradeHydra{
                 virtual void setdPK2StressdFe( ) override;
 
                 virtual void setdPK2StressdT( );
+
+                virtual void setdCauchyStressdT( );
+
+                virtual void setdRdT( ) override;
 
                 virtual void setUpdatedVolumetricViscoelasticStateVariables( );
 

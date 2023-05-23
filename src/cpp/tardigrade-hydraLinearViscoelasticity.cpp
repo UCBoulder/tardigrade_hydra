@@ -1452,6 +1452,96 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdCauchyStressdT( ){
+            /*!
+             * Set the derivative of the Cauchy stress w.r.t. the temperature
+             */
+
+            floatVector dCauchyStressdT = vectorTools::dot( *getdCauchyStressdPK2Stress( ), *getdPK2StressdT( ) );
+
+            setdCauchyStressdT( dCauchyStressdT );
+
+        }
+
+        void residual::setdCauchyStressdT( const floatVector &dCauchyStressdT ){
+            /*!
+             * Set the derivative of the Cauchy stress w.r.t. the
+             * temperature
+             *
+             * \param &dCauchyStressdT: The derivative of the Cauchy stress
+             *     w.r.t. the temperature
+             */
+
+            _dCauchyStressdT.second = dCauchyStressdT;
+
+            _dCauchyStressdT.first = true;
+
+            addIterationData( &_dCauchyStressdT );
+
+        }
+
+        const floatVector* residual::getdCauchyStressdT( ){
+            /*!
+             * Get the derivative of the Cauchy stress w.r.t.
+             * the temperature.
+             */
+
+            if ( !_dCauchyStressdT.first ){
+
+                ERROR_TOOLS_CATCH( setdCauchyStressdT( ) );
+
+            }
+
+            return &_dCauchyStressdT.second;
+
+        }
+
+        void residual::setdRdT( ){
+            /*!
+             * Set the derivative of the residual w.r.t. the temperature.
+             */
+
+            setdRdT( *getdCauchyStressdT( ) );
+
+        }
+
+        void residual::setPK2Stress( const floatVector &PK2Stress ){
+            /*!
+             * Pass-through function to linearElasticity::setPK2Stress
+             *
+             * Required because of overloading
+             *
+             * \param &PK2Stress: The second Piola-Kirchhoff stress
+             */
+
+            tardigradeHydra::linearElasticity::residual::setPK2Stress( PK2Stress );
+        }
+
+        void residual::setdPK2StressdFe( const floatMatrix &dPK2StressdFe ){
+            /*!
+             * Pass-through function to linearElasticity::setdPK2StressdFe
+             *
+             * Required because of overloading
+             *
+             * \param &dPK2StressdFe: The derivative of the second Piola-Kirchhoff
+             *     stress w.r.t. the elastic deformation gradient
+             */
+
+            tardigradeHydra::linearElasticity::residual::setdPK2StressdFe( dPK2StressdFe );
+        }
+
+        void residual::setdRdT( const floatVector &dRdT ){
+            /*!
+             * Pass-through function to residualBase::setdRdT
+             *
+             * Required because of overloading
+             *
+             * \param &dRdT: The derivative of the residual w.r.t. the temperature
+             */
+
+            tardigradeHydra::residualBase::setdRdT( dRdT );
+        }
+
     }
 
 }

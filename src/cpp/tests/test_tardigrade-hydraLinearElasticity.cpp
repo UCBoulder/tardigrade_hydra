@@ -59,7 +59,7 @@ namespace tardigradeHydra{
 
                         BOOST_CHECK( &R._dPK2StressdFe.second == R.getdPK2StressdFe( ) );
     
-                        BOOST_CHECK( &R._dCauchyStressdPK2.second == R.getdCauchyStressdPK2( ) );
+                        BOOST_CHECK( &R._dCauchyStressdPK2Stress.second == R.getdCauchyStressdPK2Stress( ) );
 
                         BOOST_CHECK( &R._dCauchyStressdF.second == R.getdCauchyStressdF( ) );
     
@@ -657,7 +657,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setCauchyStress ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdPK2 ){
+BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdPK2Stress ){
 
     class residualMock : public tardigradeHydra::linearElasticity::residual{
 
@@ -772,7 +772,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdPK2 ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, *R.getdCauchyStressdPK2( ) ) );
+    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, *R.getdCauchyStressdPK2Stress( ) ) );
 
 }
 
