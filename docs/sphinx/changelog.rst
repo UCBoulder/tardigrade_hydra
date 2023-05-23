@@ -60,3 +60,4 @@ Internal Changes
 - linearElasticity: Exposed dPK2StressdFe to users through getter-setter functions (:merge:`20`). By `Nathan Miller`_.
 - linearElasticity: Changed dPK2dXXX names to dPK2StressdXXX (:merge:`20`). By `Nathan Miller`_.
 - linearViscoelasticity: Added the computation of dPK2StressdFe and dPK2StressdT (:merge:`20`). By `Nathan Miller`_.
+- linearElasticity: Changed XXXdPK2 names to XXXdPK2Stress (:merge:`20`). By `Nathan Miller`_.

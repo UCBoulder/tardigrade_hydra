@@ -279,20 +279,20 @@ namespace tardigradeHydra{
     
             // Map the PK2 stress to the current configuration
             floatVector cauchyStress;
-            floatMatrix dCauchyStressdPK2;
+            floatMatrix dCauchyStressdPK2Stress;
             floatMatrix dCauchyStressdFe;
     
-            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::pushForwardPK2Stress( *getPK2Stress( ), Fe, cauchyStress, dCauchyStressdPK2, dCauchyStressdFe ) );
+            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::pushForwardPK2Stress( *getPK2Stress( ), Fe, cauchyStress, dCauchyStressdPK2Stress, dCauchyStressdFe ) );
     
             setCauchyStress( cauchyStress );
     
-            floatMatrix dCauchyStressdF  = vectorTools::dot( dCauchyStressdPK2, dPK2StressdF )
+            floatMatrix dCauchyStressdF  = vectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdF )
                                          + vectorTools::dot( dCauchyStressdFe, dFedF );
     
-            floatMatrix dCauchyStressdFn = vectorTools::dot( dCauchyStressdPK2, dPK2StressdFn )
+            floatMatrix dCauchyStressdFn = vectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdFn )
                                          + vectorTools::dot( dCauchyStressdFe, dFedFn );
 
-            setdCauchyStressdPK2( dCauchyStressdPK2 );   
+            setdCauchyStressdPK2Stress( dCauchyStressdPK2Stress );   
 
             setdCauchyStressdF( dCauchyStressdF );
     
@@ -300,7 +300,7 @@ namespace tardigradeHydra{
     
         }
     
-        void residual::setdCauchyStressdPK2( ){
+        void residual::setdCauchyStressdPK2Stress( ){
             /*!
              * Set the derivative of the computed Cauchy stress w.r.t. the second Piola-Kirchoff stress (this is a partial derivative generally)
              */
@@ -318,18 +318,18 @@ namespace tardigradeHydra{
     
         }
 
-        void residual::setdCauchyStressdPK2( const floatMatrix &dCauchyStressdPK2 ){
+        void residual::setdCauchyStressdPK2Stress( const floatMatrix &dCauchyStressdPK2Stress ){
             /*!
              * Set the partial derivative of the Cauchy stress w.r.t. the second Piola-Kirchhoff stress
              * 
              * \param &dCauchyStressdPK2: The partial derivative of the Cauchy stress w.r.t. the second Piola-Kirchhoff stress
              */
     
-            _dCauchyStressdPK2.second = dCauchyStressdPK2;
+            _dCauchyStressdPK2Stress.second = dCauchyStressdPK2Stress;
     
-            _dCauchyStressdPK2.first = true;
+            _dCauchyStressdPK2Stress.first = true;
     
-            addIterationData( &_dCauchyStressdPK2 );
+            addIterationData( &_dCauchyStressdPK2Stress );
     
         }
 
@@ -348,18 +348,18 @@ namespace tardigradeHydra{
     
         }
 
-        const floatMatrix* residual::getdCauchyStressdPK2( ){
+        const floatMatrix* residual::getdCauchyStressdPK2Stress( ){
             /*!
              * Get the derivative of the Cauchy stress w.r.t. the second Piola-Kirchhoff stress
              */
 
-            if ( !_dCauchyStressdPK2.first ){
+            if ( !_dCauchyStressdPK2Stress.first ){
 
-                ERROR_TOOLS_CATCH( setdCauchyStressdPK2( ) );
+                ERROR_TOOLS_CATCH( setdCauchyStressdPK2Stress( ) );
 
             }
 
-            return &_dCauchyStressdPK2.second;
+            return &_dCauchyStressdPK2Stress.second;
 
         }
 

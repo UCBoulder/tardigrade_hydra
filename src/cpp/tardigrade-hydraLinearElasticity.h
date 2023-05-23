@@ -90,7 +90,7 @@ namespace tardigradeHydra{
 
                 const floatMatrix* getdPK2StressdFe( );
     
-                const floatMatrix* getdCauchyStressdPK2( );
+                const floatMatrix* getdCauchyStressdPK2Stress( );
 
                 const floatMatrix* getdCauchyStressdF( );
     
@@ -110,7 +110,7 @@ namespace tardigradeHydra{
 
                 void setdPK2StressdFe( const floatMatrix &dPK2StressdFe );
     
-                void setdCauchyStressdPK2( const floatMatrix &dCauchyStressdPK2 );
+                void setdCauchyStressdPK2Stress( const floatMatrix &dCauchyStressdPK2Stress );
 
                 void setdCauchyStressdF( const floatMatrix &dCauchyStressdF );
     
@@ -149,7 +149,7 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatMatrix > _dPK2StressdFe;
 
-                tardigradeHydra::dataStorage< floatMatrix > _dCauchyStressdPK2;
+                tardigradeHydra::dataStorage< floatMatrix > _dCauchyStressdPK2Stress;
 
                 tardigradeHydra::dataStorage< floatMatrix > _dCauchyStressdF;
 
@@ -167,7 +167,7 @@ namespace tardigradeHydra{
 
                 virtual void setCauchyStress( ) override;
 
-                virtual void setdCauchyStressdPK2( );
+                virtual void setdCauchyStressdPK2Stress( );
 
                 virtual void setdCauchyStressdF( );
 
