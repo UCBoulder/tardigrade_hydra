@@ -159,21 +159,39 @@ namespace tardigradeHydra{
 
                 virtual floatType computeRateMultiplier( const floatVector &variables, const floatVector &parameters );
 
+                virtual floatVector computedRateMultiplierdVariables( const floatVector &variables, const floatVector &parameters );
+
                 virtual void setVolumetricRateMultiplier( const floatType &rateMultiplier );
 
                 virtual void setPreviousVolumetricRateMultiplier( const floatType &previousRateMultiplier );
+
+                virtual void setdVolumetricRateMultiplierdT( const floatType &dRateMultiplierdT );
+
+                virtual void setdPreviousVolumetricRateMultiplierdPreviousT( const floatType &dRateMultiplierdT );
 
                 const floatType* getVolumetricRateMultiplier( );
 
                 const floatType* getPreviousVolumetricRateMultiplier( );
 
+                const floatType* getdVolumetricRateMultiplierdT( );
+
+                const floatType* getdPreviousVolumetricRateMultiplierdPreviousT( );
+
                 virtual void setIsochoricRateMultiplier( const floatType &rateMultiplier );
 
                 virtual void setPreviousIsochoricRateMultiplier( const floatType &previousRateMultiplier );
 
+                virtual void setdIsochoricRateMultiplierdT( const floatType &dRateMultiplierdT );
+
+                virtual void setdPreviousIsochoricRateMultiplierdPreviousT( const floatType &dPreviousRateMultiplierdPreviousT );
+
                 const floatType* getIsochoricRateMultiplier( );
 
                 const floatType* getPreviousIsochoricRateMultiplier( );
+
+                const floatType* getdIsochoricRateMultiplierdT( );
+
+                const floatType* getdPreviousIsochoricRateMultiplierdPreviousT( );
 
                 void setVolumetricTemperatureParameters( const floatVector &parameters );
 
@@ -183,7 +201,7 @@ namespace tardigradeHydra{
 
                 virtual floatVector getIsochoricViscoelasticParameters( );
 
-                void setPK2Stress( floatVector &PK2Stress ){
+                void setPK2Stress( const floatVector &PK2Stress ){
                     tardigradeHydra::linearElasticity::residual::setPK2Stress( PK2Stress );
                 }
 
@@ -191,9 +209,33 @@ namespace tardigradeHydra{
 
                 void setPK2IsochoricStress( const floatVector &PK2IsochoricStress );
 
+                void setdPK2MeanStressdFe( const floatVector &dPK2MeanStressdFe );
+
+                void setdPK2IsochoricStressdFe( const floatMatrix &dPK2IsochoricStressdFe );
+
+                void setdPK2MeanStressdT( const floatType &dPK2MeanStressdT );
+
+                void setdPK2IsochoricStressdT( const floatVector &dPK2IsochoricStressdT );
+
+                void setdPK2StressdFe( const floatMatrix &dPK2StressdFe ){
+                    tardigradeHydra::linearElasticity::residual::setdPK2StressdFe( dPK2StressdFe );
+                }
+
+                void setdPK2StressdT( const floatVector &dPK2StressdT );
+
                 const floatType* getPK2MeanStress( );
 
                 const floatVector* getPK2IsochoricStress( );
+
+                const floatVector* getdPK2MeanStressdFe( );
+
+                const floatMatrix* getdPK2IsochoricStressdFe( );
+
+                const floatType* getdPK2MeanStressdT( );
+
+                const floatVector* getdPK2IsochoricStressdT( );
+
+                const floatVector* getdPK2StressdT( );
 
                 void setUpdatedVolumetricViscoelasticStateVariables( floatVector &volumetricViscoelasticStateVariables );
 
@@ -276,6 +318,14 @@ namespace tardigradeHydra{
 
                 dataStorage< floatType > _previousIsochoricRateMultiplier;
 
+                dataStorage< floatType > _dVolumetricRateMultiplierdT;
+
+                dataStorage< floatType > _dPreviousVolumetricRateMultiplierdPreviousT;
+
+                dataStorage< floatType > _dIsochoricRateMultiplierdT;
+
+                dataStorage< floatType > _dPreviousIsochoricRateMultiplierdPreviousT;
+
                 dataStorage< floatVector > _volumetricViscoelasticStateVariables;
 
                 dataStorage< floatVector > _isochoricViscoelasticStateVariables;
@@ -285,6 +335,16 @@ namespace tardigradeHydra{
                 dataStorage< floatType > _PK2MeanStress;
 
                 dataStorage< floatVector > _PK2IsochoricStress;
+
+                dataStorage< floatType > _dPK2MeanStressdT;
+
+                dataStorage< floatVector > _dPK2MeanStressdFe;
+
+                dataStorage< floatVector > _dPK2IsochoricStressdT;
+
+                dataStorage< floatMatrix > _dPK2IsochoricStressdFe;
+
+                dataStorage< floatVector > _dPK2StressdT;
 
                 virtual void setPK2Stress( ) override;
     
@@ -298,9 +358,29 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousIsochoricRateMultiplier( );
 
+                virtual void setdVolumetricRateMultiplierdT( );
+
+                virtual void setdPreviousVolumetricRateMultiplierdPreviousT( );
+
+                virtual void setdIsochoricRateMultiplierdT( );
+
+                virtual void setdPreviousIsochoricRateMultiplierdPreviousT( );
+
                 virtual void setPK2MeanStress( );
 
                 virtual void setPK2IsochoricStress( );
+
+                virtual void setdPK2MeanStressdFe( );
+
+                virtual void setdPK2IsochoricStressdFe( );
+
+                virtual void setdPK2MeanStressdT( );
+
+                virtual void setdPK2IsochoricStressdT( );
+
+                virtual void setdPK2StressdFe( ) override;
+
+                virtual void setdPK2StressdT( );
 
                 virtual void setUpdatedVolumetricViscoelasticStateVariables( );
 
