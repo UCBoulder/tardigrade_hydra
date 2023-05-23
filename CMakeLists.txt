@@ -12,7 +12,7 @@ set(ABAQUS_TEST_PATH "${ABAQUS_SRC_PATH}/tests")
 set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
 # Set the internal support libraries
-set(INTERNAL_SUPPORT_LIBRARIES "tardigrade-hydraLinearElasticity")
+set(INTERNAL_SUPPORT_LIBRARIES "tardigrade-hydraLinearElasticity" "tardigrade-hydraLinearViscoelasticity")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
@@ -20,6 +20,7 @@ foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
     set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
 endforeach(package)
 set(TARDIGRADE-HYDRALINEARELASTICITY_UPSTREAM_LIBRARIES "constitutive_tools")
+set(TARDIGRADE-HYDRALINEARVISCOELASTICITY_UPSTREAM_LIBRARIES "constitutive_tools" "stress_tools")
 # Set some Abaqus integration variables
 set(UMAT "${PROJECT_NAME}_umat")
 set(MISSING_INTEGRATION_DEPS_MESSAGE "Abaqus integration tests will be skipped.")
@@ -105,7 +106,7 @@ endif()
 
 # Find related, but external, projects in installed environment
 include(FetchContent)
-set(upstream_packages "error_tools" "vector_tools" "constitutive_tools" "abaqus_tools")
+set(upstream_packages "error_tools" "vector_tools" "constitutive_tools" "stress_tools" "abaqus_tools")
 if(${not_conda_test} STREQUAL "false")
     # During conda-build testing, we must find the installed project files as if they were an external project
     set(upstream_packages ${upstream_packages} ${PROJECT_NAME})

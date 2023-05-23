@@ -25,6 +25,7 @@ New Features
 - Added the solution of the non-linear problem (:merge:`14`). By `Nathan Miller`_.
 - Added a linear elastic implementation of a residual for use in testing (:merge:`18`). By `Nathan Miller`_.
 - Added the evaluation of hydra to compute the required quantities (:merge:`18`). By `Nathan Miller`_.
+- Added a linear viscoelastic implementation of a residual (:merge:`20`). By `Nathan Miller`_.
 
 Internal Changes
 ================
@@ -48,3 +49,16 @@ Internal Changes
 - Clean up conda package CI files after ``conda build`` (:issue:`2`, :merge:`15`). By `Sergio Cordova`_.
 - Changed the convergence_error type to use standard strings (:merge:`18`). By `Nathan Miller`_.
 - Changed the version extraction script (:merge:`19`). By `Nathan Miller`_.
+- linearViscoelasticity: Added elastic deformation gradient decomposition to linear viscoelasticity (:merge:`20`). By `Nathan Miller`_.
+- linearViscoelasticity: Generalized the decomposition of the current elastic deformation gradient to current and previous (:merge:`20`). By `Nathan Miller`_.
+- linearViscoelasticity: Added the decomposition of the additional state variable vector into volumetric and isochoric parts (:merge:`20`). By `Nathan Miller`_.
+- linearViscoelasticity: Added the computation of the rate multipliers and the integration alpha parameter (:merge:`20`). By `Nathan Miller`_.
+- linearViscoelasticity: Added the construction of the viscoelastic parameter vectors which are able to be parsed by stressTools::linearViscoelasticity (:merge:`20`). By `Nathan Miller`_.
+- linearViscoelasticity: Changed the isochoric moduli going into linear viscoelasticity to be 2x the moduli (:merge:`20`). By `Nathan Miller`_.
+- linearViscoelasticity: Added the computation of the mean and isochoric viscoelastic PK2 stresses (:merge:`20`). By `Nathan Miller`_.
+- linearViscoelasticity: Added the computation of the PK2 stress (:merge:`20`). By `Nathan Miller`_.
+- linearViscoelasticity: Added the gradients of the rate multipliers w.r.t. the temperatures (:merge:`20`). By `Nathan Miller`_.
+- linearElasticity: Exposed dPK2StressdFe to users through getter-setter functions (:merge:`20`). By `Nathan Miller`_.
+- linearElasticity: Changed dPK2dXXX names to dPK2StressdXXX (:merge:`20`). By `Nathan Miller`_.
+- linearViscoelasticity: Added the computation of dPK2StressdFe and dPK2StressdT (:merge:`20`). By `Nathan Miller`_.
+- linearElasticity: Changed XXXdPK2 names to XXXdPK2Stress (:merge:`20`). By `Nathan Miller`_.
