@@ -86,10 +86,12 @@ namespace tardigradeHydra{
        
                 const floatVector* getPK2Stress( );
     
-                const floatMatrix* getdPK2dEe( );
+                const floatMatrix* getdPK2StressdEe( );
 
-                const floatMatrix* getdPK2dFe( );
+                const floatMatrix* getdPK2StressdFe( );
     
+                const floatMatrix* getdCauchyStressdPK2( );
+
                 const floatMatrix* getdCauchyStressdF( );
     
                 const floatMatrix* getdCauchyStressdFn( );
@@ -104,10 +106,12 @@ namespace tardigradeHydra{
         
                 void setPK2Stress( const floatVector &PK2Stress );
     
-                void setdPK2dEe( const floatMatrix &dPK2dEe );
+                void setdPK2StressdEe( const floatMatrix &dPK2StressdEe );
 
-                void setdPK2dFe( const floatMatrix &dPK2dFe );
+                void setdPK2StressdFe( const floatMatrix &dPK2StressdFe );
     
+                void setdCauchyStressdPK2( const floatMatrix &dCauchyStressdPK2 );
+
                 void setdCauchyStressdF( const floatMatrix &dCauchyStressdF );
     
                 void setdCauchyStressdFn( const floatMatrix &dCauchyStressdFn );
@@ -141,9 +145,11 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatVector > _PK2Stress;
 
-                tardigradeHydra::dataStorage< floatMatrix > _dPK2dEe;
+                tardigradeHydra::dataStorage< floatMatrix > _dPK2StressdEe;
 
-                tardigradeHydra::dataStorage< floatMatrix > _dPK2dFe;
+                tardigradeHydra::dataStorage< floatMatrix > _dPK2StressdFe;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dCauchyStressdPK2;
 
                 tardigradeHydra::dataStorage< floatMatrix > _dCauchyStressdF;
 
@@ -155,11 +161,13 @@ namespace tardigradeHydra{
  
                 virtual void setPK2Stress( );            
 
-                virtual void setdPK2dEe( );
+                virtual void setdPK2StressdEe( );
 
-                virtual void setdPK2dFe( );
+                virtual void setdPK2StressdFe( );
 
                 virtual void setCauchyStress( ) override;
+
+                virtual void setdCauchyStressdPK2( );
 
                 virtual void setdCauchyStressdF( );
 
