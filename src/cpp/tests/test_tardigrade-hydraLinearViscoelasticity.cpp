@@ -1,12 +1,12 @@
 /**
-  * \file test_tardigrade-hydraLinearElasticity.cpp
+  * \file test_tardigrade-hydraLinearViscoelasticity.cpp
   * 
-  * Tests for tardigrade-hydraLinearElasticity
+  * Tests for tardigrade-hydraLinearViscoelasticity
   */
 
 #include<tardigrade-hydraLinearViscoelasticity.h>
 
-#define BOOST_TEST_MODULE test_tardigrade-hydraLinearElasticity
+#define BOOST_TEST_MODULE test_tardigrade-hydraLinearViscoelasticity
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 #include<stress_tools.h>
@@ -1285,6 +1285,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2Stress ){
     residualMock R( &hydra, 9, parameters, ISVlb, ISVub, 0.5 );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( PK2StressAnswer, *R.getPK2Stress( ) ) );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( vectorTools::appendVectors( { *R.getUpdatedVolumetricViscoelasticStateVariables( ), *R.getUpdatedIsochoricViscoelasticStateVariables( ) } ),
+                                           *R.getCurrentAdditionalStateVariables( ) ) );
 
 }
 

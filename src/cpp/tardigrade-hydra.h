@@ -56,8 +56,8 @@ namespace tardigradeHydra{
     }
     //Return filename for constructing debugging messages
     //https://stackoverflow.com/questions/31050113/how-to-extract-the-source-filename-without-path-and-suffix-at-compile-time
-    const std::string __BASENAME__ = file_name(__FILE__);
-    const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of("."));
+    const std::string __BASENAME__ = file_name(__FILE__); //!< The base filename which will be parsed
+    const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
 
     typedef errorTools::Node errorNode; //!< Redefinition for the error node
     typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
@@ -67,6 +67,9 @@ namespace tardigradeHydra{
 
     typedef void ( hydraBase::*hydraBaseFxn )( ); //!< Typedef for passing pointers to hydraBase functions
 
+    /*!
+     * Base class for data objects which defines the clear command
+     */
     class dataBase{
 
         public:
@@ -82,17 +85,26 @@ namespace tardigradeHydra{
 
     };
 
+    /*!
+     * Custom data storage object that allows for smart storage of objects
+     */
     template < typename T >
     class dataStorage : public dataBase{
 
         public:
 
-            bool first = false; //!The flag for whether the data has been stored
+            bool first = false; //!< The flag for whether the data has been stored
 
-            T second; //!The stored data
+            T second; //!< The stored data
 
             dataStorage( ){ };
 
+            /*!
+             * Constructor for a data-storage object setting first and second
+             * 
+             * \param &_first: The flag for whether the data storage has been set
+             * \param &_second: The data contained by the object
+             */
             dataStorage( const bool &_first, const T &_second ) : first( _first ), second( _second ) { }
 
             virtual void clear( ){
@@ -144,16 +156,23 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * A custom error for use with failures in convergence of the solver.
+     */
     class convergence_error : public std::exception{
 
         private:
-            std::string message_;
+            std::string message_; //!< The output message
 
         public:
 
+            //! Constructor
             explicit convergence_error( const std::string& message ) : message_( message ) { }
 
             const char *what( ) const noexcept override {
+                /*!
+                 * Output the message
+                 */
 
                 return message_.c_str( );
 
@@ -161,17 +180,31 @@ namespace tardigradeHydra{
 
     };
 
+    /*!
+     * A class to contain the residual computations associated with some part of a non-linear solve
+     */
     class residualBase{
-        /*!
-         * A class to contain the residual computations associated with some part of a non-linear solve
-         */
 
         public:
 
+            /*!
+             * Default residual
+             */
             residualBase( ) : hydra( NULL ), _numEquations( 0 ){ };
 
+            /*!
+             * Main utilization constructor
+             * 
+             * \param *_hydra: A pointer to a hydraBase object
+             * \param &_numEquations: The number of equations defined by the residual
+             */
             residualBase( hydraBase *_hydra, const unsigned int &_numEquations ) : hydra( _hydra ), _numEquations( _numEquations ){ }
 
+            /*!
+             * Copy constructor
+             * 
+             * \param &r: The residual to be copied
+             */
             residualBase( residualBase &r ) : hydra( r.hydra ), _numEquations( *r.getNumEquations( ) ){ }
 
             hydraBase* hydra; //!< The hydra class which owns the residualBase object
@@ -235,6 +268,19 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void setCurrentAdditionalStateVariables( ){
+                /*!
+                 * Set the current additional state variables
+                 * 
+                 * Doesn't need to be defined
+                 */
+
+                setCurrentAdditionalStateVariables( floatVector( 0, 0 ) );
+
+                return;
+
+            }
+
             // Setters
 
             void setResidual( const floatVector &residual );
@@ -249,8 +295,11 @@ namespace tardigradeHydra{
 
             void setCauchyStress( const floatVector &cauchyStress );
 
+            void setCurrentAdditionalStateVariables( const floatVector &currentAdditionalStateVariables );
+
             // Getter functions
 
+            //! Get the number of equations the residual defined
             const unsigned int* getNumEquations( ){ return &_numEquations; }
 
             const floatVector* getResidual( );
@@ -264,6 +313,8 @@ namespace tardigradeHydra{
             const floatMatrix* getAdditionalDerivatives( );
 
             const floatVector* getCauchyStress( );
+
+            const floatVector* getCurrentAdditionalStateVariables( );
 
             void addIterationData( dataBase *data );
 
@@ -283,18 +334,20 @@ namespace tardigradeHydra{
 
             dataStorage< floatVector > _cauchyStress; //!< The cauchy stress. Only needs to be defined for the first residual
 
+            dataStorage< floatVector > _currentAdditionalStateVariables; //!< The current additional state variables.
+
     };
 
+    /*!
+     * hydraBase: A base class which can be used to construct finite deformation material models.
+     * 
+     * The hydra class seeks to provide utilities for the construction of finite deformation constitutive models
+     * more rapidly than would be possible previously. The user can define as many different configurations as desired
+     * and provide a calculation of the Cauchy stress.
+     * 
+     * A non-linear problem which is of the size ( dimension**2 * num_configurations + num_ISVs ) will be solved.
+     */
     class hydraBase{
-        /*!
-         * hydraBase: A base class which can be used to construct finite deformation material models.
-         * 
-         * The hydra class seeks to provide utilities for the construction of finite deformation constitutive models
-         * more rapidly than would be possible previously. The user can define as many different configurations as desired
-         * and provide a calculation of the Cauchy stress.
-         * 
-         * A non-linear problem which is of the size ( dimension**2 * num_configurations + num_ISVs ) will be solved.
-         */
 
         public:
 

@@ -26,6 +26,7 @@ New Features
 - Added a linear elastic implementation of a residual for use in testing (:merge:`18`). By `Nathan Miller`_.
 - Added the evaluation of hydra to compute the required quantities (:merge:`18`). By `Nathan Miller`_.
 - Added a linear viscoelastic implementation of a residual (:merge:`20`). By `Nathan Miller`_.
+- Added the residual for a thermal expansion model (:merge:`21`). By `Nathan Miller`_.
 
 Internal Changes
 ================
@@ -62,3 +63,4 @@ Internal Changes
 - linearElasticity: Changed dPK2dXXX names to dPK2StressdXXX (:merge:`20`). By `Nathan Miller`_.
 - linearViscoelasticity: Added the computation of dPK2StressdFe and dPK2StressdT (:merge:`20`). By `Nathan Miller`_.
 - linearElasticity: Changed XXXdPK2 names to XXXdPK2Stress (:merge:`20`). By `Nathan Miller`_.
+- Updated documentation strings to eliminate all undefined references in the documentation generation (:merge:`21`). By `Nathan Miller`_.

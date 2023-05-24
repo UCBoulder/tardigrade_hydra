@@ -184,7 +184,7 @@ namespace tardigradeHydra{
             /*!
              * Set the isochoric time constants
              * 
-             * \param &Gs: The isochoric time constants
+             * \param &taus: The isochoric time constants
              */
 
             _isochoricTaus = taus;
@@ -658,14 +658,14 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setVolumetricRateMultiplier( const floatType &rateMultiplier ){
+        void residual::setVolumetricRateMultiplier( const floatType &volumetricRateMultiplier ){
             /*!
              * Set the volumetric rate multiplier for the viscous term evolution
              * 
-             * \param &rateMultiplier: The value of the volumetric rate multiplier
+             * \param &volumetricRateMultiplier: The value of the volumetric rate multiplier
              */
 
-            _volumetricRateMultiplier.second = rateMultiplier;
+            _volumetricRateMultiplier.second = volumetricRateMultiplier;
 
             _volumetricRateMultiplier.first = true;
 
@@ -673,27 +673,27 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setPreviousVolumetricRateMultiplier( const floatType &previousRateMultiplier ){
+        void residual::setPreviousVolumetricRateMultiplier( const floatType &previousVolumetricRateMultiplier ){
             /*!
              * Set the previous volumetric rate multiplier for the viscous term evolution
              * 
-             * \param &previousRateMultiplier: The value of the previous volumetric rate multiplier
+             * \param &previousVolumetricRateMultiplier: The value of the previous volumetric rate multiplier
              */
 
-            _previousVolumetricRateMultiplier.second = previousRateMultiplier;
+            _previousVolumetricRateMultiplier.second = previousVolumetricRateMultiplier;
 
             _previousVolumetricRateMultiplier.first = true;
 
         }
 
-        void residual::setIsochoricRateMultiplier( const floatType &rateMultiplier ){
+        void residual::setIsochoricRateMultiplier( const floatType &isochoricRateMultiplier ){
             /*!
              * Set the isochoric rate multiplier for the viscous term evolution
              * 
-             * \param &rateMultiplier: The value of the isochoric rate multiplier
+             * \param &isochoricRateMultiplier: The value of the isochoric rate multiplier
              */
 
-            _isochoricRateMultiplier.second = rateMultiplier;
+            _isochoricRateMultiplier.second = isochoricRateMultiplier;
 
             _isochoricRateMultiplier.first = true;
 
@@ -701,29 +701,29 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setPreviousIsochoricRateMultiplier( const floatType &previousRateMultiplier ){
+        void residual::setPreviousIsochoricRateMultiplier( const floatType &previousIsochoricRateMultiplier ){
             /*!
              * Set the previous isochoric rate multiplier for the viscous term evolution
              * 
-             * \param &previousRateMultiplier: The value of the previous isochoric rate multiplier
+             * \param &previousIsochoricRateMultiplier: The value of the previous isochoric rate multiplier
              */
 
-            _previousIsochoricRateMultiplier.second = previousRateMultiplier;
+            _previousIsochoricRateMultiplier.second = previousIsochoricRateMultiplier;
 
             _previousIsochoricRateMultiplier.first = true;
 
         }
 
-        void residual::setdVolumetricRateMultiplierdT( const floatType &dRateMultiplierdT ){
+        void residual::setdVolumetricRateMultiplierdT( const floatType &dVolumetricRateMultiplierdT ){
             /*!
              * Set the derivative of the volumetric rate multiplier for the viscous
              * term evolution w.r.t. the temperature
              * 
-             * \param &dRateMultiplierdT: The value of the derivative of the
+             * \param &dVolumetricRateMultiplierdT: The value of the derivative of the
              *     volumetric rate multiplier w.r.t. T
              */
 
-            _dVolumetricRateMultiplierdT.second = dRateMultiplierdT;
+            _dVolumetricRateMultiplierdT.second = dVolumetricRateMultiplierdT;
 
             _dVolumetricRateMultiplierdT.first = true;
 
@@ -731,16 +731,17 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setdPreviousVolumetricRateMultiplierdPreviousT( const floatType &dPreviousRateMultiplierdPreviousT ){
+        void residual::setdPreviousVolumetricRateMultiplierdPreviousT( const floatType &dPreviousVolumetricRateMultiplierdPreviousT ){
             /*!
              * Set the derivative of the previous volumetric rate multiplier for the
              * viscous term evolution w.r.t. the previous temperature.
              * 
-             * \param &dPreviousRateMultiplierdPreviousT: The value of the derivative of the
-             *     previous volumetric rate multiplier w.r.t. the previous temperature
+             * \param &dPreviousVolumetricRateMultiplierdPreviousT: The value of the
+             *     derivative of the previous volumetric rate multiplier w.r.t. the
+             *     previous temperature.
              */
 
-            _dPreviousVolumetricRateMultiplierdPreviousT.second = dPreviousRateMultiplierdPreviousT;
+            _dPreviousVolumetricRateMultiplierdPreviousT.second = dPreviousVolumetricRateMultiplierdPreviousT;
 
             _dPreviousVolumetricRateMultiplierdPreviousT.first = true;
 
@@ -1220,7 +1221,7 @@ namespace tardigradeHydra{
             /*!
              * Set the derivative of the isochoric PK2 stress w.r.t. the temperature
              * 
-             * \param &dPK2IsochoricStressdFe: The derivative of the PK2 stress w.r.t.
+             * \param &dPK2IsochoricStressdT: The derivative of the PK2 stress w.r.t.
              * the temperature
              */
 
@@ -1311,6 +1312,20 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setCurrentAdditionalStateVariables( ){
+            /*!
+             * Set the updated current additional state variables
+             */
+
+            floatVector viscoelasticStateVariables;
+
+            ERROR_TOOLS_CATCH( viscoelasticStateVariables = vectorTools::appendVectors( { *getUpdatedVolumetricViscoelasticStateVariables( ),
+                                                                                          *getUpdatedIsochoricViscoelasticStateVariables( ) } ) );
+
+            tardigradeHydra::residualBase::setCurrentAdditionalStateVariables( viscoelasticStateVariables );
+
+        }
+
         void residual::setUpdatedIsochoricViscoelasticStateVariables( floatVector &isochoricViscoelasticStateVariables ){
             /*!
              * Set the updated values of the isochoric viscoelastic state variables
@@ -1345,7 +1360,7 @@ namespace tardigradeHydra{
             /*!
              * Set the PK2 isochoric stress
              * 
-             * \param &PK2MeanStress: The second Piola-Kirchhoff isochoric stress
+             * \param &PK2IsochoricStress: The second Piola-Kirchhoff isochoric stress
              */
 
             _PK2IsochoricStress.second = PK2IsochoricStress;

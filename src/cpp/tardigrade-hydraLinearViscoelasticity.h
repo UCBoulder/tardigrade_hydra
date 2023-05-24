@@ -53,8 +53,8 @@ namespace tardigradeHydra{
         }
         //Return filename for constructing debugging messages
         //https://stackoverflow.com/questions/31050113/how-to-extract-the-source-filename-without-path-and-suffix-at-compile-time
-        const std::string __BASENAME__ = file_name(__FILE__);
-        const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of("."));
+        const std::string __BASENAME__ = file_name(__FILE__); //!< The base filename which will be parsed
+    const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
     
         typedef errorTools::Node errorNode; //!< Redefinition for the error node
         typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
@@ -62,14 +62,25 @@ namespace tardigradeHydra{
         typedef std::vector< floatType > floatVector; //!< Define a vector of floats
         typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats 
     
+        /*!
+         * A residual class for a linear-viscoelastic material model where the stress is
+         * computed in the reference configuration and pushed forward to the current
+         * configuration.
+         */
         class residual : public tardigradeHydra::linearElasticity::residual {
-            /*!
-             * A residual class for a linear-elastic material model where the stress is computed
-             * in the reference configuration and pushed forward to the current configuration.
-             */
         
             public:
 
+                /*!
+                 * The main residual function for the linear viscoelastic residual
+                 * 
+                 * \param *hydra: The containing hydraBase object
+                 * \param &numEquations: The number of equations the residual is responsible for
+                 * \param &parameters: The parameter vector
+                 * \param &viscoelasticISVLowerIndex: The lower index of the viscoelastic ISVs in the hydra::_additionalStateVariables
+                 * \param &viscoelasticISVUpperIndex: The upper index (not included) of the viscoelastic ISVs in the hydra::_additionalStateVariables
+                 * \param &integrationAlpha: The integration alpha parameter (0. is implicit, 1 is explicit)
+                 */
                 residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters,
                           const unsigned int viscoelasticISVLowerIndex,
                           const unsigned int viscoelasticISVUpperIndex,
@@ -79,14 +90,13 @@ namespace tardigradeHydra{
     
                 }
 
-                const floatVector* getUpdatedStateVariables( ); //TODO: This will eventually need to be something in the base class
-
                 //! Get the lower index of the viscoelastic ISVs from the non-nonlinear solve state variable vector
                 const unsigned int* getViscoelasticISVLowerIndex( ){ return &_viscoelasticISVLowerIndex; }
 
                 //! Get the upper (but not including) index of the viscoelastic ISVs from the non-nonlinear solve state variable vector
                 const unsigned int* getViscoelasticISVUpperIndex( ){ return &_viscoelasticISVUpperIndex; }
 
+                //! Get the integration alpha parameter (0 is implicit, 1 is explicit)
                 const floatType* getIntegrationAlpha( ){ return &_integrationAlpha; }
 
                 //! Get the number of volumetric viscous terms
@@ -113,10 +123,12 @@ namespace tardigradeHydra{
                 //! Get the time constants for the isochoric moduli
                 const floatVector* getIsochoricTaus( ){ return &_isochoricTaus; }
 
-                virtual void decomposeDeformation( const floatVector &Fe, floatType &Je, floatVector &Fehat );
+                virtual void decomposeDeformation( const floatVector &F, floatType &J, floatVector &Fhat );
 
+                //! Get a pointer to the number of volumetric temperature parameters
                 const floatVector* getVolumetricTemperatureParameters( ){ return &_volumetricTemperatureParameters; }
 
+                //! Get a pointer to the number of isochoric temperature parameters
                 const floatVector* getIsochoricTemperatureParameters( ){ return &_isochoricTemperatureParameters; }
 
                 virtual void decomposeElasticDeformation( );
@@ -131,11 +143,11 @@ namespace tardigradeHydra{
 
                 const floatVector* getFehat( );
 
-                void setPreviousJe( const floatType &Je );
+                void setPreviousJe( const floatType &previousJe );
 
                 const floatType* getPreviousJe( );
 
-                void setPreviousFehat( const floatVector &Fehat );
+                void setPreviousFehat( const floatVector &previousFehat );
 
                 const floatVector* getPreviousFehat( );
 
@@ -153,6 +165,7 @@ namespace tardigradeHydra{
 
                 void setNumStateVariables( const unsigned int numStateVariables );
 
+                //! Get a pointer to the number of state variables
                 unsigned int *getNumStateVariables( ){ return &_numStateVariables; }
 
                 virtual void decomposeStateVariableVector( floatVector &volumetricStateVariables, floatVector &isochoricStateVariables );
@@ -161,13 +174,13 @@ namespace tardigradeHydra{
 
                 virtual floatVector computedRateMultiplierdVariables( const floatVector &variables, const floatVector &parameters );
 
-                virtual void setVolumetricRateMultiplier( const floatType &rateMultiplier );
+                virtual void setVolumetricRateMultiplier( const floatType &volumetricRateMultiplier );
 
-                virtual void setPreviousVolumetricRateMultiplier( const floatType &previousRateMultiplier );
+                virtual void setPreviousVolumetricRateMultiplier( const floatType &previousVolumetricRateMultiplier );
 
-                virtual void setdVolumetricRateMultiplierdT( const floatType &dRateMultiplierdT );
+                virtual void setdVolumetricRateMultiplierdT( const floatType &dVolumetricRateMultiplierdT );
 
-                virtual void setdPreviousVolumetricRateMultiplierdPreviousT( const floatType &dRateMultiplierdT );
+                virtual void setdPreviousVolumetricRateMultiplierdPreviousT( const floatType &dPreviousVolumetricRateMultiplierdPreviousT );
 
                 const floatType* getVolumetricRateMultiplier( );
 
@@ -177,9 +190,9 @@ namespace tardigradeHydra{
 
                 const floatType* getdPreviousVolumetricRateMultiplierdPreviousT( );
 
-                virtual void setIsochoricRateMultiplier( const floatType &rateMultiplier );
+                virtual void setIsochoricRateMultiplier( const floatType &isochoricRateMultiplier );
 
-                virtual void setPreviousIsochoricRateMultiplier( const floatType &previousRateMultiplier );
+                virtual void setPreviousIsochoricRateMultiplier( const floatType &previousIsochoricRateMultiplier );
 
                 virtual void setdIsochoricRateMultiplierdT( const floatType &dRateMultiplierdT );
 
@@ -332,8 +345,6 @@ namespace tardigradeHydra{
 
                 dataStorage< floatVector > _isochoricViscoelasticStateVariables;
 
-                dataStorage< floatVector > _currentStateVariables;
-
                 dataStorage< floatType > _PK2MeanStress;
 
                 dataStorage< floatVector > _PK2IsochoricStress;
@@ -393,6 +404,8 @@ namespace tardigradeHydra{
                 virtual void setUpdatedVolumetricViscoelasticStateVariables( );
 
                 virtual void setUpdatedIsochoricViscoelasticStateVariables( );
+
+                virtual void setCurrentAdditionalStateVariables( );
 
         };
 

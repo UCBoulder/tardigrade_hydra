@@ -12,7 +12,7 @@ set(ABAQUS_TEST_PATH "${ABAQUS_SRC_PATH}/tests")
 set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
 # Set the internal support libraries
-set(INTERNAL_SUPPORT_LIBRARIES "tardigrade-hydraLinearElasticity" "tardigrade-hydraLinearViscoelasticity")
+set(INTERNAL_SUPPORT_LIBRARIES "tardigrade-hydraLinearElasticity" "tardigrade-hydraLinearViscoelasticity" "tardigrade-hydraThermalExpansion")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})

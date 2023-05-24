@@ -2224,6 +2224,36 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setCauchyStress ){
 
 }
 
+BOOST_AUTO_TEST_CASE( test_residualBase_setCurrentAdditionalStateVariables ){
+
+    class residualBaseMock : public tardigradeHydra::residualBase{
+
+        public:
+
+            using tardigradeHydra::residualBase::setCurrentAdditionalStateVariables;
+
+            floatVector currentAdditionalStateVariables = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+    
+            virtual void setCurrentAdditionalStateVariables( ){
+    
+                setCurrentAdditionalStateVariables( currentAdditionalStateVariables );
+    
+            }
+
+    };
+
+    tardigradeHydra::hydraBase hydra;
+
+    unsigned int numEquations = 3;
+
+    residualBaseMock residual( &hydra, numEquations );
+
+    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getCurrentAdditionalStateVariables( ), residual.currentAdditionalStateVariables ) );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses ){
 
     class hydraBaseMock : public tardigradeHydra::hydraBase{
