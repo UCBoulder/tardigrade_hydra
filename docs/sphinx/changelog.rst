@@ -65,3 +65,4 @@ Internal Changes
 - linearElasticity: Changed XXXdPK2 names to XXXdPK2Stress (:merge:`20`). By `Nathan Miller`_.
 - Updated documentation strings to eliminate all undefined references in the documentation generation (:merge:`21`). By `Nathan Miller`_.
 - thermalExpansion: Added the remaining derivatives of the residual (:merge:`21`). By `Nathan Miller`_.
+- thermalExpansion: Removed extraneous print statements (:merge:`22`). By `Nathan Miller`_.

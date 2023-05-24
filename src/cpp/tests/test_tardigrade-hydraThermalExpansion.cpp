@@ -1105,13 +1105,6 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives ){
 
     }
 
-    std::cout << "jacobian:\n"; vectorTools::print( jacobian );
-    std::cout << "R.getJacobian( ):\n"; vectorTools::print( *R.getJacobian( ) );
-
-    std::cout << "dRdF:\n"; vectorTools::print( dRdF );
-
-    std::cout << "dRdT:\n"; vectorTools::print( dRdT );
-
     BOOST_CHECK( vectorTools::fuzzyEquals( jacobian, *R.getJacobian( ) ) );
 
     BOOST_CHECK( vectorTools::fuzzyEquals( dRdF, *R.getdRdF( ) ) );
