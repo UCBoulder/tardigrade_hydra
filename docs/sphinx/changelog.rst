@@ -64,3 +64,4 @@ Internal Changes
 - linearViscoelasticity: Added the computation of dPK2StressdFe and dPK2StressdT (:merge:`20`). By `Nathan Miller`_.
 - linearElasticity: Changed XXXdPK2 names to XXXdPK2Stress (:merge:`20`). By `Nathan Miller`_.
 - Updated documentation strings to eliminate all undefined references in the documentation generation (:merge:`21`). By `Nathan Miller`_.
+- thermalExpansion: Added the remaining derivatives of the residual (:merge:`21`). By `Nathan Miller`_.

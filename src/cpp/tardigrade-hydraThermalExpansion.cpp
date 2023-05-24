@@ -270,6 +270,8 @@ namespace tardigradeHydra{
 
             }
 
+            setJacobian( jacobian );
+
         }
 
         void residual::setdRdT( ){
