@@ -322,7 +322,7 @@ namespace tardigradeHydra{
             /*!
              * Set the partial derivative of the Cauchy stress w.r.t. the second Piola-Kirchhoff stress
              * 
-             * \param &dCauchyStressdPK2: The partial derivative of the Cauchy stress w.r.t. the second Piola-Kirchhoff stress
+             * \param &dCauchyStressdPK2Stress: The partial derivative of the Cauchy stress w.r.t. the second Piola-Kirchhoff stress
              */
     
             _dCauchyStressdPK2Stress.second = dCauchyStressdPK2Stress;

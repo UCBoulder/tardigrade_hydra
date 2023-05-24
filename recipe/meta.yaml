@@ -58,6 +58,7 @@ test:
     - src/cpp/tests/test_tardigrade-hydra.cpp
     - src/cpp/tests/test_tardigrade-hydraLinearElasticity.cpp
     - src/cpp/tests/test_tardigrade-hydraLinearViscoelasticity.cpp
+    - src/cpp/tests/test_tardigrade-hydraThermalExpansion.cpp
     - src/abaqus/CMakeLists.txt
     - src/abaqus/single_element_c3d8.inp
     - src/abaqus/tests/CMakeLists.txt

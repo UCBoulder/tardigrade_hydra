@@ -203,6 +203,37 @@ namespace tardigradeHydra{
 
     }
 
+    void residualBase::setCurrentAdditionalStateVariables( const floatVector &currentAdditionalStateVariables ){
+        /*!
+         * Set the current additional state variables
+         * 
+         * \param &currentAdditionalStateVariables: The current values of the additional state variables
+         */
+
+        _currentAdditionalStateVariables.second = currentAdditionalStateVariables;
+
+        _currentAdditionalStateVariables.first = true;
+
+        addIterationData( &_currentAdditionalStateVariables );
+
+    }
+
+    const floatVector* residualBase::getCurrentAdditionalStateVariables( ){
+        /*!
+         * Get the updated additional state variables which don't require the
+         * hydra non-linear solve to find
+         */
+
+        if ( !_currentAdditionalStateVariables.first ){
+
+            ERROR_TOOLS_CATCH( setCurrentAdditionalStateVariables( ) );
+
+        }
+
+        return &_currentAdditionalStateVariables.second;
+
+    }
+
     void residualBase::addIterationData( dataBase *data ){
         /*!
          * Add data to the vector of values which will be cleared after each iteration
@@ -948,6 +979,9 @@ namespace tardigradeHydra{
     }
 
     std::vector< residualBase* >* hydraBase::getResidualClasses( ){
+        /*!
+         * Get a pointer to the vector of residual class pointers
+         */
 
         if ( !_residualClasses.first ){
 

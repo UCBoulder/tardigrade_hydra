@@ -53,8 +53,8 @@ namespace tardigradeHydra{
         }
         //Return filename for constructing debugging messages
         //https://stackoverflow.com/questions/31050113/how-to-extract-the-source-filename-without-path-and-suffix-at-compile-time
-        const std::string __BASENAME__ = file_name(__FILE__);
-        const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of("."));
+        const std::string __BASENAME__ = file_name(__FILE__);  //!< The base filename which will be parsed
+    const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
     
         typedef errorTools::Node errorNode; //!< Redefinition for the error node
         typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
@@ -62,22 +62,30 @@ namespace tardigradeHydra{
         typedef std::vector< floatType > floatVector; //!< Define a vector of floats
         typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats 
     
+        /*!
+         * A residual class for a linear-elastic material model where the stress is computed
+         * in the reference configuration and pushed forward to the current configuration.
+         */
         class residual : public tardigradeHydra::residualBase {
-            /*!
-             * A residual class for a linear-elastic material model where the stress is computed
-             * in the reference configuration and pushed forward to the current configuration.
-             */
         
             public:
-    
+
+                /*!
+                 * The main initialization constructor for the linear elastic residual
+                 * 
+                 * \param *hydra: A pointer to the containing hydra class
+                 * \param &numEquations: The number of equations the residual defines
+                 * \param &parameters: The parameter vector
+                 */
                 residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters ) : tardigradeHydra::residualBase( hydra, numEquations ){
     
                     ERROR_TOOLS_CATCH( decomposeParameterVector( parameters ) );
     
                 }
-        
+                //! Get a pointer to the value of the lambda Lame parameter
                 const floatType* getLambda( ){ return &_lambda; }
-        
+
+                //! Get a pointer to the value of the mu Lame parameter
                 const floatType* getMu( ){ return &_mu; }
         
                 const floatVector* getEe( );
@@ -96,8 +104,18 @@ namespace tardigradeHydra{
     
                 const floatMatrix* getdCauchyStressdFn( );
     
+                /*!
+                 * Set the value of the lambda Lame parameter
+                 * 
+                 * \param &lambda: The lambda Lame parameter
+                 */ 
                 void setLambda( const floatType &lambda ){ _lambda = lambda; }
-    
+   
+                /*!
+                 * Set the value of the mu Lame parameter
+                 * 
+                 * \param &mu: The mu Lame parameter
+                 */ 
                 void setMu( const floatType &mu ){ _mu = mu; }
      
                 void setEe( const floatVector &Ee );
