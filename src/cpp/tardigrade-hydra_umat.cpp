@@ -1,18 +1,18 @@
 /**
   ******************************************************************************
-  * \file cpp_stub_umat.cpp
+  * \file tardigrade-hydra_umat.cpp
   ******************************************************************************
   * The Abaqus UMAT c++ interface template
   ******************************************************************************
   */
 
-#include<cpp_stub_umat.h>
+#include<tardigrade-hydra_umat.h>
 
 extern "C" void umat_( double *STRESS,       double *STATEV,       double *DDSDDE,       double &SSE,          double &SPD,
                        double &SCD,          double &RPL,          double *DDSDDT,       double *DRPLDE,       double &DRPLDT,
                        const double *STRAN,  const double *DSTRAN, const double *TIME,   const double &DTIME,  const double &TEMP,
                        const double &DTEMP,  const double *PREDEF, const double *DPRED,  const char *CMNAME,   const int &NDI,
-                       const int &NSHR,      const int &NTENS,     const int &NSTATV,    const double *PROPS,  const int &NPROPS,
+                       const int &NSHR,      const int &NTENS,     const int &NSTATEV,    const double *PROPS,  const int &NPROPS,
                        const double *COORDS, const double *DROT,   double &PNEWDT,       const double &CELENT, const double *DFGRD0,
                        const double *DFGRD1, const int &NOEL,      const int &NPT,       const int &LAYER,     const int &KSPT,
                        const int *JSTEP,     const int &KINC ){
@@ -67,14 +67,14 @@ extern "C" void umat_( double *STRESS,       double *STATEV,       double *DDSDD
 
      //Add switching logic to handle more than one UMAT.
      //Call the appropriate UMAT interface
-     cppStub::abaqusInterface( STRESS, STATEV, DDSDDE,    SSE,    SPD,
-                                  SCD,    RPL, DDSDDT, DRPLDE, DRPLDT,
-                                STRAN, DSTRAN,   TIME,  DTIME,   TEMP,
-                                DTEMP, PREDEF,  DPRED, CMNAME,    NDI,
-                                 NSHR,  NTENS, NSTATV,  PROPS, NPROPS,
-                               COORDS,   DROT, PNEWDT, CELENT, DFGRD0,
-                               DFGRD1,   NOEL,    NPT,  LAYER,   KSPT,
-                                JSTEP,   KINC );
+     tardigradeHydra::abaqusInterface( STRESS, STATEV, DDSDDE,    SSE,    SPD,
+                                           SCD,    RPL, DDSDDT, DRPLDE, DRPLDT,
+                                         STRAN, DSTRAN,   TIME,  DTIME,   TEMP,
+                                         DTEMP, PREDEF,  DPRED, CMNAME,    NDI,
+                                          NSHR,  NTENS, NSTATEV,  PROPS, NPROPS,
+                                        COORDS,   DROT, PNEWDT, CELENT, DFGRD0,
+                                        DFGRD1,   NOEL,    NPT,  LAYER,   KSPT,
+                                         JSTEP,   KINC );
 
      return;
 }

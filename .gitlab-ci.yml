@@ -21,7 +21,7 @@ before_script:
   - module use ${aea_modulefiles}
   - module use ${PWD}/modulefiles
   # Prefer the CI environment and fall back to AEA environment(s)
-  - project_environment='cpp_stub-env'
+  - project_environment='tardigrade-hydra-env'
   - environment_choices="${project_environment} aea-beta aea-release"
   - for env in ${environment_choices}; do if [[ -d "${aea_compute_path}/${env}" ]]; then environment=${env}; break; fi; done
   - echo ${environment}
@@ -44,7 +44,7 @@ before_script:
           unset HTTPS_PROXY
       fi
   - if [[ ${project_environment} != ${environment} ]]; then module unload ${environment}; module load ${project_environment}; fi
-  - conda_artifact_directory='conda-build-artifacts'
+  - conda_artifacts_directory='conda-bld'
   # FIXME: (1) Without setting this to false, Git webserver API calls to re-git.lanl.gov will throw errors about
   # self-signed certificates. Work on CI server and Gitlab webserver configurations so that this is no longer
   # necessary. There is a matching "FIXME: (1)" tag where the process is reversed that must also be removed when this
@@ -161,13 +161,15 @@ conda-build:
     - export HTTPS_PROXY=$HTTP_PROXY
     # Override default permissions. Set group to rx with no write permissions.
     - umask 0022
-    - mkdir ${conda_artifact_directory}
-    # TODO: Return to 'conda build' after tracing conda issue: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/issues/52
-    - VERSION=$(python -m setuptools_scm) mamba build recipe --channel file://${aea_conda_channel} --channel conda-forge --no-anaconda-upload --croot /scratch/${USER}/conda-build --output-folder ${conda_artifact_directory} ${variants}
+    - mkdir ${conda_artifacts_directory}
+    - croot="/scratch/$USER/$(basename $PWD)/${conda_artifacts_directory}"
+    # TODO: Return to 'conda build' after tracing conda issue: https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra/-/issues/52
+    - VERSION=$(python -m setuptools_scm) mamba build recipe --channel file://${aea_conda_channel} --channel conda-forge --no-anaconda-upload --croot ${croot} --output-folder ${conda_artifacts_directory} ${variants}
+    - mamba build purge --croot ${croot}
   artifacts:
     expire_in: '2 hrs'
     paths:
-      - conda-build-artifacts/linux-64/cpp_stub-*-*.tar.bz2
+      - conda-bld/linux-64/tardigrade-hydra-*-*.tar.bz2
   tags:
     - shell-aea
 
@@ -186,14 +188,14 @@ deploy:
     # Override default permissions. Set group to rx with no write permissions.
     - umask 0022
     # Copy Conda package to AEA Conda Channel
-    - cp ${conda_artifact_directory}/linux-64/cpp_stub-*-*.tar.bz2 ${aea_conda_channel}/linux-64
+    - cp ${conda_artifacts_directory}/linux-64/tardigrade-hydra-*-*.tar.bz2 ${aea_conda_channel}/linux-64
     # Change group for access by all W-13 staff and prevent accidental modification by institutional account in CI jobs
-    - chgrp w13users ${aea_conda_channel}/linux-64/cpp_stub-*-*.tar.bz2 || true
-    - chmod 555 ${aea_conda_channel}/linux-64/cpp_stub-*-*.tar.bz2 || true
+    - chgrp w13users ${aea_conda_channel}/linux-64/tardigrade-hydra-*-*.tar.bz2 || true
+    - chmod 555 ${aea_conda_channel}/linux-64/tardigrade-hydra-*-*.tar.bz2 || true
     # Update the AEA Conda Channel index
-    # TODO: Return to 'conda index/search' after tracing conda issue: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/issues/52
+    # TODO: Return to 'conda index/search' after tracing conda issue: https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra/-/issues/52
     - mamba index ${aea_conda_channel}
-    - mamba search --channel file://${aea_conda_channel}/ --override-channels cpp_stub
+    - mamba search --channel file://${aea_conda_channel}/ --override-channels tardigrade-hydra
   tags:
     - shell-aea
 

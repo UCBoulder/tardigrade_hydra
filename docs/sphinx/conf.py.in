@@ -4,8 +4,8 @@ import os
 # -- Project information -----------------------------------------------------
 # Meta data from CMake configure()
 project = '@PROJECT_NAME@'
-VERSION_STRING_FULL = '@cpp_stub_VERSION_STRING_FULL@'
-VERSION = '@cpp_stub_VERSION@'
+VERSION_STRING_FULL = '@tardigrade-hydra_VERSION_STRING_FULL@'
+VERSION = '@tardigrade-hydra_VERSION@'
 
 # Hardcoded project information
 copyright = '2020, Nathan A. Miller and Kyle A. Brindley'
@@ -33,10 +33,10 @@ breathe_default_project = project
 
 # Links to PRs, Jira issues.
 extlinks = {
-     "merge": ("https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/merge_requests/%s", "MERGE-%s"),
-     "issue": ("https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/issues/%s", "ISSUE-%s"),
+     "merge": ("https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra/-/merge_requests/%s", "MERGE-%s"),
+     "issue": ("https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra/-/issues/%s", "ISSUE-%s"),
      # Maintain the old Atlassian links until the servers don't exist. Required for changelog entries.
-     "pull": ("https://xcp-stash.lanl.gov/projects/MM/repos/cpp_stub/pull-requests/%s/overview", "PR%s"),
+     "pull": ("https://xcp-stash.lanl.gov/projects/MM/repos/tardigrade-hydra/pull-requests/%s/overview", "PR%s"),
      "jira": ("https://xcp-jira.lanl.gov/browse/VIP-%s", "VIP-%s"),
 }
 

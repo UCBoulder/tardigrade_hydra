@@ -46,7 +46,7 @@
 .. _`Doxygen style docstrings`: https://www.doxygen.nl/manual/docblocks.html
 
 .. Project specific links
-.. _`Gitlab project issues`: https://re-git.lanl.gov/aea/stub-repositories/cpp_stub/-/issues
+.. _`Gitlab project issues`: https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra/-/issues
 
 .. Abaqus reference links
 .. _`Abaqus Solid Continuum Elements`: http://simulia.lanl.gov:8080/EstProdDocs2019/English/DSSIMULIA_Established.htm?show=SIMACAEELMRefMap/simaelm-c-solidcont.htm

@@ -9,9 +9,9 @@ conflict vector_tools-env
 conflict abaqus_tools-env
 
 # Set AEA standard software version and environment names
-set anaconda_version "2020.07"
-set python_version "3.8"
-set environment "cpp_stub-env"
+set anaconda_version "2021.11"
+set python_version "3.9"
+set environment "tardigrade-hydra-env"
 
 # Get current hostname
 set hostname [info hostname]
@@ -42,12 +42,12 @@ set environment_bin "$environment_path/bin"
 set environment_man "$environment_path/share/man"
 
 # Set the bash environment variables similarly to HPC anaconda module
-# Reference - sn-rfe.lanl.gov:/usr/projects/hpcsoft/modulefiles/toss3/snow/tools/python/3.8-anaconda-2020.07
+# Reference - sn-rfe.lanl.gov:/usr/projects/hpcsoft/modulefiles/toss3/snow/tools/python/3.9-anaconda-2021.11
 prepend-path PATH "$environment_bin:$anaconda_bin"
 prepend-path MANPATH "$environment_man"
 
 # Set some aliases similarly to W-13 compute servers
-# Reference - sstelmo.lanl.gov:/usr/share/Modules/modulefiles/python/2020.07-python-3.8
+# Reference - sstelmo.lanl.gov:/usr/share/Modules/modulefiles/python/2021.11-python-3.9
 set-alias ipy "ipython"
 set-alias nb "jupyter notebook"
 
@@ -71,7 +71,7 @@ if { [module-info mode load] || [module-info mode switch2] } {
 }
 
 # Set help information
-module-whatis "Configure the common cpp_stub development bash and Conda environments"
+module-whatis "Configure the common tardigrade-hydra development bash and Conda environments"
 proc ModulesHelp {} {
     global hostname
     global environment
@@ -85,7 +85,7 @@ proc ModulesHelp {} {
     global environment_bin
     global environment_man
 
-    puts stderr "\ncpp_stub modulefiles debugging information"
+    puts stderr "\ntardigrade-hydra modulefiles debugging information"
     puts stderr "hostname: $hostname"
     puts stderr "environment: $environment"
     puts stderr "software_prefix: $software_prefix"
