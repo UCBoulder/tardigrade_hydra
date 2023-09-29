@@ -1,7 +1,7 @@
 .. targets-start-do-not-remove
 
-.. _`AEA Conda channel`: https://aea.re-pages.lanl.gov/developer-operations/aea_compute_environment/aea-release/aea_compute_environment.html#aea-conda-channel
-.. _`AEA compute environment`: https://aea.re-pages.lanl.gov/developer-operations/aea_compute_environment/aea-beta/aea_compute_environment.html#
+.. _`AEA Conda channel`: https://aea.re-pages.lanl.gov/developer-operations/aea_compute_environment/aea_compute_environment.html#aea-conda-channel
+.. _`AEA compute environment`: https://aea.re-pages.lanl.gov/developer-operations/aea_compute_environment/aea_compute_environment.html#
 .. _Anaconda Documentation: https://docs.conda.io/projects/conda/en/latest/user-guide/tasks/manage-environments.html
 .. _BOOST: https://www.boost.org/doc/libs/1_53_0/
 .. _`Conda`: https://docs.conda.io/en/latest/
