@@ -25,7 +25,7 @@ before_script:
   - environment_choices="${project_environment} aea-beta aea-release"
   - for env in ${environment_choices}; do if [[ -d "${aea_compute_path}/${env}" ]]; then environment=${env}; break; fi; done
   - echo ${environment}
-  - module load ${environment}
+  - module load ${environment} || true
   - |
       if [[ "`module list -t 2>&1`" = *${environment}* ]]; then
                 echo "Module loaded successfully"
