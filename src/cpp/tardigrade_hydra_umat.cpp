@@ -6,7 +6,7 @@
   ******************************************************************************
   */
 
-#include<tardigrade-hydra_umat.h>
+#include<tardigrade_hydra_umat.h>
 
 extern "C" void umat_( double *STRESS,       double *STATEV,       double *DDSDDE,       double &SSE,          double &SPD,
                        double &SCD,          double &RPL,          double *DDSDDT,       double *DRPLDE,       double &DRPLDT,

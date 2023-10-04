@@ -7,9 +7,9 @@
   ******************************************************************************
   */
 
-#include<tardigrade-hydraLinearViscoelasticity.h>
-#include<constitutive_tools.h>
-#include<stress_tools.h>
+#include<tardigrade_hydraLinearViscoelasticity.h>
+#include<tardigrade_constitutive_tools.h>
+#include<tardigrade_stress_tools.h>
 
 namespace tardigradeHydra{
 
@@ -26,7 +26,7 @@ namespace tardigradeHydra{
  
             if ( parameters.size( ) < 10 ){
     
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "Parameter vector is expected to have a length of at least 10 but has a length of " + std::to_string( parameters.size( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Parameter vector is expected to have a length of at least 10 but has a length of " + std::to_string( parameters.size( ) ) ) );
     
             }
 
@@ -43,7 +43,7 @@ namespace tardigradeHydra{
                 message            += "   ISV Lower Bound: " + std::to_string( *getViscoelasticISVLowerIndex( ) ) + "\n";
                 message            += "   ISV UPper Bound: " + std::to_string( *getViscoelasticISVLowerIndex( ) ) + "\n";
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
             }
 
@@ -69,7 +69,7 @@ namespace tardigradeHydra{
                 message            += "The number of parameters is 4 + 2 * ( numVolumetricViscousTerms + numIsochoricViscousTerms )\n";
                 message            += "  required parameter count: " + std::to_string( parameterCount ) + "\n";
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
             }
 
@@ -200,7 +200,7 @@ namespace tardigradeHydra{
 
             floatVector Fehat;
 
-            ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->getConfigurations( ) )[ 0 ], Je, Fehat ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->getConfigurations( ) )[ 0 ], Je, Fehat ) );
 
             setJe( Je );
 
@@ -217,7 +217,7 @@ namespace tardigradeHydra{
 
             floatVector previousFehat;
 
-            ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->getPreviousConfigurations( ) )[ 0 ], previousJe, previousFehat ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->getPreviousConfigurations( ) )[ 0 ], previousJe, previousFehat ) );
 
             setPreviousJe( previousJe );
 
@@ -238,9 +238,9 @@ namespace tardigradeHydra{
 
             const unsigned int *dim = hydra->getDimension( );
 
-            ERROR_TOOLS_CATCH( J = vectorTools::determinant( F, ( *dim ), ( *dim ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( J = tardigradeVectorTools::determinant( F, ( *dim ), ( *dim ) ) );
 
-            ERROR_TOOLS_CATCH( Fhat = F / std::pow( J, 1./3 ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( Fhat = F / std::pow( J, 1./3 ) );
 
         }
 
@@ -309,7 +309,7 @@ namespace tardigradeHydra{
 
             if ( !_Je.first ){
 
-                ERROR_TOOLS_CATCH( decomposeElasticDeformation( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( decomposeElasticDeformation( ) );
 
             }
 
@@ -324,7 +324,7 @@ namespace tardigradeHydra{
 
             if ( !_Fehat.first ){
 
-                ERROR_TOOLS_CATCH( decomposeElasticDeformation( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( decomposeElasticDeformation( ) );
 
             }
 
@@ -339,7 +339,7 @@ namespace tardigradeHydra{
 
             if ( !_previousJe.first ){
 
-                ERROR_TOOLS_CATCH( decomposePreviousElasticDeformation( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( decomposePreviousElasticDeformation( ) );
 
             }
 
@@ -354,7 +354,7 @@ namespace tardigradeHydra{
 
             if ( !_previousFehat.first ){
 
-                ERROR_TOOLS_CATCH( decomposePreviousElasticDeformation( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( decomposePreviousElasticDeformation( ) );
 
             }
 
@@ -370,7 +370,7 @@ namespace tardigradeHydra{
 
             const unsigned int* dim = hydra->getDimension( );
 
-            setdJedFe( vectorTools::computeDDetADA( ( *hydra->getConfigurations( ) )[ 0 ], ( *dim ), ( *dim ) ) );
+            setdJedFe( tardigradeVectorTools::computeDDetADA( ( *hydra->getConfigurations( ) )[ 0 ], ( *dim ), ( *dim ) ) );
 
         }
 
@@ -399,7 +399,7 @@ namespace tardigradeHydra{
 
             if ( !_dJedFe.first ){
 
-                ERROR_TOOLS_CATCH( setdJedFe( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdJedFe( ) );
 
             }
 
@@ -415,9 +415,9 @@ namespace tardigradeHydra{
 
             const unsigned int* dim = hydra->getDimension( );
 
-            floatMatrix dFehatdFe = vectorTools::eye< floatType >( ( *dim ) * ( *dim ) ) * std::pow( ( *getJe( ) ), -1. / 3 );
+            floatMatrix dFehatdFe = tardigradeVectorTools::eye< floatType >( ( *dim ) * ( *dim ) ) * std::pow( ( *getJe( ) ), -1. / 3 );
 
-            dFehatdFe -= vectorTools::dyadic( ( *hydra->getConfigurations( ) )[ 0 ], *getdJedFe( ) ) * std::pow( ( *getJe( ) ), -4. / 3 ) / 3.;
+            dFehatdFe -= tardigradeVectorTools::dyadic( ( *hydra->getConfigurations( ) )[ 0 ], *getdJedFe( ) ) * std::pow( ( *getJe( ) ), -4. / 3 ) / 3.;
 
             setdFehatdFe( dFehatdFe );
 
@@ -448,7 +448,7 @@ namespace tardigradeHydra{
 
             if ( !_dFehatdFe.first ){
 
-                ERROR_TOOLS_CATCH( setdFehatdFe( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdFehatdFe( ) );
 
             }
 
@@ -499,18 +499,18 @@ namespace tardigradeHydra{
              * high temperatures and a decrease for low temperatures.
              * 
              * \param &variables: The incoming variables { temperature }
-             * \param &parameters: The incoming parameters see constitutiveTools::WLF
+             * \param &parameters: The incoming parameters see tardigradeConstitutiveTools::WLF
              */
 
             if ( variables.size( ) != 1 ){
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "The incoming variables must have a size 1" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "The incoming variables must have a size 1" ) );
 
             }
 
             floatType invRM;
 
-            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::WLF( variables[ 0 ], parameters, invRM ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::WLF( variables[ 0 ], parameters, invRM ) );
 
             return 1 / invRM;
 
@@ -525,19 +525,19 @@ namespace tardigradeHydra{
              * for low temperatures.
              * 
              * \param &variables: The incoming variables { temperature }
-             * \param &parameters: The incoming parameters see constitutiveTools::WLF
+             * \param &parameters: The incoming parameters see tardigradeConstitutiveTools::WLF
              */
 
             if ( variables.size( ) != 1 ){
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "The incoming variables must have a size 1" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "The incoming variables must have a size 1" ) );
 
             }
 
             floatType invRM;
             floatVector dinvRMdT( 1, 0 );
 
-            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::WLF( variables[ 0 ], parameters, invRM, dinvRMdT[ 0 ] ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::WLF( variables[ 0 ], parameters, invRM, dinvRMdT[ 0 ] ) );
 
             return -1 / ( invRM * invRM ) * dinvRMdT;
 
@@ -550,7 +550,7 @@ namespace tardigradeHydra{
 
             floatType rateMultiplier;
 
-            ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getTemperature( ) },
                                                                        *getVolumetricTemperatureParameters( ) ) );
 
             setVolumetricRateMultiplier( rateMultiplier );
@@ -564,7 +564,7 @@ namespace tardigradeHydra{
 
             floatType rateMultiplier;
 
-            ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
                                                                        *getVolumetricTemperatureParameters( ) ) );
 
             setPreviousVolumetricRateMultiplier( rateMultiplier );
@@ -578,7 +578,7 @@ namespace tardigradeHydra{
 
             floatType rateMultiplier;
 
-            ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getTemperature( ) },
                                                                        *getIsochoricTemperatureParameters( ) ) );
 
             setIsochoricRateMultiplier( rateMultiplier );
@@ -592,7 +592,7 @@ namespace tardigradeHydra{
 
             floatType rateMultiplier;
 
-            ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
                                                                        *getIsochoricTemperatureParameters( ) ) );
 
             setPreviousIsochoricRateMultiplier( rateMultiplier );
@@ -607,7 +607,7 @@ namespace tardigradeHydra{
 
             floatType dRateMultiplierdT;
 
-            ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
                                                                                        *getVolumetricTemperatureParameters( ) )[ 0 ] );
 
             setdVolumetricRateMultiplierdT( dRateMultiplierdT );
@@ -622,7 +622,7 @@ namespace tardigradeHydra{
 
             floatType dRateMultiplierdT;
 
-            ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
                                                                                        *getVolumetricTemperatureParameters( ) )[ 0 ] );
 
             setdPreviousVolumetricRateMultiplierdPreviousT( dRateMultiplierdT );
@@ -637,7 +637,7 @@ namespace tardigradeHydra{
 
             floatType dRateMultiplierdT;
 
-            ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
                                                                                        *getIsochoricTemperatureParameters( ) )[ 0 ] );
 
             setdIsochoricRateMultiplierdT( dRateMultiplierdT );
@@ -651,7 +651,7 @@ namespace tardigradeHydra{
 
             floatType dRateMultiplierdT;
 
-            ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
                                                                                        *getIsochoricTemperatureParameters( ) )[ 0 ] );
 
             setdPreviousIsochoricRateMultiplierdPreviousT( dRateMultiplierdT );
@@ -786,7 +786,7 @@ namespace tardigradeHydra{
 
             if ( !_volumetricRateMultiplier.first ){
 
-                ERROR_TOOLS_CATCH( setVolumetricRateMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setVolumetricRateMultiplier( ) );
 
             }
 
@@ -801,7 +801,7 @@ namespace tardigradeHydra{
 
             if ( !_previousVolumetricRateMultiplier.first ){
 
-                ERROR_TOOLS_CATCH( setPreviousVolumetricRateMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousVolumetricRateMultiplier( ) );
 
             }
 
@@ -816,7 +816,7 @@ namespace tardigradeHydra{
 
             if ( !_isochoricRateMultiplier.first ){
 
-                ERROR_TOOLS_CATCH( setIsochoricRateMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setIsochoricRateMultiplier( ) );
 
             }
 
@@ -831,7 +831,7 @@ namespace tardigradeHydra{
 
             if ( !_previousIsochoricRateMultiplier.first ){
 
-                ERROR_TOOLS_CATCH( setPreviousIsochoricRateMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousIsochoricRateMultiplier( ) );
 
             }
 
@@ -847,7 +847,7 @@ namespace tardigradeHydra{
 
             if ( !_dVolumetricRateMultiplierdT.first ){
 
-                ERROR_TOOLS_CATCH( setdVolumetricRateMultiplierdT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdVolumetricRateMultiplierdT( ) );
 
             }
 
@@ -863,7 +863,7 @@ namespace tardigradeHydra{
 
             if ( !_dPreviousVolumetricRateMultiplierdPreviousT.first ){
 
-                ERROR_TOOLS_CATCH( setdPreviousVolumetricRateMultiplierdPreviousT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousVolumetricRateMultiplierdPreviousT( ) );
 
             }
 
@@ -879,7 +879,7 @@ namespace tardigradeHydra{
 
             if ( !_dIsochoricRateMultiplierdT.first ){
 
-                ERROR_TOOLS_CATCH( setdIsochoricRateMultiplierdT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdIsochoricRateMultiplierdT( ) );
 
             }
 
@@ -894,7 +894,7 @@ namespace tardigradeHydra{
 
             if ( !_dPreviousIsochoricRateMultiplierdPreviousT.first ){
 
-                ERROR_TOOLS_CATCH( setdPreviousIsochoricRateMultiplierdPreviousT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousIsochoricRateMultiplierdPreviousT( ) );
 
             }
 
@@ -926,7 +926,7 @@ namespace tardigradeHydra{
 
         floatVector residual::getVolumetricViscoelasticParameters( ){
             /*!
-             * Get the volumetric viscoelastic parameters prepared for stressTools::linearViscoelasticity
+             * Get the volumetric viscoelastic parameters prepared for tardigradeStressTools::linearViscoelasticity
              */
 
             floatVector parameters( 1 + 2 * *getNumVolumetricViscousTerms( ), 0 );
@@ -946,7 +946,7 @@ namespace tardigradeHydra{
 
         floatVector residual::getIsochoricViscoelasticParameters( ){
             /*!
-             * Get the isochoric viscoelastic parameters prepared for stressTools::linearViscoelasticity
+             * Get the isochoric viscoelastic parameters prepared for tardigradeStressTools::linearViscoelasticity
              */
 
             floatVector parameters( 1 + 2 * *getNumIsochoricViscousTerms( ), 0 );
@@ -981,7 +981,7 @@ namespace tardigradeHydra{
 
             floatVector previousIsochoricStateVariables;
 
-            ERROR_TOOLS_CATCH( decomposeStateVariableVector( previousVolumetricStateVariables,
+            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeStateVariableVector( previousVolumetricStateVariables,
                                                              previousIsochoricStateVariables ) );
 
             floatVector PK2MeanStress;
@@ -996,7 +996,7 @@ namespace tardigradeHydra{
 
             // Compute the viscous mean stress
 
-            ERROR_TOOLS_CATCH_NODE_POINTER( stressTools::linearViscoelasticity( *hydra->getTime( ), volumetricStrain,
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::linearViscoelasticity( *hydra->getTime( ), volumetricStrain,
                                                                                 *hydra->getTime( ) - *hydra->getDeltaTime( ), previousVolumetricStrain,
                                                                                 *getVolumetricRateMultiplier( ),
                                                                                 *getPreviousVolumetricRateMultiplier( ),
@@ -1088,7 +1088,7 @@ namespace tardigradeHydra{
 
             if ( !_PK2MeanStress.first ){
 
-                ERROR_TOOLS_CATCH( setPK2MeanStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPK2MeanStress( ) );
 
             }
 
@@ -1103,7 +1103,7 @@ namespace tardigradeHydra{
 
             if ( !_dPK2MeanStressdT.first ){
 
-                ERROR_TOOLS_CATCH( setdPK2MeanStressdT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2MeanStressdT( ) );
 
             }
 
@@ -1119,7 +1119,7 @@ namespace tardigradeHydra{
 
             if ( !_dPK2MeanStressdFe.first ){
 
-                ERROR_TOOLS_CATCH( setdPK2MeanStressdFe( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2MeanStressdFe( ) );
 
             }
 
@@ -1136,11 +1136,11 @@ namespace tardigradeHydra{
 
             floatVector isochoricStrain, previousIsochoricStrain;
             floatMatrix dEehatdFehat;
-            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::computeGreenLagrangeStrain( *getFehat( ), isochoricStrain, dEehatdFehat ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *getFehat( ), isochoricStrain, dEehatdFehat ) );
 
-            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::computeGreenLagrangeStrain( *getPreviousFehat( ), previousIsochoricStrain ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *getPreviousFehat( ), previousIsochoricStrain ) );
 
-            floatMatrix dEehatdFe = vectorTools::dot( dEehatdFehat, *getdFehatdFe( ) );
+            floatMatrix dEehatdFe = tardigradeVectorTools::dot( dEehatdFehat, *getdFehatdFe( ) );
 
             // Get the previous state variable values
 
@@ -1148,7 +1148,7 @@ namespace tardigradeHydra{
 
             floatVector previousIsochoricStateVariables;
 
-            ERROR_TOOLS_CATCH( decomposeStateVariableVector( previousVolumetricStateVariables,
+            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeStateVariableVector( previousVolumetricStateVariables,
                                                              previousIsochoricStateVariables ) );
 
             floatVector PK2IsochoricStress;
@@ -1162,7 +1162,7 @@ namespace tardigradeHydra{
             floatVector dPK2IsochoricStressdRateMultiplier;
 
             // Compute the viscous isochoric stress
-            ERROR_TOOLS_CATCH_NODE_POINTER( stressTools::linearViscoelasticity( *hydra->getTime( ), isochoricStrain,
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::linearViscoelasticity( *hydra->getTime( ), isochoricStrain,
                                                                                 *hydra->getTime( ) - *hydra->getDeltaTime( ), previousIsochoricStrain,
                                                                                 *getIsochoricRateMultiplier( ),
                                                                                 *getPreviousIsochoricRateMultiplier( ),
@@ -1175,7 +1175,7 @@ namespace tardigradeHydra{
 
             setUpdatedIsochoricViscoelasticStateVariables( currentIsochoricStateVariables );
 
-            setdPK2IsochoricStressdFe( vectorTools::dot( dPK2IsochoricStressdEe, dEehatdFe ) );
+            setdPK2IsochoricStressdFe( tardigradeVectorTools::dot( dPK2IsochoricStressdEe, dEehatdFe ) );
 
             setdPK2IsochoricStressdT( dPK2IsochoricStressdRateMultiplier * ( *getdIsochoricRateMultiplierdT( ) ) );
 
@@ -1241,7 +1241,7 @@ namespace tardigradeHydra{
 
             if ( !_dPK2IsochoricStressdFe.first ){
 
-                ERROR_TOOLS_CATCH( setdPK2IsochoricStressdFe( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2IsochoricStressdFe( ) );
 
             }
 
@@ -1256,7 +1256,7 @@ namespace tardigradeHydra{
 
             if ( !_dPK2IsochoricStressdT.first ){
 
-                ERROR_TOOLS_CATCH( setdPK2IsochoricStressdT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2IsochoricStressdT( ) );
 
             }
 
@@ -1295,7 +1295,7 @@ namespace tardigradeHydra{
 
             if ( !_volumetricViscoelasticStateVariables.first ){
 
-                ERROR_TOOLS_CATCH( setUpdatedVolumetricViscoelasticStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setUpdatedVolumetricViscoelasticStateVariables( ) );
 
             }
 
@@ -1319,7 +1319,7 @@ namespace tardigradeHydra{
 
             floatVector viscoelasticStateVariables;
 
-            ERROR_TOOLS_CATCH( viscoelasticStateVariables = vectorTools::appendVectors( { *getUpdatedVolumetricViscoelasticStateVariables( ),
+            TARDIGRADE_ERROR_TOOLS_CATCH( viscoelasticStateVariables = tardigradeVectorTools::appendVectors( { *getUpdatedVolumetricViscoelasticStateVariables( ),
                                                                                           *getUpdatedIsochoricViscoelasticStateVariables( ) } ) );
 
             tardigradeHydra::residualBase::setCurrentAdditionalStateVariables( viscoelasticStateVariables );
@@ -1348,7 +1348,7 @@ namespace tardigradeHydra{
 
             if ( !_isochoricViscoelasticStateVariables.first ){
 
-                ERROR_TOOLS_CATCH( setUpdatedIsochoricViscoelasticStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setUpdatedIsochoricViscoelasticStateVariables( ) );
 
             }
 
@@ -1378,7 +1378,7 @@ namespace tardigradeHydra{
 
             if ( !_PK2IsochoricStress.first ){
 
-                ERROR_TOOLS_CATCH( setPK2IsochoricStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPK2IsochoricStress( ) );
 
             }
 
@@ -1394,7 +1394,7 @@ namespace tardigradeHydra{
             const unsigned int* dim = hydra->getDimension( );
 
             floatVector eye( ( *dim ) * ( *dim ), 0 );
-            vectorTools::eye( eye );
+            tardigradeVectorTools::eye( eye );
 
             floatVector PK2Stress = ( *getPK2IsochoricStress( ) ) + ( *getPK2MeanStress( ) ) * eye;
 
@@ -1410,9 +1410,9 @@ namespace tardigradeHydra{
             const unsigned int* dim = hydra->getDimension( );
 
             floatVector eye( ( *dim ) * ( *dim ), 0 );
-            vectorTools::eye( eye );
+            tardigradeVectorTools::eye( eye );
 
-            floatMatrix dPK2StressdFe = *getdPK2IsochoricStressdFe( ) + vectorTools::dyadic( eye, *getdPK2MeanStressdFe( ) );
+            floatMatrix dPK2StressdFe = *getdPK2IsochoricStressdFe( ) + tardigradeVectorTools::dyadic( eye, *getdPK2MeanStressdFe( ) );
 
             setdPK2StressdFe( dPK2StressdFe );
 
@@ -1426,7 +1426,7 @@ namespace tardigradeHydra{
             const unsigned int* dim = hydra->getDimension( );
 
             floatVector eye( ( *dim ) * ( *dim ), 0 );
-            vectorTools::eye( eye );
+            tardigradeVectorTools::eye( eye );
 
             floatVector dPK2StressdT = *getdPK2IsochoricStressdT( ) + *getdPK2MeanStressdT( ) * eye;
 
@@ -1459,7 +1459,7 @@ namespace tardigradeHydra{
 
             if ( !_dPK2StressdT.first ){
 
-                ERROR_TOOLS_CATCH( setdPK2StressdT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2StressdT( ) );
 
             }
 
@@ -1472,7 +1472,7 @@ namespace tardigradeHydra{
              * Set the derivative of the Cauchy stress w.r.t. the temperature
              */
 
-            floatVector dCauchyStressdT = vectorTools::dot( *getdCauchyStressdPK2Stress( ), *getdPK2StressdT( ) );
+            floatVector dCauchyStressdT = tardigradeVectorTools::dot( *getdCauchyStressdPK2Stress( ), *getdPK2StressdT( ) );
 
             setdCauchyStressdT( dCauchyStressdT );
 
@@ -1503,7 +1503,7 @@ namespace tardigradeHydra{
 
             if ( !_dCauchyStressdT.first ){
 
-                ERROR_TOOLS_CATCH( setdCauchyStressdT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdCauchyStressdT( ) );
 
             }
 

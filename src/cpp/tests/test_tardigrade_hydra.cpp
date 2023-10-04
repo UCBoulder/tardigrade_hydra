@@ -4,9 +4,9 @@
   * Tests for tardigrade-hydra
   */
 
-#include<tardigrade-hydra.h>
-#include<tardigrade-hydraLinearElasticity.h>
-#include<constitutive_tools.h>
+#include<tardigrade_hydra.h>
+#include<tardigrade_hydraLinearElasticity.h>
+#include<tardigrade_constitutive_tools.h>
 #include<sstream>
 #include<fstream>
 
@@ -14,7 +14,7 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
-typedef errorTools::Node errorNode; //!< Redefinition for the error node
+typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
 typedef tardigradeHydra::floatType floatType; //!< Redefinition of the floating point type
 typedef tardigradeHydra::floatVector floatVector; //!< Redefinition of the vector of floating points type
@@ -157,13 +157,13 @@ namespace tardigradeHydra{
 
                 static void decomposeStateVariableVector( hydraBase &hydra ){
 
-                    ERROR_TOOLS_CATCH( hydra.decomposeStateVariableVector( ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( hydra.decomposeStateVariableVector( ) );
 
                 }
 
                 static void decomposeUnknownVector( hydraBase &hydra ){
 
-                    ERROR_TOOLS_CATCH( hydra.decomposeUnknownVector( ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( hydra.decomposeUnknownVector( ) );
 
                 }
 
@@ -653,8 +653,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector ){
 
     for ( unsigned int i = 0; i < 4; i++ ){
 
-        inverseConfigurationsAnswer[ i ]         = vectorTools::inverse( configurationsAnswer[ i ], 3, 3 );
-        previousInverseConfigurationsAnswer[ i ] = vectorTools::inverse( previousConfigurationsAnswer[ i ], 3, 3 );
+        inverseConfigurationsAnswer[ i ]         = tardigradeVectorTools::inverse( configurationsAnswer[ i ], 3, 3 );
+        previousInverseConfigurationsAnswer[ i ] = tardigradeVectorTools::inverse( previousConfigurationsAnswer[ i ], 3, 3 );
 
     }
 
@@ -683,21 +683,21 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector ){
 
     tardigradeHydra::unit_test::hydraBaseTester::decomposeStateVariableVector( hydra );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( configurationsAnswer, *hydra.getConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( configurationsAnswer, *hydra.getConfigurations( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( previousConfigurationsAnswer, *hydra.getPreviousConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousConfigurationsAnswer, *hydra.getPreviousConfigurations( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( inverseConfigurationsAnswer, *hydra.getInverseConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( inverseConfigurationsAnswer, *hydra.getInverseConfigurations( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( previousInverseConfigurationsAnswer, *hydra.getPreviousInverseConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousInverseConfigurationsAnswer, *hydra.getPreviousInverseConfigurations( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( nonLinearSolveStateVariablesAnswer, *hydra.getNonLinearSolveStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( nonLinearSolveStateVariablesAnswer, *hydra.getNonLinearSolveStateVariables( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( previousNonLinearSolveStateVariablesAnswer, *hydra.getPreviousNonLinearSolveStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousNonLinearSolveStateVariablesAnswer, *hydra.getPreviousNonLinearSolveStateVariables( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( additionalStateVariablesAnswer, *hydra.getAdditionalStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( additionalStateVariablesAnswer, *hydra.getAdditionalStateVariables( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( previousAdditionalStateVariablesAnswer, *hydra.getPreviousAdditionalStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAdditionalStateVariablesAnswer, *hydra.getPreviousAdditionalStateVariables( ) ) );
 
 }
 
@@ -739,13 +739,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfiguration ){
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getSubConfiguration( 0, 4 ), *hydra.getDeformationGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getSubConfiguration( 0, 4 ), *hydra.getDeformationGradient( ) ) );
 
     floatVector answer1 = { 2.24332648, 1.48246714, 2.02801682,
                             1.50380989, 2.98203598, 2.08079721,
                             1.58939152, 1.2551092 , 2.38201794 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getSubConfiguration( 1, 3 ), answer1 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getSubConfiguration( 1, 3 ), answer1 ) );
 
 }
 
@@ -787,23 +787,23 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfiguration ){
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPrecedingConfiguration( 4 ), *hydra.getDeformationGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPrecedingConfiguration( 4 ), *hydra.getDeformationGradient( ) ) );
 
     floatVector answer1 = { 0.73947165, -0.24328161, -0.68904986,
                             0.04049558,  0.25403825, -0.1748363 ,
                             0.97015752, -0.04452644, -0.77301275 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPrecedingConfiguration( 2 ), answer1 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPrecedingConfiguration( 2 ), answer1 ) );
 
     floatVector answer2 = { 0.54568475, -0.42501821, -0.54244544,
                            -0.01317666,  0.30165847, -0.09442353,
                             0.80588282, -0.10806097, -0.42143322 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPrecedingConfiguration( 3 ), answer2 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPrecedingConfiguration( 3 ), answer2 ) );
 
     floatVector answer3 = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPrecedingConfiguration( 0 ), answer3 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPrecedingConfiguration( 0 ), answer3 ) );
 
 }
 
@@ -849,17 +849,17 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfiguration ){
                             0.98756433, 2.58928197, 1.05684715,
                             1.33422708, 1.67694162, 2.96443669 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getFollowingConfiguration( 1 ), answer1 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getFollowingConfiguration( 1 ), answer1 ) );
 
     floatVector answer2 = { 1.42635131, 0.89338916, 0.94416002,
                             0.50183668, 1.62395295, 0.1156184 ,
                             0.31728548, 0.41482621, 1.86630916 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getFollowingConfiguration( 2 ), answer2 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getFollowingConfiguration( 2 ), answer2 ) );
 
     floatVector answer3 = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getFollowingConfiguration( 3 ), answer3 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getFollowingConfiguration( 3 ), answer3 ) );
 
 }
 
@@ -901,13 +901,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfiguration ){
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPreviousSubConfiguration( 0, 4 ), *hydra.getPreviousDeformationGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousSubConfiguration( 0, 4 ), *hydra.getPreviousDeformationGradient( ) ) );
 
     floatVector answer1 = { 2.24332648, 1.48246714, 2.02801682,
                             1.50380989, 2.98203598, 2.08079721,
                             1.58939152, 1.2551092 , 2.38201794 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPreviousSubConfiguration( 1, 3 ), answer1 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousSubConfiguration( 1, 3 ), answer1 ) );
 
 }
 
@@ -949,23 +949,23 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfiguration ){
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPreviousPrecedingConfiguration( 4 ), *hydra.getPreviousDeformationGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousPrecedingConfiguration( 4 ), *hydra.getPreviousDeformationGradient( ) ) );
 
     floatVector answer1 = { -0.30350143, -0.21223491,  0.47296395,
                              0.18299993, -0.42974886, -0.06195712,
                              0.92470041, -0.36418391, -0.8287879 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPreviousPrecedingConfiguration( 2 ), answer1 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousPrecedingConfiguration( 2 ), answer1 ) );
 
     floatVector answer2 = { -0.15883228, -0.1920217 ,  0.33770597,
                              0.15460279, -0.58876502, -0.15099813,
                              0.69307214, -0.60345639, -0.66103563 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPreviousPrecedingConfiguration( 3 ), answer2 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousPrecedingConfiguration( 3 ), answer2 ) );
 
     floatVector answer3 = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPreviousPrecedingConfiguration( 0 ), answer3 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousPrecedingConfiguration( 0 ), answer3 ) );
 
 }
 
@@ -1011,17 +1011,17 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfiguration ){
                             0.98756433, 2.58928197, 1.05684715,
                             1.33422708, 1.67694162, 2.96443669 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPreviousFollowingConfiguration( 1 ), answer1 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousFollowingConfiguration( 1 ), answer1 ) );
 
     floatVector answer2 = { 1.42635131, 0.89338916, 0.94416002,
                             0.50183668, 1.62395295, 0.1156184 ,
                             0.31728548, 0.41482621, 1.86630916 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPreviousFollowingConfiguration( 2 ), answer2 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousFollowingConfiguration( 2 ), answer2 ) );
 
     floatVector answer3 = { 1, 0, 0, 0, 1, 0, 0, 0, 1 };
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( hydra.getPreviousFollowingConfiguration( 3 ), answer3 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousFollowingConfiguration( 3 ), answer3 ) );
 
 }
 
@@ -1065,7 +1065,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient ){
 
     floatMatrix configurations = *hydra.getConfigurations( );
 
-    floatVector x = vectorTools::appendVectors( configurations );
+    floatVector x = tardigradeVectorTools::appendVectors( configurations );
 
     floatType eps = 1e-6;
 
@@ -1101,7 +1101,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( configurations, lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( configurations, lower, upper ) ) );
 
     lower = 1;
     upper = 3;
@@ -1132,7 +1132,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( configurations, lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( configurations, lower, upper ) ) );
 
 }
 
@@ -1176,7 +1176,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient2 ){
 
     floatMatrix configurations = *hydra.getConfigurations( );
 
-    floatVector x = vectorTools::appendVectors( configurations );
+    floatVector x = tardigradeVectorTools::appendVectors( configurations );
 
     floatType eps = 1e-6;
 
@@ -1212,7 +1212,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient2 ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( lower, upper ) ) );
 
     lower = 1;
     upper = 3;
@@ -1243,7 +1243,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient2 ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( lower, upper ) ) );
 
 }
 
@@ -1287,7 +1287,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationGradient ){
 
     floatMatrix configurations = *hydra.getConfigurations( );
 
-    floatVector x = vectorTools::appendVectors( configurations );
+    floatVector x = tardigradeVectorTools::appendVectors( configurations );
 
     floatType eps = 1e-6;
 
@@ -1323,7 +1323,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getPrecedingConfigurationGradient( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPrecedingConfigurationGradient( upper ) ) );
 
     lower = 0;
     upper = 3;
@@ -1354,7 +1354,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getPrecedingConfigurationGradient( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPrecedingConfigurationGradient( upper ) ) );
 
 }
 
@@ -1398,7 +1398,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationGradient ){
 
     floatMatrix configurations = *hydra.getConfigurations( );
 
-    floatVector x = vectorTools::appendVectors( configurations );
+    floatVector x = tardigradeVectorTools::appendVectors( configurations );
 
     floatType eps = 1e-6;
 
@@ -1434,7 +1434,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getFollowingConfigurationGradient( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getFollowingConfigurationGradient( lower ) ) );
 
     lower = 2;
     upper = 4;
@@ -1465,7 +1465,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getFollowingConfigurationGradient( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getFollowingConfigurationGradient( lower ) ) );
 
 }
 
@@ -1509,7 +1509,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationGradient ){
 
     floatMatrix configurations = *hydra.getPreviousConfigurations( );
 
-    floatVector x = vectorTools::appendVectors( configurations );
+    floatVector x = tardigradeVectorTools::appendVectors( configurations );
 
     floatType eps = 1e-6;
 
@@ -1545,7 +1545,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getPreviousSubConfigurationGradient( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousSubConfigurationGradient( lower, upper ) ) );
 
     lower = 1;
     upper = 3;
@@ -1576,7 +1576,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getPreviousSubConfigurationGradient( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousSubConfigurationGradient( lower, upper ) ) );
 
 }
 
@@ -1620,7 +1620,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationGradient )
 
     floatMatrix configurations = *hydra.getPreviousConfigurations( );
 
-    floatVector x = vectorTools::appendVectors( configurations );
+    floatVector x = tardigradeVectorTools::appendVectors( configurations );
 
     floatType eps = 1e-6;
 
@@ -1656,7 +1656,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationGradient )
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingConfigurationGradient( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingConfigurationGradient( upper ) ) );
 
     lower = 0;
     upper = 3;
@@ -1687,7 +1687,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationGradient )
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingConfigurationGradient( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingConfigurationGradient( upper ) ) );
 
 }
 
@@ -1731,7 +1731,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationGradient )
 
     floatMatrix configurations = *hydra.getPreviousConfigurations( );
 
-    floatVector x = vectorTools::appendVectors( configurations );
+    floatVector x = tardigradeVectorTools::appendVectors( configurations );
 
     floatType eps = 1e-6;
 
@@ -1767,7 +1767,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationGradient )
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingConfigurationGradient( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingConfigurationGradient( lower ) ) );
 
     lower = 2;
     upper = 4;
@@ -1798,7 +1798,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationGradient )
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingConfigurationGradient( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingConfigurationGradient( lower ) ) );
 
 }
 
@@ -1872,7 +1872,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dF1dF_answer, *hydra.getdF1dF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dF1dF_answer, *hydra.getdF1dF( ) ) );
 
     tardigradeHydra::unit_test::hydraBaseTester::checkdF1dF( hydra );
 
@@ -1902,7 +1902,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients ){
         
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dF1dFn_answer, *hydra.getdF1dFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dF1dFn_answer, *hydra.getdF1dFn( ) ) );
 
     tardigradeHydra::unit_test::hydraBaseTester::checkdF1dFn( hydra );
 
@@ -1978,7 +1978,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients ){
 
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( previousdF1dF_answer, *hydra.getPreviousdF1dF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdF1dF_answer, *hydra.getPreviousdF1dF( ) ) );
 
     for ( unsigned int i = 0; i < ( numConfigurations - 1 ) * deformationGradient.size( ); i++ ){
 
@@ -2006,7 +2006,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients ){
         
     }
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( previousdF1dFn_answer, *hydra.getPreviousdF1dFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdF1dFn_answer, *hydra.getPreviousdF1dFn( ) ) );
 
 }
 
@@ -2070,7 +2070,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setResidual ){
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getResidual( ), residual.residual ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getResidual( ), residual.residual ) );
 
 }
 
@@ -2100,7 +2100,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setJacobian ){
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getJacobian( ), residual.jacobian ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getJacobian( ), residual.jacobian ) );
 
 }
 
@@ -2130,7 +2130,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setdRdF ){
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getdRdF( ), residual.dRdF ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getdRdF( ), residual.dRdF ) );
 
 }
 
@@ -2160,7 +2160,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setdRdT ){
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getdRdT( ), residual.dRdT ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getdRdT( ), residual.dRdT ) );
 
 }
 
@@ -2190,7 +2190,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setAdditionalDerivatives ){
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getAdditionalDerivatives( ), residual.additionalDerivatives ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getAdditionalDerivatives( ), residual.additionalDerivatives ) );
 
 }
 
@@ -2220,7 +2220,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setCauchyStress ){
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getCauchyStress( ), residual.cauchyStress ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getCauchyStress( ), residual.cauchyStress ) );
 
 }
 
@@ -2250,7 +2250,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setCurrentAdditionalStateVariables ){
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *residual.getCurrentAdditionalStateVariables( ), residual.currentAdditionalStateVariables ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getCurrentAdditionalStateVariables( ), residual.currentAdditionalStateVariables ) );
 
 }
 
@@ -2615,37 +2615,37 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
     hydraGet.setResidualClasses( );
 
-    floatVector residualAnswer = vectorTools::appendVectors( { *hydraGet.r1.getResidual( ),
+    floatVector residualAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getResidual( ),
                                                                *hydraGet.r2.getResidual( ),
                                                                *hydraGet.r3.getResidual( ) } );
 
-    floatMatrix jacobianAnswer = vectorTools::appendVectors( { *hydraGet.r1.getJacobian( ),
+    floatMatrix jacobianAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getJacobian( ),
                                                                *hydraGet.r2.getJacobian( ),
                                                                *hydraGet.r3.getJacobian( ) } );
 
-    floatMatrix dRdFAnswer = vectorTools::appendVectors( { *hydraGet.r1.getdRdF( ),
+    floatMatrix dRdFAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getdRdF( ),
                                                            *hydraGet.r2.getdRdF( ),
                                                            *hydraGet.r3.getdRdF( ) } );
 
-    floatVector dRdTAnswer = vectorTools::appendVectors( { *hydraGet.r1.getdRdT( ),
+    floatVector dRdTAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getdRdT( ),
                                                            *hydraGet.r2.getdRdT( ),
                                                            *hydraGet.r3.getdRdT( ) } );
 
-    floatMatrix additionalDerivativesAnswer = vectorTools::appendVectors( { *hydraGet.r1.getAdditionalDerivatives( ),
+    floatMatrix additionalDerivativesAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getAdditionalDerivatives( ),
                                                                             *hydraGet.r2.getAdditionalDerivatives( ),
                                                                             *hydraGet.r3.getAdditionalDerivatives( ) } );
 
     tardigradeHydra::unit_test::hydraBaseTester::formNonLinearProblem( hydra );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( residualAnswer, *hydra.getResidual( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( residualAnswer, *hydra.getResidual( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( jacobianAnswer, hydra.getJacobian( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobianAnswer, hydra.getJacobian( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dRdFAnswer, hydra.getdRdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdFAnswer, hydra.getdRdF( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( dRdTAnswer, *hydra.getdRdT( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdTAnswer, *hydra.getdRdT( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( additionalDerivativesAnswer, hydra.getAdditionalDerivatives( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( additionalDerivativesAnswer, hydra.getAdditionalDerivatives( ) ) );
 
 }
 
@@ -2852,7 +2852,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
                                         0.25045537, 0.48303426, 0.98555979, 0.51948512, 0.61289453 };
                                          
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( unknownVectorAnswer, *hydra.getUnknownVector( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( unknownVectorAnswer, *hydra.getUnknownVector( ) ) );
 
 }
 
@@ -2906,13 +2906,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setTolerance ){
 
     floatVector unknownVector = { -2, 5, 10, 0.3 };
 
-    floatVector toleranceAnswer = 1e-9 * (vectorTools::abs( residual ) + vectorTools::abs( unknownVector )) + 1e-9;
+    floatVector toleranceAnswer = 1e-9 * (tardigradeVectorTools::abs( residual ) + tardigradeVectorTools::abs( unknownVector )) + 1e-9;
 
     tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
     tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getTolerance( ), toleranceAnswer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getTolerance( ), toleranceAnswer ) );
 
 }
 
@@ -2992,10 +2992,10 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getLSResidualNorm ){
 
     floatVector residual = { 1, 2, 3 };
 
-    floatType lsResidualNormAnswer = vectorTools::l2norm( residual );
+    floatType lsResidualNormAnswer = tardigradeVectorTools::l2norm( residual );
       tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getLSResidualNorm( ), lsResidualNormAnswer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getLSResidualNorm( ), lsResidualNormAnswer ) );
 
 }
 
@@ -3129,11 +3129,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector ){
 
     tardigradeHydra::unit_test::hydraBaseTester::decomposeUnknownVector( hydra );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getCauchyStress( ), cauchyStressAnswer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getCauchyStress( ), cauchyStressAnswer ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getConfigurations( ), configurationsAnswer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getConfigurations( ), configurationsAnswer ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( *hydra.getNonLinearSolveStateVariables( ), isvAnswer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getNonLinearSolveStateVariables( ), isvAnswer ) );
 
 }
 
@@ -3292,7 +3292,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem ){
 
                 unsigned int LSIteration = tardigradeHydra::unit_test::hydraBaseTester::get_LSIteration( *this );
 
-                BOOST_CHECK( vectorTools::fuzzyEquals( expectedXVectors[ iteration ][ LSIteration ], newUnknownVector ) );
+                BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( expectedXVectors[ iteration ][ LSIteration ], newUnknownVector ) );
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, newUnknownVector );
 
@@ -3420,8 +3420,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdF ){
 
     BOOST_CHECK_NO_THROW( hydra.evaluate( ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( PK2Answer, *hydra.elasticity.getPK2Stress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( PK2Answer, *hydra.elasticity.getPK2Stress( ) ) );
 
-    BOOST_CHECK( vectorTools::fuzzyEquals( cauchyStressAnswer, *hydra.getCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *hydra.getCauchyStress( ) ) );
 
 }

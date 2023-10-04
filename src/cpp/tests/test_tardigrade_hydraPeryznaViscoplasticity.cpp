@@ -4,15 +4,15 @@
   * Tests for tardigrade-hydraPeryznaViscoplasticity
   */
 
-#include<tardigrade-hydraPeryznaViscoplasticity.h>
-#include<constitutive_tools.h>
-#include<stress_tools.h>
+#include<tardigrade_hydraPeryznaViscoplasticity.h>
+#include<tardigrade_constitutive_tools.h>
+#include<tardigrade_stress_tools.h>
 
 #define BOOST_TEST_MODULE test_tardigrade-hydraPeryznaViscoplasticity
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
-typedef errorTools::Node errorNode; //!< Redefinition for the error node
+typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
 typedef tardigradeHydra::peryznaViscoplasticity::floatType floatType; //!< Redefinition of the floating point type
 typedef tardigradeHydra::peryznaViscoplasticity::floatVector floatVector; //!< Redefinition of the vector of floating points type

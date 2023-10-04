@@ -12,10 +12,10 @@
 #include<sstream>
 #include<functional>
 
-#include<error_tools.h>
+#include<tardigrade_error_tools.h>
 #define USE_EIGEN
-#include<vector_tools.h>
-#include<abaqus_tools.h>
+#include<tardigrade_vector_tools.h>
+#include<tardigrade_abaqus_tools.h>
 
 namespace tardigradeHydra{
 
@@ -59,7 +59,7 @@ namespace tardigradeHydra{
     const std::string __BASENAME__ = file_name(__FILE__); //!< The base filename which will be parsed
     const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
 
-    typedef errorTools::Node errorNode; //!< Redefinition for the error node
+    typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
     typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
     typedef double floatType; //!< Define the float values type.
     typedef std::vector< floatType > floatVector; //!< Define a vector of floats
@@ -79,7 +79,7 @@ namespace tardigradeHydra{
                  * The function to erase the current values stored
                  */
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "clear not implemented!" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "clear not implemented!" ) );
 
             }
 
@@ -216,7 +216,7 @@ namespace tardigradeHydra{
                  * The user-defined residual equation. Must have a size of numEquations
                  */
 
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The residual is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The residual is not implemented" ) );
 
             }
 
@@ -228,7 +228,7 @@ namespace tardigradeHydra{
                  * and the state variables solved for in the non-linear solve.
                  */
 
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The jacobian is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The jacobian is not implemented" ) );
 
             }
 
@@ -237,7 +237,7 @@ namespace tardigradeHydra{
                  * The user-defined derivative of the residual w.r.t. the deformation gradient.
                  */
 
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The derivative of the residual w.r.t. the deformation gradient is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The derivative of the residual w.r.t. the deformation gradient is not implemented" ) );
  
             }
 
@@ -246,7 +246,7 @@ namespace tardigradeHydra{
                  * The user-defined derivative of the residual w.r.t. the temperature
                  */
 
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The derivative of the residual w.r.t. the temperature is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The derivative of the residual w.r.t. the temperature is not implemented" ) );
  
             }
 
@@ -264,7 +264,7 @@ namespace tardigradeHydra{
                  * Only needs to be defined for the first residual
                  */
 
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the Cauchy stress is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the Cauchy stress is not implemented" ) );
 
             }
 
@@ -621,7 +621,7 @@ namespace tardigradeHydra{
             void incrementLSIteration( ){ _LSIteration++; }
 
             void resetLSIteration( ){ _LSIteration = 0; _lambda = 1.0;
-                                      _lsResidualNorm.second = vectorTools::l2norm( *getResidual( ) );
+                                      _lsResidualNorm.second = tardigradeVectorTools::l2norm( *getResidual( ) );
                                       _lsResidualNorm.first = true; }
 
             const floatType* getLambda( ){ return &_lambda; }

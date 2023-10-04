@@ -55,11 +55,11 @@ test:
   source_files:
     - CMakeLists.txt
     - src/cpp/tests/CMakeLists.txt
-    - src/cpp/tests/test_tardigrade-hydra.cpp
-    - src/cpp/tests/test_tardigrade-hydraLinearElasticity.cpp
-    - src/cpp/tests/test_tardigrade-hydraLinearViscoelasticity.cpp
-    - src/cpp/tests/test_tardigrade-hydraThermalExpansion.cpp
-    - src/cpp/tests/test_tardigrade-hydraPeryznaViscoplasticity.cpp
+    - src/cpp/tests/test_tardigrade_hydra.cpp
+    - src/cpp/tests/test_tardigrade_hydraLinearElasticity.cpp
+    - src/cpp/tests/test_tardigrade_hydraLinearViscoelasticity.cpp
+    - src/cpp/tests/test_tardigrade_hydraThermalExpansion.cpp
+    - src/cpp/tests/test_tardigrade_hydraPeryznaViscoplasticity.cpp
     - src/abaqus/CMakeLists.txt
     - src/abaqus/single_element_c3d8.inp
     - src/abaqus/tests/CMakeLists.txt

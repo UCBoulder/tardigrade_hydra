@@ -7,8 +7,8 @@
   ******************************************************************************
   */
 
-#include<tardigrade-hydraPeryznaViscoplasticity.h>
-#include<constitutive_tools.h>
+#include<tardigrade_hydraPeryznaViscoplasticity.h>
+#include<tardigrade_constitutive_tools.h>
 
 namespace tardigradeHydra{
 
@@ -22,11 +22,11 @@ namespace tardigradeHydra{
 
             floatVector precedingConfiguration;
 
-            ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
 
             floatVector drivingStress;
 
-            constitutiveTools::pullBackCauchyStress( *hydra->getCauchyStress( ), precedingConfiguration, drivingStress );
+            tardigradeConstitutiveTools::pullBackCauchyStress( *hydra->getCauchyStress( ), precedingConfiguration, drivingStress );
 
             setDrivingStress( drivingStress );
 
@@ -232,7 +232,7 @@ namespace tardigradeHydra{
 
             if ( !_drivingStress.first ){
 
-                ERROR_TOOLS_CATCH( setDrivingStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setDrivingStress( ) );
 
             }
 
@@ -247,7 +247,7 @@ namespace tardigradeHydra{
 
             if ( !_flowDirection.first ){
 
-                ERROR_TOOLS_CATCH( setFlowDirection( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setFlowDirection( ) );
 
             }
 
@@ -262,7 +262,7 @@ namespace tardigradeHydra{
 
             if ( !_plasticMultiplier.first ){
 
-                ERROR_TOOLS_CATCH( setPlasticMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPlasticMultiplier( ) );
 
             }
 
@@ -277,7 +277,7 @@ namespace tardigradeHydra{
 
             if ( !_velocityGradient.first ){
 
-                ERROR_TOOLS_CATCH( setVelocityGradient( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setVelocityGradient( ) );
 
             }
 
@@ -292,7 +292,7 @@ namespace tardigradeHydra{
 
             if ( !_plasticDeformationGradient.first ){
 
-                ERROR_TOOLS_CATCH( setPlasticDeformationGradient( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPlasticDeformationGradient( ) );
 
             }
 
@@ -307,7 +307,7 @@ namespace tardigradeHydra{
 
             if ( !_stateVariables.first ){
 
-                ERROR_TOOLS_CATCH( setStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setStateVariables( ) );
 
             }
 
@@ -322,7 +322,7 @@ namespace tardigradeHydra{
 
             if ( !_peryznaParameters.first ){
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "Peryzna parameters not defined but required" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Peryzna parameters not defined but required" ) );
 
             }
 
@@ -337,7 +337,7 @@ namespace tardigradeHydra{
 
             if ( !_dragStressParameters.first ){
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "Drag stress parameters not defined but required" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Drag stress parameters not defined but required" ) );
 
             }
 
@@ -352,7 +352,7 @@ namespace tardigradeHydra{
 
             if ( !_thermalParameters.first ){
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "Thermal parameters not defined but required" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Thermal parameters not defined but required" ) );
 
             }
 
@@ -367,7 +367,7 @@ namespace tardigradeHydra{
 
             if ( !_yieldParameters.first ){
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "Yield parameters not defined but required" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Yield parameters not defined but required" ) );
 
             }
 
@@ -382,7 +382,7 @@ namespace tardigradeHydra{
 
             if ( !_flowParameters.first ){
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "Flow parameters not defined but required" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Flow parameters not defined but required" ) );
 
             }
 
@@ -397,7 +397,7 @@ namespace tardigradeHydra{
 
             if ( !_mixingParameters.first ){
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "Mixing parameters not defined but required" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Mixing parameters not defined but required" ) );
 
             }
 
@@ -428,7 +428,7 @@ namespace tardigradeHydra{
                 message            += "  parameters: " + std::to_string( parameters.size( ) ) + "\n";
                 message            += "  required:   " + std::to_string( expectedSize ) + "\n";
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
             }
 
