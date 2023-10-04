@@ -22,7 +22,7 @@ requirements:
     - eigen >=3.3.7
     - error_tools>=0.4
     - vector_tools>=0.5.4
-    - constitutive_tools>=0.5.0
+    - constitutive_tools>=0.7.2
     - stress_tools
     - solver_tools
     - abaqus_tools>=0.4
@@ -41,7 +41,7 @@ requirements:
     - eigen >=3.3.7
     - error_tools>=0.4
     - vector_tools>=0.5.4
-    - constitutive_tools>=0.5.0
+    - constitutive_tools>=0.7.2
     - stress_tools
     - solver_tools
     - abaqus_tools>=0.4
@@ -59,6 +59,7 @@ test:
     - src/cpp/tests/test_tardigrade-hydraLinearElasticity.cpp
     - src/cpp/tests/test_tardigrade-hydraLinearViscoelasticity.cpp
     - src/cpp/tests/test_tardigrade-hydraThermalExpansion.cpp
+    - src/cpp/tests/test_tardigrade-hydraPeryznaViscoplasticity.cpp
     - src/abaqus/CMakeLists.txt
     - src/abaqus/single_element_c3d8.inp
     - src/abaqus/tests/CMakeLists.txt
