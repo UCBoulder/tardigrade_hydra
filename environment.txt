@@ -7,7 +7,6 @@ doxygen>=1.9
 eigen>=3.3.7
 error_tools>=0.4
 compilers
-mamba
 setuptools_scm>=6.2
 solver_tools
 stress_tools
