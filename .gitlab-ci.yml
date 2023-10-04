@@ -25,13 +25,16 @@ before_script:
   - environment_choices="${project_environment} aea-beta aea-release"
   - for env in ${environment_choices}; do if [[ -d "${aea_compute_path}/${env}" ]]; then environment=${env}; break; fi; done
   - echo ${environment}
+  - module load ${environment}
   - |
-      if [[ ! module load ${environment} ]]; then
-          echo ${environment} failed to load. Attempting to use aea environments"
-          environment_choices="aea-beta aea-release"
-          for env in ${environment_choices}; do if [[ -d "${aea_compute_path}/${env}" ]]; then environment=${env}; break; fi; done
-          echo ${environment}
-          module load ${environment}
+      if [[ "`module list -t 2>&1`" = *${environment}* ]]; then
+                echo "Module loaded successfully"
+      else
+                echo ${environment} failed to load. Attempting to use aea environments.
+                environment_choices="aea-beta aea-release"
+                for env in ${environment_choices}; do if [[ -d "${aea_compute_path}/${env}" ]]; then environment=${env}; break; fi; done
+                echo ${environment}
+                module load ${environment}
       fi
   - conda info
   # Build the Conda environment if it's missing
