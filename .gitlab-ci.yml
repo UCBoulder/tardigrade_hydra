@@ -26,9 +26,11 @@ before_script:
   - for env in ${environment_choices}; do if [[ -d "${aea_compute_path}/${env}" ]]; then environment=${env}; break; fi; done
   - echo ${environment}
   - module load ${environment} || true
+  - project_module_load_success=false
   - |
       if [[ "`module list -t 2>&1`" = *${environment}* ]]; then
                 echo "Module loaded successfully"
+                project_module_load_success=true
       else
                 echo ${environment} failed to load. Attempting to use aea environments.
                 environment_choices="aea-beta aea-release"
@@ -43,7 +45,7 @@ before_script:
   - environment_path="${aea_compute_path}/${project_environment}"
   - conda_options="--yes --channel ${aea_conda_channel} --channel conda-forge --override-channels"
   - |
-      if [[ ! -d ${environment_path} ]]; then
+      if [ $project_module_load_success = false ]; then
           export ALL_PROXY="proxyout.lanl.gov:8080"
           export HTTP_PROXY="http://$ALL_PROXY"
           export HTTPS_PROXY=$HTTP_PROXY
