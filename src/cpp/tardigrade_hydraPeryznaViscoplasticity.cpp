@@ -48,6 +48,16 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setFlowDirection( ){
+            /*!
+             * Set the flow direction in the current configuration of the
+             * plastic configuration.
+             */
+
+            throw "not implemented";
+
+        }
+
         void residual::setFlowDirection( const floatVector &flowDirection ){
             /*!
              * Set the flow direction in the current configuration of the
@@ -62,6 +72,17 @@ namespace tardigradeHydra{
             _flowDirection.first = true;
 
             addIterationData( &_flowDirection );
+
+        }
+
+
+        void residual::setPlasticMultiplier( ){
+            /*!
+             * Set the plastic multiplier in the current configuration of the
+             * plastic configuration
+             */
+
+            throw "not implemented";
 
         }
 
@@ -82,6 +103,16 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setVelocityGradient( ){
+            /*!
+             * Set the velocity gradient in the current configuration of the plastic
+             * configuration
+             */
+
+            throw "not implemented";
+
+        }
+
         void residual::setVelocityGradient( const floatVector &velocityGradient ){
             /*!
              * Set the velocity gradient in the current configuration of the plastic
@@ -99,6 +130,15 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPlasticDeformationGradient( ){
+            /*!
+             * Set the plastic deformation gradient
+             */
+
+            throw "not implemented";
+
+        }
+
         void residual::setPlasticDeformationGradient( const floatVector &plasticDeformationGradient ){
             /*!
              * Set the plastic deformation gradient
@@ -111,6 +151,15 @@ namespace tardigradeHydra{
             _plasticDeformationGradient.first = true;
 
             addIterationData( &_plasticDeformationGradient );
+
+        }
+
+        void residual::setStateVariables( ){
+            /*!
+             * Set the state variables
+             */
+
+            throw "not implemented";
 
         }
 
@@ -204,6 +253,45 @@ namespace tardigradeHydra{
             _mixingParameters.second = mixingParameters;
 
             _mixingParameters.first = true;
+
+        }
+
+        void residual::setResidual( ){
+            /*!
+             * Set the value of the residual
+             * 
+             * Defined as the residual's computed plastic deformation gradient minus the value stored in hydra's configurations
+             * and the difference between the computed state variable's and hydra's stored values.
+             */
+
+            throw "not implemented";
+
+        }
+
+        void residual::setJacobian( ){
+            /*!
+             * Set the value of the Jacobian
+             */
+
+            throw "not implemented";
+
+        }
+
+        void residual::setdRdT( ){
+            /*!
+             * Set the derivative of the residual w.r.t. the temperature.
+             */
+
+            throw "not implemented";
+
+        }
+
+        void residual::setdRdF( ){
+            /*!
+             * Set the derivative of the residual w.r.t. the deformation gradient.
+             */
+
+            throw "not implemented";
 
         }
 
