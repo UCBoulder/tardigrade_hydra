@@ -95,6 +95,18 @@ namespace tardigradeHydra{
                  // Friend classes
                 friend class tardigradeHydra::peryznaViscoplasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
+                using tardigradeHydra::residualBase::residualBase;
+
+                using tardigradeHydra::residualBase::setResidual;
+
+                using tardigradeHydra::residualBase::setJacobian;
+
+                using tardigradeHydra::residualBase::setdRdF;
+
+                using tardigradeHydra::residualBase::setdRdT;
+
+                using tardigradeHydra::residualBase::setAdditionalDerivatives;
+
                 void setDrivingStress( const floatVector &drivingStress );
 
                 void setFlowDirection( const floatVector &flowDirection );
