@@ -9,6 +9,7 @@
 
 #include<tardigrade_hydraPeryznaViscoplasticity.h>
 #include<tardigrade_constitutive_tools.h>
+#include<tardigrade_stress_tools.h>
 
 namespace tardigradeHydra{
 
@@ -54,7 +55,23 @@ namespace tardigradeHydra{
              * plastic configuration.
              */
 
-            throw "not implemented";
+            const floatVector *drivingStress;
+
+            const floatVector *flowParameters;
+
+            floatType g;
+
+            floatVector dgdDrivingStress;
+
+            floatVector flowDirection;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getDrivingStress( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( flowParameters = getFlowParameters( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( *drivingStress, ( *flowParameters )[ 1 ], ( *flowParameters )[ 0 ], g, dgdDrivingStress, flowDirection ) );
+
+            setFlowDirection( flowDirection );
 
         }
 
@@ -239,7 +256,7 @@ namespace tardigradeHydra{
 
             _flowParameters.second = flowParameters;
 
-            _yieldParameters.first = true;
+            _flowParameters.first = true;
 
         }
 
