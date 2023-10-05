@@ -53,6 +53,17 @@ namespace tardigradeHydra{
             /*!
              * Set the flow direction in the current configuration of the
              * plastic configuration.
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              */
 
             const floatVector *drivingStress;
@@ -61,13 +72,13 @@ namespace tardigradeHydra{
 
             floatType g;
 
-            floatVector dgdDrivingStress;
-
-            floatVector flowDirection;
-
             TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getDrivingStress( ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( flowParameters = getFlowParameters( ) );
+
+            floatVector dgdDrivingStress( drivingStress->size( ), 0 );
+
+            floatVector flowDirection( drivingStress->size( ), 0 );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( *drivingStress, ( *flowParameters )[ 1 ], ( *flowParameters )[ 0 ], g, dgdDrivingStress, flowDirection ) );
 
@@ -92,6 +103,107 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setYieldFunction( ){
+            /*!
+             * Set the value of the yield function
+             */
+
+            const floatVector* drivingStress;
+
+            const floatVector* yieldParameters;
+
+            floatType yieldFunction;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getDrivingStress( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( yieldParameters = getYieldParameters( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( *drivingStress, ( *yieldParameters )[ 1 ], ( *yieldParameters )[ 0 ], yieldFunction ) );
+
+            setYieldFunction( yieldFunction );
+
+        }
+
+        void residual::setYieldFunction( const floatType &yieldFunction ){
+            /*!
+             * Set the value of the yield function
+             */
+
+            _yieldFunction.second = yieldFunction;
+
+            _flowDirection.first = true;
+
+            addIterationData( &_flowDirection );
+
+        }
+
+        void residual::setPlasticThermalMultiplier( ){
+            /*!
+             * Set the plastic thermal multiplier
+             */
+
+            const floatType *temperature;
+
+            const floatVector *temperatureParameters;
+
+            floatType plasticThermalMultiplier;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( temperature = hydra->getTemperature( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( temperatureParameters = getThermalParameters( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::WLF( *temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] }, plasticThermalMultiplier ) ); 
+
+            setPlasticThermalMultiplier( plasticThermalMultiplier );            
+
+        }
+
+        void residual::setPlasticThermalMultiplier( const floatType &plasticThermalMultiplier ){
+            /*!
+             * Set the plastic thermal multiplier
+             */
+
+            _plasticThermalMultiplier.second = plasticThermalMultiplier;
+
+            _plasticThermalMultiplier.first = true;
+
+            addIterationData( &_plasticThermalMultiplier );
+
+        }
+
+        void residual::setHardeningFunction( ){
+            /*!
+             * Set the value of the hardening function
+             */
+
+            const floatVector *stateVariables;
+
+            const floatVector *hardeningParameters;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getStateVariables( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = getDragStressParameters( ) );
+
+            floatType hardeningFunction;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::linearHardening( *stateVariables, floatVector( hardeningParameters->begin( ) + 1, hardeningParameters->end( ) ), ( *hardeningParameters )[ 0 ], hardeningFunction ) );
+
+            setHardeningFunction( hardeningFunction );
+
+        }
+
+        void residual::setHardeningFunction( const floatType &hardeningFunction ){
+            /*!
+             * Set the hardening function
+             */
+
+            _hardeningFunction.second = hardeningFunction;
+
+            _hardeningFunction.first = true;
+
+            addIterationData( &_hardeningFunction );
+
+        }
 
         void residual::setPlasticMultiplier( ){
             /*!
@@ -99,7 +211,27 @@ namespace tardigradeHydra{
              * plastic configuration
              */
 
-            throw "not implemented";
+            const floatType *yieldFunction;
+
+            const floatType *hardeningFunction;
+
+            const floatType *plasticThermalMultiplier;
+
+            const floatVector *peryznaParameters;
+
+            floatType plasticMultiplier;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = getYieldFunction( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = getHardeningFunction( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = getPlasticThermalMultiplier( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( peryznaParameters = getPeryznaParameters( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::peryznaModel( *yieldFunction, *hardeningFunction, *plasticThermalMultiplier, ( *peryznaParameters )[ 0 ], plasticMultiplier ) );
+
+            setPlasticMultiplier( plasticMultiplier );
 
         }
 
@@ -126,7 +258,15 @@ namespace tardigradeHydra{
              * configuration
              */
 
-            throw "not implemented";
+            const floatType *plasticMultiplier;
+
+            const floatVector *flowDirection;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPlasticMultiplier( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = getFlowDirection( ) );
+
+            setVelocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
 
         }
 
@@ -176,7 +316,28 @@ namespace tardigradeHydra{
              * Set the state variables
              */
 
-            throw "not implemented";
+            const floatVector *allStateVariables =  hydra->getNonLinearSolveStateVariables( );
+
+            floatVector stateVariables( getStateVariableIndices( )->size( ), 0 );
+
+            for ( auto index = getStateVariableIndices( )->begin( ); index != getStateVariableIndices( )->end( ); index++ ){
+
+                if ( *index >= allStateVariables->size( ) ){
+
+                    
+                    std::string message = "The requested state variable is outside of the available range.\n";
+                    message            += "  requested index: " + std::to_string( *index ) + "\n";
+                    message            += "  total state variable number: " + std::to_string( allStateVariables->size( ) ) + "\n";
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+
+                }
+
+                stateVariables[ index - getStateVariableIndices( )->begin( ) ] = ( *allStateVariables )[ *index ];
+
+            }
+
+            setStateVariables( stateVariables );
 
         }
 
@@ -357,6 +518,51 @@ namespace tardigradeHydra{
             }
 
             return &_flowDirection.second;
+
+        }
+
+        const floatType* residual::getYieldFunction( ){
+            /*!
+             * Get the value of the yield function
+             */
+
+            if ( !_yieldFunction.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setYieldFunction( ) );
+
+            }
+
+            return &_yieldFunction.second;
+
+        }
+
+        const floatType* residual::getPlasticThermalMultiplier( ){
+            /*!
+             * Get the value of the plastic thermal multiplier
+             */
+
+            if ( !_plasticThermalMultiplier.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPlasticThermalMultiplier( ) );
+
+            }
+
+            return &_plasticThermalMultiplier.second;
+
+        }
+
+        const floatType* residual::getHardeningFunction( ){
+            /*!
+             * Get the value of the hardening function
+             */
+
+            if ( !_hardeningFunction.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setHardeningFunction( ) );
+
+            }
+
+            return &_hardeningFunction.second;
 
         }
 

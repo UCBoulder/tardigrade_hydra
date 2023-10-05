@@ -111,6 +111,12 @@ namespace tardigradeHydra{
 
                 void setFlowDirection( const floatVector &flowDirection );
 
+                void setYieldFunction( const floatType &yieldFunction );
+
+                void setPlasticThermalMultiplier( const floatType &plasticThermalMultiplier );
+
+                void setHardeningFunction( const floatType &hardeningFunction );
+
                 void setPlasticMultiplier( const floatType &plasticMultiplier );
 
                 void setVelocityGradient( const floatVector &velocityGradient );
@@ -138,6 +144,12 @@ namespace tardigradeHydra{
                 const floatVector* getDrivingStress( );
 
                 const floatVector* getFlowDirection( );
+
+                const floatType* getYieldFunction( );
+
+                const floatType* getPlasticThermalMultiplier( );
+
+                const floatType* getHardeningFunction( );
 
                 const floatType* getPlasticMultiplier( );
 
@@ -169,6 +181,12 @@ namespace tardigradeHydra{
 
                 virtual void setFlowDirection( );
 
+                virtual void setYieldFunction( );
+
+                virtual void setPlasticThermalMultiplier( );
+
+                virtual void setHardeningFunction( );
+
                 virtual void setPlasticMultiplier( );
 
                 virtual void setVelocityGradient( );
@@ -189,11 +207,31 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatVector > _drivingStress;
 
+                tardigradeHydra::dataStorage< floatVector > _previousDrivingStress;
+
                 tardigradeHydra::dataStorage< floatVector > _flowDirection;
+
+                tardigradeHydra::dataStorage< floatVector > _previousFlowDirection;
+
+                tardigradeHydra::dataStorage< floatType > _yieldFunction;
+
+                tardigradeHydra::dataStorage< floatType > _previousYieldFunction;
+
+                tardigradeHydra::dataStorage< floatType > _plasticThermalMultiplier;
+
+                tardigradeHydra::dataStorage< floatType > _previousPlasticThermalMultiplier;
+
+                tardigradeHydra::dataStorage< floatType > _hardeningFunction;
+
+                tardigradeHydra::dataStorage< floatType > _previousHardeningFunction;
 
                 tardigradeHydra::dataStorage< floatType > _plasticMultiplier;
 
+                tardigradeHydra::dataStorage< floatType > _previousPlasticMultiplier;
+
                 tardigradeHydra::dataStorage< floatVector > _velocityGradient;
+
+                tardigradeHydra::dataStorage< floatVector > _previousVelocityGradient;
 
                 tardigradeHydra::dataStorage< floatVector > _plasticDeformationGradient;
 
