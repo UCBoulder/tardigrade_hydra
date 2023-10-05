@@ -112,6 +112,19 @@ namespace tardigradeHydra{
 
     }
 
+    void residualBase::setPreviousCauchyStress( const floatVector &previousCauchyStress ){
+        /*!
+         * Set the previous value of the Cauchy stress
+         * 
+         * \param &previousCauchyStress: The previous Cauchy stress in row-major form
+         */
+
+        _previousCauchyStress.second = previousCauchyStress;
+
+        _previousCauchyStress.first = true;
+
+    }
+
     const floatVector* residualBase::getResidual( ){
         /*!
          * Get the residual equations. Must be of size numEquations
@@ -200,6 +213,21 @@ namespace tardigradeHydra{
         }
 
         return &_cauchyStress.second;
+
+    }
+
+    const floatVector* residualBase::getPreviousCauchyStress( ){
+        /*!
+         * Get the Cauchy stress
+         */
+
+        if ( !_previousCauchyStress.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousCauchyStress( ) );
+
+        }
+
+        return &_previousCauchyStress.second;
 
     }
 
@@ -1322,6 +1350,23 @@ namespace tardigradeHydra{
         }
 
         return &_cauchyStress.second;
+
+    }
+
+    const floatVector* hydraBase::getPreviousCauchyStress( ){
+        /*!
+         * Get the previous value of the cauchy stress
+         */
+
+        if ( !_previousCauchyStress.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( _previousCauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getPreviousCauchyStress( ) );
+
+            _previousCauchyStress.first = true;
+
+        }
+
+        return &_previousCauchyStress.second;
 
     }
 

@@ -268,6 +268,17 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void setPreviousCauchyStress( ){
+                /*!
+                 * Compute the previous Cauchy stress
+                 * 
+                 * Only needs to be defined for the first residual
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the previous Cauchy stress is not implemented" ) );
+
+            }
+
             virtual void setCurrentAdditionalStateVariables( ){
                 /*!
                  * Set the current additional state variables
@@ -295,6 +306,8 @@ namespace tardigradeHydra{
 
             void setCauchyStress( const floatVector &cauchyStress );
 
+            void setPreviousCauchyStress( const floatVector &previousCauchyStress );
+
             void setCurrentAdditionalStateVariables( const floatVector &currentAdditionalStateVariables );
 
             // Getter functions
@@ -314,6 +327,8 @@ namespace tardigradeHydra{
 
             const floatVector* getCauchyStress( );
 
+            const floatVector* getPreviousCauchyStress( );
+
             const floatVector* getCurrentAdditionalStateVariables( );
 
             void addIterationData( dataBase *data );
@@ -332,7 +347,9 @@ namespace tardigradeHydra{
 
             dataStorage< floatMatrix > _additionalDerivatives; //!< Additional derivatives of the residual
 
-            dataStorage< floatVector > _cauchyStress; //!< The cauchy stress. Only needs to be defined for the first residual
+            dataStorage< floatVector > _cauchyStress; //!< The previous Cauchy stress. Only needs to be defined for the first residual
+
+            dataStorage< floatVector > _previousCauchyStress; //!< The previous Cauchy stress. Only needs to be defined for the first residual
 
             dataStorage< floatVector > _currentAdditionalStateVariables; //!< The current additional state variables.
 
@@ -504,6 +521,8 @@ namespace tardigradeHydra{
 
             const floatVector* getCauchyStress( );
 
+            const floatVector* getPreviousCauchyStress( );
+
             virtual void evaluate( );
 
             //! Add data to the vector of values which will be cleared after each iteration
@@ -589,6 +608,8 @@ namespace tardigradeHydra{
             dataStorage< floatType > _lsResidualNorm; //!< The reference residual norm for the line-search convergence criteria
 
             dataStorage< floatVector > _cauchyStress; //!< The Cauchy stress as determined from the current state
+
+            dataStorage< floatVector > _previousCauchyStress; //!< The previous value of the Cauchy stress as determined from the current state
 
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
