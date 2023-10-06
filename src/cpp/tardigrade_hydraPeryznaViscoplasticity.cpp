@@ -25,6 +25,16 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPreviousDrivingStress( ){
+            /*!
+             * Set the driving stress i.e. the Cauchy stress pulled back to the
+             * current configuration of the plastic configuration.
+             */
+
+            setDrivingStress( true );
+
+        }
+
         void residual::setDrivingStress( const bool isPrevious ){
             /*!
              * Set the driving stress i.e. the Cauchy stress pulled back to the
@@ -117,6 +127,27 @@ namespace tardigradeHydra{
              */
 
             setFlowDirection( false );
+
+        }
+
+        void residual::setPreviousFlowDirection( ){
+            /*!
+             * Set the flow direction in the current configuration of the
+             * plastic configuration.
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             */
+
+            setFlowDirection( true );
 
         }
 
@@ -218,6 +249,15 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPreviousYieldFunction( ){
+            /*!
+             * Set the value of the yield function
+             */
+
+            setYieldFunction( true );
+
+        }
+
         void residual::setYieldFunction( const bool isPrevious ){
             /*!
              * Set the value of the yield function
@@ -292,6 +332,15 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPreviousPlasticThermalMultiplier( ){
+            /*!
+             * Set the plastic thermal multiplier
+             */
+
+            setPlasticThermalMultiplier( true );
+
+        }
+
         void residual::setPlasticThermalMultiplier( const bool isPrevious ){
             /*!
              * Set the plastic thermal multiplier
@@ -355,12 +404,109 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setDragStress( ){
+            /*!
+             * The the value of the drag stress
+             */
+
+            setDragStress( false );
+
+        }
+
+        void residual::setPreviousDragStress( ){
+            /*!
+             * The the value of the drag stress
+             */
+
+            setDragStress( true );
+
+        }
+
+        void residual::setDragStress( const bool isPrevious ){
+            /*!
+             * Set the value of the drag stress
+             * 
+             * \param isPrevious: Flag for whether to compute the values for the
+             *     previous timestep
+             */
+
+            const floatVector *stateVariables;
+
+            const floatVector *dragStressParameters;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getPreviousStateVariables( ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getStateVariables( ) );
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( dragStressParameters = getDragStressParameters( ) );
+
+            floatType dragStress;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::linearHardening( *stateVariables, floatVector( dragStressParameters->begin( ) + 1, dragStressParameters->end( ) ), ( *dragStressParameters )[ 0 ], dragStress ) );
+
+            if ( isPrevious ){
+
+                setPreviousDragStress( dragStress );
+
+            }
+            else{
+
+                setDragStress( dragStress );
+
+            }
+
+        }
+
+        void residual::setDragStress( const floatType &dragStress ){
+            /*!
+             * Set the drag stress
+             * 
+             * \param &dragStress: The value of the drag stress
+             */
+
+            _dragStress.second = dragStress;
+
+            _dragStress.first = true;
+
+            addIterationData( &_dragStress );
+
+        }
+
+        void residual::setPreviousDragStress( const floatType &previousDragStress ){
+            /*!
+             * Set the previous drag stress
+             * 
+             * \param &previousDragStress: The value of the drag stress
+             */
+
+            _previousDragStress.second = previousDragStress;
+
+            _previousDragStress.first = true;
+
+        }
+
         void residual::setHardeningFunction( ){
             /*!
              * Set the value of the hardening function
              */
 
             setHardeningFunction( false );
+
+        }
+
+        void residual::setPreviousHardeningFunction( ){
+            /*!
+             * Set the value of the hardening function
+             */
+
+            setHardeningFunction( true );
 
         }
 
@@ -387,7 +533,7 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = getDragStressParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = getHardeningParameters( ) );
 
             floatType hardeningFunction;
 
@@ -440,6 +586,16 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPreviousPlasticMultiplier( ){
+            /*!
+             * Set the plastic multiplier in the current configuration of the
+             * plastic configuration
+             */
+
+            setPlasticMultiplier( true );
+
+        }
+
         void residual::setPlasticMultiplier( const bool isPrevious ){
             /*!
              * Set the plastic multiplier in the current configuration of the
@@ -451,7 +607,7 @@ namespace tardigradeHydra{
 
             const floatType *yieldFunction;
 
-            const floatType *hardeningFunction;
+            const floatType *dragStress;
 
             const floatType *plasticThermalMultiplier;
 
@@ -463,7 +619,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = getPreviousYieldFunction( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = getPreviousHardeningFunction( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = getPreviousDragStress( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = getPreviousPlasticThermalMultiplier( ) );
 
@@ -472,7 +628,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = getYieldFunction( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = getHardeningFunction( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = getDragStress( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = getPlasticThermalMultiplier( ) );
 
@@ -480,7 +636,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( peryznaParameters = getPeryznaParameters( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::peryznaModel( *yieldFunction, *hardeningFunction, *plasticThermalMultiplier, ( *peryznaParameters )[ 0 ], plasticMultiplier ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::peryznaModel( *yieldFunction, *dragStress, *plasticThermalMultiplier, ( *peryznaParameters )[ 0 ], plasticMultiplier ) );
 
             if ( isPrevious ){
 
@@ -534,6 +690,16 @@ namespace tardigradeHydra{
              */
 
             setVelocityGradient( false );
+
+        }
+
+        void residual::setPreviousVelocityGradient( ){
+            /*!
+             * Set the velocity gradient in the current configuration of the plastic
+             * configuration
+             */
+
+            setVelocityGradient( true );
 
         }
 
@@ -603,12 +769,118 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setStateVariableEvolutionRate( ){
+            /*! 
+             * Set the value of the state variable evolution rate
+             */
+
+            setStateVariableEvolutionRate( false );
+
+        }
+
+        void residual::setPreviousStateVariableEvolutionRate( ){
+            /*! 
+             * Set the value of the state variable evolution rate
+             */
+
+            setStateVariableEvolutionRate( true );
+
+        }
+
+        void residual::setStateVariableEvolutionRate( const bool isPrevious ){
+            /*!
+             * Set the value of the state variable evolution rate
+             * 
+             * \param isPrevious: A flag to indicate if the previous evolution rate
+             *     should be computed.
+             */
+
+            const floatType *plasticMultiplier;
+
+            const floatType *hardeningFunction;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPlasticMultiplier( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = getHardeningFunction( ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPreviousPlasticMultiplier( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = getPreviousHardeningFunction( ) );
+
+            }
+
+            floatType stateVariableEvolutionRate = ( *plasticMultiplier ) * ( *hardeningFunction );
+
+            if ( isPrevious ){
+
+                setPreviousStateVariableEvolutionRate( stateVariableEvolutionRate );
+
+            }
+            else{
+
+                setStateVariableEvolutionRate( stateVariableEvolutionRate );
+
+            }
+
+        }
+
+        void residual::setStateVariableEvolutionRate( const floatType &stateVariableEvolutionRate ){
+            /*!
+             * Set the state variable evolution rate
+             * 
+             * \param &stateVariableEvolutionRate: The current state variable evolution rate
+             */
+
+            _stateVariableEvolutionRate.second = stateVariableEvolutionRate;
+
+            _stateVariableEvolutionRate.first = true;
+
+            addIterationData( &_stateVariableEvolutionRate );
+
+        }
+
+        void residual::setPreviousStateVariableEvolutionRate( const floatType &previousStateVariableEvolutionRate ){
+            /*!
+             * Set the previous state variable evolution rate
+             * 
+             * \param &previousStateVariableEvolutionRate: The previous state variable evolution rate
+             */
+
+            _previousStateVariableEvolutionRate.second = previousStateVariableEvolutionRate;
+
+            _previousStateVariableEvolutionRate.first = true;
+
+        }
+
         void residual::setPlasticDeformationGradient( ){
             /*!
              * Set the plastic deformation gradient
              */
 
-            throw "not implemented";
+            const floatVector *velocityGradient;
+
+            const floatVector *previousVelocityGradient;
+
+            floatVector previousPlasticDeformationGradient;
+
+            floatVector dFp;
+
+            floatVector plasticDeformationGradient;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = getVelocityGradient( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousVelocityGradient = getPreviousVelocityGradient( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousPlasticDeformationGradient = hydra->getPreviousConfiguration( *getPlasticConfigurationIndex( ) ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp, plasticDeformationGradient, 1 - ( *getIntegrationParameter( ) ), 1 ) );
+
+            setPlasticDeformationGradient( plasticDeformationGradient );
 
         }
 
@@ -633,6 +905,15 @@ namespace tardigradeHydra{
              */
 
             setStateVariables( false );
+
+        }
+
+        void residual::setPreviousStateVariables( ){
+            /*!
+             * Set the state variables
+             */
+
+            setStateVariables( true );
 
         }
 
@@ -781,16 +1062,16 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setMixingParameters( const floatVector &mixingParameters ){
+        void residual::setHardeningParameters( const floatVector &hardeningParameters ){
             /*!
-             * Set the mixing parameters
+             * Set the hardening parameters
              * 
-             * \param &mixingParameters: The mixing parameters
+             * \param &hardeningParameters: The hardening parameters
              */
 
-            _mixingParameters.second = mixingParameters;
+            _hardeningParameters.second = hardeningParameters;
 
-            _mixingParameters.first = true;
+            _hardeningParameters.first = true;
 
         }
 
@@ -911,6 +1192,21 @@ namespace tardigradeHydra{
 
         }
 
+        const floatType* residual::getDragStress( ){
+            /*!
+             * Get the drag stress
+             */
+
+            if ( !_dragStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setDragStress( ) );
+
+            }
+
+            return &_dragStress.second;
+
+        }
+
         const floatType* residual::getHardeningFunction( ){
             /*!
              * Get the value of the hardening function
@@ -956,6 +1252,21 @@ namespace tardigradeHydra{
 
         }
 
+        const floatType* residual::getStateVariableEvolutionRate( ){
+            /*!
+             * Get the state variable evolution rate
+             */
+
+            if ( !_stateVariableEvolutionRate.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setStateVariableEvolutionRate( ) );
+
+            }
+
+            return &_stateVariableEvolutionRate.second;
+
+        }
+
         const floatVector* residual::getPlasticDeformationGradient( ){
             /*!
              * Get the plastic deformation gradient
@@ -993,7 +1304,7 @@ namespace tardigradeHydra{
 
             if ( !_previousDrivingStress.first ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setDrivingStress( true ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousDrivingStress( ) );
 
             }
 
@@ -1008,7 +1319,7 @@ namespace tardigradeHydra{
 
             if ( !_previousFlowDirection.first ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setFlowDirection( true ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFlowDirection( ) );
 
             }
 
@@ -1023,7 +1334,7 @@ namespace tardigradeHydra{
 
             if ( !_previousYieldFunction.first ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setYieldFunction( true ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousYieldFunction( ) );
 
             }
 
@@ -1038,11 +1349,26 @@ namespace tardigradeHydra{
 
             if ( !_previousPlasticThermalMultiplier.first ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPlasticThermalMultiplier( true ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousPlasticThermalMultiplier( ) );
 
             }
 
             return &_previousPlasticThermalMultiplier.second;
+
+        }
+
+        const floatType* residual::getPreviousDragStress( ){
+            /*!
+             * Get the previous value of the drag stress
+             */
+
+            if ( !_previousDragStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousDragStress( ) );
+
+            }
+
+            return &_previousDragStress.second;
 
         }
 
@@ -1053,7 +1379,7 @@ namespace tardigradeHydra{
 
             if ( !_previousHardeningFunction.first ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setHardeningFunction( true ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousHardeningFunction( ) );
 
             }
 
@@ -1068,7 +1394,7 @@ namespace tardigradeHydra{
 
             if ( !_previousPlasticMultiplier.first ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPlasticMultiplier( true ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousPlasticMultiplier( ) );
 
             }
 
@@ -1083,11 +1409,26 @@ namespace tardigradeHydra{
 
             if ( !_previousVelocityGradient.first ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setVelocityGradient( true ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousVelocityGradient( ) );
 
             }
 
             return &_previousVelocityGradient.second;
+
+        }
+
+        const floatType* residual::getPreviousStateVariableEvolutionRate( ){
+            /*!
+             * Get the previous state variable evolution rate
+             */
+
+            if ( !_previousStateVariableEvolutionRate.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousStateVariableEvolutionRate( ) );
+
+            }
+
+            return &_previousStateVariableEvolutionRate.second;
 
         }
 
@@ -1098,7 +1439,7 @@ namespace tardigradeHydra{
 
             if ( !_previousStateVariables.first ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setStateVariables( true ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousStateVariables( ) );
 
             }
 
@@ -1181,18 +1522,27 @@ namespace tardigradeHydra{
 
         }
 
-        const floatVector* residual::getMixingParameters( ){
+        const floatVector* residual::getHardeningParameters( ){
             /*!
-             * Get the mixing parameters
+             * Get the hardening parameters
              */
 
-            if ( !_mixingParameters.first ){
+            if ( !_hardeningParameters.first ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Mixing parameters not defined but required" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Hardening parameters not defined but required" ) );
 
             }
 
-            return &_mixingParameters.second;
+            return &_hardeningParameters.second;
+
+        }
+
+        const floatType* residual::getIntegrationParameter( ){
+            /*!
+             * Get the integration parameter
+             */
+
+            return &_integrationParameter;
 
         }
 
@@ -1203,15 +1553,16 @@ namespace tardigradeHydra{
              * \param &parameters: The incoming parameter vector. We assume a
              *     Peryzna viscoplastic driving stress with a Drucker-Prager
              *     yield and flow potential surface. The parameters are
-             *     [ n, q0, q1, C1, C2, Tref, Y, A, B, H ] where n is the
+             *     [ n, q0, q1, C1, C2, Tref, Y, A, B, h0, h1 ] where n is the
              *     Peryzna exponent, q0 is the initial drag stress, q1 is the
              *     drag modulus, C1, C2, and Tref are the temperature effect
              *     parameters, Y is the yield stress for the Drucker-Prager equation,
              *     A is the pressure term of the yield equation, B is the flow parameter,
-             *     and H is the mixing modulus.
+             *     and h0 is the initial hardening modulus, and h1 is the linear hardening
+             *     modulus.
              */
 
-            unsigned int expectedSize = 10;
+            unsigned int expectedSize = 11;
 
             if ( parameters.size( ) != expectedSize ){
 
@@ -1233,7 +1584,7 @@ namespace tardigradeHydra{
 
             setFlowParameters( { 0., parameters[ 8 ] } );
 
-            setMixingParameters( { parameters[ 9 ] } );
+            setHardeningParameters( { parameters[ 9 ], parameters[ 10 ] } );
 
         }
 
