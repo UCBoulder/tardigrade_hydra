@@ -109,21 +109,37 @@ namespace tardigradeHydra{
 
                 void setDrivingStress( const floatVector &drivingStress );
 
+                void setPreviousDrivingStress( const floatVector &previousDrivingStress );
+
                 void setFlowDirection( const floatVector &flowDirection );
+
+                void setPreviousFlowDirection( const floatVector &previousFlowDirection );
 
                 void setYieldFunction( const floatType &yieldFunction );
 
+                void setPreviousYieldFunction( const floatType &previousYieldFunction );
+
                 void setPlasticThermalMultiplier( const floatType &plasticThermalMultiplier );
+
+                void setPreviousPlasticThermalMultiplier( const floatType &previousPlasticThermalMultiplier );
 
                 void setHardeningFunction( const floatType &hardeningFunction );
 
+                void setPreviousHardeningFunction( const floatType &previousHardeningFunction );
+
                 void setPlasticMultiplier( const floatType &plasticMultiplier );
 
+                void setPreviousPlasticMultiplier( const floatType &previousPlasticMultiplier );
+
                 void setVelocityGradient( const floatVector &velocityGradient );
+
+                void setPreviousVelocityGradient( const floatVector &previousVelocityGradient );
 
                 void setPlasticDeformationGradient( const floatVector &plasticDeformationGradient );
 
                 void setStateVariables( const floatVector &stateVariables );
+
+                void setPreviousStateVariables( const floatVector &previousStateVariables );
 
                 void setPeryznaParameters( const floatVector &peryznaParameters );
 
@@ -155,9 +171,25 @@ namespace tardigradeHydra{
 
                 const floatVector* getVelocityGradient( );
 
+                const floatVector* getPreviousDrivingStress( );
+
+                const floatVector* getPreviousFlowDirection( );
+
+                const floatType* getPreviousYieldFunction( );
+
+                const floatType* getPreviousPlasticThermalMultiplier( );
+
+                const floatType* getPreviousHardeningFunction( );
+
+                const floatType* getPreviousPlasticMultiplier( );
+
+                const floatVector* getPreviousVelocityGradient( );
+
                 const floatVector* getPlasticDeformationGradient( );
 
                 const floatVector* getStateVariables( );
+
+                const floatVector* getPreviousStateVariables( );
 
                 const floatVector* getPeryznaParameters( );
 
@@ -191,9 +223,25 @@ namespace tardigradeHydra{
 
                 virtual void setVelocityGradient( );
 
+                virtual void setDrivingStress( const bool isPrevious );
+
+                virtual void setFlowDirection( const bool isPrevious );
+
+                virtual void setYieldFunction( const bool isPrevious);
+
+                virtual void setPlasticThermalMultiplier( const bool isPrevious );
+
+                virtual void setHardeningFunction( const bool isPrevious );
+
+                virtual void setPlasticMultiplier( const bool isPrevious );
+
+                virtual void setVelocityGradient( const bool isPrevious );
+
                 virtual void setPlasticDeformationGradient( );
 
                 virtual void setStateVariables( );
+
+                virtual void setStateVariables( const bool isPrevious );
 
                 virtual void setResidual( ) override;
 
@@ -236,6 +284,8 @@ namespace tardigradeHydra{
                 tardigradeHydra::dataStorage< floatVector > _plasticDeformationGradient;
 
                 tardigradeHydra::dataStorage< floatVector > _stateVariables;
+
+                tardigradeHydra::dataStorage< floatVector > _previousStateVariables;
 
                 tardigradeHydra::dataStorage< floatVector > _peryznaParameters;
 

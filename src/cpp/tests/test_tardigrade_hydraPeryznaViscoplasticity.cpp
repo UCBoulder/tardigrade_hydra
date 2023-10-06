@@ -51,18 +51,32 @@ namespace tardigradeHydra{
                         try{
     
                             BOOST_CHECK( &R._drivingStress.second == R.getDrivingStress( ) );
+
+                            BOOST_CHECK( &R._previousDrivingStress.second == R.getPreviousDrivingStress( ) );
         
                             BOOST_CHECK( &R._flowDirection.second == R.getFlowDirection( ) );
+
+                            BOOST_CHECK( &R._previousFlowDirection.second == R.getPreviousFlowDirection( ) );
     
                             BOOST_CHECK( &R._yieldFunction.second == R.getYieldFunction( ) );
+
+                            BOOST_CHECK( &R._previousYieldFunction.second == R.getPreviousYieldFunction( ) );
     
                             BOOST_CHECK( &R._plasticThermalMultiplier.second == R.getPlasticThermalMultiplier( ) );
+
+                            BOOST_CHECK( &R._previousPlasticThermalMultiplier.second == R.getPreviousPlasticThermalMultiplier( ) );
     
                             BOOST_CHECK( &R._hardeningFunction.second == R.getHardeningFunction( ) );
+
+                            BOOST_CHECK( &R._previousHardeningFunction.second == R.getPreviousHardeningFunction( ) );
         
                             BOOST_CHECK( &R._plasticMultiplier.second == R.getPlasticMultiplier( ) );
+
+                            BOOST_CHECK( &R._previousPlasticMultiplier.second == R.getPreviousPlasticMultiplier( ) );
         
                             BOOST_CHECK( &R._velocityGradient.second == R.getVelocityGradient( ) );
+
+                            BOOST_CHECK( &R._previousVelocityGradient.second == R.getPreviousVelocityGradient( ) );
         
                             BOOST_CHECK( &R._plasticDeformationGradient.second == R.getPlasticDeformationGradient( ) );
         
@@ -99,6 +113,32 @@ namespace tardigradeHydra{
 
 BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
 
+    class stressResidualMock : public tardigradeHydra::residualBase {
+
+        public:
+
+            floatVector currentCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector previousCauchyStress = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+
+        private:
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            virtual void setCauchyStress( ){
+
+                tardigradeHydra::residualBase::setCauchyStress( currentCauchyStress );
+
+            }
+
+            virtual void setPreviousCauchyStress( ){
+
+                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+
+            }
+
+    };
+
     class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
 
         public:
@@ -127,7 +167,7 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
 
             floatVector thermalParameters = { 293.15, 1e-5, 2e-5, 3e-5, 4e-5, 5e-5, 6e-5, 7e-5, 8e-5, 9e-5, 10e-5, 11e-5, 12e-5 };
     
-            tardigradeHydra::linearElasticity::residual elasticity;
+            stressResidualMock elasticity;
     
             residualMock viscoPlasticity;
 
@@ -147,9 +187,9 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
 
                 std::vector< tardigradeHydra::residualBase* > residuals( 4 );
 
-                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+                elasticity = stressResidualMock( this, 9 );
 
-                viscoPlasticity = residualMock( this, 9, 1, stateVariableIndices, viscoPlasticParameters );
+                viscoPlasticity = residualMock( this, 10, 1, stateVariableIndices, viscoPlasticParameters );
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
@@ -162,6 +202,8 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
                 residuals[ 2 ] = &thermalExpansion;
 
                 residuals[ 3 ] = &remainder;
+
+                setResidualClasses( residuals );
 
             }
 
@@ -184,18 +226,19 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
                                                 0.0, 0.0, 1.0 };
 
     floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                           1, 2, 3, 4, 5, 7, 8, 8, 9, -1, -2, -3 };
+                                           1, 2, 3, 4, 5, 7, 8, 8, 9,
+                                          -1, -2, -3, -4, -5 };
 
     floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
     floatVector unknownVector = { 1, 1, 1, 1, 1, 1, 1, 1, 1,
                                   2, 2, 2, 2, 2, 2, 2, 2, 2,
                                   3, 3, 3, 3, 3, 3, 3, 3, 3,
-                                  4, 5, 6 };
+                                  4, 5, 6, 7, 8 };
 
     unsigned int numConfigurations = 3;
 
-    unsigned int numNonLinearSolveStateVariables = 3;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
     unsigned int dimension = 3;
 
@@ -221,6 +264,24 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
      * Test of computing the driving stress
      */
 
+    class stressMock : public tardigradeHydra::residualBase {
+
+        public:
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        private:
+
+            virtual void setPreviousCauchyStress( ){
+
+                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+
+            }
+
+    };
+
     class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
 
         public:
@@ -249,7 +310,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
 
             floatVector thermalParameters = { 293.15, 1e-5, 2e-5, 3e-5, 4e-5, 5e-5, 6e-5, 7e-5, 8e-5, 9e-5, 10e-5, 11e-5, 12e-5 };
     
-            tardigradeHydra::linearElasticity::residual elasticity;
+            stressMock elasticity;
     
             residualMock viscoPlasticity;
 
@@ -269,9 +330,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
 
                 std::vector< tardigradeHydra::residualBase* > residuals( 4 );
 
-                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+                elasticity = stressMock( this, 9 );
 
-                viscoPlasticity = residualMock( this, 9, 1, stateVariableIndices, viscoPlasticParameters );
+                viscoPlasticity = residualMock( this, 10, 1, stateVariableIndices, viscoPlasticParameters );
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
@@ -284,6 +345,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
                 residuals[ 2 ] = &thermalExpansion;
 
                 residuals[ 3 ] = &remainder;
+
+                setResidualClasses( residuals );
 
             }
 
@@ -306,7 +369,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
                                                 0.0, 0.0, 1.0 };
 
     floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0.02, 0.03 };
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
 
     floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
@@ -317,11 +381,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
                                   1.01, 0.0, 0.0,
                                   0.0,  1.2, 0.0,
                                   0.0,  0.0, 0.9,
-                                  4, 5, 6 };
+                                  4, 5, 6, 7, 8 };
 
     unsigned int numConfigurations = 3;
 
-    unsigned int numNonLinearSolveStateVariables = 3;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
     unsigned int dimension = 3;
 
@@ -338,6 +402,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getDrivingStress( ) ) );
 
+    answer = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getPreviousDrivingStress( ) ) ); 
+
 }
 
 BOOST_AUTO_TEST_CASE( test_residual_getFlowDirection ){
@@ -353,15 +421,26 @@ BOOST_AUTO_TEST_CASE( test_residual_getFlowDirection ){
 
             floatVector drivingStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
+            floatVector previousDrivingStress = { 1, 0.2, 0, 0.4, 7, -1, 0.5, 3, .2 };
+
             floatVector flowParameters = { 1.23, 0.46 };
 
         private:
 
-            virtual void setDrivingStress( ){
-
-                tardigradeHydra::peryznaViscoplasticity::residual::setDrivingStress( drivingStress );
+            virtual void setDrivingStress( const bool isPrevious ) override{
 
                 setFlowParameters( flowParameters );
+
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setPreviousDrivingStress( previousDrivingStress );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setDrivingStress( drivingStress );
+
+                }
 
             }
 
@@ -423,6 +502,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getFlowDirection ){
 
                 residuals[ 3 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -444,7 +525,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getFlowDirection ){
                                                 0.0, 0.0, 1.0 };
 
     floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0.02, 0.03 };
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
 
     floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
@@ -455,11 +537,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getFlowDirection ){
                                   1.01, 0.0, 0.0,
                                   0.0,  1.2, 0.0,
                                   0.0,  0.0, 0.9,
-                                  4, 5, 6 };
+                                  4, 5, 6, 7, 8 };
 
     unsigned int numConfigurations = 3;
 
-    unsigned int numNonLinearSolveStateVariables = 3;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
     unsigned int dimension = 3;
 
@@ -471,11 +553,17 @@ BOOST_AUTO_TEST_CASE( test_residual_getFlowDirection ){
     floatType dpYield;
     floatVector jac( 9, 0 );
     floatVector answer( 9, 0 );
-    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( R.drivingStress, R.flowParameters[1], R.flowParameters[0], dpYield, jac, answer ) );
+    floatVector answer2( 9, 0 );
+
+    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( R.drivingStress, R.flowParameters[ 1 ], R.flowParameters[ 0 ], dpYield, jac, answer ) );
+
+    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( R.previousDrivingStress, R.flowParameters[ 1 ], R.flowParameters[ 0 ], dpYield, jac, answer2 ) );
 
     BOOST_CHECK( R.getFlowDirection( )->size( ) == 9 );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getFlowDirection( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousFlowDirection( ) ) );
 
 }
 
@@ -492,15 +580,26 @@ BOOST_AUTO_TEST_CASE( test_residual_getYieldFunction ){
 
             floatVector drivingStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
+            floatVector previousDrivingStress = { 1, 0.2, 0, 0.4, 7, -1, 0.5, 3, .2 };
+
             floatVector yieldParameters = { 1.23, 0.46 };
 
         private:
 
-            virtual void setDrivingStress( ){
-
-                tardigradeHydra::peryznaViscoplasticity::residual::setDrivingStress( drivingStress );
+            virtual void setDrivingStress( const bool isPrevious ) override{
 
                 setYieldParameters( yieldParameters );
+
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setPreviousDrivingStress( previousDrivingStress );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setDrivingStress( drivingStress );
+
+                }
 
             }
 
@@ -562,6 +661,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getYieldFunction ){
 
                 residuals[ 3 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -583,7 +684,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getYieldFunction ){
                                                 0.0, 0.0, 1.0 };
 
     floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0.02, 0.03 };
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
 
     floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
@@ -594,11 +696,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getYieldFunction ){
                                   1.01, 0.0, 0.0,
                                   0.0,  1.2, 0.0,
                                   0.0,  0.0, 0.9,
-                                  4, 5, 6 };
+                                  4, 5, 6, 7, 8 };
 
     unsigned int numConfigurations = 3;
 
-    unsigned int numNonLinearSolveStateVariables = 3;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
     unsigned int dimension = 3;
 
@@ -610,7 +712,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getYieldFunction ){
     floatType answer;
     TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( R.drivingStress, R.yieldParameters[1], R.yieldParameters[0], answer ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getYieldFunction( ) ) );
+    floatType answer2;
+    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( R.previousDrivingStress, R.yieldParameters[1], R.yieldParameters[0], answer2 ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousYieldFunction( ) ) );
 
 }
 
@@ -683,6 +788,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticThermalMultiplier ){
 
                 residuals[ 3 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -704,7 +811,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticThermalMultiplier ){
                                                 0.0, 0.0, 1.0 };
 
     floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0.02, 0.03 };
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
 
     floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
@@ -715,11 +823,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticThermalMultiplier ){
                                   1.01, 0.0, 0.0,
                                   0.0,  1.2, 0.0,
                                   0.0,  0.0, 0.9,
-                                  4, 5, 6 };
+                                  4, 5, 6, 7, 8 };
 
     unsigned int numConfigurations = 3;
 
-    unsigned int numNonLinearSolveStateVariables = 3;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
     unsigned int dimension = 3;
 
@@ -732,7 +840,13 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticThermalMultiplier ){
 
     floatType answer = std::pow( 10, exp );
 
+    exp = ( -hydra.viscoPlasticParameters[ 3 ] * ( previousTemperature - hydra.viscoPlasticParameters[ 5 ] ) / ( hydra.viscoPlasticParameters[ 4 ] + previousTemperature - hydra.viscoPlasticParameters[ 5 ] ) );
+
+    floatType answer2 = std::pow( 10, exp );
+
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getPlasticThermalMultiplier( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousPlasticThermalMultiplier( ) ) );
 
 }
 
@@ -749,11 +863,22 @@ BOOST_AUTO_TEST_CASE( test_residual_getHardeningFunction ){
 
             floatVector stateVariables = { 0.6 };
 
+            floatVector previousStateVariables = { 0.9 };
+
         private:
 
-            virtual void setStateVariables( ){
+            virtual void setStateVariables( const bool isPrevious ) override{
 
-                tardigradeHydra::peryznaViscoplasticity::residual::setStateVariables( stateVariables );
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setPreviousStateVariables( previousStateVariables );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setStateVariables( stateVariables );
+
+                }
 
             }
 
@@ -815,6 +940,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getHardeningFunction ){
 
                 residuals[ 3 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -836,7 +963,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getHardeningFunction ){
                                                 0.0, 0.0, 1.0 };
 
     floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0.02, 0.03 };
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
 
     floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
@@ -847,11 +975,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getHardeningFunction ){
                                   1.01, 0.0, 0.0,
                                   0.0,  1.2, 0.0,
                                   0.0,  0.0, 0.9,
-                                  4, 5, 6 };
+                                  4, 5, 6, 7, 8 };
 
     unsigned int numConfigurations = 3;
 
-    unsigned int numNonLinearSolveStateVariables = 3;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
     unsigned int dimension = 3;
 
@@ -862,7 +990,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getHardeningFunction ){
 
     floatType answer = hydra.viscoPlasticParameters[ 1 ] + R.stateVariables[ 0 ] * hydra.viscoPlasticParameters[ 2 ];
 
+    floatType answer2 = hydra.viscoPlasticParameters[ 1 ] + R.previousStateVariables[ 0 ] * hydra.viscoPlasticParameters[ 2 ];
+
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getHardeningFunction( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousHardeningFunction( ) ) );
 
 }
 
@@ -939,6 +1071,8 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters ){
 
                 residuals[ 3 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -960,7 +1094,8 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters ){
                                                 0.0, 0.0, 1.0 };
 
     floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0.02, 0.03 };
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
 
     floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
@@ -971,11 +1106,11 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters ){
                                   1.01, 0.0, 0.0,
                                   0.0,  1.2, 0.0,
                                   0.0,  0.0, 0.9,
-                                  4, 5, 6 };
+                                  4, 5, 6, 7, 8 };
 
     unsigned int numConfigurations = 3;
 
-    unsigned int numNonLinearSolveStateVariables = 3;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
     unsigned int dimension = 3;
 
@@ -1083,6 +1218,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariableIndices ){
 
                 residuals[ 3 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -1104,7 +1241,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariableIndices ){
                                                 0.0, 0.0, 1.0 };
 
     floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0.02, 0.03 };
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
 
     floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
@@ -1115,11 +1253,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariableIndices ){
                                   1.01, 0.0, 0.0,
                                   0.0,  1.2, 0.0,
                                   0.0,  0.0, 0.9,
-                                  4, 5, 6 };
+                                  4, 5, 6, 7, 8 };
 
     unsigned int numConfigurations = 3;
 
-    unsigned int numNonLinearSolveStateVariables = 3;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
     unsigned int dimension = 3;
 
@@ -1144,8 +1282,6 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariables ){
         public:
 
             using tardigradeHydra::peryznaViscoplasticity::residual::residual;
-
-            floatVector stateVariables = { 0.6 };
 
         private:
 
@@ -1207,6 +1343,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariables ){
 
                 residuals[ 3 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -1228,7 +1366,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariables ){
                                                 0.0, 0.0, 1.0 };
 
     floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0.02, 0.03 };
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
 
     floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
@@ -1239,7 +1378,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariables ){
                                   1.01, 0.0, 0.0,
                                   0.0,  1.2, 0.0,
                                   0.0,  0.0, 0.9,
-                                  4, 5, 6 };
+                                  4, 5, 6, 7, 8 };
 
     unsigned int numConfigurations = 3;
 
@@ -1257,6 +1396,10 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariables ){
     floatVector answer = { 4, 6 };
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getStateVariables( ) ) );
+
+    floatVector answer2 = { 0.01, 0.03 };
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousStateVariables( ) ) );
 
 }
 
@@ -1279,25 +1422,58 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
 
             floatType A = 0.45;
 
+            floatType previousf = 1.34;
+
+            floatType previousq = 7.67;
+
+            floatType previousA = 0.85;
+
         private:
 
-            virtual void setYieldFunction( ){
-
-                tardigradeHydra::peryznaViscoplasticity::residual::setYieldFunction( f );
+            virtual void setYieldFunction( const bool isPrevious ) override{
 
                 setPeryznaParameters( { n } );
 
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setPreviousYieldFunction( previousf );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setYieldFunction( f );
+
+                }
+
             }
 
-            virtual void setHardeningFunction( ){
+            virtual void setHardeningFunction( const bool isPrevious ) override{
 
-                tardigradeHydra::peryznaViscoplasticity::residual::setHardeningFunction( q );
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setPreviousHardeningFunction( previousq );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setHardeningFunction( q );
+
+                }
 
             }
 
-            virtual void setPlasticThermalMultiplier( ){
+            virtual void setPlasticThermalMultiplier( const bool isPrevious ) override{
 
-                tardigradeHydra::peryznaViscoplasticity::residual::setPlasticThermalMultiplier( A );
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setPreviousPlasticThermalMultiplier( previousA );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setPlasticThermalMultiplier( A );
+
+                }
 
             }
 
@@ -1359,6 +1535,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
 
                 residuals[ 3 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -1380,7 +1558,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
                                                 0.0, 0.0, 1.0 };
 
     floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0.02, 0.03 };
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
 
     floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
@@ -1391,11 +1570,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
                                   1.01, 0.0, 0.0,
                                   0.0,  1.2, 0.0,
                                   0.0,  0.0, 0.9,
-                                  4, 5, 6 };
+                                  4, 5, 6, 7, 8 };
 
     unsigned int numConfigurations = 3;
 
-    unsigned int numNonLinearSolveStateVariables = 3;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
     unsigned int dimension = 3;
 
@@ -1406,7 +1585,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
 
     floatType answer = R.A * std::pow( R.f / R.q, R.n );
 
+    floatType answer2 = R.previousA * std::pow( R.previousf / R.previousq, R.n );
+
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getPlasticMultiplier( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousPlasticMultiplier( ) ) );
 
 }
 
@@ -1425,17 +1608,39 @@ BOOST_AUTO_TEST_CASE( test_residual_getVelocityGradient ){
 
             floatVector nhat = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
+            floatType previousGamma = 5.6;
+
+            floatVector previousNhat = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+
         private:
 
-            virtual void setPlasticMultiplier( ){
+            virtual void setPlasticMultiplier( const bool isPrevious ) override{
 
-                tardigradeHydra::peryznaViscoplasticity::residual::setPlasticMultiplier( gamma );
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setPreviousPlasticMultiplier( previousGamma );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setPlasticMultiplier( gamma );
+
+                }
 
             }
 
-            virtual void setFlowDirection( ){
+            virtual void setFlowDirection( const bool isPrevious ) override{
 
-                tardigradeHydra::peryznaViscoplasticity::residual::setFlowDirection( nhat );
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setPreviousFlowDirection( previousNhat );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setFlowDirection( nhat );
+
+                }
 
             }
 
@@ -1497,6 +1702,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getVelocityGradient ){
 
                 residuals[ 3 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -1518,7 +1725,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getVelocityGradient ){
                                                 0.0, 0.0, 1.0 };
 
     floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
-                                           0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0.02, 0.03 };
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
 
     floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
 
@@ -1529,11 +1737,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getVelocityGradient ){
                                   1.01, 0.0, 0.0,
                                   0.0,  1.2, 0.0,
                                   0.0,  0.0, 0.9,
-                                  4, 5, 6 };
+                                  4, 5, 6, 7, 8 };
 
     unsigned int numConfigurations = 3;
 
-    unsigned int numNonLinearSolveStateVariables = 3;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
     unsigned int dimension = 3;
 
@@ -1545,5 +1753,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getVelocityGradient ){
     floatVector answer = R.gamma * R.nhat;
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getVelocityGradient( ) ) );
+
+    floatVector answer2 = R.previousGamma * R.previousNhat;
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousVelocityGradient( ) ) );
 
 }
