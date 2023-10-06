@@ -1341,6 +1341,12 @@ namespace tardigradeHydra{
 
         if ( !_cauchyStress.first ){
 
+            if ( getResidualClasses( )->size( ) == 0 ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "No residual classes are defined." ) );
+
+            }
+
             TARDIGRADE_ERROR_TOOLS_CATCH( _cauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getCauchyStress( ) );
 
             _cauchyStress.first = true;
@@ -1359,6 +1365,12 @@ namespace tardigradeHydra{
          */
 
         if ( !_previousCauchyStress.first ){
+
+            if ( getResidualClasses( )->size( ) == 0 ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "No residual classes are defined." ) );
+
+            }
 
             TARDIGRADE_ERROR_TOOLS_CATCH( _previousCauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getPreviousCauchyStress( ) );
 
