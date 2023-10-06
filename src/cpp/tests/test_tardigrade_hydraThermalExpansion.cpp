@@ -123,6 +123,8 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
 
                 residuals[ 2 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -217,6 +219,8 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters ){
                 residuals[ 1 ] = &thermalExpansion;
 
                 residuals[ 2 ] = &remainder;
+
+                setResidualClasses( residuals );
 
             }
 
@@ -331,6 +335,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrain ){
 
                 residuals[ 2 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -429,6 +435,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives ){
                 residuals[ 1 ] = &thermalExpansion;
 
                 residuals[ 2 ] = &remainder;
+
+                setResidualClasses( residuals );
 
             }
 
@@ -602,6 +610,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradient ){
 
                 residuals[ 2 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -707,6 +717,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives ){
                 residuals[ 1 ] = &thermalExpansion;
 
                 residuals[ 2 ] = &remainder;
+
+                setResidualClasses( residuals );
 
             }
 
@@ -871,6 +883,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual ){
 
                 residuals[ 2 ] = &remainder;
 
+                setResidualClasses( residuals );
+
             }
 
     };
@@ -971,6 +985,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives ){
                 residuals[ 1 ] = &thermalExpansion;
 
                 residuals[ 2 ] = &remainder;
+
+                setResidualClasses( residuals );
 
             }
 
