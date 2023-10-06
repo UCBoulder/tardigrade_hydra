@@ -627,6 +627,17 @@ namespace tardigradeHydra{
 
     }
 
+    floatVector hydraBase::getConfiguration( const unsigned int &index ){
+        /*!
+         * Get the configuration indicated by the provided index
+         * 
+         * \param &index: The index of the current configuration to be extracted
+         */
+
+        return getSubConfiguration( index, index + 1 );
+
+    }
+
     floatVector hydraBase::getPreviousSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
          * Get a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
@@ -660,6 +671,17 @@ namespace tardigradeHydra{
          */
 
         return getPreviousSubConfiguration( index + 1, *getNumConfigurations( ) );
+
+    }
+
+    floatVector hydraBase::getPreviousConfiguration( const unsigned int &index ){
+        /*!
+         * Get the previous configuration indicated by the provided index
+         * 
+         * \param &index: The index of the current configuration to be extracted
+         */
+
+        return getPreviousSubConfiguration( index, index + 1 );
 
     }
 

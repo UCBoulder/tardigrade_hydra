@@ -461,11 +461,15 @@ namespace tardigradeHydra{
 
             floatVector getFollowingConfiguration( const unsigned int &index );
 
+            floatVector getConfiguration( const unsigned int &index );
+
             floatVector getPreviousSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getPreviousPrecedingConfiguration( const unsigned int &index );
 
             floatVector getPreviousFollowingConfiguration( const unsigned int &index );
+
+            floatVector getPreviousConfiguration( const unsigned int &index );
 
             floatMatrix getSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
