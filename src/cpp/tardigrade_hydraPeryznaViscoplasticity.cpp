@@ -908,9 +908,21 @@ namespace tardigradeHydra{
 
             const floatVector *previousStateVariableEvolutionRates;
 
+            const floatVector *previousStateVariables;
+
+            floatVector deltaPlasticStateVariables;
+
+            floatVector plasticStateVariables;
+
             TARDIGRADE_ERROR_TOOLS_CATCH( stateVariableEvolutionRates = getStateVariableEvolutionRates( ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariableEvolutionRates = getPreviousStateVariableEvolutionRates( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariables = getPreviousStateVariables( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, plasticStateVariables, ( 1 - *getIntegrationParameter( ) ) ) );
+
+            setPlasticStateVariables( plasticStateVariables );
 
         }
 
