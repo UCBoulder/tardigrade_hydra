@@ -142,11 +142,13 @@ namespace tardigradeHydra{
 
                 void setPreviousVelocityGradient( const floatVector &previousVelocityGradient );
 
-                void setStateVariableEvolutionRate( const floatType &stateVariableEvolutionRate );
+                void setStateVariableEvolutionRates( const floatVector &stateVariableEvolutionRate );
 
-                void setPreviousStateVariableEvolutionRate( const floatType &previousStateVariableEvolutionRate );
+                void setPreviousStateVariableEvolutionRates( const floatVector &previousStateVariableEvolutionRates );
 
                 void setPlasticDeformationGradient( const floatVector &plasticDeformationGradient );
+
+                void setPlasticStateVariables( const floatVector &plasticStateVariables );
 
                 void setStateVariables( const floatVector &stateVariables );
 
@@ -184,7 +186,7 @@ namespace tardigradeHydra{
 
                 const floatVector* getVelocityGradient( );
 
-                const floatType* getStateVariableEvolutionRate( );
+                const floatVector* getStateVariableEvolutionRates( );
 
                 const floatVector* getPreviousDrivingStress( );
 
@@ -202,9 +204,11 @@ namespace tardigradeHydra{
 
                 const floatVector* getPreviousVelocityGradient( );
 
-                const floatType* getPreviousStateVariableEvolutionRate( );
+                const floatVector* getPreviousStateVariableEvolutionRates( );
 
                 const floatVector* getPlasticDeformationGradient( );
+
+                const floatVector* getPlasticStateVariables( );
 
                 const floatVector* getStateVariables( );
 
@@ -248,7 +252,7 @@ namespace tardigradeHydra{
 
                 virtual void setVelocityGradient( );
 
-                virtual void setStateVariableEvolutionRate( );
+                virtual void setStateVariableEvolutionRates( );
 
                 virtual void setPreviousDrivingStress( );
 
@@ -266,7 +270,7 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousVelocityGradient( );
 
-                virtual void setPreviousStateVariableEvolutionRate( );
+                virtual void setPreviousStateVariableEvolutionRates( );
 
                 virtual void setDrivingStress( const bool isPrevious );
 
@@ -284,9 +288,11 @@ namespace tardigradeHydra{
 
                 virtual void setVelocityGradient( const bool isPrevious );
 
-                virtual void setStateVariableEvolutionRate( const bool isPrevious );
+                virtual void setStateVariableEvolutionRates( const bool isPrevious );
 
                 virtual void setPlasticDeformationGradient( );
+
+                virtual void setPlasticStateVariables( );
 
                 virtual void setStateVariables( );
 
@@ -336,11 +342,13 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatVector > _previousVelocityGradient;
 
-                tardigradeHydra::dataStorage< floatType > _stateVariableEvolutionRate;
+                tardigradeHydra::dataStorage< floatVector > _stateVariableEvolutionRates;
 
-                tardigradeHydra::dataStorage< floatType > _previousStateVariableEvolutionRate;
+                tardigradeHydra::dataStorage< floatVector > _previousStateVariableEvolutionRates;
 
                 tardigradeHydra::dataStorage< floatVector > _plasticDeformationGradient;
+
+                tardigradeHydra::dataStorage< floatVector > _plasticStateVariables;
 
                 tardigradeHydra::dataStorage< floatVector > _stateVariables;
 

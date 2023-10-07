@@ -82,9 +82,9 @@ namespace tardigradeHydra{
 
                             BOOST_CHECK( &R._previousVelocityGradient.second == R.getPreviousVelocityGradient( ) );
 
-                            BOOST_CHECK( &R._stateVariableEvolutionRate.second == R.getStateVariableEvolutionRate( ) );
+                            BOOST_CHECK( &R._stateVariableEvolutionRates.second == R.getStateVariableEvolutionRates( ) );
 
-                            BOOST_CHECK( &R._previousStateVariableEvolutionRate.second == R.getPreviousStateVariableEvolutionRate( ) );
+                            BOOST_CHECK( &R._previousStateVariableEvolutionRates.second == R.getPreviousStateVariableEvolutionRates( ) );
 
                             BOOST_CHECK( &R._plasticDeformationGradient.second == R.getPlasticDeformationGradient( ) );
         
@@ -2070,13 +2070,13 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariableEvolutionRate ){
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
 
-    floatType answer = R.gamma * R.hardeningFunction;
+    floatVector answer = { R.gamma * R.hardeningFunction };
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getStateVariableEvolutionRate( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getStateVariableEvolutionRates( ) ) );
 
-    floatType answer2 = R.previousGamma * R.previousHardeningFunction;
+    floatVector answer2 = { R.previousGamma * R.previousHardeningFunction };
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousStateVariableEvolutionRate( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousStateVariableEvolutionRates( ) ) );
 
 }
 

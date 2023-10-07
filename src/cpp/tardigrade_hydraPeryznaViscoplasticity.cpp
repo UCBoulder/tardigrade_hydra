@@ -769,27 +769,27 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setStateVariableEvolutionRate( ){
+        void residual::setStateVariableEvolutionRates( ){
             /*! 
-             * Set the value of the state variable evolution rate
+             * Set the value of the state variable evolution rates
              */
 
-            setStateVariableEvolutionRate( false );
+            setStateVariableEvolutionRates( false );
 
         }
 
-        void residual::setPreviousStateVariableEvolutionRate( ){
+        void residual::setPreviousStateVariableEvolutionRates( ){
             /*! 
-             * Set the value of the state variable evolution rate
+             * Set the value of the state variable evolution rates
              */
 
-            setStateVariableEvolutionRate( true );
+            setStateVariableEvolutionRates( true );
 
         }
 
-        void residual::setStateVariableEvolutionRate( const bool isPrevious ){
+        void residual::setStateVariableEvolutionRates( const bool isPrevious ){
             /*!
-             * Set the value of the state variable evolution rate
+             * Set the value of the state variable evolution rates
              * 
              * \param isPrevious: A flag to indicate if the previous evolution rate
              *     should be computed.
@@ -814,46 +814,46 @@ namespace tardigradeHydra{
 
             }
 
-            floatType stateVariableEvolutionRate = ( *plasticMultiplier ) * ( *hardeningFunction );
+            floatVector stateVariableEvolutionRates = { ( *plasticMultiplier ) * ( *hardeningFunction ) };
 
             if ( isPrevious ){
 
-                setPreviousStateVariableEvolutionRate( stateVariableEvolutionRate );
+                setPreviousStateVariableEvolutionRates( stateVariableEvolutionRates );
 
             }
             else{
 
-                setStateVariableEvolutionRate( stateVariableEvolutionRate );
+                setStateVariableEvolutionRates( stateVariableEvolutionRates );
 
             }
 
         }
 
-        void residual::setStateVariableEvolutionRate( const floatType &stateVariableEvolutionRate ){
+        void residual::setStateVariableEvolutionRates( const floatVector &stateVariableEvolutionRates ){
             /*!
              * Set the state variable evolution rate
              * 
-             * \param &stateVariableEvolutionRate: The current state variable evolution rate
+             * \param &stateVariableEvolutionRates: The current state variable evolution rate
              */
 
-            _stateVariableEvolutionRate.second = stateVariableEvolutionRate;
+            _stateVariableEvolutionRates.second = stateVariableEvolutionRates;
 
-            _stateVariableEvolutionRate.first = true;
+            _stateVariableEvolutionRates.first = true;
 
-            addIterationData( &_stateVariableEvolutionRate );
+            addIterationData( &_stateVariableEvolutionRates );
 
         }
 
-        void residual::setPreviousStateVariableEvolutionRate( const floatType &previousStateVariableEvolutionRate ){
+        void residual::setPreviousStateVariableEvolutionRates( const floatVector &previousStateVariableEvolutionRates ){
             /*!
              * Set the previous state variable evolution rate
              * 
-             * \param &previousStateVariableEvolutionRate: The previous state variable evolution rate
+             * \param &previousStateVariableEvolutionRates: The previous state variable evolution rate
              */
 
-            _previousStateVariableEvolutionRate.second = previousStateVariableEvolutionRate;
+            _previousStateVariableEvolutionRates.second = previousStateVariableEvolutionRates;
 
-            _previousStateVariableEvolutionRate.first = true;
+            _previousStateVariableEvolutionRates.first = true;
 
         }
 
@@ -896,6 +896,36 @@ namespace tardigradeHydra{
             _plasticDeformationGradient.first = true;
 
             addIterationData( &_plasticDeformationGradient );
+
+        }
+
+        void residual::setPlasticStateVariables( ){
+            /*!
+             * Set the plastic state variables
+             */
+
+            const floatVector *stateVariableEvolutionRates;
+
+            const floatVector *previousStateVariableEvolutionRates;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( stateVariableEvolutionRates = getStateVariableEvolutionRates( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariableEvolutionRates = getPreviousStateVariableEvolutionRates( ) );
+
+        }
+
+        void residual::setPlasticStateVariables( const floatVector &plasticStateVariables ){
+            /*!
+             * Set the plastic state variables
+             * 
+             * \param &plasticStateVariables
+             */
+
+            _plasticStateVariables.second = plasticStateVariables;
+
+            _plasticDeformationGradient.first = true;
+
+            addIterationData( &_plasticStateVariables );
 
         }
 
@@ -1252,18 +1282,18 @@ namespace tardigradeHydra{
 
         }
 
-        const floatType* residual::getStateVariableEvolutionRate( ){
+        const floatVector* residual::getStateVariableEvolutionRates( ){
             /*!
              * Get the state variable evolution rate
              */
 
-            if ( !_stateVariableEvolutionRate.first ){
+            if ( !_stateVariableEvolutionRates.first ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setStateVariableEvolutionRate( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setStateVariableEvolutionRates( ) );
 
             }
 
-            return &_stateVariableEvolutionRate.second;
+            return &_stateVariableEvolutionRates.second;
 
         }
 
@@ -1279,6 +1309,21 @@ namespace tardigradeHydra{
             }
 
             return &_plasticDeformationGradient.second;
+
+        }
+
+        const floatVector* residual::getPlasticStateVariables( ){
+            /*!
+             * Get the plastic state variables
+             */
+
+            if ( !_plasticStateVariables.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPlasticStateVariables( ) );
+
+            }
+
+            return &_plasticStateVariables.second;
 
         }
 
@@ -1417,18 +1462,18 @@ namespace tardigradeHydra{
 
         }
 
-        const floatType* residual::getPreviousStateVariableEvolutionRate( ){
+        const floatVector* residual::getPreviousStateVariableEvolutionRates( ){
             /*!
              * Get the previous state variable evolution rate
              */
 
-            if ( !_previousStateVariableEvolutionRate.first ){
+            if ( !_previousStateVariableEvolutionRates.first ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousStateVariableEvolutionRate( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousStateVariableEvolutionRates( ) );
 
             }
 
-            return &_previousStateVariableEvolutionRate.second;
+            return &_previousStateVariableEvolutionRates.second;
 
         }
 
