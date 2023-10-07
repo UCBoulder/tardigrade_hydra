@@ -2078,11 +2078,6 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariableEvolutionRate ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousStateVariableEvolutionRate( ) ) );
 
-    std::cout << "answer : " << answer << "\n";
-    std::cout << "result : " << *R.getStateVariableEvolutionRate( ) << "\n";
-    std::cout << "answer2: " << answer2 << "\n";
-    std::cout << "result2: " << *R.getPreviousStateVariableEvolutionRate( ) << "\n";
-
 }
 
 BOOST_AUTO_TEST_CASE( test_residual_getPlasticDeformationGradient ){
