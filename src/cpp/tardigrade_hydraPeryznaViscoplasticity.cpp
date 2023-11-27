@@ -25,6 +25,38 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdDrivingStressdCauchyStress( ){
+            /*!
+             * Set the derivative of the driving stress i.e. the Cauchy stress pulled back to the
+             * current configuration of the plastic configuration with respect to the Cauchy Stress.
+             */
+
+            setdDrivingStressdCauchyStress( false );
+
+        }
+
+        void residual::setdDrivingStressdF( ){
+            /*!
+             * Set the derivative of the driving stress i.e. the Cauchy stress pulled back to the
+             * current configuration of the plastic configuration with respect to the deformation
+             * gradient
+             */
+
+            setdDrivingStressdF( false );
+
+        }
+
+        void residual::setdDrivingStressdSubFs( ){
+            /*!
+             * Set the derivative of the driving stress i.e. the Cauchy stress pulled back to the
+             * current configuration of the plastic configuration with respect to the sub-deformation
+             * gradients
+             */
+
+            setdDrivingStressdSubFs( false );
+
+        }
+
         void residual::setPreviousDrivingStress( ){
             /*!
              * Set the driving stress i.e. the Cauchy stress pulled back to the
@@ -32,6 +64,38 @@ namespace tardigradeHydra{
              */
 
             setDrivingStress( true );
+
+        }
+
+        void residual::setdPreviousDrivingStressdPreviousCauchyStress( ){
+            /*!
+             * Set the derivative of the previous driving stress i.e. the Cauchy stress pulled back to the
+             * current configuration of the plastic configuration with respect to the previous Cauchy Stress.
+             */
+
+            setdDrivingStressdCauchyStress( true );
+
+        }
+
+        void residual::setdPreviousDrivingStressdPreviousF( ){
+            /*!
+             * Set the derivative of the previous driving stress i.e. the Cauchy stress pulled back to the
+             * current configuration of the plastic configuration with respect to the previous deformation
+             * gradient
+             */
+
+            setdDrivingStressdF( true );
+
+        }
+
+        void residual::setdPreviousDrivingStressdPreviousSubFs( ){
+            /*!
+             * Set the derivative of the previous driving stress i.e. the Cauchy stress pulled back to the
+             * current configuration of the plastic configuration with respect to the previous sub-deformation
+             * gradients
+             */
+
+            setdDrivingStressdSubFs( true );
 
         }
 
@@ -79,6 +143,39 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdDrivingStressdCauchyStress( const bool isPrevious ){
+            /*!
+             * Set the derivatives of the driving stress w.r.t. the Cauchy stress
+             * 
+             * \param isPrevious: Flag for whether to compute this in the previous configuration
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setDrivingStressDerivatives( isPrevious ) );
+
+        }
+
+        void residual::setdDrivingStressdF( const bool isPrevious ){
+            /*!
+             * Set the derivatives of the driving stress w.r.t. the deformation gradient
+             * 
+             * \param isPrevious: Flag for whether to compute this in the previous configuration
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setDrivingStressDerivatives( isPrevious ) );
+
+        }
+
+        void residual::setdDrivingStressdSubFs( const bool isPrevious ){
+            /*!
+             * Set the derivatives of the driving stress w.r.t. the sub-deformation gradients
+             * 
+             * \param isPrevious: Flag for whether to compute this in the previous configuration
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setDrivingStressDerivatives( isPrevious ) );
+
+        }
+
         void residual::setDrivingStress( const floatVector &drivingStress ){
             /*!
              * Set the driving stress i.e. the Cauchy stress pulled back to the
@@ -95,6 +192,22 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdDrivingStressdCauchyStress( const floatMatrix &dDrivingStressdCauchyStress ){
+            /*!
+             * Set the derivative of the driving stress i.e. the Cauchy stress pulled back to the current
+             * configuration of the plastic configuration with respect to the Cauchy stress
+             * 
+             * \param &dDrivingStressdCauchyStress: The derivative of the driving stress w.r.t. the Cauchy stress
+             */
+
+            _dDrivingStressdCauchyStress.second = dDrivingStressdCauchyStress;
+
+            _dDrivingStressdCauchyStress.first = true;
+
+            addIterationData( &_dDrivingStressdCauchyStress );
+
+        }
+
         void residual::setPreviousDrivingStress( const floatVector &previousDrivingStress ){
             /*!
              * Set the previous driving stress i.e. the Cauchy stress pulled back to the
@@ -106,6 +219,22 @@ namespace tardigradeHydra{
             _previousDrivingStress.second = previousDrivingStress;
 
             _previousDrivingStress.first = true;
+
+        }
+
+        void residual::setdPreviousDrivingStressdPreviousCauchyStress( const floatMatrix &dPreviousDrivingStressdPreviousCauchyStress ){
+            /*!
+             * Set the derivative of the previous driving stress i.e. the previous Cauchy stress pulled back to the previous current
+             * configuration of the plastic configuration with respect to the previous Cauchy stress
+             * 
+             * \param &dPreviousDrivingStressdPreviousCauchyStress: The derivative of the previous driving stress w.r.t. the previous Cauchy stress
+             */
+
+            _dPreviousDrivingStressdPreviousCauchyStress.second = dPreviousDrivingStressdPreviousCauchyStress;
+
+            _dPreviousDrivingStressdPreviousCauchyStress.first = true;
+
+            addIterationData( &_dPreviousDrivingStressdPreviousCauchyStress );
 
         }
 
@@ -1205,6 +1334,51 @@ namespace tardigradeHydra{
 
         }
 
+        const floatMatrix* residual::getdDrivingStressdCauchyStress( ){
+            /*!
+             * Get the derivative of the driving stress w.r.t. the Cauchy stress
+             */
+
+            if ( !_dDrivingStressdCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdDrivingStressdCauchyStress( ) );
+
+            }
+
+            return &_dDrivingStressdCauchyStress.second;
+
+        }
+
+        const floatMatrix* residual::getdDrivingStressdF( ){
+            /*!
+             * Get the derivative of the driving stress w.r.t. the deformation gradient
+             */
+
+            if ( !_dDrivingStressdF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdDrivingStressdF( ) );
+
+            }
+
+            return &_dDrivingStressdF.second;
+
+        }
+
+        const floatMatrix* residual::getdDrivingStressdSubF( ){
+            /*!
+             * Get the derivative of the driving stress w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_dDrivingStressdSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdDrivingStressdSubFs( ) );
+
+            }
+
+            return &_dDrivingStressdSubFs.second;
+
+        }
+
         const floatVector* residual::getFlowDirection( ){
             /*!
              * Get the flow direction
@@ -1382,6 +1556,51 @@ namespace tardigradeHydra{
             }
 
             return &_previousDrivingStress.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousDrivingStressdPreviousCauchyStress( ){
+            /*!
+             * Get the derivative of the previous driving stress with respect to the previous Cauchy stress
+             */
+
+            if ( !_dPreviousDrivingStressdPreviousCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousDrivingStressdPreviousCauchyStress( ) );
+
+            }
+
+            return &_dPreviousDrivingStressdPreviousCauchyStress.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousDrivingStressdPreviousF( ){
+            /*!
+             * Get the derivative of the previous driving stress with respect to the previous deformation gradient
+             */
+
+            if ( !_dPreviousDrivingStressdPreviousF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousDrivingStressdPreviousF( ) );
+
+            }
+
+            return &_dPreviousDrivingStressdPreviousF.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousDrivingStressdPreviousSubFs( ){
+            /*!
+             * Get the derivative of the previous driving stress with respect to the previous sub-deformation gradients
+             */
+
+            if ( !_dPreviousDrivingStressdPreviousSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousDrivingStressdPreviousSubFs( ) );
+
+            }
+
+            return &_dPreviousDrivingStressdPreviousSubFs.second;
 
         }
 

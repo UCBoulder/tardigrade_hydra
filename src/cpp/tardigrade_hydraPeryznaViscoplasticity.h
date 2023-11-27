@@ -114,6 +114,14 @@ namespace tardigradeHydra{
 
                 void setPreviousDrivingStress( const floatVector &previousDrivingStress );
 
+                void setdDrivingStressdCauchyStress( const floatMatrix &dDrivingStressdCauchyStress );
+
+                void setdDrivingStressdF( const floatMatrix &dDrivingStressdF );
+
+                void setdPreviousDrivingStressdPreviousCauchyStress( const floatMatrix &dPreviousDrivingStressdPreviousCauchyStress );
+
+                void setdPreviousDrivingStressdPreviousF( const floatMatrix &dPreviousDrivingStressdPreviousF );
+
                 void setFlowDirection( const floatVector &flowDirection );
 
                 void setPreviousFlowDirection( const floatVector &previousFlowDirection );
@@ -172,6 +180,12 @@ namespace tardigradeHydra{
 
                 const floatVector* getDrivingStress( );
 
+                const floatMatrix* getdDrivingStressdCauchyStress( );
+
+                const floatMatrix* getdDrivingStressdF( );
+
+                const floatMatrix* getdDrivingStressdSubF( );
+
                 const floatVector* getFlowDirection( );
 
                 const floatType* getYieldFunction( );
@@ -189,6 +203,12 @@ namespace tardigradeHydra{
                 const floatVector* getStateVariableEvolutionRates( );
 
                 const floatVector* getPreviousDrivingStress( );
+
+                const floatMatrix* getdPreviousDrivingStressdPreviousCauchyStress( );
+
+                const floatMatrix* getdPreviousDrivingStressdPreviousF( );
+
+                const floatMatrix* getdPreviousDrivingStressdPreviousSubFs( );
 
                 const floatVector* getPreviousFlowDirection( );
 
@@ -238,6 +258,12 @@ namespace tardigradeHydra{
 
                 virtual void setDrivingStress( );
 
+                virtual void setdDrivingStressdCauchyStress( );
+
+                virtual void setdDrivingStressdF( );
+
+                virtual void setdDrivingStressdSubFs( );
+
                 virtual void setFlowDirection( );
 
                 virtual void setYieldFunction( );
@@ -256,6 +282,12 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousDrivingStress( );
 
+                virtual void setdPreviousDrivingStressdPreviousCauchyStress( );
+
+                virtual void setdPreviousDrivingStressdPreviousF( );
+
+                virtual void setdPreviousDrivingStressdPreviousSubFs( );
+
                 virtual void setPreviousFlowDirection( );
 
                 virtual void setPreviousYieldFunction( );
@@ -273,6 +305,14 @@ namespace tardigradeHydra{
                 virtual void setPreviousStateVariableEvolutionRates( );
 
                 virtual void setDrivingStress( const bool isPrevious );
+
+                virtual void setDrivingStressDerivatives( const bool isPrevious );
+
+                virtual void setdDrivingStressdCauchyStress( const bool isPrevious );
+
+                virtual void setdDrivingStressdF( const bool isPrevious );
+
+                virtual void setdDrivingStressdSubFs( const bool isPrevious );
 
                 virtual void setFlowDirection( const bool isPrevious );
 
@@ -314,6 +354,12 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatVector > _previousDrivingStress;
 
+                tardigradeHydra::dataStorage< floatMatrix > _dDrivingStressdCauchyStress;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dDrivingStressdF;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dDrivingStressdSubFs;
+
                 tardigradeHydra::dataStorage< floatVector > _flowDirection;
 
                 tardigradeHydra::dataStorage< floatVector > _previousFlowDirection;
@@ -329,6 +375,12 @@ namespace tardigradeHydra{
                 tardigradeHydra::dataStorage< floatType > _dragStress;
 
                 tardigradeHydra::dataStorage< floatType > _previousDragStress;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousDrivingStressdPreviousCauchyStress;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousDrivingStressdPreviousF;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousDrivingStressdPreviousSubFs;
 
                 tardigradeHydra::dataStorage< floatType > _hardeningFunction;
 
