@@ -118,6 +118,18 @@ namespace tardigradeHydra{
 
                             BOOST_CHECK( &R._dPreviousDrivingStressdPreviousSubFs.second == R.getdPreviousDrivingStressdPreviousSubFs( ) );
 
+                            BOOST_CHECK( &R._dFlowDirectiondCauchyStress.second == R.getdFlowDirectiondCauchyStress( ) );
+
+                            BOOST_CHECK( &R._dFlowDirectiondF.second == R.getdFlowDirectiondF( ) );
+
+                            BOOST_CHECK( &R._dFlowDirectiondSubFs.second == R.getdFlowDirectiondSubFs( ) );
+
+                            BOOST_CHECK( &R._dPreviousFlowDirectiondPreviousCauchyStress.second == R.getdPreviousFlowDirectiondPreviousCauchyStress( ) );
+
+                            BOOST_CHECK( &R._dPreviousFlowDirectiondPreviousF.second == R.getdPreviousFlowDirectiondPreviousF( ) );
+
+                            BOOST_CHECK( &R._dPreviousFlowDirectiondPreviousSubFs.second == R.getdPreviousFlowDirectiondPreviousSubFs( ) );
+
                         }
                         catch( std::exception &e ){
 
