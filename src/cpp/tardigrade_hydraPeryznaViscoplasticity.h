@@ -154,7 +154,7 @@ namespace tardigradeHydra{
 
                 void setPreviousVelocityGradient( const floatVector &previousVelocityGradient );
 
-                void setStateVariableEvolutionRates( const floatVector &stateVariableEvolutionRate );
+                void setStateVariableEvolutionRates( const floatVector &stateVariableEvolutionRates );
 
                 void setPreviousStateVariableEvolutionRates( const floatVector &previousStateVariableEvolutionRates );
 

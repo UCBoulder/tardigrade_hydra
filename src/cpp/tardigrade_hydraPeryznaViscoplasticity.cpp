@@ -157,33 +157,98 @@ namespace tardigradeHydra{
 
             floatVector drivingStress;
 
-            floatMatrix preceedingConfigurationGradient;
+            floatMatrix precedingConfigurationGradient;
+
+            const floatMatrix *dF1dF;
+
+            const floatMatrix *dF1dSubFs;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
 
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfigurationGradient = hydra->getPreviousPrecedingConfigurationGradient( *getPlasticConfigurationIndex( ) ) );
+
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getPreviousCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->getPreviousdF1dF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->getPreviousdF1dFn( ) );
 
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
 
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfigurationGradient = hydra->getPrecedingConfigurationGradient( *getPlasticConfigurationIndex( ) ) );
+
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->getdF1dF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->getdF1dFn( ) );
 
             }
 
-            tardigradeConstitutiveTools::pullBackCauchyStress( *cauchyStress, precedingConfiguration, drivingStress );
+            floatMatrix dDrivingStressdCauchyStress;
+
+            floatMatrix dDrivingStressdPrecedingF;
+
+            tardigradeConstitutiveTools::pullBackCauchyStress( *cauchyStress, precedingConfiguration, drivingStress,
+                                                               dDrivingStressdCauchyStress, dDrivingStressdPrecedingF );
+
+            floatMatrix dDrivingStressdFn = tardigradeVectorTools::dot( dDrivingStressdPrecedingF, precedingConfigurationGradient );
+
+            floatMatrix dDrivingStressdF( drivingStress.size( ), floatVector( precedingConfiguration.size( ), 0 ) );
+
+            floatMatrix dDrivingStressdSubFs( drivingStress.size( ), floatVector( dF1dSubFs[ 0 ].size( ), 0 ) );
+
+            for ( unsigned int i = 0; i < ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ); i++ ){
+
+                for ( unsigned int j = 0; j < ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ); j++ ){
+
+                    for ( unsigned int k = 0; k < ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ); k++ ){
+
+                        dDrivingStressdF[ i ][ j ] += dDrivingStressdFn[ i ][ k ] * ( *dF1dF )[ k ][ j ];
+
+                    }
+
+                }
+
+                for ( unsigned int j = 0; j < ( *dF1dSubFs )[ 0 ].size( ); j++ ){
+
+                    dDrivingStressdSubFs[ i ][ j ] += dDrivingStressdFn[ i ][ j + precedingConfiguration.size( ) ];
+
+                    for ( unsigned int k = 0; k < ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ); k++ ){
+
+                        dDrivingStressdSubFs[ i ][ j ] += dDrivingStressdFn[ i ][ k ] * ( *dF1dSubFs )[ k ][ j ];
+
+                    }
+
+                }
+
+            }
 
             if ( isPrevious ){
 
                 setPreviousDrivingStress( drivingStress );
 
+                setdPreviousDrivingStressdPreviousCauchyStress( dDrivingStressdCauchyStress );
+
+                setdPreviousDrivingStressdPreviousF( dDrivingStressdF );
+
+                setdPreviousDrivingStressdPreviousSubFs( dDrivingStressdSubFs );
+
             }
             else{
 
                 setDrivingStress( drivingStress );
+
+                setdDrivingStressdCauchyStress( dDrivingStressdCauchyStress );
+
+                setdDrivingStressdF( dDrivingStressdF );
+
+                setdDrivingStressdSubFs( dDrivingStressdSubFs );
 
             }
 
