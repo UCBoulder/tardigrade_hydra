@@ -118,9 +118,13 @@ namespace tardigradeHydra{
 
                 void setdDrivingStressdF( const floatMatrix &dDrivingStressdF );
 
+                void setdDrivingStressdSubFs( const floatMatrix &dDrivingStressdSubFs );
+
                 void setdPreviousDrivingStressdPreviousCauchyStress( const floatMatrix &dPreviousDrivingStressdPreviousCauchyStress );
 
                 void setdPreviousDrivingStressdPreviousF( const floatMatrix &dPreviousDrivingStressdPreviousF );
+
+                void setdPreviousDrivingStressdPreviousSubFs( const floatMatrix &dPreviousDrivingStressdPreviousSubFs );
 
                 void setFlowDirection( const floatVector &flowDirection );
 
@@ -184,7 +188,7 @@ namespace tardigradeHydra{
 
                 const floatMatrix* getdDrivingStressdF( );
 
-                const floatMatrix* getdDrivingStressdSubF( );
+                const floatMatrix* getdDrivingStressdSubFs( );
 
                 const floatVector* getFlowDirection( );
 
