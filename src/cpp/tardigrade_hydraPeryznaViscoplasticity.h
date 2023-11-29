@@ -130,6 +130,18 @@ namespace tardigradeHydra{
 
                 void setPreviousFlowDirection( const floatVector &previousFlowDirection );
 
+                void setdFlowDirectiondCauchyStress( const floatMatrix &dFlowDirectiondCauchyStress );
+
+                void setdFlowDirectiondF( const floatMatrix &dFlowDirectiondF );
+
+                void setdFlowDirectiondSubFs( const floatMatrix &dFlowDirectiondSubFs );
+
+                void setdPreviousFlowDirectiondPreviousCauchyStress( const floatMatrix &dPreviousFlowDirectiondPreviousCauchyStress );
+
+                void setdPreviousFlowDirectiondPreviousF( const floatMatrix &dPreviousFlowDirectiondPreviousF );
+
+                void setdPreviousFlowDirectiondPreviousSubFs( const floatMatrix &dPreviousFlowDirectiondPreviousSubFs );
+
                 void setYieldFunction( const floatType &yieldFunction );
 
                 void setPreviousYieldFunction( const floatType &previousYieldFunction );
@@ -192,6 +204,12 @@ namespace tardigradeHydra{
 
                 const floatVector* getFlowDirection( );
 
+                const floatMatrix* getdFlowDirectiondCauchyStress( );
+
+                const floatMatrix* getdFlowDirectiondF( );
+
+                const floatMatrix* getdFlowDirectiondSubFs( );
+
                 const floatType* getYieldFunction( );
 
                 const floatType* getPlasticThermalMultiplier( );
@@ -215,6 +233,12 @@ namespace tardigradeHydra{
                 const floatMatrix* getdPreviousDrivingStressdPreviousSubFs( );
 
                 const floatVector* getPreviousFlowDirection( );
+
+                const floatMatrix* getdPreviousFlowDirectiondPreviousCauchyStress( );
+
+                const floatMatrix* getdPreviousFlowDirectiondPreviousF( );
+
+                const floatMatrix* getdPreviousFlowDirectiondPreviousSubFs( );
 
                 const floatType* getPreviousYieldFunction( );
 
@@ -270,6 +294,12 @@ namespace tardigradeHydra{
 
                 virtual void setFlowDirection( );
 
+                virtual void setdFlowDirectiondCauchyStress( );
+
+                virtual void setdFlowDirectiondF( );
+
+                virtual void setdFlowDirectiondSubFs( );
+
                 virtual void setYieldFunction( );
 
                 virtual void setPlasticThermalMultiplier( );
@@ -293,6 +323,12 @@ namespace tardigradeHydra{
                 virtual void setdPreviousDrivingStressdPreviousSubFs( );
 
                 virtual void setPreviousFlowDirection( );
+
+                virtual void setdPreviousFlowDirectiondPreviousCauchyStress( );
+
+                virtual void setdPreviousFlowDirectiondPreviousF( );
+
+                virtual void setdPreviousFlowDirectiondPreviousSubFs( );
 
                 virtual void setPreviousYieldFunction( );
 
@@ -319,6 +355,14 @@ namespace tardigradeHydra{
                 virtual void setdDrivingStressdSubFs( const bool isPrevious );
 
                 virtual void setFlowDirection( const bool isPrevious );
+
+                virtual void setFlowDirectionDerivatives( const bool isPrevious );
+
+                virtual void setdFlowDirectiondCauchyStress( const bool isPrevious );
+
+                virtual void setdFlowDirectiondF( const bool isPrevious );
+
+                virtual void setdFlowDirectiondSubFs( const bool isPrevious );
 
                 virtual void setYieldFunction( const bool isPrevious);
 
@@ -364,9 +408,27 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatMatrix > _dDrivingStressdSubFs;
 
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousDrivingStressdPreviousCauchyStress;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousDrivingStressdPreviousF;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousDrivingStressdPreviousSubFs;
+
                 tardigradeHydra::dataStorage< floatVector > _flowDirection;
 
                 tardigradeHydra::dataStorage< floatVector > _previousFlowDirection;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dFlowDirectiondCauchyStress;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dFlowDirectiondF;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dFlowDirectiondSubFs;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousFlowDirectiondPreviousCauchyStress;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousFlowDirectiondPreviousF;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousFlowDirectiondPreviousSubFs;
 
                 tardigradeHydra::dataStorage< floatType > _yieldFunction;
 
@@ -379,12 +441,6 @@ namespace tardigradeHydra{
                 tardigradeHydra::dataStorage< floatType > _dragStress;
 
                 tardigradeHydra::dataStorage< floatType > _previousDragStress;
-
-                tardigradeHydra::dataStorage< floatMatrix > _dPreviousDrivingStressdPreviousCauchyStress;
-
-                tardigradeHydra::dataStorage< floatMatrix > _dPreviousDrivingStressdPreviousF;
-
-                tardigradeHydra::dataStorage< floatMatrix > _dPreviousDrivingStressdPreviousSubFs;
 
                 tardigradeHydra::dataStorage< floatType > _hardeningFunction;
 

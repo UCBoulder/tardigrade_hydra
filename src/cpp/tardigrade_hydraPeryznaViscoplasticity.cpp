@@ -435,6 +435,138 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdFlowDirectiondCauchyStress( const bool isPrevious ){
+            /*!
+             * Set the derivative of the flow direction in the current configuration of the
+             * plastic configuration w.r.t. the Cauchy stress
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * 
+             * \param isPrevious: Flag for whether to compute the values in the previous configuration
+             */
+
+            setFlowDirectionDerivatives( isPrevious );
+
+        }
+
+        void residual::setdFlowDirectiondF( const bool isPrevious ){
+            /*!
+             * Set the derivative of the flow direction in the current configuration of the
+             * plastic configuration w.r.t. the deformation gradient
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * 
+             * \param isPrevious: Flag for whether to compute the values in the previous configuration
+             */
+
+            setFlowDirectionDerivatives( isPrevious );
+
+        }
+
+        void residual::setdFlowDirectiondSubFs( const bool isPrevious ){
+            /*!
+             * Set the derivative of the flow direction in the current configuration of the
+             * plastic configuration w.r.t. the sub-deformation gradients
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * 
+             * \param isPrevious: Flag for whether to compute the values in the previous configuration
+             */
+
+            setFlowDirectionDerivatives( isPrevious );
+
+        }
+
+        void residual::setdFlowDirectiondCauchyStress( ){
+            /*!
+             * Set the derivative of the flow direction in the current configuration of the
+             * plastic configuration w.r.t. the Cauchy stress
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             */
+
+            setdFlowDirectiondCauchyStress( false );
+
+        }
+
+        void residual::setdFlowDirectiondF( ){
+            /*!
+             * Set the derivative of the flow direction in the current configuration of the
+             * plastic configuration w.r.t. the deformation gradient
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             */
+
+            setdFlowDirectiondF( false );
+
+        }
+
+        void residual::setdFlowDirectiondSubFs( ){
+            /*!
+             * Set the derivative of the flow direction in the current configuration of the
+             * plastic configuration w.r.t. the sub-deformation gradients
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             */
+
+            setdFlowDirectiondSubFs( false );
+
+        }
+
         void residual::setPreviousFlowDirection( ){
             /*!
              * Set the flow direction in the current configuration of the
@@ -456,9 +588,129 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPreviousFlowDirectiondPreviousCauchyStress( ){
+            /*!
+             * Set the derivative of the previous flow direction in the current configuration of the
+             * plastic configuration w.r.t. the previous Cauchy stress
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             */
+
+            setdFlowDirectiondCauchyStress( true );
+
+        }
+
+        void residual::setdPreviousFlowDirectiondPreviousF( ){
+            /*!
+             * Set the derivative of the previous flow direction in the current configuration of the
+             * plastic configuration w.r.t. the previous deformation gradient
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             */
+
+            setdFlowDirectiondF( true );
+
+        }
+
+        void residual::setdPreviousFlowDirectiondPreviousSubFs( ){
+            /*!
+             * Set the derivative of the previous flow direction in the current configuration of the
+             * plastic configuration w.r.t. the previous sub-deformation gradients
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             */
+
+            setdFlowDirectiondSubFs( true );
+
+        }
+
         void residual::setFlowDirection( const bool isPrevious ){
             /*!
              * Set the flow direction in the current configuration of the
+             * plastic configuration.
+             * 
+             * Current formulation is Drucker-Prager based on the potential
+             * 
+             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * 
+             * where
+             * 
+             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * 
+             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * 
+             * \param isPrevious: Flag for whether to compute the values in the previous configuration
+             */
+
+            const floatVector *drivingStress;
+
+            const floatVector *flowParameters;
+
+            floatType g;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getPreviousDrivingStress( ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getDrivingStress( ) );
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( flowParameters = getFlowParameters( ) );
+
+            floatVector dgdDrivingStress( drivingStress->size( ), 0 );
+
+            floatVector flowDirection( drivingStress->size( ), 0 );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( *drivingStress, ( *flowParameters )[ 1 ], ( *flowParameters )[ 0 ], g, dgdDrivingStress, flowDirection ) );
+
+            if ( isPrevious ){
+
+                setPreviousFlowDirection( flowDirection );
+
+            }
+            else{
+
+                setFlowDirection( flowDirection );
+
+            }
+
+        }
+
+        void residual::setFlowDirectionDerivatives( const bool isPrevious ){
+            /*!
+             * Set the derivatives of the flow direction in the current configuration of the
              * plastic configuration.
              * 
              * Current formulation is Drucker-Prager based on the potential
@@ -530,6 +782,57 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdFlowDirectiondCauchyStress( const floatMatrix &dFlowDirectiondCauchyStress ){
+            /*!
+             * Set the derivative of the flow direction in the current configuration of the
+             * plastic configuration w.r.t. the Cauchy stress
+             * 
+             * \param &dFlowDirectiondCauchyStress: The derivative of the flow direction in the current configuration
+             *     of the plastic configuration with respect to the Cauchy stress
+             */
+
+            _dFlowDirectiondCauchyStress.second = dFlowDirectiondCauchyStress;
+
+            _dFlowDirectiondCauchyStress.first = true;
+
+            addIterationData( &_dFlowDirectiondCauchyStress );
+
+        }
+
+        void residual::setdFlowDirectiondF( const floatMatrix &dFlowDirectiondF ){
+            /*!
+             * Set the derivative of the flow direction in the current configuration of the
+             * plastic configuration w.r.t. the deformation gradient
+             * 
+             * \param &dFlowDirectiondF: The derivative of the flow direction in the current configuration
+             *     of the plastic configuration with respect to the deformation gradient
+             */
+
+            _dFlowDirectiondF.second = dFlowDirectiondF;
+
+            _dFlowDirectiondF.first = true;
+
+            addIterationData( &_dFlowDirectiondF );
+
+        }
+
+        void residual::setdFlowDirectiondSubFs( const floatMatrix &dFlowDirectiondSubFs ){
+            /*!
+             * Set the derivative of the flow direction in the current configuration of the
+             * plastic configuration w.r.t. the sub-deformation gradients
+             * 
+             * \param &dFlowDirectiondSubFs: The derivative of the flow direction in the current configuration
+             *     of the plastic configuration with respect to the sub-deformation gradients
+             */
+
+            _dFlowDirectiondSubFs.second = dFlowDirectiondSubFs;
+
+            _dFlowDirectiondSubFs.first = true;
+
+            addIterationData( &_dFlowDirectiondSubFs );
+
+        }
+
         void residual::setPreviousFlowDirection( const floatVector &previousFlowDirection ){
             /*!
              * Set the previous flow direction in the current configuration of the
@@ -542,6 +845,57 @@ namespace tardigradeHydra{
             _previousFlowDirection.second = previousFlowDirection;
 
             _previousFlowDirection.first = true;
+
+        }
+
+        void residual::setdPreviousFlowDirectiondPreviousCauchyStress( const floatMatrix &dPreviousFlowDirectiondPreviousCauchyStress ){
+            /*!
+             * Set the derivative of the previous flow direction in the current configuration of the
+             * plastic configuration w.r.t. the previous Cauchy stress
+             * 
+             * \param &dPreviousFlowDirectiondPreviousCauchyStress: The derivative of the previous flow direction in the current configuration
+             *     of the plastic configuration with respect to the previous Cauchy stress
+             */
+
+            _dPreviousFlowDirectiondPreviousCauchyStress.second = dPreviousFlowDirectiondPreviousCauchyStress;
+
+            _dPreviousFlowDirectiondPreviousCauchyStress.first = true;
+
+            addIterationData( &_dPreviousFlowDirectiondPreviousCauchyStress );
+
+        }
+
+        void residual::setdPreviousFlowDirectiondPreviousF( const floatMatrix &dPreviousFlowDirectiondPreviousF ){
+            /*!
+             * Set the derivative of the previous flow direction in the current configuration of the
+             * plastic configuration w.r.t. the previous deformation gradient
+             * 
+             * \param &dPreviousFlowDirectiondPreviousF: The derivative of the previous flow direction in the current configuration
+             *     of the plastic configuration with respect to the previous deformation gradient
+             */
+
+            _dPreviousFlowDirectiondPreviousF.second = dPreviousFlowDirectiondPreviousF;
+
+            _dPreviousFlowDirectiondPreviousF.first = true;
+
+            addIterationData( &_dPreviousFlowDirectiondPreviousF );
+
+        }
+
+        void residual::setdPreviousFlowDirectiondPreviousSubFs( const floatMatrix &dPreviousFlowDirectiondPreviousSubFs ){
+            /*!
+             * Set the derivative of the previous flow direction in the current configuration of the
+             * plastic configuration w.r.t. the previous sub-deformation gradients
+             * 
+             * \param &dPreviousFlowDirectiondPreviousSubFs: The derivative of the previous flow direction in the current configuration
+             *     of the plastic configuration with respect to the previous sub-deformation gradients
+             */
+
+            _dPreviousFlowDirectiondPreviousSubFs.second = dPreviousFlowDirectiondPreviousSubFs;
+
+            _dPreviousFlowDirectiondPreviousSubFs.first = true;
+
+            addIterationData( &_dPreviousFlowDirectiondPreviousSubFs );
 
         }
 
@@ -1570,6 +1924,51 @@ namespace tardigradeHydra{
 
         }
 
+        const floatMatrix* residual::getdFlowDirectiondCauchyStress( ){
+            /*!
+             * Get the derivative of the flow direction w.r.t. the Cauchy stress
+             */
+
+            if ( !_dFlowDirectiondCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdFlowDirectiondCauchyStress( ) );
+
+            }
+
+            return &_dFlowDirectiondCauchyStress.second;
+
+        }
+
+        const floatMatrix* residual::getdFlowDirectiondF( ){
+            /*!
+             * Get the derivative of the flow direction w.r.t. the deformation gradient
+             */
+
+            if ( !_dFlowDirectiondF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdFlowDirectiondF( ) );
+
+            }
+
+            return &_dFlowDirectiondF.second;
+
+        }
+
+        const floatMatrix* residual::getdFlowDirectiondSubFs( ){
+            /*!
+             * Get the derivative of the flow direction w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_dFlowDirectiondSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdFlowDirectiondSubFs( ) );
+
+            }
+
+            return &_dFlowDirectiondSubFs.second;
+
+        }
+
         const floatType* residual::getYieldFunction( ){
             /*!
              * Get the value of the yield function
@@ -1792,6 +2191,51 @@ namespace tardigradeHydra{
             }
 
             return &_previousFlowDirection.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousFlowDirectiondPreviousCauchyStress( ){
+            /*!
+             * Get the derivative of the previous flow direction w.r.t. the Cauchy stress
+             */
+
+            if ( !_dPreviousFlowDirectiondPreviousCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousFlowDirectiondPreviousCauchyStress( ) );
+
+            }
+
+            return &_dPreviousFlowDirectiondPreviousCauchyStress.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousFlowDirectiondPreviousF( ){
+            /*!
+             * Get the derivative of the previous flow direction w.r.t. the deformation gradient
+             */
+
+            if ( !_dPreviousFlowDirectiondPreviousF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousFlowDirectiondPreviousF( ) );
+
+            }
+
+            return &_dPreviousFlowDirectiondPreviousF.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousFlowDirectiondPreviousSubFs( ){
+            /*!
+             * Get the derivative of the previous flow direction w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_dPreviousFlowDirectiondPreviousSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousFlowDirectiondPreviousSubFs( ) );
+
+            }
+
+            return &_dPreviousFlowDirectiondPreviousSubFs.second;
 
         }
 
