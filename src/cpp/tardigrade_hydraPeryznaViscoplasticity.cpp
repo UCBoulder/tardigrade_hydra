@@ -201,7 +201,7 @@ namespace tardigradeHydra{
 
             floatMatrix dDrivingStressdF( drivingStress.size( ), floatVector( precedingConfiguration.size( ), 0 ) );
 
-            floatMatrix dDrivingStressdSubFs( drivingStress.size( ), floatVector( dF1dSubFs[ 0 ].size( ), 0 ) );
+            floatMatrix dDrivingStressdSubFs( drivingStress.size( ), floatVector( ( *dF1dSubFs )[ 0 ].size( ), 0 ) );
 
             for ( unsigned int i = 0; i < ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ); i++ ){
 
