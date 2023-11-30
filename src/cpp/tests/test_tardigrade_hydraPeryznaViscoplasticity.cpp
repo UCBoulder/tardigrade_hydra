@@ -150,6 +150,26 @@ namespace tardigradeHydra{
 
                             BOOST_CHECK( &R._dPreviousDragStressdPreviousStateVariables.second == R.getdPreviousDragStressdPreviousStateVariables( ) );
 
+                            BOOST_CHECK( &R._dPlasticMultiplierdCauchyStress.second == R.getdPlasticMultiplierdCauchyStress( ) );
+
+                            BOOST_CHECK( &R._dPlasticMultiplierdF.second == R.getdPlasticMultiplierdF( ) );
+
+                            BOOST_CHECK( &R._dPlasticMultiplierdSubFs.second == R.getdPlasticMultiplierdSubFs( ) );
+
+                            BOOST_CHECK( &R._dPlasticMultiplierdT.second == R.getdPlasticMultiplierdT( ) );
+
+                            BOOST_CHECK( &R._dPlasticMultiplierdStateVariables.second == R.getdPlasticMultiplierdStateVariables( ) );
+
+                            BOOST_CHECK( &R._dPreviousPlasticMultiplierdPreviousCauchyStress.second == R.getdPreviousPlasticMultiplierdPreviousCauchyStress( ) );
+
+                            BOOST_CHECK( &R._dPreviousPlasticMultiplierdPreviousF.second == R.getdPreviousPlasticMultiplierdPreviousF( ) );
+
+                            BOOST_CHECK( &R._dPreviousPlasticMultiplierdPreviousSubFs.second == R.getdPreviousPlasticMultiplierdPreviousSubFs( ) );
+
+                            BOOST_CHECK( &R._dPreviousPlasticMultiplierdPreviousT.second == R.getdPreviousPlasticMultiplierdPreviousT( ) );
+
+                            BOOST_CHECK( &R._dPreviousPlasticMultiplierdPreviousStateVariables.second == R.getdPreviousPlasticMultiplierdPreviousStateVariables( ) );
+
                         }
                         catch( std::exception &e ){
 
