@@ -1835,6 +1835,116 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPlasticMultiplierdCauchyStress( ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the Cauchy stress
+             */
+
+            setdPlasticMultiplierdCauchyStress( false );
+
+        }
+
+        void residual::setdPlasticMultiplierdF( ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the deformation gradient
+             */
+
+            setdPlasticMultiplierdF( false );
+
+        }
+
+        void residual::setdPlasticMultiplierdSubFs( ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the sub-deformation gradients
+             */
+
+            setdPlasticMultiplierdSubFs( false );
+
+        }
+
+        void residual::setdPlasticMultiplierdT( ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the temperature
+             */
+
+            setdPlasticMultiplierdT( false );
+
+        }
+
+        void residual::setdPlasticMultiplierdStateVariables( ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the state variables
+             */
+
+            setdPlasticMultiplierdStateVariables( false );
+
+        }
+
+        void residual::setdPlasticMultiplierdCauchyStress( const bool isPrevious ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the Cauchy stress
+             * 
+             * \param isPrevious: Flag for whether to compute the derivatives of the current (false) or previous (true) value
+             */
+
+            setPlasticMultiplierDerivatives( isPrevious );
+
+        }
+
+        void residual::setdPlasticMultiplierdF( const bool isPrevious ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the deformation gradient
+             * 
+             * \param isPrevious: Flag for whether to compute the derivatives of the current (false) or previous (true) value
+             */
+
+            setPlasticMultiplierDerivatives( isPrevious );
+
+        }
+
+        void residual::setdPlasticMultiplierdSubFs( const bool isPrevious ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the sub-deformation gradients
+             * 
+             * \param isPrevious: Flag for whether to compute the derivatives of the current (false) or previous (true) value
+             */
+
+            setPlasticMultiplierDerivatives( isPrevious );
+
+        }
+
+        void residual::setdPlasticMultiplierdT( const bool isPrevious ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the temperature
+             * 
+             * \param isPrevious: Flag for whether to compute the derivatives of the current (false) or previous (true) value
+             */
+
+            setPlasticMultiplierDerivatives( isPrevious );
+
+        }
+
+        void residual::setdPlasticMultiplierdStateVariables( const bool isPrevious ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the state variables
+             * 
+             * \param isPrevious: Flag for whether to compute the derivatives of the current (false) or previous (true) value
+             */
+
+            setPlasticMultiplierDerivatives( isPrevious );
+
+        }
+
         void residual::setPreviousPlasticMultiplier( ){
             /*!
              * Set the plastic multiplier in the current configuration of the
@@ -1842,6 +1952,56 @@ namespace tardigradeHydra{
              */
 
             setPlasticMultiplier( true );
+
+        }
+
+        void residual::setdPreviousPlasticMultiplierdPreviousCauchyStress( ){
+            /*!
+             * Set the derivative of the previous plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the previous Cauchy stress
+             */
+
+            setdPlasticMultiplierdCauchyStress( true );
+
+        }
+
+        void residual::setdPreviousPlasticMultiplierdPreviousF( ){
+            /*!
+             * Set the derivative of the previous plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the previous deformation gradient
+             */
+
+            setdPlasticMultiplierdF( true );
+
+        }
+
+        void residual::setdPreviousPlasticMultiplierdPreviousSubFs( ){
+            /*!
+             * Set the derivative of the previous plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the previous sub-deformation gradients
+             */
+
+            setdPlasticMultiplierdSubFs( true );
+
+        }
+
+        void residual::setdPreviousPlasticMultiplierdPreviousT( ){
+            /*!
+             * Set the derivative of the previous plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the previous temperature
+             */
+
+            setdPlasticMultiplierdT( true );
+
+        }
+
+        void residual::setdPreviousPlasticMultiplierdPreviousStateVariables( ){
+            /*!
+             * Set the derivative of the previous plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the previous state variables
+             */
+
+            setdPlasticMultiplierdStateVariables( true );
 
         }
 
@@ -1900,6 +2060,128 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPlasticMultiplierDerivatives( const bool isPrevious ){
+            /*!
+             * Set the derivatives of the plastic multiplier in the current configuration of the
+             * plastic configuration
+             * 
+             * \param &isPrevious: Flag for whether to compute the plastic multiplier
+             *     in the previous timestep
+             */
+
+            const floatType *yieldFunction;
+
+            const floatType *dragStress;
+
+            const floatType *plasticThermalMultiplier;
+
+            const floatVector *peryznaParameters;
+
+            floatType plasticMultiplier;
+
+            const floatVector *dYieldFunctiondCauchyStress;
+
+            const floatVector *dYieldFunctiondF;
+
+            const floatVector *dYieldFunctiondSubFs;
+
+            const floatVector *dDragStressdStateVariables;
+
+            const floatType   *dPlasticThermalMultiplierdT;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondCauchyStress = getdPreviousYieldFunctiondPreviousCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = getdPreviousYieldFunctiondPreviousF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = getdPreviousYieldFunctiondPreviousSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = getdPreviousDragStressdPreviousStateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticThermalMultiplierdT = getdPreviousPlasticThermalMultiplierdPreviousT( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = getPreviousYieldFunction( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = getPreviousDragStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = getPreviousPlasticThermalMultiplier( ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondCauchyStress = getdYieldFunctiondCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = getdYieldFunctiondF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = getdYieldFunctiondSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = getdDragStressdStateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticThermalMultiplierdT = getdPlasticThermalMultiplierdT( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = getYieldFunction( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = getDragStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = getPlasticThermalMultiplier( ) );
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( peryznaParameters = getPeryznaParameters( ) );
+
+            floatType dPlasticMultiplierdYieldFunction;
+
+            floatType dPlasticMultiplierdDragStress;
+
+            floatType dPlasticMultiplierdPlasticThermalMultiplier;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::peryznaModel( *yieldFunction, *dragStress, *plasticThermalMultiplier, ( *peryznaParameters )[ 0 ], plasticMultiplier, dPlasticMultiplierdYieldFunction, dPlasticMultiplierdDragStress, dPlasticMultiplierdPlasticThermalMultiplier ) );
+
+            floatVector dPlasticMultiplierdCauchyStress = dPlasticMultiplierdYieldFunction * ( *dYieldFunctiondCauchyStress );
+
+            floatVector dPlasticMultiplierdF = dPlasticMultiplierdYieldFunction * ( *dYieldFunctiondF );
+
+            floatVector dPlasticMultiplierdSubFs = dPlasticMultiplierdYieldFunction * ( *dYieldFunctiondSubFs );
+
+            floatType   dPlasticMultiplierdT = dPlasticMultiplierdPlasticThermalMultiplier * ( *dPlasticThermalMultiplierdT );
+
+            floatVector dPlasticMultiplierdStateVariables = dPlasticMultiplierdDragStress * ( *dDragStressdStateVariables );
+
+            if ( isPrevious ){
+
+                setPreviousPlasticMultiplier( plasticMultiplier );
+
+                setdPreviousPlasticMultiplierdPreviousCauchyStress( dPlasticMultiplierdCauchyStress );
+
+                setdPreviousPlasticMultiplierdPreviousF( dPlasticMultiplierdF );
+
+                setdPreviousPlasticMultiplierdPreviousSubFs( dPlasticMultiplierdSubFs );
+
+                setdPreviousPlasticMultiplierdPreviousT( dPlasticMultiplierdT );
+
+                setdPreviousPlasticMultiplierdPreviousStateVariables( dPlasticMultiplierdStateVariables );
+
+            }
+            else{
+
+                setPlasticMultiplier( plasticMultiplier );
+
+                setdPlasticMultiplierdCauchyStress( dPlasticMultiplierdCauchyStress );
+
+                setdPlasticMultiplierdF( dPlasticMultiplierdF );
+
+                setdPlasticMultiplierdSubFs( dPlasticMultiplierdSubFs );
+
+                setdPlasticMultiplierdT( dPlasticMultiplierdT );
+
+                setdPlasticMultiplierdStateVariables( dPlasticMultiplierdStateVariables );
+
+            }
+
+        }
+
+
         void residual::setPlasticMultiplier( const floatType &plasticMultiplier ){
             /*!
              * Set the plastic multiplier in the current configuration of the
@@ -1917,6 +2199,91 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPlasticMultiplierdCauchyStress( const floatVector &dPlasticMultiplierdCauchyStress ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration with respect to the Cauchy stress
+             * 
+             * \param &dPlasticMultiplierdCauchyStress: The derivative of the plastic multiplier in the current
+             *     configuration of the plastic configuration w.r.t. the Cauchy stress
+             */
+
+            _dPlasticMultiplierdCauchyStress.second = dPlasticMultiplierdCauchyStress;
+
+            _dPlasticMultiplierdCauchyStress.first = true;
+
+            addIterationData( &_dPlasticMultiplierdCauchyStress );
+
+        }
+
+        void residual::setdPlasticMultiplierdF( const floatVector &dPlasticMultiplierdF ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration with respect to the deformation gradient
+             * 
+             * \param &dPlasticMultiplierdF: The derivative of the plastic multiplier in the current
+             *     configuration of the plastic configuration w.r.t. the deformation gradient
+             */
+
+            _dPlasticMultiplierdF.second = dPlasticMultiplierdF;
+
+            _dPlasticMultiplierdF.first = true;
+
+            addIterationData( &_dPlasticMultiplierdF );
+
+        }
+
+        void residual::setdPlasticMultiplierdSubFs( const floatVector &dPlasticMultiplierdSubFs ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration with respect to the sub-deformation gradients
+             * 
+             * \param &dPlasticMultiplierdSubFs: The derivative of the plastic multiplier in the current
+             *     configuration of the plastic configuration w.r.t. the sub-deformation gradient
+             */
+
+            _dPlasticMultiplierdSubFs.second = dPlasticMultiplierdSubFs;
+
+            _dPlasticMultiplierdSubFs.first = true;
+
+            addIterationData( &_dPlasticMultiplierdSubFs );
+
+        }
+
+        void residual::setdPlasticMultiplierdT( const floatType &dPlasticMultiplierdT ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration with respect to the temperature
+             * 
+             * \param &dPlasticMultiplierdT: The derivative of the plastic multiplier in the current
+             *     configuration of the plastic configuration w.r.t. the temperature
+             */
+
+            _dPlasticMultiplierdT.second = dPlasticMultiplierdT;
+
+            _dPlasticMultiplierdT.first = true;
+
+            addIterationData( &_dPlasticMultiplierdT );
+
+        }
+
+        void residual::setdPlasticMultiplierdStateVariables( const floatVector &dPlasticMultiplierdStateVariables ){
+            /*!
+             * Set the derivative of the plastic multiplier in the current configuration of the
+             * plastic configuration with respect to the state variables
+             * 
+             * \param &dPlasticMultiplierdStateVariables: The derivative of the plastic multiplier in the current
+             *     configuration of the plastic configuration w.r.t. the state variables
+             */
+
+            _dPlasticMultiplierdStateVariables.second = dPlasticMultiplierdStateVariables;
+
+            _dPlasticMultiplierdStateVariables.first = true;
+
+            addIterationData( &_dPlasticMultiplierdStateVariables );
+
+        }
+
         void residual::setPreviousPlasticMultiplier( const floatType &previousPlasticMultiplier ){
             /*!
              * Set the previous plastic multiplier in the current configuration of the
@@ -1929,6 +2296,81 @@ namespace tardigradeHydra{
             _previousPlasticMultiplier.second = previousPlasticMultiplier;
 
             _previousPlasticMultiplier.first = true;
+
+        }
+
+        void residual::setdPreviousPlasticMultiplierdPreviousCauchyStress( const floatVector &dPreviousPlasticMultiplierdPreviousCauchyStress ){
+            /*!
+             * Set the derivative of the previous plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the previous Cauchy stress
+             * 
+             * \param &dPreviousPlasticMultiplierdPreviousCauchyStress: The derivative of the previous plastic multiplier in
+             *     the current configuration of the plastic configuration w.r.t. the previous Cauchy stress
+             */
+
+            _dPreviousPlasticMultiplierdPreviousCauchyStress.second = dPreviousPlasticMultiplierdPreviousCauchyStress;
+
+            _dPreviousPlasticMultiplierdPreviousCauchyStress.first = true;
+
+        }
+
+        void residual::setdPreviousPlasticMultiplierdPreviousF( const floatVector &dPreviousPlasticMultiplierdPreviousF ){
+            /*!
+             * Set the derivative of the previous plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the previous deformation gradient
+             * 
+             * \param &dPreviousPlasticMultiplierdPreviousF: The derivative of the previous plastic multiplier in
+             *     the current configuration of the plastic configuration w.r.t. the previous deformation gradient
+             */
+
+            _dPreviousPlasticMultiplierdPreviousF.second = dPreviousPlasticMultiplierdPreviousF;
+
+            _dPreviousPlasticMultiplierdPreviousF.first = true;
+
+        }
+
+        void residual::setdPreviousPlasticMultiplierdPreviousSubFs( const floatVector &dPreviousPlasticMultiplierdPreviousSubFs ){
+            /*!
+             * Set the derivative of the previous plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the previous sub-deformation gradients
+             * 
+             * \param &dPreviousPlasticMultiplierdPreviousSubFs: The derivative of the previous plastic multiplier in
+             *     the current configuration of the plastic configuration w.r.t. the previous sub-deformation gradients
+             */
+
+            _dPreviousPlasticMultiplierdPreviousSubFs.second = dPreviousPlasticMultiplierdPreviousSubFs;
+
+            _dPreviousPlasticMultiplierdPreviousSubFs.first = true;
+
+        }
+
+        void residual::setdPreviousPlasticMultiplierdPreviousT( const floatType &dPreviousPlasticMultiplierdPreviousT ){
+            /*!
+             * Set the derivative of the previous plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the previous temperature
+             * 
+             * \param &dPreviousPlasticMultiplierdPreviousT: The derivative of the previous plastic multiplier in
+             *     the current configuration of the plastic configuration w.r.t. the previous temperature
+             */
+
+            _dPreviousPlasticMultiplierdPreviousT.second = dPreviousPlasticMultiplierdPreviousT;
+
+            _dPreviousPlasticMultiplierdPreviousT.first = true;
+
+        }
+
+        void residual::setdPreviousPlasticMultiplierdPreviousStateVariables( const floatVector &dPreviousPlasticMultiplierdPreviousStateVariables ){
+            /*!
+             * Set the derivative of the previous plastic multiplier in the current configuration of the
+             * plastic configuration w.r.t. the previous state variables
+             * 
+             * \param &dPreviousPlasticMultiplierdPreviousStateVariables: The derivative of the previous plastic multiplier in
+             *     the current configuration of the plastic configuration w.r.t. the previous state variables
+             */
+
+            _dPreviousPlasticMultiplierdPreviousStateVariables.second = dPreviousPlasticMultiplierdPreviousStateVariables;
+
+            _dPreviousPlasticMultiplierdPreviousStateVariables.first = true;
 
         }
 
@@ -2769,6 +3211,81 @@ namespace tardigradeHydra{
 
         }
 
+        const floatVector* residual::getdPlasticMultiplierdCauchyStress( ){
+            /*!
+             * Get the derivative of the plastic multiplier w.r.t. the Cauchy stress
+             */
+
+            if ( !_dPlasticMultiplierdCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticMultiplierdCauchyStress( ) );
+
+            }
+
+            return &_dPlasticMultiplierdCauchyStress.second;
+
+        }
+
+        const floatVector* residual::getdPlasticMultiplierdF( ){
+            /*!
+             * Get the derivative of the plastic multiplier w.r.t. the deformation gradient
+             */
+
+            if ( !_dPlasticMultiplierdF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticMultiplierdF( ) );
+
+            }
+
+            return &_dPlasticMultiplierdF.second;
+
+        }
+
+        const floatVector* residual::getdPlasticMultiplierdSubFs( ){
+            /*!
+             * Get the derivative of the plastic multiplier w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_dPlasticMultiplierdSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticMultiplierdSubFs( ) );
+
+            }
+
+            return &_dPlasticMultiplierdSubFs.second;
+
+        }
+
+        const floatType* residual::getdPlasticMultiplierdT( ){
+            /*!
+             * Get the derivative of the plastic multiplier w.r.t. the temperature
+             */
+
+            if ( !_dPlasticMultiplierdT.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticMultiplierdT( ) );
+
+            }
+
+            return &_dPlasticMultiplierdT.second;
+
+        }
+
+        const floatVector* residual::getdPlasticMultiplierdStateVariables( ){
+            /*!
+             * Get the derivative of the plastic multiplier w.r.t. the state variables
+             */
+
+            if ( !_dPlasticMultiplierdStateVariables.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticMultiplierdStateVariables( ) );
+
+            }
+
+            return &_dPlasticMultiplierdStateVariables.second;
+
+        }
+
         const floatVector* residual::getVelocityGradient( ){
             /*!
              * Get the velocity gradient
@@ -3081,6 +3598,81 @@ namespace tardigradeHydra{
             }
 
             return &_previousPlasticMultiplier.second;
+
+        }
+
+        const floatVector* residual::getdPreviousPlasticMultiplierdPreviousCauchyStress( ){
+            /*!
+             * Get the derivative of the previous plastic multiplier w.r.t. the previous Cauchy stress
+             */
+
+            if ( !_dPreviousPlasticMultiplierdPreviousCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticMultiplierdPreviousCauchyStress( ) );
+
+            }
+
+            return &_dPreviousPlasticMultiplierdPreviousCauchyStress.second;
+
+        }
+
+        const floatVector* residual::getdPreviousPlasticMultiplierdPreviousF( ){
+            /*!
+             * Get the derivative of the previous plastic multiplier w.r.t. the previous deformation gradient
+             */
+
+            if ( !_dPreviousPlasticMultiplierdPreviousF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticMultiplierdPreviousF( ) );
+
+            }
+
+            return &_dPreviousPlasticMultiplierdPreviousF.second;
+
+        }
+
+        const floatVector* residual::getdPreviousPlasticMultiplierdPreviousSubFs( ){
+            /*!
+             * Get the derivative of the previous plastic multiplier w.r.t. the previous sub-deformation gradients
+             */
+
+            if ( !_dPreviousPlasticMultiplierdPreviousSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticMultiplierdPreviousSubFs( ) );
+
+            }
+
+            return &_dPreviousPlasticMultiplierdPreviousSubFs.second;
+
+        }
+
+        const floatType* residual::getdPreviousPlasticMultiplierdPreviousT( ){
+            /*!
+             * Get the derivative of the previous plastic multiplier w.r.t. the previous temperature
+             */
+
+            if ( !_dPreviousPlasticMultiplierdPreviousT.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticMultiplierdPreviousT( ) );
+
+            }
+
+            return &_dPreviousPlasticMultiplierdPreviousT.second;
+
+        }
+
+        const floatVector* residual::getdPreviousPlasticMultiplierdPreviousStateVariables( ){
+            /*!
+             * Get the derivative of the previous plastic multiplier w.r.t. the previous state variables
+             */
+
+            if ( !_dPreviousPlasticMultiplierdPreviousStateVariables.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticMultiplierdPreviousStateVariables( ) );
+
+            }
+
+            return &_dPreviousPlasticMultiplierdPreviousStateVariables.second;
 
         }
 
