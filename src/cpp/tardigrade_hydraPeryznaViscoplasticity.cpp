@@ -1641,12 +1641,41 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdHardeningFunctiondStateVariables( ){
+            /*!
+             * Set the value of the derivative of the hardening function w.r.t. the state variables
+             */
+
+            setdHardeningFunctiondStateVariables( false );
+
+        }
+
+        void residual::setdHardeningFunctiondStateVariables( const bool isPrevious ){
+            /*!
+             * Set the value of the derivative of the hardening function w.r.t. the state variables
+             * 
+             * \param isPrevious: Flag for if the derivative should be taken of the previous hardening function (true) or the current one (false)
+             */
+
+            setHardeningFunctionDerivatives( isPrevious );
+
+        }
+
         void residual::setPreviousHardeningFunction( ){
             /*!
              * Set the value of the hardening function
              */
 
             setHardeningFunction( true );
+
+        }
+
+        void residual::setdPreviousHardeningFunctiondPreviousStateVariables( ){
+            /*!
+             * Set the value of the derivative of the previous hardening function w.r.t. the previous state variables
+             */
+
+            setdHardeningFunctiondStateVariables( true );
 
         }
 
@@ -1692,9 +1721,59 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setHardeningFunctionDerivatives( const bool isPrevious ){
+            /*!
+             * Set the value of the derivatives of the hardening function
+             * 
+             * \param &isPrevious: Flag for whether to compute the values for the
+             *     previous timestep
+             */
+
+            const floatVector *stateVariables;
+
+            const floatVector *hardeningParameters;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getPreviousStateVariables( ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getStateVariables( ) );
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = getHardeningParameters( ) );
+
+            floatType hardeningFunction;
+
+            floatVector dHardeningFunctiondStateVariables;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::linearHardening( *stateVariables, floatVector( hardeningParameters->begin( ) + 1, hardeningParameters->end( ) ), ( *hardeningParameters )[ 0 ], hardeningFunction, dHardeningFunctiondStateVariables ) );
+
+            if ( isPrevious ){
+
+                setPreviousHardeningFunction( hardeningFunction );
+
+                setdPreviousHardeningFunctiondPreviousStateVariables( dHardeningFunctiondStateVariables );
+
+            }
+            else{
+
+                setHardeningFunction( hardeningFunction );
+
+                setdHardeningFunctiondStateVariables( dHardeningFunctiondStateVariables );
+
+            }
+
+        }
+
         void residual::setHardeningFunction( const floatType &hardeningFunction ){
             /*!
              * Set the hardening function
+             * 
+             * \param &hardeningFunction: The value of the hardening function
              */
 
             _hardeningFunction.second = hardeningFunction;
@@ -1705,14 +1784,44 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdHardeningFunctiondStateVariables( const floatVector &dHardeningFunctiondStateVariables ){
+            /*!
+             * Set the derivative of the hardening function w.r.t. the state variables
+             * 
+             * \param &dHardeningFunctiondStateVariables: The derivative of the hardening function w.r.t. the state variables
+             */
+
+            _dHardeningFunctiondStateVariables.second = dHardeningFunctiondStateVariables;
+
+            _dHardeningFunctiondStateVariables.first = true;
+
+            addIterationData( &_dHardeningFunctiondStateVariables );
+
+        }
+
         void residual::setPreviousHardeningFunction( const floatType &previousHardeningFunction ){
             /*!
              * Set the previous hardening function
+             * 
+             * \param &previousHardeningFunction: The previous value of the hardening function
              */
 
             _previousHardeningFunction.second = previousHardeningFunction;
 
             _previousHardeningFunction.first = true;
+
+        }
+
+        void residual::setdPreviousHardeningFunctiondPreviousStateVariables( const floatVector &dPreviousHardeningFunctiondPreviousStateVariables ){
+            /*!
+             * Set the previous hardening function
+             * 
+             * \param &dPreviousHardeningFunctiondPreviousStateVariables: The derivative of the previous value of the hardening function w.r.t. the previous state variables
+             */
+
+            _dPreviousHardeningFunctiondPreviousStateVariables.second = dPreviousHardeningFunctiondPreviousStateVariables;
+
+            _dPreviousHardeningFunctiondPreviousStateVariables.first = true;
 
         }
 
@@ -2630,6 +2739,21 @@ namespace tardigradeHydra{
 
         }
 
+        const floatVector* residual::getdHardeningFunctiondStateVariables( ){
+            /*!
+             * Get the value of the derivative of the hardening function w.r.t. the state variables
+             */
+
+            if ( !_dHardeningFunctiondStateVariables.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdHardeningFunctiondStateVariables( ) );
+
+            }
+
+            return &_dHardeningFunctiondStateVariables.second;
+
+        }
+
         const floatType* residual::getPlasticMultiplier( ){
             /*!
              * Get the plastic multiplier
@@ -2927,6 +3051,21 @@ namespace tardigradeHydra{
             }
 
             return &_previousHardeningFunction.second;
+
+        }
+
+        const floatVector* residual::getdPreviousHardeningFunctiondPreviousStateVariables( ){
+            /*!
+             * Get the derivative of the previous value of the hardening function w.r.t. the previous state variables
+             */
+
+            if ( !_dPreviousHardeningFunctiondPreviousStateVariables.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousHardeningFunctiondPreviousStateVariables( ) );
+
+            }
+
+            return &_dPreviousHardeningFunctiondPreviousStateVariables.second;
 
         }
 

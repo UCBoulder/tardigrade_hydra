@@ -176,7 +176,11 @@ namespace tardigradeHydra{
 
                 void setHardeningFunction( const floatType &hardeningFunction );
 
+                void setdHardeningFunctiondStateVariables( const floatVector &dHardeningFunctiondStateVariables );
+
                 void setPreviousHardeningFunction( const floatType &previousHardeningFunction );
+
+                void setdPreviousHardeningFunctiondPreviousStateVariables( const floatVector &dPreviousHardeningFunctiondPreviousStateVariables );
 
                 void setPlasticMultiplier( const floatType &plasticMultiplier );
 
@@ -248,6 +252,8 @@ namespace tardigradeHydra{
 
                 const floatType* getHardeningFunction( );
 
+                const floatVector* getdHardeningFunctiondStateVariables( );
+
                 const floatType* getPlasticMultiplier( );
 
                 const floatVector* getVelocityGradient( );
@@ -287,6 +293,8 @@ namespace tardigradeHydra{
                 const floatVector* getdPreviousDragStressdPreviousStateVariables( );
 
                 const floatType* getPreviousHardeningFunction( );
+
+                const floatVector* getdPreviousHardeningFunctiondPreviousStateVariables( );
 
                 const floatType* getPreviousPlasticMultiplier( );
 
@@ -358,6 +366,8 @@ namespace tardigradeHydra{
 
                 virtual void setHardeningFunction( );
 
+                virtual void setdHardeningFunctiondStateVariables( );
+
                 virtual void setPlasticMultiplier( );
 
                 virtual void setVelocityGradient( );
@@ -397,6 +407,8 @@ namespace tardigradeHydra{
                 virtual void setdPreviousDragStressdPreviousStateVariables( );
 
                 virtual void setPreviousHardeningFunction( );
+
+                virtual void setdPreviousHardeningFunctiondPreviousStateVariables( );
 
                 virtual void setPreviousPlasticMultiplier( );
 
@@ -447,6 +459,10 @@ namespace tardigradeHydra{
                 virtual void setdDragStressdStateVariables( const bool isPrevious );
 
                 virtual void setHardeningFunction( const bool isPrevious );
+
+                virtual void setHardeningFunctionDerivatives( const bool isPrevious );
+
+                virtual void setdHardeningFunctiondStateVariables( const bool isPrevious );
 
                 virtual void setPlasticMultiplier( const bool isPrevious );
 
@@ -540,7 +556,11 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatType > _hardeningFunction;
 
+                tardigradeHydra::dataStorage< floatVector > _dHardeningFunctiondStateVariables;
+
                 tardigradeHydra::dataStorage< floatType > _previousHardeningFunction;
+
+                tardigradeHydra::dataStorage< floatVector > _dPreviousHardeningFunctiondPreviousStateVariables;
 
                 tardigradeHydra::dataStorage< floatType > _plasticMultiplier;
 
