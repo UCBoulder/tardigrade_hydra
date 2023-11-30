@@ -3001,6 +3001,29 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
 
             floatType previousA = 0.85;
 
+            floatVector dfdCauchy = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector dfdF = { 10, 11, 12, 13, 14, 15, 16, 17, 18 };
+
+            floatVector dfdSubFs = { 19, 20, 21, 22, 23, 24, 25, 26, 27,
+                                     28, 29, 30, 31, 32, 33, 34, 35, 36 };
+
+            floatVector dqdXi = { 27 };
+
+            floatType   dAdT  = 28;
+
+            floatVector dPreviousfdPreviousCauchy = { 29, 30, 31, 32, 33, 34, 35, 36, 37 };
+
+            floatVector dPreviousfdPreviousF = { 38, 39, 40, 41, 42, 43, 44, 45, 46 };
+
+            floatVector dPreviousfdPreviousSubFs = { 47, 48, 49, 50, 51, 52, 53, 54, 55,
+                                                     56, 57, 58, 59, 60, 61, 62, 63, 64 };
+
+            floatVector dPreviousqdPreviousXi = { 65 };
+
+            floatType   dPreviousAdPreviousT  = 66;
+            
+
         private:
 
             virtual void setYieldFunction( const bool isPrevious ) override{
@@ -3015,6 +3038,57 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
                 else{
 
                     tardigradeHydra::peryznaViscoplasticity::residual::setYieldFunction( f );
+
+                }
+
+            }
+
+            virtual void setdYieldFunctiondCauchyStress( const bool isPrevious ) override{
+
+                setPeryznaParameters( { n } );
+
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setdPreviousYieldFunctiondPreviousCauchyStress( dPreviousfdPreviousCauchy );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setdYieldFunctiondCauchyStress( dfdCauchy );
+
+                }
+
+            }
+
+            virtual void setdYieldFunctiondF( const bool isPrevious ) override{
+
+                setPeryznaParameters( { n } );
+
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setdPreviousYieldFunctiondPreviousF( dPreviousfdPreviousF );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setdYieldFunctiondF( dfdF );
+
+                }
+
+            }
+
+            virtual void setdYieldFunctiondSubFs( const bool isPrevious ) override{
+
+                setPeryznaParameters( { n } );
+
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setdPreviousYieldFunctiondPreviousSubFs( dPreviousfdPreviousSubFs );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setdYieldFunctiondSubFs( dfdSubFs );
 
                 }
 
@@ -3035,6 +3109,21 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
 
             }
 
+            virtual void setdDragStressdStateVariables( const bool isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setdPreviousDragStressdPreviousStateVariables( dPreviousqdPreviousXi );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setdDragStressdStateVariables( dqdXi );
+
+                }
+
+            }
+
             virtual void setPlasticThermalMultiplier( const bool isPrevious ) override{
 
                 if ( isPrevious ){
@@ -3045,6 +3134,21 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
                 else{
 
                     tardigradeHydra::peryznaViscoplasticity::residual::setPlasticThermalMultiplier( A );
+
+                }
+
+            }
+
+            virtual void setdPlasticThermalMultiplierdT( const bool isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setdPreviousPlasticThermalMultiplierdPreviousT( dPreviousAdPreviousT );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticThermalMultiplierdT( dAdT );
 
                 }
 
@@ -3071,7 +3175,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
 
             floatVector thermalParameters = { 293.15, 1e-5, 2e-5, 3e-5, 4e-5, 5e-5, 6e-5, 7e-5, 8e-5, 9e-5, 10e-5, 11e-5, 12e-5 };
     
-            tardigradeHydra::linearElasticity::residual elasticity;
+            //tardigradeHydra::linearElasticity::residual elasticity;
+            stressMock elasticity;
     
             residualMock viscoPlasticity;
 
@@ -3091,9 +3196,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
 
                 std::vector< tardigradeHydra::residualBase* > residuals( 4 );
 
-                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+                elasticity = stressMock( this, 9 );//tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
-                viscoPlasticity = residualMock( this, 9, 1, stateVariableIndices, viscoPlasticParameters );
+                viscoPlasticity = residualMock( this, 10, 1, stateVariableIndices, viscoPlasticParameters );
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
@@ -3174,6 +3279,491 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rjac.getPlasticMultiplier( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *Rjac.getPreviousPlasticMultiplier( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_getPlasticMultiplier_jacobian ){
+    /*!
+     * Test of computing the yield function's Jacobian
+     */
+
+    class stressMock : public tardigradeHydra::residualBase {
+
+        public:
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        private:
+
+            virtual void setPreviousCauchyStress( ){
+
+                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+
+            }
+
+    };
+
+    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+
+        public:
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+    
+            floatVector elasticityParameters = { 123.4, 56.7 };
+
+            floatVector viscoPlasticParameters = { 10.0,
+                                                   1e1, 1e2,
+                                                   10, 200, 293.15,
+                                                   5, 0.34,
+                                                   0.12,
+                                                   13., 14.};
+                                                   
+
+            std::vector< unsigned int > stateVariableIndices = { 2 };
+
+            floatVector thermalParameters = { 293.15, 1e-5, 2e-5, 3e-5, 4e-5, 5e-5, 6e-5, 7e-5, 8e-5, 9e-5, 10e-5, 11e-5, 12e-5 };
+
+            floatVector _local_deltaPreviousCauchyStress = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    
+            stressMock elasticity;
+    
+            residualMock viscoPlasticity;
+
+            tardigradeHydra::thermalExpansion::residual thermalExpansion;
+    
+            tardigradeHydra::residualBase remainder;
+    
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+    
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+    
+            }
+
+        private:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 4 );
+
+                elasticity = stressMock( this, 9 );
+
+                elasticity.previousCauchyStress += _local_deltaPreviousCauchyStress;
+
+                viscoPlasticity = residualMock( this, 10, 1, stateVariableIndices, viscoPlasticParameters );
+
+                thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
+
+                remainder = tardigradeHydra::residualBase( this, 4 );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &viscoPlasticity;
+
+                residuals[ 2 ] = &thermalExpansion;
+
+                residuals[ 3 ] = &remainder;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.005, 0.04, 0.05 };
+
+    floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+
+    floatVector unknownVector = { 2, 1, 1, 7, 1, 6, 1, 8, 3,
+                                  1.2, 0.0, 0.0,
+                                  0.0, 1.0, 0.0,
+                                  0.0, 0.0, 1.0,
+                                  1.01, 0.0, 0.0,
+                                  0.0,  1.2, 0.0,
+                                  0.0,  0.0, 0.9,
+                                  4, 5, 0.01, 7, 8 };
+
+    unsigned int numConfigurations = 3;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    residualMock R_ngrad( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+    residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
+    R.getdYieldFunctiondCauchyStress( );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getYieldFunction( ), *R_ngrad.getYieldFunction( ) ) );
+
+    // Test the jacobians
+    floatType eps = 1e-6;
+
+    floatVector dPlasticMultiplierdCauchyStress( 9, 0 );
+
+    floatVector dPlasticMultiplierdF( 9, 0 );
+
+    floatVector dPlasticMultiplierdSubFs( 18, 0 );
+
+    floatType   dPlasticMultiplierdT = 0;
+
+    floatVector dPlasticMultiplierdStateVariables( 1, 0 );
+
+    floatVector dPreviousPlasticMultiplierdPreviousCauchyStress( 9, 0 );
+
+    floatVector dPreviousPlasticMultiplierdPreviousF( 9, 0 );
+
+    floatVector dPreviousPlasticMultiplierdPreviousSubFs( 18, 0 );
+
+    floatType   dPreviousPlasticMultiplierdPreviousT = 0;
+
+    floatVector dPreviousPlasticMultiplierdPreviousStateVariables( 1, 0 );
+
+    // Jacobians w.r.t. the Cauchy stress
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatVector delta( unknownVector.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
+
+        residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector + delta );
+
+        floatType dp = *R.getPlasticMultiplier( );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector - delta );
+
+        floatType dm = *R.getPlasticMultiplier( );
+
+        dPlasticMultiplierdCauchyStress[ i ] = ( dp - dm ) / ( 2 * delta[ i ] );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticMultiplierdCauchyStress, *R.getdPlasticMultiplierdCauchyStress( ) ) );
+    std::cout << "dPlasticMultiplierdCauchyStress:\n"; tardigradeVectorTools::print( dPlasticMultiplierdCauchyStress );
+
+    // Jacobians w.r.t. the deformation gradient
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatVector delta( 9, 0 );
+
+        delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
+
+        hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector );
+
+        residualMock Rp( &hydra_p, 9, 1, hydra_p.stateVariableIndices, hydra_p.viscoPlasticParameters );
+
+        residualMock Rm( &hydra_m, 9, 1, hydra_m.stateVariableIndices, hydra_m.viscoPlasticParameters );
+
+        floatType dp = *Rp.getPlasticMultiplier( );
+
+        floatType dm = *Rm.getPlasticMultiplier( );
+
+        dPlasticMultiplierdF[ i ] = ( dp - dm ) / ( 2 * delta[ i ] );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticMultiplierdF, *R.getdPlasticMultiplierdF( ) ) );
+    std::cout << "dPlasticMultiplierdF:\n"; tardigradeVectorTools::print( dPlasticMultiplierdF );
+
+    // Jacobians w.r.t. the sub-deformation gradients
+    for ( unsigned int i = 0; i < 18; i++ ){
+
+        floatVector delta( unknownVector.size( ), 0 );
+
+        delta[ i + 9 ] = eps * std::fabs( unknownVector[ i + 9 ] ) + eps;
+
+        hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector - delta );
+
+        residualMock Rp( &hydra_p, 9, 1, hydra_p.stateVariableIndices, hydra_p.viscoPlasticParameters );
+
+        residualMock Rm( &hydra_m, 9, 1, hydra_m.stateVariableIndices, hydra_m.viscoPlasticParameters );
+
+        floatType dp = *Rp.getPlasticMultiplier( );
+
+        floatType dm = *Rm.getPlasticMultiplier( );
+
+        dPlasticMultiplierdSubFs[ i ] = ( dp - dm ) / ( 2 * delta[ i + 9 ] );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticMultiplierdSubFs, *R.getdPlasticMultiplierdSubFs( ) ) );
+    std::cout << "dPlasticMultiplierdSubFs:\n"; tardigradeVectorTools::print( dPlasticMultiplierdSubFs );
+
+    // Jacobians w.r.t. the temperature
+    for ( unsigned int i = 0; i < 1; i++ ){
+
+        floatType delta = eps * std::fabs( temperature ) + eps;
+
+        hydraBaseMock hydra_p( time, deltaTime, temperature + delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydra_m( time, deltaTime, temperature - delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector );
+
+        residualMock Rp( &hydra_p, 9, 1, hydra_p.stateVariableIndices, hydra_p.viscoPlasticParameters );
+
+        residualMock Rm( &hydra_m, 9, 1, hydra_m.stateVariableIndices, hydra_m.viscoPlasticParameters );
+
+        floatType dp = *Rp.getPlasticMultiplier( );
+
+        floatType dm = *Rm.getPlasticMultiplier( );
+
+        dPlasticMultiplierdT = ( dp - dm ) / ( 2 * delta );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticMultiplierdT, *R.getdPlasticMultiplierdT( ) ) );
+    std::cout << "dPlasticMultiplierdT:\n" << dPlasticMultiplierdT << "\n";
+
+    // Jacobians w.r.t. the state variables
+    for ( unsigned int i = 0; i < hydra.stateVariableIndices.size( ); i++ ){
+
+        floatVector delta( unknownVector.size( ), 0 );
+
+        delta[ 27 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( unknownVector[ 27 + hydra.stateVariableIndices[ i ] ] ) + eps;
+
+        hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector - delta );
+
+        residualMock Rp( &hydra_p, 9, 1, hydra_p.stateVariableIndices, hydra_p.viscoPlasticParameters );
+
+        residualMock Rm( &hydra_m, 9, 1, hydra_m.stateVariableIndices, hydra_m.viscoPlasticParameters );
+
+        floatType dp = *Rp.getPlasticMultiplier( );
+
+        floatType dm = *Rm.getPlasticMultiplier( );
+
+        dPlasticMultiplierdStateVariables[ i ] = ( dp - dm ) / ( 2 * delta[ 27 + hydra.stateVariableIndices[ i ] ] );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticMultiplierdStateVariables, *R.getdPlasticMultiplierdStateVariables( ) ) );
+    std::cout << "dPlasticMultiplierdStateVariables:\n"; tardigradeVectorTools::print( dPlasticMultiplierdStateVariables );
+
+    // Jacobians w.r.t. the Previous Cauchy stress
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatVector delta( 9, 0 );
+
+        delta[ i ] = eps * std::fabs( hydra.elasticity.previousCauchyStress[ i ] ) + eps;
+
+        hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydra_p._local_deltaPreviousCauchyStress = delta;
+
+        hydra_m._local_deltaPreviousCauchyStress = -delta;
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector );
+
+        residualMock Rp( &hydra_p, 9, 1, hydra_p.stateVariableIndices, hydra_p.viscoPlasticParameters );
+
+        residualMock Rm( &hydra_m, 9, 1, hydra_m.stateVariableIndices, hydra_m.viscoPlasticParameters );
+
+        floatType dp = *Rp.getPreviousPlasticMultiplier( );
+
+        floatType dm = *Rm.getPreviousPlasticMultiplier( );
+
+        dPreviousPlasticMultiplierdPreviousCauchyStress[ i ] = ( dp - dm ) / ( 2 * delta[ i ] );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousPlasticMultiplierdPreviousCauchyStress, *R.getdPreviousPlasticMultiplierdPreviousCauchyStress( ) ) );
+    std::cout << "dPreviousPlasticMultiplierdPreviousCauchyStress:\n"; tardigradeVectorTools::print( dPreviousPlasticMultiplierdPreviousCauchyStress );
+
+    // Jacobians w.r.t. the previous deformation gradient
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatVector delta( 9, 0 );
+
+        delta[ i ] = eps * std::fabs( previousDeformationGradient[ i ] ) + eps;
+
+        hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector );
+
+        residualMock Rp( &hydra_p, 9, 1, hydra_p.stateVariableIndices, hydra_p.viscoPlasticParameters );
+
+        residualMock Rm( &hydra_m, 9, 1, hydra_m.stateVariableIndices, hydra_m.viscoPlasticParameters );
+
+        floatType dp = *Rp.getPreviousPlasticMultiplier( );
+
+        floatType dm = *Rm.getPreviousPlasticMultiplier( );
+
+        dPreviousPlasticMultiplierdPreviousF[ i ] = ( dp - dm ) / ( 2 * delta[ i ] );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousPlasticMultiplierdPreviousF, *R.getdPreviousPlasticMultiplierdPreviousF( ) ) );
+    std::cout << "dPreviousPlasticMultiplierdPreviousF:\n"; tardigradeVectorTools::print( dPreviousPlasticMultiplierdPreviousF );
+
+    // Jacobians w.r.t. the previous sub-deformation gradients
+    for ( unsigned int i = 0; i < 18; i++ ){
+
+        floatVector delta( previousStateVariables.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
+
+        hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector );
+
+        residualMock Rp( &hydra_p, 9, 1, hydra_p.stateVariableIndices, hydra_p.viscoPlasticParameters );
+
+        residualMock Rm( &hydra_m, 9, 1, hydra_m.stateVariableIndices, hydra_m.viscoPlasticParameters );
+
+        floatType dp = *Rp.getPreviousPlasticMultiplier( );
+
+        floatType dm = *Rm.getPreviousPlasticMultiplier( );
+
+        dPreviousPlasticMultiplierdPreviousSubFs[ i ] = ( dp - dm ) / ( 2 * delta[ i ] );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousPlasticMultiplierdPreviousSubFs, *R.getdPreviousPlasticMultiplierdPreviousSubFs( ) ) );
+    std::cout << "dPreviousPlasticMultiplierdPreviousSubFs:\n"; tardigradeVectorTools::print( dPreviousPlasticMultiplierdPreviousSubFs );
+
+    // Jacobians w.r.t. the temperature
+    for ( unsigned int i = 0; i < 1; i++ ){
+
+        floatType delta = eps * std::fabs( previousTemperature ) + eps;
+
+        hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature + delta, deformationGradient, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature - delta, deformationGradient, previousDeformationGradient,
+                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector );
+
+        residualMock Rp( &hydra_p, 9, 1, hydra_p.stateVariableIndices, hydra_p.viscoPlasticParameters );
+
+        residualMock Rm( &hydra_m, 9, 1, hydra_m.stateVariableIndices, hydra_m.viscoPlasticParameters );
+
+        floatType dp = *Rp.getPreviousPlasticMultiplier( );
+
+        floatType dm = *Rm.getPreviousPlasticMultiplier( );
+
+        dPreviousPlasticMultiplierdPreviousT = ( dp - dm ) / ( 2 * delta );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousPlasticMultiplierdPreviousT, *R.getdPreviousPlasticMultiplierdPreviousT( ) ) );
+    std::cout << "dPreviousPlasticMultiplierdPreviousT:\n" << dPreviousPlasticMultiplierdPreviousT << "\n";
+
+    // Jacobians w.r.t. the state variables
+    for ( unsigned int i = 0; i < hydra.stateVariableIndices.size( ); i++ ){
+
+        floatVector delta( previousStateVariables.size( ), 0 );
+
+        delta[ 18 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( previousStateVariables[ 18 + hydra.stateVariableIndices[ i ] ] ) + eps;
+
+        hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector );
+
+        residualMock Rp( &hydra_p, 9, 1, hydra_p.stateVariableIndices, hydra_p.viscoPlasticParameters );
+
+        residualMock Rm( &hydra_m, 9, 1, hydra_m.stateVariableIndices, hydra_m.viscoPlasticParameters );
+
+        floatType dp = *Rp.getPreviousPlasticMultiplier( );
+
+        floatType dm = *Rm.getPreviousPlasticMultiplier( );
+
+        dPreviousPlasticMultiplierdPreviousStateVariables[ i ] = ( dp - dm ) / ( 2 * delta[ 18 + hydra.stateVariableIndices[ i ] ] );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousPlasticMultiplierdPreviousStateVariables, *R.getdPreviousPlasticMultiplierdPreviousStateVariables( ) ) );
+    std::cout << "dPreviousPlasticMultiplierdPreviousStateVariables:\n"; tardigradeVectorTools::print( dPreviousPlasticMultiplierdPreviousStateVariables );
+    std::cout << "R.getdPreviousPlasticMultiplierdPreviousStateVariables:\n"; tardigradeVectorTools::print( *R.getdPreviousPlasticMultiplierdPreviousStateVariables( ) );
 
 }
 

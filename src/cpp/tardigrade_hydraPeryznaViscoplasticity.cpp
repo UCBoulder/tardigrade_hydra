@@ -972,7 +972,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the yield function w.r.t. the Cauchy stress
              */
 
-            setYieldFunctionDerivatives( false );
+            setdYieldFunctiondCauchyStress( false );
 
         }
 
@@ -981,7 +981,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the yield function w.r.t. the deformation gradient
              */
 
-            setYieldFunctionDerivatives( false );
+            setdYieldFunctiondF( false );
 
         }
 
@@ -990,7 +990,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the yield function w.r.t. the sub-deformation gradients
              */
 
-            setYieldFunctionDerivatives( false );
+            setdYieldFunctiondSubFs( false );
 
         }
 
@@ -1008,7 +1008,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the previous yield function w.r.t. the previous Cauchy stress
              */
 
-            setYieldFunctionDerivatives( true );
+            setdYieldFunctiondCauchyStress( true );
 
         }
 
@@ -1017,7 +1017,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the previous yield function w.r.t. the previous deformation gradient
              */
 
-            setYieldFunctionDerivatives( true );
+            setdYieldFunctiondF( true );
 
         }
 
@@ -1026,7 +1026,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the previous yield function w.r.t. the previous sub-deformation gradients
              */
 
-            setYieldFunctionDerivatives( true );
+            setdYieldFunctiondSubFs( true );
 
         }
 
