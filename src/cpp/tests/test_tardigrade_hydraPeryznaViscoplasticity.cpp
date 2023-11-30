@@ -498,7 +498,6 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDrivingStressdCauchyStress, *Rjac.getdDrivingStressdCauchyStress( ) ) );
-    std::cout << "dDrivingStressdCauchyStress:\n"; tardigradeVectorTools::print( dDrivingStressdCauchyStress );
 
     // Jacobians w.r.t. the deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -534,7 +533,6 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDrivingStressdF, *Rjac.getdDrivingStressdF( ) ) );
-    std::cout << "dDrivingStressdF:\n"; tardigradeVectorTools::print( dDrivingStressdF );
 
     // Jacobians w.r.t. the sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -570,7 +568,6 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDrivingStressdSubFs, *Rjac.getdDrivingStressdSubFs( ) ) );
-    std::cout << "dDrivingStressdSubFs:\n"; tardigradeVectorTools::print( dDrivingStressdSubFs );
 
     // Jacobians w.r.t. the Previous Cauchy stress
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -610,7 +607,6 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDrivingStressdPreviousCauchyStress, *Rjac.getdPreviousDrivingStressdPreviousCauchyStress( ) ) );
-    std::cout << "dPreviousDrivingStressdPreviousCauchyStress:\n"; tardigradeVectorTools::print( dPreviousDrivingStressdPreviousCauchyStress );
 
     // Jacobians w.r.t. the previous deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -646,7 +642,6 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDrivingStressdPreviousF, *Rjac.getdPreviousDrivingStressdPreviousF( ) ) );
-    std::cout << "dPreviousDrivingStressdPreviousF:\n"; tardigradeVectorTools::print( dPreviousDrivingStressdPreviousF );
 
     // Jacobians w.r.t. the previous sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -682,7 +677,6 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDrivingStressdPreviousSubFs, *Rjac.getdPreviousDrivingStressdPreviousSubFs( ) ) );
-    std::cout << "dPreviousDrivingStressdPreviousSubFs:\n"; tardigradeVectorTools::print( dPreviousDrivingStressdPreviousSubFs );
 }
 
 BOOST_AUTO_TEST_CASE( test_residual_getFlowDirection ){

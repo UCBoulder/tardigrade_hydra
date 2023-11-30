@@ -146,6 +146,18 @@ namespace tardigradeHydra{
 
                 void setPreviousYieldFunction( const floatType &previousYieldFunction );
 
+                void setdYieldFunctiondCauchyStress( const floatVector &dYieldFunctiondCauchyStress );
+
+                void setdYieldFunctiondF( const floatVector &dYieldFunctiondF );
+
+                void setdYieldFunctiondSubFs( const floatVector &dYieldFunctiondSubFs );
+
+                void setdPreviousYieldFunctiondPreviousCauchyStress( const floatVector &dPreviousYieldFunctiondPreviousCauchyStress );
+
+                void setdPreviousYieldFunctiondPreviousF( const floatVector &dPreviousYieldFunctiondPreviousF );
+
+                void setdPreviousYieldFunctiondPreviousSubFs( const floatVector &dPreviousYieldFunctiondPreviousSubFs );
+
                 void setPlasticThermalMultiplier( const floatType &plasticThermalMultiplier );
 
                 void setPreviousPlasticThermalMultiplier( const floatType &previousPlasticThermalMultiplier );
@@ -212,6 +224,12 @@ namespace tardigradeHydra{
 
                 const floatType* getYieldFunction( );
 
+                const floatVector* getdYieldFunctiondCauchyStress( );
+
+                const floatVector* getdYieldFunctiondF( );
+
+                const floatVector* getdYieldFunctiondSubFs( );
+
                 const floatType* getPlasticThermalMultiplier( );
 
                 const floatType* getDragStress( );
@@ -241,6 +259,12 @@ namespace tardigradeHydra{
                 const floatMatrix* getdPreviousFlowDirectiondPreviousSubFs( );
 
                 const floatType* getPreviousYieldFunction( );
+
+                const floatVector* getdPreviousYieldFunctiondPreviousCauchyStress( );
+
+                const floatVector* getdPreviousYieldFunctiondPreviousF( );
+
+                const floatVector* getdPreviousYieldFunctiondPreviousSubFs( );
 
                 const floatType* getPreviousPlasticThermalMultiplier( );
 
@@ -302,6 +326,12 @@ namespace tardigradeHydra{
 
                 virtual void setYieldFunction( );
 
+                virtual void setdYieldFunctiondCauchyStress( );
+
+                virtual void setdYieldFunctiondF( );
+
+                virtual void setdYieldFunctiondSubFs( );
+
                 virtual void setPlasticThermalMultiplier( );
 
                 virtual void setDragStress( );
@@ -331,6 +361,12 @@ namespace tardigradeHydra{
                 virtual void setdPreviousFlowDirectiondPreviousSubFs( );
 
                 virtual void setPreviousYieldFunction( );
+
+                virtual void setdPreviousYieldFunctiondPreviousCauchyStress( );
+
+                virtual void setdPreviousYieldFunctiondPreviousF( );
+
+                virtual void setdPreviousYieldFunctiondPreviousSubFs( );
 
                 virtual void setPreviousPlasticThermalMultiplier( );
 
@@ -365,6 +401,14 @@ namespace tardigradeHydra{
                 virtual void setdFlowDirectiondSubFs( const bool isPrevious );
 
                 virtual void setYieldFunction( const bool isPrevious);
+
+                virtual void setYieldFunctionDerivatives( const bool isPrevious );
+
+                virtual void setdYieldFunctiondCauchyStress( const bool isPrevious );
+
+                virtual void setdYieldFunctiondF( const bool isPrevious );
+
+                virtual void setdYieldFunctiondSubFs( const bool isPrevious );
 
                 virtual void setPlasticThermalMultiplier( const bool isPrevious );
 
@@ -432,7 +476,19 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatType > _yieldFunction;
 
+                tardigradeHydra::dataStorage< floatVector > _dYieldFunctiondCauchyStress;
+
+                tardigradeHydra::dataStorage< floatVector > _dYieldFunctiondF;
+
+                tardigradeHydra::dataStorage< floatVector > _dYieldFunctiondSubFs;
+
                 tardigradeHydra::dataStorage< floatType > _previousYieldFunction;
+
+                tardigradeHydra::dataStorage< floatVector > _dPreviousYieldFunctiondPreviousCauchyStress;
+
+                tardigradeHydra::dataStorage< floatVector > _dPreviousYieldFunctiondPreviousF;
+
+                tardigradeHydra::dataStorage< floatVector > _dPreviousYieldFunctiondPreviousSubFs;
 
                 tardigradeHydra::dataStorage< floatType > _plasticThermalMultiplier;
 

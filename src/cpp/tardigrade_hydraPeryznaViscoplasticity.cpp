@@ -421,14 +421,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              */
 
             setFlowDirection( false );
@@ -442,14 +442,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              * 
              * \param isPrevious: Flag for whether to compute the values in the previous configuration
              */
@@ -465,14 +465,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              * 
              * \param isPrevious: Flag for whether to compute the values in the previous configuration
              */
@@ -488,14 +488,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              * 
              * \param isPrevious: Flag for whether to compute the values in the previous configuration
              */
@@ -511,14 +511,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              */
 
             setdFlowDirectiondCauchyStress( false );
@@ -532,14 +532,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              */
 
             setdFlowDirectiondF( false );
@@ -553,14 +553,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              */
 
             setdFlowDirectiondSubFs( false );
@@ -574,14 +574,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              */
 
             setFlowDirection( true );
@@ -595,14 +595,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              */
 
             setdFlowDirectiondCauchyStress( true );
@@ -616,14 +616,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              */
 
             setdFlowDirectiondF( true );
@@ -637,14 +637,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              */
 
             setdFlowDirectiondSubFs( true );
@@ -658,14 +658,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              * 
              * \param isPrevious: Flag for whether to compute the values in the previous configuration
              */
@@ -715,14 +715,14 @@ namespace tardigradeHydra{
              * 
              * Current formulation is Drucker-Prager based on the potential
              * 
-             * $\f g = \hat{\sigma} + A \bar{\sigma}\f$
+             * \f$ g = \hat{\sigma} + A \bar{\sigma}\f$
              * 
              * where
              * 
-             * $\f \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
-             * $\f \bar{\sigma} = \sigma_{ii}\f$
+             * \f$ \hat{\sigma} = \sqrt{\frac{3}{2} \sigma_{ij}^{\text{dev}} \sigma_{ij}^{\text{dev}} }\f$
+             * \f$ \bar{\sigma} = \sigma_{ii}\f$
              * 
-             * $\f \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
+             * \f$ \sigma_{ij}^{\text{dev}} = \sigma_{ij} - \frac{1}{3} \bar{\sigma} \delta_{ij}\f$
              * 
              * \param isPrevious: Flag for whether to compute the values in the previous configuration
              */
@@ -946,12 +946,99 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdYieldFunctiondCauchyStress( const bool isPrevious ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the Cauchy stress
+             * 
+             * \param isPrevious: Flag for if the calculation is for the previous value (true) or the current value (false)
+             */
+
+            setYieldFunctionDerivatives( isPrevious );
+
+        }
+
+        void residual::setdYieldFunctiondF( const bool isPrevious ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the deformation gradient
+             * 
+             * \param isPrevious: Flag for if the calculation is for the previous value (true) or the current value (false)
+             */
+
+            setYieldFunctionDerivatives( isPrevious );
+
+        }
+
+        void residual::setdYieldFunctiondSubFs( const bool isPrevious ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the sub-deformation gradients
+             * 
+             * \param isPrevious: Flag for if the calculation is for the previous value (true) or the current value (false)
+             */
+
+            setYieldFunctionDerivatives( isPrevious );
+
+        }
+
+        void residual::setdYieldFunctiondCauchyStress( ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the Cauchy stress
+             */
+
+            setYieldFunctionDerivatives( false );
+
+        }
+
+        void residual::setdYieldFunctiondF( ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the deformation gradient
+             */
+
+            setYieldFunctionDerivatives( false );
+
+        }
+
+        void residual::setdYieldFunctiondSubFs( ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the sub-deformation gradients
+             */
+
+            setYieldFunctionDerivatives( false );
+
+        }
+
         void residual::setPreviousYieldFunction( ){
             /*!
              * Set the value of the yield function
              */
 
             setYieldFunction( true );
+
+        }
+
+        void residual::setdPreviousYieldFunctiondPreviousCauchyStress( ){
+            /*!
+             * Set the value of the derivative of the previous yield function w.r.t. the previous Cauchy stress
+             */
+
+            setYieldFunctionDerivatives( true );
+
+        }
+
+        void residual::setdPreviousYieldFunctiondPreviousF( ){
+            /*!
+             * Set the value of the derivative of the previous yield function w.r.t. the previous deformation gradient
+             */
+
+            setYieldFunctionDerivatives( true );
+
+        }
+
+        void residual::setdPreviousYieldFunctiondPreviousSubFs( ){
+            /*!
+             * Set the value of the derivative of the previous yield function w.r.t. the previous sub-deformation gradients
+             */
+
+            setYieldFunctionDerivatives( true );
 
         }
 
@@ -996,6 +1083,86 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setYieldFunctionDerivatives( const bool isPrevious ){
+            /*!
+             * Set the value of the yield function derivatives
+             * 
+             * \param isPrevious: Flag for whether this is the previous timestep
+             */
+
+            const floatVector* drivingStress;
+
+            const floatMatrix* dDrivingStressdCauchyStress;
+
+            const floatMatrix* dDrivingStressdF;
+
+            const floatMatrix* dDrivingStressdSubFs;
+
+            const floatVector* yieldParameters;
+
+            floatType yieldFunction;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = getdPreviousDrivingStressdPreviousCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = getdPreviousDrivingStressdPreviousF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = getdPreviousDrivingStressdPreviousSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getPreviousDrivingStress( ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = getdDrivingStressdCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = getdDrivingStressdF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = getdDrivingStressdSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getDrivingStress( ) );
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( yieldParameters = getYieldParameters( ) );
+
+            floatVector dYieldFunctiondDrivingStress( drivingStress->size( ), 0 );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( *drivingStress, ( *yieldParameters )[ 1 ], ( *yieldParameters )[ 0 ], yieldFunction, dYieldFunctiondDrivingStress ) );
+
+            floatVector dYieldFunctiondCauchyStress = tardigradeVectorTools::Tdot( *dDrivingStressdCauchyStress, dYieldFunctiondDrivingStress );
+ 
+            floatVector dYieldFunctiondF = tardigradeVectorTools::Tdot( *dDrivingStressdF, dYieldFunctiondDrivingStress );
+
+            floatVector dYieldFunctiondSubFs = tardigradeVectorTools::Tdot( *dDrivingStressdSubFs, dYieldFunctiondDrivingStress );
+
+            if ( isPrevious ){
+
+                setPreviousYieldFunction( yieldFunction );
+
+                setdPreviousYieldFunctiondPreviousCauchyStress( dYieldFunctiondCauchyStress );
+
+                setdPreviousYieldFunctiondPreviousF( dYieldFunctiondF );
+
+                setdPreviousYieldFunctiondPreviousSubFs( dYieldFunctiondSubFs );
+
+            }
+            else{
+
+                setYieldFunction( yieldFunction );
+
+                setdYieldFunctiondCauchyStress( dYieldFunctiondCauchyStress );
+
+                setdYieldFunctiondF( dYieldFunctiondF );
+
+                setdYieldFunctiondSubFs( dYieldFunctiondSubFs );
+
+            }
+
+        }
+
+
         void residual::setYieldFunction( const floatType &yieldFunction ){
             /*!
              * Set the value of the yield function
@@ -1009,6 +1176,45 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdYieldFunctiondCauchyStress( const floatVector &dYieldFunctiondCauchyStress ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the Cauchy stress
+             */
+
+            _dYieldFunctiondCauchyStress.second = dYieldFunctiondCauchyStress;
+
+            _dYieldFunctiondCauchyStress.first = true;
+
+            addIterationData( &_dYieldFunctiondCauchyStress );
+
+        }
+
+        void residual::setdYieldFunctiondF( const floatVector &dYieldFunctiondF ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the deformation gradient
+             */
+
+            _dYieldFunctiondF.second = dYieldFunctiondF;
+
+            _dYieldFunctiondF.first = true;
+
+            addIterationData( &_dYieldFunctiondF );
+
+        }
+
+        void residual::setdYieldFunctiondSubFs( const floatVector &dYieldFunctiondSubFs ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the sub-deformation gradients
+             */
+
+            _dYieldFunctiondSubFs.second = dYieldFunctiondSubFs;
+
+            _dYieldFunctiondSubFs.first = true;
+
+            addIterationData( &_dYieldFunctiondSubFs );
+
+        }
+
         void residual::setPreviousYieldFunction( const floatType &previousYieldFunction ){
             /*!
              * Set the value of the previous yield function
@@ -1017,6 +1223,45 @@ namespace tardigradeHydra{
             _previousYieldFunction.second = previousYieldFunction;
 
             _previousYieldFunction.first = true;
+
+        }
+
+        void residual::setdPreviousYieldFunctiondPreviousCauchyStress( const floatVector &dPreviousYieldFunctiondPreviousCauchyStress ){
+            /*!
+             * Set the value of the derivative of the previous yield function w.r.t. the previous Cauchy stress
+             */
+
+            _dPreviousYieldFunctiondPreviousCauchyStress.second = dPreviousYieldFunctiondPreviousCauchyStress;
+
+            _dPreviousYieldFunctiondPreviousCauchyStress.first = true;
+
+            addIterationData( &_dPreviousYieldFunctiondPreviousCauchyStress );
+
+        }
+
+        void residual::setdPreviousYieldFunctiondPreviousF( const floatVector &dPreviousYieldFunctiondPreviousF ){
+            /*!
+             * Set the value of the derivative of the previous yield function w.r.t. the previous deformation gradient
+             */
+
+            _dPreviousYieldFunctiondPreviousF.second = dPreviousYieldFunctiondPreviousF;
+
+            _dPreviousYieldFunctiondPreviousF.first = true;
+
+            addIterationData( &_dPreviousYieldFunctiondPreviousF );
+
+        }
+
+        void residual::setdPreviousYieldFunctiondPreviousSubFs( const floatVector &dPreviousYieldFunctiondPreviousSubFs ){
+            /*!
+             * Set the value of the derivative of the previous yield function w.r.t. the previous sub-deformation gradients
+             */
+
+            _dPreviousYieldFunctiondPreviousSubFs.second = dPreviousYieldFunctiondPreviousSubFs;
+
+            _dPreviousYieldFunctiondPreviousSubFs.first = true;
+
+            addIterationData( &_dPreviousYieldFunctiondPreviousSubFs );
 
         }
 
@@ -2019,6 +2264,96 @@ namespace tardigradeHydra{
             }
 
             return &_yieldFunction.second;
+
+        }
+
+        const floatVector* residual::getdYieldFunctiondCauchyStress( ){
+            /*!
+             * Get the value of the derivative of the yield function w.r.t. the Cauchy stress
+             */
+
+            if ( !_dYieldFunctiondCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdYieldFunctiondCauchyStress( ) );
+
+            }
+
+            return &_dYieldFunctiondCauchyStress.second;
+
+        }
+
+        const floatVector* residual::getdYieldFunctiondF( ){
+            /*!
+             * Get the value of the derivative of the yield function w.r.t. the deformation gradient
+             */
+
+            if ( !_dYieldFunctiondF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdYieldFunctiondF( ) );
+
+            }
+
+            return &_dYieldFunctiondF.second;
+
+        }
+
+        const floatVector* residual::getdYieldFunctiondSubFs( ){
+            /*!
+             * Get the value of the derivative of the yield function w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_dYieldFunctiondSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdYieldFunctiondSubFs( ) );
+
+            }
+
+            return &_dYieldFunctiondSubFs.second;
+
+        }
+
+        const floatVector* residual::getdPreviousYieldFunctiondPreviousCauchyStress( ){
+            /*!
+             * Get the value of the derivative of the previous yield function w.r.t. the previous Cauchy stress
+             */
+
+            if ( !_dPreviousYieldFunctiondPreviousCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousYieldFunctiondPreviousCauchyStress( ) );
+
+            }
+
+            return &_dPreviousYieldFunctiondPreviousCauchyStress.second;
+
+        }
+
+        const floatVector* residual::getdPreviousYieldFunctiondPreviousF( ){
+            /*!
+             * Get the value of the derivative of the previous yield function w.r.t. the previous deformation gradient
+             */
+
+            if ( !_dPreviousYieldFunctiondPreviousF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousYieldFunctiondPreviousF( ) );
+
+            }
+
+            return &_dPreviousYieldFunctiondPreviousF.second;
+
+        }
+
+        const floatVector* residual::getdPreviousYieldFunctiondPreviousSubFs( ){
+            /*!
+             * Get the value of the derivative of the previous yield function w.r.t. the previous sub-deformation gradients
+             */
+
+            if ( !_dPreviousYieldFunctiondPreviousSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousYieldFunctiondPreviousSubFs( ) );
+
+            }
+
+            return &_dPreviousYieldFunctiondPreviousSubFs.second;
 
         }
 
