@@ -184,7 +184,27 @@ namespace tardigradeHydra{
 
                 void setPlasticMultiplier( const floatType &plasticMultiplier );
 
+                void setdPlasticMultiplierdCauchyStress( const floatVector &dPlasticMultiplierdCauchyStress );
+
+                void setdPlasticMultiplierdF( const floatVector &dPlasticMultiplierdF );
+
+                void setdPlasticMultiplierdSubFs( const floatVector &dPlasticMultiplierdSubFs );
+
+                void setdPlasticMultiplierdT( const floatType &dPlasticMultiplierdT );
+
+                void setdPlasticMultiplierdStateVariables( const floatVector &dPlasticMultiplierdStateVariables );
+
                 void setPreviousPlasticMultiplier( const floatType &previousPlasticMultiplier );
+
+                void setdPreviousPlasticMultiplierdPreviousCauchyStress( const floatVector &dPreviousPlasticMultiplierdPreviousCauchyStress );
+
+                void setdPreviousPlasticMultiplierdPreviousF( const floatVector &dPreviousPlasticMultiplierdPreviousF );
+
+                void setdPreviousPlasticMultiplierdPreviousSubFs( const floatVector &dPreviousPlasticMultiplierdPreviousSubFs );
+
+                void setdPreviousPlasticMultiplierdPreviousT( const floatType &dPreviousPlasticMultiplierdPreviousT );
+
+                void setdPreviousPlasticMultiplierdPreviousStateVariables( const floatVector &dPreviousPlasticMultiplierdPreviousStateVariables );
 
                 void setVelocityGradient( const floatVector &velocityGradient );
 
@@ -256,6 +276,16 @@ namespace tardigradeHydra{
 
                 const floatType* getPlasticMultiplier( );
 
+                const floatVector* getdPlasticMultiplierdCauchyStress( );
+
+                const floatVector* getdPlasticMultiplierdF( );
+
+                const floatVector* getdPlasticMultiplierdSubFs( );
+
+                const floatType* getdPlasticMultiplierdT( );
+
+                const floatVector* getdPlasticMultiplierdStateVariables( );
+
                 const floatVector* getVelocityGradient( );
 
                 const floatVector* getStateVariableEvolutionRates( );
@@ -297,6 +327,16 @@ namespace tardigradeHydra{
                 const floatVector* getdPreviousHardeningFunctiondPreviousStateVariables( );
 
                 const floatType* getPreviousPlasticMultiplier( );
+
+                const floatVector* getdPreviousPlasticMultiplierdPreviousCauchyStress( );
+
+                const floatVector* getdPreviousPlasticMultiplierdPreviousF( );
+
+                const floatVector* getdPreviousPlasticMultiplierdPreviousSubFs( );
+
+                const floatType* getdPreviousPlasticMultiplierdPreviousT( );
+
+                const floatVector* getdPreviousPlasticMultiplierdPreviousStateVariables( );
 
                 const floatVector* getPreviousVelocityGradient( );
 
@@ -370,6 +410,16 @@ namespace tardigradeHydra{
 
                 virtual void setPlasticMultiplier( );
 
+                virtual void setdPlasticMultiplierdCauchyStress( );
+
+                virtual void setdPlasticMultiplierdF( );
+
+                virtual void setdPlasticMultiplierdSubFs( );
+
+                virtual void setdPlasticMultiplierdT( );
+
+                virtual void setdPlasticMultiplierdStateVariables( );
+
                 virtual void setVelocityGradient( );
 
                 virtual void setStateVariableEvolutionRates( );
@@ -411,6 +461,16 @@ namespace tardigradeHydra{
                 virtual void setdPreviousHardeningFunctiondPreviousStateVariables( );
 
                 virtual void setPreviousPlasticMultiplier( );
+
+                virtual void setdPreviousPlasticMultiplierdPreviousCauchyStress( );
+
+                virtual void setdPreviousPlasticMultiplierdPreviousF( );
+
+                virtual void setdPreviousPlasticMultiplierdPreviousSubFs( );
+
+                virtual void setdPreviousPlasticMultiplierdPreviousT( );
+
+                virtual void setdPreviousPlasticMultiplierdPreviousStateVariables( );
 
                 virtual void setPreviousVelocityGradient( );
 
@@ -465,6 +525,18 @@ namespace tardigradeHydra{
                 virtual void setdHardeningFunctiondStateVariables( const bool isPrevious );
 
                 virtual void setPlasticMultiplier( const bool isPrevious );
+
+                virtual void setPlasticMultiplierDerivatives( const bool isPrevious );
+
+                virtual void setdPlasticMultiplierdCauchyStress( const bool isPrevious );
+
+                virtual void setdPlasticMultiplierdF( const bool isPrevious );
+
+                virtual void setdPlasticMultiplierdSubFs( const bool isPrevious );
+
+                virtual void setdPlasticMultiplierdT( const bool isPrevious );
+
+                virtual void setdPlasticMultiplierdStateVariables( const bool isPrevious );
 
                 virtual void setVelocityGradient( const bool isPrevious );
 
@@ -564,7 +636,27 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatType > _plasticMultiplier;
 
+                tardigradeHydra::dataStorage< floatVector > _dPlasticMultiplierdCauchyStress;
+
+                tardigradeHydra::dataStorage< floatVector > _dPlasticMultiplierdF;
+
+                tardigradeHydra::dataStorage< floatVector > _dPlasticMultiplierdSubFs;
+
+                tardigradeHydra::dataStorage< floatType > _dPlasticMultiplierdT;
+
+                tardigradeHydra::dataStorage< floatVector > _dPlasticMultiplierdStateVariables;
+
                 tardigradeHydra::dataStorage< floatType > _previousPlasticMultiplier;
+
+                tardigradeHydra::dataStorage< floatVector > _dPreviousPlasticMultiplierdPreviousCauchyStress;
+
+                tardigradeHydra::dataStorage< floatVector > _dPreviousPlasticMultiplierdPreviousF;
+
+                tardigradeHydra::dataStorage< floatVector > _dPreviousPlasticMultiplierdPreviousSubFs;
+
+                tardigradeHydra::dataStorage< floatType > _dPreviousPlasticMultiplierdPreviousT;
+
+                tardigradeHydra::dataStorage< floatVector > _dPreviousPlasticMultiplierdPreviousStateVariables;
 
                 tardigradeHydra::dataStorage< floatVector > _velocityGradient;
 
