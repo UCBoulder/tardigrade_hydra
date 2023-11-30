@@ -162,6 +162,10 @@ namespace tardigradeHydra{
 
                 void setPreviousPlasticThermalMultiplier( const floatType &previousPlasticThermalMultiplier );
 
+                void setdPlasticThermalMultiplierdT( const floatType &dPlasticThermalMultiplierdT );
+
+                void setdPreviousPlasticThermalMultiplierdPreviousT( const floatType &dPreviousPlasticThermalMultiplierdPreviousT );
+
                 void setDragStress( const floatType &dragStress );
 
                 void setPreviousDragStress( const floatType &previousDragStress );
@@ -232,6 +236,8 @@ namespace tardigradeHydra{
 
                 const floatType* getPlasticThermalMultiplier( );
 
+                const floatType* getdPlasticThermalMultiplierdT( );
+
                 const floatType* getDragStress( );
 
                 const floatType* getHardeningFunction( );
@@ -267,6 +273,8 @@ namespace tardigradeHydra{
                 const floatVector* getdPreviousYieldFunctiondPreviousSubFs( );
 
                 const floatType* getPreviousPlasticThermalMultiplier( );
+
+                const floatType* getdPreviousPlasticThermalMultiplierdPreviousT( );
 
                 const floatType* getPreviousDragStress( );
 
@@ -334,6 +342,8 @@ namespace tardigradeHydra{
 
                 virtual void setPlasticThermalMultiplier( );
 
+                virtual void setdPlasticThermalMultiplierdT( );
+
                 virtual void setDragStress( );
 
                 virtual void setHardeningFunction( );
@@ -369,6 +379,8 @@ namespace tardigradeHydra{
                 virtual void setdPreviousYieldFunctiondPreviousSubFs( );
 
                 virtual void setPreviousPlasticThermalMultiplier( );
+
+                virtual void setdPreviousPlasticThermalMultiplierdPreviousT( );
 
                 virtual void setPreviousDragStress( );
 
@@ -411,6 +423,10 @@ namespace tardigradeHydra{
                 virtual void setdYieldFunctiondSubFs( const bool isPrevious );
 
                 virtual void setPlasticThermalMultiplier( const bool isPrevious );
+
+                virtual void setPlasticThermalMultiplierDerivatives( const bool isPrevious );
+
+                virtual void setdPlasticThermalMultiplierdT( const bool isPrevious );
 
                 virtual void setDragStress( const bool isPrevious );
 
@@ -492,7 +508,11 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatType > _plasticThermalMultiplier;
 
+                tardigradeHydra::dataStorage< floatType > _dPlasticThermalMultiplierdT;
+
                 tardigradeHydra::dataStorage< floatType > _previousPlasticThermalMultiplier;
+
+                tardigradeHydra::dataStorage< floatType > _dPreviousPlasticThermalMultiplierdPreviousT;
 
                 tardigradeHydra::dataStorage< floatType > _dragStress;
 

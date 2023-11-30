@@ -1845,6 +1845,12 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticThermalMultiplier ){
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
 
+    residualMock Rjac( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+    Rjac.getdPlasticThermalMultiplierdT( );
+
+    Rjac.getdPreviousPlasticThermalMultiplierdPreviousT( );
+
     floatType exp = ( -hydra.viscoPlasticParameters[ 3 ] * ( temperature - hydra.viscoPlasticParameters[ 5 ] ) / ( hydra.viscoPlasticParameters[ 4 ] + temperature - hydra.viscoPlasticParameters[ 5 ] ) );
 
     floatType answer = std::pow( 10, exp );
@@ -1856,6 +1862,65 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticThermalMultiplier ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getPlasticThermalMultiplier( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousPlasticThermalMultiplier( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rjac.getPlasticThermalMultiplier( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *Rjac.getPreviousPlasticThermalMultiplier( ) ) );
+
+    // Check the Jacobians w.r.t. the temperature
+    floatType eps = 1e-6;
+
+    floatType dPlasticThermalMultiplierdT = 0;
+
+    for ( unsigned int i = 0; i < 1; i++ ){
+
+        floatType delta = eps * std::fabs( temperature ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature + delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature - delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        residualMock Rp( &hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+        residualMock Rm( &hydram, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+        floatType dp = *Rp.getPlasticThermalMultiplier( );
+
+        floatType dm = *Rm.getPlasticThermalMultiplier( );
+
+        dPlasticThermalMultiplierdT = ( dp - dm ) / ( 2 * delta );
+
+    }
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticThermalMultiplierdT, *Rjac.getdPlasticThermalMultiplierdT( ) ) );
+    std::cout << "dPlasticThermalMultiplierdT: " << dPlasticThermalMultiplierdT << "\n";
+
+    floatType dPreviousPlasticThermalMultiplierdPreviousT = 0;
+
+    for ( unsigned int i = 0; i < 1; i++ ){
+
+        floatType delta = eps * std::fabs( previousTemperature ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature + delta, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature - delta, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        residualMock Rp( &hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+        residualMock Rm( &hydram, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+        floatType dp = *Rp.getPreviousPlasticThermalMultiplier( );
+
+        floatType dm = *Rm.getPreviousPlasticThermalMultiplier( );
+
+        dPreviousPlasticThermalMultiplierdPreviousT += ( dp - dm ) / ( 2 * delta );
+
+    }
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousPlasticThermalMultiplierdPreviousT, *Rjac.getdPreviousPlasticThermalMultiplierdPreviousT( ) ) );
+    std::cout << "dPreviousPlasticThermalMultiplierdPreviousT: " << dPreviousPlasticThermalMultiplierdPreviousT << "\n";
 
 }
 

@@ -378,8 +378,6 @@ namespace tardigradeHydra{
 
             _dPreviousDrivingStressdPreviousCauchyStress.first = true;
 
-            addIterationData( &_dPreviousDrivingStressdPreviousCauchyStress );
-
         }
 
         void residual::setdPreviousDrivingStressdPreviousF( const floatMatrix &dPreviousDrivingStressdPreviousF ){
@@ -394,8 +392,6 @@ namespace tardigradeHydra{
 
             _dPreviousDrivingStressdPreviousF.first = true;
 
-            addIterationData( &_dPreviousDrivingStressdPreviousF );
-
         }
 
         void residual::setdPreviousDrivingStressdPreviousSubFs( const floatMatrix &dPreviousDrivingStressdPreviousSubFs ){
@@ -409,8 +405,6 @@ namespace tardigradeHydra{
             _dPreviousDrivingStressdPreviousSubFs.second = dPreviousDrivingStressdPreviousSubFs;
 
             _dPreviousDrivingStressdPreviousSubFs.first = true;
-
-            addIterationData( &_dPreviousDrivingStressdPreviousSubFs );
 
         }
 
@@ -899,8 +893,6 @@ namespace tardigradeHydra{
 
             _dPreviousFlowDirectiondPreviousCauchyStress.first = true;
 
-            addIterationData( &_dPreviousFlowDirectiondPreviousCauchyStress );
-
         }
 
         void residual::setdPreviousFlowDirectiondPreviousF( const floatMatrix &dPreviousFlowDirectiondPreviousF ){
@@ -916,8 +908,6 @@ namespace tardigradeHydra{
 
             _dPreviousFlowDirectiondPreviousF.first = true;
 
-            addIterationData( &_dPreviousFlowDirectiondPreviousF );
-
         }
 
         void residual::setdPreviousFlowDirectiondPreviousSubFs( const floatMatrix &dPreviousFlowDirectiondPreviousSubFs ){
@@ -932,8 +922,6 @@ namespace tardigradeHydra{
             _dPreviousFlowDirectiondPreviousSubFs.second = dPreviousFlowDirectiondPreviousSubFs;
 
             _dPreviousFlowDirectiondPreviousSubFs.first = true;
-
-            addIterationData( &_dPreviousFlowDirectiondPreviousSubFs );
 
         }
 
@@ -1235,8 +1223,6 @@ namespace tardigradeHydra{
 
             _dPreviousYieldFunctiondPreviousCauchyStress.first = true;
 
-            addIterationData( &_dPreviousYieldFunctiondPreviousCauchyStress );
-
         }
 
         void residual::setdPreviousYieldFunctiondPreviousF( const floatVector &dPreviousYieldFunctiondPreviousF ){
@@ -1247,8 +1233,6 @@ namespace tardigradeHydra{
             _dPreviousYieldFunctiondPreviousF.second = dPreviousYieldFunctiondPreviousF;
 
             _dPreviousYieldFunctiondPreviousF.first = true;
-
-            addIterationData( &_dPreviousYieldFunctiondPreviousF );
 
         }
 
@@ -1261,8 +1245,6 @@ namespace tardigradeHydra{
 
             _dPreviousYieldFunctiondPreviousSubFs.first = true;
 
-            addIterationData( &_dPreviousYieldFunctiondPreviousSubFs );
-
         }
 
         void residual::setPlasticThermalMultiplier( ){
@@ -1274,18 +1256,49 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPlasticThermalMultiplierdT( ){
+            /*!
+             * Set the derivative of the plastic thermal multiplier w.r.t. the temperature
+             */
+
+            setdPlasticThermalMultiplierdT( false );
+
+        }
+
         void residual::setPreviousPlasticThermalMultiplier( ){
             /*!
-             * Set the plastic thermal multiplier
+             * Set the previous plastic thermal multiplier
              */
 
             setPlasticThermalMultiplier( true );
 
         }
 
+        void residual::setdPreviousPlasticThermalMultiplierdPreviousT( ){
+            /*!
+             * Set the derivative of the previous plastic thermal multiplier w.r.t. the pervious temperature
+             */
+
+            setdPlasticThermalMultiplierdT( true );
+
+        }
+
+        void residual::setdPlasticThermalMultiplierdT( const bool isPrevious ){
+            /*!
+             * Set the derivative of the plastic thermal multiplier w.r.t. the temperature
+             * 
+             * \param isPrevious: A flag for if the derivative is to be computed for the previous (True) or current (False) plastic thermal multiplier
+             */
+
+            setPlasticThermalMultiplierDerivatives( isPrevious );
+
+        }
+
         void residual::setPlasticThermalMultiplier( const bool isPrevious ){
             /*!
              * Set the plastic thermal multiplier
+             * 
+             * \param isPrevious: A flag for if the values are to be computed for the previous (True) or current (False) plastic thermal multiplier
              */
 
             const floatType *temperature;
@@ -1322,9 +1335,59 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPlasticThermalMultiplierDerivatives( const bool isPrevious ){
+            /*!
+             * Set the derivatives of the plastic thermal multiplier
+             * 
+             * \param isPrevious: A flag for if the values are to be computed for the previous (True) or current (False) plastic thermal multiplier
+             */
+
+            const floatType *temperature;
+
+            const floatVector *temperatureParameters;
+
+            floatType plasticThermalMultiplier;
+
+            floatType dPlasticThermalMultiplierdT;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( temperature = hydra->getPreviousTemperature( ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( temperature = hydra->getTemperature( ) );
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( temperatureParameters = getThermalParameters( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::WLF( *temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] }, plasticThermalMultiplier, dPlasticThermalMultiplierdT ) ); 
+
+            if ( isPrevious ){
+
+                setPreviousPlasticThermalMultiplier( plasticThermalMultiplier );
+
+                setdPreviousPlasticThermalMultiplierdPreviousT( dPlasticThermalMultiplierdT );
+
+            }
+            else{
+
+                setPlasticThermalMultiplier( plasticThermalMultiplier );
+
+                setdPlasticThermalMultiplierdT( dPlasticThermalMultiplierdT );
+
+            }
+
+        }
+
+
         void residual::setPlasticThermalMultiplier( const floatType &plasticThermalMultiplier ){
             /*!
              * Set the plastic thermal multiplier
+             * 
+             * \param &plasticThermalMultiplier: The multiplicative term which gives the evolution equation temperature dependence
              */
 
             _plasticThermalMultiplier.second = plasticThermalMultiplier;
@@ -1335,14 +1398,44 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPlasticThermalMultiplierdT( const floatType &dPlasticThermalMultiplierdT ){
+            /*!
+             * Set the derivative of the plastic thermal multiplier w.r.t. the temperature
+             * 
+             * \param &dPlasticThermalMultiplierdT: The derivative of the plastic thermal multiplier w.r.t. temperature
+             */
+
+            _dPlasticThermalMultiplierdT.second = dPlasticThermalMultiplierdT;
+
+            _dPlasticThermalMultiplierdT.first = true;
+
+            addIterationData( &_dPlasticThermalMultiplierdT );
+
+        }
+
         void residual::setPreviousPlasticThermalMultiplier( const floatType &previousPlasticThermalMultiplier ){
             /*!
              * Set the previous plastic thermal multiplier
+             * 
+             * \param &previousPlasticThermalMultiplier: The previous value of the multiplicative term which gives the evolution equation temperature dependence
              */
 
             _previousPlasticThermalMultiplier.second = previousPlasticThermalMultiplier;
 
             _previousPlasticThermalMultiplier.first = true;
+
+        }
+
+        void residual::setdPreviousPlasticThermalMultiplierdPreviousT( const floatType &dPreviousPlasticThermalMultiplierdPreviousT ){
+            /*!
+             * Set the previous plastic thermal multiplier
+             * 
+             * \param &dPreviousPlasticThermalMultiplierdPreviousT: The derivative of the previous plastic thermal multiplier w.r.t. the previous temperature
+             */
+
+            _dPreviousPlasticThermalMultiplierdPreviousT.second = dPreviousPlasticThermalMultiplierdPreviousT;
+
+            _dPreviousPlasticThermalMultiplierdPreviousT.first = true;
 
         }
 
@@ -2372,6 +2465,21 @@ namespace tardigradeHydra{
 
         }
 
+        const floatType* residual::getdPlasticThermalMultiplierdT( ){
+            /*!
+             * Get the value of the derivative of the plastic thermal multiplier w.r.t. the temperature
+             */
+
+            if ( !_dPlasticThermalMultiplierdT.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticThermalMultiplierdT( ) );
+
+            }
+
+            return &_dPlasticThermalMultiplierdT.second;
+
+        }
+
         const floatType* residual::getDragStress( ){
             /*!
              * Get the drag stress
@@ -2639,6 +2747,21 @@ namespace tardigradeHydra{
             }
 
             return &_previousPlasticThermalMultiplier.second;
+
+        }
+
+        const floatType* residual::getdPreviousPlasticThermalMultiplierdPreviousT( ){
+            /*!
+             * Get the previous value of the derivative of the plastic thermal multiplier w.r.t. the previous temperature
+             */
+
+            if ( !_dPreviousPlasticThermalMultiplierdPreviousT.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticThermalMultiplierdPreviousT( ) );
+
+            }
+
+            return &_dPreviousPlasticThermalMultiplierdPreviousT.second;
 
         }
 
