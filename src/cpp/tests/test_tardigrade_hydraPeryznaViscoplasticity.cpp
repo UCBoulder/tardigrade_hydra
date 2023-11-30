@@ -142,6 +142,14 @@ namespace tardigradeHydra{
 
                             BOOST_CHECK( &R._dPreviousYieldFunctiondPreviousSubFs.second == R.getdPreviousYieldFunctiondPreviousSubFs( ) );
 
+                            BOOST_CHECK( &R._dPlasticThermalMultiplierdT.second == R.getdPlasticThermalMultiplierdT( ) );
+
+                            BOOST_CHECK( &R._dPreviousPlasticThermalMultiplierdPreviousT.second == R.getdPreviousPlasticThermalMultiplierdPreviousT( ) );
+
+                            BOOST_CHECK( &R._dDragStressdStateVariables.second == R.getdDragStressdStateVariables( ) );
+
+                            BOOST_CHECK( &R._dPreviousDragStressdPreviousStateVariables.second == R.getdPreviousDragStressdPreviousStateVariables( ) );
+
                         }
                         catch( std::exception &e ){
 
@@ -2069,6 +2077,237 @@ BOOST_AUTO_TEST_CASE( test_residual_getDragStress ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getDragStress( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousDragStress( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_getDragStress_jacobian ){
+    /*!
+     * Test of computing the drag stress
+     */
+
+    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+
+        public:
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+
+            floatVector stateVariables = { 0.6 };
+
+            floatVector previousStateVariables = { 0.9 };
+
+        private:
+
+            virtual void setStateVariables( const bool isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setPreviousStateVariables( previousStateVariables );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::setStateVariables( stateVariables );
+
+                }
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+    
+            floatVector elasticityParameters = { 123.4, 56.7 };
+
+            floatVector viscoPlasticParameters = { 10.0,
+                                                   1e1, 1e2,
+                                                   10, 200, 293.15,
+                                                   5, 0.34,
+                                                   0.12,
+                                                   13., 14.};
+
+            floatVector _local_stateVariableDelta = { 0 };                                                   
+
+            floatVector _local_previousStateVariableDelta = { 0 };                                                   
+
+            std::vector< unsigned int > stateVariableIndices = { 2 };
+
+            floatVector thermalParameters = { 293.15, 1e-5, 2e-5, 3e-5, 4e-5, 5e-5, 6e-5, 7e-5, 8e-5, 9e-5, 10e-5, 11e-5, 12e-5 };
+    
+            tardigradeHydra::linearElasticity::residual elasticity;
+    
+            residualMock viscoPlasticity;
+
+            tardigradeHydra::thermalExpansion::residual thermalExpansion;
+    
+            tardigradeHydra::residualBase remainder;
+    
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+    
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+    
+            }
+
+        private:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 4 );
+
+                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+
+                viscoPlasticity = residualMock( this, 9, 1, stateVariableIndices, viscoPlasticParameters );
+
+                viscoPlasticity.stateVariables += _local_stateVariableDelta;
+
+                viscoPlasticity.previousStateVariables += _local_previousStateVariableDelta;
+
+                thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
+
+                remainder = tardigradeHydra::residualBase( this, 4 );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &viscoPlasticity;
+
+                residuals[ 2 ] = &thermalExpansion;
+
+                residuals[ 3 ] = &remainder;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
+
+    floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+
+    floatVector unknownVector = { 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                  1.2, 0.0, 0.0,
+                                  0.0, 1.0, 0.0,
+                                  0.0, 0.0, 1.0,
+                                  1.01, 0.0, 0.0,
+                                  0.0,  1.2, 0.0,
+                                  0.0,  0.0, 0.9,
+                                  4, 5, 6, 7, 8 };
+
+    unsigned int numConfigurations = 3;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+    residualMock Rjac( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+    floatType answer = hydra.viscoPlasticParameters[ 1 ] + R.stateVariables[ 0 ] * hydra.viscoPlasticParameters[ 2 ];
+
+    floatType answer2 = hydra.viscoPlasticParameters[ 1 ] + R.previousStateVariables[ 0 ] * hydra.viscoPlasticParameters[ 2 ];
+
+    Rjac.getdDragStressdStateVariables( );
+
+    Rjac.getdPreviousDragStressdPreviousStateVariables( );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getDragStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousDragStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rjac.getDragStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *Rjac.getPreviousDragStress( ) ) );
+
+    floatType eps = 1e-6;
+
+    floatVector dDragStressdStateVariables( R.stateVariables.size( ), 0 );
+
+    for ( unsigned int i = 0; i < R.stateVariables.size( ); i++ ){
+
+        floatVector delta = floatVector( R.stateVariables.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( R.stateVariables[ i ] ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        residualMock Rp( &hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+        residualMock Rm( &hydram, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+        Rp.stateVariables += delta;
+
+        Rm.stateVariables -= delta;
+
+        floatType dp = *Rp.getDragStress( );
+
+        floatType dm = *Rm.getDragStress( );
+
+        dDragStressdStateVariables[ i ] = ( dp - dm ) / ( 2 * delta[ i ] );
+
+    }
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDragStressdStateVariables, *Rjac.getdDragStressdStateVariables( ) ) );
+    std::cout << "dDragStressdStateVariables: "; tardigradeVectorTools::print( dDragStressdStateVariables );
+
+    floatVector dPreviousDragStressdPreviousStateVariables( R.previousStateVariables.size( ), 0 );
+
+    for ( unsigned int i = 0; i < R.previousStateVariables.size( ); i++ ){
+
+        floatVector delta = floatVector( R.previousStateVariables.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( R.previousStateVariables[ i ] ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        residualMock Rp( &hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+        residualMock Rm( &hydram, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+        Rp.stateVariables += delta;
+
+        Rm.stateVariables -= delta;
+
+        floatType dp = *Rp.getDragStress( );
+
+        floatType dm = *Rm.getDragStress( );
+
+        dPreviousDragStressdPreviousStateVariables[ i ] = ( dp - dm ) / ( 2 * delta[ i ] );
+
+    }
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDragStressdPreviousStateVariables, *Rjac.getdPreviousDragStressdPreviousStateVariables( ) ) );
+    std::cout << "dPreviousDragStressdPreviousStateVariables: "; tardigradeVectorTools::print( dPreviousDragStressdPreviousStateVariables );
 
 }
 

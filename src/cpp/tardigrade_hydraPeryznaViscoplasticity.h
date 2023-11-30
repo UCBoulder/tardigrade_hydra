@@ -170,6 +170,10 @@ namespace tardigradeHydra{
 
                 void setPreviousDragStress( const floatType &previousDragStress );
 
+                void setdDragStressdStateVariables( const floatVector &dDragStressdStateVariables );
+
+                void setdPreviousDragStressdPreviousStateVariables( const floatVector &dPreviousDragStressdPreviousStateVariables );
+
                 void setHardeningFunction( const floatType &hardeningFunction );
 
                 void setPreviousHardeningFunction( const floatType &previousHardeningFunction );
@@ -240,6 +244,8 @@ namespace tardigradeHydra{
 
                 const floatType* getDragStress( );
 
+                const floatVector* getdDragStressdStateVariables( );
+
                 const floatType* getHardeningFunction( );
 
                 const floatType* getPlasticMultiplier( );
@@ -277,6 +283,8 @@ namespace tardigradeHydra{
                 const floatType* getdPreviousPlasticThermalMultiplierdPreviousT( );
 
                 const floatType* getPreviousDragStress( );
+
+                const floatVector* getdPreviousDragStressdPreviousStateVariables( );
 
                 const floatType* getPreviousHardeningFunction( );
 
@@ -346,6 +354,8 @@ namespace tardigradeHydra{
 
                 virtual void setDragStress( );
 
+                virtual void setdDragStressdStateVariables( );
+
                 virtual void setHardeningFunction( );
 
                 virtual void setPlasticMultiplier( );
@@ -383,6 +393,8 @@ namespace tardigradeHydra{
                 virtual void setdPreviousPlasticThermalMultiplierdPreviousT( );
 
                 virtual void setPreviousDragStress( );
+
+                virtual void setdPreviousDragStressdPreviousStateVariables( );
 
                 virtual void setPreviousHardeningFunction( );
 
@@ -429,6 +441,10 @@ namespace tardigradeHydra{
                 virtual void setdPlasticThermalMultiplierdT( const bool isPrevious );
 
                 virtual void setDragStress( const bool isPrevious );
+
+                virtual void setDragStressDerivatives( const bool isPrevious );
+
+                virtual void setdDragStressdStateVariables( const bool isPrevious );
 
                 virtual void setHardeningFunction( const bool isPrevious );
 
@@ -516,7 +532,11 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatType > _dragStress;
 
+                tardigradeHydra::dataStorage< floatVector > _dDragStressdStateVariables;
+
                 tardigradeHydra::dataStorage< floatType > _previousDragStress;
+
+                tardigradeHydra::dataStorage< floatVector > _dPreviousDragStressdPreviousStateVariables;
 
                 tardigradeHydra::dataStorage< floatType > _hardeningFunction;
 

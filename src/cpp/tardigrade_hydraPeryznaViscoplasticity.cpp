@@ -1441,19 +1441,48 @@ namespace tardigradeHydra{
 
         void residual::setDragStress( ){
             /*!
-             * The the value of the drag stress
+             * Set the value of the drag stress
              */
 
             setDragStress( false );
 
         }
 
+        void residual::setdDragStressdStateVariables( ){
+            /*!
+             * Set the value of the derivative of the drag stress w.r.t. the state variables
+             */
+
+            setdDragStressdStateVariables( false );
+
+        }
+
+        void residual::setdDragStressdStateVariables( const bool isPrevious ){
+            /*!
+             * Set the value of the derivative of the drag stress w.r.t. the state variables
+             * 
+             * \param isPrevious: Flag for whether the derivative should be computed of the previous (true) or current (false) values
+             */
+
+            setDragStressDerivatives( isPrevious );
+
+        }
+
         void residual::setPreviousDragStress( ){
             /*!
-             * The the value of the drag stress
+             * Set the value of the drag stress
              */
 
             setDragStress( true );
+
+        }
+
+        void residual::setdPreviousDragStressdPreviousStateVariables( ){
+            /*!
+             * Set the value of the derivative of the previous drag stress w.r.t. the previous state variables
+             */
+
+            setdDragStressdStateVariables( true );
 
         }
 
@@ -1499,6 +1528,54 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setDragStressDerivatives( const bool isPrevious ){
+            /*!
+             * Set the value of the derivatives of the drag stress
+             * 
+             * \param isPrevious: Flag for whether to compute the values for the
+             *     previous timestep
+             */
+
+            const floatVector *stateVariables;
+
+            const floatVector *dragStressParameters;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getPreviousStateVariables( ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getStateVariables( ) );
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( dragStressParameters = getDragStressParameters( ) );
+
+            floatType dragStress;
+
+            floatVector dDragStressdStateVariables;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::linearHardening( *stateVariables, floatVector( dragStressParameters->begin( ) + 1, dragStressParameters->end( ) ), ( *dragStressParameters )[ 0 ], dragStress, dDragStressdStateVariables ) );
+
+            if ( isPrevious ){
+
+                setPreviousDragStress( dragStress );
+
+                setdPreviousDragStressdPreviousStateVariables( dDragStressdStateVariables );
+
+            }
+            else{
+
+                setDragStress( dragStress );
+
+                setdDragStressdStateVariables( dDragStressdStateVariables );
+
+            }
+
+        }
+
         void residual::setDragStress( const floatType &dragStress ){
             /*!
              * Set the drag stress
@@ -1514,6 +1591,21 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdDragStressdStateVariables( const floatVector &dDragStressdStateVariables ){
+            /*!
+             * Set the derivative of the drag stress w.r.t. the state variables
+             * 
+             * \param &dDragStressdStateVariables: The value of the derivative of the drag stress w.r.t. the state variables
+             */
+
+            _dDragStressdStateVariables.second = dDragStressdStateVariables;
+
+            _dDragStressdStateVariables.first = true;
+
+            addIterationData( &_dDragStressdStateVariables );
+
+        }
+
         void residual::setPreviousDragStress( const floatType &previousDragStress ){
             /*!
              * Set the previous drag stress
@@ -1524,6 +1616,19 @@ namespace tardigradeHydra{
             _previousDragStress.second = previousDragStress;
 
             _previousDragStress.first = true;
+
+        }
+
+        void residual::setdPreviousDragStressdPreviousStateVariables( const floatVector &dPreviousDragStressdPreviousStateVariables ){
+            /*!
+             * Set the derivative of the previous drag stress w.r.t. the previous state variables
+             * 
+             * \param &dPreviousDragStressdPreviousStateVariables: The value of the derivative of the drag stress w.r.t. the previous state variables
+             */
+
+            _dPreviousDragStressdPreviousStateVariables.second = dPreviousDragStressdPreviousStateVariables;
+
+            _dPreviousDragStressdPreviousStateVariables.first = true;
 
         }
 
@@ -2495,6 +2600,21 @@ namespace tardigradeHydra{
 
         }
 
+        const floatVector* residual::getdDragStressdStateVariables( ){
+            /*!
+             * Get the derivative drag stress w.r.t. the state variables
+             */
+
+            if ( !_dDragStressdStateVariables.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdDragStressdStateVariables( ) );
+
+            }
+
+            return &_dDragStressdStateVariables.second;
+
+        }
+
         const floatType* residual::getHardeningFunction( ){
             /*!
              * Get the value of the hardening function
@@ -2777,6 +2897,21 @@ namespace tardigradeHydra{
             }
 
             return &_previousDragStress.second;
+
+        }
+
+        const floatVector* residual::getdPreviousDragStressdPreviousStateVariables( ){
+            /*!
+             * Get the derivative of the previous value of the drag stress w.r.t. the previous state variables
+             */
+
+            if ( !_dPreviousDragStressdPreviousStateVariables.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousDragStressdPreviousStateVariables( ) );
+
+            }
+
+            return &_dPreviousDragStressdPreviousStateVariables.second;
 
         }
 
