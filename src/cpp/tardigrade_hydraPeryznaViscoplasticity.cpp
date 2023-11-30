@@ -731,14 +731,32 @@ namespace tardigradeHydra{
 
             const floatVector *flowParameters;
 
+            const floatMatrix *dDrivingStressdCauchyStress;
+
+            const floatMatrix *dDrivingStressdF;
+
+            const floatMatrix *dDrivingStressdSubFs;
+
             floatType g;
 
             if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = getdPreviousDrivingStressdPreviousCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = getdPreviousDrivingStressdPreviousF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = getdPreviousDrivingStressdPreviousSubFs( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getPreviousDrivingStress( ) );
 
             }
             else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = getdDrivingStressdCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = getdDrivingStressdF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = getdDrivingStressdSubFs( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getDrivingStress( ) );
 
@@ -750,16 +768,36 @@ namespace tardigradeHydra{
 
             floatVector flowDirection( drivingStress->size( ), 0 );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( *drivingStress, ( *flowParameters )[ 1 ], ( *flowParameters )[ 0 ], g, dgdDrivingStress, flowDirection ) );
+            floatMatrix dFlowDirectiondDrivingStress;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( *drivingStress, ( *flowParameters )[ 1 ], ( *flowParameters )[ 0 ], g, dgdDrivingStress, flowDirection, dFlowDirectiondDrivingStress ) );
+
+            floatMatrix dFlowDirectiondCauchyStress = tardigradeVectorTools::dot( dFlowDirectiondDrivingStress, *dDrivingStressdCauchyStress );
+
+            floatMatrix dFlowDirectiondF            = tardigradeVectorTools::dot( dFlowDirectiondDrivingStress, *dDrivingStressdF );
+
+            floatMatrix dFlowDirectiondSubFs        = tardigradeVectorTools::dot( dFlowDirectiondDrivingStress, *dDrivingStressdSubFs );
 
             if ( isPrevious ){
 
                 setPreviousFlowDirection( flowDirection );
 
+                setdPreviousFlowDirectiondPreviousCauchyStress( dFlowDirectiondCauchyStress );
+
+                setdPreviousFlowDirectiondPreviousF( dFlowDirectiondF );
+
+                setdPreviousFlowDirectiondPreviousSubFs( dFlowDirectiondSubFs );
+
             }
             else{
 
                 setFlowDirection( flowDirection );
+
+                setdFlowDirectiondCauchyStress( dFlowDirectiondCauchyStress );
+
+                setdFlowDirectiondF( dFlowDirectiondF );
+
+                setdFlowDirectiondSubFs( dFlowDirectiondSubFs );
 
             }
 
