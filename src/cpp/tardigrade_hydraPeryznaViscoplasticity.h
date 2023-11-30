@@ -208,7 +208,27 @@ namespace tardigradeHydra{
 
                 void setVelocityGradient( const floatVector &velocityGradient );
 
+                void setdVelocityGradientdCauchyStress( const floatVector &dVelocityGradientdCauchyStress );
+
+                void setdVelocityGradientdF( const floatVector &dVelocityGradientdF );
+
+                void setdVelocityGradientdSubFs( const floatVector &dVelocityGradientdSubFs );
+
+                void setdVelocityGradientdT( const floatVector &dVelocityGradientdT );
+
+                void setdVelocityGradientdStateVariables( const floatMatrix &dVelocityGradientdStateVariables );
+
                 void setPreviousVelocityGradient( const floatVector &previousVelocityGradient );
+
+                void setdPreviousVelocityGradientdPreviousCauchyStress( const floatVector &dPreviousVelocityGradientdPreviousCauchyStress );
+
+                void setdPreviousVelocityGradientdPreviousF( const floatVector &dPreviousVelocityGradientdPreviousF );
+
+                void setdPreviousVelocityGradientdPreviousSubFs( const floatVector &dPreviousVelocityGradientdPreviousSubFs );
+
+                void setdPreviousVelocityGradientdPreviousT( const floatVector &dPreviousVelocityGradientdPreviousT );
+
+                void setdPreviousVelocityGradientdPreviousStateVariables( const floatMatrix &dPreviousVelocityGradientdPreviousStateVariables );
 
                 void setStateVariableEvolutionRates( const floatVector &stateVariableEvolutionRates );
 
@@ -288,6 +308,16 @@ namespace tardigradeHydra{
 
                 const floatVector* getVelocityGradient( );
 
+                const floatMatrix* getdVelocityGradientdCauchyStress( );
+
+                const floatMatrix* getdVelocityGradientdF( );
+
+                const floatMatrix* getdVelocityGradientdSubFs( );
+
+                const floatVector* getdVelocityGradientdT( );
+
+                const floatMatrix* getdVelocityGradientdStateVariables( );
+
                 const floatVector* getStateVariableEvolutionRates( );
 
                 const floatVector* getPreviousDrivingStress( );
@@ -339,6 +369,16 @@ namespace tardigradeHydra{
                 const floatVector* getdPreviousPlasticMultiplierdPreviousStateVariables( );
 
                 const floatVector* getPreviousVelocityGradient( );
+
+                const floatMatrix* getdPreviousVelocityGradientdPreviousCauchyStress( );
+
+                const floatMatrix* getdPreviousVelocityGradientdPreviousF( );
+
+                const floatMatrix* getdPreviousVelocityGradientdPreviousSubFs( );
+
+                const floatVector* getdPreviousVelocityGradientdPreviousT( );
+
+                const floatMatrix* getdPreviousVelocityGradientdPreviousStateVariables( );
 
                 const floatVector* getPreviousStateVariableEvolutionRates( );
 
@@ -422,6 +462,16 @@ namespace tardigradeHydra{
 
                 virtual void setVelocityGradient( );
 
+                virtual void setdVelocityGradientdCauchyStress( );
+
+                virtual void setdVelocityGradientdF( );
+
+                virtual void setdVelocityGradientdSubFs( );
+
+                virtual void setdVelocityGradientdT( );
+
+                virtual void setdVelocityGradientdStateVariables( );
+
                 virtual void setStateVariableEvolutionRates( );
 
                 virtual void setPreviousDrivingStress( );
@@ -473,6 +523,16 @@ namespace tardigradeHydra{
                 virtual void setdPreviousPlasticMultiplierdPreviousStateVariables( );
 
                 virtual void setPreviousVelocityGradient( );
+
+                virtual void setdPreviousVelocityGradientdPreviousCauchyStress( );
+
+                virtual void setdPreviousVelocityGradientdPreviousF( );
+
+                virtual void setdPreviousVelocityGradientdPreviousSubFs( );
+
+                virtual void setdPreviousVelocityGradientdPreviousT( );
+
+                virtual void setdPreviousVelocityGradientdPreviousStateVariables( );
 
                 virtual void setPreviousStateVariableEvolutionRates( );
 
@@ -539,6 +599,18 @@ namespace tardigradeHydra{
                 virtual void setdPlasticMultiplierdStateVariables( const bool isPrevious );
 
                 virtual void setVelocityGradient( const bool isPrevious );
+
+                virtual void setVelocityGradientDerivatives( const bool isPrevious );
+
+                virtual void setdVelocityGradientdCauchyStress( const bool isPrevious );
+
+                virtual void setdVelocityGradientdF( const bool isPrevious );
+
+                virtual void setdVelocityGradientdSubFs( const bool isPrevious );
+
+                virtual void setdVelocityGradientdT( const bool isPrevious );
+
+                virtual void setdVelocityGradientdStateVariables( const bool isPrevious );
 
                 virtual void setStateVariableEvolutionRates( const bool isPrevious );
 
@@ -660,7 +732,27 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatVector > _velocityGradient;
 
+                tardigradeHydra::dataStorage< floatMatrix > _dVelocityGradientdCauchyStress;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dVelocityGradientdF;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dVelocityGradientdSubFs;
+
+                tardigradeHydra::dataStorage< floatVector > _dVelocityGradientdT;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dVelocityGradientdStateVariables;
+
                 tardigradeHydra::dataStorage< floatVector > _previousVelocityGradient;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousVelocityGradientdPreviousCauchyStress;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousVelocityGradientdPreviousF;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousVelocityGradientdPreviousSubFs;
+
+                tardigradeHydra::dataStorage< floatVector > _dPreviousVelocityGradientdPreviousT;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPreviousVelocityGradientdPreviousStateVariables;
 
                 tardigradeHydra::dataStorage< floatVector > _stateVariableEvolutionRates;
 
