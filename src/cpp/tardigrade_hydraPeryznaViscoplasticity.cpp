@@ -2384,6 +2384,116 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdVelocityGradientdCauchyStress( ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the Cauchy stress
+             */
+
+            setdVelocityGradientdCauchyStress( false );
+
+        }
+
+        void residual::setdVelocityGradientdF( ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the deformation gradient
+             */
+
+            setdVelocityGradientdF( false );
+
+        }
+
+        void residual::setdVelocityGradientdSubFs( ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the sub-deformation gradients
+             */
+
+            setdVelocityGradientdSubFs( false );
+
+        }
+
+        void residual::setdVelocityGradientdT( ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the temperature
+             */
+
+            setdVelocityGradientdT( false );
+
+        }
+
+        void residual::setdVelocityGradientdStateVariables( ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the state variables
+             */
+
+            setdVelocityGradientdStateVariables( false );
+
+        }
+
+        void residual::setdVelocityGradientdCauchyStress( const bool isPrevious ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the Cauchy stress
+             * 
+             * \param isPrevious: A flag for if the gradient is computed of the previous (true) or current (false) value
+             */
+
+            setVelocityGradientDerivatives( isPrevious );
+
+        }
+
+        void residual::setdVelocityGradientdF( const bool isPrevious ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the deformation gradient
+             * 
+             * \param isPrevious: A flag for if the gradient is computed of the previous (true) or current (false) value
+             */
+
+            setVelocityGradientDerivatives( isPrevious );
+
+        }
+
+        void residual::setdVelocityGradientdSubFs( const bool isPrevious ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the sub-deformation gradients
+             * 
+             * \param isPrevious: A flag for if the gradient is computed of the previous (true) or current (false) value
+             */
+
+            setVelocityGradientDerivatives( isPrevious );
+
+        }
+
+        void residual::setdVelocityGradientdT( const bool isPrevious ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the temperature
+             * 
+             * \param isPrevious: A flag for if the gradient is computed of the previous (true) or current (false) value
+             */
+
+            setVelocityGradientDerivatives( isPrevious );
+
+        }
+
+        void residual::setdVelocityGradientdStateVariables( const bool isPrevious ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the state variables
+             * 
+             * \param isPrevious: A flag for if the gradient is computed of the previous (true) or current (false) value
+             */
+
+            setVelocityGradientDerivatives( isPrevious );
+
+        }
+
         void residual::setPreviousVelocityGradient( ){
             /*!
              * Set the velocity gradient in the current configuration of the plastic
@@ -2391,6 +2501,56 @@ namespace tardigradeHydra{
              */
 
             setVelocityGradient( true );
+
+        }
+
+        void residual::setdPreviousVelocityGradientdPreviousCauchyStress( ){
+            /*!
+             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the previous Cauchy stress
+             */
+
+            setdVelocityGradientdCauchyStress( true );
+
+        }
+
+        void residual::setdPreviousVelocityGradientdPreviousF( ){
+            /*!
+             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the previous deformation gradient
+             */
+
+            setdVelocityGradientdF( true );
+
+        }
+
+        void residual::setdPreviousVelocityGradientdPreviousSubFs( ){
+            /*!
+             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the previous sub-deformation gradients
+             */
+
+            setdVelocityGradientdSubFs( true );
+
+        }
+
+        void residual::setdPreviousVelocityGradientdPreviousT( ){
+            /*!
+             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the previous temperature
+             */
+
+            setdVelocityGradientdT( true );
+
+        }
+
+        void residual::setdPreviousVelocityGradientdPreviousStateVariables( ){
+            /*!
+             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the previous state variables
+             */
+
+            setdVelocityGradientdStateVariables( true );
 
         }
 
@@ -2428,6 +2588,108 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setVelocityGradientDerivatives( const bool isPrevious ){
+            /*!
+             * Set the derivatives of the velocity gradient in the current configuration of the plastic
+             * configuration
+             * 
+             * \param isPrevious: Flag for whether to compute the value at the previous
+             *     timestep.
+             */
+
+            const floatType *plasticMultiplier;
+
+            const floatVector *dPlasticMultiplierdCauchyStress;
+
+            const floatVector *dPlasticMultiplierdF;
+
+            const floatVector *dPlasticMultiplierdSubFs;
+
+            const floatType   *dPlasticMultiplierdT;
+
+            const floatVector *dPlasticMultiplierdStateVariables;
+
+            const floatVector *flowDirection;
+
+            const floatMatrix *dFlowDirectiondCauchyStress;
+
+            const floatMatrix *dFlowDirectiondF;
+
+            const floatMatrix *dFlowDirectiondSubFs;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress   = getdPreviousPlasticMultiplierdPreviousCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF              = getdPreviousPlasticMultiplierdPreviousF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs          = getdPreviousPlasticMultiplierdPreviousSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT              = getdPreviousPlasticMultiplierdPreviousT( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = getdPreviousPlasticMultiplierdPreviousStateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondCauchyStress       = getdPreviousFlowDirectiondPreviousCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondF                  = getdPreviousFlowDirectiondPreviousF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondSubFs              = getdPreviousFlowDirectiondPreviousSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPreviousPlasticMultiplier( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = getPreviousFlowDirection( ) );
+
+                setPreviousVelocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
+
+                setdPreviousVelocityGradientdPreviousCauchyStress( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdCauchyStress ) + ( *plasticMultiplier ) * ( *dFlowDirectiondCauchyStress ) );
+
+                setdPreviousVelocityGradientdPreviousF( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdF ) + ( *plasticMultiplier ) * ( *dFlowDirectiondF ) );
+
+                setdPreviousVelocityGradientdPreviousSubFs( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdSubFs ) + ( *plasticMultiplier ) * ( *dFlowDirectiondSubFs ) );
+
+                setdPreviousVelocityGradientdPreviousT( ( *flowDirection ) * ( *dPlasticMultiplierdT ) );
+
+                setdPreviousVelocityGradientdPreviousStateVariables( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdStateVariables ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress   = getdPlasticMultiplierdCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF              = getdPlasticMultiplierdF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs          = getdPlasticMultiplierdSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT              = getdPlasticMultiplierdT( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = getdPlasticMultiplierdStateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondCauchyStress       = getdFlowDirectiondCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondF                  = getdFlowDirectiondF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondSubFs              = getdFlowDirectiondSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPlasticMultiplier( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = getFlowDirection( ) );
+
+                setVelocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
+
+                setdVelocityGradientdCauchyStress( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdCauchyStress ) + ( *plasticMultiplier ) * ( *dFlowDirectiondCauchyStress ) );
+
+                setdVelocityGradientdF( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdF ) + ( *plasticMultiplier ) * ( *dFlowDirectiondF ) );
+
+                setdVelocityGradientdSubFs( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdSubFs ) + ( *plasticMultiplier ) * ( *dFlowDirectiondSubFs ) );
+
+                setdVelocityGradientdT( ( *flowDirection ) * ( *dPlasticMultiplierdT ) );
+
+                setdVelocityGradientdStateVariables( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdStateVariables ) );
+
+            }
+
+        }
+
         void residual::setVelocityGradient( const floatVector &velocityGradient ){
             /*!
              * Set the velocity gradient in the current configuration of the plastic
@@ -2445,6 +2707,91 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdVelocityGradientdCauchyStress( const floatMatrix &dVelocityGradientdCauchyStress ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the Cauchy stress
+             * 
+             * \param &dVelocityGradientdCauchyStress: The derivative of the velocity gradient in the current
+             *     configuration of the plastic configuration w.r.t. the Cauchy stress
+             */
+
+            _dVelocityGradientdCauchyStress.second = dVelocityGradientdCauchyStress;
+
+            _dVelocityGradientdCauchyStress.first = true;
+
+            addIterationData( &_dVelocityGradientdCauchyStress );
+
+        }
+
+        void residual::setdVelocityGradientdF( const floatMatrix &dVelocityGradientdF ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the deformation gradient
+             * 
+             * \param &dVelocityGradientdF: The derivative of the velocity gradient in the current
+             *     configuration of the plastic configuration w.r.t. the deformation gradient
+             */
+
+            _dVelocityGradientdF.second = dVelocityGradientdF;
+
+            _dVelocityGradientdF.first = true;
+
+            addIterationData( &_dVelocityGradientdF );
+
+        }
+
+        void residual::setdVelocityGradientdSubFs( const floatMatrix &dVelocityGradientdSubFs ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the sub-deformation gradients
+             * 
+             * \param &dVelocityGradientdSubFs: The derivative of the velocity gradient in the current
+             *     configuration of the plastic configuration w.r.t. the sub-deformation gradients
+             */
+
+            _dVelocityGradientdSubFs.second = dVelocityGradientdSubFs;
+
+            _dVelocityGradientdSubFs.first = true;
+
+            addIterationData( &_dVelocityGradientdSubFs );
+
+        }
+
+        void residual::setdVelocityGradientdT( const floatVector &dVelocityGradientdT ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the temperature
+             * 
+             * \param &dVelocityGradientdT: The derivative of the velocity gradient in the current
+             *     configuration of the plastic configuration w.r.t. the temperature
+             */
+
+            _dVelocityGradientdT.second = dVelocityGradientdT;
+
+            _dVelocityGradientdT.first = true;
+
+            addIterationData( &_dVelocityGradientdT );
+
+        }
+
+        void residual::setdVelocityGradientdStateVariables( const floatMatrix &dVelocityGradientdStateVariables ){
+            /*!
+             * Set the derivative of the velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the state variables
+             * 
+             * \param &dVelocityGradientdStateVariables: The derivative of the velocity gradient in the current
+             *     configuration of the plastic configuration w.r.t. the state variables
+             */
+
+            _dVelocityGradientdStateVariables.second = dVelocityGradientdStateVariables;
+
+            _dVelocityGradientdStateVariables.first = true;
+
+            addIterationData( &_dVelocityGradientdStateVariables );
+
+        }
+
         void residual::setPreviousVelocityGradient( const floatVector &previousVelocityGradient ){
             /*!
              * Set the previous velocity gradient in the current configuration of the plastic
@@ -2457,6 +2804,81 @@ namespace tardigradeHydra{
             _previousVelocityGradient.second = previousVelocityGradient;
 
             _previousVelocityGradient.first = true;
+
+        }
+
+        void residual::setdPreviousVelocityGradientdPreviousCauchyStress( const floatMatrix &dPreviousVelocityGradientdPreviousCauchyStress ){
+            /*!
+             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the previous Cauchy stress
+             * 
+             * \param &dPreviousVelocityGradientdPreviousCauchyStress: The derivative of the velocity gradient in the current
+             *     w.r.t. the previous Cauchy stress
+             */
+
+            _dPreviousVelocityGradientdPreviousCauchyStress.second = dPreviousVelocityGradientdPreviousCauchyStress;
+
+            _dPreviousVelocityGradientdPreviousCauchyStress.first = true;
+
+        }
+
+        void residual::setdPreviousVelocityGradientdPreviousF( const floatMatrix &dPreviousVelocityGradientdPreviousF ){
+            /*!
+             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the previous deformation gradient
+             * 
+             * \param &dPreviousVelocityGradientdPreviousF: The derivative of the velocity gradient in the current
+             *     w.r.t. the previous deforamtion gradient
+             */
+
+            _dPreviousVelocityGradientdPreviousF.second = dPreviousVelocityGradientdPreviousF;
+
+            _dPreviousVelocityGradientdPreviousF.first = true;
+
+        }
+
+        void residual::setdPreviousVelocityGradientdPreviousSubFs( const floatMatrix &dPreviousVelocityGradientdPreviousSubFs ){
+            /*!
+             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the previous sub-deformation gradients
+             * 
+             * \param &dPreviousVelocityGradientdPreviousSubFs: The derivative of the velocity gradient in the current
+             *     w.r.t. the previous sub-deforamtion gradients
+             */
+
+            _dPreviousVelocityGradientdPreviousSubFs.second = dPreviousVelocityGradientdPreviousSubFs;
+
+            _dPreviousVelocityGradientdPreviousSubFs.first = true;
+
+        }
+
+        void residual::setdPreviousVelocityGradientdPreviousT( const floatVector &dPreviousVelocityGradientdPreviousT ){
+            /*!
+             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the previous temperature
+             * 
+             * \param &dPreviousVelocityGradientdPreviousT: The derivative of the velocity gradient in the current
+             *     w.r.t. the previous temperature
+             */
+
+            _dPreviousVelocityGradientdPreviousT.second = dPreviousVelocityGradientdPreviousT;
+
+            _dPreviousVelocityGradientdPreviousT.first = true;
+
+        }
+
+        void residual::setdPreviousVelocityGradientdPreviousStateVariables( const floatMatrix &dPreviousVelocityGradientdPreviousStateVariables ){
+            /*!
+             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
+             * configuration w.r.t. the previous state variables
+             * 
+             * \param &dPreviousVelocityGradientdPreviousStateVariables: The derivative of the velocity gradient in the current
+             *     w.r.t. the previous state variables
+             */
+
+            _dPreviousVelocityGradientdPreviousStateVariables.second = dPreviousVelocityGradientdPreviousStateVariables;
+
+            _dPreviousVelocityGradientdPreviousStateVariables.first = true;
 
         }
 
@@ -3301,6 +3723,81 @@ namespace tardigradeHydra{
 
         }
 
+        const floatMatrix* residual::getdVelocityGradientdCauchyStress( ){
+            /*!
+             * Get the derivative of the velocity gradient w.r.t. the Cauchy stress
+             */
+
+            if ( !_dVelocityGradientdCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdVelocityGradientdCauchyStress( ) );
+
+            }
+
+            return &_dVelocityGradientdCauchyStress.second;
+
+        }
+
+        const floatMatrix* residual::getdVelocityGradientdF( ){
+            /*!
+             * Get the derivative of the velocity gradient w.r.t. the deformation gradient
+             */
+
+            if ( !_dVelocityGradientdF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdVelocityGradientdF( ) );
+
+            }
+
+            return &_dVelocityGradientdF.second;
+
+        }
+
+        const floatMatrix* residual::getdVelocityGradientdSubFs( ){
+            /*!
+             * Get the derivative of the velocity gradient w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_dVelocityGradientdSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdVelocityGradientdSubFs( ) );
+
+            }
+
+            return &_dVelocityGradientdSubFs.second;
+
+        }
+
+        const floatVector* residual::getdVelocityGradientdT( ){
+            /*!
+             * Get the derivative of the velocity gradient w.r.t. the temperature
+             */
+
+            if ( !_dVelocityGradientdT.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdVelocityGradientdT( ) );
+
+            }
+
+            return &_dVelocityGradientdT.second;
+
+        }
+
+        const floatMatrix* residual::getdVelocityGradientdStateVariables( ){
+            /*!
+             * Get the derivative of the velocity gradient w.r.t. the state variables
+             */
+
+            if ( !_dVelocityGradientdStateVariables.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdVelocityGradientdStateVariables( ) );
+
+            }
+
+            return &_dVelocityGradientdStateVariables.second;
+
+        }
+
         const floatVector* residual::getStateVariableEvolutionRates( ){
             /*!
              * Get the state variable evolution rate
@@ -3688,6 +4185,86 @@ namespace tardigradeHydra{
             }
 
             return &_previousVelocityGradient.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousVelocityGradientdPreviousCauchyStress( ){
+            /*!
+             * Get the derivative of the previous velocity gradient w.r.t.
+             * the previous Cauchy stress.
+             */
+
+            if ( !_dPreviousVelocityGradientdPreviousCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousVelocityGradientdPreviousCauchyStress( ) );
+
+            }
+
+            return &_dPreviousVelocityGradientdPreviousCauchyStress.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousVelocityGradientdPreviousF( ){
+            /*!
+             * Get the derivative of the previous velocity gradient w.r.t.
+             * the previous deformation gradient
+             */
+
+            if ( !_dPreviousVelocityGradientdPreviousF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousVelocityGradientdPreviousF( ) );
+
+            }
+
+            return &_dPreviousVelocityGradientdPreviousF.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousVelocityGradientdPreviousSubFs( ){
+            /*!
+             * Get the derivative of the previous velocity gradient w.r.t.
+             * the previous sub-deformation gradients
+             */
+
+            if ( !_dPreviousVelocityGradientdPreviousSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousVelocityGradientdPreviousSubFs( ) );
+
+            }
+
+            return &_dPreviousVelocityGradientdPreviousSubFs.second;
+
+        }
+
+        const floatVector* residual::getdPreviousVelocityGradientdPreviousT( ){
+            /*!
+             * Get the derivative of the previous velocity gradient w.r.t.
+             * the previous temperature
+             */
+
+            if ( !_dPreviousVelocityGradientdPreviousT.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousVelocityGradientdPreviousT( ) );
+
+            }
+
+            return &_dPreviousVelocityGradientdPreviousT.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousVelocityGradientdPreviousStateVariables( ){
+            /*!
+             * Get the derivative of the previous velocity gradient w.r.t.
+             * the previous state variables
+             */
+
+            if ( !_dPreviousVelocityGradientdPreviousStateVariables.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousVelocityGradientdPreviousStateVariables( ) );
+
+            }
+
+            return &_dPreviousVelocityGradientdPreviousStateVariables.second;
 
         }
 

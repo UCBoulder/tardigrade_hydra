@@ -208,11 +208,11 @@ namespace tardigradeHydra{
 
                 void setVelocityGradient( const floatVector &velocityGradient );
 
-                void setdVelocityGradientdCauchyStress( const floatVector &dVelocityGradientdCauchyStress );
+                void setdVelocityGradientdCauchyStress( const floatMatrix &dVelocityGradientdCauchyStress );
 
-                void setdVelocityGradientdF( const floatVector &dVelocityGradientdF );
+                void setdVelocityGradientdF( const floatMatrix &dVelocityGradientdF );
 
-                void setdVelocityGradientdSubFs( const floatVector &dVelocityGradientdSubFs );
+                void setdVelocityGradientdSubFs( const floatMatrix &dVelocityGradientdSubFs );
 
                 void setdVelocityGradientdT( const floatVector &dVelocityGradientdT );
 
@@ -220,11 +220,11 @@ namespace tardigradeHydra{
 
                 void setPreviousVelocityGradient( const floatVector &previousVelocityGradient );
 
-                void setdPreviousVelocityGradientdPreviousCauchyStress( const floatVector &dPreviousVelocityGradientdPreviousCauchyStress );
+                void setdPreviousVelocityGradientdPreviousCauchyStress( const floatMatrix &dPreviousVelocityGradientdPreviousCauchyStress );
 
-                void setdPreviousVelocityGradientdPreviousF( const floatVector &dPreviousVelocityGradientdPreviousF );
+                void setdPreviousVelocityGradientdPreviousF( const floatMatrix &dPreviousVelocityGradientdPreviousF );
 
-                void setdPreviousVelocityGradientdPreviousSubFs( const floatVector &dPreviousVelocityGradientdPreviousSubFs );
+                void setdPreviousVelocityGradientdPreviousSubFs( const floatMatrix &dPreviousVelocityGradientdPreviousSubFs );
 
                 void setdPreviousVelocityGradientdPreviousT( const floatVector &dPreviousVelocityGradientdPreviousT );
 
