@@ -2963,6 +2963,24 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
      * Test of computing the plastic multiplier
      */
 
+    class stressMock : public tardigradeHydra::residualBase {
+
+        public:
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        private:
+
+            virtual void setPreviousCauchyStress( ){
+
+                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+
+            }
+
+    };
+
     class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
 
         public:
@@ -3135,7 +3153,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+    residualMock Rjac( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
 
     floatType answer = R.A * std::pow( R.f / R.q, R.n );
 
@@ -3144,6 +3166,14 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getPlasticMultiplier( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.getPreviousPlasticMultiplier( ) ) );
+
+    Rjac.getdPlasticMultiplierdCauchyStress( );
+
+    Rjac.getdPreviousPlasticMultiplierdPreviousCauchyStress( );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rjac.getPlasticMultiplier( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *Rjac.getPreviousPlasticMultiplier( ) ) );
 
 }
 
