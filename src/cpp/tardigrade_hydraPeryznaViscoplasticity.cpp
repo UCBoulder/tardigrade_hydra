@@ -2891,12 +2891,157 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdStateVariableEvolutionRatesdCauchyStress( ){
+            /*! 
+             * Set the value of the derivative of the state variable evolution rates w.r.t. the Cauchy stress
+             */
+
+            setdStateVariableEvolutionRatesdCauchyStress( false );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdF( ){
+            /*! 
+             * Set the value of the derivative of the state variable evolution rates w.r.t. the deformation gradient
+             */
+
+            setdStateVariableEvolutionRatesdF( false );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdSubFs( ){
+            /*! 
+             * Set the value of the derivative of the state variable evolution rates w.r.t. the sub-deformation gradients
+             */
+
+            setdStateVariableEvolutionRatesdSubFs( false );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdT( ){
+            /*! 
+             * Set the value of the derivative of the state variable evolution rates w.r.t. the temperature
+             */
+
+            setdStateVariableEvolutionRatesdT( false );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdStateVariables( ){
+            /*! 
+             * Set the value of the derivative of the state variable evolution rates w.r.t. the state variables
+             */
+
+            setdStateVariableEvolutionRatesdStateVariables( false );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdCauchyStress( const bool isPrevious ){
+            /*! 
+             * Set the value of the derivative of the state variable evolution rates w.r.t. the Cauchy stress
+             * 
+             * \param isPrevious: Flag for whether the gradients are of the current (false) or previous (true) value 
+             */
+
+            setStateVariableEvolutionRateDerivatives( isPrevious );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdF( const bool isPrevious ){
+            /*! 
+             * Set the value of the derivative of the state variable evolution rates w.r.t. the deformation gradient
+             * 
+             * \param isPrevious: Flag for whether the gradients are of the current (false) or previous (true) value 
+             */
+
+            setStateVariableEvolutionRateDerivatives( isPrevious );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdSubFs( const bool isPrevious ){
+            /*! 
+             * Set the value of the derivative of the state variable evolution rates w.r.t. the sub-deformation gradients
+             * 
+             * \param isPrevious: Flag for whether the gradients are of the current (false) or previous (true) value 
+             */
+
+            setStateVariableEvolutionRateDerivatives( isPrevious );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdT( const bool isPrevious ){
+            /*! 
+             * Set the value of the derivative of the state variable evolution rates w.r.t. the temperature
+             * 
+             * \param isPrevious: Flag for whether the gradients are of the current (false) or previous (true) value 
+             */
+
+            setStateVariableEvolutionRateDerivatives( isPrevious );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdStateVariables( const bool isPrevious ){
+            /*! 
+             * Set the value of the derivative of the state variable evolution rates w.r.t. the state variables
+             * 
+             * \param isPrevious: Flag for whether the gradients are of the current (false) or previous (true) value 
+             */
+
+            setStateVariableEvolutionRateDerivatives( isPrevious );
+
+        }
+
         void residual::setPreviousStateVariableEvolutionRates( ){
             /*! 
              * Set the value of the state variable evolution rates
              */
 
             setStateVariableEvolutionRates( true );
+
+        }
+
+        void residual::setdPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ){
+            /*! 
+             * Set the value of the derivative of the previous state variable evolution rates w.r.t. the previous Cauchy stress
+             */
+
+            setdStateVariableEvolutionRatesdCauchyStress( true );
+
+        }
+
+        void residual::setdPreviousStateVariableEvolutionRatesdPreviousF( ){
+            /*! 
+             * Set the value of the derivative of the previous state variable evolution rates w.r.t. the previous deformation gradient
+             */
+
+            setdStateVariableEvolutionRatesdF( true );
+
+        }
+
+        void residual::setdPreviousStateVariableEvolutionRatesdPreviousSubFs( ){
+            /*! 
+             * Set the value of the previous derivative of the state variable evolution rates w.r.t. the previous sub-deformation gradients
+             */
+
+            setdStateVariableEvolutionRatesdSubFs( true );
+
+        }
+
+        void residual::setdPreviousStateVariableEvolutionRatesdPreviousT( ){
+            /*! 
+             * Set the value of the derivative of the previous state variable evolution rates w.r.t. the previous temperature
+             */
+
+            setdStateVariableEvolutionRatesdT( true );
+
+        }
+
+        void residual::setdPreviousStateVariableEvolutionRatesdPreviousStateVariables( ){
+            /*! 
+             * Set the value of the derivative of the previous state variable evolution rates w.r.t. the previous state variables
+             */
+
+            setdStateVariableEvolutionRatesdStateVariables( false );
 
         }
 
@@ -2942,6 +3087,114 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setStateVariableEvolutionRateDerivatives( const bool isPrevious ){
+            /*!
+             * Set the value of the derivatives of the state variable evolution rates
+             * 
+             * \param isPrevious: A flag to indicate if the previous evolution rate
+             *     should be computed.
+             */
+
+            const floatType *plasticMultiplier;
+
+            const floatType *hardeningFunction;
+
+            const floatVector *dPlasticMultiplierdCauchyStress;
+
+            const floatVector *dPlasticMultiplierdF;
+
+            const floatVector *dPlasticMultiplierdSubFs;
+
+            const floatType   *dPlasticMultiplierdT;
+
+            const floatVector *dPlasticMultiplierdStateVariables;
+
+            const floatVector *dHardeningFunctiondStateVariables;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress = getdPreviousPlasticMultiplierdPreviousCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF = getdPreviousPlasticMultiplierdPreviousF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs = getdPreviousPlasticMultiplierdPreviousSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT = getdPreviousPlasticMultiplierdPreviousT( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = getdPreviousPlasticMultiplierdPreviousStateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dHardeningFunctiondStateVariables = getdPreviousHardeningFunctiondPreviousStateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPreviousPlasticMultiplier( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = getPreviousHardeningFunction( ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress = getdPlasticMultiplierdCauchyStress( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF = getdPlasticMultiplierdF( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs = getdPlasticMultiplierdSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT = getdPlasticMultiplierdT( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = getdPlasticMultiplierdStateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dHardeningFunctiondStateVariables = getdHardeningFunctiondStateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPlasticMultiplier( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = getHardeningFunction( ) );
+
+            }
+
+            floatVector stateVariableEvolutionRates = { ( *plasticMultiplier ) * ( *hardeningFunction ) };
+
+            floatMatrix dStateVariableEvolutionRatesdCauchyStress = { ( *dPlasticMultiplierdCauchyStress ) * ( *hardeningFunction ) };
+
+            floatMatrix dStateVariableEvolutionRatesdF = { ( *dPlasticMultiplierdF ) * ( *hardeningFunction ) };
+
+            floatMatrix dStateVariableEvolutionRatesdSubFs = { ( *dPlasticMultiplierdSubFs ) * ( *hardeningFunction ) };
+
+            floatVector dStateVariableEvolutionRatesdT = { ( *dPlasticMultiplierdT ) * ( *hardeningFunction ) };
+
+            floatMatrix dStateVariableEvolutionRatesdStateVariables = { ( *dPlasticMultiplierdStateVariables ) * ( *hardeningFunction ) + ( *plasticMultiplier ) * ( *dHardeningFunctiondStateVariables ) };
+
+            if ( isPrevious ){
+
+                setPreviousStateVariableEvolutionRates( stateVariableEvolutionRates );
+
+                setdPreviousStateVariableEvolutionRatesdPreviousCauchyStress( dStateVariableEvolutionRatesdCauchyStress );
+
+                setdPreviousStateVariableEvolutionRatesdPreviousF( dStateVariableEvolutionRatesdF );
+
+                setdPreviousStateVariableEvolutionRatesdPreviousSubFs( dStateVariableEvolutionRatesdSubFs );
+
+                setdPreviousStateVariableEvolutionRatesdPreviousT( dStateVariableEvolutionRatesdT );
+
+                setdPreviousStateVariableEvolutionRatesdPreviousStateVariables( dStateVariableEvolutionRatesdStateVariables );
+
+            }
+            else{
+
+                setStateVariableEvolutionRates( stateVariableEvolutionRates );
+
+                setdStateVariableEvolutionRatesdCauchyStress( dStateVariableEvolutionRatesdCauchyStress );
+
+                setdStateVariableEvolutionRatesdF( dStateVariableEvolutionRatesdF );
+
+                setdStateVariableEvolutionRatesdSubFs( dStateVariableEvolutionRatesdSubFs );
+
+                setdStateVariableEvolutionRatesdT( dStateVariableEvolutionRatesdT );
+
+                setdStateVariableEvolutionRatesdStateVariables( dStateVariableEvolutionRatesdStateVariables );
+
+            }
+
+        }
+
         void residual::setStateVariableEvolutionRates( const floatVector &stateVariableEvolutionRates ){
             /*!
              * Set the state variable evolution rate
@@ -2957,6 +3210,81 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdStateVariableEvolutionRatesdCauchyStress( const floatMatrix &dStateVariableEvolutionRatesdCauchyStress ){
+            /*!
+             * Set the derivative of the state variable evolution rates w.r.t. the Cauchy stress
+             * 
+             * \param &dStateVariableEvolutionRatesdCauchyStress: The value of the derivative
+             */
+
+            _dStateVariableEvolutionRatesdCauchyStress.second = dStateVariableEvolutionRatesdCauchyStress;
+
+            _dStateVariableEvolutionRatesdCauchyStress.first = true;
+
+            addIterationData( &_dStateVariableEvolutionRatesdCauchyStress );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdF( const floatMatrix &dStateVariableEvolutionRatesdF ){
+            /*!
+             * Set the derivative of the state variable evolution rates w.r.t. the deformation gradient
+             * 
+             * \param &dStateVariableEvolutionRatesdF: The value of the derivative
+             */
+
+            _dStateVariableEvolutionRatesdF.second = dStateVariableEvolutionRatesdF;
+
+            _dStateVariableEvolutionRatesdF.first = true;
+
+            addIterationData( &_dStateVariableEvolutionRatesdF );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdSubFs( const floatMatrix &dStateVariableEvolutionRatesdSubFs ){
+            /*!
+             * Set the derivative of the state variable evolution rates w.r.t. the sub-deformation gradients
+             * 
+             * \param &dStateVariableEvolutionRatesdSubFs: The value of the derivative
+             */
+
+            _dStateVariableEvolutionRatesdSubFs.second = dStateVariableEvolutionRatesdSubFs;
+
+            _dStateVariableEvolutionRatesdSubFs.first = true;
+
+            addIterationData( &_dStateVariableEvolutionRatesdSubFs );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdT( const floatVector &dStateVariableEvolutionRatesdT ){
+            /*!
+             * Set the derivative of the state variable evolution rates w.r.t. the temperature
+             * 
+             * \param &dStateVariableEvolutionRatesdT: The value of the derivative
+             */
+
+            _dStateVariableEvolutionRatesdT.second = dStateVariableEvolutionRatesdT;
+
+            _dStateVariableEvolutionRatesdT.first = true;
+
+            addIterationData( &_dStateVariableEvolutionRatesdT );
+
+        }
+
+        void residual::setdStateVariableEvolutionRatesdStateVariables( const floatMatrix &dStateVariableEvolutionRatesdStateVariables ){
+            /*!
+             * Set the derivative of the state variable evolution rates w.r.t. the state variables
+             * 
+             * \param &dStateVariableEvolutionRatesdStateVariables: The value of the derivative
+             */
+
+            _dStateVariableEvolutionRatesdStateVariables.second = dStateVariableEvolutionRatesdStateVariables;
+
+            _dStateVariableEvolutionRatesdStateVariables.first = true;
+
+            addIterationData( &_dStateVariableEvolutionRatesdStateVariables );
+
+        }
+
         void residual::setPreviousStateVariableEvolutionRates( const floatVector &previousStateVariableEvolutionRates ){
             /*!
              * Set the previous state variable evolution rate
@@ -2967,6 +3295,71 @@ namespace tardigradeHydra{
             _previousStateVariableEvolutionRates.second = previousStateVariableEvolutionRates;
 
             _previousStateVariableEvolutionRates.first = true;
+
+        }
+
+        void residual::setdPreviousStateVariableEvolutionRatesdPreviousCauchyStress( const floatMatrix &dPreviousStateVariableEvolutionRatesdPreviousCauchyStress ){
+            /*!
+             * Set the derivative of the state variable evolution rates w.r.t. the Cauchy stress
+             * 
+             * \param &dPreviousStateVariableEvolutionRatesdPreviousCauchyStress: The value of the derivative
+             */
+
+            _dPreviousStateVariableEvolutionRatesdPreviousCauchyStress.second = dPreviousStateVariableEvolutionRatesdPreviousCauchyStress;
+
+            _dPreviousStateVariableEvolutionRatesdPreviousCauchyStress.first = true;
+
+        }
+
+        void residual::setdPreviousStateVariableEvolutionRatesdPreviousF( const floatMatrix &dPreviousStateVariableEvolutionRatesdPreviousF ){
+            /*!
+             * Set the derivative of the state variable evolution rates w.r.t. the deformation gradient
+             * 
+             * \param &dPreviousStateVariableEvolutionRatesdPreviousF: The value of the derivative
+             */
+
+            _dPreviousStateVariableEvolutionRatesdPreviousF.second = dPreviousStateVariableEvolutionRatesdPreviousF;
+
+            _dPreviousStateVariableEvolutionRatesdPreviousF.first = true;
+
+        }
+
+        void residual::setdPreviousStateVariableEvolutionRatesdPreviousSubFs( const floatMatrix &dPreviousStateVariableEvolutionRatesdPreviousSubFs ){
+            /*!
+             * Set the derivative of the state variable evolution rates w.r.t. the sub-deformation gradients
+             * 
+             * \param &dPreviousStateVariableEvolutionRatesdPreviousSubFs: The value of the derivative
+             */
+
+            _dPreviousStateVariableEvolutionRatesdPreviousSubFs.second = dPreviousStateVariableEvolutionRatesdPreviousSubFs;
+
+            _dPreviousStateVariableEvolutionRatesdPreviousSubFs.first = true;
+
+        }
+
+        void residual::setdPreviousStateVariableEvolutionRatesdPreviousT( const floatVector &dPreviousStateVariableEvolutionRatesdPreviousT ){
+            /*!
+             * Set the derivative of the state variable evolution rates w.r.t. the temperature
+             * 
+             * \param &dPreviousStateVariableEvolutionRatesdPreviousT: The value of the derivative
+             */
+
+            _dPreviousStateVariableEvolutionRatesdPreviousT.second = dPreviousStateVariableEvolutionRatesdPreviousT;
+
+            _dPreviousStateVariableEvolutionRatesdPreviousT.first = true;
+
+        }
+
+        void residual::setdPreviousStateVariableEvolutionRatesdPreviousStateVariables( const floatMatrix &dPreviousStateVariableEvolutionRatesdPreviousStateVariables ){
+            /*!
+             * Set the derivative of the state variable evolution rates w.r.t. the state variables
+             * 
+             * \param &dPreviousStateVariableEvolutionRatesdPreviousStateVariables: The value of the derivative
+             */
+
+            _dPreviousStateVariableEvolutionRatesdPreviousStateVariables.second = dPreviousStateVariableEvolutionRatesdPreviousStateVariables;
+
+            _dPreviousStateVariableEvolutionRatesdPreviousStateVariables.first = true;
 
         }
 
@@ -3813,6 +4206,81 @@ namespace tardigradeHydra{
 
         }
 
+        const floatMatrix* residual::getdStateVariableEvolutionRatesdCauchyStress( ){
+            /*!
+             * Get the derivative of the state variable evolution rate w.r.t. the Cauchy stress
+             */
+
+            if ( !_dStateVariableEvolutionRatesdCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdStateVariableEvolutionRatesdCauchyStress( ) );
+
+            }
+
+            return &_dStateVariableEvolutionRatesdCauchyStress.second;
+
+        }
+
+        const floatMatrix* residual::getdStateVariableEvolutionRatesdF( ){
+            /*!
+             * Get the derivative of the state variable evolution rate w.r.t. the deformation gradient
+             */
+
+            if ( !_dStateVariableEvolutionRatesdF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdStateVariableEvolutionRatesdF( ) );
+
+            }
+
+            return &_dStateVariableEvolutionRatesdF.second;
+
+        }
+
+        const floatMatrix* residual::getdStateVariableEvolutionRatesdSubFs( ){
+            /*!
+             * Get the derivative of the state variable evolution rate w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_dStateVariableEvolutionRatesdSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdStateVariableEvolutionRatesdSubFs( ) );
+
+            }
+
+            return &_dStateVariableEvolutionRatesdSubFs.second;
+
+        }
+
+        const floatVector* residual::getdStateVariableEvolutionRatesdT( ){
+            /*!
+             * Get the derivative of the state variable evolution rate w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_dStateVariableEvolutionRatesdT.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdStateVariableEvolutionRatesdT( ) );
+
+            }
+
+            return &_dStateVariableEvolutionRatesdT.second;
+
+        }
+
+        const floatMatrix* residual::getdStateVariableEvolutionRatesdStateVariables( ){
+            /*!
+             * Get the derivative of the state variable evolution rate w.r.t. the state variables
+             */
+
+            if ( !_dStateVariableEvolutionRatesdStateVariables.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdStateVariableEvolutionRatesdStateVariables( ) );
+
+            }
+
+            return &_dStateVariableEvolutionRatesdStateVariables.second;
+
+        }
+
         const floatVector* residual::getPlasticDeformationGradient( ){
             /*!
              * Get the plastic deformation gradient
@@ -4280,6 +4748,81 @@ namespace tardigradeHydra{
             }
 
             return &_previousStateVariableEvolutionRates.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ){
+            /*!
+             * Get the derivative of the previous state variable evolution rate w.r.t. the previous Cauchy stress
+             */
+
+            if ( !_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ) );
+
+            }
+
+            return &_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousStateVariableEvolutionRatesdPreviousF( ){
+            /*!
+             * Get the derivative of the previous state variable evolution rate w.r.t. the previous deformation gradient
+             */
+
+            if ( !_dPreviousStateVariableEvolutionRatesdPreviousF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousStateVariableEvolutionRatesdPreviousF( ) );
+
+            }
+
+            return &_dPreviousStateVariableEvolutionRatesdPreviousF.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousStateVariableEvolutionRatesdPreviousSubFs( ){
+            /*!
+             * Get the derivative of the previous state variable evolution rate w.r.t. the previous sub-deformation gradients
+             */
+
+            if ( !_dPreviousStateVariableEvolutionRatesdPreviousSubFs.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousStateVariableEvolutionRatesdPreviousSubFs( ) );
+
+            }
+
+            return &_dPreviousStateVariableEvolutionRatesdPreviousSubFs.second;
+
+        }
+
+        const floatVector* residual::getdPreviousStateVariableEvolutionRatesdPreviousT( ){
+            /*!
+             * Get the derivative of the previous state variable evolution rate w.r.t. the previous sub-deformation gradients
+             */
+
+            if ( !_dPreviousStateVariableEvolutionRatesdPreviousT.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousStateVariableEvolutionRatesdPreviousT( ) );
+
+            }
+
+            return &_dPreviousStateVariableEvolutionRatesdPreviousT.second;
+
+        }
+
+        const floatMatrix* residual::getdPreviousStateVariableEvolutionRatesdPreviousStateVariables( ){
+            /*!
+             * Get the derivative of the previous state variable evolution rate w.r.t. the previous state variables
+             */
+
+            if ( !_dPreviousStateVariableEvolutionRatesdPreviousStateVariables.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) );
+
+            }
+
+            return &_dPreviousStateVariableEvolutionRatesdPreviousStateVariables.second;
 
         }
 

@@ -242,7 +242,7 @@ namespace tardigradeHydra{
 
                 void setdStateVariableEvolutionRatesdStateVariables( const floatMatrix &dStateVariableEvolutionRatesdStateVariables );
 
-                void setPreviousStateVariableEvolutionRates( const floatMatrix &previousStateVariableEvolutionRates );
+                void setPreviousStateVariableEvolutionRates( const floatVector &previousStateVariableEvolutionRates );
 
                 void setdPreviousStateVariableEvolutionRatesdPreviousCauchyStress( const floatMatrix &dPreviousStateVariableEvolutionRatesdPreviousCauchyStress );
 
@@ -676,15 +676,15 @@ namespace tardigradeHydra{
 
                 virtual void setStateVariableEvolutionRateDerivatives( const bool isPrevious );
 
-                virtual void setdStateVariableEvolutionRatedCauchyStress( const bool isPrevious );
+                virtual void setdStateVariableEvolutionRatesdCauchyStress( const bool isPrevious );
 
-                virtual void setdStateVariableEvolutionRatedF( const bool isPrevious );
+                virtual void setdStateVariableEvolutionRatesdF( const bool isPrevious );
 
-                virtual void setdStateVariableEvolutionRatedSubFs( const bool isPrevious );
+                virtual void setdStateVariableEvolutionRatesdSubFs( const bool isPrevious );
 
-                virtual void setdStateVariableEvolutionRatedT( const bool isPrevious );
+                virtual void setdStateVariableEvolutionRatesdT( const bool isPrevious );
 
-                virtual void setdStateVariableEvolutionRatedStateVariables( const bool isPrevious );
+                virtual void setdStateVariableEvolutionRatesdStateVariables( const bool isPrevious );
 
                 virtual void setPlasticDeformationGradient( );
 
@@ -834,7 +834,7 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatMatrix > _dStateVariableEvolutionRatesdSubFs;
 
-                tardigradeHydra::dataStorage< floatVector > _dStateVariableEvolutionRatesdT
+                tardigradeHydra::dataStorage< floatVector > _dStateVariableEvolutionRatesdT;
 
                 tardigradeHydra::dataStorage< floatMatrix > _dStateVariableEvolutionRatesdStateVariables;
 
@@ -846,7 +846,7 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatMatrix > _dPreviousStateVariableEvolutionRatesdPreviousSubFs;
 
-                tardigradeHydra::dataStorage< floatVector > _dPreviousStateVariableEvolutionRatesdPreviousT
+                tardigradeHydra::dataStorage< floatVector > _dPreviousStateVariableEvolutionRatesdPreviousT;
 
                 tardigradeHydra::dataStorage< floatMatrix > _dPreviousStateVariableEvolutionRatesdPreviousStateVariables;
 
