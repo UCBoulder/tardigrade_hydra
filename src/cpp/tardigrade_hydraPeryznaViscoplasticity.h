@@ -278,6 +278,26 @@ namespace tardigradeHydra{
 
                 void setPlasticStateVariables( const floatVector &plasticStateVariables );
 
+                void setdPlasticStateVariablesdCauchyStress( const floatMatrix &dPlasticStateVariablesdCauchyStress );
+
+                void setdPlasticStateVariablesdF( const floatMatrix &dPlasticStateVariablesdF );
+
+                void setdPlasticStateVariablesdSubFs( const floatMatrix &dPlasticStateVariablesdSubFs );
+
+                void setdPlasticStateVariablesdT( const floatVector &dPlasticStateVariablesdT );
+
+                void setdPlasticStateVariablesdStateVariables( const floatMatrix &dPlasticStateVariablesdStateVariables );
+
+                void setdPlasticStateVariablesdPreviousCauchyStress( const floatMatrix &dPlasticStateVariablesdPreviousCauchyStress );
+
+                void setdPlasticStateVariablesdPreviousF( const floatMatrix &dPlasticStateVariablesdPreviousF );
+
+                void setdPlasticStateVariablesdPreviousSubFs( const floatMatrix &dPlasticStateVariablesdPreviousSubFs );
+
+                void setdPlasticStateVariablesdPreviousT( const floatVector &dPlasticStateVariablesdPreviousT );
+
+                void setdPlasticStateVariablesdPreviousStateVariables( const floatMatrix &dPlasticStateVariablesdPreviousStateVariables );
+
                 void setStateVariables( const floatVector &stateVariables );
 
                 void setPreviousStateVariables( const floatVector &previousStateVariables );
@@ -465,6 +485,26 @@ namespace tardigradeHydra{
                 const floatMatrix* getdPlasticDeformationGradientdPreviousStateVariables( );
 
                 const floatVector* getPlasticStateVariables( );
+
+                const floatMatrix* getdPlasticStateVariablesdCauchyStress( );
+
+                const floatMatrix* getdPlasticStateVariablesdF( );
+
+                const floatMatrix* getdPlasticStateVariablesdSubFs( );
+
+                const floatVector* getdPlasticStateVariablesdT( );
+
+                const floatMatrix* getdPlasticStateVariablesdStateVariables( );
+
+                const floatMatrix* getdPlasticStateVariablesdPreviousCauchyStress( );
+
+                const floatMatrix* getdPlasticStateVariablesdPreviousF( );
+
+                const floatMatrix* getdPlasticStateVariablesdPreviousSubFs( );
+
+                const floatVector* getdPlasticStateVariablesdPreviousT( );
+
+                const floatMatrix* getdPlasticStateVariablesdPreviousStateVariables( );
 
                 const floatVector* getStateVariables( );
 
@@ -751,6 +791,28 @@ namespace tardigradeHydra{
                 virtual void setdPlasticDeformationGradientdPreviousStateVariables( );
 
                 virtual void setPlasticStateVariables( );
+
+                virtual void setPlasticStateVariableDerivatives( const bool setPreviousDerivatives );
+
+                virtual void setdPlasticStateVariablesdCauchyStress( );
+
+                virtual void setdPlasticStateVariablesdF( );
+
+                virtual void setdPlasticStateVariablesdSubFs( );
+
+                virtual void setdPlasticStateVariablesdT( );
+
+                virtual void setdPlasticStateVariablesdStateVariables( );
+
+                virtual void setdPlasticStateVariablesdPreviousCauchyStress( );
+
+                virtual void setdPlasticStateVariablesdPreviousF( );
+
+                virtual void setdPlasticStateVariablesdPreviousSubFs( );
+
+                virtual void setdPlasticStateVariablesdPreviousT( );
+
+                virtual void setdPlasticStateVariablesdPreviousStateVariables( );
 
                 virtual void setStateVariables( );
 
