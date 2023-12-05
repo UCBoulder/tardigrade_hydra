@@ -3041,7 +3041,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the previous state variable evolution rates w.r.t. the previous state variables
              */
 
-            setdStateVariableEvolutionRatesdStateVariables( false );
+            setdStateVariableEvolutionRatesdStateVariables( true );
 
         }
 
