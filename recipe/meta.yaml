@@ -1,5 +1,5 @@
 package:
-  name: tardigrade-hydra
+  name: tardigrade_hydra
   # TODO: setup and use pyproject.toml and a Conda build Jinja template
   version: {{ VERSION }}
 
@@ -11,7 +11,7 @@ build:
     - mkdir build-package
     - cd build-package
     - cmake .. -DCMAKE_BUILD_TYPE=Release
-    - cmake --build . --target tardigrade-hydra tardigrade-hydra_umat
+    - cmake --build . --target tardigrade_hydra tardigrade_hydra_umat
     - cmake --install . --prefix ${PREFIX}
   ignore_run_exports:
     - python_abi
@@ -20,12 +20,12 @@ requirements:
   build:
     - {{ compiler('cxx') }}
     - eigen >=3.3.7
-    - error_tools>=0.4
-    - vector_tools>=0.5.4
-    - constitutive_tools>=0.5.0
-    - stress_tools
-    - solver_tools
-    - abaqus_tools>=0.4
+    - tardigrade_error_tools>=0.4
+    - tardigrade_vector_tools>=0.5.4
+    - tardigrade_constitutive_tools>=0.7.2
+    - tardigrade_stress_tools
+    - tardigrade_solver_tools
+    - tardigrade_abaqus_tools>=0.4
     - boost >=1.59  # TODO: Separate the package/test configuration to make BOOST an optional build dependency
     - setuptools_scm >=6.2
     - libcxx <16  # [osx]
@@ -39,12 +39,12 @@ requirements:
   run:
     - {{ compiler('cxx') }}
     - eigen >=3.3.7
-    - error_tools>=0.4
-    - vector_tools>=0.5.4
-    - constitutive_tools>=0.5.0
-    - stress_tools
-    - solver_tools
-    - abaqus_tools>=0.4
+    - tardigrade_error_tools>=0.4
+    - tardigrade_vector_tools>=0.5.4
+    - tardigrade_constitutive_tools>=0.7.2
+    - tardigrade_stress_tools
+    - tardigrade_solver_tools
+    - tardigrade_abaqus_tools>=0.4
 
 test:
   requires:
@@ -55,10 +55,11 @@ test:
   source_files:
     - CMakeLists.txt
     - src/cpp/tests/CMakeLists.txt
-    - src/cpp/tests/test_tardigrade-hydra.cpp
-    - src/cpp/tests/test_tardigrade-hydraLinearElasticity.cpp
-    - src/cpp/tests/test_tardigrade-hydraLinearViscoelasticity.cpp
-    - src/cpp/tests/test_tardigrade-hydraThermalExpansion.cpp
+    - src/cpp/tests/test_tardigrade_hydra.cpp
+    - src/cpp/tests/test_tardigrade_hydraLinearElasticity.cpp
+    - src/cpp/tests/test_tardigrade_hydraLinearViscoelasticity.cpp
+    - src/cpp/tests/test_tardigrade_hydraThermalExpansion.cpp
+    - src/cpp/tests/test_tardigrade_hydraPeryznaViscoplasticity.cpp
     - src/abaqus/CMakeLists.txt
     - src/abaqus/single_element_c3d8.inp
     - src/abaqus/tests/CMakeLists.txt

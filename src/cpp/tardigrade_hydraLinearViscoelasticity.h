@@ -11,8 +11,8 @@
 #define TARDIGRADE_HYDRA_LINEAR_VISCOELASTICITY_H
 
 #define USE_EIGEN
-#include<vector_tools.h>
-#include<tardigrade-hydraLinearElasticity.h>
+#include<tardigrade_vector_tools.h>
+#include<tardigrade_hydraLinearElasticity.h>
 
 namespace tardigradeHydra{
 
@@ -56,7 +56,7 @@ namespace tardigradeHydra{
         const std::string __BASENAME__ = file_name(__FILE__); //!< The base filename which will be parsed
     const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
     
-        typedef errorTools::Node errorNode; //!< Redefinition for the error node
+        typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
         typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
         typedef double floatType; //!< Define the float values type.
         typedef std::vector< floatType > floatVector; //!< Define a vector of floats
@@ -86,7 +86,7 @@ namespace tardigradeHydra{
                           const unsigned int viscoelasticISVUpperIndex,
                           const floatType integrationAlpha=0. ) : tardigradeHydra::linearElasticity::residual( hydra, numEquations ), _viscoelasticISVLowerIndex( viscoelasticISVLowerIndex ), _viscoelasticISVUpperIndex( viscoelasticISVUpperIndex ), _integrationAlpha( integrationAlpha ){
     
-                    ERROR_TOOLS_CATCH( decomposeParameterVector( parameters ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameterVector( parameters ) );
     
                 }
 

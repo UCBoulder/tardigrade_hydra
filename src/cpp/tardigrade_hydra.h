@@ -12,10 +12,10 @@
 #include<sstream>
 #include<functional>
 
-#include<error_tools.h>
+#include<tardigrade_error_tools.h>
 #define USE_EIGEN
-#include<vector_tools.h>
-#include<abaqus_tools.h>
+#include<tardigrade_vector_tools.h>
+#include<tardigrade_abaqus_tools.h>
 
 namespace tardigradeHydra{
 
@@ -59,7 +59,7 @@ namespace tardigradeHydra{
     const std::string __BASENAME__ = file_name(__FILE__); //!< The base filename which will be parsed
     const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
 
-    typedef errorTools::Node errorNode; //!< Redefinition for the error node
+    typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
     typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
     typedef double floatType; //!< Define the float values type.
     typedef std::vector< floatType > floatVector; //!< Define a vector of floats
@@ -79,7 +79,7 @@ namespace tardigradeHydra{
                  * The function to erase the current values stored
                  */
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "clear not implemented!" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "clear not implemented!" ) );
 
             }
 
@@ -216,7 +216,7 @@ namespace tardigradeHydra{
                  * The user-defined residual equation. Must have a size of numEquations
                  */
 
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The residual is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The residual is not implemented" ) );
 
             }
 
@@ -228,7 +228,7 @@ namespace tardigradeHydra{
                  * and the state variables solved for in the non-linear solve.
                  */
 
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The jacobian is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The jacobian is not implemented" ) );
 
             }
 
@@ -237,7 +237,7 @@ namespace tardigradeHydra{
                  * The user-defined derivative of the residual w.r.t. the deformation gradient.
                  */
 
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The derivative of the residual w.r.t. the deformation gradient is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The derivative of the residual w.r.t. the deformation gradient is not implemented" ) );
  
             }
 
@@ -246,7 +246,7 @@ namespace tardigradeHydra{
                  * The user-defined derivative of the residual w.r.t. the temperature
                  */
 
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The derivative of the residual w.r.t. the temperature is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The derivative of the residual w.r.t. the temperature is not implemented" ) );
  
             }
 
@@ -264,7 +264,18 @@ namespace tardigradeHydra{
                  * Only needs to be defined for the first residual
                  */
 
-                ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the Cauchy stress is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the Cauchy stress is not implemented" ) );
+
+            }
+
+            virtual void setPreviousCauchyStress( ){
+                /*!
+                 * Compute the previous Cauchy stress
+                 * 
+                 * Only needs to be defined for the first residual
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the previous Cauchy stress is not implemented" ) );
 
             }
 
@@ -295,6 +306,8 @@ namespace tardigradeHydra{
 
             void setCauchyStress( const floatVector &cauchyStress );
 
+            void setPreviousCauchyStress( const floatVector &previousCauchyStress );
+
             void setCurrentAdditionalStateVariables( const floatVector &currentAdditionalStateVariables );
 
             // Getter functions
@@ -314,6 +327,8 @@ namespace tardigradeHydra{
 
             const floatVector* getCauchyStress( );
 
+            const floatVector* getPreviousCauchyStress( );
+
             const floatVector* getCurrentAdditionalStateVariables( );
 
             void addIterationData( dataBase *data );
@@ -332,7 +347,9 @@ namespace tardigradeHydra{
 
             dataStorage< floatMatrix > _additionalDerivatives; //!< Additional derivatives of the residual
 
-            dataStorage< floatVector > _cauchyStress; //!< The cauchy stress. Only needs to be defined for the first residual
+            dataStorage< floatVector > _cauchyStress; //!< The previous Cauchy stress. Only needs to be defined for the first residual
+
+            dataStorage< floatVector > _previousCauchyStress; //!< The previous Cauchy stress. Only needs to be defined for the first residual
 
             dataStorage< floatVector > _currentAdditionalStateVariables; //!< The current additional state variables.
 
@@ -444,11 +461,15 @@ namespace tardigradeHydra{
 
             floatVector getFollowingConfiguration( const unsigned int &index );
 
+            floatVector getConfiguration( const unsigned int &index );
+
             floatVector getPreviousSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getPreviousPrecedingConfiguration( const unsigned int &index );
 
             floatVector getPreviousFollowingConfiguration( const unsigned int &index );
+
+            floatVector getPreviousConfiguration( const unsigned int &index );
 
             floatMatrix getSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
@@ -503,6 +524,8 @@ namespace tardigradeHydra{
             virtual bool checkLSConvergence( );
 
             const floatVector* getCauchyStress( );
+
+            const floatVector* getPreviousCauchyStress( );
 
             virtual void evaluate( );
 
@@ -590,6 +613,8 @@ namespace tardigradeHydra{
 
             dataStorage< floatVector > _cauchyStress; //!< The Cauchy stress as determined from the current state
 
+            dataStorage< floatVector > _previousCauchyStress; //!< The previous value of the Cauchy stress as determined from the current state
+
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
             unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
@@ -621,7 +646,7 @@ namespace tardigradeHydra{
             void incrementLSIteration( ){ _LSIteration++; }
 
             void resetLSIteration( ){ _LSIteration = 0; _lambda = 1.0;
-                                      _lsResidualNorm.second = vectorTools::l2norm( *getResidual( ) );
+                                      _lsResidualNorm.second = tardigradeVectorTools::l2norm( *getResidual( ) );
                                       _lsResidualNorm.first = true; }
 
             const floatType* getLambda( ){ return &_lambda; }

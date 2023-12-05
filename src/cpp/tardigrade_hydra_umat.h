@@ -9,7 +9,7 @@
 #ifndef UMAT_H
 #define UMAT_H
 
-#include<tardigrade-hydra.h>
+#include<tardigrade_hydra.h>
 
 extern "C" void UMAT( double *STRESS,       double *STATEV,       double *DDSDDE,       double &SSE,          double &SPD,
                       double &SCD,          double &RPL,          double *DDSDDT,       double *DRPLDE,       double &DRPLDT,

@@ -27,6 +27,7 @@ New Features
 - Added the evaluation of hydra to compute the required quantities (:merge:`18`). By `Nathan Miller`_.
 - Added a linear viscoelastic implementation of a residual (:merge:`20`). By `Nathan Miller`_.
 - Added the residual for a thermal expansion model (:merge:`21`). By `Nathan Miller`_.
+- Added the residual for a Peryzna viscoplasticity model (:merge:`24`). By `Nathan Miller`_. 
 
 Internal Changes
 ================
@@ -65,3 +66,4 @@ Internal Changes
 - linearElasticity: Changed XXXdPK2 names to XXXdPK2Stress (:merge:`20`). By `Nathan Miller`_.
 - Updated documentation strings to eliminate all undefined references in the documentation generation (:merge:`21`). By `Nathan Miller`_.
 - thermalExpansion: Added the remaining derivatives of the residual (:merge:`21`). By `Nathan Miller`_.
+- thermalExpansion: Removed extraneous print statements (:merge:`22`). By `Nathan Miller`_.
