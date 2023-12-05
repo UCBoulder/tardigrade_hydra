@@ -27,6 +27,7 @@ New Features
 - Added the evaluation of hydra to compute the required quantities (:merge:`18`). By `Nathan Miller`_.
 - Added a linear viscoelastic implementation of a residual (:merge:`20`). By `Nathan Miller`_.
 - Added the residual for a thermal expansion model (:merge:`21`). By `Nathan Miller`_.
+- Added the residual for a Peryzna viscoplasticity model (:merge:`24`). By `Nathan Miller`_. 
 
 Internal Changes
 ================
