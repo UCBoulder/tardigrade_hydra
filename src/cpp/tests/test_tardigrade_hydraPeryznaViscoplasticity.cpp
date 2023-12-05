@@ -230,6 +230,26 @@ namespace tardigradeHydra{
 
                             BOOST_CHECK( &R._dPlasticDeformationGradientdPreviousStateVariables.second == R.getdPlasticDeformationGradientdPreviousStateVariables( ) );
 
+                            BOOST_CHECK( &R._dPlasticStateVariablesdCauchyStress.second           == R.getdPlasticStateVariablesdCauchyStress( ) );
+
+                            BOOST_CHECK( &R._dPlasticStateVariablesdF.second                      == R.getdPlasticStateVariablesdF( ) );
+
+                            BOOST_CHECK( &R._dPlasticStateVariablesdSubFs.second                  == R.getdPlasticStateVariablesdSubFs( ) );
+
+                            BOOST_CHECK( &R._dPlasticStateVariablesdT.second                      == R.getdPlasticStateVariablesdT( ) );
+
+                            BOOST_CHECK( &R._dPlasticStateVariablesdStateVariables.second         == R.getdPlasticStateVariablesdStateVariables( ) );
+
+                            BOOST_CHECK( &R._dPlasticStateVariablesdPreviousCauchyStress.second   == R.getdPlasticStateVariablesdPreviousCauchyStress( ) );
+
+                            BOOST_CHECK( &R._dPlasticStateVariablesdPreviousF.second              == R.getdPlasticStateVariablesdPreviousF( ) );
+
+                            BOOST_CHECK( &R._dPlasticStateVariablesdPreviousSubFs.second          == R.getdPlasticStateVariablesdPreviousSubFs( ) );
+
+                            BOOST_CHECK( &R._dPlasticStateVariablesdPreviousT.second              == R.getdPlasticStateVariablesdPreviousT( ) );
+
+                            BOOST_CHECK( &R._dPlasticStateVariablesdPreviousStateVariables.second == R.getdPlasticStateVariablesdPreviousStateVariables( ) );
+
                         }
                         catch( std::exception &e ){
 
