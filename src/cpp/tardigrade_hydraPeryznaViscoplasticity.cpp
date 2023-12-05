@@ -4318,7 +4318,68 @@ namespace tardigradeHydra{
              * Set the value of the Jacobian
              */
 
-            throw "not implemented";
+            floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+
+            // Set the derivatives
+            getdPlasticDeformationGradientdCauchyStress( );
+
+            getdPlasticStateVariablesdCauchyStress( );
+
+            // Get the Jacobians of the plastic deformation gradient
+            for ( unsigned int i = 0; i < getPlasticDeformationGradient( )->size( ); i++ ){
+
+                // Set the Jacobian with respect to the Cauchy stress
+                for ( unsigned int j = 0; j < ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ); j++ ){
+
+                    jacobian[ i ][ j ] += ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ][ j ];
+
+                }
+
+                // Set the Jacobian with respect to the other configurations
+                for ( unsigned int j = 0; j < ( *getdPlasticDeformationGradientdSubFs( ) )[ i ].size( ); j++ ){
+
+                    jacobian[ i ][ j ] += ( *getdPlasticDeformationGradientdSubFs( ) )[ i ][ j ];
+
+                }
+
+                // Set the Jacobian with respect to the state variables
+                for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
+
+                    jacobian[ i ][ ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + ( *getdPlasticDeformationGradientdSubFs( ) )[ i ].size( ) + *ind ]
+                        += ( *getdPlasticDeformationGradientdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+
+                }
+
+            }
+
+            // Get the Jacobians of the plastic state variables
+            for ( unsigned int i = 0; i < getPlasticStateVariables( )->size( ); i++ ){
+
+                // Set the Jacobian with respect to the Cauchy stress
+                for ( unsigned int j = 0; j < ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ].size( ); j++ ){
+
+                    jacobian[ i + getPlasticDeformationGradient( )->size( ) ][ j ] += ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ][ j ];
+
+                }
+
+                // Set the Jacobian with respect to the other configurations
+                for ( unsigned int j = 0; j < ( *getdPlasticStateVariablesdSubFs( ) )[ i ].size( ); j++ ){
+
+                    jacobian[ i + getPlasticDeformationGradient( )->size( ) ][ j ] += ( *getdPlasticStateVariablesdSubFs( ) )[ i ][ j ];
+
+                }
+
+                // Set the Jacobian with respect to the state variables
+                for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
+
+                    jacobian[ i + getPlasticDeformationGradient( )->size( ) ][ ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *getdPlasticStateVariablesdSubFs( ) )[ i ].size( ) + *ind ]
+                        += ( *getdPlasticStateVariablesdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+
+                }
+
+            }
+
+            setJacobian( jacobian );
 
         }
 
@@ -4327,7 +4388,28 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature.
              */
 
-            throw "not implemented";
+            floatVector dRdT( *getNumEquations( ), 0 );
+
+            // Set the derivatives
+            getdPlasticDeformationGradientdT( );
+
+            getdPlasticStateVariablesdT( );
+
+            // Get the Jacobians of the plastic deformation gradient
+            for ( unsigned int i = 0; i < getPlasticDeformationGradient( )->size( ); i++ ){
+
+                dRdT[ i ] = ( *getdPlasticDeformationGradientdT( ) )[ i ];
+
+            }
+
+            // Get the Jacobians of the plastic state variables
+            for ( unsigned int i = 0; i < getPlasticStateVariables( )->size( ); i++ ){
+
+                dRdT[ i + getPlasticDeformationGradient( )->size( ) ] += ( *getdPlasticStateVariablesdT( ) )[ i ];
+
+            }
+
+            setdRdT( dRdT );
 
         }
 
@@ -4336,7 +4418,36 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient.
              */
 
-            throw "not implemented";
+            floatMatrix dRdF( *getNumEquations( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
+
+            // Set the derivatives
+            getdPlasticDeformationGradientdF( );
+
+            getdPlasticStateVariablesdF( );
+
+            // Get the Jacobians of the plastic deformation gradient
+            for ( unsigned int i = 0; i < getPlasticDeformationGradient( )->size( ); i++ ){
+
+                for ( unsigned int j = 0; j < ( *getdPlasticDeformationGradientdF( ) )[ i ].size( ); j++ ){
+
+                    dRdF[ i ][ j ] = ( *getdPlasticDeformationGradientdF( ) )[ i ][ j ];
+
+                }
+
+            }
+
+            // Get the Jacobians of the plastic state variables
+            for ( unsigned int i = 0; i < getPlasticStateVariables( )->size( ); i++ ){
+
+                for ( unsigned int j = 0; j < ( *getdPlasticStateVariablesdF( ) )[ i ].size( ); j++ ){
+
+                    dRdF[ i + getPlasticDeformationGradient( )->size( ) ][ j ] += ( *getdPlasticStateVariablesdF( ) )[ i ][ j ];
+
+                }
+
+            }
+
+            setdRdF( dRdF );
 
         }
 
