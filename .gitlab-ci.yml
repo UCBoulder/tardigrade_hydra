@@ -200,7 +200,7 @@ deploy:
     # Override default permissions. Set group to rx with no write permissions.
     - umask 0022
     # Copy Conda package to AEA Conda Channel
-    - cp ${conda_artifacts_directory}/linux-64/tardigrade-hydra-*-*.tar.bz2 ${aea_conda_channel}/linux-64
+    - cp ${conda_artifacts_directory}/linux-64/tardigrade_hydra-*-*.tar.bz2 ${aea_conda_channel}/linux-64
     # Change group for access by all W-13 staff and prevent accidental modification by institutional account in CI jobs
     - chgrp w13users ${aea_conda_channel}/linux-64/tardigrade_hydra-*-*.tar.bz2 || true
     - chmod 555 ${aea_conda_channel}/linux-64/tardigrade_hydra-*-*.tar.bz2 || true
