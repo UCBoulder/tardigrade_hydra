@@ -7377,3 +7377,180 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getResidual( ) ) );
 
 }
+
+BOOST_AUTO_TEST_CASE( test_residual_getJacobian ){
+    /*!
+     * Test of computing the jacobian
+     */
+
+    class stressMock : public tardigradeHydra::residualBase {
+
+        public:
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        private:
+
+            virtual void setPreviousCauchyStress( ){
+
+                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+
+            }
+
+    };
+
+    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+
+        public:
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+    
+            floatVector elasticityParameters = { 123.4, 56.7 };
+
+            floatVector viscoPlasticParameters = { 10.0,
+                                                   1e1, 1e2,
+                                                   10, 200, 293.15,
+                                                   5, 0.34,
+                                                   0.12,
+                                                   13., 14.};
+                                                   
+
+            std::vector< unsigned int > stateVariableIndices = { 2 };
+
+            floatVector thermalParameters = { 293.15, 1e-5, 2e-5, 3e-5, 4e-5, 5e-5, 6e-5, 7e-5, 8e-5, 9e-5, 10e-5, 11e-5, 12e-5 };
+
+            floatVector _local_deltaPreviousCauchyStress = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+    
+            stressMock elasticity;
+    
+            residualMock viscoPlasticity;
+
+            tardigradeHydra::thermalExpansion::residual thermalExpansion;
+    
+            tardigradeHydra::residualBase remainder;
+    
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+    
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+    
+            }
+
+        private:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 4 );
+
+                elasticity = stressMock( this, 9 );
+
+                elasticity.previousCauchyStress += _local_deltaPreviousCauchyStress;
+
+                viscoPlasticity = residualMock( this, 10, 1, stateVariableIndices, viscoPlasticParameters );
+
+                thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
+
+                remainder = tardigradeHydra::residualBase( this, 4 );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &viscoPlasticity;
+
+                residuals[ 2 ] = &thermalExpansion;
+
+                residuals[ 3 ] = &remainder;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.005, 0.04, 0.05 };
+
+    floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+
+    floatVector unknownVector = { 2, 1, 1, 7, 1, 6, 1, 8, 3,
+                                  1.2, 0.0, 0.0,
+                                  0.0, 1.0, 0.0,
+                                  0.0, 0.0, 1.0,
+                                  1.01, 0.0, 0.0,
+                                  0.0,  1.2, 0.0,
+                                  0.0,  0.0, 0.9,
+                                  4, 5, 0.01, 7, 8 };
+
+    unsigned int numConfigurations = 3;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    residualMock R( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
+    unsigned int nvar = 10;
+
+    floatMatrix jacobian( nvar, floatVector( unknownVector.size( ), 0 ) );
+
+    floatType eps = 1e-6;
+
+    for ( unsigned int i = 0; i < unknownVector.size( ); i++ ){
+
+        floatVector delta( unknownVector.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
+
+        residualMock _R( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector + delta );
+
+        floatVector dp = *_R.getResidual( );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector - delta );
+
+        floatVector dm = *_R.getResidual( );
+
+        for ( unsigned int j = 0; j < nvar; j++ ){
+
+            jacobian[ j ][ i ] = ( dp[ j ] - dm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, *R.getJacobian( ) ) );
+    std::cout << "jacobian:\n"; tardigradeVectorTools::print( jacobian );
+    std::cout << "R.getJacobian:\n"; tardigradeVectorTools::print( *R.getJacobian( ) );
+
+}

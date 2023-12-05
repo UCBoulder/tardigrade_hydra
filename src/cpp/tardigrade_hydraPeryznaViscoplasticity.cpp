@@ -4327,26 +4327,30 @@ namespace tardigradeHydra{
 
             // Get the Jacobians of the plastic deformation gradient
             for ( unsigned int i = 0; i < getPlasticDeformationGradient( )->size( ); i++ ){
+                unsigned int row = i;
 
                 // Set the Jacobian with respect to the Cauchy stress
                 for ( unsigned int j = 0; j < ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ); j++ ){
+                    unsigned int col = j;
 
-                    jacobian[ i ][ j ] += ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ][ j ];
+                    jacobian[ row ][ col ] += ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ][ j ];
 
                 }
 
-                // Set the Jacobian with respect to the other configurations
+                // Set the Jacobian with respect to the sub-configurations
+                jacobian[ i ][ ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + i ] -= 1;
                 for ( unsigned int j = 0; j < ( *getdPlasticDeformationGradientdSubFs( ) )[ i ].size( ); j++ ){
+                    unsigned int col = ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + j;
 
-                    jacobian[ i ][ j ] += ( *getdPlasticDeformationGradientdSubFs( ) )[ i ][ j ];
+                    jacobian[ row ][ col ] += ( *getdPlasticDeformationGradientdSubFs( ) )[ i ][ j ];
 
                 }
 
                 // Set the Jacobian with respect to the state variables
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
+                    unsigned int col = ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + ( *getdPlasticDeformationGradientdSubFs( ) )[ i ].size( ) + *ind;
 
-                    jacobian[ i ][ ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + ( *getdPlasticDeformationGradientdSubFs( ) )[ i ].size( ) + *ind ]
-                        += ( *getdPlasticDeformationGradientdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    jacobian[ row ][ col ] += ( *getdPlasticDeformationGradientdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
@@ -4354,26 +4358,30 @@ namespace tardigradeHydra{
 
             // Get the Jacobians of the plastic state variables
             for ( unsigned int i = 0; i < getPlasticStateVariables( )->size( ); i++ ){
+                unsigned int row = getPlasticDeformationGradient( )->size( ) + i;
 
                 // Set the Jacobian with respect to the Cauchy stress
                 for ( unsigned int j = 0; j < ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ].size( ); j++ ){
+                    unsigned int col = j;
 
-                    jacobian[ i + getPlasticDeformationGradient( )->size( ) ][ j ] += ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ][ j ];
+                    jacobian[ row ][ col ] += ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ][ j ];
 
                 }
 
                 // Set the Jacobian with respect to the other configurations
                 for ( unsigned int j = 0; j < ( *getdPlasticStateVariablesdSubFs( ) )[ i ].size( ); j++ ){
+                    unsigned int col = ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + j;
 
-                    jacobian[ i + getPlasticDeformationGradient( )->size( ) ][ j ] += ( *getdPlasticStateVariablesdSubFs( ) )[ i ][ j ];
+                    jacobian[ row ][ col ] += ( *getdPlasticStateVariablesdSubFs( ) )[ i ][ j ];
 
                 }
 
                 // Set the Jacobian with respect to the state variables
+                jacobian[ row ][ ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *getdPlasticStateVariablesdSubFs( ) )[ i ].size( ) + ( *getStateVariableIndices( ) )[ i ] ] -= 1;
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
+                    unsigned int col = ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *getdPlasticStateVariablesdSubFs( ) )[ i ].size( ) + *ind;
 
-                    jacobian[ i + getPlasticDeformationGradient( )->size( ) ][ ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *getdPlasticStateVariablesdSubFs( ) )[ i ].size( ) + *ind ]
-                        += ( *getdPlasticStateVariablesdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    jacobian[ row ][ col ] += ( *getdPlasticStateVariablesdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
