@@ -998,6 +998,26 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< floatVector > _plasticStateVariables;
 
+                tardigradeHydra::dataStorage< floatMatrix > _dPlasticStateVariablesdCauchyStress;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPlasticStateVariablesdF;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPlasticStateVariablesdSubFs;
+
+                tardigradeHydra::dataStorage< floatVector > _dPlasticStateVariablesdT;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPlasticStateVariablesdStateVariables;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPlasticStateVariablesdPreviousCauchyStress;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPlasticStateVariablesdPreviousF;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPlasticStateVariablesdPreviousSubFs;
+
+                tardigradeHydra::dataStorage< floatVector > _dPlasticStateVariablesdPreviousT;
+
+                tardigradeHydra::dataStorage< floatMatrix > _dPlasticStateVariablesdPreviousStateVariables;
+
                 tardigradeHydra::dataStorage< floatVector > _stateVariables;
 
                 tardigradeHydra::dataStorage< floatVector > _previousStateVariables;
