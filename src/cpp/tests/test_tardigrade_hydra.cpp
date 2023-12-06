@@ -1,7 +1,7 @@
 /**
-  * \file test_tardigrade-hydra.cpp
+  * \file test_tardigrade_hydra.cpp
   *
-  * Tests for tardigrade-hydra
+  * Tests for tardigrade_hydra
   */
 
 #include<tardigrade_hydra.h>
@@ -10,7 +10,7 @@
 #include<sstream>
 #include<fstream>
 
-#define BOOST_TEST_MODULE test_tardigrade-hydra
+#define BOOST_TEST_MODULE test_tardigrade_hydra
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -305,7 +305,7 @@ BOOST_AUTO_TEST_CASE( testSayHello ){
 
 BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     /*!
-     * Test the tardigrade-hydra abaqus interface
+     * Test the tardigrade_hydra abaqus interface
      */
 
     double double_scalar = 0.0;
@@ -314,7 +314,7 @@ BOOST_AUTO_TEST_CASE( testAbaqusInterface ){
     //Create nominally correct variable holders that match expected Abaqus Fortran interface
     //TODO: fill out nominally correct variable shape and values
     //Strings
-    char CMNAME[ ] = "tardigrade-hydra";
+    char CMNAME[ ] = "tardigrade_hydra";
     //Scalar integers
     int NDI = 3;
     int NSHR = 3;
@@ -2194,21 +2194,21 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setAdditionalDerivatives ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_setCauchyStress ){
+BOOST_AUTO_TEST_CASE( test_residualBase_setStress ){
 
     class residualBaseMock : public tardigradeHydra::residualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::setCauchyStress;
+            using tardigradeHydra::residualBase::setStress;
 
             floatVector cauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
             residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
-            virtual void setCauchyStress( ){
+            virtual void setStress( ){
     
-                setCauchyStress( cauchyStress );
+                setStress( cauchyStress );
     
             }
 
@@ -2220,25 +2220,25 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setCauchyStress ){
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getCauchyStress( ), residual.cauchyStress ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getStress( ), residual.cauchyStress ) );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_setPreviousCauchyStress ){
+BOOST_AUTO_TEST_CASE( test_residualBase_setPreviousStress ){
 
     class residualBaseMock : public tardigradeHydra::residualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::setPreviousCauchyStress;
+            using tardigradeHydra::residualBase::setPreviousStress;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
             residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
     
-                setPreviousCauchyStress( previousCauchyStress );
+                setPreviousStress( previousCauchyStress );
     
             }
 
@@ -2250,7 +2250,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setPreviousCauchyStress ){
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getPreviousCauchyStress( ), residual.previousCauchyStress ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getPreviousStress( ), residual.previousCauchyStress ) );
 
 }
 
@@ -2783,11 +2783,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
             using residualBaseMock::setAdditionalDerivatives;
 
-            using tardigradeHydra::residualBase::setCauchyStress;
+            using tardigradeHydra::residualBase::setStress;
 
-            virtual void setCauchyStress( ){
+            virtual void setStress( ){
 
-                setCauchyStress( cauchyStress );
+                setStress( cauchyStress );
 
             }
 
@@ -3089,7 +3089,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkLSConvergence ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousCauchyStress ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousStress ){
 
 
     class residualMockGood : public tardigradeHydra::residualBase {
@@ -3102,9 +3102,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousCauchyStress ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -3189,7 +3189,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousCauchyStress ){
 
     floatVector answer = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *hydra.getPreviousCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *hydra.getPreviousStress( ) ) );
 
 }
 
@@ -3263,7 +3263,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector ){
 
     tardigradeHydra::unit_test::hydraBaseTester::decomposeUnknownVector( hydra );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getCauchyStress( ), cauchyStressAnswer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getStress( ), cauchyStressAnswer ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getConfigurations( ), configurationsAnswer ) );
 
@@ -3556,7 +3556,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdF ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( PK2Answer, *hydra.elasticity.getPK2Stress( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *hydra.getCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *hydra.getStress( ) ) );
 
 }
 

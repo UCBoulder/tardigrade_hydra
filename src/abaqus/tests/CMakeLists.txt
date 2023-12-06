@@ -1,4 +1,4 @@
-# Add abaqus tardigrade-hydra_umat integration tests that run abaqus against input files
+# Add abaqus tardigrade_hydra_umat integration tests that run abaqus against input files
 set(ABAQUS_LD_LIBRARY_PATH $ENV{CONDA_PREFIX}/lib:$ENV{CONDA_PREFIX}/lib64:$ENV{LD_LIBRARY_PATH})
 foreach(INPUT_FILE ${ABAQUS_INPUT_FILES})
     add_test(NAME ${ABAQUS_TEST_NAME}[${INPUT_FILE}]

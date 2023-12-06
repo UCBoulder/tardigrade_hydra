@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file tardigrade-hydra.h
+  * \file tardigrade_hydra.h
   ******************************************************************************
   * A C++ library for constructing finite deformation constitutive models.
   ******************************************************************************
@@ -257,25 +257,25 @@ namespace tardigradeHydra{
 
             }
 
-            virtual void setCauchyStress( ){
+            virtual void setStress( ){
                 /*!
-                 * Compute the current Cauchy stress
+                 * Compute the current stress
                  * 
                  * Only needs to be defined for the first residual
                  */
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the Cauchy stress is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the stress is not implemented" ) );
 
             }
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
                 /*!
-                 * Compute the previous Cauchy stress
+                 * Compute the previous stress
                  * 
                  * Only needs to be defined for the first residual
                  */
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the previous Cauchy stress is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the previous stress is not implemented" ) );
 
             }
 
@@ -304,9 +304,9 @@ namespace tardigradeHydra{
 
             void setAdditionalDerivatives( const floatMatrix &additionalDerivatives );
 
-            void setCauchyStress( const floatVector &cauchyStress );
+            void setStress( const floatVector &stress );
 
-            void setPreviousCauchyStress( const floatVector &previousCauchyStress );
+            void setPreviousStress( const floatVector &previousStress );
 
             void setCurrentAdditionalStateVariables( const floatVector &currentAdditionalStateVariables );
 
@@ -325,9 +325,9 @@ namespace tardigradeHydra{
 
             const floatMatrix* getAdditionalDerivatives( );
 
-            const floatVector* getCauchyStress( );
+            const floatVector* getStress( );
 
-            const floatVector* getPreviousCauchyStress( );
+            const floatVector* getPreviousStress( );
 
             const floatVector* getCurrentAdditionalStateVariables( );
 
@@ -347,9 +347,9 @@ namespace tardigradeHydra{
 
             dataStorage< floatMatrix > _additionalDerivatives; //!< Additional derivatives of the residual
 
-            dataStorage< floatVector > _cauchyStress; //!< The previous Cauchy stress. Only needs to be defined for the first residual
+            dataStorage< floatVector > _stress; //!< The stress. Only needs to be defined for the first residual
 
-            dataStorage< floatVector > _previousCauchyStress; //!< The previous Cauchy stress. Only needs to be defined for the first residual
+            dataStorage< floatVector > _previousStress; //!< The previous stress. Only needs to be defined for the first residual
 
             dataStorage< floatVector > _currentAdditionalStateVariables; //!< The current additional state variables.
 
@@ -523,9 +523,9 @@ namespace tardigradeHydra{
 
             virtual bool checkLSConvergence( );
 
-            const floatVector* getCauchyStress( );
+            const floatVector* getStress( );
 
-            const floatVector* getPreviousCauchyStress( );
+            const floatVector* getPreviousStress( );
 
             virtual void evaluate( );
 
@@ -605,15 +605,15 @@ namespace tardigradeHydra{
 
             dataStorage< floatVector > _additionalDerivatives; //!< Additional derivatives of the residual
 
-            dataStorage< floatVector > _X; //!< The unknown vector { cauchyStress, F1, ..., Fn, xi1, ..., xim }
+            dataStorage< floatVector > _X; //!< The unknown vector { stress, F1, ..., Fn, xi1, ..., xim }
 
             dataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
 
             dataStorage< floatType > _lsResidualNorm; //!< The reference residual norm for the line-search convergence criteria
 
-            dataStorage< floatVector > _cauchyStress; //!< The Cauchy stress as determined from the current state
+            dataStorage< floatVector > _stress; //!< The stress in the current configuration as determined from the current state
 
-            dataStorage< floatVector > _previousCauchyStress; //!< The previous value of the Cauchy stress as determined from the current state
+            dataStorage< floatVector > _previousStress; //!< The previous value of the stress in the current configuration as determined from the previous state
 
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 

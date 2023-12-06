@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file tardigrade-hydraLinearElasticity.cpp
+  * \file tardigrade_hydraLinearElasticity.cpp
   ******************************************************************************
   * An implementation of linear elasticity using the hydra framework. Used as an
   * example and as the basis for more complex models.
@@ -258,7 +258,7 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setCauchyStress( ){
+        void residual::setStress( ){
             /*!
              * Set the Cauchy stress
              */
@@ -284,7 +284,7 @@ namespace tardigradeHydra{
     
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::pushForwardPK2Stress( *getPK2Stress( ), Fe, cauchyStress, dCauchyStressdPK2Stress, dCauchyStressdFe ) );
     
-            setCauchyStress( cauchyStress );
+            setStress( cauchyStress );
     
             floatMatrix dCauchyStressdF  = tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdF )
                                          + tardigradeVectorTools::dot( dCauchyStressdFe, dFedF );
@@ -305,7 +305,7 @@ namespace tardigradeHydra{
              * Set the derivative of the computed Cauchy stress w.r.t. the second Piola-Kirchoff stress (this is a partial derivative generally)
              */
     
-            setCauchyStress( );
+            setStress( );
     
         }
 
@@ -314,7 +314,7 @@ namespace tardigradeHydra{
              * Set the derivative of the computed Cauchy stress w.r.t. F (this is a partial derivative generally)
              */
     
-            setCauchyStress( );
+            setStress( );
     
         }
 
@@ -384,7 +384,7 @@ namespace tardigradeHydra{
              * (this is a partial derivative generally)
              */
     
-            setCauchyStress( );
+            setStress( );
     
         }
     
@@ -424,9 +424,9 @@ namespace tardigradeHydra{
              * Set the residual value
              */
     
-            const floatVector *cauchyStress = getCauchyStress( );
+            const floatVector *cauchyStress = getStress( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( *cauchyStress - *hydra->getCauchyStress( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( *cauchyStress - *hydra->getStress( ) ) );
     
         }
     
@@ -438,7 +438,7 @@ namespace tardigradeHydra{
             const unsigned int *dim = hydra->getDimension( );
     
             // Form the Jacobian
-            floatMatrix jacobian = floatMatrix( getCauchyStress( )->size( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+            floatMatrix jacobian = floatMatrix( getStress( )->size( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
     
             for ( unsigned int i = 0; i < ( *dim ); i++ ){
     
@@ -448,7 +448,7 @@ namespace tardigradeHydra{
     
                     for ( unsigned int I = 0; I < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( *dim ) * ( *dim ); I++ ){
     
-                        jacobian[ ( *dim ) * i + j ][ getCauchyStress( )->size( ) + I ] = ( *getdCauchyStressdFn( ) )[ ( *dim ) * i + j ][ I ];
+                        jacobian[ ( *dim ) * i + j ][ getStress( )->size( ) + I ] = ( *getdCauchyStressdFn( ) )[ ( *dim ) * i + j ][ I ];
     
                     }
     

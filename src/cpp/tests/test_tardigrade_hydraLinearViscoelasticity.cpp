@@ -1,12 +1,12 @@
 /**
-  * \file test_tardigrade-hydraLinearViscoelasticity.cpp
+  * \file test_tardigrade_hydraLinearViscoelasticity.cpp
   * 
-  * Tests for tardigrade-hydraLinearViscoelasticity
+  * Tests for tardigrade_hydraLinearViscoelasticity
   */
 
 #include<tardigrade_hydraLinearViscoelasticity.h>
 
-#define BOOST_TEST_MODULE test_tardigrade-hydraLinearViscoelasticity
+#define BOOST_TEST_MODULE test_tardigrade_hydraLinearViscoelasticity
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 #include<tardigrade_stress_tools.h>
@@ -1495,7 +1495,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdT ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dCauchyStressdF[ j ][ i ] = ( ( *Rp.getCauchyStress( ) )[ j ] - ( *Rm.getCauchyStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            dCauchyStressdF[ j ][ i ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -1519,7 +1519,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdT ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dCauchyStressdT[ j ] = ( ( *Rp.getCauchyStress( ) )[ j ] - ( *Rm.getCauchyStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            dCauchyStressdT[ j ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
