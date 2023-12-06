@@ -7,8 +7,8 @@
   ******************************************************************************
   */
 
-#include<tardigrade-hydraThermalExpansion.h>
-#include<constitutive_tools.h>
+#include<tardigrade_hydraThermalExpansion.h>
+#include<tardigrade_constitutive_tools.h>
 
 namespace tardigradeHydra{
 
@@ -126,7 +126,7 @@ namespace tardigradeHydra{
 
             if ( !_thermalGreenLagrangeStrain.first ){
 
-                ERROR_TOOLS_CATCH( setThermalGreenLagrangeStrain( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setThermalGreenLagrangeStrain( ) );
 
             }
 
@@ -141,7 +141,7 @@ namespace tardigradeHydra{
 
             if ( !_thermalDeformationGradient.first ){
 
-                ERROR_TOOLS_CATCH( setThermalDeformationGradient( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setThermalDeformationGradient( ) );
 
             }
 
@@ -157,7 +157,7 @@ namespace tardigradeHydra{
 
             if ( !_dThermalGreenLagrangeStraindT.first ){
 
-                ERROR_TOOLS_CATCH( setdThermalGreenLagrangeStraindT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdThermalGreenLagrangeStraindT( ) );
 
             }
 
@@ -173,7 +173,7 @@ namespace tardigradeHydra{
 
             if ( !_dThermalDeformationGradientdT.first ){
 
-                ERROR_TOOLS_CATCH( setdThermalDeformationGradientdT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdThermalDeformationGradientdT( ) );
 
             }
 
@@ -192,7 +192,7 @@ namespace tardigradeHydra{
 
             floatVector dThermalGreenLagrangeStraindT;
 
-            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::quadraticThermalExpansion( *hydra->getTemperature( ), *getReferenceTemperature( ), *getLinearParameters( ), *getQuadraticParameters( ), thermalGreenLagrangeStrain, dThermalGreenLagrangeStraindT ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::quadraticThermalExpansion( *hydra->getTemperature( ), *getReferenceTemperature( ), *getLinearParameters( ), *getQuadraticParameters( ), thermalGreenLagrangeStrain, dThermalGreenLagrangeStraindT ) );
 
             setThermalGreenLagrangeStrain( thermalGreenLagrangeStrain );
 
@@ -212,17 +212,17 @@ namespace tardigradeHydra{
             floatMatrix dThermalGreenLagrangeStraindThermalDeformationGradient;
 
             floatVector eye( ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ) );
-            vectorTools::eye( eye );
+            tardigradeVectorTools::eye( eye );
 
-            ERROR_TOOLS_CATCH( thermalDeformationGradient = vectorTools::matrixSqrt( 2 * ( *getThermalGreenLagrangeStrain( ) ) + eye, *hydra->getDimension( ), dThermalGreenLagrangeStraindThermalDeformationGradient ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( thermalDeformationGradient = tardigradeVectorTools::matrixSqrt( 2 * ( *getThermalGreenLagrangeStrain( ) ) + eye, *hydra->getDimension( ), dThermalGreenLagrangeStraindThermalDeformationGradient ) );
 
             setThermalDeformationGradient( thermalDeformationGradient );
 
             floatMatrix dThermalDeformationGradientdGreenLagrangeStrain;
 
-            ERROR_TOOLS_CATCH( dThermalDeformationGradientdGreenLagrangeStrain = vectorTools::inflate( 2 * vectorTools::inverse( vectorTools::appendVectors( dThermalGreenLagrangeStraindThermalDeformationGradient ), ( *dim ) * ( *dim ), ( *dim ) * ( *dim ) ), ( *dim ) * ( *dim ), ( *dim ) * ( *dim ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( dThermalDeformationGradientdGreenLagrangeStrain = tardigradeVectorTools::inflate( 2 * tardigradeVectorTools::inverse( tardigradeVectorTools::appendVectors( dThermalGreenLagrangeStraindThermalDeformationGradient ), ( *dim ) * ( *dim ), ( *dim ) * ( *dim ) ), ( *dim ) * ( *dim ), ( *dim ) * ( *dim ) ) );
 
-            setdThermalDeformationGradientdT( vectorTools::dot( dThermalDeformationGradientdGreenLagrangeStrain, *getdThermalGreenLagrangeStraindT( ) ) );
+            setdThermalDeformationGradientdT( tardigradeVectorTools::dot( dThermalDeformationGradientdGreenLagrangeStrain, *getdThermalGreenLagrangeStraindT( ) ) );
 
         }
 
@@ -299,7 +299,7 @@ namespace tardigradeHydra{
              * \param &parameters: The parameter vector. Assumed to be
              *     of the form ( referenceTemperature, linearParameters, quadraticParameters )
              *     where the parameters are defined as in
-             *     constitutiveTools::quadraticThermalExpansion.
+             *     tardigradeConstitutiveTools::quadraticThermalExpansion.
              */
 
             const unsigned int *dim = hydra->getDimension( );

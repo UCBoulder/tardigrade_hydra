@@ -7,7 +7,7 @@
   ******************************************************************************
   */
 
-#include<tardigrade-hydra.h>
+#include<tardigrade_hydra.h>
 
 namespace tardigradeHydra{
 
@@ -112,6 +112,19 @@ namespace tardigradeHydra{
 
     }
 
+    void residualBase::setPreviousCauchyStress( const floatVector &previousCauchyStress ){
+        /*!
+         * Set the previous value of the Cauchy stress
+         * 
+         * \param &previousCauchyStress: The previous Cauchy stress in row-major form
+         */
+
+        _previousCauchyStress.second = previousCauchyStress;
+
+        _previousCauchyStress.first = true;
+
+    }
+
     const floatVector* residualBase::getResidual( ){
         /*!
          * Get the residual equations. Must be of size numEquations
@@ -119,7 +132,7 @@ namespace tardigradeHydra{
 
         if ( !_residual.first ){
 
-            ERROR_TOOLS_CATCH( setResidual( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( ) );
 
         }
 
@@ -135,7 +148,7 @@ namespace tardigradeHydra{
 
         if ( !_jacobian.first ){
 
-            ERROR_TOOLS_CATCH( setJacobian( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setJacobian( ) );
 
         }
 
@@ -150,7 +163,7 @@ namespace tardigradeHydra{
 
         if ( !_dRdF.first ){
 
-            ERROR_TOOLS_CATCH( setdRdF( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setdRdF( ) );
 
         }
 
@@ -165,7 +178,7 @@ namespace tardigradeHydra{
 
         if ( !_dRdT.first ){
 
-            ERROR_TOOLS_CATCH( setdRdT( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setdRdT( ) );
 
         }
 
@@ -180,7 +193,7 @@ namespace tardigradeHydra{
 
         if ( !_additionalDerivatives.first ){
 
-            ERROR_TOOLS_CATCH( setAdditionalDerivatives( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setAdditionalDerivatives( ) );
 
         }
 
@@ -195,11 +208,26 @@ namespace tardigradeHydra{
 
         if ( !_cauchyStress.first ){
 
-            ERROR_TOOLS_CATCH( setCauchyStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setCauchyStress( ) );
 
         }
 
         return &_cauchyStress.second;
+
+    }
+
+    const floatVector* residualBase::getPreviousCauchyStress( ){
+        /*!
+         * Get the Cauchy stress
+         */
+
+        if ( !_previousCauchyStress.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousCauchyStress( ) );
+
+        }
+
+        return &_previousCauchyStress.second;
 
     }
 
@@ -226,7 +254,7 @@ namespace tardigradeHydra{
 
         if ( !_currentAdditionalStateVariables.first ){
 
-            ERROR_TOOLS_CATCH( setCurrentAdditionalStateVariables( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setCurrentAdditionalStateVariables( ) );
 
         }
 
@@ -325,15 +353,15 @@ namespace tardigradeHydra{
                                                        unknownVector->begin( ) + ( i + 1 ) * ( *dim ) * ( *dim ) );
 
             // Compute the inverse of the current configuration and store it
-            _inverseConfigurations.second[ i ] = vectorTools::inverse( _configurations.second[ i ], ( *dim ), ( *dim ) );
+            _inverseConfigurations.second[ i ] = tardigradeVectorTools::inverse( _configurations.second[ i ], ( *dim ), ( *dim ) );
 
             // Add contribution of deformation gradient to the first configuration
-            _configurations.second[ 0 ] = vectorTools::matrixMultiply( _configurations.second[ 0 ], _inverseConfigurations.second[ i ],
+            _configurations.second[ 0 ] = tardigradeVectorTools::matrixMultiply( _configurations.second[ 0 ], _inverseConfigurations.second[ i ],
                                                                        ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
 
         }
 
-        _inverseConfigurations.second[ 0 ] = vectorTools::inverse( _configurations.second[ 0 ], ( *dim ), ( *dim ) );
+        _inverseConfigurations.second[ 0 ] = tardigradeVectorTools::inverse( _configurations.second[ 0 ], ( *dim ), ( *dim ) );
 
         // Extract the remaining state variables required for the non-linear solve
         _nonLinearSolveStateVariables.second = floatVector( unknownVector->begin( ) + ( *nConfig ) * ( *dim ) * ( *dim ),
@@ -372,7 +400,7 @@ namespace tardigradeHydra{
 
         // Extract the previous configurations
         floatVector eye( ( *dim ) * ( *dim ) );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
         if ( getPreviousStateVariables( )->size( ) < ( ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + ( *nNLISV ) ) ){
 
@@ -383,7 +411,7 @@ namespace tardigradeHydra{
             message            += "  # non-linear solve ISVs           : " + std::to_string( ( *nNLISV ) ) + "\n";
             message            += "  # minimum required ISVs           : " + std::to_string( ( *nConfig ) * ( *dim ) * ( *dim ) + ( *nNLISV ) );
 
-            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
         }
 
@@ -407,7 +435,7 @@ namespace tardigradeHydra{
                                                        getPreviousStateVariables( )->begin( ) + i * ( *dim ) * ( *dim ) ) + eye;
 
             // Compute the inverse of the current configuration and store it
-            _inverseConfigurations.second[ i ] = vectorTools::inverse( _configurations.second[ i ], ( *dim ), ( *dim ) );
+            _inverseConfigurations.second[ i ] = tardigradeVectorTools::inverse( _configurations.second[ i ], ( *dim ), ( *dim ) );
 
             // Set the previous configuration
             _previousConfigurations.second[ i ] = _configurations.second[ i ];
@@ -416,18 +444,18 @@ namespace tardigradeHydra{
             _previousInverseConfigurations.second[ i ] = _inverseConfigurations.second[ i ];
 
             // Add contribution of deformation gradient to the first configuration
-            _configurations.second[ 0 ] = vectorTools::matrixMultiply( _configurations.second[ 0 ], _inverseConfigurations.second[ i ],
+            _configurations.second[ 0 ] = tardigradeVectorTools::matrixMultiply( _configurations.second[ 0 ], _inverseConfigurations.second[ i ],
                                                                        ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
 
             // Add the contribution of the deformation gradient to the previous configuration
-            _previousConfigurations.second[ 0 ] = vectorTools::matrixMultiply( _previousConfigurations.second[ 0 ], _previousInverseConfigurations.second[ i ],
+            _previousConfigurations.second[ 0 ] = tardigradeVectorTools::matrixMultiply( _previousConfigurations.second[ 0 ], _previousInverseConfigurations.second[ i ],
                                                                                ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
 
         }
 
-        _inverseConfigurations.second[ 0 ] = vectorTools::inverse( _configurations.second[ 0 ], ( *dim ), ( *dim ) );
+        _inverseConfigurations.second[ 0 ] = tardigradeVectorTools::inverse( _configurations.second[ 0 ], ( *dim ), ( *dim ) );
 
-        _previousInverseConfigurations.second[ 0 ] = vectorTools::inverse( _previousConfigurations.second[ 0 ], ( *dim ), ( *dim ) );
+        _previousInverseConfigurations.second[ 0 ] = tardigradeVectorTools::inverse( _previousConfigurations.second[ 0 ], ( *dim ), ( *dim ) );
 
         // Extract the remaining state variables required for the non-linear solve
         _nonLinearSolveStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ),
@@ -483,7 +511,7 @@ namespace tardigradeHydra{
             message            += "  upperIndex      : " + std::to_string( upperIndex ) + "\n";
             message            += "  # configurations: " + std::to_string( configurations.size( ) );
 
-            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
         }
 
@@ -493,18 +521,18 @@ namespace tardigradeHydra{
             message            += "  lowerIndex: " + std::to_string( lowerIndex ) + "\n";
             message            += "  upperIndex: " + std::to_string( upperIndex ) + "\n";
 
-            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
         }
 
         const unsigned int* dim = getDimension( );
 
         floatVector Fsc( ( *dim ) * ( *dim ), 0 );
-        vectorTools::eye( Fsc );
+        tardigradeVectorTools::eye( Fsc );
 
         for ( unsigned int i = lowerIndex; i < upperIndex; i++ ){
 
-            Fsc = vectorTools::matrixMultiply( Fsc, configurations[ i ], ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
+            Fsc = tardigradeVectorTools::matrixMultiply( Fsc, configurations[ i ], ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
 
         }
 
@@ -535,9 +563,9 @@ namespace tardigradeHydra{
 
             floatVector Fm, Fp;
 
-            ERROR_TOOLS_CATCH( Fm = getSubConfiguration( configurations, lowerIndex, index ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( Fm = getSubConfiguration( configurations, lowerIndex, index ) );
 
-            ERROR_TOOLS_CATCH( Fp = getSubConfiguration( configurations, index + 1, upperIndex ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( Fp = getSubConfiguration( configurations, index + 1, upperIndex ) );
 
             for ( unsigned int i = 0; i < *dim; i++ ){
 
@@ -599,6 +627,17 @@ namespace tardigradeHydra{
 
     }
 
+    floatVector hydraBase::getConfiguration( const unsigned int &index ){
+        /*!
+         * Get the configuration indicated by the provided index
+         * 
+         * \param &index: The index of the current configuration to be extracted
+         */
+
+        return getSubConfiguration( index, index + 1 );
+
+    }
+
     floatVector hydraBase::getPreviousSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
          * Get a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
@@ -632,6 +671,17 @@ namespace tardigradeHydra{
          */
 
         return getPreviousSubConfiguration( index + 1, *getNumConfigurations( ) );
+
+    }
+
+    floatVector hydraBase::getPreviousConfiguration( const unsigned int &index ){
+        /*!
+         * Get the previous configuration indicated by the provided index
+         * 
+         * \param &index: The index of the current configuration to be extracted
+         */
+
+        return getPreviousSubConfiguration( index, index + 1 );
 
     }
 
@@ -733,13 +783,13 @@ namespace tardigradeHydra{
         _dF1dFn.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
 
         floatVector eye( ( *dim ) * ( *dim ) );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
-        floatVector invFsc = vectorTools::inverse( getFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
+        floatVector invFsc = tardigradeVectorTools::inverse( getFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
 
-        floatMatrix dInvFscdFsc = vectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
+        floatMatrix dInvFscdFsc = tardigradeVectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
 
-        floatMatrix dInvFscdFs = vectorTools::dot( dInvFscdFsc, getFollowingConfigurationGradient( 0 ) );
+        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getFollowingConfigurationGradient( 0 ) );
 
         // Compute the gradients
         for ( unsigned int i = 0; i < ( *dim ); i++ ){
@@ -800,13 +850,13 @@ namespace tardigradeHydra{
         _previousdF1dFn.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
 
         floatVector eye( ( *dim ) * ( *dim ) );
-        vectorTools::eye( eye );
+        tardigradeVectorTools::eye( eye );
 
-        floatVector invFsc = vectorTools::inverse( getPreviousFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
+        floatVector invFsc = tardigradeVectorTools::inverse( getPreviousFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
 
-        floatMatrix dInvFscdFsc = vectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
+        floatMatrix dInvFscdFsc = tardigradeVectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
 
-        floatMatrix dInvFscdFs = vectorTools::dot( dInvFscdFsc, getPreviousFollowingConfigurationGradient( 0 ) );
+        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getPreviousFollowingConfigurationGradient( 0 ) );
 
         // Compute the gradients
         for ( unsigned int i = 0; i < ( *dim ); i++ ){
@@ -852,7 +902,7 @@ namespace tardigradeHydra{
 
         if ( !_dF1dF.first ){
 
-            ERROR_TOOLS_CATCH( setFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationGradients( ) );
 
         }
 
@@ -867,7 +917,7 @@ namespace tardigradeHydra{
 
         if ( !_dF1dFn.first ){
 
-            ERROR_TOOLS_CATCH( setFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationGradients( ) );
 
         }
 
@@ -882,7 +932,7 @@ namespace tardigradeHydra{
 
         if ( !_previousdF1dF.first ){
 
-            ERROR_TOOLS_CATCH( setPreviousFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationGradients( ) );
 
         }
 
@@ -897,7 +947,7 @@ namespace tardigradeHydra{
 
         if ( !_previousdF1dFn.first ){
 
-            ERROR_TOOLS_CATCH( setPreviousFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationGradients( ) );
 
         }
 
@@ -970,7 +1020,7 @@ namespace tardigradeHydra{
             message            += "  expected number of equations: " + std::to_string( ( *getNumConfigurations( ) ) * ( *dim ) * ( *dim ) + *getNumNonLinearSolveStateVariables( ) ) + "\n";
             message            += "  number of defined equations:  " + std::to_string( numEquations ) + "\n";
 
-            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
         }
 
@@ -985,7 +1035,7 @@ namespace tardigradeHydra{
 
         if ( !_residualClasses.first ){
 
-            ERROR_TOOLS_CATCH( setResidualClasses( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setResidualClasses( ) );
 
         }
 
@@ -1023,19 +1073,19 @@ namespace tardigradeHydra{
             // Extract the terms
 
             const floatVector* localResidual;
-            ERROR_TOOLS_CATCH( localResidual = residual->getResidual( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( localResidual = residual->getResidual( ) );
 
             const floatMatrix* localJacobian;
-            ERROR_TOOLS_CATCH( localJacobian = residual->getJacobian( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( localJacobian = residual->getJacobian( ) );
 
             const floatMatrix* localdRdF;
-            ERROR_TOOLS_CATCH( localdRdF = residual->getdRdF( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( localdRdF = residual->getdRdF( ) );
 
             const floatVector* localdRdT;
-            ERROR_TOOLS_CATCH( localdRdT = residual->getdRdT( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( localdRdT = residual->getdRdT( ) );
 
             const floatMatrix* localAdditionalDerivatives;
-            ERROR_TOOLS_CATCH( localAdditionalDerivatives = residual->getAdditionalDerivatives( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( localAdditionalDerivatives = residual->getAdditionalDerivatives( ) );
 
             // Check the contributions to make sure they are consistent sizes
 
@@ -1045,7 +1095,7 @@ namespace tardigradeHydra{
                 message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
                 message            += "  actual:   " + std::to_string( localResidual->size( ) ) + "\n";
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
             }
 
@@ -1055,7 +1105,7 @@ namespace tardigradeHydra{
                 message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
                 message            += "  actual:   " + std::to_string( localJacobian->size( ) ) + "\n";
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
             }
 
@@ -1065,7 +1115,7 @@ namespace tardigradeHydra{
                 message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
                 message            += "  actual:   " + std::to_string( localdRdF->size( ) ) + "\n";
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
             }
 
@@ -1075,7 +1125,7 @@ namespace tardigradeHydra{
                 message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
                 message            += "  actual:   " + std::to_string( localdRdT->size( ) ) + "\n";
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
             }
 
@@ -1087,7 +1137,7 @@ namespace tardigradeHydra{
                     message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
                     message            += "  actual:   " + std::to_string( localAdditionalDerivatives->size( ) ) + "\n";
     
-                    ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
                 }
 
@@ -1106,7 +1156,7 @@ namespace tardigradeHydra{
                         message            += "  expected: " + std::to_string( numAdditionalDerivatives ) + "\n";
                         message            += "  actual:   " + std::to_string( ( *localAdditionalDerivatives )[ 0 ].size( ) ) + "\n";
     
-                        ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+                        TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
     
                     }
     
@@ -1126,7 +1176,7 @@ namespace tardigradeHydra{
                     message            += "  expected: " + std::to_string( residualSize ) + "\n";
                     message            += "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n";
 
-                    ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
                 }
 
@@ -1142,7 +1192,7 @@ namespace tardigradeHydra{
                     message            += "  expected: " + std::to_string( ( *dim ) * ( *dim ) ) + "\n";
                     message            += "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n";
 
-                    ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
                 }
 
@@ -1195,7 +1245,7 @@ namespace tardigradeHydra{
 
         if ( !_residual.first ){
 
-            ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
 
         }
 
@@ -1210,7 +1260,7 @@ namespace tardigradeHydra{
 
         if ( !_jacobian.first ){
 
-            ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
 
         }
 
@@ -1223,7 +1273,7 @@ namespace tardigradeHydra{
          * Get the jacobian for the non-linear problem
          */
 
-        return vectorTools::inflate( *getFlatJacobian( ), getResidual( )->size( ), getResidual( )->size( ) );
+        return tardigradeVectorTools::inflate( *getFlatJacobian( ), getResidual( )->size( ), getResidual( )->size( ) );
 
     }
 
@@ -1234,7 +1284,7 @@ namespace tardigradeHydra{
 
         if ( !_dRdF.first ){
 
-            ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
 
         }
 
@@ -1247,7 +1297,7 @@ namespace tardigradeHydra{
          * Get dRdF for the non-linear problem
          */
 
-        return vectorTools::inflate( *getFlatdRdF( ), getResidual( )->size( ), ( *getDimension( ) ) * ( *getDimension( ) ) );
+        return tardigradeVectorTools::inflate( *getFlatdRdF( ), getResidual( )->size( ), ( *getDimension( ) ) * ( *getDimension( ) ) );
     }
 
     const floatVector* hydraBase::getdRdT( ){
@@ -1257,7 +1307,7 @@ namespace tardigradeHydra{
 
         if ( !_dRdT.first ){
 
-            ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
 
         }
 
@@ -1272,7 +1322,7 @@ namespace tardigradeHydra{
 
         if ( !_additionalDerivatives.first ){
 
-            ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
 
         }
 
@@ -1287,7 +1337,7 @@ namespace tardigradeHydra{
 
         if ( getFlatAdditionalDerivatives( )->size( ) > 0 ){
 
-            return vectorTools::inflate( *getFlatAdditionalDerivatives( ), getResidual( )->size( ), getFlatAdditionalDerivatives( )->size( ) / getResidual( )->size( ) );
+            return tardigradeVectorTools::inflate( *getFlatAdditionalDerivatives( ), getResidual( )->size( ), getFlatAdditionalDerivatives( )->size( ) / getResidual( )->size( ) );
 
         }
 
@@ -1313,7 +1363,13 @@ namespace tardigradeHydra{
 
         if ( !_cauchyStress.first ){
 
-            ERROR_TOOLS_CATCH( _cauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getCauchyStress( ) );
+            if ( getResidualClasses( )->size( ) == 0 ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "No residual classes are defined." ) );
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( _cauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getCauchyStress( ) );
 
             _cauchyStress.first = true;
 
@@ -1322,6 +1378,29 @@ namespace tardigradeHydra{
         }
 
         return &_cauchyStress.second;
+
+    }
+
+    const floatVector* hydraBase::getPreviousCauchyStress( ){
+        /*!
+         * Get the previous value of the cauchy stress
+         */
+
+        if ( !_previousCauchyStress.first ){
+
+            if ( getResidualClasses( )->size( ) == 0 ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "No residual classes are defined." ) );
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( _previousCauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getPreviousCauchyStress( ) );
+
+            _previousCauchyStress.first = true;
+
+        }
+
+        return &_previousCauchyStress.second;
 
     }
 
@@ -1336,7 +1415,7 @@ namespace tardigradeHydra{
          */
 
         const floatVector *cauchyStress;
-        ERROR_TOOLS_CATCH( cauchyStress = getCauchyStress( ) );
+        TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = getCauchyStress( ) );
 
         const floatMatrix *configurations = getConfigurations( );
 
@@ -1354,7 +1433,7 @@ namespace tardigradeHydra{
 
         Xmat[ Xmat.size( ) - 1 ] = *nonLinearSolveStateVariables;
 
-        _X.second = vectorTools::appendVectors( Xmat );
+        _X.second = tardigradeVectorTools::appendVectors( Xmat );
 
         _X.first = true;
 
@@ -1367,7 +1446,7 @@ namespace tardigradeHydra{
 
         if ( !_X.first ){
 
-            ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
 
         }
 
@@ -1382,7 +1461,7 @@ namespace tardigradeHydra{
          * \f$ tol = tolr * ( |R_0| + |X| ) + tola \f$
          */
 
-        floatVector tolerance = vectorTools::abs( *getResidual( ) ) + vectorTools::abs( *getUnknownVector( ) );
+        floatVector tolerance = tardigradeVectorTools::abs( *getResidual( ) ) + tardigradeVectorTools::abs( *getUnknownVector( ) );
 
         tolerance = *getRelativeTolerance( ) * tolerance + *getAbsoluteTolerance( );
 
@@ -1410,7 +1489,7 @@ namespace tardigradeHydra{
 
         if ( !_tolerance.first ){
 
-            ERROR_TOOLS_CATCH( setTolerance( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setTolerance( ) );
 
         }
 
@@ -1433,7 +1512,7 @@ namespace tardigradeHydra{
             message            += "  tolerance: " + std::to_string( tolerance->size( ) ) + "\n";
             message            += "  residual:  " + std::to_string( residual->size( ) ) + "\n";
 
-            ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
         }
 
@@ -1458,7 +1537,7 @@ namespace tardigradeHydra{
 
         if ( !_lsResidualNorm.first ){
 
-            ERROR_TOOLS_CATCH( resetLSIteration( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( resetLSIteration( ) );
 
         }
 
@@ -1471,7 +1550,7 @@ namespace tardigradeHydra{
          * Check the line-search convergence
          */
 
-        if ( vectorTools::l2norm( *getResidual( ) ) < ( 1 - *getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
+        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < ( 1 - *getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
 
             return true;
 
@@ -1497,7 +1576,7 @@ namespace tardigradeHydra{
         _X.first = true;
 
         // Decompose the unknown vector and update the state
-        ERROR_TOOLS_CATCH( decomposeUnknownVector( ) );
+        TARDIGRADE_ERROR_TOOLS_CATCH( decomposeUnknownVector( ) );
 
     }
 
@@ -1507,7 +1586,7 @@ namespace tardigradeHydra{
          */
 
         // Form the initial unknown vector
-        ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+        TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
 
         unsigned int rank;
 
@@ -1519,12 +1598,12 @@ namespace tardigradeHydra{
 
             floatVector X0 = *getUnknownVector( );
 
-            ERROR_TOOLS_CATCH( deltaX = -vectorTools::solveLinearSystem( *getFlatJacobian( ), *getResidual( ),
+            TARDIGRADE_ERROR_TOOLS_CATCH( deltaX = -tardigradeVectorTools::solveLinearSystem( *getFlatJacobian( ), *getResidual( ),
                                                                          getResidual( )->size( ), getResidual( )->size( ), rank ) );
 
             if ( rank != getResidual( )->size( ) ){
 
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "The Jacobian is not full rank" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "The Jacobian is not full rank" ) );
 
             }
 
@@ -1542,7 +1621,7 @@ namespace tardigradeHydra{
 
             if ( !checkLSConvergence( ) ){
 
-                ERROR_TOOLS_CATCH( throw convergence_error( "Failure in line search" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "Failure in line search" ) );
 
             }
 
@@ -1555,12 +1634,12 @@ namespace tardigradeHydra{
 
         if ( !checkConvergence( ) ){
 
-            ERROR_TOOLS_CATCH( throw convergence_error( "Failure to converge main loop" ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "Failure to converge main loop" ) );
 
         }
 
         // Set the tolerance
-        ERROR_TOOLS_CATCH( setTolerance( ) );
+        TARDIGRADE_ERROR_TOOLS_CATCH( setTolerance( ) );
 
     }
 
@@ -1569,7 +1648,7 @@ namespace tardigradeHydra{
          * Solve the non-linear problem and update the variables
          */
 
-        ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
+        TARDIGRADE_ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
 
     }
 
@@ -1631,15 +1710,15 @@ namespace tardigradeHydra{
         const std::vector< double > time( TIME, TIME + 2 );
         const std::vector< double > predef( PREDEF, PREDEF + 1 );
         const std::vector< double > dpred( DPRED, DPRED + 1 );
-        const std::string cmname( abaqusTools::FtoCString( 80, CMNAME ) );
+        const std::string cmname( tardigradeAbaqusTools::FtoCString( 80, CMNAME ) );
         const std::vector< double > props( PROPS, PROPS + NPROPS );
         const std::vector< double > coords( COORDS, COORDS + spatialDimensions );
         const std::vector< int > jstep( JSTEP, JSTEP + 4 );
         //Fortran two-dimensional arrays require careful column to row major conversions to c++ types
-        std::vector< std::vector< double > > ddsdde = abaqusTools::columnToRowMajor( DDSDDE, NTENS, NTENS );
-        const std::vector< std::vector< double > > drot = abaqusTools::columnToRowMajor( DROT, spatialDimensions, spatialDimensions );
-        const std::vector< std::vector< double > > dfgrd0 = abaqusTools::columnToRowMajor( DFGRD0, spatialDimensions, spatialDimensions );
-        const std::vector< std::vector< double > > dfgrd1 = abaqusTools::columnToRowMajor( DFGRD1, spatialDimensions, spatialDimensions );
+        std::vector< std::vector< double > > ddsdde = tardigradeAbaqusTools::columnToRowMajor( DDSDDE, NTENS, NTENS );
+        const std::vector< std::vector< double > > drot = tardigradeAbaqusTools::columnToRowMajor( DROT, spatialDimensions, spatialDimensions );
+        const std::vector< std::vector< double > > dfgrd0 = tardigradeAbaqusTools::columnToRowMajor( DFGRD0, spatialDimensions, spatialDimensions );
+        const std::vector< std::vector< double > > dfgrd1 = tardigradeAbaqusTools::columnToRowMajor( DFGRD1, spatialDimensions, spatialDimensions );
 
         //Verify number of state variables against hydra expectations
         if ( statev.size( ) != nStateVariables ){
@@ -1685,12 +1764,12 @@ namespace tardigradeHydra{
         //Re-pack C++ objects into FORTRAN memory to return values to Abaqus
         //Scalars were passed by reference and will update correctly
         //Vectors don't require row/column major considerations, but do require re-packing to the Fortran pointer
-        abaqusTools::rowToColumnMajor( STRESS, stress, 1, NTENS );
-        abaqusTools::rowToColumnMajor( DDSDDT, ddsddt, 1, NTENS );
-        abaqusTools::rowToColumnMajor( DRPLDE, drplde, 1, NTENS );
-        abaqusTools::rowToColumnMajor( STATEV, statev, 1, NSTATV );
+        tardigradeAbaqusTools::rowToColumnMajor( STRESS, stress, 1, NTENS );
+        tardigradeAbaqusTools::rowToColumnMajor( DDSDDT, ddsddt, 1, NTENS );
+        tardigradeAbaqusTools::rowToColumnMajor( DRPLDE, drplde, 1, NTENS );
+        tardigradeAbaqusTools::rowToColumnMajor( STATEV, statev, 1, NSTATV );
         //Arrays require vector of vector to column major conversion
-        abaqusTools::rowToColumnMajor( DDSDDE, ddsdde, NTENS, NTENS );
+        tardigradeAbaqusTools::rowToColumnMajor( DDSDDE, ddsdde, NTENS, NTENS );
 
     }
 

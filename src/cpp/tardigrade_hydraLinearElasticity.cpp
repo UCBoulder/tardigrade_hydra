@@ -7,8 +7,8 @@
   ******************************************************************************
   */
 
-#include<tardigrade-hydraLinearElasticity.h>
-#include<constitutive_tools.h>
+#include<tardigrade_hydraLinearElasticity.h>
+#include<tardigrade_constitutive_tools.h>
 
 namespace tardigradeHydra{
 
@@ -23,7 +23,7 @@ namespace tardigradeHydra{
     
             if ( parameters.size( ) != 2 ){
     
-                ERROR_TOOLS_CATCH( throw std::runtime_error( "Parameter vector is expected to have a length of 2 but has a length of " + std::to_string( parameters.size( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Parameter vector is expected to have a length of 2 but has a length of " + std::to_string( parameters.size( ) ) ) );
     
             }
     
@@ -44,7 +44,7 @@ namespace tardigradeHydra{
    
             floatMatrix dEedFe;
 
-            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::computeGreenLagrangeStrain( Fe, Ee, dEedFe ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( Fe, Ee, dEedFe ) );
     
             setEe( Ee );
     
@@ -74,7 +74,7 @@ namespace tardigradeHydra{
     
             if ( !_Ee.first ){
     
-                ERROR_TOOLS_CATCH( setEe( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setEe( ) );
     
             }
     
@@ -89,7 +89,7 @@ namespace tardigradeHydra{
              * Default assumption is that this happens when the Green-Lagrange strain is computed; 
              */
     
-            ERROR_TOOLS_CATCH( getEe( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( getEe( ) );
     
         }
     
@@ -115,7 +115,7 @@ namespace tardigradeHydra{
     
             if ( !_dEedFe.first ){
     
-                ERROR_TOOLS_CATCH( setdEedFe( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdEedFe( ) );
     
             }
     
@@ -129,9 +129,9 @@ namespace tardigradeHydra{
              */
     
             floatVector eye( getEe( )->size( ), 0 );
-            vectorTools::eye( eye );
+            tardigradeVectorTools::eye( eye );
     
-            floatVector PK2Stress = ( *getLambda( ) ) * vectorTools::trace( *getEe( ) ) * eye + 2 * ( *getMu( ) ) * ( *getEe( ) );
+            floatVector PK2Stress = ( *getLambda( ) ) * tardigradeVectorTools::trace( *getEe( ) ) * eye + 2 * ( *getMu( ) ) * ( *getEe( ) );
     
             setPK2Stress( PK2Stress );
     
@@ -159,7 +159,7 @@ namespace tardigradeHydra{
     
             if ( !_PK2Stress.first ){
     
-                ERROR_TOOLS_CATCH( setPK2Stress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPK2Stress( ) );
     
             }
     
@@ -173,11 +173,11 @@ namespace tardigradeHydra{
              */
     
             floatVector eye( getEe( )->size( ), 0 );
-            vectorTools::eye( eye );
+            tardigradeVectorTools::eye( eye );
     
-            floatMatrix EYE = vectorTools::eye< floatType >( getEe( )->size( ) );
+            floatMatrix EYE = tardigradeVectorTools::eye< floatType >( getEe( )->size( ) );
     
-            floatMatrix dPK2StressdEe = ( *getLambda( ) ) * vectorTools::dyadic( eye, eye ) + 2 * ( *getMu( ) ) * EYE;
+            floatMatrix dPK2StressdEe = ( *getLambda( ) ) * tardigradeVectorTools::dyadic( eye, eye ) + 2 * ( *getMu( ) ) * EYE;
     
             setdPK2StressdEe( dPK2StressdEe );
     
@@ -205,7 +205,7 @@ namespace tardigradeHydra{
     
             if ( !_dPK2StressdEe.first ){
     
-                ERROR_TOOLS_CATCH( setdPK2StressdEe( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2StressdEe( ) );
     
             }
     
@@ -219,7 +219,7 @@ namespace tardigradeHydra{
              * deformation gradient
              */
 
-             floatMatrix dPK2StressdFe = vectorTools::dot( *getdPK2StressdEe( ), *getdEedFe( ) );
+             floatMatrix dPK2StressdFe = tardigradeVectorTools::dot( *getdPK2StressdEe( ), *getdEedFe( ) );
 
              setdPK2StressdFe( dPK2StressdFe );
 
@@ -250,7 +250,7 @@ namespace tardigradeHydra{
 
             if ( !_dPK2StressdFe.first ){
 
-                ERROR_TOOLS_CATCH( setdPK2StressdFe( ) )
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2StressdFe( ) )
 
             }
 
@@ -273,24 +273,24 @@ namespace tardigradeHydra{
             floatMatrix dPK2StressdFe = *getdPK2StressdFe( );
 
             // Compute the Second Piola-Kirchhoff stress and it's gradients
-            floatMatrix dPK2StressdF = vectorTools::dot( *getdPK2StressdFe( ), dFedF );
+            floatMatrix dPK2StressdF = tardigradeVectorTools::dot( *getdPK2StressdFe( ), dFedF );
     
-            floatMatrix dPK2StressdFn = vectorTools::dot( *getdPK2StressdFe( ), dFedFn );
+            floatMatrix dPK2StressdFn = tardigradeVectorTools::dot( *getdPK2StressdFe( ), dFedFn );
     
             // Map the PK2 stress to the current configuration
             floatVector cauchyStress;
             floatMatrix dCauchyStressdPK2Stress;
             floatMatrix dCauchyStressdFe;
     
-            ERROR_TOOLS_CATCH_NODE_POINTER( constitutiveTools::pushForwardPK2Stress( *getPK2Stress( ), Fe, cauchyStress, dCauchyStressdPK2Stress, dCauchyStressdFe ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::pushForwardPK2Stress( *getPK2Stress( ), Fe, cauchyStress, dCauchyStressdPK2Stress, dCauchyStressdFe ) );
     
             setCauchyStress( cauchyStress );
     
-            floatMatrix dCauchyStressdF  = vectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdF )
-                                         + vectorTools::dot( dCauchyStressdFe, dFedF );
+            floatMatrix dCauchyStressdF  = tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdF )
+                                         + tardigradeVectorTools::dot( dCauchyStressdFe, dFedF );
     
-            floatMatrix dCauchyStressdFn = vectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdFn )
-                                         + vectorTools::dot( dCauchyStressdFe, dFedFn );
+            floatMatrix dCauchyStressdFn = tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdFn )
+                                         + tardigradeVectorTools::dot( dCauchyStressdFe, dFedFn );
 
             setdCauchyStressdPK2Stress( dCauchyStressdPK2Stress );   
 
@@ -355,7 +355,7 @@ namespace tardigradeHydra{
 
             if ( !_dCauchyStressdPK2Stress.first ){
 
-                ERROR_TOOLS_CATCH( setdCauchyStressdPK2Stress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdCauchyStressdPK2Stress( ) );
 
             }
 
@@ -370,7 +370,7 @@ namespace tardigradeHydra{
 
             if ( !_dCauchyStressdF.first ){
 
-                ERROR_TOOLS_CATCH( setdCauchyStressdF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdCauchyStressdF( ) );
 
             }
 
@@ -411,7 +411,7 @@ namespace tardigradeHydra{
 
             if ( !_dCauchyStressdFn.first ){
 
-                ERROR_TOOLS_CATCH( setdCauchyStressdFn( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdCauchyStressdFn( ) );
 
             }
 
@@ -426,7 +426,7 @@ namespace tardigradeHydra{
     
             const floatVector *cauchyStress = getCauchyStress( );
 
-            ERROR_TOOLS_CATCH( setResidual( *cauchyStress - *hydra->getCauchyStress( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( *cauchyStress - *hydra->getCauchyStress( ) ) );
     
         }
     
