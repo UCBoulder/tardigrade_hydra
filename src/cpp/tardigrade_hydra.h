@@ -327,7 +327,7 @@ namespace tardigradeHydra{
 
             const floatVector* getStress( );
 
-            const floatVector* getPreviousCauchyStress( );
+            const floatVector* getPreviousStress( );
 
             const floatVector* getCurrentAdditionalStateVariables( );
 
@@ -525,7 +525,7 @@ namespace tardigradeHydra{
 
             const floatVector* getStress( );
 
-            const floatVector* getPreviousCauchyStress( );
+            const floatVector* getPreviousStress( );
 
             virtual void evaluate( );
 

@@ -216,9 +216,9 @@ namespace tardigradeHydra{
 
     }
 
-    const floatVector* residualBase::getPreviousCauchyStress( ){
+    const floatVector* residualBase::getPreviousStress( ){
         /*!
-         * Get the Cauchy stress
+         * Get the previous stress
          */
 
         if ( !_previousCauchyStress.first ){
@@ -1381,9 +1381,9 @@ namespace tardigradeHydra{
 
     }
 
-    const floatVector* hydraBase::getPreviousCauchyStress( ){
+    const floatVector* hydraBase::getPreviousStress( ){
         /*!
-         * Get the previous value of the cauchy stress
+         * Get the previous value of the stress
          */
 
         if ( !_previousCauchyStress.first ){
@@ -1394,7 +1394,7 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( _previousCauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getPreviousCauchyStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( _previousCauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getPreviousStress( ) );
 
             _previousCauchyStress.first = true;
 

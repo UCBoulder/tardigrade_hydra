@@ -2250,7 +2250,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setPreviousCauchyStress ){
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getPreviousCauchyStress( ), residual.previousCauchyStress ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getPreviousStress( ), residual.previousCauchyStress ) );
 
 }
 
@@ -3089,7 +3089,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkLSConvergence ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousCauchyStress ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousStress ){
 
 
     class residualMockGood : public tardigradeHydra::residualBase {
@@ -3189,7 +3189,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousCauchyStress ){
 
     floatVector answer = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *hydra.getPreviousCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *hydra.getPreviousStress( ) ) );
 
 }
 
