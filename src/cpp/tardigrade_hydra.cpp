@@ -201,9 +201,9 @@ namespace tardigradeHydra{
 
     }
 
-    const floatVector* residualBase::getCauchyStress( ){
+    const floatVector* residualBase::getStress( ){
         /*!
-         * Get the Cauchy stress
+         * Get the stress
          */
 
         if ( !_cauchyStress.first ){
@@ -986,8 +986,8 @@ namespace tardigradeHydra{
          * residual = { cauchyResidual, F2residual, ... Fnresidual, xiresidual1, xiresidual2, ... }
          * 
          * and can be formed by any number of residual classes. The first residual class must also
-         * have the method `void getCauchyStress( )` defined which will return the current value
-         * of the Cauchy stress.
+         * have the method `void getStress( )` defined which will return the current value
+         * of the stress.
          */
 
     }
@@ -1356,9 +1356,9 @@ namespace tardigradeHydra{
         return NULL;
     }
 
-    const floatVector* hydraBase::getCauchyStress( ){
+    const floatVector* hydraBase::getStress( ){
         /*!
-         * Get the cauchy stress
+         * Get the stress
          */
 
         if ( !_cauchyStress.first ){
@@ -1369,7 +1369,7 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( _cauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getCauchyStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( _cauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getStress( ) );
 
             _cauchyStress.first = true;
 
@@ -1410,12 +1410,12 @@ namespace tardigradeHydra{
          * 
          * \f$X = \left\{ \bf{\sigma}, \bf{F}^2, \bf{F}^3, ..., \bf{F}n, \xi^1, \xi^2, ..., \xi^m \right\} \f$
          * 
-         * It is assumed that the first residual calculation also has a method `void getCauchyStress( )`
-         * which returns a pointer to the current value of the Cauchy stress.
+         * It is assumed that the first residual calculation also has a method `void getStress( )`
+         * which returns a pointer to the current value of the stress.
          */
 
         const floatVector *cauchyStress;
-        TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = getCauchyStress( ) );
+        TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = getStress( ) );
 
         const floatMatrix *configurations = getConfigurations( );
 

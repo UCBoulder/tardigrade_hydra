@@ -325,7 +325,7 @@ namespace tardigradeHydra{
 
             const floatMatrix* getAdditionalDerivatives( );
 
-            const floatVector* getCauchyStress( );
+            const floatVector* getStress( );
 
             const floatVector* getPreviousCauchyStress( );
 
@@ -523,7 +523,7 @@ namespace tardigradeHydra{
 
             virtual bool checkLSConvergence( );
 
-            const floatVector* getCauchyStress( );
+            const floatVector* getStress( );
 
             const floatVector* getPreviousCauchyStress( );
 

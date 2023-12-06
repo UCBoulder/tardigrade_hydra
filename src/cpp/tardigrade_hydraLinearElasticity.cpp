@@ -424,9 +424,9 @@ namespace tardigradeHydra{
              * Set the residual value
              */
     
-            const floatVector *cauchyStress = getCauchyStress( );
+            const floatVector *cauchyStress = getStress( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( *cauchyStress - *hydra->getCauchyStress( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( *cauchyStress - *hydra->getStress( ) ) );
     
         }
     
@@ -438,7 +438,7 @@ namespace tardigradeHydra{
             const unsigned int *dim = hydra->getDimension( );
     
             // Form the Jacobian
-            floatMatrix jacobian = floatMatrix( getCauchyStress( )->size( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+            floatMatrix jacobian = floatMatrix( getStress( )->size( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
     
             for ( unsigned int i = 0; i < ( *dim ); i++ ){
     
@@ -448,7 +448,7 @@ namespace tardigradeHydra{
     
                     for ( unsigned int I = 0; I < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( *dim ) * ( *dim ); I++ ){
     
-                        jacobian[ ( *dim ) * i + j ][ getCauchyStress( )->size( ) + I ] = ( *getdCauchyStressdFn( ) )[ ( *dim ) * i + j ][ I ];
+                        jacobian[ ( *dim ) * i + j ][ getStress( )->size( ) + I ] = ( *getdCauchyStressdFn( ) )[ ( *dim ) * i + j ][ I ];
     
                     }
     

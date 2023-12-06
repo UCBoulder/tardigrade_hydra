@@ -1495,7 +1495,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdT ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dCauchyStressdF[ j ][ i ] = ( ( *Rp.getCauchyStress( ) )[ j ] - ( *Rm.getCauchyStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            dCauchyStressdF[ j ][ i ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -1519,7 +1519,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdT ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dCauchyStressdT[ j ] = ( ( *Rp.getCauchyStress( ) )[ j ] - ( *Rm.getCauchyStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            dCauchyStressdT[ j ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 

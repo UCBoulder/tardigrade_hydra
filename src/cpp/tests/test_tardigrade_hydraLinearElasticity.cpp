@@ -653,7 +653,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setCauchyStress ){
 
     residualMock R( &hydra, 9, parameters );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *R.getCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *R.getStress( ) ) );
 
 }
 
@@ -766,7 +766,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdPK2Stress ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            gradient[ j ][ i ] = ( ( *Rp.getCauchyStress( ) )[ j ] - ( *Rm.getCauchyStress( ) )[ j ] ) / ( 2 * delta[ i ] );
+            gradient[ j ][ i ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
@@ -857,7 +857,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdF ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            gradient[ j ][ i ] = ( ( *Rp.getCauchyStress( ) )[ j ] - ( *Rm.getCauchyStress( ) )[ j ] ) / ( 2 * delta[ i ] );
+            gradient[ j ][ i ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
@@ -1020,7 +1020,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn2 ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            gradient[ j ][ i ] = ( ( *Rp.getCauchyStress( ) )[ j ] - ( *Rm.getCauchyStress( ) )[ j ] ) / ( 2 * delta[ i ] );
+            gradient[ j ][ i ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * delta[ i ] );
 
         }
 

@@ -2220,7 +2220,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setCauchyStress ){
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getCauchyStress( ), residual.cauchyStress ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getStress( ), residual.cauchyStress ) );
 
 }
 
@@ -3263,7 +3263,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector ){
 
     tardigradeHydra::unit_test::hydraBaseTester::decomposeUnknownVector( hydra );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getCauchyStress( ), cauchyStressAnswer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getStress( ), cauchyStressAnswer ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getConfigurations( ), configurationsAnswer ) );
 
@@ -3556,7 +3556,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdF ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( PK2Answer, *hydra.elasticity.getPK2Stress( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *hydra.getCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *hydra.getStress( ) ) );
 
 }
 
