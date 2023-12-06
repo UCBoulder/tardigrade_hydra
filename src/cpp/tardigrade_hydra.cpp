@@ -319,6 +319,33 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::setStress( const floatVector &stress ){
+        /*!
+         * Set the value of the stress
+         * 
+         * \param &stress: The stress in row-major form
+         */
+
+        _stress.second = stress;
+
+        _stress.first = true;
+
+        addIterationData( &_stress );
+
+    }
+
+    void hydraBase::extractStress( ){
+        /*!
+         * Extract the stresses out of the unknown vector
+         */
+
+        const floatVector *unknownVector = getUnknownVector( );
+
+        setStress( floatVector( unknownVector->begin( ),
+                                unknownVector->begin( ) + ( *getDimension( ) ) * ( *getDimension( ) ) ) );
+
+    }
+
     void hydraBase::decomposeUnknownVector( ){
         /*!
          * Decompose the unknown vector into the cauchy stress, configurations, and state variables used for the non-linear solve
@@ -331,12 +358,7 @@ namespace tardigradeHydra{
         const unsigned int* nConfig = getNumConfigurations( );
 
         // Set the stress
-        _stress.second = floatVector( unknownVector->begin( ),
-                                      unknownVector->begin( ) + ( *dim ) * ( *dim ) );
-
-        _stress.first = true;
-
-        addIterationData( &_stress );
+        extractStress( );
 
         // Set the configurations
         _configurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
