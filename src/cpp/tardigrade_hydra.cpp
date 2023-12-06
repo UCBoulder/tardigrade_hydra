@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file tardigrade-hydra.cpp
+  * \file tardigrade_hydra.cpp
   ******************************************************************************
   * A C++ library for defining frameworks to solve finite deformation material
   * models.
@@ -97,31 +97,31 @@ namespace tardigradeHydra{
 
     }
 
-    void residualBase::setCauchyStress( const floatVector &cauchyStress ){
+    void residualBase::setStress( const floatVector &stress ){
         /*!
-         * Set the value of the Cauchy stress
+         * Set the value of the stress
          * 
-         * \param &cauchyStress: The Cauchy stress in row-major form
+         * \param &stress: The stress in row-major form
          */
 
-        _cauchyStress.second = cauchyStress;
+        _stress.second = stress;
 
-        _cauchyStress.first = true;
+        _stress.first = true;
 
-        addIterationData( &_cauchyStress );
+        addIterationData( &_stress );
 
     }
 
-    void residualBase::setPreviousCauchyStress( const floatVector &previousCauchyStress ){
+    void residualBase::setPreviousStress( const floatVector &previousStress ){
         /*!
-         * Set the previous value of the Cauchy stress
+         * Set the previous value of the stress
          * 
-         * \param &previousCauchyStress: The previous Cauchy stress in row-major form
+         * \param &previousStress: The previous stress in row-major form
          */
 
-        _previousCauchyStress.second = previousCauchyStress;
+        _previousStress.second = previousStress;
 
-        _previousCauchyStress.first = true;
+        _previousStress.first = true;
 
     }
 
@@ -206,13 +206,13 @@ namespace tardigradeHydra{
          * Get the stress
          */
 
-        if ( !_cauchyStress.first ){
+        if ( !_stress.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setCauchyStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setStress( ) );
 
         }
 
-        return &_cauchyStress.second;
+        return &_stress.second;
 
     }
 
@@ -221,13 +221,13 @@ namespace tardigradeHydra{
          * Get the previous stress
          */
 
-        if ( !_previousCauchyStress.first ){
+        if ( !_previousStress.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousCauchyStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousStress( ) );
 
         }
 
-        return &_previousCauchyStress.second;
+        return &_previousStress.second;
 
     }
 
@@ -330,13 +330,13 @@ namespace tardigradeHydra{
 
         const unsigned int* nConfig = getNumConfigurations( );
 
-        // Set the cauchy stress
-        _cauchyStress.second = floatVector( unknownVector->begin( ),
-                                            unknownVector->begin( ) + ( *dim ) * ( *dim ) );
+        // Set the stress
+        _stress.second = floatVector( unknownVector->begin( ),
+                                      unknownVector->begin( ) + ( *dim ) * ( *dim ) );
 
-        _cauchyStress.first = true;
+        _stress.first = true;
 
-        addIterationData( &_cauchyStress );
+        addIterationData( &_stress );
 
         // Set the configurations
         _configurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
@@ -1361,7 +1361,7 @@ namespace tardigradeHydra{
          * Get the stress
          */
 
-        if ( !_cauchyStress.first ){
+        if ( !_stress.first ){
 
             if ( getResidualClasses( )->size( ) == 0 ){
 
@@ -1369,15 +1369,15 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( _cauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( _stress.second = *( *getResidualClasses( ) )[ 0 ]->getStress( ) );
 
-            _cauchyStress.first = true;
+            _stress.first = true;
 
-            addIterationData( &_cauchyStress );
+            addIterationData( &_stress );
 
         }
 
-        return &_cauchyStress.second;
+        return &_stress.second;
 
     }
 
@@ -1386,7 +1386,7 @@ namespace tardigradeHydra{
          * Get the previous value of the stress
          */
 
-        if ( !_previousCauchyStress.first ){
+        if ( !_previousStress.first ){
 
             if ( getResidualClasses( )->size( ) == 0 ){
 
@@ -1394,13 +1394,13 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( _previousCauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getPreviousStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( _previousStress.second = *( *getResidualClasses( ) )[ 0 ]->getPreviousStress( ) );
 
-            _previousCauchyStress.first = true;
+            _previousStress.first = true;
 
         }
 
-        return &_previousCauchyStress.second;
+        return &_previousStress.second;
 
     }
 

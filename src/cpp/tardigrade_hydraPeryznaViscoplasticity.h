@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file tardigrade-hydraPeryznaViscoplasticity.h
+  * \file tardigrade_hydraPeryznaViscoplasticity.h
   ******************************************************************************
   * An implementation of peryznaViscoplasticity using the hydra framework. Used
   * as an example and as the basis for more complex models.

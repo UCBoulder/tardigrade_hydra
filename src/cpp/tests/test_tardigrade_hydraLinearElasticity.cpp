@@ -1,13 +1,13 @@
 /**
-  * \file test_tardigrade-hydraLinearElasticity.cpp
+  * \file test_tardigrade_hydraLinearElasticity.cpp
   * 
-  * Tests for tardigrade-hydraLinearElasticity
+  * Tests for tardigrade_hydraLinearElasticity
   */
 
 #include<tardigrade_hydraLinearElasticity.h>
 #include<tardigrade_constitutive_tools.h>
 
-#define BOOST_TEST_MODULE test_tardigrade-hydraLinearElasticity
+#define BOOST_TEST_MODULE test_tardigrade_hydraLinearElasticity
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -570,7 +570,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdFe ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_setCauchyStress ){
+BOOST_AUTO_TEST_CASE( test_residual_setStress ){
 
     class residualMock : public tardigradeHydra::linearElasticity::residual {
 
@@ -1110,15 +1110,15 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual2 ){
 
             using tardigradeHydra::linearElasticity::residual::residual;
 
-            void setCauchyStress( floatVector &cauchyStress ){ tardigradeHydra::residualBase::setCauchyStress( cauchyStress ); }
+            void setStress( floatVector &cauchyStress ){ tardigradeHydra::residualBase::setStress( cauchyStress ); }
 
         private:
 
-            void setCauchyStress( ){
+            void setStress( ){
 
                 floatVector cauchyStress = { 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-                setCauchyStress( cauchyStress );
+                setStress( cauchyStress );
 
             }
 

@@ -1,14 +1,14 @@
 /**
-  * \file test_tardigrade-hydraThermalExpansion.cpp
+  * \file test_tardigrade_hydraThermalExpansion.cpp
   *
-  * Tests for tardigrade-hydraThermalExpansion
+  * Tests for tardigrade_hydraThermalExpansion
   */
 
 #include<tardigrade_hydraThermalExpansion.h>
 #include<tardigrade_hydraLinearElasticity.h>
 #include<tardigrade_constitutive_tools.h>
 
-#define BOOST_TEST_MODULE test_tardigrade-hydraThermalExpansion
+#define BOOST_TEST_MODULE test_tardigrade_hydraThermalExpansion
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 

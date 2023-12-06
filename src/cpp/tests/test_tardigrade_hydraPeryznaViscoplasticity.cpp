@@ -1,7 +1,7 @@
 /**
-  * \file test_tardigrade-hydraPeryznaViscoplasticity.cpp
+  * \file test_tardigrade_hydraPeryznaViscoplasticity.cpp
   *
-  * Tests for tardigrade-hydraPeryznaViscoplasticity
+  * Tests for tardigrade_hydraPeryznaViscoplasticity
   */
 
 #include<tardigrade_hydraPeryznaViscoplasticity.h>
@@ -10,7 +10,7 @@
 #include<tardigrade_constitutive_tools.h>
 #include<tardigrade_stress_tools.h>
 
-#define BOOST_TEST_MODULE test_tardigrade-hydraPeryznaViscoplasticity
+#define BOOST_TEST_MODULE test_tardigrade_hydraPeryznaViscoplasticity
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -282,15 +282,15 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
 
             using tardigradeHydra::residualBase::residualBase;
 
-            virtual void setCauchyStress( ){
+            virtual void setStress( ){
 
-                tardigradeHydra::residualBase::setCauchyStress( currentCauchyStress );
+                tardigradeHydra::residualBase::setStress( currentCauchyStress );
 
             }
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -430,9 +430,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getDrivingStress ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -973,9 +973,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getFlowDirection_jacobian ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -1495,9 +1495,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getYieldFunction_jacobian ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -3035,9 +3035,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMuliplier ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -3359,9 +3359,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticMultiplier_jacobian ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -4197,9 +4197,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getVelocityGradient_jacobian ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -5034,9 +5034,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariableEvolutionRates_jacobian ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -5837,9 +5837,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticDeformationGradient_jacobian ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -6646,9 +6646,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getPlasticStateVariables_jacobian ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -7304,9 +7304,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -7479,9 +7479,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -7658,9 +7658,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF ){
 
         private:
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousCauchyStress( previousCauchyStress );
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
 
             }
 

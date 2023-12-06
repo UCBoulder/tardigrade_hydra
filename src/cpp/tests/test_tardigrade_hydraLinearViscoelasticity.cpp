@@ -1,12 +1,12 @@
 /**
-  * \file test_tardigrade-hydraLinearViscoelasticity.cpp
+  * \file test_tardigrade_hydraLinearViscoelasticity.cpp
   * 
-  * Tests for tardigrade-hydraLinearViscoelasticity
+  * Tests for tardigrade_hydraLinearViscoelasticity
   */
 
 #include<tardigrade_hydraLinearViscoelasticity.h>
 
-#define BOOST_TEST_MODULE test_tardigrade-hydraLinearViscoelasticity
+#define BOOST_TEST_MODULE test_tardigrade_hydraLinearViscoelasticity
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 #include<tardigrade_stress_tools.h>
