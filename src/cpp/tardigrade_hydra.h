@@ -534,7 +534,23 @@ namespace tardigradeHydra{
 
         protected:
 
+            // Setters that the user may need to access but not override
+
             void setStress( const floatVector &stress );
+
+            void setConfigurations( const floatMatrix &configurations );
+
+            void setInverseConfigurations( const floatMatrix &inverseConfigurations );
+
+            void setPreviousConfigurations( const floatMatrix &previousConfigurations );
+
+            void setPreviousInverseConfigurations( const floatMatrix &previousInverseConfigurations );
+
+            // Utility functions
+            virtual void computeConfigurations( const floatVector *data_vector, const unsigned int start_index,
+                                                const floatVector &total_transformation,
+                                                floatMatrix &configurations, floatMatrix &inverseConfigurations,
+                                                const bool add_eye=false );
 
         private:
 
