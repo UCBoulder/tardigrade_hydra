@@ -96,7 +96,8 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor ){
                                           -0.01, -0.02, -0.03, -0.04, -0.05, -0.06, -0.07, -0.08, -0.09,
                                            1.00,  2.00,  3.00,  4.00,  5.00,  6.00,  7.00,  8.00,  9.00,
                                           10.00, 11.00, 12.00, 13.00, 14.00, 15.00, 16.00, 17.00, 18.00,
-                                          19.00, 20.00, 21.00, 22.00, 23.00, 24.00, 25.00, 26.00, 27.00 };
+                                          19.00, 20.00, 21.00, 22.00, 23.00, 24.00, 25.00, 26.00, 27.00,
+                                          -1.00, -2.00, -3.00, -4.00, -5.00, -6.00 };
 
     floatVector parameters = { 0.1, 0.2, 0.3, 0.4 };
 
@@ -106,7 +107,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor ){
 
     unsigned int dimension = 3;
 
-    unsigned int configuration_unknown_count = 27;
+    unsigned int configuration_unknown_count = 45;
 
     floatType tolr = 1e-2;
 
