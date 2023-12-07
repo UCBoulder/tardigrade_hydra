@@ -542,10 +542,15 @@ namespace tardigradeHydra{
 
             void setInverseConfigurations( const floatMatrix &inverseConfigurations );
 
+            void setPreviousConfigurations( const floatMatrix &previousConfigurations );
+
+            void setPreviousInverseConfigurations( const floatMatrix &previousInverseConfigurations );
+
             // Utility functions
             virtual void computeConfigurations( const floatVector *data_vector, const unsigned int start_index,
                                                 const floatVector &total_transformation,
-                                                floatMatrix &configurations, floatMatrix &inverseConfigurations );
+                                                floatMatrix &configurations, floatMatrix &inverseConfigurations,
+                                                const bool add_eye=false );
 
         private:
 
