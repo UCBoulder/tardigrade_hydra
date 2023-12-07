@@ -370,7 +370,7 @@ namespace tardigradeHydra{
 
             // Constructors
             //! Default constructor for hydraBase
-            hydraBase( ){ }
+            hydraBase( ) : _configuration_unknown_count( 0 ){ }
 
             //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
             hydraBase( const floatType &time, const floatType &deltaTime,
@@ -385,6 +385,9 @@ namespace tardigradeHydra{
             // Setter functions
 
             // Getter functions
+            //! Get a reference to the number of unknowns in each configuration
+            const unsigned int* getConfigurationUnknownCount( ){ return &_configuration_unknown_count; }
+
             //! Get a reference to the current time
             const floatType* getTime( ){ return &_time; }
 
@@ -533,6 +536,8 @@ namespace tardigradeHydra{
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
 
         protected:
+
+            const unsigned int _configuration_unknown_count; //!< The number of unknowns required for a configuration. Used to ensure that the unknown and state variable vectors are the right size. Must be set by all inheriting classes. For 3D classical continuum this will be 9, for higher order theories this will change.
 
             // Setters that the user may need to access but not override
 

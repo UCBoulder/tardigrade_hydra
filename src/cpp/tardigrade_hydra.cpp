@@ -279,7 +279,8 @@ namespace tardigradeHydra{
                           const floatVector &previousStateVariables, const floatVector &parameters,
                           const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                           const unsigned int dimension, const floatType tolr, const floatType tola, const unsigned int maxIterations,
-                          const unsigned int maxLSIterations, const floatType lsAlpha ) : _time( time ), _deltaTime( deltaTime ),
+                          const unsigned int maxLSIterations, const floatType lsAlpha ) : _configuration_unknown_count( dimension * dimension ),
+                                                           _time( time ), _deltaTime( deltaTime ),
                                                            _temperature( temperature ), _previousTemperature( previousTemperature ),
                                                            _deformationGradient( deformationGradient ),
                                                            _previousDeformationGradient( previousDeformationGradient ),
@@ -396,7 +397,7 @@ namespace tardigradeHydra{
         const floatVector *unknownVector = getUnknownVector( );
 
         setStress( floatVector( unknownVector->begin( ),
-                                unknownVector->begin( ) + ( *getDimension( ) ) * ( *getDimension( ) ) ) );
+                                unknownVector->begin( ) + *getConfigurationUnknownCount( ) ) );
 
     }
 
@@ -464,10 +465,6 @@ namespace tardigradeHydra{
 
         const floatVector *unknownVector = getUnknownVector( );
 
-        const unsigned int* dim = getDimension( );
-
-        const unsigned int* nConfig = getNumConfigurations( );
-
         // Set the stress
         extractStress( );
 
@@ -483,7 +480,7 @@ namespace tardigradeHydra{
         setInverseConfigurations( inverseConfigurations );
 
         // Extract the remaining state variables required for the non-linear solve
-        _nonLinearSolveStateVariables.second = floatVector( unknownVector->begin( ) + ( *nConfig ) * ( *dim ) * ( *dim ),
+        _nonLinearSolveStateVariables.second = floatVector( unknownVector->begin( ) + ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ),
                                                             unknownVector->end( ) );
 
         addIterationData( &_nonLinearSolveStateVariables );
@@ -517,14 +514,14 @@ namespace tardigradeHydra{
         floatVector eye( ( *dim ) * ( *dim ) );
         tardigradeVectorTools::eye( eye );
 
-        if ( getPreviousStateVariables( )->size( ) < ( ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + ( *nNLISV ) ) ){
+        if ( getPreviousStateVariables( )->size( ) < ( ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + ( *nNLISV ) ) ){
 
             std::string message = "The number of state variables is less than required for the configurations and ";
             message            += "non-linear state variables\n";
-            message            += "  # previousStateVariables          : " + std::to_string( getPreviousStateVariables( )->size( ) ) + "\n";
-            message            += "  # ( configurations - 1 ) * dim**2 : " + std::to_string( ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) ) + "\n";
-            message            += "  # non-linear solve ISVs           : " + std::to_string( ( *nNLISV ) ) + "\n";
-            message            += "  # minimum required ISVs           : " + std::to_string( ( *nConfig ) * ( *dim ) * ( *dim ) + ( *nNLISV ) );
+            message            += "  # previousStateVariables                               : " + std::to_string( getPreviousStateVariables( )->size( ) ) + "\n";
+            message            += "  # ( configurations - 1 ) * configuration_unknown_count : " + std::to_string( ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) ) + "\n";
+            message            += "  # non-linear solve ISVs                                : " + std::to_string( ( *nNLISV ) ) + "\n";
+            message            += "  # minimum required ISVs                                : " + std::to_string( ( *nConfig ) * ( *getConfigurationUnknownCount( ) ) + ( *nNLISV ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
@@ -554,13 +551,13 @@ namespace tardigradeHydra{
         setPreviousInverseConfigurations( previousInverseConfigurations );
 
         // Extract the remaining state variables required for the non-linear solve
-        _nonLinearSolveStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ),
-                                                            getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + *nNLISV );
+        _nonLinearSolveStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ),
+                                                            getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV );
 
         _previousNonLinearSolveStateVariables.second = _nonLinearSolveStateVariables.second;
 
         // Extract the additional state variables
-        _additionalStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + *nNLISV,
+        _additionalStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV,
                                                         getPreviousStateVariables( )->end( ) );
 
         _previousAdditionalStateVariables.second = _additionalStateVariables.second;
@@ -1084,8 +1081,6 @@ namespace tardigradeHydra{
          *     populate the residual and jacobian matrices for the non-linear solve
          */
 
-        const unsigned int *dim = getDimension( );
-
         unsigned int numEquations = 0;
 
         _residualClasses.second = std::vector< residualBase* >( residualClasses.size( ) );
@@ -1098,10 +1093,10 @@ namespace tardigradeHydra{
 
         }
 
-        if ( numEquations != ( *getNumConfigurations( ) * ( *dim ) * ( *dim ) + *getNumNonLinearSolveStateVariables( ) ) ){
+        if ( numEquations != ( *getNumConfigurations( ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( ) ) ){
 
             std::string message = "The number of equations for the non-linear solve is not equal to the number of equations defined\n";
-            message            += "  expected number of equations: " + std::to_string( ( *getNumConfigurations( ) ) * ( *dim ) * ( *dim ) + *getNumNonLinearSolveStateVariables( ) ) + "\n";
+            message            += "  expected number of equations: " + std::to_string( ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( ) ) + "\n";
             message            += "  number of defined equations:  " + std::to_string( numEquations ) + "\n";
 
             TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
@@ -1134,7 +1129,7 @@ namespace tardigradeHydra{
 
         const unsigned int *dim = getDimension( );
 
-        unsigned int residualSize = ( *getNumConfigurations( ) ) * ( *dim ) * ( *dim ) + *getNumNonLinearSolveStateVariables( );
+        unsigned int residualSize = ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( );
 
         _residual.second = floatVector( residualSize, 0 );
 
