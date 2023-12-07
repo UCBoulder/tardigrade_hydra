@@ -334,6 +334,34 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::setConfigurations( const floatMatrix &configurations ){
+        /*!
+         * Set the value of the configurations
+         *
+         * \param &configurations: The configurations matrix. Each row is a different configuration.
+         */
+
+        _configurations.second = configurations;
+
+        _configurations.first = true;
+
+        addIterationData( &_configurations );
+    }
+
+    void hydraBase::setInverseConfigurations( const floatMatrix &inverseConfigurations ){
+        /*!
+         * Set the value of the inverse configurations
+         *
+         * \param &inverseConfigurations: The inverse configurations matrix. Each row is a different configuration.
+         */
+
+        _inverseConfigurations.second = inverseConfigurations;
+
+        _inverseConfigurations.first = true;
+
+        addIterationData( &_inverseConfigurations );
+    }
+
     void hydraBase::extractStress( ){
         /*!
          * Extract the stresses out of the unknown vector
@@ -343,6 +371,51 @@ namespace tardigradeHydra{
 
         setStress( floatVector( unknownVector->begin( ),
                                 unknownVector->begin( ) + ( *getDimension( ) ) * ( *getDimension( ) ) ) );
+
+    }
+
+    void hydraBase::computeConfigurations( const floatVector *data_vector, const unsigned int start_index,
+                                           const floatVector &total_transformation,
+                                           floatMatrix &configurations, floatMatrix &inverseConfigurations ){
+        /*!
+         * Compute the configurations from the provided vector. Each configuration is assumed to have a dimension
+         * of dimension x dimension
+         *
+         * \param *data_vector: A pointer to the vector of data which contains the configurations and other information
+         * \param &start_index: The starting index for the vector
+         * \param &total_transformation: The total transformation from the reference to the current configuration
+         */
+
+        const unsigned int* dim = getDimension( );
+
+        const unsigned int* nConfig = getNumConfigurations( );
+
+        // Set the configurations
+        configurations = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        inverseConfigurations = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        // Initialize the first configuration with the total deformation gradient
+        configurations[ 0 ] = total_transformation;
+
+        for ( int i = ( *nConfig ) - 2; i >= 0; i-- ){
+
+            // Set the current configuration as being equal to the previous
+            configurations[ i + 1 ] = floatVector( data_vector->begin( ) + i * ( *dim ) * ( *dim ) + start_index,
+                                                   data_vector->begin( ) + ( i + 1 ) * ( *dim ) * ( *dim ) + start_index );
+
+            // Compute the inverse of the current configuration and store it
+            inverseConfigurations[ i + 1 ] = tardigradeVectorTools::inverse( configurations[ i + 1 ], ( *dim ), ( *dim ) );
+
+            // Add contribution of deformation gradient to the first configuration
+            configurations[ 0 ] = tardigradeVectorTools::matrixMultiply( configurations[ 0 ], inverseConfigurations[ i + 1 ],
+                                                                         ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
+
+        }
+
+        inverseConfigurations[ 0 ] = tardigradeVectorTools::inverse( configurations[ 0 ], ( *dim ), ( *dim ) );
+
+        return;
 
     }
 
@@ -361,37 +434,18 @@ namespace tardigradeHydra{
         extractStress( );
 
         // Set the configurations
-        _configurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+        floatMatrix configurations;
+        floatMatrix inverseConfigurations;
 
-        _inverseConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+        computeConfigurations( unknownVector, getStress( )->size( ), *getDeformationGradient( ), configurations, inverseConfigurations );
 
-        // Initialize the first configuration with the total deformation gradient
-        _configurations.second[ 0 ] = *getDeformationGradient( );
+        setConfigurations( configurations );
 
-        for ( unsigned int i = ( *nConfig ) - 1; i >= 1; i-- ){
-
-            // Set the current configuration as being equal to the previous
-            _configurations.second[ i ] = floatVector( unknownVector->begin( ) + i * ( *dim ) * ( *dim ),
-                                                       unknownVector->begin( ) + ( i + 1 ) * ( *dim ) * ( *dim ) );
-
-            // Compute the inverse of the current configuration and store it
-            _inverseConfigurations.second[ i ] = tardigradeVectorTools::inverse( _configurations.second[ i ], ( *dim ), ( *dim ) );
-
-            // Add contribution of deformation gradient to the first configuration
-            _configurations.second[ 0 ] = tardigradeVectorTools::matrixMultiply( _configurations.second[ 0 ], _inverseConfigurations.second[ i ],
-                                                                       ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
-
-        }
-
-        _inverseConfigurations.second[ 0 ] = tardigradeVectorTools::inverse( _configurations.second[ 0 ], ( *dim ), ( *dim ) );
+        setInverseConfigurations( inverseConfigurations );
 
         // Extract the remaining state variables required for the non-linear solve
         _nonLinearSolveStateVariables.second = floatVector( unknownVector->begin( ) + ( *nConfig ) * ( *dim ) * ( *dim ),
                                                             unknownVector->end( ) );
-
-        addIterationData( &_configurations );
-
-        addIterationData( &_inverseConfigurations );
 
         addIterationData( &_nonLinearSolveStateVariables );
 
