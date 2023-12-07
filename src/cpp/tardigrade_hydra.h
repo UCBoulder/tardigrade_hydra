@@ -551,6 +551,14 @@ namespace tardigradeHydra{
 
             void setPreviousInverseConfigurations( const floatMatrix &previousInverseConfigurations );
 
+            void setNonLinearSolveStateVariables( const floatVector &nonLinearSolveStateVariables );
+
+            void setPreviousNonLinearSolveStateVariables( const floatVector &previousNonLinearSolveStateVariables );
+
+            void setAdditionalStateVariables( const floatVector &additionalStateVariables );
+
+            void setPreviousAdditionalStateVariables( const floatVector &previousAdditionalStateVariables );
+
             // Utility functions
             virtual void computeConfigurations( const floatVector *data_vector, const unsigned int start_index,
                                                 const floatVector &total_transformation,
