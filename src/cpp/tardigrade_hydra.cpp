@@ -389,6 +389,62 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::setNonLinearSolveStateVariables( const floatVector &nonLinearSolveStateVariables ){
+        /*!
+         * Set the value of the state variables which are a part of the non-linear solve
+         * 
+         * \param &nonLinearSolveStateVariables
+         */
+
+        _nonLinearSolveStateVariables.second = nonLinearSolveStateVariables;
+
+        _nonLinearSolveStateVariables.first = true;
+
+        addIterationData( &_nonLinearSolveStateVariables );
+
+    }
+
+    void hydraBase::setPreviousNonLinearSolveStateVariables( const floatVector &previousNonLinearSolveStateVariables ){
+        /*!
+         * Set the previous value of the state variables which are a part of the non-linear solve
+         * 
+         * \param &nonLinearSolveStateVariables
+         */
+
+        _previousNonLinearSolveStateVariables.second = previousNonLinearSolveStateVariables;
+
+        _previousNonLinearSolveStateVariables.first = true;
+
+    }
+
+    void hydraBase::setAdditionalStateVariables( const floatVector &additionalStateVariables ){
+        /*!
+         * Set the value of the additional state variables which are not part of the non-linear solve
+         * 
+         * \param &additionalStateVariables
+         */
+
+        _additionalStateVariables.second = additionalStateVariables;
+
+        _additionalStateVariables.first = true;
+
+        addIterationData( &_additionalStateVariables );
+
+    }
+
+    void hydraBase::setPreviousAdditionalStateVariables( const floatVector &previousAdditionalStateVariables ){
+        /*!
+         * Set the previous value of the additional state variables which are not part of the non-linear solve
+         * 
+         * \param &previousAdditionalStateVariables
+         */
+
+        _previousAdditionalStateVariables.second = previousAdditionalStateVariables;
+
+        _previousAdditionalStateVariables.first = true;
+
+    }
+
     void hydraBase::extractStress( ){
         /*!
          * Extract the stresses out of the unknown vector
@@ -480,10 +536,8 @@ namespace tardigradeHydra{
         setInverseConfigurations( inverseConfigurations );
 
         // Extract the remaining state variables required for the non-linear solve
-        _nonLinearSolveStateVariables.second = floatVector( unknownVector->begin( ) + ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ),
-                                                            unknownVector->end( ) );
-
-        addIterationData( &_nonLinearSolveStateVariables );
+        setNonLinearSolveStateVariables( floatVector( unknownVector->begin( ) + ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ),
+                                                      unknownVector->end( ) ) );
 
     }
 
@@ -551,26 +605,16 @@ namespace tardigradeHydra{
         setPreviousInverseConfigurations( previousInverseConfigurations );
 
         // Extract the remaining state variables required for the non-linear solve
-        _nonLinearSolveStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ),
-                                                            getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV );
+        setPreviousNonLinearSolveStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ),
+                                                              getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV ) );
 
-        _previousNonLinearSolveStateVariables.second = _nonLinearSolveStateVariables.second;
+        setNonLinearSolveStateVariables( *getPreviousNonLinearSolveStateVariables( ) );
 
         // Extract the additional state variables
-        _additionalStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV,
-                                                        getPreviousStateVariables( )->end( ) );
+        setPreviousAdditionalStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV,
+                                                          getPreviousStateVariables( )->end( ) ) );
 
-        _previousAdditionalStateVariables.second = _additionalStateVariables.second;
-
-        _nonLinearSolveStateVariables.first = true;
-
-        _previousNonLinearSolveStateVariables.first = true;
-
-        _additionalStateVariables.first = true;
-
-        _previousAdditionalStateVariables.first = true;
-
-        addIterationData( &_nonLinearSolveStateVariables );
+        setAdditionalStateVariables( *getPreviousAdditionalStateVariables( ) );
 
     }
 
