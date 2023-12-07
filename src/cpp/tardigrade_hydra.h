@@ -378,7 +378,9 @@ namespace tardigradeHydra{
                        const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                        const floatVector &previousStateVariables, const floatVector &parameters,
                        const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                       const unsigned int dimension=3, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxIterations=20, const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4 );
+                       const unsigned int dimension=3, const unsigned int configuration_unknown_count=9,
+                       const floatType tolr=1e-9, const floatType tola=1e-9,
+                       const unsigned int maxIterations=20, const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4 );
 
             // User defined functions
 
@@ -537,8 +539,6 @@ namespace tardigradeHydra{
 
         protected:
 
-            const unsigned int _configuration_unknown_count; //!< The number of unknowns required for a configuration. Used to ensure that the unknown and state variable vectors are the right size. Must be set by all inheriting classes. For 3D classical continuum this will be 9, for higher order theories this will change.
-
             // Setters that the user may need to access but not override
 
             void setStress( const floatVector &stress );
@@ -565,10 +565,31 @@ namespace tardigradeHydra{
                                                 floatMatrix &configurations, floatMatrix &inverseConfigurations,
                                                 const bool add_eye=false );
 
+            virtual void extractStress( );
+
+            virtual void decomposeUnknownVector( );
+
+            virtual void decomposeStateVariableVector( );
+
+            virtual void formNonLinearProblem( );
+
+            virtual void initializeUnknownVector( );
+
+            virtual void setTolerance( );
+
+            //! Update the line-search lambda parameter
+            virtual void updateLambda( ){ _lambda *= 0.5; }
+
+            virtual void updateUnknownVector( const floatVector &newUnknownVector );
+
         private:
 
             // Friend classes
             friend class unit_test::hydraBaseTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
+
+            unsigned int _dimension; //!< The spatial dimension of the problem
+
+            const unsigned int _configuration_unknown_count; //!< The number of unknowns required for a configuration. Used to ensure that the unknown and state variable vectors are the right size. Must be set by all inheriting classes. For 3D classical continuum this will be 9, for higher order theories this will change.
 
             floatType _time; //!< The current time
 
@@ -589,8 +610,6 @@ namespace tardigradeHydra{
             unsigned int _numConfigurations; //!< The number of configurations
 
             unsigned int _numNonLinearSolveStateVariables; //!< The number of state variables which will be solved in the Newton-Raphson loop
-
-            unsigned int _dimension; //!< The spatial dimension of the problem
 
             floatType _tolr; //!< The relative tolerance
 
@@ -656,29 +675,15 @@ namespace tardigradeHydra{
 
             floatType _lambda = 1;
 
-            virtual void extractStress( );
-
-            virtual void decomposeUnknownVector( );
-
-            virtual void decomposeStateVariableVector( );
-
             void setFirstConfigurationJacobians( );
 
             void setPreviousFirstConfigurationJacobians( );
 
-            virtual void formNonLinearProblem( );
-
             void solveNonLinearProblem( );
-
-            virtual void initializeUnknownVector( );
-
-            virtual void setTolerance( );
 
             void setTolerance( const floatVector &tolerance );
 
             void incrementIteration( ){ _iteration++; }
-
-            virtual void updateLambda( ){ _lambda *= 0.5; }
 
             void incrementLSIteration( ){ _LSIteration++; }
 
@@ -691,8 +696,6 @@ namespace tardigradeHydra{
             bool checkIteration( ){ return _iteration < _maxIterations; }
 
             bool checkLSIteration( ){ return _LSIteration < _maxLSIterations; }
-
-            virtual void updateUnknownVector( const floatVector &newUnknownVector );
 
             void resetIterationData( );
 
