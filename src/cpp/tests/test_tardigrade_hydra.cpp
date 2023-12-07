@@ -1025,7 +1025,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfiguration ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian ){
 
     floatType time = 1.1;
 
@@ -1101,7 +1101,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( configurations, lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationJacobian( configurations, lower, upper ) ) );
 
     lower = 1;
     upper = 3;
@@ -1132,11 +1132,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( configurations, lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationJacobian( configurations, lower, upper ) ) );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient2 ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian2 ){
 
     floatType time = 1.1;
 
@@ -1212,7 +1212,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationJacobian( lower, upper ) ) );
 
     lower = 1;
     upper = 3;
@@ -1243,11 +1243,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationGradient2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationGradient( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationJacobian( lower, upper ) ) );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationGradient ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationJacobian ){
 
     floatType time = 1.1;
 
@@ -1323,7 +1323,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPrecedingConfigurationGradient( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPrecedingConfigurationJacobian( upper ) ) );
 
     lower = 0;
     upper = 3;
@@ -1354,11 +1354,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPrecedingConfigurationGradient( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPrecedingConfigurationJacobian( upper ) ) );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationGradient ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationJacobian ){
 
     floatType time = 1.1;
 
@@ -1434,7 +1434,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getFollowingConfigurationGradient( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getFollowingConfigurationJacobian( lower ) ) );
 
     lower = 2;
     upper = 4;
@@ -1465,11 +1465,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getFollowingConfigurationGradient( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getFollowingConfigurationJacobian( lower ) ) );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationGradient ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationJacobian ){
 
     floatType time = 1.1;
 
@@ -1545,7 +1545,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousSubConfigurationGradient( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousSubConfigurationJacobian( lower, upper ) ) );
 
     lower = 1;
     upper = 3;
@@ -1576,11 +1576,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousSubConfigurationGradient( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousSubConfigurationJacobian( lower, upper ) ) );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationGradient ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationJacobian ){
 
     floatType time = 1.1;
 
@@ -1656,7 +1656,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationGradient )
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingConfigurationGradient( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingConfigurationJacobian( upper ) ) );
 
     lower = 0;
     upper = 3;
@@ -1687,11 +1687,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationGradient )
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingConfigurationGradient( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingConfigurationJacobian( upper ) ) );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationGradient ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationJacobian ){
 
     floatType time = 1.1;
 
@@ -1767,7 +1767,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationGradient )
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingConfigurationGradient( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingConfigurationJacobian( lower ) ) );
 
     lower = 2;
     upper = 4;
@@ -1798,7 +1798,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationGradient )
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingConfigurationGradient( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingConfigurationJacobian( lower ) ) );
 
 }
 

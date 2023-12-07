@@ -624,10 +624,10 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBase::getSubConfigurationGradient( const floatMatrix &configurations, const unsigned int &lowerIndex,
+    floatMatrix hydraBase::getSubConfigurationJacobian( const floatMatrix &configurations, const unsigned int &lowerIndex,
                                                         const unsigned int &upperIndex ){
         /*!
-         * Get the gradient a sub-configuration \f$\bf{F}^{sc}\f$ defined as
+         * Get the jacobian of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
          *
          * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex-1}}_{\bar{I}I} \f$
          * 
@@ -769,9 +769,9 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBase::getSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+    floatMatrix hydraBase::getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
-         * Get the gradient of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
+         * Get the jacobian of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
          *
          * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex-1}}_{\bar{I}I} \f$
          * 
@@ -782,35 +782,35 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfigurationGradient( *getConfigurations( ), lowerIndex, upperIndex );
+        return getSubConfigurationJacobian( *getConfigurations( ), lowerIndex, upperIndex );
 
     }
 
-    floatMatrix hydraBase::getPrecedingConfigurationGradient( const unsigned int &index ){
+    floatMatrix hydraBase::getPrecedingConfigurationJacobian( const unsigned int &index ){
         /*!
-         * Get the gradient of the sub-configuration preceding but not including the index with respect to the current configurations.
+         * Get the jacobian of the sub-configuration preceding but not including the index with respect to the current configurations.
          * 
          * \param &index: The index of the configuration immediately following the sub-configuration
          */
 
-        return getSubConfigurationGradient( 0, index );
+        return getSubConfigurationJacobian( 0, index );
 
     }
 
-    floatMatrix hydraBase::getFollowingConfigurationGradient( const unsigned int &index ){
+    floatMatrix hydraBase::getFollowingConfigurationJacobian( const unsigned int &index ){
         /*!
-         * Get the gradient of the sub-configuration following but not including the index with respect to the current configurations.
+         * Get the jacobian of the sub-configuration following but not including the index with respect to the current configurations.
          * 
          * \param &index: The index of the current configuration immediately before the sub-configuration
          */
 
-        return getSubConfigurationGradient( index + 1, *getNumConfigurations( ) );
+        return getSubConfigurationJacobian( index + 1, *getNumConfigurations( ) );
 
     }
 
-    floatMatrix hydraBase::getPreviousSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+    floatMatrix hydraBase::getPreviousSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
-         * Get the gradient of a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
+         * Get the jacobian of a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
          *
          * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex-1}}_{\bar{I}I} \f$
          * 
@@ -821,37 +821,37 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfigurationGradient( *getPreviousConfigurations( ), lowerIndex, upperIndex );
+        return getSubConfigurationJacobian( *getPreviousConfigurations( ), lowerIndex, upperIndex );
 
     }
 
-    floatMatrix hydraBase::getPreviousPrecedingConfigurationGradient( const unsigned int &index ){
+    floatMatrix hydraBase::getPreviousPrecedingConfigurationJacobian( const unsigned int &index ){
         /*!
-         * Get the gradient of the previous sub-configuration preceding but not including the index with
+         * Get the jacobian of the previous sub-configuration preceding but not including the index with
          * respect to the previous configurations.
          * 
          * \param &index: The index of the configuration immediately following the sub-configuration
          */
 
-        return getPreviousSubConfigurationGradient( 0, index );
+        return getPreviousSubConfigurationJacobian( 0, index );
 
     }
 
-    floatMatrix hydraBase::getPreviousFollowingConfigurationGradient( const unsigned int &index ){
+    floatMatrix hydraBase::getPreviousFollowingConfigurationJacobian( const unsigned int &index ){
         /*!
-         * Get the gradient of the previous sub-configuration following but not including the index with
+         * Get the jacobian of the previous sub-configuration following but not including the index with
          * respect to the previous configurations
          * 
          * \param &index: The index of the current configuration immediately before the sub-configuration
          */
 
-        return getPreviousSubConfigurationGradient( index + 1, *getNumConfigurations( ) );
+        return getPreviousSubConfigurationJacobian( index + 1, *getNumConfigurations( ) );
 
     }
 
-    void hydraBase::setFirstConfigurationGradients( ){
+    void hydraBase::setFirstConfigurationJacobians( ){
         /*!
-         * Get the gradient of the first configuration w.r.t. the deformation gradient (the first entry of the pair)
+         * Get the jacobian of the first configuration w.r.t. the deformation gradient (the first entry of the pair)
          * and the remaining gradients (the second entry) i.e.,
          * 
          * \f$\text{return.first} = \frac{\partial F^1}{\partial F}\f$
@@ -873,7 +873,7 @@ namespace tardigradeHydra{
 
         floatMatrix dInvFscdFsc = tardigradeVectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
 
-        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getFollowingConfigurationGradient( 0 ) );
+        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getFollowingConfigurationJacobian( 0 ) );
 
         // Compute the gradients
         for ( unsigned int i = 0; i < ( *dim ); i++ ){
@@ -916,9 +916,9 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::setPreviousFirstConfigurationGradients( ){
+    void hydraBase::setPreviousFirstConfigurationJacobians( ){
         /*!
-         * Get the gradient of the previous first configuration w.r.t. the deformation gradient (the first entry of the pair)
+         * Get the jacobian of the previous first configuration w.r.t. the deformation gradient (the first entry of the pair)
          * and the remaining gradients (the second entry) i.e.,
          * 
          * \f$\text{return.first} = \frac{\partial F^1}{\partial F}\f$
@@ -940,7 +940,7 @@ namespace tardigradeHydra{
 
         floatMatrix dInvFscdFsc = tardigradeVectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
 
-        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getPreviousFollowingConfigurationGradient( 0 ) );
+        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getPreviousFollowingConfigurationJacobian( 0 ) );
 
         // Compute the gradients
         for ( unsigned int i = 0; i < ( *dim ); i++ ){
@@ -986,7 +986,7 @@ namespace tardigradeHydra{
 
         if ( !_dF1dF.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationJacobians( ) );
 
         }
 
@@ -1001,7 +1001,7 @@ namespace tardigradeHydra{
 
         if ( !_dF1dFn.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationJacobians( ) );
 
         }
 
@@ -1016,7 +1016,7 @@ namespace tardigradeHydra{
 
         if ( !_previousdF1dF.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationJacobians( ) );
 
         }
 
@@ -1031,7 +1031,7 @@ namespace tardigradeHydra{
 
         if ( !_previousdF1dFn.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationJacobians( ) );
 
         }
 

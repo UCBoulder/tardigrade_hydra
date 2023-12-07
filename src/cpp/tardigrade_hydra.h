@@ -453,7 +453,7 @@ namespace tardigradeHydra{
 
             floatVector getSubConfiguration( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatMatrix getSubConfigurationGradient( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatMatrix getSubConfigurationJacobian( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
@@ -471,17 +471,17 @@ namespace tardigradeHydra{
 
             floatVector getPreviousConfiguration( const unsigned int &index );
 
-            floatMatrix getSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatMatrix getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatMatrix getPrecedingConfigurationGradient( const unsigned int &index );
+            floatMatrix getPrecedingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getFollowingConfigurationGradient( const unsigned int &index );
+            floatMatrix getFollowingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getPreviousSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatMatrix getPreviousSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatMatrix getPreviousPrecedingConfigurationGradient( const unsigned int &index );
+            floatMatrix getPreviousPrecedingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getPreviousFollowingConfigurationGradient( const unsigned int &index );
+            floatMatrix getPreviousFollowingConfigurationJacobian( const unsigned int &index );
 
             const floatType* getLSResidualNorm( );
 
@@ -649,9 +649,9 @@ namespace tardigradeHydra{
 
             virtual void decomposeStateVariableVector( );
 
-            void setFirstConfigurationGradients( );
+            void setFirstConfigurationJacobians( );
 
-            void setPreviousFirstConfigurationGradients( );
+            void setPreviousFirstConfigurationJacobians( );
 
             virtual void formNonLinearProblem( );
 
