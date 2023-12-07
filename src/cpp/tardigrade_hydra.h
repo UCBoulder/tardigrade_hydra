@@ -532,6 +532,10 @@ namespace tardigradeHydra{
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
 
+        protected:
+
+            void setStress( const floatVector &stress );
+
         private:
 
             // Friend classes
@@ -556,6 +560,7 @@ namespace tardigradeHydra{
             unsigned int _numConfigurations; //!< The number of configurations
 
             unsigned int _numNonLinearSolveStateVariables; //!< The number of state variables which will be solved in the Newton-Raphson loop
+
             unsigned int _dimension; //!< The spatial dimension of the problem
 
             floatType _tolr; //!< The relative tolerance
@@ -577,6 +582,7 @@ namespace tardigradeHydra{
             dataStorage< floatMatrix > _previousInverseConfigurations; //!< The inverses of the previous configurations
 
             dataStorage< floatVector > _nonLinearSolveStateVariables; //!< The current values of the state variables involved in the non-linear solve
+
             dataStorage< floatVector > _previousNonLinearSolveStateVariables; //!< The previous values of the state variables involved in the non-linear solve
 
             dataStorage< floatVector > _additionalStateVariables; //!< The current values of the additional state variables
@@ -620,6 +626,8 @@ namespace tardigradeHydra{
             unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
 
             floatType _lambda = 1;
+
+            virtual void extractStress( );
 
             virtual void decomposeUnknownVector( );
 
