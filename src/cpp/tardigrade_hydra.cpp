@@ -924,6 +924,32 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::setPreviousdF1dF( const floatMatrix &previousdF1dF ){
+        /*!
+         * Set the jacobian of the previous first sub configuration w.r.t. the deformation gradient
+         * 
+         * \param &previousdF1dF: The value of the jacobian
+         */
+
+        _previousdF1dF.second = previousdF1dF;
+
+        _previousdF1dF.first = true;
+
+    }
+
+    void hydraBase::setPreviousdF1dFn( const floatMatrix &previousdF1dFn ){
+        /*!
+         * Set the previous jacobian of the first sub configuration w.r.t. the sub-deformation gradients
+         * 
+         * \param &previousdF1dFn: The value of the jacobian
+         */
+
+        _previousdF1dFn.second = previousdF1dFn;
+
+        _previousdF1dFn.first = true;
+
+    }
+
     void hydraBase::calculateFirstConfigurationJacobians( const floatMatrix &configurations, floatMatrix &dC1dC, floatMatrix &dC1dCn ){
         /*!
          * Get the Jacobian of the first configuration w.r.t. the total mapping and the remaining configurations.
@@ -986,6 +1012,9 @@ namespace tardigradeHydra{
     }
 
     void hydraBase::setFirstConfigurationJacobians( ){
+        /*!
+         * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining sub-configurations
+         */
 
         floatMatrix dF1dF;
 
@@ -1001,64 +1030,18 @@ namespace tardigradeHydra{
 
     void hydraBase::setPreviousFirstConfigurationJacobians( ){
         /*!
-         * Get the jacobian of the previous first configuration w.r.t. the deformation gradient (the first entry of the pair)
-         * and the remaining gradients (the second entry) i.e.,
-         * 
-         * \f$\text{return.first} = \frac{\partial F^1}{\partial F}\f$
-         * \f$\text{return.second} = \frac{\partial F^1}{\partial F^n}\f$
-         * 
-         * where \f$F^n = F^2, F^3, \cdots\f$
+         * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining sub-configurations
          */
 
-        const unsigned int* dim = getDimension( );
+        floatMatrix dF1dF;
 
-        _previousdF1dF.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
+        floatMatrix dF1dFn;
 
-        _previousdF1dFn.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
+        calculateFirstConfigurationJacobians( *getPreviousConfigurations( ), dF1dF, dF1dFn );
 
-        floatVector eye( ( *dim ) * ( *dim ) );
-        tardigradeVectorTools::eye( eye );
+        setPreviousdF1dF( dF1dF );
 
-        floatVector invFsc = tardigradeVectorTools::inverse( getPreviousFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
-
-        floatMatrix dInvFscdFsc = tardigradeVectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
-
-        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getPreviousFollowingConfigurationJacobian( 0 ) );
-
-        // Compute the gradients
-        for ( unsigned int i = 0; i < ( *dim ); i++ ){
-
-            for ( unsigned int barI = 0; barI < ( *dim ); barI++ ){
-
-                for ( unsigned int a = 0; a < ( *dim ); a++ ){
-
-                    for ( unsigned int A = 0; A < ( *dim ); A++ ){
-
-                        _previousdF1dF.second[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invFsc[ ( *dim ) * A + barI ];
-
-                        for ( unsigned int index = 0; index < ( *getNumConfigurations( ) ) - 1; index++ ){
-
-                            for ( unsigned int J = 0; J < ( *dim ); J++ ){
-
-                                _previousdF1dFn.second[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
-                                    += ( *getPreviousDeformationGradient( ) )[ ( *dim ) * i + J ]
-                                     * dInvFscdFs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
-
-        _previousdF1dF.first = true;
-
-        _previousdF1dFn.first = true;
+        setPreviousdF1dFn( dF1dFn );
 
     }
 

@@ -559,10 +559,6 @@ namespace tardigradeHydra{
 
             void setPreviousAdditionalStateVariables( const floatVector &previousAdditionalStateVariables );
 
-            void setdF1dF( const floatMatrix &dF1dF );
-
-            void setdF1dFn( const floatMatrix &dF1dFn );
-
             // Utility functions
             virtual void computeConfigurations( const floatVector *data_vector, const unsigned int start_index,
                                                 const floatVector &total_transformation,
@@ -684,6 +680,14 @@ namespace tardigradeHydra{
             void setFirstConfigurationJacobians( );
 
             void setPreviousFirstConfigurationJacobians( );
+
+            void setdF1dF( const floatMatrix &dF1dF );
+
+            void setdF1dFn( const floatMatrix &dF1dFn );
+
+            void setPreviousdF1dF( const floatMatrix &previousdF1dF );
+
+            void setPreviousdF1dFn( const floatMatrix &previousdF1dFn );
 
             void solveNonLinearProblem( );
 
