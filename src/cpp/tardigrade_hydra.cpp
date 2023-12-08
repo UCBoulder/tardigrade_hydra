@@ -894,6 +894,36 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::setdF1dF( const floatMatrix &dF1dF ){
+        /*!
+         * Set the jacobian of the first sub configuration w.r.t. the deformation gradient
+         * 
+         * \param &dF1dF: The value of the jacobian
+         */
+
+        _dF1dF.second = dF1dF;
+
+        _dF1dF.first = true;
+
+        addIterationData( &_dF1dF );
+
+    }
+
+    void hydraBase::setdF1dFn( const floatMatrix &dF1dFn ){
+        /*!
+         * Set the jacobian of the first sub configuration w.r.t. the sub-deformation gradients
+         * 
+         * \param &dF1dFn: The value of the jacobian
+         */
+
+        _dF1dFn.second = dF1dFn;
+
+        _dF1dFn.first = true;
+
+        addIterationData( &_dF1dFn );
+
+    }
+
     void hydraBase::setFirstConfigurationJacobians( ){
         /*!
          * Get the jacobian of the first configuration w.r.t. the deformation gradient (the first entry of the pair)
@@ -907,9 +937,9 @@ namespace tardigradeHydra{
 
         const unsigned int* dim = getDimension( );
 
-        _dF1dF.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
+        floatMatrix dF1dF( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
 
-        _dF1dFn.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
+        floatMatrix dF1dFn( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
 
         floatVector eye( ( *dim ) * ( *dim ) );
         tardigradeVectorTools::eye( eye );
@@ -929,13 +959,13 @@ namespace tardigradeHydra{
 
                     for ( unsigned int A = 0; A < ( *dim ); A++ ){
 
-                        _dF1dF.second[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invFsc[ ( *dim ) * A + barI ];
+                        dF1dF[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invFsc[ ( *dim ) * A + barI ];
 
                         for ( unsigned int index = 0; index < ( *getNumConfigurations( ) ) - 1; index++ ){
 
                             for ( unsigned int J = 0; J < ( *dim ); J++ ){
 
-                                _dF1dFn.second[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
+                                dF1dFn[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
                                     += ( *getDeformationGradient( ) )[ ( *dim ) * i + J ]
                                      * dInvFscdFs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
 
@@ -951,13 +981,9 @@ namespace tardigradeHydra{
 
         }
 
-        _dF1dF.first = true;
+        setdF1dF( dF1dF );
 
-        _dF1dFn.first = true;
-
-        addIterationData( &_dF1dF );
-
-        addIterationData( &_dF1dFn );
+        setdF1dFn( dF1dFn );
 
     }
 
