@@ -41,6 +41,33 @@ namespace tardigradeHydra{
             //! Get the previous spatial gradient w.r.t. the reference configuration of the micro-deformation tensor
             const floatVector *getPreviousGradientMicroDeformation( ){ return &_previousGradientMicroDeformation; }
 
+            //! Get a reference to the micro configurations
+            const floatMatrix* getMicroConfigurations( ){ return &_microConfigurations.second; }
+
+            //! Get a reference to the inverse micro configurations
+            const floatMatrix* getInverseMicroConfigurations( ){ return &_inverseMicroConfigurations.second; }
+
+            //! Get a reference to the previous micro configurations
+            const floatMatrix* getPreviousMicroConfigurations( ){ return &_previousMicroConfigurations.second; }
+
+            //! Get a reference to the previous inverse micro configurations
+            const floatMatrix* getPreviousInverseMicroConfigurations( ){ return &_previousInverseMicroConfigurations.second; }
+
+        protected:
+            //Setter functions
+            void setMicroConfigurations( const floatMatrix &microConfigurations );
+
+            void setInverseMicroConfigurations( const floatMatrix &inverseMicroConfigurations );
+
+            void setPreviousMicroConfigurations( const floatMatrix &previousMicroConfigurations );
+
+            void setPreviousInverseMicroConfigurations( const floatMatrix &previousInverseMicroConfigurations );
+
+            //Utility functions
+            virtual void decomposeStateVariableVector( ) override;
+
+            virtual void decomposeStateVariableVectorMicroConfigurations( );
+
         private:
 
             floatVector _microDeformation; //!< The current micro-deformation
@@ -50,6 +77,14 @@ namespace tardigradeHydra{
             floatVector _gradientMicroDeformation; //!< The spatial gradient of the micro-deformation w.r.t. the reference coordinates
 
             floatVector _previousGradientMicroDeformation; //!< The previous spatial gradient of the micro-deformation w.r.t. the reference coordinates
+
+            dataStorage< floatMatrix > _microConfigurations; //!< The current values of the micro-configurations
+
+            dataStorage< floatMatrix > _inverseMicroConfigurations; //!< The current values of the inverse micro-configurations
+
+            dataStorage< floatMatrix > _previousMicroConfigurations; //!< The previous values of the micro-configurations
+
+            dataStorage< floatMatrix > _previousInverseMicroConfigurations; //!< The previous values of the inverse micro-configurations
 
     };
 
