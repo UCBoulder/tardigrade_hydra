@@ -6,7 +6,19 @@ Changelog
 #########
 
 ******************
-0.1.0 (unreleased)
+0.2.0 (unreleased)
+******************
+
+Breaking Changes
+================
+- Changed hydra function calls to be more general (:pull:`1`, :pull:`2`, :pull:`3`, :pull:`4`, :pull:`5`, :pull:`6`). By `Nathan Miller`_.
+
+New Features
+============
+- Added micromorphic hydra object (:pull:`8`). By `Nathan Miller`_.
+
+******************
+0.1.2 (12-06-2023)
 ******************
 
 Breaking Changes

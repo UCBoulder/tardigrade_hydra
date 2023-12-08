@@ -278,8 +278,9 @@ namespace tardigradeHydra{
                           const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                           const floatVector &previousStateVariables, const floatVector &parameters,
                           const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                          const unsigned int dimension, const floatType tolr, const floatType tola, const unsigned int maxIterations,
-                          const unsigned int maxLSIterations, const floatType lsAlpha ) : _configuration_unknown_count( dimension * dimension ),
+                          const unsigned int dimension, const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola, const unsigned int maxIterations,
+                          const unsigned int maxLSIterations, const floatType lsAlpha ) : _dimension( dimension ),
+                                                           _configuration_unknown_count( configuration_unknown_count ),
                                                            _time( time ), _deltaTime( deltaTime ),
                                                            _temperature( temperature ), _previousTemperature( previousTemperature ),
                                                            _deformationGradient( deformationGradient ),
@@ -288,7 +289,7 @@ namespace tardigradeHydra{
                                                            _parameters( parameters ),
                                                            _numConfigurations( numConfigurations ),
                                                            _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
-                                                           _dimension( dimension ), _tolr( tolr ), _tola( tola ),
+                                                           _tolr( tolr ), _tola( tola ),
                                                            _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ),
                                                            _lsAlpha( lsAlpha ){
         /*!
@@ -305,6 +306,7 @@ namespace tardigradeHydra{
          * \param &numConfigurations: The number of configurations
          * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the non-linear solve's residual
          * \param &dimension: The dimension of the problem (defaults to 3)
+         * \param &configuration_unknown_count: The number of unknowns in each configuration (defaults to 9)
          * \param &tolr: The relative tolerance (defaults to 1e-9)
          * \param &tola: The absolute tolerance (defaults to 1e-9)
          * \param &maxIterations: The maximum number of non-linear iterations (defaults to 20)
@@ -380,7 +382,7 @@ namespace tardigradeHydra{
         /*!
          * Set the value of the previous inverse configurations
          *
-         * \param &inverseConfigurations: The inverse configurations matrix. Each row is a different configuration.
+         * \param &previousInverseConfigurations: The previous inverse configurations matrix. Each row is a different configuration.
          */
 
         _previousInverseConfigurations.second = previousInverseConfigurations;
@@ -408,7 +410,7 @@ namespace tardigradeHydra{
         /*!
          * Set the previous value of the state variables which are a part of the non-linear solve
          * 
-         * \param &nonLinearSolveStateVariables
+         * \param &previousNonLinearSolveStateVariables
          */
 
         _previousNonLinearSolveStateVariables.second = previousNonLinearSolveStateVariables;
@@ -468,6 +470,8 @@ namespace tardigradeHydra{
          * \param *data_vector: A pointer to the vector of data which contains the configurations and other information
          * \param &start_index: The starting index for the vector
          * \param &total_transformation: The total transformation from the reference to the current configuration
+         * \param &configurations: The resulting collection of configurations
+         * \param &inverseConfigurations: The resulting inverse configurations
          * \param add_eye: A flag for whether to add the identity matrix to each of the configurations except for the
          *     total transformation. Defaults to false.
          */
@@ -575,7 +579,7 @@ namespace tardigradeHydra{
             message            += "  # previousStateVariables                               : " + std::to_string( getPreviousStateVariables( )->size( ) ) + "\n";
             message            += "  # ( configurations - 1 ) * configuration_unknown_count : " + std::to_string( ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) ) + "\n";
             message            += "  # non-linear solve ISVs                                : " + std::to_string( ( *nNLISV ) ) + "\n";
-            message            += "  # minimum required ISVs                                : " + std::to_string( ( *nConfig ) * ( *getConfigurationUnknownCount( ) ) + ( *nNLISV ) );
+            message            += "  # minimum required ISVs                                : " + std::to_string( ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + ( *nNLISV ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
