@@ -152,6 +152,21 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBaseMicromorphic::setGradientMicroConfigurations( const floatMatrix &gradientMicroConfigurations ){
+        /*!
+         * Set the spatial gradients of the micro-configurations w.r.t. their reference configurations
+         * 
+         * \param &gradientMicroConfigurations: The list of the spatial gradients of the micro-configurations in row-major matrix form
+         */
+
+        _gradientMicroConfigurations.second = gradientMicroConfigurations;
+
+        _gradientMicroConfigurations.first = true;
+
+        addIterationData( &_gradientMicroConfigurations );
+
+    }
+
     void hydraBaseMicromorphic::setPreviousMicroConfigurations( const floatMatrix &previousMicroConfigurations ){
         /*!
          * Set the previous micro-configurations
@@ -175,6 +190,19 @@ namespace tardigradeHydra{
         _previousInverseMicroConfigurations.second = previousInverseMicroConfigurations;
 
         _previousInverseMicroConfigurations.first = true;
+
+    }
+
+    void hydraBaseMicromorphic::setPreviousGradientMicroConfigurations( const floatMatrix &previousGradientMicroConfigurations ){
+        /*!
+         * Set the spatial gradients of the previous micro-configurations w.r.t. their reference configurations
+         * 
+         * \param &previousGradientMicroConfigurations: The list of the spatial gradients of the previous micro-configurations in row-major matrix form
+         */
+
+        _previousGradientMicroConfigurations.second = previousGradientMicroConfigurations;
+
+        _previousGradientMicroConfigurations.first = true;
 
     }
 

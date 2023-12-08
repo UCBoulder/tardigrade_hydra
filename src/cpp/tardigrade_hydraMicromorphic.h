@@ -95,9 +95,13 @@ namespace tardigradeHydra{
 
             void setInverseMicroConfigurations( const floatMatrix &inverseMicroConfigurations );
 
+            void setGradientMicroConfigurations( const floatMatrix &gradientMicroConfigurations );
+
             void setPreviousMicroConfigurations( const floatMatrix &previousMicroConfigurations );
 
             void setPreviousInverseMicroConfigurations( const floatMatrix &previousInverseMicroConfigurations );
+
+            void setPreviousGradientMicroConfigurations( const floatMatrix &gradientMicroConfigurations );
 
             //Utility functions
             virtual void decomposeStateVariableVector( ) override;
@@ -118,9 +122,13 @@ namespace tardigradeHydra{
 
             dataStorage< floatMatrix > _inverseMicroConfigurations; //!< The current values of the inverse micro-configurations
 
+            dataStorage< floatMatrix > _gradientMicroConfigurations; //!< The spatial gradients of the micro-configurations w.r.t. their reference configurations
+
             dataStorage< floatMatrix > _previousMicroConfigurations; //!< The previous values of the micro-configurations
 
             dataStorage< floatMatrix > _previousInverseMicroConfigurations; //!< The previous values of the inverse micro-configurations
+
+            dataStorage< floatMatrix > _previousGradientMicroConfigurations; //!< The spatial gradients of the previous micro-configurations w.r.t. their reference configurations
 
             dataStorage< floatMatrix > _dChi1dChi; //!< The jacobian of the first micro-configuration w.r.t. the total micro-configuration
 
