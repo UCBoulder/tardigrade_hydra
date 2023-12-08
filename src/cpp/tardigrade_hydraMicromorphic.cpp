@@ -178,4 +178,51 @@ namespace tardigradeHydra{
 
     }
 
+    floatVector hydraBaseMicromorphic::getSubMicroConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+        /*!
+         * Get a sub-micro configuration \f$\bf{\chi}^{sc}\f$ defined as
+         *
+         * \f$ \chi^{sc}_{iI} = \chi^{\text{lowerIndex}}_{i\hat{I}} \chi^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots \chi^{\text{upperIndex-1}}_{\bar{I}I} \f$
+         * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
+         * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
+         *   Note, the configuration indicated by the index is NOT included in the sub-configuration
+         */
+
+        return getSubConfiguration( *getMicroConfigurations( ), lowerIndex, upperIndex );
+
+    }
+
+    floatVector hydraBaseMicromorphic::getPrecedingMicroConfiguration( const unsigned int &index ){
+        /*!
+         * Get the sub-micro configuration preceding but not including the index
+         * 
+         * \param &index: The index of the configuration immediately following the sub-micro configuration
+         */
+
+        return getSubMicroConfiguration( 0, index );
+
+    }
+
+    floatVector hydraBaseMicromorphic::getFollowingMicroConfiguration( const unsigned int &index ){
+        /*!
+         * Get the sub-micro configuration following but not including the index
+         * 
+         * \param &index: The index of the current configuration immediately before the sub-micro configuration
+         */
+
+        return getSubMicroConfiguration( index + 1, *getNumConfigurations( ) );
+
+    }
+
+    floatVector hydraBaseMicromorphic::getMicroConfiguration( const unsigned int &index ){
+        /*!
+         * Get the micro configuration indicated by the provided index
+         * 
+         * \param &index: The index of the current configuration to be extracted
+         */
+
+        return getSubMicroConfiguration( index, index + 1 );
+
+    }
+
 }
