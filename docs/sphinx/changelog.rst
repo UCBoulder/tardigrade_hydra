@@ -15,7 +15,11 @@ Breaking Changes
 
 New Features
 ============
-- Added micromorphic hydra object (:pull:`8`). By `Nathan Miller`_.
+- Added micromorphic hydra object (:pull:`7`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Added decomposition of the micro deformations (:pull:`8`). By `Nathan Miller`_.
 
 ******************
 0.1.2 (12-06-2023)

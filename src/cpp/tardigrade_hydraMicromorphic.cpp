@@ -53,6 +53,129 @@ namespace tardigradeHydra{
          * \param &lsAlpha: The alpha term for the line search (defaults to 1e-4)
          */
 
+        decomposeStateVariableVectorMicroConfigurations( );
+
+    }
+
+    void hydraBaseMicromorphic::decomposeStateVariableVector( ){
+        /*!
+         * Decompose the incoming state variable vector setting the different configurations along the way
+         * 
+         * The state variable vector is assumed to be of the form:
+         * 
+         * \f$ \text{ISV} = \left\{\bf{F}^2 - \bf{I}, \bf{F}^3 - \bf{I}, \cdots, \bf{F}^n - \bf{I}, \bf{\chi}^2 - \bf{I}, \bf{\chi}^3 - \bf{I}, \cdots, \bf{\chi}^n - \bf{I} \frac{\partial}{\partial \bf{X}} \bf{\chi}^2, \frac{\partial}{\partial \bf{X}} \bf{\chi}^3, \cdots, \frac{\partial}{\partial \bf{X}} \bf{\chi}^n, \xi^1, \xi^2, \cdots, \xi^m, \eta^1, \cdots\right\} \f$
+         * 
+         * where the \f$\bf{F}\f$ are the different deformation gradients (configurations), \f$\bf{\chi}\f$ are the micro-deformations,
+         * \f$\xi^y\f$ are the other variables to be solved during the non-linear solve, and \f$\eta^z\f$ are other state variables. Note
+         * that we decompose the deformation gradient and micro-deformation as
+         * 
+         * \f$\bf{F} = \bf{F}^1 \bf{F}^2 \cdots \bf{F}^n\f$
+         * 
+         * \f$\bf{\chi} = \bf{\chi}^1 \bf{\chi}^2 \cdots \bf{\chi}^n\f$
+         * 
+         * and so because \f$\bf{F}\f$ and \f$\bf{\chi}\f$ are provided we can solve for \f$\bf{F}^1\f$ and \f$\bf{\chi}\f$. Typically,
+         * this configuration would be the elastic configuration (i.e., the configuration that generates the stress) though we do not insist that users follow convention.
+         * 
+         * NOTE: Though we overload the decomposeStateVariableVector in hydraBase this function will not be called in hydraBase's constructor because
+         *       virtual functions do not come into being during the construction of parent classes constructors. We could work around this but instead
+         *       we will overload and define a local method to do the decomposition of the micro-deformation tensors.
+         */
+
+        // Call the parent class decomposition
+        hydraBase::decomposeStateVariableVector( );
+
+        // Decompose the micro-deformation
+        decomposeStateVariableVectorMicroConfigurations( );
+
+    }
+
+    void hydraBaseMicromorphic::decomposeStateVariableVectorMicroConfigurations( ){
+        /*!
+         * Decompose the micro-deformation parts of the state variable vector
+         */
+
+        unsigned int start_index = ( ( *getNumConfigurations( ) ) - 1 )* ( *getDimension( ) ) * ( *getDimension( ) );
+
+        floatMatrix microConfigurations;
+
+        floatMatrix inverseMicroConfigurations;
+
+        floatMatrix previousMicroConfigurations;
+
+        floatMatrix previousInverseMicroConfigurations;
+
+        // Compute the configurations
+
+        computeConfigurations( getPreviousStateVariables( ), start_index, *getMicroDeformation( ), microConfigurations, inverseMicroConfigurations, true );
+
+        computeConfigurations( getPreviousStateVariables( ), start_index, *getPreviousMicroDeformation( ), previousMicroConfigurations, previousInverseMicroConfigurations, true );
+
+        // Set the configurations
+
+        setMicroConfigurations( microConfigurations );
+
+        setInverseMicroConfigurations( inverseMicroConfigurations );
+
+        setPreviousMicroConfigurations( previousMicroConfigurations );
+
+        setPreviousInverseMicroConfigurations( previousInverseMicroConfigurations );
+
+    }
+
+    void hydraBaseMicromorphic::setMicroConfigurations( const floatMatrix &microConfigurations ){
+        /*!
+         * Set the micro-configurations
+         * 
+         * \param &microConfigurations: The list of micro-configurations in row-major matrix form
+         */
+
+        _microConfigurations.second = microConfigurations;
+
+        _microConfigurations.first = true;
+
+        addIterationData( &_microConfigurations );
+
+    }
+
+    void hydraBaseMicromorphic::setInverseMicroConfigurations( const floatMatrix &inverseMicroConfigurations ){
+        /*!
+         * Set the inverse micro-configurations
+         * 
+         * \param &inverseMicroConfigurations: The list of inverse micro-configurations in row-major matrix form
+         */
+
+        _inverseMicroConfigurations.second = inverseMicroConfigurations;
+
+        _inverseMicroConfigurations.first = true;
+
+        addIterationData( &_inverseMicroConfigurations );
+
+    }
+
+    void hydraBaseMicromorphic::setPreviousMicroConfigurations( const floatMatrix &previousMicroConfigurations ){
+        /*!
+         * Set the previous micro-configurations
+         * 
+         * \param &previousMicroConfigurations: The list of previous micro-configurations in row-major matrix form
+         */
+
+        _previousMicroConfigurations.second = previousMicroConfigurations;
+
+        _previousMicroConfigurations.first = true;
+
+    }
+
+    void hydraBaseMicromorphic::setPreviousInverseMicroConfigurations( const floatMatrix &previousInverseMicroConfigurations ){
+        /*!
+         * Set the previous inverse micro-configurations
+         * 
+         * \param &previousInverseMicroConfigurations: The list of previous inverse micro-configurations in row-major matrix form
+         */
+
+        _previousInverseMicroConfigurations.second = previousInverseMicroConfigurations;
+
+        _previousInverseMicroConfigurations.first = true;
+
     }
 
 }
