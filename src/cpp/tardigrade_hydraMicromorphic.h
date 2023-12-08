@@ -81,6 +81,14 @@ namespace tardigradeHydra{
 
             floatMatrix getPreviousFollowingMicroConfigurationJacobian( const unsigned int &index );
 
+            const floatMatrix *getdChi1dChi( );
+
+            const floatMatrix *getdChi1dChin( );
+
+            const floatMatrix *getPreviousdChi1dChi( );
+
+            const floatMatrix *getPreviousdChi1dChin( );
+
         protected:
             //Setter functions
             void setMicroConfigurations( const floatMatrix &microConfigurations );

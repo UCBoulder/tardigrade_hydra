@@ -440,4 +440,64 @@ namespace tardigradeHydra{
 
     }
 
+    const floatMatrix *hydraBaseMicromorphic::getdChi1dChi( ){
+        /*!
+         * Get the derivative of the first micro-configuration w.r.t. the total micro-configuration
+         */
+
+        if ( !_dChi1dChi.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstMicroConfigurationJacobians( ) );
+
+        }
+
+        return &_dChi1dChi.second;
+
+    }
+
+    const floatMatrix *hydraBaseMicromorphic::getdChi1dChin( ){
+        /*!
+         * Get the derivative of the first micro-configuration w.r.t. the remaining micro-configurations
+         */
+
+        if ( !_dChi1dChin.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstMicroConfigurationJacobians( ) );
+
+        }
+
+        return &_dChi1dChin.second;
+
+    }
+
+    const floatMatrix *hydraBaseMicromorphic::getPreviousdChi1dChi( ){
+        /*!
+         * Get the derivative of the previous first micro-configuration w.r.t. the total micro-configuration
+         */
+
+        if ( !_previousdChi1dChi.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstMicroConfigurationJacobians( ) );
+
+        }
+
+        return &_previousdChi1dChi.second;
+
+    }
+
+    const floatMatrix *hydraBaseMicromorphic::getPreviousdChi1dChin( ){
+        /*!
+         * Get the derivative of the previous first micro-configuration w.r.t. the remaining micro-configurations
+         */
+
+        if ( !_previousdChi1dChin.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstMicroConfigurationJacobians( ) );
+
+        }
+
+        return &_previousdChi1dChin.second;
+
+    }
+
 }
