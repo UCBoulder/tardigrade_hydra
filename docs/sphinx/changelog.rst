@@ -22,6 +22,7 @@ Internal Changes
 - Added decomposition of the micro deformations (:pull:`8`). By `Nathan Miller`_.
 - Added the calculation of sub micro configurations (:pull:`9`). By `Nathan Miller`_.
 - Added the jacobians of the sub micro configurations w.r.t. the micro configurations (:pull:`10`). By `Nathan Miller`_.
+- Added generalization of the computation of the Jacobians of the first configurations (:pull:`11`). By `Nathan Miller`_.
 
 ******************
 0.1.2 (12-06-2023)

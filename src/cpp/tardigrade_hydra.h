@@ -582,6 +582,8 @@ namespace tardigradeHydra{
 
             virtual void updateUnknownVector( const floatVector &newUnknownVector );
 
+            virtual void calculateFirstConfigurationJacobians( const floatMatrix &configurations, floatMatrix &dC1dC, floatMatrix &dC1dCn );
+
         private:
 
             // Friend classes
@@ -678,6 +680,14 @@ namespace tardigradeHydra{
             void setFirstConfigurationJacobians( );
 
             void setPreviousFirstConfigurationJacobians( );
+
+            void setdF1dF( const floatMatrix &dF1dF );
+
+            void setdF1dFn( const floatMatrix &dF1dFn );
+
+            void setPreviousdF1dF( const floatMatrix &previousdF1dF );
+
+            void setPreviousdF1dFn( const floatMatrix &previousdF1dFn );
 
             void solveNonLinearProblem( );
 

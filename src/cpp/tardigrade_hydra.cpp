@@ -894,98 +894,89 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::setFirstConfigurationJacobians( ){
+    void hydraBase::setdF1dF( const floatMatrix &dF1dF ){
         /*!
-         * Get the jacobian of the first configuration w.r.t. the deformation gradient (the first entry of the pair)
-         * and the remaining gradients (the second entry) i.e.,
+         * Set the jacobian of the first sub configuration w.r.t. the deformation gradient
          * 
-         * \f$\text{return.first} = \frac{\partial F^1}{\partial F}\f$
-         * \f$\text{return.second} = \frac{\partial F^1}{\partial F^n}\f$
-         * 
-         * where \f$F^n = F^2, F^3, \cdots\f$
+         * \param &dF1dF: The value of the jacobian
          */
 
-        const unsigned int* dim = getDimension( );
-
-        _dF1dF.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
-
-        _dF1dFn.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
-
-        floatVector eye( ( *dim ) * ( *dim ) );
-        tardigradeVectorTools::eye( eye );
-
-        floatVector invFsc = tardigradeVectorTools::inverse( getFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
-
-        floatMatrix dInvFscdFsc = tardigradeVectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
-
-        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getFollowingConfigurationJacobian( 0 ) );
-
-        // Compute the gradients
-        for ( unsigned int i = 0; i < ( *dim ); i++ ){
-
-            for ( unsigned int barI = 0; barI < ( *dim ); barI++ ){
-
-                for ( unsigned int a = 0; a < ( *dim ); a++ ){
-
-                    for ( unsigned int A = 0; A < ( *dim ); A++ ){
-
-                        _dF1dF.second[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invFsc[ ( *dim ) * A + barI ];
-
-                        for ( unsigned int index = 0; index < ( *getNumConfigurations( ) ) - 1; index++ ){
-
-                            for ( unsigned int J = 0; J < ( *dim ); J++ ){
-
-                                _dF1dFn.second[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
-                                    += ( *getDeformationGradient( ) )[ ( *dim ) * i + J ]
-                                     * dInvFscdFs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
+        _dF1dF.second = dF1dF;
 
         _dF1dF.first = true;
 
-        _dF1dFn.first = true;
-
         addIterationData( &_dF1dF );
+
+    }
+
+    void hydraBase::setdF1dFn( const floatMatrix &dF1dFn ){
+        /*!
+         * Set the jacobian of the first sub configuration w.r.t. the sub-deformation gradients
+         * 
+         * \param &dF1dFn: The value of the jacobian
+         */
+
+        _dF1dFn.second = dF1dFn;
+
+        _dF1dFn.first = true;
 
         addIterationData( &_dF1dFn );
 
     }
 
-    void hydraBase::setPreviousFirstConfigurationJacobians( ){
+    void hydraBase::setPreviousdF1dF( const floatMatrix &previousdF1dF ){
         /*!
-         * Get the jacobian of the previous first configuration w.r.t. the deformation gradient (the first entry of the pair)
-         * and the remaining gradients (the second entry) i.e.,
+         * Set the jacobian of the previous first sub configuration w.r.t. the deformation gradient
          * 
-         * \f$\text{return.first} = \frac{\partial F^1}{\partial F}\f$
-         * \f$\text{return.second} = \frac{\partial F^1}{\partial F^n}\f$
+         * \param &previousdF1dF: The value of the jacobian
+         */
+
+        _previousdF1dF.second = previousdF1dF;
+
+        _previousdF1dF.first = true;
+
+    }
+
+    void hydraBase::setPreviousdF1dFn( const floatMatrix &previousdF1dFn ){
+        /*!
+         * Set the previous jacobian of the first sub configuration w.r.t. the sub-deformation gradients
          * 
-         * where \f$F^n = F^2, F^3, \cdots\f$
+         * \param &previousdF1dFn: The value of the jacobian
+         */
+
+        _previousdF1dFn.second = previousdF1dFn;
+
+        _previousdF1dFn.first = true;
+
+    }
+
+    void hydraBase::calculateFirstConfigurationJacobians( const floatMatrix &configurations, floatMatrix &dC1dC, floatMatrix &dC1dCn ){
+        /*!
+         * Get the Jacobian of the first configuration w.r.t. the total mapping and the remaining configurations.
+         * 
+         * \param &configurations: The configurations which describe the mapping from the current to the reference configuration
+         * \param &dC1dC: The Jacobian of the first entry w.r.t. the total
+         * \param &dC1dCn: The Jacobian of the first entry w.r.t. the remaining terms
+         * 
+         * whre \f$C^n = C^2, C^3, \cdots \f$
          */
 
         const unsigned int* dim = getDimension( );
 
-        _previousdF1dF.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
+        dC1dC  = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
 
-        _previousdF1dFn.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
+        dC1dCn = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
 
         floatVector eye( ( *dim ) * ( *dim ) );
         tardigradeVectorTools::eye( eye );
 
-        floatVector invFsc = tardigradeVectorTools::inverse( getPreviousFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
+        floatVector fullConfiguration = getSubConfiguration( configurations, 0, *getNumConfigurations( ) );
 
-        floatMatrix dInvFscdFsc = tardigradeVectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
+        floatVector invCsc = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, *getNumConfigurations( ) ), ( *dim ), ( *dim ) );
 
-        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getPreviousFollowingConfigurationJacobian( 0 ) );
+        floatMatrix dInvCscdCsc = tardigradeVectorTools::computeDInvADA( invCsc, ( *dim ), ( *dim ) );
+
+        floatMatrix dInvCscdCs = tardigradeVectorTools::dot( dInvCscdCsc, getSubConfigurationJacobian( configurations, 1, *getNumConfigurations( ) ) );
 
         // Compute the gradients
         for ( unsigned int i = 0; i < ( *dim ); i++ ){
@@ -996,15 +987,15 @@ namespace tardigradeHydra{
 
                     for ( unsigned int A = 0; A < ( *dim ); A++ ){
 
-                        _previousdF1dF.second[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invFsc[ ( *dim ) * A + barI ];
+                        dC1dC[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invCsc[ ( *dim ) * A + barI ];
 
                         for ( unsigned int index = 0; index < ( *getNumConfigurations( ) ) - 1; index++ ){
 
                             for ( unsigned int J = 0; J < ( *dim ); J++ ){
 
-                                _previousdF1dFn.second[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
-                                    += ( *getPreviousDeformationGradient( ) )[ ( *dim ) * i + J ]
-                                     * dInvFscdFs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
+                                dC1dCn[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
+                                    += fullConfiguration[ ( *dim ) * i + J ]
+                                     * dInvCscdCs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
 
                             }
 
@@ -1018,9 +1009,39 @@ namespace tardigradeHydra{
 
         }
 
-        _previousdF1dF.first = true;
+    }
 
-        _previousdF1dFn.first = true;
+    void hydraBase::setFirstConfigurationJacobians( ){
+        /*!
+         * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining sub-configurations
+         */
+
+        floatMatrix dF1dF;
+
+        floatMatrix dF1dFn;
+
+        calculateFirstConfigurationJacobians( *getConfigurations( ), dF1dF, dF1dFn );
+
+        setdF1dF( dF1dF );
+
+        setdF1dFn( dF1dFn );
+
+    }
+
+    void hydraBase::setPreviousFirstConfigurationJacobians( ){
+        /*!
+         * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining sub-configurations
+         */
+
+        floatMatrix dF1dF;
+
+        floatMatrix dF1dFn;
+
+        calculateFirstConfigurationJacobians( *getPreviousConfigurations( ), dF1dF, dF1dFn );
+
+        setPreviousdF1dF( dF1dF );
+
+        setPreviousdF1dFn( dF1dFn );
 
     }
 
