@@ -122,6 +122,10 @@ namespace tardigradeHydra{
 
             dataStorage< floatMatrix > _previousdChi1dChin; //!< The jacobian of the previous first micro-configuration w.r.t. the remaining micro-configurations
 
+            void setFirstMicroConfigurationJacobians( );
+
+            void setPreviousFirstMicroConfigurationJacobians( );
+
             void setdChi1dChi( const floatMatrix &dChi1dChi );
 
             void setdChi1dChin( const floatMatrix &dChi1dChin );

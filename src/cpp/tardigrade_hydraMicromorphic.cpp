@@ -406,4 +406,38 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBaseMicromorphic::setFirstMicroConfigurationJacobians( ){
+        /*!
+         * Set the Jacobians of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
+         */
+
+        floatMatrix dChi1dChi;
+
+        floatMatrix dChi1dChin;
+
+        calculateFirstConfigurationJacobians( *getMicroConfigurations( ), dChi1dChi, dChi1dChin );
+
+        setdChi1dChi( dChi1dChi );
+
+        setdChi1dChin( dChi1dChin );
+
+    }
+
+    void hydraBaseMicromorphic::setPreviousFirstMicroConfigurationJacobians( ){
+        /*!
+         * Set the Jacobians of the previous first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
+         */
+
+        floatMatrix previousdChi1dChi;
+
+        floatMatrix previousdChi1dChin;
+
+        calculateFirstConfigurationJacobians( *getPreviousMicroConfigurations( ), previousdChi1dChi, previousdChi1dChin );
+
+        setPreviousdChi1dChi( previousdChi1dChi );
+
+        setPreviousdChi1dChin( previousdChi1dChin );
+
+    }
+
 }
