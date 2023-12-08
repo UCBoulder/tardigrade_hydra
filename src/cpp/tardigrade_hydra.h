@@ -586,6 +586,8 @@ namespace tardigradeHydra{
 
             virtual void updateUnknownVector( const floatVector &newUnknownVector );
 
+            virtual void calculateFirstConfigurationJacobians( const floatMatrix &configurations, floatMatrix &dC1dC, floatMatrix &dC1dCn );
+
         private:
 
             // Friend classes
