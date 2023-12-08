@@ -225,4 +225,51 @@ namespace tardigradeHydra{
 
     }
 
+    floatVector hydraBaseMicromorphic::getPreviousSubMicroConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+        /*!
+         * Get a previous sub-micro configuration \f$\bf{\chi}^{sc}\f$ defined as
+         *
+         * \f$ \chi^{sc}_{iI} = \chi^{\text{lowerIndex}}_{i\hat{I}} \chi^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots \chi^{\text{upperIndex-1}}_{\bar{I}I} \f$
+         * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
+         * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
+         *   Note, the configuration indicated by the index is NOT included in the sub-configuration
+         */
+
+        return getSubConfiguration( *getPreviousMicroConfigurations( ), lowerIndex, upperIndex );
+
+    }
+
+    floatVector hydraBaseMicromorphic::getPreviousPrecedingMicroConfiguration( const unsigned int &index ){
+        /*!
+         * Get the previous sub-micro configuration preceding but not including the index
+         * 
+         * \param &index: The index of the configuration immediately following the sub-micro configuration
+         */
+
+        return getPreviousSubMicroConfiguration( 0, index );
+
+    }
+
+    floatVector hydraBaseMicromorphic::getPreviousFollowingMicroConfiguration( const unsigned int &index ){
+        /*!
+         * Get the previous sub-micro configuration following but not including the index
+         * 
+         * \param &index: The index of the current configuration immediately before the sub-micro configuration
+         */
+
+        return getPreviousSubMicroConfiguration( index + 1, *getNumConfigurations( ) );
+
+    }
+
+    floatVector hydraBaseMicromorphic::getPreviousMicroConfiguration( const unsigned int &index ){
+        /*!
+         * Get the previous micro configuration indicated by the provided index
+         * 
+         * \param &index: The index of the current configuration to be extracted
+         */
+
+        return getPreviousSubMicroConfiguration( index, index + 1 );
+
+    }
+
 }

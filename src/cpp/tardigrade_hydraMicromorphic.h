@@ -61,6 +61,14 @@ namespace tardigradeHydra{
 
             floatVector getMicroConfiguration( const unsigned int &index );
 
+            floatVector getPreviousSubMicroConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+
+            floatVector getPreviousPrecedingMicroConfiguration( const unsigned int &index );
+
+            floatVector getPreviousFollowingMicroConfiguration( const unsigned int &index );
+
+            floatVector getPreviousMicroConfiguration( const unsigned int &index );
+
         protected:
             //Setter functions
             void setMicroConfigurations( const floatMatrix &microConfigurations );
