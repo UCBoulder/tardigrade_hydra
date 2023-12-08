@@ -350,4 +350,60 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBaseMicromorphic::setdChi1dChi( const floatMatrix &dChi1dChi ){
+        /*!
+         * Set the value of the derivative of the first micro-configuration w.r.t. the total micro configuration
+         * 
+         * \param &dChi1dChi: The value of the jacobian
+         */
+
+        _dChi1dChi.second = dChi1dChi;
+
+        _dChi1dChi.first = true;
+
+        addIterationData( &_dChi1dChi );
+
+    }
+
+    void hydraBaseMicromorphic::setdChi1dChin( const floatMatrix &dChi1dChin ){
+        /*!
+         * Set the value of the derivative of the first micro-configuration w.r.t. the remaining micro configurationn
+         * 
+         * \param &dChi1dChin: The value of the jacobian
+         */
+
+        _dChi1dChin.second = dChi1dChin;
+
+        _dChi1dChin.first = true;
+
+        addIterationData( &_dChi1dChin );
+
+    }
+
+    void hydraBaseMicromorphic::setPreviousdChi1dChi( const floatMatrix &previousdChi1dChi ){
+        /*!
+         * Set the value of the derivative of the previous first micro-configuration w.r.t. the total micro configuration
+         * 
+         * \param &previousdChi1dChi: The value of the jacobian
+         */
+
+        _previousdChi1dChi.second = previousdChi1dChi;
+
+        _previousdChi1dChi.first = true;
+
+    }
+
+    void hydraBaseMicromorphic::setPreviousdChi1dChin( const floatMatrix &previousdChi1dChin ){
+        /*!
+         * Set the value of the derivative of the previous first micro-configuration w.r.t. the remaining micro configurationn
+         * 
+         * \param &previousdChi1dChin: The value of the jacobian
+         */
+
+        _previousdChi1dChin.second = previousdChi1dChin;
+
+        _previousdChi1dChin.first = true;
+
+    }
+
 }
