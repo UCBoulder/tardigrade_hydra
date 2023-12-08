@@ -76,13 +76,13 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor ){
 
     floatType previousTemperature = 4.56;
 
-    floatVector deformationGradient = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+    floatVector deformationGradient = { 1, 2, 2, 4, 5, 6, 7, 8, 9 };
 
-    floatVector previousDeformationGradient = { 10, 11, 12, 13, 14, 15, 16, 17, 18 };
+    floatVector previousDeformationGradient = { 10, 11, 12, 13, 14, 15, 16, 16, 18 };
 
-    floatVector microDeformation = { 19, 20, 21, 22, 23, 24, 25, 26, 27 };
+    floatVector microDeformation = { 18, 20, 21, 22, 23, 24, 25, 26, 27 };
 
-    floatVector previousMicroDeformation = { 28, 29, 30, 31, 32, 33, 34, 35, 36 };
+    floatVector previousMicroDeformation = { 28, 29, 30, 31, 32, 33, 34, 35, 33 };
 
     floatVector gradientMicroDeformation = { 36, 37, 38, 39, 40, 41, 42, 43, 44,
                                              45, 46, 47, 48, 49, 50, 51, 52, 53,
@@ -98,6 +98,18 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor ){
                                           10.00, 11.00, 12.00, 13.00, 14.00, 15.00, 16.00, 17.00, 18.00,
                                           19.00, 20.00, 21.00, 22.00, 23.00, 24.00, 25.00, 26.00, 27.00,
                                           -1.00, -2.00, -3.00, -4.00, -5.00, -6.00 };
+
+    floatMatrix configurationsAnswer = { { 0.80151542, 1.75875283, 1.71599025, 3.43145793, 4.30238634, 5.17331475, 6.12262672, 6.91517157, 7.70771643 },
+                                         { 1.01, 0.02, 0.03, 0.04, 1.05, 0.06, 0.07, 0.08, 1.09 } };
+
+    floatMatrix previousConfigurationsAnswer = { { 8.81379551,  9.5279568 , 10.2421181 , 11.50496429, 12.14074203, 12.77651977, 14.23044766, 13.79655112, 15.36265459 },
+                                                 { 1.01, 0.02, 0.03, 0.04, 1.05, 0.06, 0.07, 0.08, 1.09 } };
+
+    floatMatrix inverseConfigurationsAnswer = { { -1.        , -0.64666667,  0.65666667,  2.        , -1.65666667,         0.66666667, -1.        ,  2.        , -0.99       },
+                                                {  0.99259711, -0.01689601, -0.02638913, -0.03431458,  0.95697614,        -0.05173315, -0.06122627, -0.06915172,  0.92292284 } };
+
+    floatMatrix previousInverseConfigurationsAnswer = { { -1.96      ,  0.97      ,  0.5       , -0.97      ,  1.98      ,        -1.        ,  2.68666667, -2.67666667,  0.5        },
+                                                        {  0.99259711, -0.01689601, -0.02638913, -0.03431458,  0.95697614,        -0.05173315, -0.06122627, -0.06915172,  0.92292284 } };
 
     floatVector parameters = { 0.1, 0.2, 0.3, 0.4 };
 
@@ -157,5 +169,13 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradientMicroDeformation, *hydra.getGradientMicroDeformation( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousGradientMicroDeformation, *hydra.getPreviousGradientMicroDeformation( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( configurationsAnswer, *hydra.getConfigurations( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousConfigurationsAnswer, *hydra.getPreviousConfigurations( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( inverseConfigurationsAnswer, *hydra.getInverseConfigurations( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousInverseConfigurationsAnswer, *hydra.getPreviousInverseConfigurations( ) ) );
 
 }
