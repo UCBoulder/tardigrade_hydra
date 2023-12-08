@@ -944,11 +944,15 @@ namespace tardigradeHydra{
         floatVector eye( ( *dim ) * ( *dim ) );
         tardigradeVectorTools::eye( eye );
 
-        floatVector invFsc = tardigradeVectorTools::inverse( getFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
+        floatMatrix configurations = *getConfigurations( );
+
+        floatVector fullConfiguration = getSubConfiguration( configurations, 0, *getNumConfigurations( ) );
+
+        floatVector invFsc = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, *getNumConfigurations( ) ), ( *dim ), ( *dim ) );
 
         floatMatrix dInvFscdFsc = tardigradeVectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
 
-        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getFollowingConfigurationJacobian( 0 ) );
+        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getSubConfigurationJacobian( configurations, 1, *getNumConfigurations( ) ) );
 
         // Compute the gradients
         for ( unsigned int i = 0; i < ( *dim ); i++ ){
@@ -966,7 +970,7 @@ namespace tardigradeHydra{
                             for ( unsigned int J = 0; J < ( *dim ); J++ ){
 
                                 dF1dFn[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
-                                    += ( *getDeformationGradient( ) )[ ( *dim ) * i + J ]
+                                    += fullConfiguration[ ( *dim ) * i + J ]
                                      * dInvFscdFs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
 
                             }
