@@ -350,4 +350,154 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBaseMicromorphic::setdChi1dChi( const floatMatrix &dChi1dChi ){
+        /*!
+         * Set the value of the derivative of the first micro-configuration w.r.t. the total micro configuration
+         * 
+         * \param &dChi1dChi: The value of the jacobian
+         */
+
+        _dChi1dChi.second = dChi1dChi;
+
+        _dChi1dChi.first = true;
+
+        addIterationData( &_dChi1dChi );
+
+    }
+
+    void hydraBaseMicromorphic::setdChi1dChin( const floatMatrix &dChi1dChin ){
+        /*!
+         * Set the value of the derivative of the first micro-configuration w.r.t. the remaining micro configurationn
+         * 
+         * \param &dChi1dChin: The value of the jacobian
+         */
+
+        _dChi1dChin.second = dChi1dChin;
+
+        _dChi1dChin.first = true;
+
+        addIterationData( &_dChi1dChin );
+
+    }
+
+    void hydraBaseMicromorphic::setPreviousdChi1dChi( const floatMatrix &previousdChi1dChi ){
+        /*!
+         * Set the value of the derivative of the previous first micro-configuration w.r.t. the total micro configuration
+         * 
+         * \param &previousdChi1dChi: The value of the jacobian
+         */
+
+        _previousdChi1dChi.second = previousdChi1dChi;
+
+        _previousdChi1dChi.first = true;
+
+    }
+
+    void hydraBaseMicromorphic::setPreviousdChi1dChin( const floatMatrix &previousdChi1dChin ){
+        /*!
+         * Set the value of the derivative of the previous first micro-configuration w.r.t. the remaining micro configurationn
+         * 
+         * \param &previousdChi1dChin: The value of the jacobian
+         */
+
+        _previousdChi1dChin.second = previousdChi1dChin;
+
+        _previousdChi1dChin.first = true;
+
+    }
+
+    void hydraBaseMicromorphic::setFirstMicroConfigurationJacobians( ){
+        /*!
+         * Set the Jacobians of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
+         */
+
+        floatMatrix dChi1dChi;
+
+        floatMatrix dChi1dChin;
+
+        calculateFirstConfigurationJacobians( *getMicroConfigurations( ), dChi1dChi, dChi1dChin );
+
+        setdChi1dChi( dChi1dChi );
+
+        setdChi1dChin( dChi1dChin );
+
+    }
+
+    void hydraBaseMicromorphic::setPreviousFirstMicroConfigurationJacobians( ){
+        /*!
+         * Set the Jacobians of the previous first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
+         */
+
+        floatMatrix previousdChi1dChi;
+
+        floatMatrix previousdChi1dChin;
+
+        calculateFirstConfigurationJacobians( *getPreviousMicroConfigurations( ), previousdChi1dChi, previousdChi1dChin );
+
+        setPreviousdChi1dChi( previousdChi1dChi );
+
+        setPreviousdChi1dChin( previousdChi1dChin );
+
+    }
+
+    const floatMatrix *hydraBaseMicromorphic::getdChi1dChi( ){
+        /*!
+         * Get the derivative of the first micro-configuration w.r.t. the total micro-configuration
+         */
+
+        if ( !_dChi1dChi.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstMicroConfigurationJacobians( ) );
+
+        }
+
+        return &_dChi1dChi.second;
+
+    }
+
+    const floatMatrix *hydraBaseMicromorphic::getdChi1dChin( ){
+        /*!
+         * Get the derivative of the first micro-configuration w.r.t. the remaining micro-configurations
+         */
+
+        if ( !_dChi1dChin.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstMicroConfigurationJacobians( ) );
+
+        }
+
+        return &_dChi1dChin.second;
+
+    }
+
+    const floatMatrix *hydraBaseMicromorphic::getPreviousdChi1dChi( ){
+        /*!
+         * Get the derivative of the previous first micro-configuration w.r.t. the total micro-configuration
+         */
+
+        if ( !_previousdChi1dChi.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstMicroConfigurationJacobians( ) );
+
+        }
+
+        return &_previousdChi1dChi.second;
+
+    }
+
+    const floatMatrix *hydraBaseMicromorphic::getPreviousdChi1dChin( ){
+        /*!
+         * Get the derivative of the previous first micro-configuration w.r.t. the remaining micro-configurations
+         */
+
+        if ( !_previousdChi1dChin.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstMicroConfigurationJacobians( ) );
+
+        }
+
+        return &_previousdChi1dChin.second;
+
+    }
+
 }

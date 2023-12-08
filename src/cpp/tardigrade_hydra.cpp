@@ -1030,7 +1030,7 @@ namespace tardigradeHydra{
 
     void hydraBase::setPreviousFirstConfigurationJacobians( ){
         /*!
-         * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining sub-configurations
+         * Set the Jacobians of the previous first configuration w.r.t. the total configuration and the remaining sub-configurations
          */
 
         floatMatrix dF1dF;
