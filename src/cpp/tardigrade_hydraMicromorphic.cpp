@@ -311,4 +311,43 @@ namespace tardigradeHydra{
 
     }
 
+    floatMatrix hydraBaseMicromorphic::getPreviousSubMicroConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+        /*!
+         * Get the jacobian of a previous sub-micro configuration \f$\bf{\chi}^{sc}\f$ defined as
+         *
+         * \f$ \chi^{sc}_{iI} = \chi^{\text{lowerIndex}}_{i\hat{I}} \chi^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots \chi^{\text{upperIndex-1}}_{\bar{I}I} \f$
+         * 
+         * with respect to the current configurations.
+         *
+         * \param &lowerIndex: The index of the lower configuration (starts at 0 and goes to numConfigurations - 1)
+         * \param &upperIndex: The index of the upper configuration (starts at 0 and goes to numConfigurations)
+         *   Note, the configuration indicated by the index is NOT included in the sub-configuration
+         */
+
+        return getSubConfigurationJacobian( *getPreviousMicroConfigurations( ), lowerIndex, upperIndex );
+
+    }
+
+    floatMatrix hydraBaseMicromorphic::getPreviousPrecedingMicroConfigurationJacobian( const unsigned int &index ){
+        /*!
+         * Get the jacobian of the previous sub-micro configuration preceding but not including the index with respect to the current configurations.
+         * 
+         * \param &index: The index of the configuration immediately following the sub-configuration
+         */
+
+        return getPreviousSubMicroConfigurationJacobian( 0, index );
+
+    }
+
+    floatMatrix hydraBaseMicromorphic::getPreviousFollowingMicroConfigurationJacobian( const unsigned int &index ){
+        /*!
+         * Get the jacobian of the previous sub-micro configuration following but not including the index with respect to the current configurations.
+         * 
+         * \param &index: The index of the current configuration immediately before the sub-configuration
+         */
+
+        return getPreviousSubMicroConfigurationJacobian( index + 1, *getNumConfigurations( ) );
+
+    }
+
 }
