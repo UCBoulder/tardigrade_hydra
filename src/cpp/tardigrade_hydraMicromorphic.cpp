@@ -89,26 +89,67 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBaseMicromorphic::computeGradientMicroConfigurations( const floatVector *data_vector, unsigned int start_index,
+                                                                    const floatMatrix &configurations, const floatMatrix &microConfigurations,
+                                                                    const floatVector &gradientMicroConfiguration, floatMatrix &gradientMicroConfigurations ){
+        /*!
+         * Compute the gradient of the micro-configurations in their reference configurations
+         * 
+         * \param *data_vector: The vector of data
+         * \param &start_index: The index at which to start reading the data from data_vector
+         * \param &configurations: The macro-scale configurations
+         * \param &microConfigurations: The micro-configurations
+         * \param &gradientMicroConfiguration: The gradient of the total micro-configuration w.r.t. the reference configuration
+         * \param &gradientMicroConfigurations: The resulting gradients of the micro configurations
+         */
+
+        const unsigned int *dim = getDimension( );
+
+        gradientMicroConfigurations = floatMatrix( *getNumConfigurations( ), floatVector( ( *dim ) * ( *dim ) * ( *dim ), 0 ) );
+
+        for ( unsigned int i = 1; i < *getNumConfigurations( ); i++ ){
+
+            gradientMicroConfigurations[ i ] = floatVector( data_vector->begin( ) + ( i - 1 ) * ( *dim ) * ( *dim ) * ( *dim ) + start_index,
+                                                            data_vector->begin( ) + i * ( *dim ) * ( *dim ) * ( *dim ) + start_index );
+
+        }
+
+        calculateFirstConfigurationGradChi( configurations, microConfigurations, gradientMicroConfiguration, gradientMicroConfigurations );
+
+    }
+
     void hydraBaseMicromorphic::decomposeStateVariableVectorMicroConfigurations( ){
         /*!
          * Decompose the micro-deformation parts of the state variable vector
          */
 
-        unsigned int start_index = ( ( *getNumConfigurations( ) ) - 1 )* ( *getDimension( ) ) * ( *getDimension( ) );
+        unsigned int start_index = ( ( *getNumConfigurations( ) ) - 1 ) * ( *getDimension( ) ) * ( *getDimension( ) );
 
         floatMatrix microConfigurations;
 
         floatMatrix inverseMicroConfigurations;
 
+        floatMatrix gradientMicroConfigurations;
+
         floatMatrix previousMicroConfigurations;
 
         floatMatrix previousInverseMicroConfigurations;
 
-        // Compute the configurations
+        floatMatrix previousGradientMicroConfigurations;
+
+        // Compute the micro-configurations
 
         computeConfigurations( getPreviousStateVariables( ), start_index, *getMicroDeformation( ), microConfigurations, inverseMicroConfigurations, true );
 
         computeConfigurations( getPreviousStateVariables( ), start_index, *getPreviousMicroDeformation( ), previousMicroConfigurations, previousInverseMicroConfigurations, true );
+
+        start_index += ( ( *getNumConfigurations( ) ) - 1 ) * ( *getDimension( ) ) * ( *getDimension( ) );
+
+        computeGradientMicroConfigurations( getPreviousStateVariables( ), start_index, *getConfigurations( ), microConfigurations,
+                                            *getGradientMicroDeformation( ), gradientMicroConfigurations );
+
+        computeGradientMicroConfigurations( getPreviousStateVariables( ), start_index, *getPreviousConfigurations( ), previousMicroConfigurations,
+                                            *getPreviousGradientMicroDeformation( ), previousGradientMicroConfigurations );
 
         // Set the configurations
 
@@ -116,9 +157,13 @@ namespace tardigradeHydra{
 
         setInverseMicroConfigurations( inverseMicroConfigurations );
 
+        setGradientMicroConfigurations( gradientMicroConfigurations );
+
         setPreviousMicroConfigurations( previousMicroConfigurations );
 
         setPreviousInverseMicroConfigurations( previousInverseMicroConfigurations );
+
+        setPreviousGradientMicroConfigurations( previousGradientMicroConfigurations );
 
     }
 
@@ -534,7 +579,7 @@ namespace tardigradeHydra{
          * the spatial gradient of the micro deformation in the reference configuration, and the gradients of the micro-configurations
          * other than the first in their own reference configurations.
          * 
-         * \param &configuations: The configuration matrix
+         * \param &configurations: The configuration matrix
          * \param &microConfigurations: The micro-configuration matrix
          * \param &gradientMicroConfiguration: The gradient of the micro-deformation in the reference configuration
          * \param &gradientMicroConfigurations: The matrix of gradients of the micro-configurations in their reference configurations
@@ -590,6 +635,8 @@ namespace tardigradeHydra{
         floatVector invChiFollow = tardigradeVectorTools::inverse( getSubConfiguration( microConfigurations, 1, *getNumConfigurations( ) ), *dim, *dim );
 
         floatVector invFFollow = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, *getNumConfigurations( ) ), *dim, *dim );
+
+        gradientMicroConfigurations[ 0 ] = floatVector( ( *dim ) * ( *dim ) * ( *dim ), 0 );
 
         for ( unsigned int i = 0; i < *dim; i++ ){
 

@@ -47,11 +47,17 @@ namespace tardigradeHydra{
             //! Get a reference to the inverse micro configurations
             const floatMatrix* getInverseMicroConfigurations( ){ return &_inverseMicroConfigurations.second; }
 
+            //! Get a reference to the gradient of the micro configurations
+            const floatMatrix* getGradientMicroConfigurations( ){ return &_gradientMicroConfigurations.second; }
+
             //! Get a reference to the previous micro configurations
             const floatMatrix* getPreviousMicroConfigurations( ){ return &_previousMicroConfigurations.second; }
 
             //! Get a reference to the previous inverse micro configurations
             const floatMatrix* getPreviousInverseMicroConfigurations( ){ return &_previousInverseMicroConfigurations.second; }
+
+            //! Get a reference to the gradient of the previous micro configurations
+            const floatMatrix* getPreviousGradientMicroConfigurations( ){ return &_previousGradientMicroConfigurations.second; }
 
             floatVector getSubMicroConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
@@ -101,7 +107,7 @@ namespace tardigradeHydra{
 
             void setPreviousInverseMicroConfigurations( const floatMatrix &previousInverseMicroConfigurations );
 
-            void setPreviousGradientMicroConfigurations( const floatMatrix &gradientMicroConfigurations );
+            void setPreviousGradientMicroConfigurations( const floatMatrix &previousGradientMicroConfigurations );
 
             //Utility functions
             virtual void decomposeStateVariableVector( ) override;
@@ -150,7 +156,12 @@ namespace tardigradeHydra{
 
             void setPreviousdChi1dChin( const floatMatrix &previousdChi1dChin );
 
-            void calculateFirstConfigurationGradChi( const floatMatrix &configurations, const floatMatrix &microConfigurations, const floatVector &gradientMicroConfiguration, floatMatrix &gradientMicroConfigurations );
+            void computeGradientMicroConfigurations( const floatVector *data_vector, unsigned int start_index,
+                                                     const floatMatrix &configurations, const floatMatrix &microConfigurations,
+                                                     const floatVector &gradientMicroConfiguration, floatMatrix &gradientMicroConfigurations );
+
+            void calculateFirstConfigurationGradChi( const floatMatrix &configurations, const floatMatrix &microConfigurations,
+                                                     const floatVector &gradientMicroConfiguration, floatMatrix &gradientMicroConfigurations );
 
     };
 
