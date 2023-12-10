@@ -150,6 +150,8 @@ namespace tardigradeHydra{
 
             void setPreviousdChi1dChin( const floatMatrix &previousdChi1dChin );
 
+            void calculateFirstConfigurationGradChi( const floatMatrix &configurations, const floatMatrix &microConfigurations, const floatVector &gradientMicroConfiguration, floatMatrix &gradientMicroConfigurations );
+
     };
 
 }
