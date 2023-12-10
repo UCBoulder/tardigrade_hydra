@@ -47,11 +47,17 @@ namespace tardigradeHydra{
             //! Get a reference to the inverse micro configurations
             const floatMatrix* getInverseMicroConfigurations( ){ return &_inverseMicroConfigurations.second; }
 
+            //! Get a reference to the gradient of the micro configurations
+            const floatMatrix* getGradientMicroConfigurations( ){ return &_gradientMicroConfigurations.second; }
+
             //! Get a reference to the previous micro configurations
             const floatMatrix* getPreviousMicroConfigurations( ){ return &_previousMicroConfigurations.second; }
 
             //! Get a reference to the previous inverse micro configurations
             const floatMatrix* getPreviousInverseMicroConfigurations( ){ return &_previousInverseMicroConfigurations.second; }
+
+            //! Get a reference to the gradient of the previous micro configurations
+            const floatMatrix* getPreviousGradientMicroConfigurations( ){ return &_previousGradientMicroConfigurations.second; }
 
             floatVector getSubMicroConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
@@ -95,9 +101,13 @@ namespace tardigradeHydra{
 
             void setInverseMicroConfigurations( const floatMatrix &inverseMicroConfigurations );
 
+            void setGradientMicroConfigurations( const floatMatrix &gradientMicroConfigurations );
+
             void setPreviousMicroConfigurations( const floatMatrix &previousMicroConfigurations );
 
             void setPreviousInverseMicroConfigurations( const floatMatrix &previousInverseMicroConfigurations );
+
+            void setPreviousGradientMicroConfigurations( const floatMatrix &previousGradientMicroConfigurations );
 
             //Utility functions
             virtual void decomposeStateVariableVector( ) override;
@@ -118,9 +128,13 @@ namespace tardigradeHydra{
 
             dataStorage< floatMatrix > _inverseMicroConfigurations; //!< The current values of the inverse micro-configurations
 
+            dataStorage< floatMatrix > _gradientMicroConfigurations; //!< The spatial gradients of the micro-configurations w.r.t. their reference configurations
+
             dataStorage< floatMatrix > _previousMicroConfigurations; //!< The previous values of the micro-configurations
 
             dataStorage< floatMatrix > _previousInverseMicroConfigurations; //!< The previous values of the inverse micro-configurations
+
+            dataStorage< floatMatrix > _previousGradientMicroConfigurations; //!< The spatial gradients of the previous micro-configurations w.r.t. their reference configurations
 
             dataStorage< floatMatrix > _dChi1dChi; //!< The jacobian of the first micro-configuration w.r.t. the total micro-configuration
 
@@ -141,6 +155,13 @@ namespace tardigradeHydra{
             void setPreviousdChi1dChi( const floatMatrix &previousdChi1dChi );
 
             void setPreviousdChi1dChin( const floatMatrix &previousdChi1dChin );
+
+            void computeGradientMicroConfigurations( const floatVector *data_vector, unsigned int start_index,
+                                                     const floatMatrix &configurations, const floatMatrix &microConfigurations,
+                                                     const floatVector &gradientMicroConfiguration, floatMatrix &gradientMicroConfigurations );
+
+            void calculateFirstConfigurationGradChi( const floatMatrix &configurations, const floatMatrix &microConfigurations,
+                                                     const floatVector &gradientMicroConfiguration, floatMatrix &gradientMicroConfigurations );
 
     };
 
