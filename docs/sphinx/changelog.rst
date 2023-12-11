@@ -25,6 +25,7 @@ Internal Changes
 - Added generalization of the computation of the Jacobians of the first configurations (:pull:`11`). By `Nathan Miller`_.
 - Added computation of the Jacobian of the first micro-configuration (:pull:`12`). By `Nathan Miller`_.
 - Added computation of the gradient of the micro-deformations in their local reference configurations (:pull:`13`). By `Nathan Miller`_.
+- Added computation of Jacobian of the gradient of the micro-deformations in their local reference configurations (:pull:`14`). By `Nathan Miller`_.
 
 ******************
 0.1.2 (12-06-2023)

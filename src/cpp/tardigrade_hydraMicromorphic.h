@@ -95,6 +95,26 @@ namespace tardigradeHydra{
 
             const floatMatrix *getPreviousdChi1dChin( );
 
+            const floatMatrix *getdGradChi1dFn( );
+
+            const floatMatrix *getdGradChi1dChi( );
+
+            const floatMatrix *getdGradChi1dChin( );
+
+            const floatMatrix *getdGradChi1dGradChi( );
+
+            const floatMatrix *getdGradChi1dGradChin( );
+
+            const floatMatrix *getPreviousdGradChi1dFn( );
+
+            const floatMatrix *getPreviousdGradChi1dChi( );
+
+            const floatMatrix *getPreviousdGradChi1dChin( );
+
+            const floatMatrix *getPreviousdGradChi1dGradChi( );
+
+            const floatMatrix *getPreviousdGradChi1dGradChin( );
+
         protected:
             //Setter functions
             void setMicroConfigurations( const floatMatrix &microConfigurations );
@@ -108,6 +128,26 @@ namespace tardigradeHydra{
             void setPreviousInverseMicroConfigurations( const floatMatrix &previousInverseMicroConfigurations );
 
             void setPreviousGradientMicroConfigurations( const floatMatrix &previousGradientMicroConfigurations );
+
+            void setdGradChi1dFn( const floatMatrix &dGradChi1dFn );
+
+            void setdGradChi1dChi( const floatMatrix &dGradChi1dChi );
+
+            void setdGradChi1dChin( const floatMatrix &dGradChi1dChin );
+
+            void setdGradChi1dGradChi( const floatMatrix &dGradChi1dGradChi );
+
+            void setdGradChi1dGradChin( const floatMatrix &dGradChi1dGradChin );
+
+            void setPreviousdGradChi1dFn( const floatMatrix &previousdGradChi1dFn );
+
+            void setPreviousdGradChi1dChi( const floatMatrix &previousdGradChi1dChi );
+
+            void setPreviousdGradChi1dChin( const floatMatrix &previousdGradChi1dChin );
+
+            void setPreviousdGradChi1dGradChi( const floatMatrix &previousdGradChi1dGradChi );
+
+            void setPreviousdGradChi1dGradChin( const floatMatrix &previousdGradChi1dGradChin );
 
             //Utility functions
             virtual void decomposeStateVariableVector( ) override;
@@ -136,17 +176,41 @@ namespace tardigradeHydra{
 
             dataStorage< floatMatrix > _previousGradientMicroConfigurations; //!< The spatial gradients of the previous micro-configurations w.r.t. their reference configurations
 
-            dataStorage< floatMatrix > _dChi1dChi; //!< The jacobian of the first micro-configuration w.r.t. the total micro-configuration
+            dataStorage< floatMatrix > _dChi1dChi; //!< The Jacobian of the first micro-configuration w.r.t. the total micro-configuration
 
-            dataStorage< floatMatrix > _dChi1dChin; //!< The jacobian of the first micro-configuration w.r.t. the remaining micro-configurations
+            dataStorage< floatMatrix > _dChi1dChin; //!< The Jacobian of the first micro-configuration w.r.t. the remaining micro-configurations
 
-            dataStorage< floatMatrix > _previousdChi1dChi; //!< The jacobian of the previous first micro-configuration w.r.t. the total micro-configuration
+            dataStorage< floatMatrix > _previousdChi1dChi; //!< The Jacobian of the previous first micro-configuration w.r.t. the total micro-configuration
 
-            dataStorage< floatMatrix > _previousdChi1dChin; //!< The jacobian of the previous first micro-configuration w.r.t. the remaining micro-configurations
+            dataStorage< floatMatrix > _previousdChi1dChin; //!< The Jacobian of the previous first micro-configuration w.r.t. the remaining micro-configurations
+
+            dataStorage< floatMatrix > _dGradChi1dFn; //!< The Jacobian of the first spatial gradient of the micro-configuration w.r.t. the remaining sub-configurations
+
+            dataStorage< floatMatrix > _dGradChi1dChi; //!< The Jacobian of the first spatial gradient of the micro-configuration w.r.t. the total micro-configuration
+
+            dataStorage< floatMatrix > _dGradChi1dChin; //!< The Jacobian of the first spatial gradient of the micro-configuration w.r.t. the remaining sub micro-configurations
+
+            dataStorage< floatMatrix > _dGradChi1dGradChi; //!< The Jacobian of the first spatial gradient of the micro-configuration w.r.t. the total spatial gradient of the micro-configuration
+
+            dataStorage< floatMatrix > _dGradChi1dGradChin; //!< The Jacobian of the first spatial gradient of the micro-configuration w.r.t. the remaining spatial gradients of the sub micro-configurations
+
+            dataStorage< floatMatrix > _previousdGradChi1dFn; //!< The Jacobian of the previous first spatial gradient of the micro-configuration w.r.t. the remaining sub-configurations
+
+            dataStorage< floatMatrix > _previousdGradChi1dChi; //!< The Jacobian of the previous first spatial gradient of the micro-configuration w.r.t. the total micro-configuration
+
+            dataStorage< floatMatrix > _previousdGradChi1dChin; //!< The Jacobian of the previous first spatial gradient of the micro-configuration w.r.t. the remaining sub micro-configurations
+
+            dataStorage< floatMatrix > _previousdGradChi1dGradChi; //!< The Jacobian of the previous first spatial gradient of the micro-configuration w.r.t. the total spatial gradient of the micro-configuration
+
+            dataStorage< floatMatrix > _previousdGradChi1dGradChin; //!< The Jacobian of the previous first spatial gradient of the micro-configuration w.r.t. the remaining spatial gradients of the sub micro-configurations
 
             void setFirstMicroConfigurationJacobians( );
 
             void setPreviousFirstMicroConfigurationJacobians( );
+
+            void setFirstGradientMicroConfigurationJacobians( );
+
+            void setPreviousFirstGradientMicroConfigurationJacobians( );
 
             void setdChi1dChi( const floatMatrix &dChi1dChi );
 
@@ -162,6 +226,13 @@ namespace tardigradeHydra{
 
             void calculateFirstConfigurationGradChi( const floatMatrix &configurations, const floatMatrix &microConfigurations,
                                                      const floatVector &gradientMicroConfiguration, floatMatrix &gradientMicroConfigurations );
+
+            void calculateFirstConfigurationGradChiJacobian( const floatMatrix &configurations, const floatMatrix &microConfigurations,
+                                                             const floatVector &gradientMicroConfiguration, const floatMatrix &gradientMicroConfigurations,
+                                                             const floatMatrix &dChi1dChi, const floatMatrix &dChi1dChin,
+                                                             floatMatrix &dGradChi1dCn,
+                                                             floatMatrix &dGradChi1dChi, floatMatrix &dGradChi1dChin,
+                                                             floatMatrix &dGradChi1dGradChi, floatMatrix &dGradChi1dGradChin );
 
     };
 
