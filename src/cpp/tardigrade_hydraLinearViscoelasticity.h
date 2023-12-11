@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file tardigrade-hydraLinearViscoelasticity.h
+  * \file tardigrade_hydraLinearViscoelasticity.h
   ******************************************************************************
   * An implementation of linear viscoelasticity using the hydra framework. Used
   * as an example and as the basis for more complex models.

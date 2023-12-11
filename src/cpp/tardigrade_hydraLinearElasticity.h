@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file tardigrade-hydraLinearElasticity.h
+  * \file tardigrade_hydraLinearElasticity.h
   ******************************************************************************
   * An implementation of linear elasticity using the hydra framework. Used as an
   * example and as the basis for more complex models.
@@ -151,7 +151,7 @@ namespace tardigradeHydra{
         
                 using tardigradeHydra::residualBase::setAdditionalDerivatives;
         
-                using tardigradeHydra::residualBase::setCauchyStress;
+                using tardigradeHydra::residualBase::setStress;
         
                 floatType _lambda;
         
@@ -183,7 +183,7 @@ namespace tardigradeHydra{
 
                 virtual void setdPK2StressdFe( );
 
-                virtual void setCauchyStress( ) override;
+                virtual void setStress( ) override;
 
                 virtual void setdCauchyStressdPK2Stress( );
 

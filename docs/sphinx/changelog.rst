@@ -6,7 +6,29 @@ Changelog
 #########
 
 ******************
-0.1.0 (unreleased)
+0.2.0 (unreleased)
+******************
+
+Breaking Changes
+================
+- Changed hydra function calls to be more general (:pull:`1`, :pull:`2`, :pull:`3`, :pull:`4`, :pull:`5`, :pull:`6`). By `Nathan Miller`_.
+
+New Features
+============
+- Added micromorphic hydra object (:pull:`7`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Added decomposition of the micro deformations (:pull:`8`). By `Nathan Miller`_.
+- Added the calculation of sub micro configurations (:pull:`9`). By `Nathan Miller`_.
+- Added the jacobians of the sub micro configurations w.r.t. the micro configurations (:pull:`10`). By `Nathan Miller`_.
+- Added generalization of the computation of the Jacobians of the first configurations (:pull:`11`). By `Nathan Miller`_.
+- Added computation of the Jacobian of the first micro-configuration (:pull:`12`). By `Nathan Miller`_.
+- Added computation of the gradient of the micro-deformations in their local reference configurations (:pull:`13`). By `Nathan Miller`_.
+- Added computation of Jacobian of the gradient of the micro-deformations in their local reference configurations (:pull:`14`). By `Nathan Miller`_.
+
+******************
+0.1.2 (12-06-2023)
 ******************
 
 Breaking Changes

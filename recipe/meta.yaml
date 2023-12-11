@@ -56,6 +56,7 @@ test:
     - CMakeLists.txt
     - src/cpp/tests/CMakeLists.txt
     - src/cpp/tests/test_tardigrade_hydra.cpp
+    - src/cpp/tests/test_tardigrade_hydraMicromorphic.cpp
     - src/cpp/tests/test_tardigrade_hydraLinearElasticity.cpp
     - src/cpp/tests/test_tardigrade_hydraLinearViscoelasticity.cpp
     - src/cpp/tests/test_tardigrade_hydraThermalExpansion.cpp

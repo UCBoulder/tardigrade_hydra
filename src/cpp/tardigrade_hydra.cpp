@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file tardigrade-hydra.cpp
+  * \file tardigrade_hydra.cpp
   ******************************************************************************
   * A C++ library for defining frameworks to solve finite deformation material
   * models.
@@ -97,31 +97,31 @@ namespace tardigradeHydra{
 
     }
 
-    void residualBase::setCauchyStress( const floatVector &cauchyStress ){
+    void residualBase::setStress( const floatVector &stress ){
         /*!
-         * Set the value of the Cauchy stress
+         * Set the value of the stress
          * 
-         * \param &cauchyStress: The Cauchy stress in row-major form
+         * \param &stress: The stress in row-major form
          */
 
-        _cauchyStress.second = cauchyStress;
+        _stress.second = stress;
 
-        _cauchyStress.first = true;
+        _stress.first = true;
 
-        addIterationData( &_cauchyStress );
+        addIterationData( &_stress );
 
     }
 
-    void residualBase::setPreviousCauchyStress( const floatVector &previousCauchyStress ){
+    void residualBase::setPreviousStress( const floatVector &previousStress ){
         /*!
-         * Set the previous value of the Cauchy stress
+         * Set the previous value of the stress
          * 
-         * \param &previousCauchyStress: The previous Cauchy stress in row-major form
+         * \param &previousStress: The previous stress in row-major form
          */
 
-        _previousCauchyStress.second = previousCauchyStress;
+        _previousStress.second = previousStress;
 
-        _previousCauchyStress.first = true;
+        _previousStress.first = true;
 
     }
 
@@ -201,33 +201,33 @@ namespace tardigradeHydra{
 
     }
 
-    const floatVector* residualBase::getCauchyStress( ){
+    const floatVector* residualBase::getStress( ){
         /*!
-         * Get the Cauchy stress
+         * Get the stress
          */
 
-        if ( !_cauchyStress.first ){
+        if ( !_stress.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setCauchyStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setStress( ) );
 
         }
 
-        return &_cauchyStress.second;
+        return &_stress.second;
 
     }
 
-    const floatVector* residualBase::getPreviousCauchyStress( ){
+    const floatVector* residualBase::getPreviousStress( ){
         /*!
-         * Get the Cauchy stress
+         * Get the previous stress
          */
 
-        if ( !_previousCauchyStress.first ){
+        if ( !_previousStress.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousCauchyStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousStress( ) );
 
         }
 
-        return &_previousCauchyStress.second;
+        return &_previousStress.second;
 
     }
 
@@ -278,8 +278,10 @@ namespace tardigradeHydra{
                           const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                           const floatVector &previousStateVariables, const floatVector &parameters,
                           const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                          const unsigned int dimension, const floatType tolr, const floatType tola, const unsigned int maxIterations,
-                          const unsigned int maxLSIterations, const floatType lsAlpha ) : _time( time ), _deltaTime( deltaTime ),
+                          const unsigned int dimension, const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola, const unsigned int maxIterations,
+                          const unsigned int maxLSIterations, const floatType lsAlpha ) : _dimension( dimension ),
+                                                           _configuration_unknown_count( configuration_unknown_count ),
+                                                           _time( time ), _deltaTime( deltaTime ),
                                                            _temperature( temperature ), _previousTemperature( previousTemperature ),
                                                            _deformationGradient( deformationGradient ),
                                                            _previousDeformationGradient( previousDeformationGradient ),
@@ -287,7 +289,7 @@ namespace tardigradeHydra{
                                                            _parameters( parameters ),
                                                            _numConfigurations( numConfigurations ),
                                                            _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
-                                                           _dimension( dimension ), _tolr( tolr ), _tola( tola ),
+                                                           _tolr( tolr ), _tola( tola ),
                                                            _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ),
                                                            _lsAlpha( lsAlpha ){
         /*!
@@ -304,6 +306,7 @@ namespace tardigradeHydra{
          * \param &numConfigurations: The number of configurations
          * \param &numNonLinearSolveStateVariables: The number of state variables which will contribute terms to the non-linear solve's residual
          * \param &dimension: The dimension of the problem (defaults to 3)
+         * \param &configuration_unknown_count: The number of unknowns in each configuration (defaults to 9)
          * \param &tolr: The relative tolerance (defaults to 1e-9)
          * \param &tola: The absolute tolerance (defaults to 1e-9)
          * \param &maxIterations: The maximum number of non-linear iterations (defaults to 20)
@@ -319,6 +322,202 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::setStress( const floatVector &stress ){
+        /*!
+         * Set the value of the stress
+         * 
+         * \param &stress: The stress in row-major form
+         */
+
+        _stress.second = stress;
+
+        _stress.first = true;
+
+        addIterationData( &_stress );
+
+    }
+
+    void hydraBase::setConfigurations( const floatMatrix &configurations ){
+        /*!
+         * Set the value of the configurations
+         *
+         * \param &configurations: The configurations matrix. Each row is a different configuration.
+         */
+
+        _configurations.second = configurations;
+
+        _configurations.first = true;
+
+        addIterationData( &_configurations );
+    }
+
+    void hydraBase::setInverseConfigurations( const floatMatrix &inverseConfigurations ){
+        /*!
+         * Set the value of the inverse configurations
+         *
+         * \param &inverseConfigurations: The inverse configurations matrix. Each row is a different configuration.
+         */
+
+        _inverseConfigurations.second = inverseConfigurations;
+
+        _inverseConfigurations.first = true;
+
+        addIterationData( &_inverseConfigurations );
+    }
+
+    void hydraBase::setPreviousConfigurations( const floatMatrix &previousConfigurations ){
+        /*!
+         * Set the value of the previous configurations
+         *
+         * \param &previousConfigurations: The previous configurations matrix. Each row is a different configuration.
+         */
+
+        _previousConfigurations.second = previousConfigurations;
+
+        _previousConfigurations.first = true;
+
+    }
+
+    void hydraBase::setPreviousInverseConfigurations( const floatMatrix &previousInverseConfigurations ){
+        /*!
+         * Set the value of the previous inverse configurations
+         *
+         * \param &previousInverseConfigurations: The previous inverse configurations matrix. Each row is a different configuration.
+         */
+
+        _previousInverseConfigurations.second = previousInverseConfigurations;
+
+        _previousInverseConfigurations.first = true;
+
+    }
+
+    void hydraBase::setNonLinearSolveStateVariables( const floatVector &nonLinearSolveStateVariables ){
+        /*!
+         * Set the value of the state variables which are a part of the non-linear solve
+         * 
+         * \param &nonLinearSolveStateVariables
+         */
+
+        _nonLinearSolveStateVariables.second = nonLinearSolveStateVariables;
+
+        _nonLinearSolveStateVariables.first = true;
+
+        addIterationData( &_nonLinearSolveStateVariables );
+
+    }
+
+    void hydraBase::setPreviousNonLinearSolveStateVariables( const floatVector &previousNonLinearSolveStateVariables ){
+        /*!
+         * Set the previous value of the state variables which are a part of the non-linear solve
+         * 
+         * \param &previousNonLinearSolveStateVariables
+         */
+
+        _previousNonLinearSolveStateVariables.second = previousNonLinearSolveStateVariables;
+
+        _previousNonLinearSolveStateVariables.first = true;
+
+    }
+
+    void hydraBase::setAdditionalStateVariables( const floatVector &additionalStateVariables ){
+        /*!
+         * Set the value of the additional state variables which are not part of the non-linear solve
+         * 
+         * \param &additionalStateVariables
+         */
+
+        _additionalStateVariables.second = additionalStateVariables;
+
+        _additionalStateVariables.first = true;
+
+        addIterationData( &_additionalStateVariables );
+
+    }
+
+    void hydraBase::setPreviousAdditionalStateVariables( const floatVector &previousAdditionalStateVariables ){
+        /*!
+         * Set the previous value of the additional state variables which are not part of the non-linear solve
+         * 
+         * \param &previousAdditionalStateVariables
+         */
+
+        _previousAdditionalStateVariables.second = previousAdditionalStateVariables;
+
+        _previousAdditionalStateVariables.first = true;
+
+    }
+
+    void hydraBase::extractStress( ){
+        /*!
+         * Extract the stresses out of the unknown vector
+         */
+
+        const floatVector *unknownVector = getUnknownVector( );
+
+        setStress( floatVector( unknownVector->begin( ),
+                                unknownVector->begin( ) + *getConfigurationUnknownCount( ) ) );
+
+    }
+
+    void hydraBase::computeConfigurations( const floatVector *data_vector, const unsigned int start_index,
+                                           const floatVector &total_transformation,
+                                           floatMatrix &configurations, floatMatrix &inverseConfigurations,
+                                           const bool add_eye ){
+        /*!
+         * Compute the configurations from the provided vector. Each configuration is assumed to have a dimension
+         * of dimension x dimension
+         *
+         * \param *data_vector: A pointer to the vector of data which contains the configurations and other information
+         * \param &start_index: The starting index for the vector
+         * \param &total_transformation: The total transformation from the reference to the current configuration
+         * \param &configurations: The resulting collection of configurations
+         * \param &inverseConfigurations: The resulting inverse configurations
+         * \param add_eye: A flag for whether to add the identity matrix to each of the configurations except for the
+         *     total transformation. Defaults to false.
+         */
+
+        const unsigned int* dim = getDimension( );
+
+        const unsigned int* nConfig = getNumConfigurations( );
+
+        floatVector eye( ( *dim ) * ( *dim ) );
+        tardigradeVectorTools::eye( eye );
+
+        // Set the configurations
+        configurations = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        inverseConfigurations = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+
+        // Initialize the first configuration with the total deformation gradient
+        configurations[ 0 ] = total_transformation;
+
+        for ( int i = ( *nConfig ) - 2; i >= 0; i-- ){
+
+            // Set the current configuration as being equal to the previous
+            configurations[ i + 1 ] = floatVector( data_vector->begin( ) + i * ( *dim ) * ( *dim ) + start_index,
+                                                   data_vector->begin( ) + ( i + 1 ) * ( *dim ) * ( *dim ) + start_index );
+
+            if ( add_eye ){
+
+                configurations[ i + 1 ] += eye;
+
+            }
+
+            // Compute the inverse of the current configuration and store it
+            inverseConfigurations[ i + 1 ] = tardigradeVectorTools::inverse( configurations[ i + 1 ], ( *dim ), ( *dim ) );
+
+            // Add contribution of deformation gradient to the first configuration
+            configurations[ 0 ] = tardigradeVectorTools::matrixMultiply( configurations[ 0 ], inverseConfigurations[ i + 1 ],
+                                                                         ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
+
+        }
+
+        inverseConfigurations[ 0 ] = tardigradeVectorTools::inverse( configurations[ 0 ], ( *dim ), ( *dim ) );
+
+        return;
+
+    }
+
     void hydraBase::decomposeUnknownVector( ){
         /*!
          * Decompose the unknown vector into the cauchy stress, configurations, and state variables used for the non-linear solve
@@ -326,52 +525,23 @@ namespace tardigradeHydra{
 
         const floatVector *unknownVector = getUnknownVector( );
 
-        const unsigned int* dim = getDimension( );
-
-        const unsigned int* nConfig = getNumConfigurations( );
-
-        // Set the cauchy stress
-        _cauchyStress.second = floatVector( unknownVector->begin( ),
-                                            unknownVector->begin( ) + ( *dim ) * ( *dim ) );
-
-        _cauchyStress.first = true;
-
-        addIterationData( &_cauchyStress );
+        // Set the stress
+        extractStress( );
 
         // Set the configurations
-        _configurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+        floatMatrix configurations;
 
-        _inverseConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+        floatMatrix inverseConfigurations;
 
-        // Initialize the first configuration with the total deformation gradient
-        _configurations.second[ 0 ] = *getDeformationGradient( );
+        computeConfigurations( unknownVector, getStress( )->size( ), *getDeformationGradient( ), configurations, inverseConfigurations );
 
-        for ( unsigned int i = ( *nConfig ) - 1; i >= 1; i-- ){
+        setConfigurations( configurations );
 
-            // Set the current configuration as being equal to the previous
-            _configurations.second[ i ] = floatVector( unknownVector->begin( ) + i * ( *dim ) * ( *dim ),
-                                                       unknownVector->begin( ) + ( i + 1 ) * ( *dim ) * ( *dim ) );
-
-            // Compute the inverse of the current configuration and store it
-            _inverseConfigurations.second[ i ] = tardigradeVectorTools::inverse( _configurations.second[ i ], ( *dim ), ( *dim ) );
-
-            // Add contribution of deformation gradient to the first configuration
-            _configurations.second[ 0 ] = tardigradeVectorTools::matrixMultiply( _configurations.second[ 0 ], _inverseConfigurations.second[ i ],
-                                                                       ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
-
-        }
-
-        _inverseConfigurations.second[ 0 ] = tardigradeVectorTools::inverse( _configurations.second[ 0 ], ( *dim ), ( *dim ) );
+        setInverseConfigurations( inverseConfigurations );
 
         // Extract the remaining state variables required for the non-linear solve
-        _nonLinearSolveStateVariables.second = floatVector( unknownVector->begin( ) + ( *nConfig ) * ( *dim ) * ( *dim ),
-                                                            unknownVector->end( ) );
-
-        addIterationData( &_configurations );
-
-        addIterationData( &_inverseConfigurations );
-
-        addIterationData( &_nonLinearSolveStateVariables );
+        setNonLinearSolveStateVariables( floatVector( unknownVector->begin( ) + ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ),
+                                                      unknownVector->end( ) ) );
 
     }
 
@@ -402,94 +572,53 @@ namespace tardigradeHydra{
         floatVector eye( ( *dim ) * ( *dim ) );
         tardigradeVectorTools::eye( eye );
 
-        if ( getPreviousStateVariables( )->size( ) < ( ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + ( *nNLISV ) ) ){
+        if ( getPreviousStateVariables( )->size( ) < ( ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + ( *nNLISV ) ) ){
 
             std::string message = "The number of state variables is less than required for the configurations and ";
             message            += "non-linear state variables\n";
-            message            += "  # previousStateVariables          : " + std::to_string( getPreviousStateVariables( )->size( ) ) + "\n";
-            message            += "  # ( configurations - 1 ) * dim**2 : " + std::to_string( ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) ) + "\n";
-            message            += "  # non-linear solve ISVs           : " + std::to_string( ( *nNLISV ) ) + "\n";
-            message            += "  # minimum required ISVs           : " + std::to_string( ( *nConfig ) * ( *dim ) * ( *dim ) + ( *nNLISV ) );
+            message            += "  # previousStateVariables                               : " + std::to_string( getPreviousStateVariables( )->size( ) ) + "\n";
+            message            += "  # ( configurations - 1 ) * configuration_unknown_count : " + std::to_string( ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) ) + "\n";
+            message            += "  # non-linear solve ISVs                                : " + std::to_string( ( *nNLISV ) ) + "\n";
+            message            += "  # minimum required ISVs                                : " + std::to_string( ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + ( *nNLISV ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
         }
 
-        _previousConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+        floatMatrix configurations;
 
-        _configurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+        floatMatrix previousConfigurations;
 
-        _previousInverseConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+        floatMatrix inverseConfigurations;
 
-        _inverseConfigurations.second = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+        floatMatrix previousInverseConfigurations;
 
-        // Initialize the first configuration with the total deformation gradient
-        _configurations.second[ 0 ] = *getDeformationGradient( );
+        // Compute the configurations
+        computeConfigurations( getPreviousStateVariables( ), 0, *getDeformationGradient( ), configurations, inverseConfigurations, true );
 
-        _previousConfigurations.second[ 0 ] = *getPreviousDeformationGradient( );
+        computeConfigurations( getPreviousStateVariables( ), 0, *getPreviousDeformationGradient( ), previousConfigurations, previousInverseConfigurations, true );
 
-        for ( unsigned int i = ( *nConfig ) - 1; i >= 1; i-- ){
+        // Set the configurations
 
-            // Set the current configuration as being equal to the previous
-            _configurations.second[ i ] = floatVector( getPreviousStateVariables( )->begin( ) + ( i - 1 ) * ( *dim ) * ( *dim ),
-                                                       getPreviousStateVariables( )->begin( ) + i * ( *dim ) * ( *dim ) ) + eye;
+        setConfigurations( configurations );
 
-            // Compute the inverse of the current configuration and store it
-            _inverseConfigurations.second[ i ] = tardigradeVectorTools::inverse( _configurations.second[ i ], ( *dim ), ( *dim ) );
+        setInverseConfigurations( inverseConfigurations );
 
-            // Set the previous configuration
-            _previousConfigurations.second[ i ] = _configurations.second[ i ];
+        setPreviousConfigurations( previousConfigurations );
 
-            // Set the previous inverse configuration
-            _previousInverseConfigurations.second[ i ] = _inverseConfigurations.second[ i ];
-
-            // Add contribution of deformation gradient to the first configuration
-            _configurations.second[ 0 ] = tardigradeVectorTools::matrixMultiply( _configurations.second[ 0 ], _inverseConfigurations.second[ i ],
-                                                                       ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
-
-            // Add the contribution of the deformation gradient to the previous configuration
-            _previousConfigurations.second[ 0 ] = tardigradeVectorTools::matrixMultiply( _previousConfigurations.second[ 0 ], _previousInverseConfigurations.second[ i ],
-                                                                               ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
-
-        }
-
-        _inverseConfigurations.second[ 0 ] = tardigradeVectorTools::inverse( _configurations.second[ 0 ], ( *dim ), ( *dim ) );
-
-        _previousInverseConfigurations.second[ 0 ] = tardigradeVectorTools::inverse( _previousConfigurations.second[ 0 ], ( *dim ), ( *dim ) );
+        setPreviousInverseConfigurations( previousInverseConfigurations );
 
         // Extract the remaining state variables required for the non-linear solve
-        _nonLinearSolveStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ),
-                                                            getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + *nNLISV );
+        setPreviousNonLinearSolveStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ),
+                                                              getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV ) );
 
-        _previousNonLinearSolveStateVariables.second = _nonLinearSolveStateVariables.second;
+        setNonLinearSolveStateVariables( *getPreviousNonLinearSolveStateVariables( ) );
 
         // Extract the additional state variables
-        _additionalStateVariables.second = floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *dim ) * ( *dim ) + *nNLISV,
-                                                        getPreviousStateVariables( )->end( ) );
+        setPreviousAdditionalStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV,
+                                                          getPreviousStateVariables( )->end( ) ) );
 
-        _previousAdditionalStateVariables.second = _additionalStateVariables.second;
-
-        _configurations.first = true;
-
-        _previousConfigurations.first = true;
-
-        _inverseConfigurations.first = true;
-
-        _previousInverseConfigurations.first = true;
-
-        _nonLinearSolveStateVariables.first = true;
-
-        _previousNonLinearSolveStateVariables.first = true;
-
-        _additionalStateVariables.first = true;
-
-        _previousAdditionalStateVariables.first = true;
-
-        addIterationData( &_configurations );
-
-        addIterationData( &_inverseConfigurations );
-
-        addIterationData( &_nonLinearSolveStateVariables );
+        setAdditionalStateVariables( *getPreviousAdditionalStateVariables( ) );
 
     }
 
@@ -540,10 +669,10 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBase::getSubConfigurationGradient( const floatMatrix &configurations, const unsigned int &lowerIndex,
+    floatMatrix hydraBase::getSubConfigurationJacobian( const floatMatrix &configurations, const unsigned int &lowerIndex,
                                                         const unsigned int &upperIndex ){
         /*!
-         * Get the gradient a sub-configuration \f$\bf{F}^{sc}\f$ defined as
+         * Get the jacobian of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
          *
          * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex-1}}_{\bar{I}I} \f$
          * 
@@ -685,9 +814,9 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBase::getSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+    floatMatrix hydraBase::getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
-         * Get the gradient of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
+         * Get the jacobian of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
          *
          * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex-1}}_{\bar{I}I} \f$
          * 
@@ -698,35 +827,35 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfigurationGradient( *getConfigurations( ), lowerIndex, upperIndex );
+        return getSubConfigurationJacobian( *getConfigurations( ), lowerIndex, upperIndex );
 
     }
 
-    floatMatrix hydraBase::getPrecedingConfigurationGradient( const unsigned int &index ){
+    floatMatrix hydraBase::getPrecedingConfigurationJacobian( const unsigned int &index ){
         /*!
-         * Get the gradient of the sub-configuration preceding but not including the index with respect to the current configurations.
+         * Get the jacobian of the sub-configuration preceding but not including the index with respect to the current configurations.
          * 
          * \param &index: The index of the configuration immediately following the sub-configuration
          */
 
-        return getSubConfigurationGradient( 0, index );
+        return getSubConfigurationJacobian( 0, index );
 
     }
 
-    floatMatrix hydraBase::getFollowingConfigurationGradient( const unsigned int &index ){
+    floatMatrix hydraBase::getFollowingConfigurationJacobian( const unsigned int &index ){
         /*!
-         * Get the gradient of the sub-configuration following but not including the index with respect to the current configurations.
+         * Get the jacobian of the sub-configuration following but not including the index with respect to the current configurations.
          * 
          * \param &index: The index of the current configuration immediately before the sub-configuration
          */
 
-        return getSubConfigurationGradient( index + 1, *getNumConfigurations( ) );
+        return getSubConfigurationJacobian( index + 1, *getNumConfigurations( ) );
 
     }
 
-    floatMatrix hydraBase::getPreviousSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+    floatMatrix hydraBase::getPreviousSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
-         * Get the gradient of a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
+         * Get the jacobian of a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
          *
          * \f$ F^{sc}_{iI} = F^{\text{lowerIndex}}_{i\hat{I}} F^{\text{lowerIndex} + 1}_{\hat{I}\breve{I}} \cdots F^{\text{upperIndex-1}}_{\bar{I}I} \f$
          * 
@@ -737,126 +866,117 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfigurationGradient( *getPreviousConfigurations( ), lowerIndex, upperIndex );
+        return getSubConfigurationJacobian( *getPreviousConfigurations( ), lowerIndex, upperIndex );
 
     }
 
-    floatMatrix hydraBase::getPreviousPrecedingConfigurationGradient( const unsigned int &index ){
+    floatMatrix hydraBase::getPreviousPrecedingConfigurationJacobian( const unsigned int &index ){
         /*!
-         * Get the gradient of the previous sub-configuration preceding but not including the index with
+         * Get the jacobian of the previous sub-configuration preceding but not including the index with
          * respect to the previous configurations.
          * 
          * \param &index: The index of the configuration immediately following the sub-configuration
          */
 
-        return getPreviousSubConfigurationGradient( 0, index );
+        return getPreviousSubConfigurationJacobian( 0, index );
 
     }
 
-    floatMatrix hydraBase::getPreviousFollowingConfigurationGradient( const unsigned int &index ){
+    floatMatrix hydraBase::getPreviousFollowingConfigurationJacobian( const unsigned int &index ){
         /*!
-         * Get the gradient of the previous sub-configuration following but not including the index with
+         * Get the jacobian of the previous sub-configuration following but not including the index with
          * respect to the previous configurations
          * 
          * \param &index: The index of the current configuration immediately before the sub-configuration
          */
 
-        return getPreviousSubConfigurationGradient( index + 1, *getNumConfigurations( ) );
+        return getPreviousSubConfigurationJacobian( index + 1, *getNumConfigurations( ) );
 
     }
 
-    void hydraBase::setFirstConfigurationGradients( ){
+    void hydraBase::setdF1dF( const floatMatrix &dF1dF ){
         /*!
-         * Get the gradient of the first configuration w.r.t. the deformation gradient (the first entry of the pair)
-         * and the remaining gradients (the second entry) i.e.,
+         * Set the jacobian of the first sub configuration w.r.t. the deformation gradient
          * 
-         * \f$\text{return.first} = \frac{\partial F^1}{\partial F}\f$
-         * \f$\text{return.second} = \frac{\partial F^1}{\partial F^n}\f$
-         * 
-         * where \f$F^n = F^2, F^3, \cdots\f$
+         * \param &dF1dF: The value of the jacobian
          */
 
-        const unsigned int* dim = getDimension( );
-
-        _dF1dF.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
-
-        _dF1dFn.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
-
-        floatVector eye( ( *dim ) * ( *dim ) );
-        tardigradeVectorTools::eye( eye );
-
-        floatVector invFsc = tardigradeVectorTools::inverse( getFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
-
-        floatMatrix dInvFscdFsc = tardigradeVectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
-
-        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getFollowingConfigurationGradient( 0 ) );
-
-        // Compute the gradients
-        for ( unsigned int i = 0; i < ( *dim ); i++ ){
-
-            for ( unsigned int barI = 0; barI < ( *dim ); barI++ ){
-
-                for ( unsigned int a = 0; a < ( *dim ); a++ ){
-
-                    for ( unsigned int A = 0; A < ( *dim ); A++ ){
-
-                        _dF1dF.second[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invFsc[ ( *dim ) * A + barI ];
-
-                        for ( unsigned int index = 0; index < ( *getNumConfigurations( ) ) - 1; index++ ){
-
-                            for ( unsigned int J = 0; J < ( *dim ); J++ ){
-
-                                _dF1dFn.second[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
-                                    += ( *getDeformationGradient( ) )[ ( *dim ) * i + J ]
-                                     * dInvFscdFs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-        }
+        _dF1dF.second = dF1dF;
 
         _dF1dF.first = true;
 
-        _dF1dFn.first = true;
-
         addIterationData( &_dF1dF );
+
+    }
+
+    void hydraBase::setdF1dFn( const floatMatrix &dF1dFn ){
+        /*!
+         * Set the jacobian of the first sub configuration w.r.t. the sub-deformation gradients
+         * 
+         * \param &dF1dFn: The value of the jacobian
+         */
+
+        _dF1dFn.second = dF1dFn;
+
+        _dF1dFn.first = true;
 
         addIterationData( &_dF1dFn );
 
     }
 
-    void hydraBase::setPreviousFirstConfigurationGradients( ){
+    void hydraBase::setPreviousdF1dF( const floatMatrix &previousdF1dF ){
         /*!
-         * Get the gradient of the previous first configuration w.r.t. the deformation gradient (the first entry of the pair)
-         * and the remaining gradients (the second entry) i.e.,
+         * Set the jacobian of the previous first sub configuration w.r.t. the deformation gradient
          * 
-         * \f$\text{return.first} = \frac{\partial F^1}{\partial F}\f$
-         * \f$\text{return.second} = \frac{\partial F^1}{\partial F^n}\f$
+         * \param &previousdF1dF: The value of the jacobian
+         */
+
+        _previousdF1dF.second = previousdF1dF;
+
+        _previousdF1dF.first = true;
+
+    }
+
+    void hydraBase::setPreviousdF1dFn( const floatMatrix &previousdF1dFn ){
+        /*!
+         * Set the previous jacobian of the first sub configuration w.r.t. the sub-deformation gradients
          * 
-         * where \f$F^n = F^2, F^3, \cdots\f$
+         * \param &previousdF1dFn: The value of the jacobian
+         */
+
+        _previousdF1dFn.second = previousdF1dFn;
+
+        _previousdF1dFn.first = true;
+
+    }
+
+    void hydraBase::calculateFirstConfigurationJacobians( const floatMatrix &configurations, floatMatrix &dC1dC, floatMatrix &dC1dCn ){
+        /*!
+         * Get the Jacobian of the first configuration w.r.t. the total mapping and the remaining configurations.
+         * 
+         * \param &configurations: The configurations which describe the mapping from the current to the reference configuration
+         * \param &dC1dC: The Jacobian of the first entry w.r.t. the total
+         * \param &dC1dCn: The Jacobian of the first entry w.r.t. the remaining terms
+         * 
+         * whre \f$C^n = C^2, C^3, \cdots \f$
          */
 
         const unsigned int* dim = getDimension( );
 
-        _previousdF1dF.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
+        dC1dC  = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
 
-        _previousdF1dFn.second = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
+        dC1dCn = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
 
         floatVector eye( ( *dim ) * ( *dim ) );
         tardigradeVectorTools::eye( eye );
 
-        floatVector invFsc = tardigradeVectorTools::inverse( getPreviousFollowingConfiguration( 0 ), ( *dim ), ( *dim ) );
+        floatVector fullConfiguration = getSubConfiguration( configurations, 0, *getNumConfigurations( ) );
 
-        floatMatrix dInvFscdFsc = tardigradeVectorTools::computeDInvADA( invFsc, ( *dim ), ( *dim ) );
+        floatVector invCsc = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, *getNumConfigurations( ) ), ( *dim ), ( *dim ) );
 
-        floatMatrix dInvFscdFs = tardigradeVectorTools::dot( dInvFscdFsc, getPreviousFollowingConfigurationGradient( 0 ) );
+        floatMatrix dInvCscdCsc = tardigradeVectorTools::computeDInvADA( invCsc, ( *dim ), ( *dim ) );
+
+        floatMatrix dInvCscdCs = tardigradeVectorTools::dot( dInvCscdCsc, getSubConfigurationJacobian( configurations, 1, *getNumConfigurations( ) ) );
 
         // Compute the gradients
         for ( unsigned int i = 0; i < ( *dim ); i++ ){
@@ -867,15 +987,15 @@ namespace tardigradeHydra{
 
                     for ( unsigned int A = 0; A < ( *dim ); A++ ){
 
-                        _previousdF1dF.second[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invFsc[ ( *dim ) * A + barI ];
+                        dC1dC[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invCsc[ ( *dim ) * A + barI ];
 
                         for ( unsigned int index = 0; index < ( *getNumConfigurations( ) ) - 1; index++ ){
 
                             for ( unsigned int J = 0; J < ( *dim ); J++ ){
 
-                                _previousdF1dFn.second[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
-                                    += ( *getPreviousDeformationGradient( ) )[ ( *dim ) * i + J ]
-                                     * dInvFscdFs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
+                                dC1dCn[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
+                                    += fullConfiguration[ ( *dim ) * i + J ]
+                                     * dInvCscdCs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
 
                             }
 
@@ -889,9 +1009,39 @@ namespace tardigradeHydra{
 
         }
 
-        _previousdF1dF.first = true;
+    }
 
-        _previousdF1dFn.first = true;
+    void hydraBase::setFirstConfigurationJacobians( ){
+        /*!
+         * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining sub-configurations
+         */
+
+        floatMatrix dF1dF;
+
+        floatMatrix dF1dFn;
+
+        calculateFirstConfigurationJacobians( *getConfigurations( ), dF1dF, dF1dFn );
+
+        setdF1dF( dF1dF );
+
+        setdF1dFn( dF1dFn );
+
+    }
+
+    void hydraBase::setPreviousFirstConfigurationJacobians( ){
+        /*!
+         * Set the Jacobians of the previous first configuration w.r.t. the total configuration and the remaining sub-configurations
+         */
+
+        floatMatrix dF1dF;
+
+        floatMatrix dF1dFn;
+
+        calculateFirstConfigurationJacobians( *getPreviousConfigurations( ), dF1dF, dF1dFn );
+
+        setPreviousdF1dF( dF1dF );
+
+        setPreviousdF1dFn( dF1dFn );
 
     }
 
@@ -902,7 +1052,7 @@ namespace tardigradeHydra{
 
         if ( !_dF1dF.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationJacobians( ) );
 
         }
 
@@ -917,7 +1067,7 @@ namespace tardigradeHydra{
 
         if ( !_dF1dFn.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationJacobians( ) );
 
         }
 
@@ -932,7 +1082,7 @@ namespace tardigradeHydra{
 
         if ( !_previousdF1dF.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationJacobians( ) );
 
         }
 
@@ -947,7 +1097,7 @@ namespace tardigradeHydra{
 
         if ( !_previousdF1dFn.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationGradients( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationJacobians( ) );
 
         }
 
@@ -986,8 +1136,8 @@ namespace tardigradeHydra{
          * residual = { cauchyResidual, F2residual, ... Fnresidual, xiresidual1, xiresidual2, ... }
          * 
          * and can be formed by any number of residual classes. The first residual class must also
-         * have the method `void getCauchyStress( )` defined which will return the current value
-         * of the Cauchy stress.
+         * have the method `void getStress( )` defined which will return the current value
+         * of the stress.
          */
 
     }
@@ -999,8 +1149,6 @@ namespace tardigradeHydra{
          * \param &residualClasses: A vector of residual classes which will be used to
          *     populate the residual and jacobian matrices for the non-linear solve
          */
-
-        const unsigned int *dim = getDimension( );
 
         unsigned int numEquations = 0;
 
@@ -1014,10 +1162,10 @@ namespace tardigradeHydra{
 
         }
 
-        if ( numEquations != ( *getNumConfigurations( ) * ( *dim ) * ( *dim ) + *getNumNonLinearSolveStateVariables( ) ) ){
+        if ( numEquations != ( *getNumConfigurations( ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( ) ) ){
 
             std::string message = "The number of equations for the non-linear solve is not equal to the number of equations defined\n";
-            message            += "  expected number of equations: " + std::to_string( ( *getNumConfigurations( ) ) * ( *dim ) * ( *dim ) + *getNumNonLinearSolveStateVariables( ) ) + "\n";
+            message            += "  expected number of equations: " + std::to_string( ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( ) ) + "\n";
             message            += "  number of defined equations:  " + std::to_string( numEquations ) + "\n";
 
             TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
@@ -1050,7 +1198,7 @@ namespace tardigradeHydra{
 
         const unsigned int *dim = getDimension( );
 
-        unsigned int residualSize = ( *getNumConfigurations( ) ) * ( *dim ) * ( *dim ) + *getNumNonLinearSolveStateVariables( );
+        unsigned int residualSize = ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( );
 
         _residual.second = floatVector( residualSize, 0 );
 
@@ -1356,12 +1504,12 @@ namespace tardigradeHydra{
         return NULL;
     }
 
-    const floatVector* hydraBase::getCauchyStress( ){
+    const floatVector* hydraBase::getStress( ){
         /*!
-         * Get the cauchy stress
+         * Get the stress
          */
 
-        if ( !_cauchyStress.first ){
+        if ( !_stress.first ){
 
             if ( getResidualClasses( )->size( ) == 0 ){
 
@@ -1369,24 +1517,24 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( _cauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getCauchyStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( _stress.second = *( *getResidualClasses( ) )[ 0 ]->getStress( ) );
 
-            _cauchyStress.first = true;
+            _stress.first = true;
 
-            addIterationData( &_cauchyStress );
+            addIterationData( &_stress );
 
         }
 
-        return &_cauchyStress.second;
+        return &_stress.second;
 
     }
 
-    const floatVector* hydraBase::getPreviousCauchyStress( ){
+    const floatVector* hydraBase::getPreviousStress( ){
         /*!
-         * Get the previous value of the cauchy stress
+         * Get the previous value of the stress
          */
 
-        if ( !_previousCauchyStress.first ){
+        if ( !_previousStress.first ){
 
             if ( getResidualClasses( )->size( ) == 0 ){
 
@@ -1394,13 +1542,13 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( _previousCauchyStress.second = *( *getResidualClasses( ) )[ 0 ]->getPreviousCauchyStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( _previousStress.second = *( *getResidualClasses( ) )[ 0 ]->getPreviousStress( ) );
 
-            _previousCauchyStress.first = true;
+            _previousStress.first = true;
 
         }
 
-        return &_previousCauchyStress.second;
+        return &_previousStress.second;
 
     }
 
@@ -1410,12 +1558,12 @@ namespace tardigradeHydra{
          * 
          * \f$X = \left\{ \bf{\sigma}, \bf{F}^2, \bf{F}^3, ..., \bf{F}n, \xi^1, \xi^2, ..., \xi^m \right\} \f$
          * 
-         * It is assumed that the first residual calculation also has a method `void getCauchyStress( )`
-         * which returns a pointer to the current value of the Cauchy stress.
+         * It is assumed that the first residual calculation also has a method `void getStress( )`
+         * which returns a pointer to the current value of the stress.
          */
 
         const floatVector *cauchyStress;
-        TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = getCauchyStress( ) );
+        TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = getStress( ) );
 
         const floatMatrix *configurations = getConfigurations( );
 

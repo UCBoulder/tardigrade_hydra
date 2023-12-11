@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file tardigrade-hydraThermalExpansion.h
+  * \file tardigrade_hydraThermalExpansion.h
   ******************************************************************************
   * An implementation of thermal expansion using the hydra framework. Used as an
   * example and as the basis for more complex models.

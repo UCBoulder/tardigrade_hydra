@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file tardigrade-hydra.h
+  * \file tardigrade_hydra.h
   ******************************************************************************
   * A C++ library for constructing finite deformation constitutive models.
   ******************************************************************************
@@ -257,25 +257,25 @@ namespace tardigradeHydra{
 
             }
 
-            virtual void setCauchyStress( ){
+            virtual void setStress( ){
                 /*!
-                 * Compute the current Cauchy stress
+                 * Compute the current stress
                  * 
                  * Only needs to be defined for the first residual
                  */
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the Cauchy stress is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the stress is not implemented" ) );
 
             }
 
-            virtual void setPreviousCauchyStress( ){
+            virtual void setPreviousStress( ){
                 /*!
-                 * Compute the previous Cauchy stress
+                 * Compute the previous stress
                  * 
                  * Only needs to be defined for the first residual
                  */
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the previous Cauchy stress is not implemented" ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the previous stress is not implemented" ) );
 
             }
 
@@ -304,9 +304,9 @@ namespace tardigradeHydra{
 
             void setAdditionalDerivatives( const floatMatrix &additionalDerivatives );
 
-            void setCauchyStress( const floatVector &cauchyStress );
+            void setStress( const floatVector &stress );
 
-            void setPreviousCauchyStress( const floatVector &previousCauchyStress );
+            void setPreviousStress( const floatVector &previousStress );
 
             void setCurrentAdditionalStateVariables( const floatVector &currentAdditionalStateVariables );
 
@@ -325,9 +325,9 @@ namespace tardigradeHydra{
 
             const floatMatrix* getAdditionalDerivatives( );
 
-            const floatVector* getCauchyStress( );
+            const floatVector* getStress( );
 
-            const floatVector* getPreviousCauchyStress( );
+            const floatVector* getPreviousStress( );
 
             const floatVector* getCurrentAdditionalStateVariables( );
 
@@ -347,9 +347,9 @@ namespace tardigradeHydra{
 
             dataStorage< floatMatrix > _additionalDerivatives; //!< Additional derivatives of the residual
 
-            dataStorage< floatVector > _cauchyStress; //!< The previous Cauchy stress. Only needs to be defined for the first residual
+            dataStorage< floatVector > _stress; //!< The stress. Only needs to be defined for the first residual
 
-            dataStorage< floatVector > _previousCauchyStress; //!< The previous Cauchy stress. Only needs to be defined for the first residual
+            dataStorage< floatVector > _previousStress; //!< The previous stress. Only needs to be defined for the first residual
 
             dataStorage< floatVector > _currentAdditionalStateVariables; //!< The current additional state variables.
 
@@ -370,7 +370,7 @@ namespace tardigradeHydra{
 
             // Constructors
             //! Default constructor for hydraBase
-            hydraBase( ){ }
+            hydraBase( ) : _configuration_unknown_count( 0 ){ }
 
             //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
             hydraBase( const floatType &time, const floatType &deltaTime,
@@ -378,13 +378,18 @@ namespace tardigradeHydra{
                        const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                        const floatVector &previousStateVariables, const floatVector &parameters,
                        const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
-                       const unsigned int dimension=3, const floatType tolr=1e-9, const floatType tola=1e-9, const unsigned int maxIterations=20, const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4 );
+                       const unsigned int dimension=3, const unsigned int configuration_unknown_count=9,
+                       const floatType tolr=1e-9, const floatType tola=1e-9,
+                       const unsigned int maxIterations=20, const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4 );
 
             // User defined functions
 
             // Setter functions
 
             // Getter functions
+            //! Get a reference to the number of unknowns in each configuration
+            const unsigned int* getConfigurationUnknownCount( ){ return &_configuration_unknown_count; }
+
             //! Get a reference to the current time
             const floatType* getTime( ){ return &_time; }
 
@@ -453,7 +458,7 @@ namespace tardigradeHydra{
 
             floatVector getSubConfiguration( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatMatrix getSubConfigurationGradient( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatMatrix getSubConfigurationJacobian( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
@@ -471,17 +476,17 @@ namespace tardigradeHydra{
 
             floatVector getPreviousConfiguration( const unsigned int &index );
 
-            floatMatrix getSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatMatrix getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatMatrix getPrecedingConfigurationGradient( const unsigned int &index );
+            floatMatrix getPrecedingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getFollowingConfigurationGradient( const unsigned int &index );
+            floatMatrix getFollowingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getPreviousSubConfigurationGradient( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatMatrix getPreviousSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatMatrix getPreviousPrecedingConfigurationGradient( const unsigned int &index );
+            floatMatrix getPreviousPrecedingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getPreviousFollowingConfigurationGradient( const unsigned int &index );
+            floatMatrix getPreviousFollowingConfigurationJacobian( const unsigned int &index );
 
             const floatType* getLSResidualNorm( );
 
@@ -523,19 +528,70 @@ namespace tardigradeHydra{
 
             virtual bool checkLSConvergence( );
 
-            const floatVector* getCauchyStress( );
+            const floatVector* getStress( );
 
-            const floatVector* getPreviousCauchyStress( );
+            const floatVector* getPreviousStress( );
 
             virtual void evaluate( );
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
 
+        protected:
+
+            // Setters that the user may need to access but not override
+
+            void setStress( const floatVector &stress );
+
+            void setConfigurations( const floatMatrix &configurations );
+
+            void setInverseConfigurations( const floatMatrix &inverseConfigurations );
+
+            void setPreviousConfigurations( const floatMatrix &previousConfigurations );
+
+            void setPreviousInverseConfigurations( const floatMatrix &previousInverseConfigurations );
+
+            void setNonLinearSolveStateVariables( const floatVector &nonLinearSolveStateVariables );
+
+            void setPreviousNonLinearSolveStateVariables( const floatVector &previousNonLinearSolveStateVariables );
+
+            void setAdditionalStateVariables( const floatVector &additionalStateVariables );
+
+            void setPreviousAdditionalStateVariables( const floatVector &previousAdditionalStateVariables );
+
+            // Utility functions
+            virtual void computeConfigurations( const floatVector *data_vector, const unsigned int start_index,
+                                                const floatVector &total_transformation,
+                                                floatMatrix &configurations, floatMatrix &inverseConfigurations,
+                                                const bool add_eye=false );
+
+            virtual void extractStress( );
+
+            virtual void decomposeUnknownVector( );
+
+            virtual void decomposeStateVariableVector( );
+
+            virtual void formNonLinearProblem( );
+
+            virtual void initializeUnknownVector( );
+
+            virtual void setTolerance( );
+
+            //! Update the line-search lambda parameter
+            virtual void updateLambda( ){ _lambda *= 0.5; }
+
+            virtual void updateUnknownVector( const floatVector &newUnknownVector );
+
+            virtual void calculateFirstConfigurationJacobians( const floatMatrix &configurations, floatMatrix &dC1dC, floatMatrix &dC1dCn );
+
         private:
 
             // Friend classes
             friend class unit_test::hydraBaseTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
+
+            unsigned int _dimension; //!< The spatial dimension of the problem
+
+            const unsigned int _configuration_unknown_count; //!< The number of unknowns required for a configuration. Used to ensure that the unknown and state variable vectors are the right size. Must be set by all inheriting classes. For 3D classical continuum this will be 9, for higher order theories this will change.
 
             floatType _time; //!< The current time
 
@@ -556,7 +612,6 @@ namespace tardigradeHydra{
             unsigned int _numConfigurations; //!< The number of configurations
 
             unsigned int _numNonLinearSolveStateVariables; //!< The number of state variables which will be solved in the Newton-Raphson loop
-            unsigned int _dimension; //!< The spatial dimension of the problem
 
             floatType _tolr; //!< The relative tolerance
 
@@ -577,6 +632,7 @@ namespace tardigradeHydra{
             dataStorage< floatMatrix > _previousInverseConfigurations; //!< The inverses of the previous configurations
 
             dataStorage< floatVector > _nonLinearSolveStateVariables; //!< The current values of the state variables involved in the non-linear solve
+
             dataStorage< floatVector > _previousNonLinearSolveStateVariables; //!< The previous values of the state variables involved in the non-linear solve
 
             dataStorage< floatVector > _additionalStateVariables; //!< The current values of the additional state variables
@@ -605,15 +661,15 @@ namespace tardigradeHydra{
 
             dataStorage< floatVector > _additionalDerivatives; //!< Additional derivatives of the residual
 
-            dataStorage< floatVector > _X; //!< The unknown vector { cauchyStress, F1, ..., Fn, xi1, ..., xim }
+            dataStorage< floatVector > _X; //!< The unknown vector { stress, F1, ..., Fn, xi1, ..., xim }
 
             dataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
 
             dataStorage< floatType > _lsResidualNorm; //!< The reference residual norm for the line-search convergence criteria
 
-            dataStorage< floatVector > _cauchyStress; //!< The Cauchy stress as determined from the current state
+            dataStorage< floatVector > _stress; //!< The stress in the current configuration as determined from the current state
 
-            dataStorage< floatVector > _previousCauchyStress; //!< The previous value of the Cauchy stress as determined from the current state
+            dataStorage< floatVector > _previousStress; //!< The previous value of the stress in the current configuration as determined from the previous state
 
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
@@ -621,27 +677,23 @@ namespace tardigradeHydra{
 
             floatType _lambda = 1;
 
-            virtual void decomposeUnknownVector( );
+            void setFirstConfigurationJacobians( );
 
-            virtual void decomposeStateVariableVector( );
+            void setPreviousFirstConfigurationJacobians( );
 
-            void setFirstConfigurationGradients( );
+            void setdF1dF( const floatMatrix &dF1dF );
 
-            void setPreviousFirstConfigurationGradients( );
+            void setdF1dFn( const floatMatrix &dF1dFn );
 
-            virtual void formNonLinearProblem( );
+            void setPreviousdF1dF( const floatMatrix &previousdF1dF );
+
+            void setPreviousdF1dFn( const floatMatrix &previousdF1dFn );
 
             void solveNonLinearProblem( );
-
-            virtual void initializeUnknownVector( );
-
-            virtual void setTolerance( );
 
             void setTolerance( const floatVector &tolerance );
 
             void incrementIteration( ){ _iteration++; }
-
-            virtual void updateLambda( ){ _lambda *= 0.5; }
 
             void incrementLSIteration( ){ _LSIteration++; }
 
@@ -654,8 +706,6 @@ namespace tardigradeHydra{
             bool checkIteration( ){ return _iteration < _maxIterations; }
 
             bool checkLSIteration( ){ return _LSIteration < _maxLSIterations; }
-
-            virtual void updateUnknownVector( const floatVector &newUnknownVector );
 
             void resetIterationData( );
 
