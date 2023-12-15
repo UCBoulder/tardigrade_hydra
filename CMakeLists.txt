@@ -19,11 +19,11 @@ foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
     set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h)
     set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
 endforeach(package)
-set(TARDIGRADE-HYDRAMICROMORPHIC_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
-set(TARDIGRADE-HYDRALINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
-set(TARDIGRADE-HYDRALINEARVISCOELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
-set(TARDIGRADE-HYDRATHERMALEXPANSION_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
-set(TARDIGRADE-HYDRAPERYZNAVISCOPLASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
+set(TARDIGRADE_HYDRAMICROMORPHIC_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
+set(TARDIGRADE_HYDRALINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
+set(TARDIGRADE_HYDRALINEARVISCOELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
+set(TARDIGRADE_HYDRATHERMALEXPANSION_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
+set(TARDIGRADE_HYDRAPERYZNAVISCOPLASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
 # Set some Abaqus integration variables
 set(UMAT "${PROJECT_NAME}_umat")
 set(MISSING_INTEGRATION_DEPS_MESSAGE "Abaqus integration tests will be skipped.")
@@ -109,7 +109,7 @@ endif()
 
 # Find related, but external, projects in installed environment
 include(FetchContent)
-set(upstream_packages "tardigrade_error_tools" "tardigrade_vector_tools" "tardigrade_constitutive_tools" "tardigrade_stress_tools" "tardigrade_abaqus_tools")
+set(upstream_packages "tardigrade_error_tools" "tardigrade_vector_tools" "tardigrade_constitutive_tools" "tardigrade_stress_tools" "tardigrade_abaqus_tools" "tardigrade_micromorphic_tools")
 if(${not_conda_test} STREQUAL "false")
     # During conda-build testing, we must find the installed project files as if they were an external project
     set(upstream_packages ${upstream_packages} ${PROJECT_NAME})
@@ -125,7 +125,7 @@ foreach(package ${upstream_packages})
         # TODO: Decide how to handle main/dev build differences. bash env variables for GIT TAG?
         FetchContent_Declare(
             ${package}
-            GIT_REPOSITORY ssh://git@re-git.lanl.gov:10022/aea/material-models/${package}.git
+            GIT_REPOSITORY https://github.com/UCBoulder/${package}.git
             GIT_TAG        origin/dev
         )
         FetchContent_MakeAvailable(${package})
