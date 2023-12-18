@@ -219,6 +219,44 @@ namespace tardigradeHydra{
                                             parameterVector &Amatrix, parameterVector &Bmatrix,
                                             parameterVector &Cmatrix, parameterVector &Dmatrix );
 
+        class residual : public tardigradeHydra::residualBase {
+
+            public:
+
+                /*!
+                 * The main initialization constructor for the linear elastic residual
+                 * 
+                 * \param *hydra: A pointer to the containing hydra class
+                 * \param &numEquations: The number of equations the residual defines
+                 * \param &parameters: The parameter vector
+                 */
+
+                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters ) : tardigradeHydra::residualBase( hydra, numEquations ){
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH( extractMaterialParameters( parameters, _Amatrix, _Bmatrix, _Cmatrix, _Dmatrix ) );
+
+                }
+
+                const parameterVector *getAMatrix( ){ return &_Amatrix; }
+
+                const parameterVector *getBMatrix( ){ return &_Bmatrix; }
+
+                const parameterVector *getCMatrix( ){ return &_Cmatrix; }
+
+                const parameterVector *getDMatrix( ){ return &_Dmatrix; }
+
+            private:
+
+                parameterVector _Amatrix;
+
+                parameterVector _Bmatrix;
+
+                parameterVector _Cmatrix;
+
+                parameterVector _Dmatrix;
+
+        };
+
     }
 
 }
