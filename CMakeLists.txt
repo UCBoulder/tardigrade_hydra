@@ -11,8 +11,12 @@ set(ABAQUS_SRC_PATH "src/abaqus")
 set(ABAQUS_TEST_PATH "${ABAQUS_SRC_PATH}/tests")
 set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
+
+# Add a flag for whether the python bindings should be built or not
+set(TARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built for hydra")
+
 # Set the internal support libraries
-set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPeryznaViscoplasticity")
+set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPeryznaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
@@ -24,6 +28,7 @@ set(TARDIGRADE_HYDRALINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive
 set(TARDIGRADE_HYDRALINEARVISCOELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
 set(TARDIGRADE_HYDRATHERMALEXPANSION_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
 set(TARDIGRADE_HYDRAPERYZNAVISCOPLASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
+set(TARDIGRADE_HYDRAMICROMORPHICLINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
 # Set some Abaqus integration variables
 set(UMAT "${PROJECT_NAME}_umat")
 set(MISSING_INTEGRATION_DEPS_MESSAGE "Abaqus integration tests will be skipped.")
@@ -114,8 +119,10 @@ if(${not_conda_test} STREQUAL "false")
     # During conda-build testing, we must find the installed project files as if they were an external project
     set(upstream_packages ${upstream_packages} ${PROJECT_NAME})
 endif()
+set(LOCAL_BUILD_INCLUDE_DIRECTORIES "")
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
+    set(${package_upper}_BUILD_PYTHON_BINDINGS ${TARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS} CACHE INTERNAL "Setting ${package}'s python binding flag to the global value")
     find_package(${package} ${upstream_required} CONFIG)
     if(${package}_FOUND)
         message(STATUS "Found ${package}: ${${package}_DIR}")
@@ -129,6 +136,17 @@ foreach(package ${upstream_packages})
             GIT_TAG        origin/dev
         )
         FetchContent_MakeAvailable(${package})
+        set(LOCAL_BUILD_INCLUDE_DIRECTORIES ${LOCAL_BUILD_INCLUDE_DIRECTORIES} ${${package}_SOURCE_DIR}/${CPP_SRC_PATH})
+    endif()
+endforeach(package)
+
+foreach(package ${upstream_packages})
+    if(NOT cmake_build_type_lower STREQUAL "release")
+        string(TOLOWER "${package}" lower_package)
+        foreach(sub_package ${${upper_package}_UPSTREAM_LIBRARIES})
+            target_include_directories(${package} PUBLIC
+                                       ${${sub_package}_SOURCE_DIR}/${CPP_SRC_PATH})
+        endforeach(sub_package)
     endif()
 endforeach(package)
 
