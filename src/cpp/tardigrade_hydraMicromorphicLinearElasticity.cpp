@@ -18,7 +18,9 @@ namespace tardigradeHydra{
         errorOut formIsotropicA( const parameterType &lambda, const parameterType &mu, parameterVector &A ){
             /*!
              * Form the isotropic A stiffness tensor.
-             * A_{KLMN} = \lambda \delta_{KL} \delta_{MN} + \mu \left( \delta_{KM} \delta_{LN} + \delta_{KN} \delta_{LM} )
+             * \f$\begin{align}
+             * A_{KLMN} &= \lambda \delta_{KL} \delta_{MN} + \mu \left( \delta_{KM} \delta_{LN} + \delta_{KN} \delta_{LM} \right)
+             * \end{align}\f$
              *
              * :param const parameterType &lambda: The micromorphic lambda parameter.
              * :param const parameterType &mu: The micromorphic mu parameter.
@@ -52,8 +54,10 @@ namespace tardigradeHydra{
                                  const parameterType &nu,  const parameterType &sigma, parameterVector &B ){
             /*!
              * Form the isotropic B stiffness tensor.
-             * B_{KLMN} = ( eta - tau ) \delta_{KL} \delta_{MN} + \kappa \delta_{KM} \delta_{LN} + \nu \delta_{KN} \delta_{LM}
-             *          - \sigma \left( \delta_{KM} \delta_{LN} + \delta_{KN} \delta_{LM} \right)
+             * \f$\begin{align}
+             * B_{KLMN} &= ( eta - tau ) \delta_{KL} \delta_{MN} + \kappa \delta_{KM} \delta_{LN} + \nu \delta_{KN} \delta_{LM}
+             *          &- \sigma \left( \delta_{KM} \delta_{LN} + \delta_{KN} \delta_{LM} \right)
+             * \end{align}\f$
              *
              * :param const parameterType &eta: The micromorphic eta parameter.
              * :param const parameterType &tau: The micromorphic tau parameter.
@@ -91,17 +95,19 @@ namespace tardigradeHydra{
         errorOut formIsotropicC( const parameterVector &taus, parameterVector &C ){
             /*!
              * Form the isotropic C stiffness tensor.
-             * C_{KLMNPQ} = \tau_1 \left( \delta_{KL} \delta_{MN} \delta_{PQ} + \delta_{KQ} \delta_{LM} \delta_{NP} \right) 
-             *            + \tau_2 \left( \delta_{KL} \delta_{MP} \delta_{NQ} + \delta_{KM} \delta_{LQ} \delta_{NP} \right)
-             *            + \tau_3 \delta_{KL} \delta_{MQ} \delta_{NP}
-             *            + \tau_4 \delta_{KN} \delta_{LM} \delta_{PQ}
-             *            + \tau_5 \left( \delta_{KM} \delta_{LN} \delta_{PQ} + \delta_{KP} \delta_{LM} \delta_{NQ} )
-             *            + \tau_6 \delta_{KM} \delta_{LP} \delta_{NQ}
-             *            + \tau_7 \delta_{KN} \delta_{LP} \delta_{MQ}
-             *            + \tau_8 \left( \delta_{KP} \delta_{LQ} \delta_{MN} + \delta_{KQ} \delta_{LN} \delta_{MP} )
-             *            + \tau_9 \delta_{KN} \delta_{LQ} \delta_{MP}
-             *            + \tau_{10} \delta_{KP} \delta_{LN} \delta_{MQ}
-             *            + \tau_{11} \delta_{KQ} \delta_{LP} \delta_{MN}
+             * \f$\begin{align}
+             * C_{KLMNPQ} &= \tau_1 \left( \delta_{KL} \delta_{MN} \delta_{PQ} + \delta_{KQ} \delta_{LM} \delta_{NP} \right) 
+             *            &+ \tau_2 \left( \delta_{KL} \delta_{MP} \delta_{NQ} + \delta_{KM} \delta_{LQ} \delta_{NP} \right)
+             *            &+ \tau_3 \delta_{KL} \delta_{MQ} \delta_{NP}
+             *            &+ \tau_4 \delta_{KN} \delta_{LM} \delta_{PQ}
+             *            &+ \tau_5 \left( \delta_{KM} \delta_{LN} \delta_{PQ} + \delta_{KP} \delta_{LM} \delta_{NQ} )
+             *            &+ \tau_6 \delta_{KM} \delta_{LP} \delta_{NQ}
+             *            &+ \tau_7 \delta_{KN} \delta_{LP} \delta_{MQ}
+             *            &+ \tau_8 \left( \delta_{KP} \delta_{LQ} \delta_{MN} + \delta_{KQ} \delta_{LN} \delta_{MP} )
+             *            &+ \tau_9 \delta_{KN} \delta_{LQ} \delta_{MP}
+             *            &+ \tau_{10} \delta_{KP} \delta_{LN} \delta_{MQ}
+             *            &+ \tau_{11} \delta_{KQ} \delta_{LP} \delta_{MN}
+             * \end{align}\f$
              *
              * :param const parameterVector &taus: The moduli (11 independent terms)
              * :param parameterVector &C: The isotropic C stiffness tensor.
@@ -154,7 +160,7 @@ namespace tardigradeHydra{
         errorOut formIsotropicD( const parameterType &tau, const parameterType &sigma, parameterVector &D ) {
             /*!
              * Form the isotropic tensor D.
-             * D_{KLMN} = \tau \delta_{KL} \delta_{MN} + \sigma \left( \delta_{KM} \delta_{LN} + \delta_{KN} \delta_{LM} )
+             * \f$ D_{KLMN} = \tau \delta_{KL} \delta_{MN} + \sigma \left( \delta_{KM} \delta_{LN} + \delta_{KN} \delta_{LM} \right) \f$
              *
              * :param const parameterType &tau: The micromorphic tau parameter.
              * :param const parameterType &sigma: The micromorphic sigma parameter.
@@ -177,6 +183,142 @@ namespace tardigradeHydra{
                         }
                     }
                 }
+            }
+    
+            return NULL;
+        }
+
+        errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
+                                                         const double ( &grad_phi )[ 9 ][ 3 ],
+                                                         variableVector &deformationGradient, variableVector &microDeformation,
+                                                         variableVector &gradientMicroDeformation ){
+            /*!
+             * Assemble the fundamental deformation meaures from the degrees of freedom.
+             *
+             * :param const double ( &grad_u )[ 3 ][ 3 ]: The macro displacement gradient w.r.t. the reference configuration.
+             * :param const double ( &phi )[ 9 ]: The micro displacement.
+             * :param const double ( &grad_phi )[ 9 ][ 3 ]: The gradient of the micro displacement w.r.t. the reference configuration.
+             * :param variableVector &deformationGradient: The deformation gradient
+             * :param variableVector &microDeformation: The micro deformation
+             * :param variableVector &gradientMicroDeformation: The gradient of the micro deformation.
+             */
+    
+    
+            //Extract the degrees of freedom
+            variableMatrix displacementGradient = { { grad_u[ 0 ][ 0 ], grad_u[ 0 ][ 1 ], grad_u[ 0 ][ 2 ] },
+                                                    { grad_u[ 1 ][ 0 ], grad_u[ 1 ][ 1 ], grad_u[ 1 ][ 2 ] },
+                                                    { grad_u[ 2 ][ 0 ], grad_u[ 2 ][ 1 ], grad_u[ 2 ][ 2 ] } };
+    
+            variableVector microDisplacement = { phi[ 0 ], phi[ 1 ], phi[ 2 ],
+                                                 phi[ 3 ], phi[ 4 ], phi[ 5 ],
+                                                 phi[ 6 ], phi[ 7 ], phi[ 8 ] };
+    
+            variableMatrix gradientMicroDisplacement = { { grad_phi[ 0 ][ 0 ], grad_phi[ 0 ][ 1 ], grad_phi[ 0 ][ 2 ] },
+                                                         { grad_phi[ 1 ][ 0 ], grad_phi[ 1 ][ 1 ], grad_phi[ 1 ][ 2 ] },
+                                                         { grad_phi[ 2 ][ 0 ], grad_phi[ 2 ][ 1 ], grad_phi[ 2 ][ 2 ] },
+                                                         { grad_phi[ 3 ][ 0 ], grad_phi[ 3 ][ 1 ], grad_phi[ 3 ][ 2 ] },
+                                                         { grad_phi[ 4 ][ 0 ], grad_phi[ 4 ][ 1 ], grad_phi[ 4 ][ 2 ] },
+                                                         { grad_phi[ 5 ][ 0 ], grad_phi[ 5 ][ 1 ], grad_phi[ 5 ][ 2 ] },
+                                                         { grad_phi[ 6 ][ 0 ], grad_phi[ 6 ][ 1 ], grad_phi[ 6 ][ 2 ] },
+                                                         { grad_phi[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ] },
+                                                         { grad_phi[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] } };
+    
+            errorOut error = tardigradeMicromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient );
+    
+            if ( error ){
+                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
+                                                 "Error in assembly of the deformation gradient" );
+                result->addNext( error );
+                return result;
+            }
+    
+            error = tardigradeMicromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation );
+    
+            if ( error ){
+                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
+                                                 "Error in assembly of the micro deformation" );
+                result->addNext( error );
+                return result;
+            }
+    
+            error = tardigradeMicromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation );
+    
+            if ( error ){
+                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
+                                                 "Error in assembly of the gradient of the micro deformation" );
+                result->addNext( error );
+                return result;
+            }
+    
+            return NULL;
+        }
+
+        errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
+                                                         const double ( &grad_phi )[ 9 ][ 3 ],
+                                                         variableVector &deformationGradient, variableVector &microDeformation,
+                                                         variableVector &gradientMicroDeformation, variableMatrix &dFdGradU,
+                                                         variableMatrix &dChidPhi, variableMatrix &dGradChidGradPhi ){
+            /*!
+             * Assemble the fundamental deformation meaures from the degrees of freedom.
+             *
+             * :param const double ( &grad_u )[ 3 ][ 3 ]: The macro displacement gradient w.r.t. the reference configuration.
+             * :param const double ( &phi )[ 9 ]: The micro displacement.
+             * :param const double ( &grad_phi )[ 9 ][ 3 ]: The gradient of the micro displacement w.r.t. the reference configuration.
+             * :param variableVector &deformationGradient: The deformation gradient
+             * :param variableVector &microDeformation: The micro deformation
+             * :param variableVector &gradientMicroDeformation: The gradient of the micro deformation.
+             * :param variableMatrix &dFdGradU: The Jacobian of the deformation gradient w.r.t. the gradient of the displacement
+             * :param variableMatrix &dChidPhi: The Jacobian of the micro deformation w.r.t. the micro displacement
+             * :param variableMatrix &dGradChidGradPhi: The Jacobian of the gradient of the micro deformation w.r.t.
+             *      the gradient of the micro displacement
+             */
+    
+    
+            //Extract the degrees of freedom
+            variableMatrix displacementGradient = { { grad_u[ 0 ][ 0 ], grad_u[ 0 ][ 1 ], grad_u[ 0 ][ 2 ] },
+                                                    { grad_u[ 1 ][ 0 ], grad_u[ 1 ][ 1 ], grad_u[ 1 ][ 2 ] },
+                                                    { grad_u[ 2 ][ 0 ], grad_u[ 2 ][ 1 ], grad_u[ 2 ][ 2 ] } };
+    
+            variableVector microDisplacement = { phi[ 0 ], phi[ 1 ], phi[ 2 ],
+                                                 phi[ 3 ], phi[ 4 ], phi[ 5 ],
+                                                 phi[ 6 ], phi[ 7 ], phi[ 8 ] };
+    
+            variableMatrix gradientMicroDisplacement = { { grad_phi[ 0 ][ 0 ], grad_phi[ 0 ][ 1 ], grad_phi[ 0 ][ 2 ] },
+                                                         { grad_phi[ 1 ][ 0 ], grad_phi[ 1 ][ 1 ], grad_phi[ 1 ][ 2 ] },
+                                                         { grad_phi[ 2 ][ 0 ], grad_phi[ 2 ][ 1 ], grad_phi[ 2 ][ 2 ] },
+                                                         { grad_phi[ 3 ][ 0 ], grad_phi[ 3 ][ 1 ], grad_phi[ 3 ][ 2 ] },
+                                                         { grad_phi[ 4 ][ 0 ], grad_phi[ 4 ][ 1 ], grad_phi[ 4 ][ 2 ] },
+                                                         { grad_phi[ 5 ][ 0 ], grad_phi[ 5 ][ 1 ], grad_phi[ 5 ][ 2 ] },
+                                                         { grad_phi[ 6 ][ 0 ], grad_phi[ 6 ][ 1 ], grad_phi[ 6 ][ 2 ] },
+                                                         { grad_phi[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ] },
+                                                         { grad_phi[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] } };
+    
+            errorOut error = tardigradeMicromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient, dFdGradU );
+    
+            if ( error ){
+                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures (jacobian)",
+                                                 "Error in assembly of the deformation gradient" );
+                result->addNext( error );
+                return result;
+            }
+    
+            error = tardigradeMicromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation, dChidPhi );
+    
+            if ( error ){
+                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures (jacobian)",
+                                                 "Error in assembly of the micro deformation" );
+                result->addNext( error );
+                return result;
+            }
+    
+            error = tardigradeMicromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation,
+                                                                         dGradChidGradPhi );
+    
+            if ( error ){
+                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures (jacobian)",
+                                                 "Error in assembly of the gradient of the micro deformation" );
+                result->addNext( error );
+                return result;
             }
     
             return NULL;

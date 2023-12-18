@@ -62,11 +62,16 @@ namespace tardigradeHydra{
         typedef std::vector< floatType > floatVector; //!< Define a vector of floats
         typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
 
+        typedef floatType variableType; //!< Define the variable values type.
+        typedef std::vector< variableType > variableVector; //!< Define a vector of variables
+        typedef std::vector< std::vector< variableType > > variableMatrix; //!< Define a matrix of variables
+
         typedef double parameterType; //!< Define the parameter values type.
         typedef std::vector< parameterType > parameterVector; //!< Define a vector of parameters
 
         typedef double constantType; //!< Define the constant values type.
         typedef std::vector< constantType > constantVector; //!< Define a vector of constants
+        typedef std::vector< std::vector< constantType > > constantMatrix; //!< Define a matrix of constants
 
         errorOut formIsotropicA( const parameterType &lambda, const parameterType &mu, parameterVector &A );
     
@@ -76,6 +81,18 @@ namespace tardigradeHydra{
         errorOut formIsotropicC( const parameterVector &taus, parameterVector &C );
     
         errorOut formIsotropicD( const parameterType &tau, const parameterType &sigma, parameterVector &D );
+
+        errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
+                                                         const double ( &grad_phi )[ 9 ][ 3 ],
+                                                         variableVector &deformationGradient, variableVector &microDeformation,
+                                                         variableVector &gradientMicroDeformation );
+    
+        errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
+                                                         const double ( &grad_phi )[ 9 ][ 3 ],
+                                                         variableVector &deformationGradient, variableVector &microDeformation,
+                                                         variableVector &gradientMicroDeformation,
+                                                         variableMatrix &dFdGradU, variableMatrix &dChidPhi,
+                                                         variableMatrix &dGradChidGradPhi );
 
     }
 
