@@ -324,6 +324,115 @@ namespace tardigradeHydra{
             return NULL;
         }
 
+        errorOut extractMaterialParameters( const std::vector< double > &fparams,
+                                            parameterVector &Amatrix, parameterVector &Bmatrix,
+                                            parameterVector &Cmatrix, parameterVector &Dmatrix ){
+            /*!
+             * Extract the parameters from the parameter vector
+             *
+             * :param const std::vector< double > &fparams: The incoming parameter vector
+             * :param parameterVector &Amatrix: The A stiffness matrix.
+             * :param parameterVector &Bmatrix: The B stiffness matrix.
+             * :param parameterVector &Cmatrix: The C stiffness matrix.
+             * :param parameterVector &Dmatrix: The D stiffness matrix.
+             */
+    
+            if ( fparams.size() == 0 ){
+                return new errorNode( "extractMaterialParameters",
+                                      "The material parameters vector has a length of 0" );
+            }
+    
+            unsigned int start = 0;
+            unsigned int span;
+    
+            std::vector< parameterVector > outputs( 4 );
+    
+            //Extract the material parameters
+            for ( unsigned int i = 0; i < outputs.size(); i++ ){
+                span = ( unsigned int )std::floor( fparams[ start ]  + 0.5 ); //Extract the span of the parameter set
+    
+                if ( fparams.size() < start + 1 + span ){
+                    std::string outstr = "fparams is not long enough to contain all of the required parameters:\n";
+                    outstr +=            "    filling variable " + std::to_string( i ) + "\n";
+                    outstr +=            "    size =          "  + std::to_string( fparams.size() ) + "\n";
+                    outstr +=            "    required size = "  + std::to_string( start + 1 + span );
+    
+                    return new errorNode( "extractMaterialParameters",
+                                          outstr.c_str() );
+                }
+    
+                outputs[ i ] = parameterVector( fparams.begin() + start + 1, fparams.begin() + start + 1 + span );
+    
+                start = start + 1 + span;
+            }
+    
+            //Form the stiffness tensors
+            errorOut error;
+            if ( outputs[ 0 ].size() == 2 ){
+                error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicA( outputs[ 0 ][ 0 ], outputs[ 0 ][ 1 ], Amatrix );
+            }
+            else{
+                std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 0 ].size() ) + " ) for the A stiffness tensor";
+                return new errorNode( "extractMaterialParameters",
+                                      outstr.c_str() );
+            }
+    
+            if ( error ){
+                errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the A stiffness tensor" );
+                result->addNext( error );
+                return result;
+            }
+    
+            if ( outputs[ 1 ].size() == 5 ){
+                error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicB( outputs[ 1 ][ 0 ], outputs[ 1 ][ 1 ], outputs[ 1 ][ 2 ],
+                                                                                       outputs[ 1 ][ 3 ], outputs[ 1 ][ 4 ], Bmatrix );
+            }
+            else{
+                std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 1 ].size() ) + " ) for the B stiffness tensor";
+                return new errorNode( "extractMaterialParameters",
+                                      outstr.c_str() );
+            }
+    
+            if ( error ){
+                errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the B stiffness tensor" );
+                result->addNext( error );
+                return result;
+            }
+    
+            if ( outputs[ 2 ].size() == 11 ){
+                error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicC( outputs[ 2 ], Cmatrix );
+            }
+            else{
+                std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 2 ].size() ) + " ) for the C stiffness tensor";
+                return new errorNode( "extractMaterialParameters",
+                                      outstr.c_str() );
+            }
+    
+            if ( error ){
+                errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the C stiffness tensor" );
+                result->addNext( error );
+                return result;
+            }
+    
+            if ( outputs[ 3 ].size() == 2 ){
+                error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicD( outputs[ 3 ][ 0 ], outputs[ 3 ][ 1 ], Dmatrix );
+            }
+            else{
+                std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 3 ].size() ) + " ) for the D stiffness tensor";
+                return new errorNode( "extractMaterialParameters",
+                                      outstr.c_str() );
+            }
+    
+            if ( error ){
+                errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the D stiffness tensor" );
+                result->addNext( error );
+                return result;
+            }
+    
+            return NULL;
+
+        }
+
     }
 
 }

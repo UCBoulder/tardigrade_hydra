@@ -94,6 +94,10 @@ namespace tardigradeHydra{
                                                          variableMatrix &dFdGradU, variableMatrix &dChidPhi,
                                                          variableMatrix &dGradChidGradPhi );
 
+        errorOut extractMaterialParameters( const std::vector< double > &fparams,
+                                            parameterVector &Amatrix, parameterVector &Bmatrix,
+                                            parameterVector &Cmatrix, parameterVector &Dmatrix );
+
     }
 
 }

@@ -429,3 +429,49 @@ BOOST_AUTO_TEST_CASE( testAssembleFundamentalDeformationMeasures ){
         }
     }
 }
+
+BOOST_AUTO_TEST_CASE( testExtractMaterialParameters ){
+    /*!
+     * Test the extraction of the material parameters.
+     *
+     */
+
+    std::vector< double > fparams = { 2, 1.7, 1.8,
+                                      5, 2.8, .76, .15, 9.8, 5.4,
+                                      11, 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.,
+                                      2, .76, 5.4 };
+
+    parameterVector Amatrix;
+    parameterVector Bmatrix;
+    parameterVector Cmatrix;
+    parameterVector Dmatrix;
+
+    parameterVector answerAmatrix;
+    parameterVector answerBmatrix;
+    parameterVector answerCmatrix;
+    parameterVector answerDmatrix;
+
+    errorOut error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicA( 1.7, 1.8, answerAmatrix );
+    BOOST_CHECK( !error );
+
+    error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicB( 2.8, 0.76, 0.15, 9.8, 5.4, answerBmatrix );
+    BOOST_CHECK( !error );
+
+    error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicC( { 1., 2., 3., 4., 5., 6., 7., 8., 9., 10., 11.}, answerCmatrix );
+    BOOST_CHECK( !error );
+
+    error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicD( 0.76, 5.4, answerDmatrix );
+    BOOST_CHECK( !error );
+
+    error = tardigradeHydra::micromorphicLinearElasticity::extractMaterialParameters( fparams, Amatrix, Bmatrix, Cmatrix, Dmatrix );
+
+    BOOST_CHECK( !error );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( Amatrix, answerAmatrix ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( Bmatrix, answerBmatrix ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( Cmatrix, answerCmatrix ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( Dmatrix, answerDmatrix ) );
+}
