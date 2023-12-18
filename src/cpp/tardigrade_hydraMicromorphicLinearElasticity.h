@@ -16,7 +16,7 @@
 
 namespace tardigradeHydra{
 
-    namespace linearElasticity{
+    namespace micromorphicLinearElasticity{
 
         // forward class definitions
         namespace unit_test{
@@ -61,6 +61,21 @@ namespace tardigradeHydra{
         typedef double floatType; //!< Define the float values type.
         typedef std::vector< floatType > floatVector; //!< Define a vector of floats
         typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
+
+        typedef double parameterType; //!< Define the parameter values type.
+        typedef std::vector< parameterType > parameterVector; //!< Define a vector of parameters
+
+        typedef double constantType; //!< Define the constant values type.
+        typedef std::vector< constantType > constantVector; //!< Define a vector of constants
+
+        errorOut formIsotropicA( const parameterType &lambda, const parameterType &mu, parameterVector &A );
+    
+        errorOut formIsotropicB( const parameterType &eta, const parameterType &tau,   const parameterType &kappa,
+                                 const parameterType &nu,  const parameterType &sigma, parameterVector &B );
+    
+        errorOut formIsotropicC( const parameterVector &taus, parameterVector &C );
+    
+        errorOut formIsotropicD( const parameterType &tau, const parameterType &sigma, parameterVector &D );
 
     }
 
