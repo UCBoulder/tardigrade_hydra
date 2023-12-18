@@ -237,12 +237,16 @@ namespace tardigradeHydra{
 
                 }
 
+                //! Return a reference to the A stiffness matrix
                 const parameterVector *getAMatrix( ){ return &_Amatrix; }
 
+                //! Return a reference to the B stiffness matrix
                 const parameterVector *getBMatrix( ){ return &_Bmatrix; }
 
+                //! Return a reference to the C stiffness matrix
                 const parameterVector *getCMatrix( ){ return &_Cmatrix; }
 
+                //! Return a reference to the D stiffness matrix
                 const parameterVector *getDMatrix( ){ return &_Dmatrix; }
 
             private:
