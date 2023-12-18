@@ -73,6 +73,30 @@ namespace tardigradeHydra{
         typedef std::vector< constantType > constantVector; //!< Define a vector of constants
         typedef std::vector< std::vector< constantType > > constantMatrix; //!< Define a matrix of constants
 
+        errorOut computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
+                                                    variableVector &referenceHigherOrderStress );
+    
+        errorOut computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
+                                                    variableVector &referenceHigherOrderStress,
+                                                    variableMatrix &dHigherOrderStressdGamma );
+
+        errorOut computeLinearElasticTerm3( const variableVector &invCGamma,
+                                            const variableVector &referenceHigherOrderStress, variableVector &term3 );
+    
+        errorOut computeLinearElasticTerm3( const variableVector &invCGamma,
+                                            const variableVector &referenceHigherOrderStress, variableVector &term3,
+                                            variableMatrix &dTerm3dInvCGamma, variableMatrix &dTerm3dReferenceHigherOrderStress );
+
+        errorOut computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi );
+    
+        errorOut computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi,
+                                   variableMatrix &dInvRCGPsidRGG, variableMatrix &dInvRCGPsidPsi );
+    
+        errorOut computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma );
+    
+        errorOut computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma,
+                                     variableMatrix &dInvRCGGammadRCG, variableMatrix &dInvRCGGammadGamma );
+
         errorOut formIsotropicA( const parameterType &lambda, const parameterType &mu, parameterVector &A );
     
         errorOut formIsotropicB( const parameterType &eta, const parameterType &tau,   const parameterType &kappa,

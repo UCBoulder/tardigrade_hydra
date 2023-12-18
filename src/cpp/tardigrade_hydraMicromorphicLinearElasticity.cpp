@@ -15,6 +15,353 @@ namespace tardigradeHydra{
 
     namespace micromorphicLinearElasticity{
 
+        errorOut computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
+                                                    variableVector &referenceHigherOrderStress ){
+            /*!
+             * Compute the higher order stress in the reference configuration.
+             * \f$M_{IJK} = C_{JKILMN} Gamma_{LMN}\f$
+             *
+             * :param const variableVector &Gamma: The micro-gradient deformation measure.
+             * :param const parameterVector &C: The C stiffness tensor.
+             * :param variableVector &referenceHigherOrderStress: The higher order stress in the reference 
+             *     configuration.
+             */
+    
+            //Assume 3D
+            unsigned int dim = 3;
+    
+            if ( Gamma.size() != dim * dim * dim ){
+                return new errorNode( "computeReferenceHigherOrderStress",
+                                      "Gamma must have a length of 27" );
+            }
+    
+            if ( C.size() != dim * dim * dim * dim * dim * dim ){
+                return new errorNode( "computeReferenceHigherOrderStress",
+                                      "The C stiffness tensor have a length of 3**6" );
+            }
+    
+            referenceHigherOrderStress = variableVector( dim * dim * dim, 0 );
+    
+            for ( unsigned int I = 0; I < dim; I++ ){
+                for ( unsigned int J = 0; J < dim; J++ ){
+                    for ( unsigned int K = 0; K < dim; K++ ){
+                        for ( unsigned int L = 0; L < dim; L++ ){
+                            for ( unsigned int M = 0; M < dim; M++ ){
+                                for ( unsigned int N = 0; N < dim; N++ ){
+                                    referenceHigherOrderStress[ dim * dim * I + dim * J + K ] += C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + dim * dim * L + dim * M + N ] * Gamma[ dim * dim * L + dim * M + N ];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            return NULL;
+        }
+    
+        errorOut computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
+                                                    variableVector &referenceHigherOrderStress,
+                                                    variableMatrix &dReferenceHigherOrderStressdGamma ){
+            /*!
+             * Compute the higher order stress in the reference configuration.
+             * \f$M_{IJK} = C_{JKILMN} Gamma_{LMN}\f$
+             *
+             * Also compute the Jacobian
+             * \f$\frac{ \partial M_{IJK} }{\partial \Gamma_{OPQ} } = C_{JKIOPQ}\f$
+             *
+             * :param const variableVector &Gamma: The micro-gradient deformation measure.
+             * :param const parameterVector &C: The C stiffness tensor.
+             * :param variableVector &referenceHigherOrderStress: The higher order stress in the reference 
+             *     configuration.
+             */
+    
+            //Assume 3D
+            unsigned int dim = 3;
+    
+            errorOut error = computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeReferenceHigherOrderStress (jacobian)",
+                                                 "Error in computation of higher order stress" );
+                result->addNext( error );
+                return result;
+            }
+    
+            //Assemble the Jacobian
+            dReferenceHigherOrderStressdGamma = variableMatrix( dim * dim * dim, variableVector( dim * dim * dim, 0 ) );
+    
+            for ( unsigned int I = 0; I < dim; I++ ){
+                for ( unsigned int J = 0; J < dim; J++ ){
+                    for ( unsigned int K = 0; K < dim; K++ ){
+                        for ( unsigned int O = 0; O < dim; O++ ){
+                            for ( unsigned int P = 0; P < dim; P++ ){
+                                for ( unsigned int Q = 0; Q < dim; Q++ ){
+                                    dReferenceHigherOrderStressdGamma[ dim * dim * I + dim * J + K ][ dim * dim * O + dim * P + Q ] +=
+                                        C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + dim * dim * O + dim * P + Q ];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    
+            return NULL;
+        }
+
+        errorOut computeLinearElasticTerm3( const variableVector &invCGamma,
+                                            const variableVector &referenceHigherOrderStress, variableVector &term3 ){
+            /*!
+             * Compute the value of the third term in the micromorphic linear elasticity formulation.
+             * \f$ term3_{IJ} = M_{IQR} C_{JS}^{-1} \Gamma_{SQR} \f$
+             *
+             * :param const variableVector &invCGamma: \f$ C_{JS}^{-1} \Gamma_{SQR} \f$
+             * :param const variableVector &referenceHigherOrderStress: The higher order stress in the reference configuration.
+             * :param variableVector &term3: The third term in the linear elastic equation.
+             */
+    
+            //Assume 3D
+            unsigned int dim = 3;
+    
+            if ( invCGamma.size() != dim * dim * dim ){
+                return new errorNode( "computeLinearElasticTerm3",
+                                      "invCGamma must have a size of 27" );
+            }
+    
+            if ( referenceHigherOrderStress.size() != dim * dim * dim ){
+                return new errorNode( "computeLinearElasticTerm3",
+                                      "The referenceHigherOrder stress must have a size of 27" );
+            }
+    
+            term3 = variableVector( dim * dim, 0 );
+    
+            for ( unsigned int I = 0; I < dim; I++ ){
+                for ( unsigned int J = 0; J < dim; J++ ){
+                    for ( unsigned int Q = 0; Q < dim; Q++ ){
+                        for ( unsigned int R = 0; R < dim; R++ ){
+                            term3[ dim * I + J ] += referenceHigherOrderStress[ dim * dim * I + dim * Q + R ] * invCGamma[ dim * dim * J + dim * Q + R ];
+                        }
+                    }
+                }
+            }
+    
+            return NULL;
+        }
+
+        errorOut computeLinearElasticTerm3( const variableVector &invCGamma,
+                                            const variableVector &referenceHigherOrderStress, variableVector &term3,
+                                            variableMatrix &dTerm3dInvCGamma, variableMatrix &dTerm3dReferenceHigherOrderStress ){
+            /*!
+             * Compute the value of the third term in the micromorphic linear elasticity formulation.
+             * \f$ term3_{IJ} = M_{IQR} C_{JS}^{-1} \Gamma_{SQR} \f$
+             *
+             * Also returns the Jacobians
+             * \f$\begin{align}
+             * \frac{ \partial term3_{IJ} }{ \partial M_{TUV} } &= \delta_{IT} C_{JS}^{-1} \Gamma_{SUV}\\
+             * \frac{ \partial term3_{IJ} }{ \partial C_{TW}^{-1} \Gamma_{WUV} &= M_{IUV} \delta_{JT}
+             * \end{align}\f$
+             *
+             * :param const variableVector &invCGamma: C_{JS}^{-1} \Gamma_{SQR}
+             * :param const variableVector &referenceHigherOrderStress: The higher order stress in the reference configuration.
+             * :param variableVector &term3: The third term in the linear elastic equation.
+             */
+    
+            //Assume 3D
+            unsigned int dim = 3;
+    
+            errorOut error = computeLinearElasticTerm3( invCGamma, referenceHigherOrderStress, term3 );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeLinearElasticTerm3 (jacobian)",
+                                                 "Error in computation of term 3" );
+                result->addNext( error );
+                return result;
+            }
+    
+            constantVector eye( dim * dim );
+            tardigradeVectorTools::eye( eye );
+    
+            dTerm3dInvCGamma = variableMatrix( dim * dim, variableVector( dim * dim * dim, 0 ) );
+            dTerm3dReferenceHigherOrderStress = variableMatrix( dim * dim, variableVector( dim * dim * dim, 0 ) );
+    
+            for ( unsigned int I = 0; I < dim; I++ ){
+                for ( unsigned int J = 0; J < dim; J++ ){
+                    for ( unsigned int T = 0; T < dim; T++ ){
+                        for ( unsigned int U = 0; U < dim; U++ ){
+                            for ( unsigned int V = 0; V < dim; V++ ){
+                                dTerm3dInvCGamma[ dim * I + J ][ dim * dim * T + dim * U + V ] = referenceHigherOrderStress[ dim * dim * I + dim * U + V ] * eye[ dim * J + T ];
+                                dTerm3dReferenceHigherOrderStress[ dim * I + J ][ dim * dim * T + dim * U + V ] = eye[ dim * I + T ] * invCGamma[ dim * dim * J + dim * U + V ];
+                            }
+                        }
+                    }
+                }
+            }
+            return NULL;
+        }
+
+        errorOut computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi ){
+            /*!
+             * Compute the product \f$ C_{IK}^{-1} \Psi_{KJ} \f$
+             *
+             * :param const variableVector &invRCG: The inverse of the right cauchy green deformation tensor.
+             * :param const variableVector &Psi: The micro-deformation measure.
+             * :param variableVector &invRCGPsi: the product.
+             */
+    
+            //Assume 3d
+            unsigned int dim = 3;
+    
+            if ( invRCG.size() != dim * dim ){
+                return new errorNode( "computeInvRCGGamma", "invRCG has an improper dimension" );
+            }
+    
+            if ( Psi.size() != dim * dim ){
+                return new errorNode( "computeInvRCGGamma", "Psi has an improper dimension" );
+            }
+    
+            invRCGPsi = tardigradeVectorTools::matrixMultiply( invRCG, Psi, dim, dim, dim, dim );
+    
+            return NULL;
+        }
+    
+        errorOut computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi,
+                                   variableMatrix &dInvRCGPsidRCG, variableMatrix &dInvRCGPsidPsi ){
+            /*!
+             * Compute the product \f$ C_{IK}^{-1} \Psi_{KJ} \f$
+             *
+             * Also compute the Jacobians
+             * \f$\begin{align}
+             * \frac{ \partial C_{IO}^{-1} \Psi_{OJ} } { \partial C_{KL} } &= -C_{IK}^{-1} C_{LO}^{-1} \Psi_{OJ}\\
+             * \frac{ \partial C_{IO}^{-1} \Psi_{OJ} } { \partial \Psi_{KL} } &= C_{IK}^{-1} \delta_{JL}
+             * \end{align}\f$
+             *
+             * :param const variableVector &invRCG: The inverse of the right cauchy green deformation tensor.
+             * :param const variableVector &Psi: The micro-deformation measure.
+             * :param variableVector &invRCGPsi: the product.
+             * :param variableMatrix &dInvRCGPsidRCG: The Jacobian of the product w.r.t. the right cauchy green
+             *     deformation tensor.
+             * :param variableMatrix &dInvRCGPsidPsi: The Jacobian of the product w.r.t. the micro-deformation measure.
+             */
+    
+            //Assume 3D
+            unsigned int dim = 3;
+    
+            errorOut error = computeInvRCGPsi( invRCG, Psi, invRCGPsi );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeInvRCGPsi (jacobian)", "Error in computation of invRCG Psi product" );
+                result->addNext( error );
+                return result;
+            }
+    
+            //Construct the jacobians
+            variableVector eye( dim * dim );
+            tardigradeVectorTools::eye( eye );
+    
+            dInvRCGPsidRCG = variableMatrix( invRCGPsi.size(), variableVector( invRCG.size(), 0 ) );
+            dInvRCGPsidPsi = variableMatrix( invRCGPsi.size(), variableVector( Psi.size(), 0 ) );
+    
+            for ( unsigned int I = 0; I < 3; I++ ){
+                for ( unsigned int J = 0; J < 3; J++ ){
+                    for ( unsigned int K = 0; K < 3; K++ ){
+                        for ( unsigned int L = 0; L < 3; L++ ){
+                            dInvRCGPsidRCG[ dim * I + J ][ dim * K + L ] = -invRCG[ dim * I + K ] * invRCGPsi[ dim * L + J ];
+                            dInvRCGPsidPsi[ dim * I + J ][ dim * K + L ] = invRCG[ dim * I + K ] * eye[ dim * J + L ];
+                        }
+                    }
+                }
+            }
+    
+            return NULL;
+        }
+    
+        errorOut computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma ){
+            /*!
+             * Compute the product \f$ C_{IS}^{-1} \Gamma_{SQR} \f$
+             *
+             * :param const variableVector &invRCG: The inverse of the right Cauchy Green deformation tensor.
+             * :param const variableVector &Gamma: The gradient of the micro-deformation deformation tensor.
+             * :param variableVector &invRCGGamma: The product.
+             */
+    
+            //Assume 3d
+            unsigned int dim = 3;
+    
+            if ( invRCG.size() != dim * dim ){
+                return new errorNode( "computeInvRCGGamma", "invRCG has an improper dimension" );
+            }
+    
+            if ( Gamma.size() != dim * dim * dim ){
+                return new errorNode( "computeInvRCGGamma", "Gamma has an improper dimension" );
+            }
+    
+            invRCGGamma = variableVector( dim * dim * dim, 0 );
+            for ( unsigned int J = 0; J < dim; J++ ){
+                for ( unsigned int Q = 0; Q < dim; Q++ ){
+                    for ( unsigned int R = 0; R < dim; R++ ){
+                        for ( unsigned int S = 0; S < dim; S++ ){
+                            invRCGGamma[ dim * dim * J + dim * Q + R ] += invRCG[ dim * J + S ] * Gamma[ dim * dim * S + dim * Q + R ];
+                        }
+                    }
+                }
+            }
+    
+            return NULL;
+        }
+    
+        errorOut computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma,
+                                     variableMatrix &dInvRCGGammadRCG, variableMatrix &dInvRCGGammadGamma ){
+            /*!
+             * Compute the product \f$ C_{IS}^{-1} \Gamma_{SQR} \f$
+             *
+             * Also compute the Jacobians
+             * 
+             * \f$\begin{align}
+             * \frac{\partial C_{JS}^{-1} \Gamma_{SQR} }{ \partial C_{TU} } &= -C_{JT}^{-1} C_{US}^{-1} \Gamma_{SQR}\\
+             * \frac{\partial C_{JS}^{-1} \Gamma_{SQR} }{ \partial \Gamma_{TUV} } &= C_{JT}^{-1} \delta_{QU} \delta_{RV}
+             * \end{align}\f$
+             *
+             * :param const variableVector &invRCG: The inverse of the right Cauchy Green deformation tensor.
+             * :param const variableVector &Gamma: The gradient of the micro-deformation deformation tensor.
+             * :param variableVector &invRCGGamma: The product.
+             */
+    
+            //Assume 3d
+            unsigned int dim = 3;
+    
+            errorOut error = computeInvRCGGamma( invRCG, Gamma, invRCGGamma );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeInvRCGGamma (jacobian)", "Error in computation of invRCG Gamma product" );
+                result->addNext( error );
+                return result;
+            }
+    
+            //Assemble jacobians of invCGamma w.r.t. C and Gamma
+            variableVector eye( dim * dim );
+            tardigradeVectorTools::eye( eye );
+    
+            dInvRCGGammadRCG = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
+            dInvRCGGammadGamma = variableMatrix( dim * dim * dim, variableVector( dim * dim * dim, 0 ) );
+    
+            for ( unsigned int J = 0; J < dim; J++ ){
+                for ( unsigned int Q = 0; Q < dim; Q++ ){
+                    for ( unsigned int R = 0; R < dim; R++ ){
+                        for ( unsigned int T = 0; T < dim; T++ ){
+                            for ( unsigned int U = 0; U < dim; U++ ){
+                                dInvRCGGammadRCG[ dim * dim * J + dim * Q + R ][ dim * T + U ]
+                                    = -invRCG[ dim * J + T] * invRCGGamma[ dim * dim * U + dim * Q + R ];
+                                for ( unsigned int V = 0; V < dim; V++ ){
+                                    dInvRCGGammadGamma[ dim * dim * J + dim * Q + R ][ dim * dim * T + dim * U + V]
+                                        = invRCG[ dim * J + T ] * eye[ dim * Q + U ] * eye[ dim * R + V ];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    
+            return NULL;
+        }
+
         errorOut formIsotropicA( const parameterType &lambda, const parameterType &mu, parameterVector &A ){
             /*!
              * Form the isotropic A stiffness tensor.
@@ -55,7 +402,7 @@ namespace tardigradeHydra{
             /*!
              * Form the isotropic B stiffness tensor.
              * \f$\begin{align}
-             * B_{KLMN} &= ( eta - tau ) \delta_{KL} \delta_{MN} + \kappa \delta_{KM} \delta_{LN} + \nu \delta_{KN} \delta_{LM}
+             * B_{KLMN} &= ( eta - tau ) \delta_{KL} \delta_{MN} + \kappa \delta_{KM} \delta_{LN} + \nu \delta_{KN} \delta_{LM}\\
              *          &- \sigma \left( \delta_{KM} \delta_{LN} + \delta_{KN} \delta_{LM} \right)
              * \end{align}\f$
              *
@@ -96,16 +443,16 @@ namespace tardigradeHydra{
             /*!
              * Form the isotropic C stiffness tensor.
              * \f$\begin{align}
-             * C_{KLMNPQ} &= \tau_1 \left( \delta_{KL} \delta_{MN} \delta_{PQ} + \delta_{KQ} \delta_{LM} \delta_{NP} \right) 
-             *            &+ \tau_2 \left( \delta_{KL} \delta_{MP} \delta_{NQ} + \delta_{KM} \delta_{LQ} \delta_{NP} \right)
-             *            &+ \tau_3 \delta_{KL} \delta_{MQ} \delta_{NP}
-             *            &+ \tau_4 \delta_{KN} \delta_{LM} \delta_{PQ}
-             *            &+ \tau_5 \left( \delta_{KM} \delta_{LN} \delta_{PQ} + \delta_{KP} \delta_{LM} \delta_{NQ} )
-             *            &+ \tau_6 \delta_{KM} \delta_{LP} \delta_{NQ}
-             *            &+ \tau_7 \delta_{KN} \delta_{LP} \delta_{MQ}
-             *            &+ \tau_8 \left( \delta_{KP} \delta_{LQ} \delta_{MN} + \delta_{KQ} \delta_{LN} \delta_{MP} )
-             *            &+ \tau_9 \delta_{KN} \delta_{LQ} \delta_{MP}
-             *            &+ \tau_{10} \delta_{KP} \delta_{LN} \delta_{MQ}
+             * C_{KLMNPQ} &= \tau_1 \left( \delta_{KL} \delta_{MN} \delta_{PQ} + \delta_{KQ} \delta_{LM} \delta_{NP} \right)\\
+             *            &+ \tau_2 \left( \delta_{KL} \delta_{MP} \delta_{NQ} + \delta_{KM} \delta_{LQ} \delta_{NP} \right)\\
+             *            &+ \tau_3 \delta_{KL} \delta_{MQ} \delta_{NP}\\
+             *            &+ \tau_4 \delta_{KN} \delta_{LM} \delta_{PQ}\\
+             *            &+ \tau_5 \left( \delta_{KM} \delta_{LN} \delta_{PQ} + \delta_{KP} \delta_{LM} \delta_{NQ} )\\
+             *            &+ \tau_6 \delta_{KM} \delta_{LP} \delta_{NQ}\\
+             *            &+ \tau_7 \delta_{KN} \delta_{LP} \delta_{MQ}\\
+             *            &+ \tau_8 \left( \delta_{KP} \delta_{LQ} \delta_{MN} + \delta_{KQ} \delta_{LN} \delta_{MP} )\\
+             *            &+ \tau_9 \delta_{KN} \delta_{LQ} \delta_{MP}\\
+             *            &+ \tau_{10} \delta_{KP} \delta_{LN} \delta_{MQ}\\
              *            &+ \tau_{11} \delta_{KQ} \delta_{LP} \delta_{MN}
              * \end{align}\f$
              *
