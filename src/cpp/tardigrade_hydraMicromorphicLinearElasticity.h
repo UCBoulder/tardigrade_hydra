@@ -73,6 +73,24 @@ namespace tardigradeHydra{
         typedef std::vector< constantType > constantVector; //!< Define a vector of constants
         typedef std::vector< std::vector< constantType > > constantMatrix; //!< Define a matrix of constants
 
+        errorOut linearElasticity( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                   const variableVector &gradientMicroDeformation,
+                                   const parameterVector &A, const parameterVector &B, const parameterVector &C,
+                                   const parameterVector &D,
+                                   variableVector &cauchyStress, variableVector &microStress,
+                                   variableVector &higherOrderStress );
+    
+        errorOut linearElasticity( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                   const variableVector &gradientMicroDeformation,
+                                   const parameterVector &A, const parameterVector &B, const parameterVector &C,
+                                   const parameterVector &D,
+                                   variableVector &cauchyStress, variableVector &microStress,
+                                   variableVector &higherOrderStress,
+                                   variableMatrix &dCauchyStressdF, variableMatrix &dCauchyStressdChi, variableMatrix &dCauchyStressdGradChi,
+                                   variableMatrix &dMicroStressdF, variableMatrix &dMicroStressdChi, variableMatrix &dMicroStressdGradChi,
+                                   variableMatrix &dHigherOrderStressdF, variableMatrix &dHigherOrderStressdChi,
+                                   variableMatrix &dHigherOrderStressdGradChi );
+
         errorOut linearElasticityReference( const variableVector &deformationGradient, const variableVector &microDeformation,
                                             const variableVector &gradientMicroDeformation,
                                             const parameterVector &A, const parameterVector &B, const parameterVector &C,
