@@ -73,6 +73,43 @@ namespace tardigradeHydra{
         typedef std::vector< constantType > constantVector; //!< Define a vector of constants
         typedef std::vector< std::vector< constantType > > constantMatrix; //!< Define a matrix of constants
 
+        errorOut linearElasticityReference( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                            const variableVector &gradientMicroDeformation,
+                                            const parameterVector &A, const parameterVector &B, const parameterVector &C,
+                                            const parameterVector &D,
+                                            variableVector &PK2Stress, variableVector &referenceMicroStress,
+                                            variableVector &referenceHigherOrderStress );
+    
+        errorOut linearElasticityReference( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                            const variableVector &gradientMicroDeformation,
+                                            const parameterVector &A, const parameterVector &B, const parameterVector &C,
+                                            const parameterVector &D,
+                                            variableVector &PK2Stress, variableVector &referenceMicroStress,
+                                            variableVector &referenceHigherOrderStress,
+                                            variableMatrix &dPK2StressdF, variableMatrix &dPK2StressdChi, variableMatrix &dPK2StressdGradChi,
+                                            variableMatrix &dReferenceMicroStressdF, variableMatrix &dReferenceMicroStressdChi,
+                                            variableMatrix &dReferenceMicroStressdGradChi, variableMatrix &dMdF, variableMatrix &dMdGradChi );
+
+        errorOut linearElasticityReferenceDerivedMeasures( const variableVector &rightCauchyGreenDeformation, const variableVector &Psi,
+                                                           const variableVector &Gamma,
+                                                           const parameterVector &A, const parameterVector &B, const parameterVector &C,
+                                                           const parameterVector &D,
+                                                           variableVector &PK2Stress, variableVector &referenceMicroStress,
+                                                           variableVector &referenceHigherOrderStress );
+    
+        errorOut linearElasticityReferenceDerivedMeasures( const variableVector &rightCauchyGreenDeformation, const variableVector &Psi,
+                                                           const variableVector &Gamma,
+                                                           const parameterVector &A, const parameterVector &B, const parameterVector &C,
+                                                           const parameterVector &D,
+                                                           variableVector &PK2Stress, variableVector &referenceMicroStress,
+                                                           variableVector &referenceHigherOrderStress,
+                                                           variableMatrix &dPK2StressdRCG, variableMatrix &dPK2StressdPsi,
+                                                           variableMatrix &dPK2StressdGamma,
+                                                           variableMatrix &dReferenceMicroStressdRCG,
+                                                           variableMatrix &dReferenceMicroStressdPsi,
+                                                           variableMatrix &dReferenceMicroStressdGamma,
+                                                           variableMatrix &dMdGamma );
+
         errorOut mapStressMeasuresToCurrent( const variableVector &deformationGradient, const variableVector &microDeformation,
                                              const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                              const variableVector &referenceHigherOrderStress,
