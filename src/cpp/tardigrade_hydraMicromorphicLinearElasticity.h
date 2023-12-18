@@ -73,6 +73,22 @@ namespace tardigradeHydra{
         typedef std::vector< constantType > constantVector; //!< Define a vector of constants
         typedef std::vector< std::vector< constantType > > constantMatrix; //!< Define a matrix of constants
 
+        errorOut mapStressMeasuresToCurrent( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                             const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                             const variableVector &referenceHigherOrderStress,
+                                             variableVector &cauchyStress, variableVector &microStress,
+                                             variableVector &higherOrderStress );
+    
+        errorOut mapStressMeasuresToCurrent( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                             const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                             const variableVector &referenceHigherOrderStress,
+                                             variableVector &cauchyStress, variableVector &microStress,
+                                             variableVector &higherOrderStress,
+                                             variableMatrix &dCauchyStressdF, variableMatrix &dCauchyStressdPK2Stress,
+                                             variableMatrix &dMicroStressdF, variableMatrix &dMicroStressdReferenceMicroStress,
+                                             variableMatrix &dHigherOrderStressdF, variableMatrix &dHigherOrderStressdChi,
+                                             variableMatrix &dHigherOrderStressdReferenceHigherOrderStress );
+
         errorOut computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
                                              const variableVector &gradientMicroDeformation,
                                              variableVector &rightCauchyGreen, variableVector &Psi, variableVector &Gamma );

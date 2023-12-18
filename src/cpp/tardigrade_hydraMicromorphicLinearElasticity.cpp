@@ -15,6 +15,143 @@ namespace tardigradeHydra{
 
     namespace micromorphicLinearElasticity{
 
+        errorOut mapStressMeasuresToCurrent( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                             const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                             const variableVector &referenceHigherOrderStress,
+                                             variableVector &cauchyStress, variableVector &microStress,
+                                             variableVector &higherOrderStress ){
+            /*!
+             * Map the stress measures in the reference configuration to the current configuration.
+             *
+             * :param const variableVector &deformationGradient: The deformation gradient between the 
+             *     reference configuration and the current configuration.
+             * :param const variableVector &microDeformation: The micro-deformation map between the 
+             *     reference configuration and the current configuration.
+             * :param const variableVector &PK2Stress: The Second Piola-Kirchoff stress.
+             * :param const variableVector &referenceMicroStress: The symmetric micro-stress in the 
+             *     reference configuration.
+             * :param const variableVector &referenceHigherOrderStress: The higher order stress in 
+             *     the reference configuration.
+             * :param variableVector &cauchyStress: The Cauchy stress (PK2 stress in the current configuration).
+             * :param variableVector &microStress: The symmetric micro-stress in the current configuration.
+             * :param variableVector &higherOrderStress: The higher order stress in the current configuration.
+             */
+    
+            //Map the PK2 stress to the Cauchy stress
+            errorOut error = tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, deformationGradient, cauchyStress );
+    
+            if ( error ){
+                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
+                                                 "Error in the map of the PK2 stress to the Cauchy stress" );
+                result->addNext( error );
+                return result;
+            }
+    
+            //Map the symmetric micro stress to the current configuration
+            error = tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceMicroStress, deformationGradient, microStress );
+    
+            if ( error ){
+                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
+                                                 "Error in the map of the micro-stress to the current configuation" );
+                result->addNext( error );
+                return result;
+            }
+    
+            //Map the higher order stress to the current configuration
+            error = tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, deformationGradient,
+                                                                     microDeformation, higherOrderStress );
+    
+            if ( error ){
+                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
+                                                 "Error in the map of the higher-order stress to the current configuation" );
+                result->addNext( error );
+                return result;
+            }
+    
+            return NULL;
+        }
+    
+        errorOut mapStressMeasuresToCurrent( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                             const variableVector &PK2Stress, const variableVector &referenceMicroStress,
+                                             const variableVector &referenceHigherOrderStress,
+                                             variableVector &cauchyStress, variableVector &microStress,
+                                             variableVector &higherOrderStress,
+                                             variableMatrix &dCauchyStressdF, variableMatrix &dCauchyStressdPK2Stress,
+                                             variableMatrix &dMicroStressdF, variableMatrix &dMicroStressdReferenceMicroStress,
+                                             variableMatrix &dHigherOrderStressdF, variableMatrix &dHigherOrderStressdChi,
+                                             variableMatrix &dHigherOrderStressdReferenceHigherOrderStress ){
+            /*!
+             * Map the stress measures in the reference configuration to the current configuration.
+             *
+             * Also computes the Jacobians
+             *
+             * :param const variableVector &deformationGradient: The deformation gradient between the 
+             *     reference configuration and the current configuration.
+             * :param const variableVector &microDeformation: The micro-deformation map between the 
+             *     reference configuration and the current configuration.
+             * :param const variableVector &PK2Stress: The Second Piola-Kirchoff stress.
+             * :param const variableVector &referenceMicroStress: The symmetric micro-stress in the 
+             *     reference configuration.
+             * :param const variableVector &referenceHigherOrderStress: The higher order stress in 
+             *     the reference configuration.
+             * :param variableVector &cauchyStress: The Cauchy stress (PK2 stress in the current configuration).
+             * :param variableVector &microStress: The symmetric micro-stress in the current configuration.
+             * :param variableVector &higherOrderStress: The higher order stress in the current configuration.
+             * :param variableMatrix &dCauchyStressdF: The Jacobian of the Cauchy stress w.r.t. the 
+             *     deformation gradient.
+             * :param variableMatrix &dCauchyStressdPK2Stress: The Jacobian of the Cauchy stress w.r.t. the 
+             *     PK2 stress.
+             * :param variableMatrix &dMicroStressdF: The Jacobian of the micro stress w.r.t. the 
+             *     deformation gradient.
+             * :param variableMatrix &dMicroStressdReferenceMicroStress: The Jacobian of the micro-stress 
+             *     in the current configuration w.r.t. the micro-stress in the reference configuration.
+             * :param variableMatrix &dHigherOrderStressdF: The Jacobian of the higher-order stress w.r.t.
+             *     the deformation gradient.
+             * :param variableMatrix &dHigherOrderStressdChi: The Jacobian of the higher-order stress 
+             *     w.r.t. the micro-deformation.
+             * :param variableMatrix &dHigherOrderStressdReferenceHigherOrderStress: The Jacobian of the 
+             *     higher-order stress w.r.t. the higher order stress in the reference configuration.
+             */
+    
+            //Map the PK2 stress to the Cauchy stress
+            errorOut error = tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, deformationGradient, cauchyStress,
+                                                                      dCauchyStressdPK2Stress, dCauchyStressdF );
+    
+            if ( error ){
+                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
+                                                 "Error in the map of the PK2 stress to the Cauchy stress" );
+                result->addNext( error );
+                return result;
+            }
+    
+            //Map the symmetric micro stress to the current configuration
+            error = tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceMicroStress, deformationGradient, microStress,
+                                                                        dMicroStressdReferenceMicroStress, dMicroStressdF );
+    
+            if ( error ){
+                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
+                                                 "Error in the map of the micro-stress to the current configuation" );
+                result->addNext( error );
+                return result;
+            }
+    
+            //Map the higher order stress to the current configuration
+            error = tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, deformationGradient,
+                                                                     microDeformation, higherOrderStress,
+                                                                     dHigherOrderStressdReferenceHigherOrderStress,
+                                                                     dHigherOrderStressdF,
+                                                                     dHigherOrderStressdChi );
+    
+            if ( error ){
+                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
+                                                 "Error in the map of the higher-order stress to the current configuation" );
+                result->addNext( error );
+                return result;
+            }
+    
+            return NULL;
+        }
+
         errorOut computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
                                              const variableVector &gradientMicroDeformation,
                                              variableVector &rightCauchyGreen, variableVector &Psi, variableVector &Gamma ){
