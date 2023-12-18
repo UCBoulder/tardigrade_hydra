@@ -11,6 +11,10 @@ set(ABAQUS_SRC_PATH "src/abaqus")
 set(ABAQUS_TEST_PATH "${ABAQUS_SRC_PATH}/tests")
 set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
+
+# Add a flag for whether the python bindings should be built or not
+set(TARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built for hydra")
+
 # Set the internal support libraries
 set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPeryznaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
@@ -118,6 +122,7 @@ endif()
 set(LOCAL_BUILD_INCLUDE_DIRECTORIES "")
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
+    set(${package_upper}_BUILD_PYTHON_BINDINGS ${TARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS} CACHE INTERNAL "Setting ${package}'s python binding flag to the global value")
     find_package(${package} ${upstream_required} CONFIG)
     if(${package}_FOUND)
         message(STATUS "Found ${package}: ${${package}_DIR}")
