@@ -1032,6 +1032,8 @@ namespace tardigradeHydra{
          * \param &microConfigurations: The micro-configuration matrix
          * \param &gradientMicroConfiguration: The gradient of the micro-deformation in the reference configuration
          * \param &gradientMicroConfigurations: The gradient of the micro-deformations in their reference configurations
+         * \param &dChi1dChi: The gradient of the first micro sub-configuration w.r.t. the total micro deformation
+         * \param &dChi1dChin: The gradient of the first micro sub-configuration w.r.t. the remaining sub-micro configurations
          * \param &dGradChi1dCn: The Jacobian of the gradient of the first micro-configuration w.r.t. the remaining configurations
          * \param &dGradChi1dChi: The Jacobian of the gradient of the first micro-configuration w.r.t. the total micro-configuration
          * \param &dGradChi1dChin: The Jacobian of the gradient of the first micro-configuration w.r.t. the remaining micro-configurations
