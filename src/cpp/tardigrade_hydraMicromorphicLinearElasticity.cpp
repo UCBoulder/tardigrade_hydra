@@ -15,6 +15,339 @@ namespace tardigradeHydra{
 
     namespace micromorphicLinearElasticity{
 
+        errorOut computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                             const variableVector &gradientMicroDeformation,
+                                             variableVector &rightCauchyGreen, variableVector &Psi, variableVector &Gamma ){
+            /*!
+             * Compute the deformation measures
+             * \f$\begin{align}
+             * C_{IJ} &= F_{iI} F_{iJ}\\
+             * Psi_{IJ} &= F_{iI} \Chi_{iJ}\\
+             * \Gamma_{IJK} &= F_{iI} \Chi_{iJ, K}
+             * \end{align}\f$
+             *
+             * :param const variableVector &deformationGradient: The deformation gradient
+             * :param const variableVector &microDeformation: The micro-deformation
+             * :param const variableVector &gradientMicroDeformation: The spatial gradient of the micro-deformation
+             * :param variableVector &rightCauchyGreen: The Right Cauchy-Green deformation tensor
+             * :param variableVector &Psi: The micro-deformation measure
+             * :param variableVector &Gamma: The gradient micro-deformation measure
+             */
+    
+            errorOut error = tardigradeConstitutiveTools::computeRightCauchyGreen( deformationGradient, rightCauchyGreen );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeDeformationMeasures",
+                                                 "Error in the computation of the right Cauchy-Green Deformation measure" );
+                result->addNext( error );
+                return result;
+            }
+    
+            error = tardigradeMicromorphicTools::computePsi( deformationGradient, microDeformation, Psi );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeDeformationMeasures",
+                                                 "Error in the computation of Psi" );
+                result->addNext( error );
+                return result;
+            }
+    
+            error = tardigradeMicromorphicTools::computeGamma( deformationGradient, gradientMicroDeformation, Gamma );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeDeformationMeasures",
+                                                 "Error in the computation of Gamma" );
+                result->addNext( error );
+                return result;
+            }
+    
+            return NULL;
+    
+        }
+    
+        errorOut computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                             const variableVector &gradientMicroDeformation,
+                                             variableVector &rightCauchyGreen, variableVector &Psi, variableVector &Gamma,
+                                             variableMatrix &dCdF, variableMatrix &dPsidF, variableMatrix &dPsidChi,
+                                             variableMatrix &dGammadF, variableMatrix &dGammadGradChi ){
+            /*!
+             * Compute the deformation measures
+             * \f$\begin{align}
+             * C_{IJ} &= F_{iI} F_{iJ}\\
+             * Psi_{IJ} &= F_{iI} \Chi_{iJ}\\
+             * \Gamma_{IJK} &= F_{iI} \Chi_{iJ, K}
+             * \end{align}\f$
+             *
+             * :param const variableVector &deformationGradient: The deformation gradient
+             * :param const variableVector &microDeformation: The micro-deformation
+             * :param const variableVector &gradientMicroDeformation: The spatial gradient of the micro-deformation
+             * :param variableVector &rightCauchyGreen: The Right Cauchy-Green deformation tensor
+             * :param variableVector &Psi: The micro-deformation measure
+             * :param variableVector &Gamma: The gradient micro-deformation measure
+             * :param variableMatrix &dCdF: The gradient of the right Cauchy green deformation tensor w.r.t. 
+             *     the deformation gradient.
+             * :param variableMatrix &dPsidF: The gradient of Psi w.r.t. the deformation gradient.
+             * :param variableMatrix &dPsidChi: The gradient of Psi w.r.t. the microDeformation.
+             * :param variableMatrix &dGammadF: The gradient of Gamma w.r.t. the deformation gradient.
+             * :param variableMatrix &dGammadGradChi: The gradient of Gamma w.r.t. the spatial gradient of Chi
+             */
+    
+            errorOut error = tardigradeConstitutiveTools::computeRightCauchyGreen( deformationGradient, rightCauchyGreen, dCdF );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeDeformationMeasures (jacobian)",
+                                                 "Error in the computation of the right Cauchy-Green Deformation measure" );
+                result->addNext( error );
+                return result;
+            }
+    
+            error = tardigradeMicromorphicTools::computePsi( deformationGradient, microDeformation, Psi, dPsidF, dPsidChi );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeDeformationMeasures (jacobian)",
+                                                 "Error in the computation of Psi" );
+                result->addNext( error );
+                return result;
+            }
+    
+            error = tardigradeMicromorphicTools::computeGamma( deformationGradient, gradientMicroDeformation, Gamma, dGammadF, dGammadGradChi );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeDeformationMeasures (jacobian)",
+                                                 "Error in the computation of Gamma" );
+                result->addNext( error );
+                return result;
+            }
+    
+            return NULL;
+        }
+
+        errorOut computeLinearElasticTerm1( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+                                            const parameterVector &A, const parameterVector &D, variableVector &term1 ){
+            /*!
+             * Compute the first term for the linear elastic model
+             * term1_{IJ} = A_{IJKL} E_{KL} + D_{IJKL} * \mathcal{E}_{KL}
+             *
+             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain.
+             * :param const variableVector &microStrain: The micro-strain
+             * :param const parameterVector &A: The A stiffness matrix
+             * :param const parameterVEctor &D: The D stiffness matrix
+             * :param variableVector &term1: The first term.
+             */
+    
+            //Assume 3D
+            unsigned int dim = 3;
+    
+            if ( greenLagrangeStrain.size() != dim * dim ){
+                return new errorNode( "computeLinearElasticTerm1",
+                                      "The green lagrange strain must have a length of 9" );
+            }
+    
+            if ( microStrain.size() != dim * dim ){
+                return new errorNode( "computeLinearElasticTerm1",
+                                      "The micro-strain must have a length of 9" );
+            }
+    
+            if ( A.size() != dim * dim * dim * dim ){
+                return new errorNode( "computeLinearElasticTerm1",
+                                      "A must have a size of 3**4" );
+            }
+    
+            if ( D.size() != dim * dim * dim * dim ){
+                return new errorNode( "computeLinearElasticTerm1",
+                                      "D must have a size of 3**4" );
+            }
+    
+            //Compute the first common term for the PK2 and symmetric micro-stress
+            term1 = variableVector( dim * dim, 0 );
+            for ( unsigned int I = 0; I < dim; I++ ){
+                for ( unsigned int J = 0; J < dim; J++ ){
+                    for ( unsigned int K = 0; K < dim; K++ ){
+                        for ( unsigned int L = 0; L < dim; L++ ){
+                            term1[ dim * I + J ] += A[ dim * dim * dim * I + dim * dim * J + dim * K + L ] * greenLagrangeStrain[ dim * K + L ]
+                                                  + D[ dim * dim * dim * I + dim * dim * J + dim * K + L ] * microStrain[ dim * K + L ];
+                        }
+                    }
+                }
+            }
+    
+            return NULL;
+        }
+    
+        errorOut computeLinearElasticTerm1( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+                                            const parameterVector &A, const parameterVector &D, variableVector &term1,
+                                            variableMatrix &dTerm1dGreenLagrangeStrain, variableMatrix &dTerm1dMicroStrain ){
+            /*!
+             * Compute the first term for the linear elastic model
+             * term1_{IJ} = A_{IJKL} E_{KL} + D_{IJKL} * \mathcal{E}_{KL}
+             *
+             * Also return the Jacobian
+             * \frac{\partial term^1_{IJ} }{ E_{MN} } = A_{IJMN}
+             * \frac{\partial term^1_{IJ} }{ \mathcal{E}_{MN} } = D_{IJMN}
+             *
+             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain.
+             * :param const variableVector &microStrain: The micro-strain
+             * :param const parameterVector &A: The A stiffness matrix
+             * :param const parameterVEctor &D: The D stiffness matrix
+             * :param variableVector &term1: The first term.
+             */
+    
+            //Assume 3D
+            unsigned int dim = 3;
+    
+            errorOut error = computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1 );
+    
+            if ( error ){
+                errorOut result = new errorNode( "computeLinearElasticTerm1 (jacobian)",
+                                                 "Error in computation of linear elastic term1" );
+                result->addNext( error );
+                return result;
+            }
+    
+            //Compute the first common term for the PK2 and symmetric micro-stress
+            dTerm1dGreenLagrangeStrain = variableMatrix( term1.size(), variableVector( greenLagrangeStrain.size(), 0 ) );
+            dTerm1dMicroStrain = variableMatrix( term1.size(), variableVector( microStrain.size(), 0 ) );
+    
+            for ( unsigned int I = 0; I < dim; I++ ){
+                for ( unsigned int J = 0; J < dim; J++ ){
+                    for ( unsigned int M = 0; M < dim; M++ ){
+                        for ( unsigned int N = 0; N < dim; N++ ){
+                            dTerm1dGreenLagrangeStrain[ dim * I + J ][ dim * M + N ] = A[ dim * dim * dim * I + dim * dim * J + dim * M + N ];
+                            dTerm1dMicroStrain[ dim * I + J ][ dim * M + N ] = D[ dim * dim * dim * I + dim * dim * J + dim * M + N ];
+                        }
+                    }
+                }
+            }
+    
+            return NULL;
+        }
+    
+        errorOut computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+                                            const variableVector &invCPsi, const parameterVector &B, const parameterVector &D,
+                                            variableVector &term2 ){
+            /*!
+             * Compute the second term from the linear elastic constitutive model
+             *
+             * term^2_{IJ} = \left( B_{IQKL} \mathcal{E}_{KL} + E_{KL} D_{KLIQ} \right) C_{JR}^{-1} \Psi_{RQ}
+             *
+             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain E_{IJ} = \frac{1}{2} \left( C_{IJ} - \delta_{IJ} \right)
+             * :param const variableVector &microStrain: The micro-strain \mathcal{E}_{IJ} = \Psi_{IJ} - \delta_{IJ}
+             * :param const variableVector &invCPsi: The product C_{JR}^{-1} \Psi_{RQ}
+             * :param const variableVector &B: The B stiffness matrix
+             * :param const variableVector &D: The D stiffness matrix
+             * :param variableVector &term2: The second term.
+             */
+    
+            //Assume 3D
+            unsigned int dim = 3;
+    
+            if ( greenLagrangeStrain.size() != dim * dim ){
+                return new errorNode( "computeLinearElasticTerm2",
+                                      "The green lagrange strain must have a length of 9" );
+            }
+    
+            if ( microStrain.size() != dim * dim ){
+                return new errorNode( "computeLinearElasticTerm2",
+                                      "The micro-strain must have a length of 9" );
+            }
+    
+            if ( invCPsi.size() != dim * dim ){
+                return new errorNode( "computeLinearElasticTerm2",
+                                      "invCPsi must have a size of 9" );
+            }
+    
+            if ( B.size() != dim * dim * dim * dim ){
+                return new errorNode( "computeLinearElasticTerm2",
+                                      "B must have a size of 3**4" );
+            }
+    
+            if ( D.size() != dim * dim * dim * dim ){
+                return new errorNode( "computeLinearElasticTerm2",
+                                      "D must have a size of 3**4" );
+            }
+    
+            term2 = variableVector( greenLagrangeStrain.size(), 0 );
+    
+            for ( unsigned int I = 0; I < dim; I++ ){
+                for ( unsigned int J = 0; J < dim; J++ ){
+                    for ( unsigned int K = 0; K < dim; K++ ){
+                        for ( unsigned int L = 0; L < dim; L++ ){
+                            for ( unsigned int Q = 0; Q < dim; Q++ ){
+                                term2[ dim * I + J] += ( B[ dim * dim * dim * I + dim * dim * Q + dim * K + L ] * microStrain[ dim * K + L ]
+                                                     + greenLagrangeStrain[ dim * K + L ] * D[ dim * dim * dim * K + dim * dim * L + dim * I + Q ] )
+                                                     * invCPsi[ dim * J + Q ];
+                            }
+                        }
+                    }
+                }
+            }
+    
+            return NULL;
+        }
+    
+       errorOut computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+                                            const variableVector &invCPsi, const parameterVector &B, const parameterVector &D,
+                                            variableVector &term2, variableMatrix &dTerm2dGreenLagrangeStrain,
+                                            variableMatrix &dTerm2dMicroStrain, variableMatrix &dTerm2dInvCPsi ){
+            /*!
+             * Compute the second term from the linear elastic constitutive model
+             *
+             * term^2_{IJ} = \left( B_{IQKL} \mathcal{E}_{KL} + E_{KL} D_{KLIQ} \right) C_{JR}^{-1} \Psi_{RQ}
+             *
+             * Also return the Jacobians
+             * \frac{ \partial term^2_{IJ} }{ \partial E_{MN} } = D_{MNIK} C_{JR}^{-1} \Psi_{RK}
+             * \frac{ \partial term^2_{IJ} }{ \partial \mathcal{E}_{MN} } = B_{IKMN} C_{JR}^{-1} \Psi_{RK}
+             * \frac{ \partial term^2_{IJ} }{ \partial C_{MO}^{-1} \Psi_{ON} } = \left( B_{INKL} \mathcal{E}_{KL} + E_{KL} D_{KLIN} \right) \delta_{JM} 
+             *
+             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain E_{IJ} = \frac{1}{2} \left( C_{IJ} - \delta_{IJ} \right)
+             * :param const variableVector &microStrain: The micro-strain \mathcal{E}_{IJ} = \Psi_{IJ} - \delta_{IJ}
+             * :param const variableVector &invCPsi: The product C_{JR}^{-1} \Psi_{RQ}
+             * :param const variableVector &B: The B stiffness matrix
+             * :param const variableVector &D: The D stiffness matrix
+             * :param variableVector &term2: The second term.
+             * :param variableMatrix &dTerm2dGreenLagrangeStrain: The jacobian of term 2 w.r.t. the Green-Lagrange strain.
+             * :param variableMatrix &dTerm2dMicroStrain: The jacobian of term 2 w.r.t. the microStrain.
+             * :param variableMatrix &dTerm2dInvCPsi: The jacobian of term 2 w.r.t. C_{JR}^{-1} \Psi_{RQ}
+             */
+    
+            //Assume 3D
+            unsigned int dim = 3;
+    
+            errorOut error = computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invCPsi, B, D, term2 );
+    
+            if ( error ){
+                errorOut result = new errorNode("computeLinearElasticTerm2 (jacobian)",
+                                                "Error in computation of term 2" );
+                result->addNext( error );
+                return result;
+            }
+    
+            //Compute the Jacobians
+            constantVector eye( dim * dim );
+            tardigradeVectorTools::eye( eye );
+            dTerm2dGreenLagrangeStrain = variableMatrix( term2.size(), variableVector( greenLagrangeStrain.size(), 0 ) );
+            dTerm2dMicroStrain         = variableMatrix( term2.size(), variableVector( microStrain.size(), 0 ) );
+            dTerm2dInvCPsi             = variableMatrix( term2.size(), variableVector( invCPsi.size(), 0 ) );
+    
+            for ( unsigned int I = 0; I < dim; I++ ){
+                for ( unsigned int J = 0; J < dim; J++ ){
+                    for ( unsigned int M = 0; M < dim; M++ ){
+                        for ( unsigned int N = 0; N < dim; N++ ){
+                            for ( unsigned int K = 0; K < dim; K++ ){
+                                dTerm2dGreenLagrangeStrain[ dim * I + J ][ dim * M + N ] += D[ dim * dim * dim * M + dim * dim * N + dim * I + K] * invCPsi[ dim * J + K ];
+                                dTerm2dMicroStrain[ dim * I + J ][ dim * M + N ] += B[ dim * dim * dim * I + dim * dim * K + dim * M + N] * invCPsi[ dim * J + K ];
+                                for ( unsigned int L = 0; L < dim; L++ ){
+                                    dTerm2dInvCPsi[ dim * I + J ][ dim * M + N ] += ( B[ dim * dim * dim * I + dim * dim * N + dim * K + L ] * microStrain[ dim * K + L ] + greenLagrangeStrain[ dim * K + L ] * D[ dim * dim * dim * K + dim * dim * L + dim * I + N ] ) * eye[ dim * J + M ];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+    
+            return NULL;
+        }
+
         errorOut computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
                                                     variableVector &referenceHigherOrderStress ){
             /*!

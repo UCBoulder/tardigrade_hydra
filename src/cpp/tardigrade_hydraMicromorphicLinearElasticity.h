@@ -73,6 +73,32 @@ namespace tardigradeHydra{
         typedef std::vector< constantType > constantVector; //!< Define a vector of constants
         typedef std::vector< std::vector< constantType > > constantMatrix; //!< Define a matrix of constants
 
+        errorOut computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                             const variableVector &gradientMicroDeformation,
+                                             variableVector &rightCauchyGreen, variableVector &Psi, variableVector &Gamma );
+    
+        errorOut computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                             const variableVector &gradientMicroDeformation,
+                                             variableVector &rightCauchyGreen, variableVector &Psi, variableVector &Gamma,
+                                             variableMatrix &dCdF, variableMatrix &dPsidF, variableMatrix &dPsidChi,
+                                             variableMatrix &dGammadF, variableMatrix &dGammadGradChi );
+
+        errorOut computeLinearElasticTerm1( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+                                            const parameterVector &A, const parameterVector &D, variableVector &term1 );
+    
+        errorOut computeLinearElasticTerm1( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+                                            const parameterVector &A, const parameterVector &D, variableVector &term1,
+                                            variableMatrix &dTerm1dGreenLagrangeStrain, variableMatrix &dTerm1dMicroStrain );
+    
+        errorOut computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+                                            const variableVector &incCPsi, const parameterVector &B, const parameterVector &D,
+                                            variableVector &term2 );
+    
+        errorOut computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+                                            const variableVector &invCPsi, const parameterVector &B, const parameterVector &D,
+                                            variableVector &term2, variableMatrix &dTerm2dGreenLagrangeStrain,
+                                            variableMatrix &dTerm2dMicroStrain, variableMatrix &dTerm2dInvCPsi );
+
         errorOut computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
                                                     variableVector &referenceHigherOrderStress );
     
