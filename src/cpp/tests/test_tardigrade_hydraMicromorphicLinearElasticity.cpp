@@ -1584,6 +1584,64 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
                                    -1.0183107 , -0.12645195, -0.79818076, -1.23318541, -0.95577138,
                                     0.1274431 , -0.47648617 };
 
+    // Form a hydra class and residual class
+    floatType time = 1.23;
+
+    floatType deltaTime = 2.34;
+
+    floatType temperature = 3.45;
+
+    floatType previousTemperature = 4.56;
+
+    floatVector previousDeformationGradient = { 1, 0, 0,
+                                                0, 1, 0,
+                                                0, 0, 1 };
+
+    floatVector previousMicroDeformation = { 1, 0, 0,
+                                             0, 1, 0,
+                                             0, 0, 1 };
+
+    floatVector previousGradientMicroDeformation( 27, 0 );
+
+    floatVector previousStateVariables = { };
+
+    floatVector parameters = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    unsigned int configuration_unknown_count = 45;
+
+    floatType tolr = 1e-2;
+
+    floatType tola = 1e-3;
+
+    unsigned int maxIterations = 24;
+
+    unsigned int maxLSIterations = 45;
+
+    floatType lsAlpha = 2.3;
+
+    class hydraBaseMicromorphicMock : public tardigradeHydra::hydraBaseMicromorphic{
+
+        public:
+
+            using tardigradeHydra::hydraBaseMicromorphic::hydraBaseMicromorphic;
+
+    };
+
+    hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                     microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables,
+                                     dimension, configuration_unknown_count,
+                                     tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    tardigradeHydra::micromorphicLinearElasticity::residual R( &hydra, 45, parameters );
+
     variableVector resultC, resultPsi, resultGamma;
     errorOut error = tardigradeHydra::micromorphicLinearElasticity::computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
                                                                                                 resultC, resultPsi, resultGamma );
@@ -1595,6 +1653,12 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultPsi, answerPsi ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultGamma, answerGamma ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getRightCauchyGreen( ), answerC ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getPsi( ), answerPsi ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getGamma( ), answerGamma ) );
 
     //Test the jacobians
 

@@ -249,6 +249,46 @@ namespace tardigradeHydra{
                 //! Return a reference to the D stiffness matrix
                 const parameterVector *getDMatrix( ){ return &_Dmatrix; }
 
+                const variableVector *getRightCauchyGreen( );
+
+                const variableVector *getPsi( );
+
+                const variableVector *getGamma( );
+
+                const variableVector *getPreviousRightCauchyGreen( );
+
+                const variableVector *getPreviousPsi( );
+
+                const variableVector *getPreviousGamma( );
+
+            protected:
+
+                void setRightCauchyGreen( const variableVector &rightCauchyGreen );
+
+                void setPsi( const variableVector &psi );
+
+                void setGamma( const variableVector &gamma );
+
+                void setPreviousRightCauchyGreen( const variableVector &previousRightCauchyGreen );
+
+                void setPreviousPsi( const variableVector &previousPsi );
+
+                void setPreviousGamma( const variableVector &previousGamma );
+
+                virtual void setDeformation( const bool isPrevious );
+
+                virtual void setRightCauchyGreen( );
+
+                virtual void setPsi( );
+
+                virtual void setGamma( );
+
+                virtual void setPreviousRightCauchyGreen( );
+
+                virtual void setPreviousPsi( );
+
+                virtual void setPreviousGamma( );
+
             private:
 
                 parameterVector _Amatrix; //!< The A stiffness matrix
@@ -258,6 +298,18 @@ namespace tardigradeHydra{
                 parameterVector _Cmatrix; //!< The C stiffness matrix
 
                 parameterVector _Dmatrix; //!< The D stiffness matrix
+
+                tardigradeHydra::dataStorage< variableVector > _rightCauchyGreen; //!< The current right Cauchy-Green deformation tensor
+
+                tardigradeHydra::dataStorage< variableVector > _psi; //!< The current micro-deformation tensor Psi
+
+                tardigradeHydra::dataStorage< variableVector > _gamma; //!< The current gradient micro-deformation tensor Gamma
+
+                tardigradeHydra::dataStorage< variableVector > _previousRightCauchyGreen; //!< The previous right Cauchy-Green deformation tensor
+
+                tardigradeHydra::dataStorage< variableVector > _previousPsi; //!< The previous micro-deformation tensor Psi
+
+                tardigradeHydra::dataStorage< variableVector > _previousGamma; //!< The previous gradient micro-deformation tensor Gamma
 
         };
 

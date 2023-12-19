@@ -1814,6 +1814,300 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setRightCauchyGreen( const variableVector &rightCauchyGreen ){
+            /*!
+             * Set the value of the right Cauchy-Green deformation tensor
+             * 
+             * \param &rightCauchyGreen: The value
+             */
+
+            _rightCauchyGreen.second = rightCauchyGreen;
+
+            _rightCauchyGreen.first = true;
+
+            addIterationData( &_rightCauchyGreen );
+
+        }
+
+        void residual::setPsi( const variableVector &psi ){
+            /*!
+             * Set the value of the micro deformation measure psi
+             * 
+             * \param &psi: The value
+             */
+
+            _psi.second = psi;
+
+            _psi.first = true;
+
+            addIterationData( &_psi );
+
+        }
+
+        void residual::setGamma( const variableVector &gamma ){
+            /*!
+             * Set the value of the micro deformation measure gamma
+             * 
+             * \param &gamma: The value
+             */
+
+            _gamma.second = gamma;
+
+            _gamma.first = true;
+
+            addIterationData( &_gamma );
+
+        }
+
+        void residual::setPreviousRightCauchyGreen( const variableVector &previousRightCauchyGreen ){
+            /*!
+             * Set the value of the previous right Cauchy-Green deformation tensor
+             * 
+             * \param &previousRightCauchyGreen: The value
+             */
+
+            _previousRightCauchyGreen.second = previousRightCauchyGreen;
+
+            _previousRightCauchyGreen.first = true;
+
+        }
+
+        void residual::setPreviousPsi( const variableVector &previousPsi ){
+            /*!
+             * Set the value of the previous micro deformation measure psi
+             * 
+             * \param &previousPsi: The value
+             */
+
+            _previousPsi.second = previousPsi;
+
+            _previousPsi.first = true;
+        }
+
+        void residual::setPreviousGamma( const variableVector &previousGamma ){
+            /*!
+             * Set the value of the previous micro deformation measure gamma
+             * 
+             * \param &previousGamma: The value
+             */
+
+            _previousGamma.second = previousGamma;
+
+            _previousGamma.first = true;
+
+        }
+
+        void residual::setRightCauchyGreen( ){
+            /*!
+             * Set the value of the right Cauchy-Green deformation tensor
+             */
+
+            setDeformation( false );
+
+        }
+
+        void residual::setPsi( ){
+            /*!
+             * Set the value of the micro deformation measure psi
+             */
+
+            setDeformation( false );
+
+        }
+
+        void residual::setGamma( ){
+            /*!
+             * Set the value of the micro deformation measure gamma
+             */
+
+            setDeformation( false );
+
+        }
+
+        void residual::setPreviousRightCauchyGreen( ){
+            /*!
+             * Set the value of the previous right Cauchy-Green deformation tensor
+             */
+
+            setDeformation( true );
+
+        }
+
+        void residual::setPreviousPsi( ){
+            /*!
+             * Set the value of the previous micro deformation measure psi
+             * 
+             * \param &previousPsi: The value
+             */
+
+            setDeformation( true );
+        }
+
+        void residual::setPreviousGamma( ){
+            /*!
+             * Set the value of the previous micro deformation measure gamma
+             */
+
+            setDeformation( true );
+
+        }
+
+        void residual::setDeformation( const bool isPrevious ){
+            /*!
+             * Evaluate the derived deformation measures
+             * 
+             * We assume that the first configuration in hydra.getConfigurations is the elastic one
+             *
+             * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
+             */
+
+            floatVector deformationGradient;
+
+            floatVector microDeformation;
+
+            floatVector gradientMicroDeformation;
+
+            if ( isPrevious ){
+
+                deformationGradient = ( *hydra->getPreviousConfigurations( ) )[ 0 ];
+
+                microDeformation = ( *hydra->getPreviousMicroConfigurations( ) )[ 0 ];
+
+                gradientMicroDeformation = ( *hydra->getPreviousGradientMicroConfigurations( ) )[ 0 ];
+
+            }
+            else{
+
+                deformationGradient = ( *hydra->getConfigurations( ) )[ 0 ];
+
+                microDeformation = ( *hydra->getMicroConfigurations( ) )[ 0 ];
+
+                gradientMicroDeformation = ( *hydra->getGradientMicroConfigurations( ) )[ 0 ];
+
+            }
+
+            floatVector rightCauchyGreen;
+
+            floatVector Psi;
+
+            floatVector Gamma;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
+                                                                                   rightCauchyGreen, Psi, Gamma ) );
+
+            if ( isPrevious ){
+
+                setPreviousRightCauchyGreen( rightCauchyGreen );
+
+                setPreviousPsi( Psi );
+
+                setPreviousGamma( Gamma );
+
+            }
+            else{
+
+                setRightCauchyGreen( rightCauchyGreen );
+
+                setPsi( Psi );
+
+                setGamma( Gamma );
+
+            }
+
+        }
+
+        const variableVector *residual::getRightCauchyGreen( ){
+            /*!
+             * Set the value of the right Cauchy-Green deformation tensor
+             */
+
+            if ( !_rightCauchyGreen.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( false ) );
+
+            }
+
+            return &_rightCauchyGreen.second;
+
+        }
+
+        const variableVector *residual::getPsi( ){
+            /*!
+             * Set the value of the micro deformation measure Psi
+             */
+
+            if ( !_psi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( false ) );
+
+            }
+
+            return &_psi.second;
+
+        }
+
+
+        const variableVector *residual::getGamma( ){
+            /*!
+             * Set the value of the micro deformation measure Gamma
+             */
+
+            if ( !_gamma.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( false ) );
+
+            }
+
+            return &_gamma.second;
+
+        }
+
+        const variableVector *residual::getPreviousRightCauchyGreen( ){
+            /*!
+             * Set the previous value of the right Cauchy-Green deformation tensor
+             */
+
+            if ( !_previousRightCauchyGreen.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( true ) );
+
+            }
+
+            return &_rightCauchyGreen.second;
+
+        }
+
+        const variableVector *residual::getPreviousPsi( ){
+            /*!
+             * Set the value of the previous micro deformation measure Psi
+             */
+
+            if ( !_previousPsi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( true ) );
+
+            }
+
+            return &_previousPsi.second;
+
+        }
+
+
+        const variableVector *residual::getPreviousGamma( ){
+            /*!
+             * Set the value of the previous micro deformation measure Gamma
+             */
+
+            if ( !_previousGamma.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( true ) );
+
+            }
+
+            return &_previousGamma.second;
+
+        }
+
     }
 
 }
