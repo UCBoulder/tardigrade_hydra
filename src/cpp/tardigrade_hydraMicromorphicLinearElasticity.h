@@ -301,9 +301,31 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< variableVector > _rightCauchyGreen; //!< The current right Cauchy-Green deformation tensor
 
+                tardigradeHydra::dataStorage< variableMatrix > _dCdF; //!< The Jacobian of the right Cauchy-Green deformation tensor w.r.t. the total deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _dCdFn; //!< The Jacobian of the right Cauchy-Green deformation tensor w.r.t. the remaining sub-deformation gradients
+
                 tardigradeHydra::dataStorage< variableVector > _psi; //!< The current micro-deformation tensor Psi
 
+                tardigradeHydra::dataStorage< variableMatrix > _dPsidF; //!< The Jacobian of the micro deformation measure Psi w.r.t. the total deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _dPsidFn; //!< The Jacobian of the micro deformation measure Psi w.r.t. the remaining sub-deformation gradients
+
+                tardigradeHydra::dataStorage< variableMatrix > _dPsidChi; //!< The Jacobian of the micro deformation measure Psi w.r.t. the total micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _dPsidChin; //!< The Jacobian of the micro deformation measure Psi w.r.t. the remaining sub micro deformations
+
                 tardigradeHydra::dataStorage< variableVector > _gamma; //!< The current gradient micro-deformation tensor Gamma
+
+                tardigradeHydra::dataStorage< variableMatrix > _dGammadF; //!< The Jacobian of the micro deformation measure Gamma w.r.t. the total deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _dGammadGradChi; //!< The Jacobian of the micro deformation measure Gamma w.r.t. the reference spatial gradient of the total micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _dGammadFn; //!< The Jacobian of the micro deformation measure Gamma w.r.t. the remaining sub-deformation gradients
+
+                tardigradeHydra::dataStorage< variableMatrix > _dGammadChin; //!< The Jacobian of the micro deformation measure Gamma w.r.t. the remaining sub micro-deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _dGammadGradChin; //!< The Jacobian of the micro deformation measure Gamma w.r.t. the local reference spatial gradients of the remaining sub-micro deformations
 
                 tardigradeHydra::dataStorage< variableVector > _previousRightCauchyGreen; //!< The previous right Cauchy-Green deformation tensor
 
