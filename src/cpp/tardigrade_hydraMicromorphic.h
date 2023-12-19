@@ -248,8 +248,6 @@ namespace tardigradeHydra{
              */
             residualBaseMicromorphic( hydraBaseMicromorphic *_hydra, unsigned int _numEquations ) : residualBase( _hydra, _numEquations ), hydra( _hydra ){ }
 
-        protected:
-
             hydraBaseMicromorphic *hydra;
 
     };
