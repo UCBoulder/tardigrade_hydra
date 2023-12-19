@@ -1662,6 +1662,8 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
 
     tardigradeHydra::micromorphicLinearElasticity::residual R( &hydra, 45, parameters );
 
+    tardigradeHydra::micromorphicLinearElasticity::residual RJ( &hydra, 45, parameters );
+
     variableVector resultC, resultPsi, resultGamma;
     errorOut error = tardigradeHydra::micromorphicLinearElasticity::computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
                                                                                                 resultC, resultPsi, resultGamma );
@@ -1695,6 +1697,8 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
                                                                                         resultCJ, resultPsiJ, resultGammaJ, dCdF, dPsidF, dPsidXi,
                                                                                         dGammadF, dGammadGradXi );
 
+    RJ.getdRightCauchyGreendF( ); //Set the values of the deformation Jacobians
+
     BOOST_CHECK( !error );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultCJ, answerC ) );
@@ -1702,6 +1706,19 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultPsiJ, answerPsi ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultGammaJ, answerGamma ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getRightCauchyGreen( ), answerC ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getPsi( ), answerPsi ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getGamma( ), answerGamma ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getPreviousRightCauchyGreen( ), previousAnswerC ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getPreviousPsi( ), previousAnswerPsi ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getPreviousGamma( ), previousAnswerGamma ) );
+
 
     //Test jacobians w.r.t. the deformation gradient
     constantType eps = 1e-6;
@@ -1728,18 +1745,24 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dCdF[j][i] ) );
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdRightCauchyGreendF( ) )[ j ][ i ] ) );
         }
 
         gradCol = ( resultPsi_P - resultPsi_M ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dPsidF[j][i] ) );
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdPsidF( ) )[ j ][ i ] ) );
         }
 
         gradCol = ( resultGamma_P - resultGamma_M ) / ( 2 * delta[i] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dGammadF[j][i] ) );
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdGammadF( ) )[ j ][ i ] ) );
         }
     }
 
@@ -1774,11 +1797,15 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dPsidXi[j][i] ) );
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdPsidChi( ) )[ j ][ i ] ) );
         }
 
         gradCol = ( resultGamma_P - resultGamma_M ) / ( 2 * delta[ i ] );
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], ( *RJ.getdGammadChi( ) )[ j ][ i ] ) );
         }
     }
 
@@ -1819,6 +1846,8 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dGammadGradXi[j][i] ) );
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdGammadGradChi( ) )[ j ][ i ] ) );
         }
     }
 }
