@@ -1936,8 +1936,6 @@ namespace tardigradeHydra{
         void residual::setPreviousPsi( ){
             /*!
              * Set the value of the previous micro deformation measure psi
-             * 
-             * \param &previousPsi: The value
              */
 
             setDeformation( true );
