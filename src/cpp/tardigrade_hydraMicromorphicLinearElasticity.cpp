@@ -2497,6 +2497,24 @@ namespace tardigradeHydra{
 
             floatVector gradientMicroDeformation1;
 
+            const floatMatrix *dF1dF;
+
+            const floatMatrix *dF1dFn;
+
+            const floatMatrix *dChi1dChi;
+
+            const floatMatrix *dChi1dChin;
+
+            const floatMatrix *dGradChi1dFn;
+
+            const floatMatrix *dGradChi1dChi;
+
+            const floatMatrix *dGradChi1dChin;
+
+            const floatMatrix *dGradChi1dGradChi;
+
+            const floatMatrix *dGradChi1dGradChin;
+
             if ( isPrevious ){
 
                 deformationGradient1 = ( *hydra->getPreviousConfigurations( ) )[ 0 ];
@@ -2504,6 +2522,24 @@ namespace tardigradeHydra{
                 microDeformation1 = ( *hydra->getPreviousMicroConfigurations( ) )[ 0 ];
 
                 gradientMicroDeformation1 = ( *hydra->getPreviousGradientMicroConfigurations( ) )[ 0 ];
+
+                dF1dF              = hydra->getPreviousdF1dF( );
+
+                dF1dFn             = hydra->getPreviousdF1dFn( );
+
+                dChi1dChi          = hydra->getPreviousdChi1dChi( );
+
+                dChi1dChin         = hydra->getPreviousdChi1dChin( );
+
+                dGradChi1dFn       = hydra->getPreviousdGradChi1dFn( );
+
+                dGradChi1dChi      = hydra->getPreviousdGradChi1dChi( );
+
+                dGradChi1dChin     = hydra->getPreviousdGradChi1dChin( );
+
+                dGradChi1dGradChi  = hydra->getPreviousdGradChi1dGradChi( );
+
+                dGradChi1dGradChin = hydra->getPreviousdGradChi1dGradChin( );
 
             }
             else{
@@ -2513,6 +2549,24 @@ namespace tardigradeHydra{
                 microDeformation1 = ( *hydra->getMicroConfigurations( ) )[ 0 ];
 
                 gradientMicroDeformation1 = ( *hydra->getGradientMicroConfigurations( ) )[ 0 ];
+
+                dF1dF              = hydra->getdF1dF( );
+
+                dF1dFn             = hydra->getdF1dFn( );
+
+                dChi1dChi          = hydra->getdChi1dChi( );
+
+                dChi1dChin         = hydra->getdChi1dChin( );
+
+                dGradChi1dFn       = hydra->getdGradChi1dFn( );
+
+                dGradChi1dChi      = hydra->getdGradChi1dChi( );
+
+                dGradChi1dChin     = hydra->getdGradChi1dChin( );
+
+                dGradChi1dGradChi  = hydra->getdGradChi1dGradChi( );
+
+                dGradChi1dGradChin = hydra->getdGradChi1dGradChin( );
 
             }
 
@@ -2544,6 +2598,30 @@ namespace tardigradeHydra{
 
                 setPreviousGamma( Gamma );
 
+//                setPreviousdRightCauchyGreendF( tardigradeVectorTools::dot( dCdF1, *dF1dF ) );
+//
+//                setPreviousdRightCauchyGreendFn( tardigradeVectorTools::dot( dCdF1, *dF1dFn ) );
+//
+//                setPreviousdPsidF( tardigradeVectorTools::dot( dPsidF1, *dF1dF ) );
+//
+//                setPreviousdPsidFn( tardigradeVectorTools::dot( dPsidF1, *dF1dFn ) );
+//
+//                setPreviousdPsidChi( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChi ) );
+//
+//                setPreviousdPsidChin( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChin ) );
+//
+//                setPreviousdGammadF( tardigradeVectorTools::dot( dGammadF1, *dF1dF ) );
+//
+//                setPreviousdGammadFn( tardigradeVectorTools::dot( dGammadF1, *dF1dFn ) + tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dFn ) );
+//
+//                setPreviousdGammadChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChi ) );
+//
+//                setPreviousdGammadChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChin ) );
+//
+//                setPreviousdGammadGradChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChi ) );
+//
+//                setPreviousdGammadGradChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChin ) );
+
             }
             else{
 
@@ -2552,6 +2630,30 @@ namespace tardigradeHydra{
                 setPsi( Psi );
 
                 setGamma( Gamma );
+
+                setdRightCauchyGreendF( tardigradeVectorTools::dot( dCdF1, *dF1dF ) );
+
+                setdRightCauchyGreendFn( tardigradeVectorTools::dot( dCdF1, *dF1dFn ) );
+
+                setdPsidF( tardigradeVectorTools::dot( dPsidF1, *dF1dF ) );
+
+                setdPsidFn( tardigradeVectorTools::dot( dPsidF1, *dF1dFn ) );
+
+                setdPsidChi( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChi ) );
+
+                setdPsidChin( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChin ) );
+
+                setdGammadF( tardigradeVectorTools::dot( dGammadF1, *dF1dF ) );
+
+                setdGammadFn( tardigradeVectorTools::dot( dGammadF1, *dF1dFn ) + tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dFn ) );
+
+                setdGammadChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChi ) );
+
+                setdGammadChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChin ) );
+
+                setdGammadGradChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChi ) );
+
+                setdGammadGradChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChin ) );
 
             }
 
