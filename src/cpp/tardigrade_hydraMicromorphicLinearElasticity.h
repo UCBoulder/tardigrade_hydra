@@ -219,7 +219,7 @@ namespace tardigradeHydra{
                                             parameterVector &Amatrix, parameterVector &Bmatrix,
                                             parameterVector &Cmatrix, parameterVector &Dmatrix );
 
-        class residual : public tardigradeHydra::residualBase {
+        class residual : public tardigradeHydra::residualBaseMicromorphic {
 
             public:
 
@@ -230,8 +230,7 @@ namespace tardigradeHydra{
                  * \param &_numEquations: The number of equations the residual defines
                  * \param &parameters: The parameter vector
                  */
-                residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const floatVector &parameters ) : tardigradeHydra::residualBase( _hydra, _numEquations ),
-                    hydra( _hydra ){
+                residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const floatVector &parameters ) : tardigradeHydra::residualBaseMicromorphic( _hydra, _numEquations ){
 
                     // Form the stiffness matrices
                     TARDIGRADE_ERROR_TOOLS_CATCH( extractMaterialParameters( parameters, _Amatrix, _Bmatrix, _Cmatrix, _Dmatrix ) );
@@ -251,8 +250,6 @@ namespace tardigradeHydra{
                 const parameterVector *getDMatrix( ){ return &_Dmatrix; }
 
             private:
-
-                hydraBaseMicromorphic *hydra; //!< A reference to the micromorphic hydra base class. This hides the pre-existing reference to the classical type.
 
                 parameterVector _Amatrix; //!< The A stiffness matrix
 

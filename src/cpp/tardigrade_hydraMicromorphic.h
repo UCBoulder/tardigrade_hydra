@@ -236,6 +236,24 @@ namespace tardigradeHydra{
 
     };
 
+    class residualBaseMicromorphic : public residualBase{
+
+        public:
+
+            /*!
+             * Base class for micromorphic residuals
+             * 
+             * \param *_hydra: A pointer to the containing hydra object
+             * \param _numEquations: The number of equations the residual defines
+             */
+            residualBaseMicromorphic( hydraBaseMicromorphic *_hydra, unsigned int _numEquations ) : residualBase( _hydra, _numEquations ), hydra( _hydra ){ }
+
+        protected:
+
+            hydraBaseMicromorphic *hydra;
+
+    };
+
 }
 
 #endif
