@@ -12,7 +12,7 @@
 
 #define USE_EIGEN
 #include<tardigrade_vector_tools.h>
-#include<tardigrade_hydra.h>
+#include<tardigrade_hydraMicromorphic.h>
 
 namespace tardigradeHydra{
 
@@ -226,13 +226,14 @@ namespace tardigradeHydra{
                 /*!
                  * The main initialization constructor for the linear elastic residual
                  * 
-                 * \param *hydra: A pointer to the containing hydra class
-                 * \param &numEquations: The number of equations the residual defines
+                 * \param *_hydra: A pointer to the containing hydra class
+                 * \param &_numEquations: The number of equations the residual defines
                  * \param &parameters: The parameter vector
                  */
+                residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const floatVector &parameters ) : tardigradeHydra::residualBase( _hydra, _numEquations ),
+                    hydra( _hydra ){
 
-                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters ) : tardigradeHydra::residualBase( hydra, numEquations ){
-
+                    // Form the stiffness matrices
                     TARDIGRADE_ERROR_TOOLS_CATCH( extractMaterialParameters( parameters, _Amatrix, _Bmatrix, _Cmatrix, _Dmatrix ) );
 
                 }
@@ -251,13 +252,15 @@ namespace tardigradeHydra{
 
             private:
 
-                parameterVector _Amatrix;
+                hydraBaseMicromorphic *hydra; //!< A reference to the micromorphic hydra base class. This hides the pre-existing reference to the classical type.
 
-                parameterVector _Bmatrix;
+                parameterVector _Amatrix; //!< The A stiffness matrix
 
-                parameterVector _Cmatrix;
+                parameterVector _Bmatrix; //!< The B stiffness matrix
 
-                parameterVector _Dmatrix;
+                parameterVector _Cmatrix; //!< The C stiffness matrix
+
+                parameterVector _Dmatrix; //!< The D stiffness matrix
 
         };
 
