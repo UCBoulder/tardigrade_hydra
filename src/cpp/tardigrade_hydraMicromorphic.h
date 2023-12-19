@@ -18,6 +18,9 @@ namespace tardigradeHydra{
     class hydraBaseMicromorphic : public hydraBase{
 
         public:
+
+            hydraBaseMicromorphic( ){ }
+
             hydraBaseMicromorphic( const floatType &time, const floatType &deltaTime,
                                    const floatType &temperature, const floatType &previousTemperature,
                                    const floatVector &deformationGradient, const floatVector &previousDeformationGradient,

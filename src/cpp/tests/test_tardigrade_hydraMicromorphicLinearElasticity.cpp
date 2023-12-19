@@ -2905,6 +2905,14 @@ BOOST_AUTO_TEST_CASE( testExtractMaterialParameters ){
     parameterVector answerCmatrix;
     parameterVector answerDmatrix;
 
+    class hydraMock : public tardigradeHydra::hydraBaseMicromorphic{
+
+        public:
+
+            hydraMock( ){ }
+
+    };
+
     errorOut error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicA( 1.7, 1.8, answerAmatrix );
     BOOST_CHECK( !error );
 
@@ -2928,4 +2936,17 @@ BOOST_AUTO_TEST_CASE( testExtractMaterialParameters ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( Cmatrix, answerCmatrix ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( Dmatrix, answerDmatrix ) );
+
+    hydraMock h;
+
+    tardigradeHydra::micromorphicLinearElasticity::residual residual( &h, 10, fparams );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getAMatrix( ), answerAmatrix ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getBMatrix( ), answerBmatrix ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getCMatrix( ), answerCmatrix ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *residual.getDMatrix( ), answerDmatrix ) );
+
 }
