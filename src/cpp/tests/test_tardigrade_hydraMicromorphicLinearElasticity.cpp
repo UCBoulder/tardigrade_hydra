@@ -1850,6 +1850,126 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdGammadGradChi( ) )[ j ][ i ] ) );
         }
     }
+
+    //Test jacobians w.r.t. the previous deformation gradient
+    for ( unsigned int i = 0; i < deformationGradient.size(); i++ ){
+        constantVector delta( deformationGradient.size(), 0 );
+        delta[i] = eps * fabs( deformationGradient[i] ) + eps;
+
+        variableVector resultC_P, resultC_M;
+        variableVector resultPsi_P, resultPsi_M;
+        variableVector resultGamma_P, resultGamma_M;
+
+        error =  tardigradeHydra::micromorphicLinearElasticity::computeDeformationMeasures( previousDeformationGradient + delta, previousMicroDeformation,
+                                                                                            previousGradientMicroDeformation,
+                                                                                            resultC_P, resultPsi_P, resultGamma_P );
+        BOOST_CHECK( !error );
+
+        error =  tardigradeHydra::micromorphicLinearElasticity::computeDeformationMeasures( previousDeformationGradient - delta, previousMicroDeformation,
+                                                                                            previousGradientMicroDeformation,
+                                                                                            resultC_M, resultPsi_M, resultGamma_M );
+
+        BOOST_CHECK( !error );
+
+        variableVector gradCol = ( resultC_P - resultC_M ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdRightCauchyGreendF( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( resultPsi_P - resultPsi_M ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdPsidF( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( resultGamma_P - resultGamma_M ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdGammadF( ) )[ j ][ i ] ) );
+        }
+    }
+
+    //Test jacobians w.r.t. the micro deformation
+    for ( unsigned int i = 0; i < microDeformation.size(); i++ ){
+        constantVector delta( microDeformation.size(), 0 );
+        delta[i] = eps * fabs( microDeformation[i] ) + eps;
+
+        variableVector resultC_P, resultC_M;
+        variableVector resultPsi_P, resultPsi_M;
+        variableVector resultGamma_P, resultGamma_M;
+
+        error =  tardigradeHydra::micromorphicLinearElasticity::computeDeformationMeasures( previousDeformationGradient, previousMicroDeformation + delta,
+                                                                                            previousGradientMicroDeformation,
+                                                                                            resultC_P, resultPsi_P, resultGamma_P );
+
+        BOOST_CHECK( !error );
+
+        error =  tardigradeHydra::micromorphicLinearElasticity::computeDeformationMeasures( previousDeformationGradient, previousMicroDeformation - delta,
+                                                                                            previousGradientMicroDeformation,
+                                                                                            resultC_M, resultPsi_M, resultGamma_M );
+
+        BOOST_CHECK( !error );
+
+        variableVector gradCol = ( resultC_P - resultC_M ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], 0. ) );
+        }
+
+        gradCol = ( resultPsi_P - resultPsi_M ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdPsidChi( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( resultGamma_P - resultGamma_M ) / ( 2 * delta[ i ] );
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], ( *RJ.getPreviousdGammadChi( ) )[ j ][ i ] ) );
+        }
+    }
+
+    //Test jacobians w.r.t. the gradient of the micro deformation
+    for ( unsigned int i = 0; i < gradientMicroDeformation.size(); i++ ){
+        constantVector delta( gradientMicroDeformation.size(), 0 );
+        delta[i] = eps * fabs( gradientMicroDeformation[i] ) + eps;
+
+        variableVector resultC_P, resultC_M;
+        variableVector resultPsi_P, resultPsi_M;
+        variableVector resultGamma_P, resultGamma_M;
+
+        error =  tardigradeHydra::micromorphicLinearElasticity::computeDeformationMeasures( previousDeformationGradient, previousMicroDeformation,
+                                                                                            previousGradientMicroDeformation + delta,
+                                                                                            resultC_P, resultPsi_P, resultGamma_P );
+
+        BOOST_CHECK( !error );
+
+        error =  tardigradeHydra::micromorphicLinearElasticity::computeDeformationMeasures( previousDeformationGradient, previousMicroDeformation,
+                                                                                            previousGradientMicroDeformation - delta,
+                                                                                            resultC_M, resultPsi_M, resultGamma_M );
+
+        BOOST_CHECK( !error );
+
+        variableVector gradCol = ( resultC_P - resultC_M ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], 0. ) );
+        }
+
+        gradCol = ( resultPsi_P - resultPsi_M ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], 0. ) );
+        }
+
+        gradCol = ( resultGamma_P - resultGamma_M ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdGammadGradChi( ) )[ j ][ i ] ) );
+        }
+    }
 }
 
 BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm1 ){

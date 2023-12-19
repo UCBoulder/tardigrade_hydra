@@ -288,6 +288,30 @@ namespace tardigradeHydra{
 
                 const variableMatrix *getdGammadGradChin( );
 
+                const variableMatrix *getPreviousdRightCauchyGreendF( );
+
+                const variableMatrix *getPreviousdRightCauchyGreendFn( );
+
+                const variableMatrix *getPreviousdPsidF( );
+
+                const variableMatrix *getPreviousdPsidFn( );
+
+                const variableMatrix *getPreviousdPsidChi( );
+
+                const variableMatrix *getPreviousdPsidChin( );
+
+                const variableMatrix *getPreviousdGammadF( );
+
+                const variableMatrix *getPreviousdGammadFn( );
+
+                const variableMatrix *getPreviousdGammadChi( );
+
+                const variableMatrix *getPreviousdGammadChin( );
+
+                const variableMatrix *getPreviousdGammadGradChi( );
+
+                const variableMatrix *getPreviousdGammadGradChin( );
+
             protected:
 
                 void setRightCauchyGreen( const variableVector &rightCauchyGreen );
@@ -302,29 +326,53 @@ namespace tardigradeHydra{
 
                 void setPreviousGamma( const variableVector &previousGamma );
 
-                virtual void setdRightCauchyGreendF( const floatMatrix &value );
+                void setdRightCauchyGreendF( const floatMatrix &value );
 
-                virtual void setdRightCauchyGreendFn( const floatMatrix &value );
+                void setdRightCauchyGreendFn( const floatMatrix &value );
 
-                virtual void setdPsidF( const floatMatrix &value );
+                void setdPsidF( const floatMatrix &value );
 
-                virtual void setdPsidFn( const floatMatrix &value );
+                void setdPsidFn( const floatMatrix &value );
 
-                virtual void setdPsidChi( const floatMatrix &value );
+                void setdPsidChi( const floatMatrix &value );
 
-                virtual void setdPsidChin( const floatMatrix &value );
+                void setdPsidChin( const floatMatrix &value );
 
-                virtual void setdGammadF( const floatMatrix &value );
+                void setdGammadF( const floatMatrix &value );
 
-                virtual void setdGammadFn( const floatMatrix &value );
+                void setdGammadFn( const floatMatrix &value );
 
-                virtual void setdGammadChi( const floatMatrix &value );
+                void setdGammadChi( const floatMatrix &value );
 
-                virtual void setdGammadChin( const floatMatrix &value );
+                void setdGammadChin( const floatMatrix &value );
 
-                virtual void setdGammadGradChi( const floatMatrix &value );
+                void setdGammadGradChi( const floatMatrix &value );
 
-                virtual void setdGammadGradChin( const floatMatrix &value );
+                void setdGammadGradChin( const floatMatrix &value );
+
+                void setPreviousdRightCauchyGreendF( const floatMatrix &value );
+
+                void setPreviousdRightCauchyGreendFn( const floatMatrix &value );
+
+                void setPreviousdPsidF( const floatMatrix &value );
+
+                void setPreviousdPsidFn( const floatMatrix &value );
+
+                void setPreviousdPsidChi( const floatMatrix &value );
+
+                void setPreviousdPsidChin( const floatMatrix &value );
+
+                void setPreviousdGammadF( const floatMatrix &value );
+
+                void setPreviousdGammadFn( const floatMatrix &value );
+
+                void setPreviousdGammadChi( const floatMatrix &value );
+
+                void setPreviousdGammadChin( const floatMatrix &value );
+
+                void setPreviousdGammadGradChi( const floatMatrix &value );
+
+                void setPreviousdGammadGradChin( const floatMatrix &value );
 
                 virtual void setDeformation( const bool isPrevious );
 
@@ -365,6 +413,30 @@ namespace tardigradeHydra{
                 virtual void setdGammadGradChi( );
 
                 virtual void setdGammadGradChin( );
+
+                virtual void setPreviousdRightCauchyGreendF( );
+
+                virtual void setPreviousdRightCauchyGreendFn( );
+
+                virtual void setPreviousdPsidF( );
+
+                virtual void setPreviousdPsidFn( );
+
+                virtual void setPreviousdPsidChi( );
+
+                virtual void setPreviousdPsidChin( );
+
+                virtual void setPreviousdGammadF( );
+
+                virtual void setPreviousdGammadFn( );
+
+                virtual void setPreviousdGammadChi( );
+
+                virtual void setPreviousdGammadChin( );
+
+                virtual void setPreviousdGammadGradChi( );
+
+                virtual void setPreviousdGammadGradChin( );
 
             private:
 
@@ -408,10 +480,33 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< variableVector > _previousRightCauchyGreen; //!< The previous right Cauchy-Green deformation tensor
 
+                tardigradeHydra::dataStorage< variableMatrix > _previousdRightCauchyGreendF; //!< The Jacobian of the previous right Cauchy-Green deformation tensor w.r.t. the total deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdRightCauchyGreendFn; //!< The Jacobian of the previous right Cauchy-Green deformation tensor w.r.t. the remaining sub-deformation gradients
+
                 tardigradeHydra::dataStorage< variableVector > _previousPsi; //!< The previous micro-deformation tensor Psi
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdPsidF; //!< The Jacobian of the previous micro deformation measure Psi w.r.t. the total deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdPsidFn; //!< The Jacobian of the previous micro deformation measure Psi w.r.t. the remaining sub-deformation gradients
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdPsidChi; //!< The Jacobian of the previous micro deformation measure Psi w.r.t. the total micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdPsidChin; //!< The Jacobian of the previous micro deformation measure Psi w.r.t. the remaining sub micro deformations
 
                 tardigradeHydra::dataStorage< variableVector > _previousGamma; //!< The previous gradient micro-deformation tensor Gamma
 
+                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadF; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the total deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadChi; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the total micro-deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadGradChi; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the reference spatial gradient of the total micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadFn; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the remaining sub-deformation gradients
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadChin; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the remaining sub micro-deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadGradChin; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the local reference spatial gradients of the remaining sub-micro deformations
         };
 
     }
