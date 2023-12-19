@@ -251,7 +251,7 @@ namespace tardigradeHydra{
              */
             residualBaseMicromorphic( hydraBaseMicromorphic *_hydra, unsigned int _numEquations ) : residualBase( _hydra, _numEquations ), hydra( _hydra ){ }
 
-            hydraBaseMicromorphic *hydra;
+            hydraBaseMicromorphic *hydra; //!< A pointer to the containing hydra object
 
     };
 
