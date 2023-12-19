@@ -823,7 +823,7 @@ namespace tardigradeHydra{
                                             const parameterVector &A, const parameterVector &D, variableVector &term1 ){
             /*!
              * Compute the first term for the linear elastic model
-             * term1_{IJ} = A_{IJKL} E_{KL} + D_{IJKL} * \mathcal{E}_{KL}
+             * \f$ term1_{IJ} = A_{IJKL} E_{KL} + D_{IJKL} * \mathcal{E}_{KL} \f$
              *
              * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain.
              * :param const variableVector &microStrain: The micro-strain
@@ -876,11 +876,13 @@ namespace tardigradeHydra{
                                             variableMatrix &dTerm1dGreenLagrangeStrain, variableMatrix &dTerm1dMicroStrain ){
             /*!
              * Compute the first term for the linear elastic model
-             * term1_{IJ} = A_{IJKL} E_{KL} + D_{IJKL} * \mathcal{E}_{KL}
+             * \f$ term1_{IJ} = A_{IJKL} E_{KL} + D_{IJKL} * \mathcal{E}_{KL} \f$
              *
              * Also return the Jacobian
-             * \frac{\partial term^1_{IJ} }{ E_{MN} } = A_{IJMN}
-             * \frac{\partial term^1_{IJ} }{ \mathcal{E}_{MN} } = D_{IJMN}
+             * \f$\begin{align}
+             * \frac{\partial term^1_{IJ} }{ E_{MN} } &= A_{IJMN}\\
+             * \frac{\partial term^1_{IJ} }{ \mathcal{E}_{MN} } &= D_{IJMN}
+             * \end{align}\f$
              *
              * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain.
              * :param const variableVector &microStrain: The micro-strain
@@ -925,11 +927,11 @@ namespace tardigradeHydra{
             /*!
              * Compute the second term from the linear elastic constitutive model
              *
-             * term^2_{IJ} = \left( B_{IQKL} \mathcal{E}_{KL} + E_{KL} D_{KLIQ} \right) C_{JR}^{-1} \Psi_{RQ}
+             * \f$term^2_{IJ} = \left( B_{IQKL} \mathcal{E}_{KL} + E_{KL} D_{KLIQ} \right) C_{JR}^{-1} \Psi_{RQ}\f$
              *
-             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain E_{IJ} = \frac{1}{2} \left( C_{IJ} - \delta_{IJ} \right)
-             * :param const variableVector &microStrain: The micro-strain \mathcal{E}_{IJ} = \Psi_{IJ} - \delta_{IJ}
-             * :param const variableVector &invCPsi: The product C_{JR}^{-1} \Psi_{RQ}
+             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain \f$E_{IJ} = \frac{1}{2} \left( C_{IJ} - \delta_{IJ} \right)\f$
+             * :param const variableVector &microStrain: The micro-strain \f$\mathcal{E}_{IJ} = \Psi_{IJ} - \delta_{IJ}\f$
+             * :param const variableVector &invCPsi: The product \f$C_{JR}^{-1} \Psi_{RQ}\f$
              * :param const variableVector &B: The B stiffness matrix
              * :param const variableVector &D: The D stiffness matrix
              * :param variableVector &term2: The second term.
@@ -989,22 +991,24 @@ namespace tardigradeHydra{
             /*!
              * Compute the second term from the linear elastic constitutive model
              *
-             * term^2_{IJ} = \left( B_{IQKL} \mathcal{E}_{KL} + E_{KL} D_{KLIQ} \right) C_{JR}^{-1} \Psi_{RQ}
+             * \f$term^2_{IJ} = \left( B_{IQKL} \mathcal{E}_{KL} + E_{KL} D_{KLIQ} \right) C_{JR}^{-1} \Psi_{RQ}\f$
              *
              * Also return the Jacobians
-             * \frac{ \partial term^2_{IJ} }{ \partial E_{MN} } = D_{MNIK} C_{JR}^{-1} \Psi_{RK}
-             * \frac{ \partial term^2_{IJ} }{ \partial \mathcal{E}_{MN} } = B_{IKMN} C_{JR}^{-1} \Psi_{RK}
-             * \frac{ \partial term^2_{IJ} }{ \partial C_{MO}^{-1} \Psi_{ON} } = \left( B_{INKL} \mathcal{E}_{KL} + E_{KL} D_{KLIN} \right) \delta_{JM} 
+             * \f$\begin{align}
+             * \frac{ \partial term^2_{IJ} }{ \partial E_{MN} } &= D_{MNIK} C_{JR}^{-1} \Psi_{RK}\\
+             * \frac{ \partial term^2_{IJ} }{ \partial \mathcal{E}_{MN} } &= B_{IKMN} C_{JR}^{-1} \Psi_{RK}\\
+             * \frac{ \partial term^2_{IJ} }{ \partial C_{MO}^{-1} \Psi_{ON} } &= \left( B_{INKL} \mathcal{E}_{KL} + E_{KL} D_{KLIN} \right) \delta_{JM}
+             * \end{align}\f$
              *
-             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain E_{IJ} = \frac{1}{2} \left( C_{IJ} - \delta_{IJ} \right)
-             * :param const variableVector &microStrain: The micro-strain \mathcal{E}_{IJ} = \Psi_{IJ} - \delta_{IJ}
-             * :param const variableVector &invCPsi: The product C_{JR}^{-1} \Psi_{RQ}
+             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain \f$E_{IJ} = \frac{1}{2} \left( C_{IJ} - \delta_{IJ} \right)\f$
+             * :param const variableVector &microStrain: The micro-strain \f$\mathcal{E}_{IJ} = \Psi_{IJ} - \delta_{IJ}\f$
+             * :param const variableVector &invCPsi: The product \f$C_{JR}^{-1} \Psi_{RQ}\f$
              * :param const variableVector &B: The B stiffness matrix
              * :param const variableVector &D: The D stiffness matrix
              * :param variableVector &term2: The second term.
              * :param variableMatrix &dTerm2dGreenLagrangeStrain: The jacobian of term 2 w.r.t. the Green-Lagrange strain.
              * :param variableMatrix &dTerm2dMicroStrain: The jacobian of term 2 w.r.t. the microStrain.
-             * :param variableMatrix &dTerm2dInvCPsi: The jacobian of term 2 w.r.t. C_{JR}^{-1} \Psi_{RQ}
+             * :param variableMatrix &dTerm2dInvCPsi: The jacobian of term 2 w.r.t. \f$C_{JR}^{-1} \Psi_{RQ}\f$
              */
     
             //Assume 3D
@@ -1189,7 +1193,7 @@ namespace tardigradeHydra{
              * \frac{ \partial term3_{IJ} }{ \partial C_{TW}^{-1} \Gamma_{WUV} &= M_{IUV} \delta_{JT}
              * \end{align}\f$
              *
-             * :param const variableVector &invCGamma: C_{JS}^{-1} \Gamma_{SQR}
+             * :param const variableVector &invCGamma: \f$ C_{JS}^{-1} \Gamma_{SQR} \f$
              * :param const variableVector &referenceHigherOrderStress: The higher order stress in the reference configuration.
              * :param variableVector &term3: The third term in the linear elastic equation.
              */

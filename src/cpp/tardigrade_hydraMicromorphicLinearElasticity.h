@@ -12,7 +12,7 @@
 
 #define USE_EIGEN
 #include<tardigrade_vector_tools.h>
-#include<tardigrade_hydra.h>
+#include<tardigrade_hydraMicromorphic.h>
 
 namespace tardigradeHydra{
 
@@ -218,6 +218,48 @@ namespace tardigradeHydra{
         errorOut extractMaterialParameters( const std::vector< double > &fparams,
                                             parameterVector &Amatrix, parameterVector &Bmatrix,
                                             parameterVector &Cmatrix, parameterVector &Dmatrix );
+
+        class residual : public tardigradeHydra::residualBaseMicromorphic {
+
+            public:
+
+                /*!
+                 * The main initialization constructor for the linear elastic residual
+                 * 
+                 * \param *_hydra: A pointer to the containing hydra class
+                 * \param &_numEquations: The number of equations the residual defines
+                 * \param &parameters: The parameter vector
+                 */
+                residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const floatVector &parameters ) : tardigradeHydra::residualBaseMicromorphic( _hydra, _numEquations ){
+
+                    // Form the stiffness matrices
+                    TARDIGRADE_ERROR_TOOLS_CATCH( extractMaterialParameters( parameters, _Amatrix, _Bmatrix, _Cmatrix, _Dmatrix ) );
+
+                }
+
+                //! Return a reference to the A stiffness matrix
+                const parameterVector *getAMatrix( ){ return &_Amatrix; }
+
+                //! Return a reference to the B stiffness matrix
+                const parameterVector *getBMatrix( ){ return &_Bmatrix; }
+
+                //! Return a reference to the C stiffness matrix
+                const parameterVector *getCMatrix( ){ return &_Cmatrix; }
+
+                //! Return a reference to the D stiffness matrix
+                const parameterVector *getDMatrix( ){ return &_Dmatrix; }
+
+            private:
+
+                parameterVector _Amatrix; //!< The A stiffness matrix
+
+                parameterVector _Bmatrix; //!< The B stiffness matrix
+
+                parameterVector _Cmatrix; //!< The C stiffness matrix
+
+                parameterVector _Dmatrix; //!< The D stiffness matrix
+
+        };
 
     }
 

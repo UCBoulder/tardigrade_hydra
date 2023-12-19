@@ -18,6 +18,9 @@ namespace tardigradeHydra{
     class hydraBaseMicromorphic : public hydraBase{
 
         public:
+
+            hydraBaseMicromorphic( ){ }
+
             hydraBaseMicromorphic( const floatType &time, const floatType &deltaTime,
                                    const floatType &temperature, const floatType &previousTemperature,
                                    const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
@@ -233,6 +236,22 @@ namespace tardigradeHydra{
                                                              floatMatrix &dGradChi1dCn,
                                                              floatMatrix &dGradChi1dChi, floatMatrix &dGradChi1dChin,
                                                              floatMatrix &dGradChi1dGradChi, floatMatrix &dGradChi1dGradChin );
+
+    };
+
+    class residualBaseMicromorphic : public residualBase{
+
+        public:
+
+            /*!
+             * Base class for micromorphic residuals
+             * 
+             * \param *_hydra: A pointer to the containing hydra object
+             * \param _numEquations: The number of equations the residual defines
+             */
+            residualBaseMicromorphic( hydraBaseMicromorphic *_hydra, unsigned int _numEquations ) : residualBase( _hydra, _numEquations ), hydra( _hydra ){ }
+
+            hydraBaseMicromorphic *hydra;
 
     };
 
