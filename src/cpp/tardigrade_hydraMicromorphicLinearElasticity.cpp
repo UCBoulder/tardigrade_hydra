@@ -1959,28 +1959,28 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
              */
 
-            floatVector deformationGradient;
+            floatVector deformationGradient1;
 
-            floatVector microDeformation;
+            floatVector microDeformation1;
 
-            floatVector gradientMicroDeformation;
+            floatVector gradientMicroDeformation1;
 
             if ( isPrevious ){
 
-                deformationGradient = ( *hydra->getPreviousConfigurations( ) )[ 0 ];
+                deformationGradient1 = ( *hydra->getPreviousConfigurations( ) )[ 0 ];
 
-                microDeformation = ( *hydra->getPreviousMicroConfigurations( ) )[ 0 ];
+                microDeformation1 = ( *hydra->getPreviousMicroConfigurations( ) )[ 0 ];
 
-                gradientMicroDeformation = ( *hydra->getPreviousGradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = ( *hydra->getPreviousGradientMicroConfigurations( ) )[ 0 ];
 
             }
             else{
 
-                deformationGradient = ( *hydra->getConfigurations( ) )[ 0 ];
+                deformationGradient1 = ( *hydra->getConfigurations( ) )[ 0 ];
 
-                microDeformation = ( *hydra->getMicroConfigurations( ) )[ 0 ];
+                microDeformation1 = ( *hydra->getMicroConfigurations( ) )[ 0 ];
 
-                gradientMicroDeformation = ( *hydra->getGradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = ( *hydra->getGradientMicroConfigurations( ) )[ 0 ];
 
             }
 
@@ -1990,8 +1990,551 @@ namespace tardigradeHydra{
 
             floatVector Gamma;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( computeDeformationMeasures( deformationGradient1, microDeformation1, gradientMicroDeformation1,
                                                                                    rightCauchyGreen, Psi, Gamma ) );
+
+            if ( isPrevious ){
+
+                setPreviousRightCauchyGreen( rightCauchyGreen );
+
+                setPreviousPsi( Psi );
+
+                setPreviousGamma( Gamma );
+
+            }
+            else{
+
+                setRightCauchyGreen( rightCauchyGreen );
+
+                setPsi( Psi );
+
+                setGamma( Gamma );
+
+            }
+
+        }
+
+        void residual::setdRightCauchyGreendF( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the right Cauchy-Green deformation measure w.r.t. the total deformation gradient
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dRightCauchyGreendF.second = value;
+
+            _dRightCauchyGreendF.first = true;
+
+            addIterationData( &_dRightCauchyGreendF );
+
+        }
+
+        void residual::setdRightCauchyGreendFn( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the right Cauchy-Green deformation measure w.r.t. the remaining sub-deformation gradients
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dRightCauchyGreendFn.second = value;
+
+            _dRightCauchyGreendFn.first = true;
+
+            addIterationData( &_dRightCauchyGreendFn );
+
+        }
+
+        void residual::setdPsidF( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the micro deformation measure w.r.t. the total deformation gradient
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dPsidF.second = value;
+
+            _dPsidF.first = true;
+
+            addIterationData( &_dPsidF );
+
+        }
+
+        void residual::setdPsidFn( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the micro deformation measure w.r.t. the remaining sub-deformation gradients
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dPsidFn.second = value;
+
+            _dPsidFn.first = true;
+
+            addIterationData( &_dPsidFn );
+
+        }
+
+        void residual::setdPsidChi( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the micro deformation measure w.r.t. the total micro deformation
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dPsidChi.second = value;
+
+            _dPsidChi.first = true;
+
+            addIterationData( &_dPsidChi );
+
+        }
+
+        void residual::setdPsidChin( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the micro deformation measure w.r.t. the remaining sub-micro deformation
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dPsidChin.second = value;
+
+            _dPsidChin.first = true;
+
+            addIterationData( &_dPsidChin );
+
+        }
+
+        void residual::setdGammadF( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the micro deformation measure gamma w.r.t. the total deformation gradient
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dGammadF.second = value;
+
+            _dGammadF.first = true;
+
+            addIterationData( &_dGammadF );
+
+        }
+
+        void residual::setdGammadFn( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the micro deformation measure gamma w.r.t. the remaining sub-deformation gradients
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dGammadFn.second = value;
+
+            _dGammadFn.first = true;
+
+            addIterationData( &_dGammadFn );
+
+        }
+
+        void residual::setdGammadChi( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the micro deformation measure gamma w.r.t. the total micro deformation
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dGammadChi.second = value;
+
+            _dGammadChi.first = true;
+
+            addIterationData( &_dGammadChi );
+
+        }
+
+        void residual::setdGammadChin( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the micro deformation measure gamma w.r.t. the remaining sub-micro deformation
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dGammadChin.second = value;
+
+            _dGammadChin.first = true;
+
+            addIterationData( &_dGammadChin );
+
+        }
+
+        void residual::setdGammadGradChi( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the micro deformation measure gamma w.r.t. the reference spatial gradient of the total micro deformation
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dGammadGradChi.second = value;
+
+            _dGammadGradChi.first = true;
+
+            addIterationData( &_dGammadGradChi );
+
+        }
+
+        void residual::setdGammadGradChin( const floatMatrix &value ){
+            /*!
+             * Set the derivative of the micro deformation measure gamma w.r.t. the local reference spatial gradient of the remaining sub-micro deformation
+             * 
+             * \param &value: The value of the Jacobian
+             */
+
+            _dGammadGradChin.second = value;
+
+            _dGammadGradChin.first = true;
+
+            addIterationData( &_dGammadGradChin );
+
+        }
+
+        void residual::setdRightCauchyGreendF( ){
+            /*!
+             * Set the jacobian of the right Cauchy-Green deformation tensor w.r.t. the total deformation gradient
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        void residual::setdRightCauchyGreendFn( ){
+            /*!
+             * Set the jacobian of the right Cauchy-Green deformation tensor w.r.t. the remaining sub-deformation gradients
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        void residual::setdPsidF( ){
+            /*!
+             * Set the jacobian of the micro deformation measure psi w.r.t. the total deformation gradient
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        void residual::setdPsidFn( ){
+            /*!
+             * Set the jacobian of the micro deformation tensor psi w.r.t. the remaining sub-deformation gradients
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        void residual::setdPsidChi( ){
+            /*!
+             * Set the jacobian of the micro deformation measure psi w.r.t. the total micro-deformation
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        void residual::setdPsidChin( ){
+            /*!
+             * Set the jacobian of the micro deformation tensor psi w.r.t. the remaining sub-micro deformations
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        void residual::setdGammadF( ){
+            /*!
+             * Set the jacobian of the micro deformation measure gamma w.r.t. the total deformation gradient
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        void residual::setdGammadFn( ){
+            /*!
+             * Set the jacobian of the micro deformation tensor gamma w.r.t. the remaining sub-deformation gradients
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        void residual::setdGammadChi( ){
+            /*!
+             * Set the jacobian of the micro deformation measure gamma w.r.t. the total micro-deformation
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        void residual::setdGammadChin( ){
+            /*!
+             * Set the jacobian of the micro deformation tensor gamma w.r.t. the remaining sub-micro deformations
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        void residual::setdGammadGradChi( ){
+            /*!
+             * Set the jacobian of the micro deformation measure gamma w.r.t. the reference spatial gradient of the total micro-deformation
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        void residual::setdGammadGradChin( ){
+            /*!
+             * Set the jacobian of the micro deformation tensor gamma w.r.t. the local reference spatial gradient of the remaining sub-micro deformations
+             */
+
+            setDeformationJacobians( false );
+
+        }
+
+        const variableMatrix *residual::getdRightCauchyGreendF( ){
+            /*!
+             * Get the jacobian of the right Cauchy-Green deformation tensor w.r.t. the total deformation gradient
+             */
+
+            if ( !_dRightCauchyGreendF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdRightCauchyGreendF( ) );
+
+            }
+
+            return &_dRightCauchyGreendF.second;
+
+        }
+
+        const variableMatrix *residual::getdRightCauchyGreendFn( ){
+            /*!
+             * Get the jacobian of the right Cauchy-Green deformation tensor w.r.t. the remaining sub-deformation gradients
+             */
+
+            if ( !_dRightCauchyGreendFn.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdRightCauchyGreendFn( ) );
+
+            }
+
+            return &_dRightCauchyGreendFn.second;
+
+        }
+
+        const variableMatrix *residual::getdPsidF( ){
+            /*!
+             * Get the jacobian of the micro deformation measure psi w.r.t. the total deformation gradient
+             */
+
+            if ( !_dPsidF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPsidF( ) );
+
+            }
+
+            return &_dPsidF.second;
+
+        }
+
+        const variableMatrix *residual::getdPsidFn( ){
+            /*!
+             * Get the jacobian of the micro deformation tensor psi w.r.t. the remaining sub-deformation gradients
+             */
+
+            if ( !_dPsidFn.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPsidFn( ) );
+
+            }
+
+            return &_dPsidFn.second;
+
+        }
+
+        const variableMatrix *residual::getdPsidChi( ){
+            /*!
+             * Get the jacobian of the micro deformation measure psi w.r.t. the total micro-deformation
+             */
+
+            if ( !_dPsidChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPsidChi( ) );
+
+            }
+
+            return &_dPsidChi.second;
+
+        }
+
+        const variableMatrix *residual::getdPsidChin( ){
+            /*!
+             * Get the jacobian of the micro deformation tensor psi w.r.t. the remaining sub-micro deformations
+             */
+
+            if ( !_dPsidChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPsidChin( ) );
+
+            }
+
+            return &_dPsidChin.second;
+
+        }
+
+        const variableMatrix *residual::getdGammadF( ){
+            /*!
+             * Get the jacobian of the micro deformation measure gamma w.r.t. the total deformation gradient
+             */
+
+            if ( !_dGammadF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadF( ) );
+
+            }
+
+            return &_dGammadF.second;
+
+        }
+
+        const variableMatrix *residual::getdGammadFn( ){
+            /*!
+             * Get the jacobian of the micro deformation tensor gamma w.r.t. the remaining sub-deformation gradients
+             */
+
+            if ( !_dGammadFn.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadFn( ) );
+
+            }
+
+            return &_dGammadFn.second;
+
+        }
+
+        const variableMatrix *residual::getdGammadChi( ){
+            /*!
+             * Get the jacobian of the micro deformation measure gamma w.r.t. the total micro-deformation
+             */
+
+            if ( !_dGammadChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadChi( ) );
+
+            }
+
+            return &_dGammadChi.second;
+
+        }
+
+        const variableMatrix *residual::getdGammadChin( ){
+            /*!
+             * Get the jacobian of the micro deformation tensor gamma w.r.t. the remaining sub-micro deformations
+             */
+
+            if ( !_dGammadChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadChin( ) );
+
+            }
+
+            return &_dGammadChin.second;
+
+        }
+
+        const variableMatrix *residual::getdGammadGradChi( ){
+            /*!
+             * Get the jacobian of the micro deformation measure gamma w.r.t. the reference spatial gradient of the total micro-deformation
+             */
+
+            if ( !_dGammadGradChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadGradChi( ) );
+
+            }
+
+            return &_dGammadGradChi.second;
+
+        }
+
+        const variableMatrix *residual::getdGammadGradChin( ){
+            /*!
+             * Get the jacobian of the micro deformation tensor gamma w.r.t. the local reference spatial gradient of the remaining sub-micro deformations
+             */
+
+            if ( !_dGammadGradChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadGradChin( ) );
+
+            }
+
+            return &_dGammadGradChin.second;
+
+        }
+
+        void residual::setDeformationJacobians( const bool isPrevious ){
+            /*!
+             * Evaluate the derived deformation Jacobians
+             * 
+             * We assume that the first configuration in hydra.getConfigurations is the elastic one
+             *
+             * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
+             */
+
+            floatVector deformationGradient1;
+
+            floatVector microDeformation1;
+
+            floatVector gradientMicroDeformation1;
+
+            if ( isPrevious ){
+
+                deformationGradient1 = ( *hydra->getPreviousConfigurations( ) )[ 0 ];
+
+                microDeformation1 = ( *hydra->getPreviousMicroConfigurations( ) )[ 0 ];
+
+                gradientMicroDeformation1 = ( *hydra->getPreviousGradientMicroConfigurations( ) )[ 0 ];
+
+            }
+            else{
+
+                deformationGradient1 = ( *hydra->getConfigurations( ) )[ 0 ];
+
+                microDeformation1 = ( *hydra->getMicroConfigurations( ) )[ 0 ];
+
+                gradientMicroDeformation1 = ( *hydra->getGradientMicroConfigurations( ) )[ 0 ];
+
+            }
+
+            floatVector rightCauchyGreen;
+
+            floatVector Psi;
+
+            floatVector Gamma;
+
+            floatMatrix dCdF1;
+
+            floatMatrix dPsidF1;
+
+            floatMatrix dPsidChi1;
+
+            floatMatrix dGammadF1;
+
+            floatMatrix dGammadGradChi1;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( computeDeformationMeasures( deformationGradient1, microDeformation1, gradientMicroDeformation1,
+                                                                                   rightCauchyGreen, Psi, Gamma,
+                                                                                   dCdF1, dPsidF1, dPsidChi1, dGammadF1, dGammadGradChi1 ) );
 
             if ( isPrevious ){
 
