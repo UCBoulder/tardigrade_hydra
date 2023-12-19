@@ -2073,7 +2073,7 @@ namespace tardigradeHydra{
 
             }
 
-            return &_rightCauchyGreen.second;
+            return &_previousRightCauchyGreen.second;
 
         }
 

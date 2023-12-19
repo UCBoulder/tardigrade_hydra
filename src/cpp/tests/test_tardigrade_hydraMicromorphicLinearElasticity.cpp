@@ -45,7 +45,7 @@ struct cout_redirect{
 
 BOOST_AUTO_TEST_CASE( testLinearElasticity ){
     /*!
-     * Test the micro-morphic linear elasticity model where the 
+     * Test the micromorphic linear elasticity model where the 
      * stresses are pushed to the current configuration.
      *
      */
@@ -1593,15 +1593,35 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
 
     floatType previousTemperature = 4.56;
 
-    floatVector previousDeformationGradient = { 1, 0, 0,
-                                                0, 1, 0,
-                                                0, 0, 1 };
+    floatVector previousDeformationGradient = { 1.39293837, -0.42772133, -0.54629709,
+                                                0.10262954,  1.43893794, -0.15378708,
+                                                0.9615284 ,  0.36965948,  0.9618638 };
 
-    floatVector previousMicroDeformation = { 1, 0, 0,
-                                             0, 1, 0,
-                                             0, 0, 1 };
+    floatVector previousMicroDeformation = { 0.78423504, -0.31364397,  0.45809941,
+                                            -0.12285551,  0.11935579, -0.20391149,
+                                             0.47599081, -0.63501654,  0.35090351 };
 
-    floatVector previousGradientMicroDeformation( 27, 0 );
+    floatVector previousGradientMicroDeformation = { 0.06310275,  0.06365517,  0.26880192,  0.69886359,  0.44891065,
+                                                     0.22204702,  0.44488677, -0.35408217, -0.27642269, -0.54347354,
+                                                    -0.41257191,  0.26195225, -0.81579012, -0.13259765, -0.13827447,
+                                                    -0.0126298 , -0.14833942, -0.37547755, -0.14729739,  0.78677833,
+                                                     0.88832004,  0.00367335,  0.2479059 , -0.76876321, -0.36542904,
+                                                    -0.17034758,  0.73261832 };
+
+    variableVector previousAnswerC = { 2.87534699, -0.09267383,  0.14811808,
+                                      -0.09267383,  2.39013606,  0.36793493,
+                                       0.14811808,  0.36793493,  1.24727296 };
+
+    variableVector previousAnswerPsi = { 1.53746115, -1.03522372,  0.9545806 ,
+                                        -0.33626099,  0.07115791, -0.35964006,
+                                         0.0483066 , -0.45781201,  0.11862196 };
+
+    variableVector previousAnswerGamma = {-0.10950882,  0.80283537,  1.25545348,  0.89328178,  0.850065  ,
+                                          -0.44408089,  0.26703326, -0.67223268,  0.28085846, -0.86346496,
+                                          -0.33005198,  0.59033663, -1.47143233, -0.29116769, -0.57812324,
+                                          -0.34354537, -0.12497332, -0.15123771, -0.09257366,  0.78544719,
+                                           0.66731231, -0.2527959 ,  0.01360494, -0.83948432, -0.59259101,
+                                           0.05239558,  0.91343155 };
 
     floatVector previousStateVariables = { };
 
@@ -1659,6 +1679,12 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getPsi( ), answerPsi ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getGamma( ), answerGamma ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getPreviousRightCauchyGreen( ), previousAnswerC ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getPreviousPsi( ), previousAnswerPsi ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getPreviousGamma( ), previousAnswerGamma ) );
 
     //Test the jacobians
 
