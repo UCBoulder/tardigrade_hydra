@@ -1071,7 +1071,7 @@ namespace tardigradeHydra{
     
             if ( C.size() != dim * dim * dim * dim * dim * dim ){
                 return new errorNode( "computeReferenceHigherOrderStress",
-                                      "The C stiffness tensor have a length of 3**6" );
+                                      "The C stiffness tensor must have a length of 3**6.\nThe current size is " + std::to_string( C.size( ) ) );
             }
     
             referenceHigherOrderStress = variableVector( dim * dim * dim, 0 );
@@ -2563,6 +2563,323 @@ namespace tardigradeHydra{
              */
 
             setDeformationJacobians( true );
+
+        }
+
+        void residual::setPK2Stress( const variableVector &value ){
+            /*!
+             * Set the value of the second Piola-Kirchhoff stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _pk2Stress.second = value;
+
+            _pk2Stress.first = true;
+
+            addIterationData( &_pk2Stress );
+
+        }
+
+        void residual::setReferenceSymmetricMicroStress( const variableVector &value ){
+            /*!
+             * Set the value of the reference symmetric micro stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _referenceSymmetricMicroStress.second = value;
+
+            _referenceSymmetricMicroStress.first = true;
+
+            addIterationData( &_referenceSymmetricMicroStress );
+
+        }
+
+        void residual::setReferenceHigherOrderStress( const variableVector &value ){
+            /*!
+             * Set the value of the reference higher order stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _referenceHigherOrderStress.second = value;
+
+            _referenceHigherOrderStress.first = true;
+
+            addIterationData( &_referenceHigherOrderStress );
+
+        }
+
+        void residual::setPreviousPK2Stress( const variableVector &value ){
+            /*!
+             * Set the value of the previous second Piola-Kirchhoff stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _previouspk2Stress.second = value;
+
+            _previouspk2Stress.first = true;
+
+        }
+
+        void residual::setPreviousReferenceSymmetricMicroStress( const variableVector &value ){
+            /*!
+             * Set the value of the previous reference symmetric micro stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _previousreferenceSymmetricMicroStress.second = value;
+
+            _previousreferenceSymmetricMicroStress.first = true;
+
+        }
+
+        void residual::setPreviousReferenceHigherOrderStress( const variableVector &value ){
+            /*!
+             * Set the value of the previous reference higher order stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _previousreferenceHigherOrderStress.second = value;
+
+            _previousreferenceHigherOrderStress.first = true;
+
+        }
+
+        void residual::setPK2Stress( ){
+            /*!
+             * Set the value of the second Piola-Kirchhoff stress
+             */
+
+            return setReferenceStresses( false );
+
+        }
+
+        void residual::setReferenceSymmetricMicroStress( ){
+            /*!
+             * Set the value of the reference symmetric micro stress
+             */
+
+            return setReferenceStresses( false );
+
+        }
+
+        void residual::setReferenceHigherOrderStress( ){
+            /*!
+             * Set the value of the reference higher order stress
+             */
+
+            return setReferenceStresses( false );
+
+        }
+
+        void residual::setPreviousPK2Stress( ){
+            /*!
+             * Set the value of the previous second Piola-Kirchhoff stress
+             */
+
+            return setReferenceStresses( true );
+
+        }
+
+        void residual::setPreviousReferenceSymmetricMicroStress( ){
+            /*!
+             * Set the value of the previous reference symmetric micro stress
+             */
+
+            return setReferenceStresses( true );
+
+        }
+
+        void residual::setPreviousReferenceHigherOrderStress( ){
+            /*!
+             * Set the value of the previous reference higher order stress
+             */
+
+            return setReferenceStresses( true );
+
+        }
+
+        const variableVector *residual::getPK2Stress( ){
+            /*!
+             * Get the value of the second Piola-Kirchhoff stress
+             */
+
+            if ( !_pk2Stress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPK2Stress( ) );
+
+            }
+
+            return &_pk2Stress.second;
+
+        }
+
+        const variableVector *residual::getReferenceSymmetricMicroStress( ){
+            /*!
+             * Get the value of the reference symmetric micro stress
+             */
+
+            if ( !_referenceSymmetricMicroStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setReferenceSymmetricMicroStress( ) );
+
+            }
+
+            return &_referenceSymmetricMicroStress.second;
+
+        }
+
+        const variableVector *residual::getReferenceHigherOrderStress( ){
+            /*!
+             * Get the value of the reference higher order stress
+             */
+
+            if ( !_referenceHigherOrderStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setReferenceHigherOrderStress( ) );
+
+            }
+
+            return &_referenceHigherOrderStress.second;
+
+        }
+
+        const variableVector *residual::getPreviousPK2Stress( ){
+            /*!
+             * Get the value of the previous second Piola-Kirchhoff stress
+             */
+
+            if ( !_previouspk2Stress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousPK2Stress( ) );
+
+            }
+
+            return &_previouspk2Stress.second;
+
+        }
+
+        const variableVector *residual::getPreviousReferenceSymmetricMicroStress( ){
+            /*!
+             * Get the value of the previous reference symmetric micro stress
+             */
+
+            if ( !_previousreferenceSymmetricMicroStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousReferenceSymmetricMicroStress( ) );
+
+            }
+
+            return &_previousreferenceSymmetricMicroStress.second;
+
+        }
+
+        const variableVector *residual::getPreviousReferenceHigherOrderStress( ){
+            /*!
+             * Get the value of the previous reference higher order stress
+             */
+
+            if ( !_previousreferenceHigherOrderStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousReferenceHigherOrderStress( ) );
+
+            }
+
+            return &_previousreferenceHigherOrderStress.second;
+
+        }
+
+        void residual::setReferenceStresses( const bool isPrevious ){
+            /*!
+             * Set the values of the reference stresses
+             * 
+             * \param isPrevious: Flag for if the stresses to be calculated are the current (false) or previous (true)
+             */
+
+            const variableVector *C;
+
+            const variableVector *Psi;
+
+            const variableVector *Gamma;
+
+            variableVector followingConfiguration;
+
+            variableVector followingMicroConfiguration;
+
+            if ( isPrevious ){
+
+                C     = getPreviousRightCauchyGreen( );
+
+                Psi   = getPreviousPsi( );
+
+                Gamma = getPreviousGamma( );
+
+                followingConfiguration = hydra->getPreviousFollowingConfiguration( 0 );
+
+                followingMicroConfiguration = hydra->getPreviousFollowingMicroConfiguration( 0 );
+
+            }
+            else{
+
+                C     = getRightCauchyGreen( );
+
+                Psi   = getPsi( );
+
+                Gamma = getGamma( );
+
+                followingConfiguration = hydra->getFollowingConfiguration( 0 );
+    
+                followingMicroConfiguration = hydra->getFollowingMicroConfiguration( 0 );
+
+            }
+
+            floatVector localPK2Stress;
+
+            floatVector localReferenceSymmetricMicroStress;
+
+            floatVector localReferenceHigherOrderStress;
+
+            // Compute the stresses in the local configuration
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( linearElasticityReferenceDerivedMeasures( *C, *Psi, *Gamma, *getAMatrix( ), *getBMatrix( ), *getCMatrix( ), *getDMatrix( ),
+                                                                                                 localPK2Stress, localReferenceSymmetricMicroStress, localReferenceHigherOrderStress ) );
+
+            floatVector PK2Stress;
+
+            floatVector referenceSymmetricMicroStress;
+
+            floatVector referenceHigherOrderStress;
+
+            // Pull the stresses back to the true reference configuration
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, PK2Stress ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, followingConfiguration, referenceSymmetricMicroStress ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
+                                                                                                               referenceHigherOrderStress ) );
+
+            if ( isPrevious ){
+
+                setPreviousPK2Stress( PK2Stress );
+
+                setPreviousReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
+
+                setPreviousReferenceHigherOrderStress( referenceHigherOrderStress );
+
+            }
+            else{
+
+                setPK2Stress( PK2Stress );
+
+                setReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
+
+                setReferenceHigherOrderStress( referenceHigherOrderStress );
+
+            }
 
         }
 

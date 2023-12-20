@@ -236,7 +236,7 @@ namespace tardigradeHydra{
                      */
 
                     // Form the stiffness matrices
-                    TARDIGRADE_ERROR_TOOLS_CATCH( extractMaterialParameters( parameters, _Amatrix, _Bmatrix, _Cmatrix, _Dmatrix ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( extractMaterialParameters( parameters, _Amatrix, _Bmatrix, _Cmatrix, _Dmatrix ) );
 
                 }
 
@@ -263,6 +263,18 @@ namespace tardigradeHydra{
                 const variableVector *getPreviousPsi( );
 
                 const variableVector *getPreviousGamma( );
+
+                const variableVector *getPK2Stress( );
+
+                const variableVector *getReferenceSymmetricMicroStress( );
+
+                const variableVector *getReferenceHigherOrderStress( );
+
+                const variableVector *getPreviousPK2Stress( );
+
+                const variableVector *getPreviousReferenceSymmetricMicroStress( );
+
+                const variableVector *getPreviousReferenceHigherOrderStress( );
 
                 const variableMatrix *getdRightCauchyGreendF( );
 
@@ -326,6 +338,18 @@ namespace tardigradeHydra{
 
                 void setPreviousGamma( const variableVector &previousGamma );
 
+                void setPK2Stress( const variableVector &value );
+
+                void setReferenceSymmetricMicroStress( const variableVector &value );
+
+                void setReferenceHigherOrderStress( const variableVector &value );
+
+                void setPreviousPK2Stress( const variableVector &value );
+
+                void setPreviousReferenceSymmetricMicroStress( const variableVector &value );
+
+                void setPreviousReferenceHigherOrderStress( const variableVector &value );
+
                 void setdRightCauchyGreendF( const floatMatrix &value );
 
                 void setdRightCauchyGreendFn( const floatMatrix &value );
@@ -387,6 +411,20 @@ namespace tardigradeHydra{
                 virtual void setPreviousPsi( );
 
                 virtual void setPreviousGamma( );
+
+                virtual void setReferenceStresses( const bool isPrevious );
+
+                virtual void setPK2Stress( );
+
+                virtual void setReferenceSymmetricMicroStress( );
+
+                virtual void setReferenceHigherOrderStress( );
+
+                virtual void setPreviousPK2Stress( );
+
+                virtual void setPreviousReferenceSymmetricMicroStress( );
+
+                virtual void setPreviousReferenceHigherOrderStress( );
 
                 virtual void setDeformationJacobians( const bool isPrevious );
 
@@ -507,6 +545,19 @@ namespace tardigradeHydra{
                 tardigradeHydra::dataStorage< variableMatrix > _previousdGammadChin; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the remaining sub micro-deformation
 
                 tardigradeHydra::dataStorage< variableMatrix > _previousdGammadGradChin; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the local reference spatial gradients of the remaining sub-micro deformations
+
+                tardigradeHydra::dataStorage< variableVector > _pk2Stress; //!< The value of the second Piola-Kirchoff stress
+
+                tardigradeHydra::dataStorage< variableVector > _referenceSymmetricMicroStress; //!< The value of the reference symmetric micro stress
+
+                tardigradeHydra::dataStorage< variableVector > _referenceHigherOrderStress; //!< The value of the reference higher order stress
+
+                tardigradeHydra::dataStorage< variableVector > _previouspk2Stress; //!< The value of the previous second Piola-Kirchoff stress
+
+                tardigradeHydra::dataStorage< variableVector > _previousreferenceSymmetricMicroStress; //!< The value of the previous reference symmetric micro stress
+
+                tardigradeHydra::dataStorage< variableVector > _previousreferenceHigherOrderStress; //!< The value of the previous reference higher order stress
+
         };
 
     }
