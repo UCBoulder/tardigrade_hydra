@@ -27,7 +27,8 @@ Internal Changes
 - Added computation of the gradient of the micro-deformations in their local reference configurations (:pull:`13`). By `Nathan Miller`_.
 - Added computation of Jacobian of the gradient of the micro-deformations in their local reference configurations (:pull:`14`). By `Nathan Miller`_.
 - Copied over micromorphic linear elasticity subroutines to tardigrade hydra (:pull:`17`). By `Nathan Miller`_.
-- Added initial micromorphic linear elastic residual (:opull:`18`). By `Nathan Miller`_.
+- Added initial micromorphic linear elastic residual (:pull:`18`). By `Nathan Miller`_.
+- Added the calculation of the derived deformation measures (:pull:`19`). By `Nathan Miller`_.
 
 ******************
 0.1.2 (12-06-2023)

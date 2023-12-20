@@ -429,7 +429,7 @@ namespace tardigradeHydra{
             //! Get a reference to the absolute tolerance
             const floatType* getAbsoluteTolerance( ){ return &_tola; }
 
-            //! Get a reference to the line-learch alpha
+            //! Get a reference to the line-search alpha
             const floatType* getLSAlpha( ){ return &_lsAlpha; }
 
             //! Get a reference to the configurations
