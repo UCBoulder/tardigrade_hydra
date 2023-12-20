@@ -1978,23 +1978,32 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
      *
      */
 
-    variableVector answerC = { 142655.22674421,   22879.92475693, -110554.34798382,
-                                22879.92475693,    3669.84875752,  -17731.54833121,
-                              -110554.34798382,  -17731.54833121,   85677.17137833 };
+    variableVector answerC = { 1.0420175 , -0.01567354,  0.02009378, -0.01567354,  1.04517444,
+         0.01117377,  0.02009378,  0.01117377,  0.99699524 };
 
-    variableVector answerPsi = {-5.73323740e-01, -3.53082067e+01, -2.69657966e+02,
-                                -3.25865970e-02, -5.55192209e+00, -4.31920316e+01,
-                                 7.24159829e-01,  2.71720862e+01,  2.09132082e+02 };
+    variableVector answerPsi = { 1.00975939, -0.01261125,  0.06981878, -0.02699305,  0.97669685,
+         0.00697393, -0.00321878, -0.0386127 ,  0.965153   };
 
-    variableVector answerGamma = { -94541.77098898,  -15034.54201975,   73524.55829707,
-                                  -112140.234552  ,  -17828.61490546,   87267.34195579,
-                                    94358.66212331,   14961.26074082,  -73808.21712746,
-                                   -14973.0258162 ,   -2381.05007085,   11644.05943378,
-                                   -17835.03781258,   -2835.63909034,   13878.79806324,
-                                    15059.30924568,    2387.67951896,  -11779.79227515,
-                                    73279.70479902,   11652.84029514,  -56989.45428845,
-                                    86917.38584131,   13818.56422459,  -67639.00034301,
-                                   -73023.40584936,  -11578.20904891,   57119.71045806 };
+    variableVector answerGamma = { 0.00272361,  0.00503071,  0.01590672,  0.03542922,  0.02344842,
+         0.00943703,  0.0217997 , -0.01849948, -0.01242793, -0.02797366,
+        -0.0204223 ,  0.01391857, -0.04242861, -0.00702631, -0.00801335,
+        -0.00145878, -0.00735856, -0.01821328, -0.00722806,  0.03933559,
+         0.04386348, -0.00045751,  0.01180954, -0.03861496, -0.01883936,
+        -0.00796052,  0.03708295 };
+
+    variableVector previousAnswerC = { 1.04331828,  0.07740333, -0.04818369,  0.07740333,  1.02127827,
+         0.00878475, -0.04818369,  0.00878475,  0.94941784 };
+
+    variableVector previousAnswerPsi = { 1.00292230e+00,  2.54165529e-02, -1.85364751e-02,  8.82065595e-03,
+         9.71777894e-01, -2.73086483e-02,  7.99314819e-04,  5.21963589e-02,
+         9.78691969e-01 };
+
+    variableVector previousAnswerGamma = { 0.03707413, -0.01328247, -0.01848551, -0.0134395 , -0.03513971,
+         0.03422343, -0.01676235,  0.00512315,  0.00759903,  0.00417436,
+        -0.05083012,  0.04807159,  0.04029675, -0.03137182, -0.01897138,
+         0.00111867,  0.04045507,  0.04871388, -0.02408691,  0.0054817 ,
+         0.03110153, -0.00930223,  0.02242195, -0.03388678,  0.01007971,
+         0.03633334,  0.04791309 };
 
     // Form a hydra class and residual class
     floatType time = 1.23;
@@ -2005,63 +2014,42 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
     floatType previousTemperature = 4.56;
 
-    variableVector deformationGradient = { -0.50668478, -0.48303615, -1.43907185,
-                                            0.24106815,  0.10656166,  1.06851718,
-                                           -0.18353482, -1.11676646, -0.68534721 };
+    variableVector deformationGradient = { 0.99326911, -0.02363891,  0.02288332,  0.00674376,  1.03339616,
+        -0.04624458,  0.07948457,  0.02889643,  1.0042246  };
 
-    variableVector microDeformation = { -0.36302711,  0.94624033,  0.07877948,
-                                        -0.68872716,  0.10276167, -0.81357538,
-                                         0.22307023, -0.23788599,  0.67759487 };
+    variableVector microDeformation = { 0.97376126, -0.03545076,  0.01496646,  0.01111296,  0.99189296,
+        -0.00927561,  0.03923156, -0.02509436,  0.97939958 };
 
-    variableVector gradientMicroDeformation = { 0.80507219, 0.73460211, 0.66571977, 0.13571332, 0.18559912,
-                                                0.99230253, 0.77887526, 0.23648914, 0.31711178, 0.75118698,
-                                                0.08013972, 0.27232507, 0.59595994, 0.13892773, 0.51533812,
-                                                0.19823639, 0.51598785, 0.19048906, 0.45974189, 0.01871104,
-                                                0.51255207, 0.82869552, 0.99152216, 0.51920895, 0.06818867,
-                                                0.12194391, 0.32637525 };
+    variableVector gradientMicroDeformation = { 0.02197053,  0.0370446 , -0.02739394,  0.06279444, -0.00127596,
+                                               -0.01796094,  0.02814145, -0.05906054,  0.02578498, -0.01458269,
+                                                0.00048507, -0.03393819, -0.03257968, -0.00138203, -0.04167585,
+                                               -0.03382795,  0.01151479, -0.03641219,  0.01271894,  0.04506872,
+                                                0.03179861,  0.04033839,  0.0440033 , -0.05450839, -0.05968426,
+                                               -0.02910144,  0.0279304 };
 
-    floatVector previousDeformationGradient = { 1.39293837, -0.42772133, -0.54629709,
-                                                0.10262954,  1.43893794, -0.15378708,
-                                                0.9615284 ,  0.36965948,  0.9618638 };
+    floatVector previousDeformationGradient = { 9.94656270e-01,  4.82152400e-02,  3.31984800e-02,  2.81918700e-02,
+         1.02086536e+00, -1.77592100e-02, -2.24798000e-03, -1.28410000e-04,
+         9.77165250e-01 };
 
-    floatVector previousMicroDeformation = { 0.78423504, -0.31364397,  0.45809941,
-                                            -0.12285551,  0.11935579, -0.20391149,
-                                             0.47599081, -0.63501654,  0.35090351 };
+    floatVector previousMicroDeformation = { 0.96917405, -0.01777599,  0.00870406, -0.02163002,  0.9998683 ,
+        -0.01669352,  0.03355217,  0.04427456,  1.01778466 };
 
-    floatVector previousGradientMicroDeformation = { 0.06310275,  0.06365517,  0.26880192,  0.69886359,  0.44891065,
-                                                     0.22204702,  0.44488677, -0.35408217, -0.27642269, -0.54347354,
-                                                    -0.41257191,  0.26195225, -0.81579012, -0.13259765, -0.13827447,
-                                                    -0.0126298 , -0.14833942, -0.37547755, -0.14729739,  0.78677833,
-                                                     0.88832004,  0.00367335,  0.2479059 , -0.76876321, -0.36542904,
-                                                    -0.17034758,  0.73261832 };
+    floatVector previousGradientMicroDeformation = { 0.05043761,  0.02160516, -0.0565408 ,  0.01218304, -0.05851034,
+         0.00485749, -0.00962607, -0.03455912,  0.04490067,  0.01552915,
+        -0.02878364,  0.00595866,  0.04750406, -0.02377005, -0.05041534,
+        -0.02922214,  0.06280788,  0.02850865, -0.00226005,  0.0146049 ,
+         0.01560184,  0.03224767,  0.05822091, -0.05294424, -0.03518206,
+         0.01831308,  0.03774438 };
 
-    variableVector previousAnswerC = { 778158.14470341,  123984.10175747, -606632.17302239,
-                                       123984.10175747,   19755.48081747,  -96654.12473479,
-                                      -606632.17302239,  -96654.12473479,  472916.33509549 };
-
-    variableVector previousAnswerPsi = {-897.04913752,   66.03415451, -500.78969738,
-                                        -142.78254265,   10.52496599,  -79.82425921,
-                                         699.86402184,  -51.72103093,  390.66516435 };
-
-    variableVector previousAnswerGamma = {-487548.36596717,  -76656.56643283,  379680.2523678 ,
-                                          -332519.40893294,  -52794.74889218,  258759.66161849,
-                                           216951.2177532 ,   34125.53450858, -169171.51961702,
-                                           -77275.71089713,  -12149.70435098,   60178.70667689,
-                                           -52702.85396585,   -8367.74090265,   41011.77032419,
-                                            34548.42364691,    5434.20535286,  -26939.96755529,
-                                           380770.59551366,   59869.10014237, -296526.08179314,
-                                           259526.06604678,   41205.62123169, -201958.3175536 ,
-                                          -168785.66170157,  -26548.53438963,  131613.90850759 };
-
-    floatVector previousStateVariables = {-0.49908927, -0.03393147,  0.97111957,  0.03897024,  0.22578905,
-                                          -0.75874267,  0.6526816 ,  0.20612026,  0.09013601, -0.31447233,
-                                          -0.39175842, -0.16595558,  0.36260153,  0.75091368,  0.02084467,
-                                           0.33862757,  0.17187311,  0.249807  ,  0.3493781 ,  0.68468488,
-                                          -0.83361002,  0.52736568, -0.51266725, -0.61155408,  0.14491391,
-                                          -0.80857497,  0.77065365,  0.25449794,  0.44683272, -0.96774159,
-                                           0.18886376,  0.11357038, -0.68208071, -0.69385897,  0.39105906,
-                                          -0.36246715,  0.38394059,  0.1087665 , -0.22209885,  0.85026498,
-                                           0.68333999, -0.28520487, -0.91281707, -0.39046385, -0.20362864};
+    floatVector previousStateVariables = {-0.02495446, -0.00169657,  0.04855598,  0.00194851,  0.01128945,
+       -0.03793713,  0.03263408,  0.01030601,  0.0045068 , -0.01572362,
+       -0.01958792, -0.00829778,  0.01813008,  0.03754568,  0.00104223,
+        0.01693138,  0.00859366,  0.01249035,  0.01746891,  0.03423424,
+       -0.0416805 ,  0.02636828, -0.02563336, -0.0305777 ,  0.0072457 ,
+       -0.04042875,  0.03853268,  0.0127249 ,  0.02234164, -0.04838708,
+        0.00944319,  0.00567852, -0.03410404, -0.03469295,  0.01955295,
+       -0.01812336,  0.01919703,  0.00543832, -0.01110494,  0.04251325,
+        0.034167  , -0.01426024, -0.04564085, -0.01952319, -0.01018143 };
 
     floatVector parameters = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8 };
 
@@ -2132,7 +2120,6 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getPreviousGamma( ), previousAnswerGamma ) );
 
-
     //Test jacobians w.r.t. the deformation gradient
     constantType eps = 1e-6;
     for ( unsigned int i = 0; i < deformationGradient.size(); i++ ){
@@ -2175,9 +2162,6 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdGammadF( ) )[ j ][ i ] ) );
         }
     }
-    std::cout << "dRightCauchyGreendF:\n"; tardigradeVectorTools::print( *RJ.getdRightCauchyGreendF( ) );
-    std::cout << "dPsidF:\n"; tardigradeVectorTools::print( *RJ.getdPsidF( ) );
-    std::cout << "dGammadF:\n"; tardigradeVectorTools::print( *RJ.getdGammadF( ) );
 
     //Test jacobians w.r.t. the micro deformation
     for ( unsigned int i = 0; i < microDeformation.size(); i++ ){
@@ -2220,8 +2204,6 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdGammadChi( ) )[ j ][ i ] ) );
         }
     }
-    std::cout << "dPsidChi:\n"; tardigradeVectorTools::print( *RJ.getdPsidChi( ) );
-    std::cout << "dGammadChi:\n"; tardigradeVectorTools::print( *RJ.getdGammadChi( ) );
 
     //Test jacobians w.r.t. the gradient of the micro deformation
     for ( unsigned int i = 0; i < gradientMicroDeformation.size(); i++ ){
@@ -2264,7 +2246,6 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdGammadGradChi( ) )[ j ][ i ] ) );
         }
     }
-    std::cout << "dGammadGradChi:\n"; tardigradeVectorTools::print( *RJ.getdGammadGradChi( ) );
 
     //Test jacobians w.r.t. the previous deformation gradient
     for ( unsigned int i = 0; i < deformationGradient.size(); i++ ){
@@ -2307,9 +2288,6 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdGammadF( ) )[ j ][ i ] ) );
         }
     }
-    std::cout << "PreviousdRightCauchyGreendF:\n"; tardigradeVectorTools::print( *RJ.getPreviousdRightCauchyGreendF( ) );
-    std::cout << "PreviousdPsidF:\n"; tardigradeVectorTools::print( *RJ.getPreviousdPsidF( ) );
-    std::cout << "PreviousdGammadF:\n"; tardigradeVectorTools::print( *RJ.getPreviousdGammadF( ) );
 
     //Test jacobians w.r.t. the micro deformation
     for ( unsigned int i = 0; i < microDeformation.size(); i++ ){
@@ -2352,8 +2330,6 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdGammadChi( ) )[ j ][ i ] ) );
         }
     }
-    std::cout << "PreviousdPsidChi:\n"; tardigradeVectorTools::print( *RJ.getPreviousdPsidChi( ) );
-    std::cout << "PreviousdGammadChi:\n"; tardigradeVectorTools::print( *RJ.getPreviousdGammadChi( ) );
 
     //Test jacobians w.r.t. the gradient of the micro deformation
     for ( unsigned int i = 0; i < gradientMicroDeformation.size(); i++ ){
@@ -2396,7 +2372,141 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdGammadGradChi( ) )[ j ][ i ] ) );
         }
     }
-    std::cout << "PreviousdGammadGradChi:\n"; tardigradeVectorTools::print( *RJ.getPreviousdGammadGradChi( ) );
+
+    floatMatrix dCdStateVariables( 9, floatVector( 45, 0 ) );
+    floatMatrix dPsidStateVariables( 9, floatVector( 45, 0 ) );
+    floatMatrix dGammadStateVariables( 27, floatVector( 45, 0 ) );
+
+    floatMatrix previousdCdStateVariables( 9, floatVector( 45, 0 ) );
+    floatMatrix previousdPsidStateVariables( 9, floatVector( 45, 0 ) );
+    floatMatrix previousdGammadStateVariables( 27, floatVector( 45, 0 ) );
+
+    //Test jacobians w.r.t. the previous non-linear state variables
+    for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
+        constantVector delta( previousStateVariables.size( ), 0 );
+        delta[i] = eps * fabs( previousStateVariables[i] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables + delta, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables - delta, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
+
+        variableVector gradCol = ( ( *rp.getRightCauchyGreen( ) ) - ( *rm.getRightCauchyGreen( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            dCdStateVariables[ j ][ i ] = gradCol[ j ];
+        }
+
+        gradCol = ( ( *rp.getPsi( ) ) - ( *rm.getPsi( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            dPsidStateVariables[ j ][ i ] = gradCol[ j ];
+        }
+
+        gradCol = ( ( *rp.getGamma( ) ) - ( *rm.getGamma( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            dGammadStateVariables[ j ][ i ] = gradCol [ j ];
+        }
+
+        gradCol = ( ( *rp.getPreviousRightCauchyGreen( ) ) - ( *rm.getPreviousRightCauchyGreen( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            previousdCdStateVariables[ j ][ i ] = gradCol[ j ];
+        }
+
+        gradCol = ( ( *rp.getPreviousPsi( ) ) - ( *rm.getPreviousPsi( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            previousdPsidStateVariables[ j ][ i ] = gradCol[ j ];
+        }
+
+        gradCol = ( ( *rp.getPreviousGamma( ) ) - ( *rm.getPreviousGamma( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            previousdGammadStateVariables[ j ][ i ] = gradCol [ j ];
+        }
+    }
+
+    //Check the expected Jacobians
+    for ( unsigned int j = 0; j < 9; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCdStateVariables[ i ][ j ], ( *RJ.getdRightCauchyGreendFn( ) )[ i ][ j ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPsidStateVariables[ i ][ j ], ( *RJ.getdPsidFn( ) )[ i ][ j ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGammadStateVariables[ i ][ j ], ( *RJ.getdGammadFn( ) )[ i ][ j ] ) );
+
+        }
+
+    }
+
+    for ( unsigned int j = 9; j < 18; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCdStateVariables[ i ][ j ], 0. ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPsidStateVariables[ i ][ j ], ( *RJ.getdPsidChin( ) )[ i ][ j - 9 ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGammadStateVariables[ i ][ j ], ( *RJ.getdGammadChin( ) )[ i ][ j - 9 ] ) );
+
+        }
+
+    }
+
+    for ( unsigned int j = 18; j < 45; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCdStateVariables[ i ][ j ], 0. ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPsidStateVariables[ i ][ j ], 0. ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGammadStateVariables[ i ][ j ], ( *RJ.getdGammadGradChin( ) )[ i ][ j - 18 ] ) );
+
+        }
+
+    }
 }
 
 BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm1 ){
