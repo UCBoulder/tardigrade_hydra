@@ -333,6 +333,38 @@ namespace tardigradeHydra{
 
             void addIterationData( dataBase *data );
 
+            template<class T>
+            void setIterationData( const T &data, dataStorage<T> &storage ){
+                /*!
+                 * Template function for adding iteration data
+                 *
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
+
+                storage.second = data;
+
+                storage.first = true;
+
+                addIterationData( &storage );
+
+            }
+
+            template<class T>
+            void setPreviousData( const T &data, dataStorage<T> &storage ){
+                /*!
+                 * Template function for adding previous data
+                 * 
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
+
+                storage.second = data;
+
+                storage.first = true;
+
+            }
+
         private:
 
             unsigned int _numEquations; //!< The number of residual equations
