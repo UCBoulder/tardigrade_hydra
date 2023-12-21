@@ -365,6 +365,21 @@ namespace tardigradeHydra{
 
             }
 
+            template<class T>
+            void setConstantData( const T &data, dataStorage<T> &storage ){
+                /*!
+                 * Template function for adding constant data
+                 * 
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
+
+                storage.second = data;
+
+                storage.first = true;
+
+            }
+
         private:
 
             unsigned int _numEquations; //!< The number of residual equations
