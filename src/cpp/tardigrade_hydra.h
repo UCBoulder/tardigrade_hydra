@@ -17,6 +17,30 @@
 #include<tardigrade_vector_tools.h>
 #include<tardigrade_abaqus_tools.h>
 
+#define TARDIGRADE_HYDRA_DECLARE_SETTER(varname,vartype,setfun)          \
+    void set_##varname(const vartype &varname ){                         \
+    /*!                                                                  \
+     * Declaration of the storage for varname of type vartype            \
+     *                                                                   \
+     * \param &varname: The value of the variable                        \
+     */                                                                  \
+        setfun( varname, _##varname );                                   \
+    }
+
+#define TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setfun) \
+    private: dataStorage<vartype> _##varname;                       \
+    public: TARDIGRADE_HYDRA_DECLARE_SETTER(varname,vartype,setfun) \
+    context:
+
+#define TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(context,varname,vartype) \
+    TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setIterationData)
+
+#define TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(context,varname,vartype) \
+    TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setPreviousData)
+
+#define TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(context,varname,vartype) \
+    TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setConstantData)
+
 namespace tardigradeHydra{
 
     // forward class definitions
