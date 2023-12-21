@@ -1821,11 +1821,7 @@ namespace tardigradeHydra{
              * \param &rightCauchyGreen: The value
              */
 
-            _rightCauchyGreen.second = rightCauchyGreen;
-
-            _rightCauchyGreen.first = true;
-
-            addIterationData( &_rightCauchyGreen );
+            setIterationData( rightCauchyGreen, _rightCauchyGreen );
 
         }
 
@@ -1836,11 +1832,7 @@ namespace tardigradeHydra{
              * \param &psi: The value
              */
 
-            _psi.second = psi;
-
-            _psi.first = true;
-
-            addIterationData( &_psi );
+            setIterationData( psi, _psi );
 
         }
 
@@ -1851,11 +1843,7 @@ namespace tardigradeHydra{
              * \param &gamma: The value
              */
 
-            _gamma.second = gamma;
-
-            _gamma.first = true;
-
-            addIterationData( &_gamma );
+            setIterationData( gamma, _gamma );
 
         }
 
@@ -1866,9 +1854,7 @@ namespace tardigradeHydra{
              * \param &previousRightCauchyGreen: The value
              */
 
-            _previousRightCauchyGreen.second = previousRightCauchyGreen;
-
-            _previousRightCauchyGreen.first = true;
+            setPreviousData( previousRightCauchyGreen, _previousRightCauchyGreen );
 
         }
 
@@ -1879,9 +1865,8 @@ namespace tardigradeHydra{
              * \param &previousPsi: The value
              */
 
-            _previousPsi.second = previousPsi;
+            setPreviousData( previousPsi, _previousPsi );
 
-            _previousPsi.first = true;
         }
 
         void residual::setPreviousGamma( const variableVector &previousGamma ){
@@ -1891,9 +1876,7 @@ namespace tardigradeHydra{
              * \param &previousGamma: The value
              */
 
-            _previousGamma.second = previousGamma;
-
-            _previousGamma.first = true;
+            setPreviousData( previousGamma, _previousGamma );
 
         }
 
@@ -2021,11 +2004,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dRightCauchyGreendF.second = value;
-
-            _dRightCauchyGreendF.first = true;
-
-            addIterationData( &_dRightCauchyGreendF );
+            setIterationData( value, _dRightCauchyGreendF );
 
         }
 
@@ -2036,11 +2015,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dRightCauchyGreendFn.second = value;
-
-            _dRightCauchyGreendFn.first = true;
-
-            addIterationData( &_dRightCauchyGreendFn );
+            setIterationData( value, _dRightCauchyGreendFn );
 
         }
 
@@ -2051,11 +2026,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dPsidF.second = value;
-
-            _dPsidF.first = true;
-
-            addIterationData( &_dPsidF );
+            setIterationData( value, _dPsidF );
 
         }
 
@@ -2066,11 +2037,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dPsidFn.second = value;
-
-            _dPsidFn.first = true;
-
-            addIterationData( &_dPsidFn );
+            setIterationData( value, _dPsidFn );
 
         }
 
@@ -2081,11 +2048,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dPsidChi.second = value;
-
-            _dPsidChi.first = true;
-
-            addIterationData( &_dPsidChi );
+            setIterationData( value, _dPsidChi );
 
         }
 
@@ -2096,11 +2059,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dPsidChin.second = value;
-
-            _dPsidChin.first = true;
-
-            addIterationData( &_dPsidChin );
+            setIterationData( value, _dPsidChin );
 
         }
 
@@ -2111,11 +2070,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dGammadF.second = value;
-
-            _dGammadF.first = true;
-
-            addIterationData( &_dGammadF );
+            setIterationData( value, _dGammadF );
 
         }
 
@@ -2126,11 +2081,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dGammadFn.second = value;
-
-            _dGammadFn.first = true;
-
-            addIterationData( &_dGammadFn );
+            setIterationData( value, _dGammadFn );
 
         }
 
@@ -2141,11 +2092,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dGammadChi.second = value;
-
-            _dGammadChi.first = true;
-
-            addIterationData( &_dGammadChi );
+            setIterationData( value, _dGammadChi );
 
         }
 
@@ -2156,11 +2103,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dGammadChin.second = value;
-
-            _dGammadChin.first = true;
-
-            addIterationData( &_dGammadChin );
+            setIterationData( value, _dGammadChin );
 
         }
 
@@ -2171,11 +2114,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dGammadGradChi.second = value;
-
-            _dGammadGradChi.first = true;
-
-            addIterationData( &_dGammadGradChi );
+            setIterationData( value, _dGammadGradChi );
 
         }
 
@@ -2186,11 +2125,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _dGammadGradChin.second = value;
-
-            _dGammadGradChin.first = true;
-
-            addIterationData( &_dGammadGradChin );
+            setIterationData( value, _dGammadGradChin );
 
         }
 
@@ -2201,9 +2136,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdRightCauchyGreendF.second = value;
-
-            _previousdRightCauchyGreendF.first = true;
+            setPreviousData( value, _previousdRightCauchyGreendF );
 
         }
 
@@ -2214,9 +2147,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdRightCauchyGreendFn.second = value;
-
-            _previousdRightCauchyGreendFn.first = true;
+            setPreviousData( value, _previousdRightCauchyGreendFn );
 
         }
 
@@ -2227,9 +2158,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdPsidF.second = value;
-
-            _previousdPsidF.first = true;
+            setPreviousData( value, _previousdPsidF );
 
         }
 
@@ -2240,9 +2169,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdPsidFn.second = value;
-
-            _previousdPsidFn.first = true;
+            setPreviousData( value, _previousdPsidFn );
 
         }
 
@@ -2253,9 +2180,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdPsidChi.second = value;
-
-            _previousdPsidChi.first = true;
+            setPreviousData( value, _previousdPsidChi );
 
         }
 
@@ -2266,9 +2191,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdPsidChin.second = value;
-
-            _previousdPsidChin.first = true;
+            setPreviousData( value, _previousdPsidChin );
 
         }
 
@@ -2279,9 +2202,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdGammadF.second = value;
-
-            _previousdGammadF.first = true;
+            setPreviousData( value, _previousdGammadF );
 
         }
 
@@ -2292,9 +2213,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdGammadFn.second = value;
-
-            _previousdGammadFn.first = true;
+            setPreviousData( value, _previousdGammadFn );
 
         }
 
@@ -2305,9 +2224,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdGammadChi.second = value;
-
-            _previousdGammadChi.first = true;
+            setPreviousData( value, _previousdGammadChi );
 
         }
 
@@ -2318,9 +2235,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdGammadChin.second = value;
-
-            _previousdGammadChin.first = true;
+            setPreviousData( value, _previousdGammadChin );
 
         }
 
@@ -2331,9 +2246,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdGammadGradChi.second = value;
-
-            _previousdGammadGradChi.first = true;
+            setPreviousData( value, _previousdGammadGradChi );
 
         }
 
@@ -2344,9 +2257,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the Jacobian
              */
 
-            _previousdGammadGradChin.second = value;
-
-            _previousdGammadGradChin.first = true;
+            setPreviousData( value, _previousdGammadGradChin );
 
         }
 
@@ -2573,11 +2484,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the stress
              */
 
-            _pk2Stress.second = value;
-
-            _pk2Stress.first = true;
-
-            addIterationData( &_pk2Stress );
+            setIterationData( value, _pk2Stress );
 
         }
 
@@ -2588,11 +2495,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the stress
              */
 
-            _referenceSymmetricMicroStress.second = value;
-
-            _referenceSymmetricMicroStress.first = true;
-
-            addIterationData( &_referenceSymmetricMicroStress );
+            setIterationData( value, _referenceSymmetricMicroStress );
 
         }
 
@@ -2603,11 +2506,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the stress
              */
 
-            _referenceHigherOrderStress.second = value;
-
-            _referenceHigherOrderStress.first = true;
-
-            addIterationData( &_referenceHigherOrderStress );
+            setIterationData( value, _referenceHigherOrderStress );
 
         }
 
@@ -2618,9 +2517,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the stress
              */
 
-            _previouspk2Stress.second = value;
-
-            _previouspk2Stress.first = true;
+            setPreviousData( value, _previouspk2Stress );
 
         }
 
@@ -2631,9 +2528,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the stress
              */
 
-            _previousreferenceSymmetricMicroStress.second = value;
-
-            _previousreferenceSymmetricMicroStress.first = true;
+            setPreviousData( value, _previousreferenceSymmetricMicroStress );
 
         }
 
@@ -2644,9 +2539,7 @@ namespace tardigradeHydra{
              * \param &value: The value of the stress
              */
 
-            _previousreferenceHigherOrderStress.second = value;
-
-            _previousreferenceHigherOrderStress.first = true;
+            setPreviousData( value, _previousreferenceHigherOrderStress );
 
         }
 
