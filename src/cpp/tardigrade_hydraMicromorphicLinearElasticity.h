@@ -324,6 +324,78 @@ namespace tardigradeHydra{
 
                 const variableMatrix *getPreviousdGammadGradChin( );
 
+                const variableMatrix *getdPK2dF( );
+
+                const variableMatrix *getdPK2dFn( );
+
+                const variableMatrix *getdPK2dChi( );
+
+                const variableMatrix *getdPK2dChin( );
+
+                const variableMatrix *getdPK2dGradChi( );
+
+                const variableMatrix *getdPK2dGradChin( );
+
+                const variableMatrix *getdSIGMAdF( );
+
+                const variableMatrix *getdSIGMAdFn( );
+
+                const variableMatrix *getdSIGMAdChi( );
+
+                const variableMatrix *getdSIGMAdChin( );
+
+                const variableMatrix *getdSIGMAdGradChi( );
+
+                const variableMatrix *getdSIGMAdGradChin( );
+
+                const variableMatrix *getdMdF( );
+
+                const variableMatrix *getdMdFn( );
+
+                const variableMatrix *getdMdChi( );
+
+                const variableMatrix *getdMdChin( );
+
+                const variableMatrix *getdMdGradChi( );
+
+                const variableMatrix *getdMdGradChin( );
+
+                const variableMatrix *getPreviousdPK2dF( );
+
+                const variableMatrix *getPreviousdPK2dFn( );
+
+                const variableMatrix *getPreviousdPK2dChi( );
+
+                const variableMatrix *getPreviousdPK2dChin( );
+
+                const variableMatrix *getPreviousdPK2dGradChi( );
+
+                const variableMatrix *getPreviousdPK2dGradChin( );
+
+                const variableMatrix *getPreviousdSIGMAdF( );
+
+                const variableMatrix *getPreviousdSIGMAdFn( );
+
+                const variableMatrix *getPreviousdSIGMAdChi( );
+
+                const variableMatrix *getPreviousdSIGMAdChin( );
+
+                const variableMatrix *getPreviousdSIGMAdGradChi( );
+
+                const variableMatrix *getPreviousdSIGMAdGradChin( );
+
+                const variableMatrix *getPreviousdMdF( );
+
+                const variableMatrix *getPreviousdMdFn( );
+
+                const variableMatrix *getPreviousdMdChi( );
+
+                const variableMatrix *getPreviousdMdChin( );
+
+                const variableMatrix *getPreviousdMdGradChi( );
+
+                const variableMatrix *getPreviousdMdGradChin( );
+
             protected:
 
                 void setRightCauchyGreen( const variableVector &rightCauchyGreen );
@@ -476,6 +548,152 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousdGammadGradChin( );
 
+                virtual void setdPK2dF( );
+
+                virtual void setdPK2dFn( );
+
+                virtual void setdPK2dChi( );
+
+                virtual void setdPK2dChin( );
+
+                virtual void setdPK2dGradChi( );
+
+                virtual void setdPK2dGradChin( );
+
+                virtual void setdSIGMAdF( );
+
+                virtual void setdSIGMAdFn( );
+
+                virtual void setdSIGMAdChi( );
+
+                virtual void setdSIGMAdChin( );
+
+                virtual void setdSIGMAdGradChi( );
+
+                virtual void setdSIGMAdGradChin( );
+
+                virtual void setdMdF( );
+
+                virtual void setdMdFn( );
+
+                virtual void setdMdChi( );
+
+                virtual void setdMdChin( );
+
+                virtual void setdMdGradChi( );
+
+                virtual void setdMdGradChin( );
+
+                virtual void setPreviousdPK2dF( );
+
+                virtual void setPreviousdPK2dFn( );
+
+                virtual void setPreviousdPK2dChi( );
+
+                virtual void setPreviousdPK2dChin( );
+
+                virtual void setPreviousdPK2dGradChi( );
+
+                virtual void setPreviousdPK2dGradChin( );
+
+                virtual void setPreviousdSIGMAdF( );
+
+                virtual void setPreviousdSIGMAdFn( );
+
+                virtual void setPreviousdSIGMAdChi( );
+
+                virtual void setPreviousdSIGMAdChin( );
+
+                virtual void setPreviousdSIGMAdGradChi( );
+
+                virtual void setPreviousdSIGMAdGradChin( );
+
+                virtual void setPreviousdMdF( );
+
+                virtual void setPreviousdMdFn( );
+
+                virtual void setPreviousdMdChi( );
+
+                virtual void setPreviousdMdChin( );
+
+                virtual void setPreviousdMdGradChi( );
+
+                virtual void setPreviousdMdGradChin( );
+
+                void setdPK2dF( const variableMatrix &value );
+
+                void setdPK2dFn( const variableMatrix &value );
+
+                void setdPK2dChi( const variableMatrix &value );
+
+                void setdPK2dChin( const variableMatrix &value );
+
+                void setdPK2dGradChi( const variableMatrix &value );
+
+                void setdPK2dGradChin( const variableMatrix &value );
+
+                void setdSIGMAdF( const variableMatrix &value );
+
+                void setdSIGMAdFn( const variableMatrix &value );
+
+                void setdSIGMAdChi( const variableMatrix &value );
+
+                void setdSIGMAdChin( const variableMatrix &value );
+
+                void setdSIGMAdGradChi( const variableMatrix &value );
+
+                void setdSIGMAdGradChin( const variableMatrix &value );
+
+                void setdMdF( const variableMatrix &value );
+
+                void setdMdFn( const variableMatrix &value );
+
+                void setdMdChi( const variableMatrix &value );
+
+                void setdMdChin( const variableMatrix &value );
+
+                void setdMdGradChi( const variableMatrix &value );
+
+                void setdMdGradChin( const variableMatrix &value );
+
+                void setPreviousdPK2dF( const variableMatrix &value );
+
+                void setPreviousdPK2dFn( const variableMatrix &value );
+
+                void setPreviousdPK2dChi( const variableMatrix &value );
+
+                void setPreviousdPK2dChin( const variableMatrix &value );
+
+                void setPreviousdPK2dGradChi( const variableMatrix &value );
+
+                void setPreviousdPK2dGradChin( const variableMatrix &value );
+
+                void setPreviousdSIGMAdF( const variableMatrix &value );
+
+                void setPreviousdSIGMAdFn( const variableMatrix &value );
+
+                void setPreviousdSIGMAdChi( const variableMatrix &value );
+
+                void setPreviousdSIGMAdChin( const variableMatrix &value );
+
+                void setPreviousdSIGMAdGradChi( const variableMatrix &value );
+
+                void setPreviousdSIGMAdGradChin( const variableMatrix &value );
+
+                void setPreviousdMdF( const variableMatrix &value );
+
+                void setPreviousdMdFn( const variableMatrix &value );
+
+                void setPreviousdMdChi( const variableMatrix &value );
+
+                void setPreviousdMdChin( const variableMatrix &value );
+
+                void setPreviousdMdGradChi( const variableMatrix &value );
+
+                void setPreviousdMdGradChin( const variableMatrix &value );
+
+                virtual void setReferenceStressJacobians( const bool isPrevious );
+
             private:
 
                 parameterVector _Amatrix; //!< The A stiffness matrix
@@ -548,15 +766,87 @@ namespace tardigradeHydra{
 
                 tardigradeHydra::dataStorage< variableVector > _pk2Stress; //!< The value of the second Piola-Kirchoff stress
 
+                tardigradeHydra::dataStorage< variableMatrix > _dPK2dF; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _dPK2dFn; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the sub-deformation gradients
+
+                tardigradeHydra::dataStorage< variableMatrix > _dPK2dChi; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _dPK2dChin; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the sub-micro deformations
+
+                tardigradeHydra::dataStorage< variableMatrix > _dPK2dGradChi; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the spatial gradient of the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _dPK2dGradChin; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the spatial gradient of the sub-micro deformations
+
                 tardigradeHydra::dataStorage< variableVector > _referenceSymmetricMicroStress; //!< The value of the reference symmetric micro stress
+
+                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdF; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdFn; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the sub-deformation gradients
+
+                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdChi; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdChin; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the sub-micro deformations
+
+                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdGradChi; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdGradChin; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the sub-micro deformations
 
                 tardigradeHydra::dataStorage< variableVector > _referenceHigherOrderStress; //!< The value of the reference higher order stress
 
+                tardigradeHydra::dataStorage< variableMatrix > _dMdF; //!< The value of the derivative of the reference higher order stress w.r.t. the deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _dMdFn; //!< The value of the derivative of the reference higher order stress w.r.t. the sub-deformation gradients
+
+                tardigradeHydra::dataStorage< variableMatrix > _dMdChi; //!< The value of the derivative of the reference higher order stress w.r.t. the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _dMdChin; //!< The value of the derivative of the reference higher order stress w.r.t. the sub-micro deformations
+
+                tardigradeHydra::dataStorage< variableMatrix > _dMdGradChi; //!< The value of the derivative of the reference higher order stress w.r.t. the spatial gradient of the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _dMdGradChin; //!< The value of the derivative of the reference higher order stress w.r.t. the spatial gradient of the sub-micro deformations
+
                 tardigradeHydra::dataStorage< variableVector > _previouspk2Stress; //!< The value of the previous second Piola-Kirchoff stress
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dF; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dFn; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the sub-deformation gradients
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dChi; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dChin; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the sub-micro deformations
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dGradChi; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the spatial gradient of the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dGradChin; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the spatial gradient of the sub-micro deformations
 
                 tardigradeHydra::dataStorage< variableVector > _previousreferenceSymmetricMicroStress; //!< The value of the previous reference symmetric micro stress
 
+                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdF; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdFn; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the sub-deformation gradients
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdChi; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdChin; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the sub-micro deformations
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdGradChi; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdGradChin; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the sub-micro deformations
+
                 tardigradeHydra::dataStorage< variableVector > _previousreferenceHigherOrderStress; //!< The value of the previous reference higher order stress
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdMdF; //!< The value of the previous derivative of the reference higher order stress w.r.t. the deformation gradient
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdMdFn; //!< The value of the previous derivative of the reference higher order stress w.r.t. the sub-deformation gradients
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdMdChi; //!< The value of the previous derivative of the reference higher order stress w.r.t. the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdMdChin; //!< The value of the previous derivative of the reference higher order stress w.r.t. the sub-micro deformations
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdMdGradChi; //!< The value of the previous derivative of the reference higher order stress w.r.t. the spatial gradient of the micro deformation
+
+                tardigradeHydra::dataStorage< variableMatrix > _previousdMdGradChin; //!< The value of the previous derivative of the reference higher order stress w.r.t. the spatial gradient of the sub-micro deformations
 
         };
 
