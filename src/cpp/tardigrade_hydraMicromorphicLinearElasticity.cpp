@@ -1071,7 +1071,7 @@ namespace tardigradeHydra{
     
             if ( C.size() != dim * dim * dim * dim * dim * dim ){
                 return new errorNode( "computeReferenceHigherOrderStress",
-                                      "The C stiffness tensor have a length of 3**6" );
+                                      "The C stiffness tensor must have a length of 3**6.\nThe current size is " + std::to_string( C.size( ) ) );
             }
     
             referenceHigherOrderStress = variableVector( dim * dim * dim, 0 );
@@ -2566,6 +2566,323 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPK2Stress( const variableVector &value ){
+            /*!
+             * Set the value of the second Piola-Kirchhoff stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _pk2Stress.second = value;
+
+            _pk2Stress.first = true;
+
+            addIterationData( &_pk2Stress );
+
+        }
+
+        void residual::setReferenceSymmetricMicroStress( const variableVector &value ){
+            /*!
+             * Set the value of the reference symmetric micro stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _referenceSymmetricMicroStress.second = value;
+
+            _referenceSymmetricMicroStress.first = true;
+
+            addIterationData( &_referenceSymmetricMicroStress );
+
+        }
+
+        void residual::setReferenceHigherOrderStress( const variableVector &value ){
+            /*!
+             * Set the value of the reference higher order stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _referenceHigherOrderStress.second = value;
+
+            _referenceHigherOrderStress.first = true;
+
+            addIterationData( &_referenceHigherOrderStress );
+
+        }
+
+        void residual::setPreviousPK2Stress( const variableVector &value ){
+            /*!
+             * Set the value of the previous second Piola-Kirchhoff stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _previouspk2Stress.second = value;
+
+            _previouspk2Stress.first = true;
+
+        }
+
+        void residual::setPreviousReferenceSymmetricMicroStress( const variableVector &value ){
+            /*!
+             * Set the value of the previous reference symmetric micro stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _previousreferenceSymmetricMicroStress.second = value;
+
+            _previousreferenceSymmetricMicroStress.first = true;
+
+        }
+
+        void residual::setPreviousReferenceHigherOrderStress( const variableVector &value ){
+            /*!
+             * Set the value of the previous reference higher order stress
+             * 
+             * \param &value: The value of the stress
+             */
+
+            _previousreferenceHigherOrderStress.second = value;
+
+            _previousreferenceHigherOrderStress.first = true;
+
+        }
+
+        void residual::setPK2Stress( ){
+            /*!
+             * Set the value of the second Piola-Kirchhoff stress
+             */
+
+            return setReferenceStresses( false );
+
+        }
+
+        void residual::setReferenceSymmetricMicroStress( ){
+            /*!
+             * Set the value of the reference symmetric micro stress
+             */
+
+            return setReferenceStresses( false );
+
+        }
+
+        void residual::setReferenceHigherOrderStress( ){
+            /*!
+             * Set the value of the reference higher order stress
+             */
+
+            return setReferenceStresses( false );
+
+        }
+
+        void residual::setPreviousPK2Stress( ){
+            /*!
+             * Set the value of the previous second Piola-Kirchhoff stress
+             */
+
+            return setReferenceStresses( true );
+
+        }
+
+        void residual::setPreviousReferenceSymmetricMicroStress( ){
+            /*!
+             * Set the value of the previous reference symmetric micro stress
+             */
+
+            return setReferenceStresses( true );
+
+        }
+
+        void residual::setPreviousReferenceHigherOrderStress( ){
+            /*!
+             * Set the value of the previous reference higher order stress
+             */
+
+            return setReferenceStresses( true );
+
+        }
+
+        const variableVector *residual::getPK2Stress( ){
+            /*!
+             * Get the value of the second Piola-Kirchhoff stress
+             */
+
+            if ( !_pk2Stress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPK2Stress( ) );
+
+            }
+
+            return &_pk2Stress.second;
+
+        }
+
+        const variableVector *residual::getReferenceSymmetricMicroStress( ){
+            /*!
+             * Get the value of the reference symmetric micro stress
+             */
+
+            if ( !_referenceSymmetricMicroStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setReferenceSymmetricMicroStress( ) );
+
+            }
+
+            return &_referenceSymmetricMicroStress.second;
+
+        }
+
+        const variableVector *residual::getReferenceHigherOrderStress( ){
+            /*!
+             * Get the value of the reference higher order stress
+             */
+
+            if ( !_referenceHigherOrderStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setReferenceHigherOrderStress( ) );
+
+            }
+
+            return &_referenceHigherOrderStress.second;
+
+        }
+
+        const variableVector *residual::getPreviousPK2Stress( ){
+            /*!
+             * Get the value of the previous second Piola-Kirchhoff stress
+             */
+
+            if ( !_previouspk2Stress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousPK2Stress( ) );
+
+            }
+
+            return &_previouspk2Stress.second;
+
+        }
+
+        const variableVector *residual::getPreviousReferenceSymmetricMicroStress( ){
+            /*!
+             * Get the value of the previous reference symmetric micro stress
+             */
+
+            if ( !_previousreferenceSymmetricMicroStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousReferenceSymmetricMicroStress( ) );
+
+            }
+
+            return &_previousreferenceSymmetricMicroStress.second;
+
+        }
+
+        const variableVector *residual::getPreviousReferenceHigherOrderStress( ){
+            /*!
+             * Get the value of the previous reference higher order stress
+             */
+
+            if ( !_previousreferenceHigherOrderStress.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousReferenceHigherOrderStress( ) );
+
+            }
+
+            return &_previousreferenceHigherOrderStress.second;
+
+        }
+
+        void residual::setReferenceStresses( const bool isPrevious ){
+            /*!
+             * Set the values of the reference stresses
+             * 
+             * \param isPrevious: Flag for if the stresses to be calculated are the current (false) or previous (true)
+             */
+
+            const variableVector *C;
+
+            const variableVector *Psi;
+
+            const variableVector *Gamma;
+
+            variableVector followingConfiguration;
+
+            variableVector followingMicroConfiguration;
+
+            if ( isPrevious ){
+
+                C     = getPreviousRightCauchyGreen( );
+
+                Psi   = getPreviousPsi( );
+
+                Gamma = getPreviousGamma( );
+
+                followingConfiguration = hydra->getPreviousFollowingConfiguration( 0 );
+
+                followingMicroConfiguration = hydra->getPreviousFollowingMicroConfiguration( 0 );
+
+            }
+            else{
+
+                C     = getRightCauchyGreen( );
+
+                Psi   = getPsi( );
+
+                Gamma = getGamma( );
+
+                followingConfiguration = hydra->getFollowingConfiguration( 0 );
+    
+                followingMicroConfiguration = hydra->getFollowingMicroConfiguration( 0 );
+
+            }
+
+            floatVector localPK2Stress;
+
+            floatVector localReferenceSymmetricMicroStress;
+
+            floatVector localReferenceHigherOrderStress;
+
+            // Compute the stresses in the local configuration
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( linearElasticityReferenceDerivedMeasures( *C, *Psi, *Gamma, *getAMatrix( ), *getBMatrix( ), *getCMatrix( ), *getDMatrix( ),
+                                                                                                 localPK2Stress, localReferenceSymmetricMicroStress, localReferenceHigherOrderStress ) );
+
+            floatVector PK2Stress;
+
+            floatVector referenceSymmetricMicroStress;
+
+            floatVector referenceHigherOrderStress;
+
+            // Pull the stresses back to the true reference configuration
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, PK2Stress ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, followingConfiguration, referenceSymmetricMicroStress ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
+                                                                                                               referenceHigherOrderStress ) );
+
+            if ( isPrevious ){
+
+                setPreviousPK2Stress( PK2Stress );
+
+                setPreviousReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
+
+                setPreviousReferenceHigherOrderStress( referenceHigherOrderStress );
+
+            }
+            else{
+
+                setPK2Stress( PK2Stress );
+
+                setReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
+
+                setReferenceHigherOrderStress( referenceHigherOrderStress );
+
+            }
+
+        }
+
         const variableMatrix *residual::getdRightCauchyGreendF( ){
             /*!
              * Get the jacobian of the right Cauchy-Green deformation tensor w.r.t. the total deformation gradient
@@ -2892,7 +3209,7 @@ namespace tardigradeHydra{
 
             }
 
-            return &_dGammadChin.second;
+            return &_previousdGammadChin.second;
 
         }
 
@@ -2923,6 +3240,1616 @@ namespace tardigradeHydra{
             }
 
             return &_previousdGammadGradChin.second;
+
+        }
+
+        const variableMatrix *residual::getdPK2dF( ){
+            /*!
+             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the deformation gradient
+             */
+
+            if ( !_dPK2dF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dF( ) );
+
+            }
+
+            return &_dPK2dF.second;
+
+        }
+
+        const variableMatrix *residual::getdPK2dFn( ){
+            /*!
+             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_dPK2dFn.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dFn( ) );
+
+            }
+
+            return &_dPK2dFn.second;
+
+        }
+
+        const variableMatrix *residual::getdPK2dChi( ){
+            /*!
+             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the micro-deformation
+             */
+
+            if ( !_dPK2dChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dChi( ) );
+
+            }
+
+            return &_dPK2dChi.second;
+
+        }
+
+        const variableMatrix *residual::getdPK2dChin( ){
+            /*!
+             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the sub-micro deformations
+             */
+
+            if ( !_dPK2dChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dChin( ) );
+
+            }
+
+            return &_dPK2dChin.second;
+
+        }
+
+        const variableMatrix *residual::getdPK2dGradChi( ){
+            /*!
+             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the spatial gradient of the micro-deformation
+             */
+
+            if ( !_dPK2dGradChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dGradChi( ) );
+
+            }
+
+            return &_dPK2dGradChi.second;
+
+        }
+
+        const variableMatrix *residual::getdPK2dGradChin( ){
+            /*!
+             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the local spatial gradients of the sub-micro deformations
+             */
+
+            if ( !_dPK2dGradChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dGradChin( ) );
+
+            }
+
+            return &_dPK2dGradChin.second;
+
+        }
+
+        const variableMatrix *residual::getdSIGMAdF( ){
+            /*!
+             * Get the value of the derivative of the reference symmetric micro stress w.r.t. the deformation gradient
+             */
+
+            if ( !_dSIGMAdF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdF( ) );
+
+            }
+
+            return &_dSIGMAdF.second;
+
+        }
+
+        const variableMatrix *residual::getdSIGMAdFn( ){
+            /*!
+             * Get the value of the reference symmetric micro stress w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_dSIGMAdFn.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdFn( ) );
+
+            }
+
+            return &_dSIGMAdFn.second;
+
+        }
+
+        const variableMatrix *residual::getdSIGMAdChi( ){
+            /*!
+             * Get the value of the derivative of the reference symmetric micro stress w.r.t. the micro-deformation
+             */
+
+            if ( !_dSIGMAdChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdChi( ) );
+
+            }
+
+            return &_dSIGMAdChi.second;
+
+        }
+
+        const variableMatrix *residual::getdSIGMAdChin( ){
+            /*!
+             * Get the value of the derivative of the reference symmetric micro stress w.r.t. the sub-micro deformations
+             */
+
+            if ( !_dSIGMAdChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdChin( ) );
+
+            }
+
+            return &_dSIGMAdChin.second;
+
+        }
+
+        const variableMatrix *residual::getdSIGMAdGradChi( ){
+            /*!
+             * Get the value of the derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the micro-deformation
+             */
+
+            if ( !_dSIGMAdGradChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdGradChi( ) );
+
+            }
+
+            return &_dSIGMAdGradChi.second;
+
+        }
+
+        const variableMatrix *residual::getdSIGMAdGradChin( ){
+            /*!
+             * Get the value of the derivative of the reference symmetric micro stress w.r.t. the local spatial gradients of the sub-micro deformations
+             */
+
+            if ( !_dSIGMAdGradChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdGradChin( ) );
+
+            }
+
+            return &_dSIGMAdGradChin.second;
+
+        }
+
+        const variableMatrix *residual::getdMdF( ){
+            /*!
+             * Get the value of the derivative of the higher order stress w.r.t. the deformation gradient
+             */
+
+            if ( !_dMdF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdF( ) );
+
+            }
+
+            return &_dMdF.second;
+
+        }
+
+        const variableMatrix *residual::getdMdFn( ){
+            /*!
+             * Get the value of the derivative of the higher order stress w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_dMdFn.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdFn( ) );
+
+            }
+
+            return &_dMdFn.second;
+
+        }
+
+        const variableMatrix *residual::getdMdChi( ){
+            /*!
+             * Get the value of the derivative of the reference higher order stress w.r.t. the micro-deformation
+             */
+
+            if ( !_dMdChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdChi( ) );
+
+            }
+
+            return &_dMdChi.second;
+
+        }
+
+        const variableMatrix *residual::getdMdChin( ){
+            /*!
+             * Get the value of the derivative of the higher order stress w.r.t. the sub-micro deformations
+             */
+
+            if ( !_dMdChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdChin( ) );
+
+            }
+
+            return &_dMdChin.second;
+
+        }
+
+        const variableMatrix *residual::getdMdGradChi( ){
+            /*!
+             * Get the value of the derivative of the reference higher order stress w.r.t. the spatial gradient of the micro-deformation
+             */
+
+            if ( !_dMdGradChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdGradChi( ) );
+
+            }
+
+            return &_dMdGradChi.second;
+
+        }
+
+        const variableMatrix *residual::getdMdGradChin( ){
+            /*!
+             * Get the value of the derivative of the reference higher order stress w.r.t. the local spatial gradients of the sub-micro deformations
+             */
+
+            if ( !_dMdGradChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdGradChin( ) );
+
+            }
+
+            return &_dMdGradChin.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdPK2dF( ){
+            /*!
+             * Get the value of the previous derivative second Piola-Kirchhoff stress w.r.t. the deformation gradient
+             */
+
+            if ( !_previousdPK2dF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dF( ) );
+
+            }
+
+            return &_previousdPK2dF.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdPK2dFn( ){
+            /*!
+             * Get the previous value of the derivative second Piola-Kirchhoff stress w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_previousdPK2dFn.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dFn( ) );
+
+            }
+
+            return &_previousdPK2dFn.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdPK2dChi( ){
+            /*!
+             * Get the previous value of the derivative second Piola-Kirchhoff stress w.r.t. the micro-deformation
+             */
+
+            if ( !_previousdPK2dChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dChi( ) );
+
+            }
+
+            return &_previousdPK2dChi.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdPK2dChin( ){
+            /*!
+             * Get the previous value of the derivative second Piola-Kirchhoff stress w.r.t. the sub-micro deformations
+             */
+
+            if ( !_previousdPK2dChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dChin( ) );
+
+            }
+
+            return &_previousdPK2dChin.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdPK2dGradChi( ){
+            /*!
+             * Get the previous value of the derivative second Piola-Kirchhoff stress w.r.t. the spatial gradient of the micro-deformation
+             */
+
+            if ( !_previousdPK2dGradChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dGradChi( ) );
+
+            }
+
+            return &_previousdPK2dGradChi.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdPK2dGradChin( ){
+            /*!
+             * Get the previous value of the derivative second Piola-Kirchhoff stress w.r.t. the local spatial gradients of the sub-micro deformations
+             */
+
+            if ( !_previousdPK2dGradChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dGradChin( ) );
+
+            }
+
+            return &_previousdPK2dGradChin.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdSIGMAdF( ){
+            /*!
+             * Get the previous value of the derivative of the reference symmetric micro stress w.r.t. the deformation gradient
+             */
+
+            if ( !_previousdSIGMAdF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdF( ) );
+
+            }
+
+            return &_previousdSIGMAdF.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdSIGMAdFn( ){
+            /*!
+             * Get the previous value of the reference symmetric micro stress w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_previousdSIGMAdFn.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdFn( ) );
+
+            }
+
+            return &_previousdSIGMAdFn.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdSIGMAdChi( ){
+            /*!
+             * Get the previous value of the derivative of the reference symmetric micro stress w.r.t. the micro-deformation
+             */
+
+            if ( !_previousdSIGMAdChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdChi( ) );
+
+            }
+
+            return &_previousdSIGMAdChi.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdSIGMAdChin( ){
+            /*!
+             * Get the previous value of the derivative of the reference symmetric micro stress w.r.t. the sub-micro deformations
+             */
+
+            if ( !_previousdSIGMAdChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdChin( ) );
+
+            }
+
+            return &_previousdSIGMAdChin.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdSIGMAdGradChi( ){
+            /*!
+             * Get the previous value of the derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the micro-deformation
+             */
+
+            if ( !_previousdSIGMAdGradChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdGradChi( ) );
+
+            }
+
+            return &_previousdSIGMAdGradChi.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdSIGMAdGradChin( ){
+            /*!
+             * Get the previous value of the derivative of the reference symmetric micro stress w.r.t. the local spatial gradients of the sub-micro deformations
+             */
+
+            if ( !_previousdSIGMAdGradChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdGradChin( ) );
+
+            }
+
+            return &_previousdSIGMAdGradChin.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdMdF( ){
+            /*!
+             * Get the previous value of the derivative of the higher order stress w.r.t. the deformation gradient
+             */
+
+            if ( !_previousdMdF.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdF( ) );
+
+            }
+
+            return &_previousdMdF.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdMdFn( ){
+            /*!
+             * Get the previous value of the derivative of the higher order stress w.r.t. the sub-deformation gradients
+             */
+
+            if ( !_previousdMdFn.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdFn( ) );
+
+            }
+
+            return &_previousdMdFn.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdMdChi( ){
+            /*!
+             * Get the previous value of the derivative of the reference higher order stress w.r.t. the micro-deformation
+             */
+
+            if ( !_previousdMdChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdChi( ) );
+
+            }
+
+            return &_previousdMdChi.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdMdChin( ){
+            /*!
+             * Get the previous value of the derivative of the higher order stress w.r.t. the sub-micro deformations
+             */
+
+            if ( !_previousdMdChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdChin( ) );
+
+            }
+
+            return &_previousdMdChin.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdMdGradChi( ){
+            /*!
+             * Get the previous value of the derivative of the reference higher order stress w.r.t. the spatial gradient of the micro-deformation
+             */
+
+            if ( !_previousdMdGradChi.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdGradChi( ) );
+
+            }
+
+            return &_previousdMdGradChi.second;
+
+        }
+
+        const variableMatrix *residual::getPreviousdMdGradChin( ){
+            /*!
+             * Get the previous value of the derivative of the reference higher order stress w.r.t. the local spatial gradients of the sub-micro deformations
+             */
+
+            if ( !_previousdMdGradChin.first ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdGradChin( ) );
+
+            }
+
+            return &_previousdMdGradChin.second;
+
+        }
+
+        void residual::setdPK2dF( ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress tensor w.r.t. the deformation gradient
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdPK2dFn( ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress tensor w.r.t. the sub-deformation gradients
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdPK2dChi( ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress tensor w.r.t. the micro deformation
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdPK2dChin( ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress tensor w.r.t. the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdPK2dGradChi( ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress tensor w.r.t. the spatial reference gradient of the micro deformations
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdPK2dGradChin( ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress tensor w.r.t. the spatial local reference gradient of the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( false );
+
+        };
+
+        void residual::setdSIGMAdF( ){
+            /*!
+             * Set the derivative of the reference symmetric micro stress tensor w.r.t. the deformation gradient
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdSIGMAdFn( ){
+            /*!
+             * Set the derivative of the reference symmetric micro stress tensor w.r.t. the sub-deformation gradients
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdSIGMAdChi( ){
+            /*!
+             * Set the derivative of the reference symmetric micro stress tensor w.r.t. the micro deformation
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdSIGMAdChin( ){
+            /*!
+             * Set the derivative of the reference symmetric micro stress tensor w.r.t. the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdSIGMAdGradChi( ){
+            /*!
+             * Set the derivative of the reference symmetric micro stress tensor w.r.t. the spatial reference gradient of the micro deformations
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdSIGMAdGradChin( ){
+            /*!
+             * Set the derivative of the reference symmetric micro stress tensor w.r.t. the spatial local reference gradient of the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( false );
+
+        };
+
+        void residual::setdMdF( ){
+            /*!
+             * Set the derivative of the reference higher order stress tensor w.r.t. the deformation gradient
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdMdFn( ){
+            /*!
+             * Set the derivative of the reference higher order micro stress tensor w.r.t. the sub-deformation gradients
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdMdChi( ){
+            /*!
+             * Set the derivative of the reference higher order stress tensor w.r.t. the micro deformation
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdMdChin( ){
+            /*!
+             * Set the derivative of the reference higher order stress tensor w.r.t. the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdMdGradChi( ){
+            /*!
+             * Set the derivative of the reference higher order stress tensor w.r.t. the spatial reference gradient of the micro deformations
+             */
+
+            setReferenceStressJacobians( false );
+
+        }
+
+        void residual::setdMdGradChin( ){
+            /*!
+             * Set the derivative of the reference higher order stress tensor w.r.t. the spatial local reference gradient of the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( false );
+
+        };
+
+        void residual::setPreviousdPK2dF( ){
+            /*!
+             * Set the previous derivative of the second Piola-Kirchhoff stress tensor w.r.t. the deformation gradient
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdPK2dFn( ){
+            /*!
+             * Set the previous derivative of the second Piola-Kirchhoff stress tensor w.r.t. the sub-deformation gradients
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdPK2dChi( ){
+            /*!
+             * Set the previous derivative of the second Piola-Kirchhoff stress tensor w.r.t. the micro deformation
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdPK2dChin( ){
+            /*!
+             * Set the previous derivative of the second Piola-Kirchhoff stress tensor w.r.t. the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdPK2dGradChi( ){
+            /*!
+             * Set the previous derivative of the second Piola-Kirchhoff stress tensor w.r.t. the spatial reference gradient of the micro deformations
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdPK2dGradChin( ){
+            /*!
+             * Set the previous derivative of the second Piola-Kirchhoff stress tensor w.r.t. the spatial local reference gradient of the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( true );
+
+        };
+
+        void residual::setPreviousdSIGMAdF( ){
+            /*!
+             * Set the previous derivative of the reference symmetric micro stress tensor w.r.t. the deformation gradient
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdSIGMAdFn( ){
+            /*!
+             * Set the previous derivative of the reference symmetric micro stress tensor w.r.t. the sub-deformation gradients
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdSIGMAdChi( ){
+            /*!
+             * Set the derivative of the reference symmetric micro stress tensor w.r.t. the micro deformation
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdSIGMAdChin( ){
+            /*!
+             * Set the previous derivative of the reference symmetric micro stress tensor w.r.t. the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdSIGMAdGradChi( ){
+            /*!
+             * Set the previous derivative of the reference symmetric micro stress tensor w.r.t. the spatial reference gradient of the micro deformations
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdSIGMAdGradChin( ){
+            /*!
+             * Set the previous derivative of the reference symmetric micro stress tensor w.r.t. the spatial local reference gradient of the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( true );
+
+        };
+
+        void residual::setPreviousdMdF( ){
+            /*!
+             * Set the previous derivative of the reference higher order stress tensor w.r.t. the deformation gradient
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdMdFn( ){
+            /*!
+             * Set the previous derivative of the reference higher order micro stress tensor w.r.t. the sub-deformation gradients
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdMdChi( ){
+            /*!
+             * Set the previous derivative of the reference higher order stress tensor w.r.t. the micro deformation
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdMdChin( ){
+            /*!
+             * Set the previous derivative of the reference higher order stress tensor w.r.t. the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdMdGradChi( ){
+            /*!
+             * Set the previous derivative of the reference higher order stress tensor w.r.t. the spatial reference gradient of the micro deformations
+             */
+
+            setReferenceStressJacobians( true );
+
+        }
+
+        void residual::setPreviousdMdGradChin( ){
+            /*!
+             * Set the previous derivative of the reference higher order stress tensor w.r.t. the spatial local reference gradient of the sub-micro deformations
+             */
+
+            setReferenceStressJacobians( true );
+
+        };
+
+        void residual::setdPK2dF( const variableMatrix &value ){
+            /*!
+             * The setter function for dPK2dF
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dPK2dF );
+
+        }
+
+        void residual::setdPK2dFn( const variableMatrix &value ){
+            /*!
+             * The setter function for dPK2dFn
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dPK2dFn );
+
+        }
+
+        void residual::setdPK2dChi( const variableMatrix &value ){
+            /*!
+             * The setter function for dPK2dChi
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dPK2dChi );
+
+        }
+
+        void residual::setdPK2dChin( const variableMatrix &value ){
+            /*!
+             * The setter function for dPK2dChin
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dPK2dChin );
+
+        }
+
+        void residual::setdPK2dGradChi( const variableMatrix &value ){
+            /*!
+             * The setter function for dPK2dGradChi
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dPK2dGradChi );
+
+        }
+
+        void residual::setdPK2dGradChin( const variableMatrix &value ){
+            /*!
+             * The setter function for dPK2dGradChin
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dPK2dGradChin );
+
+        }
+
+        void residual::setdSIGMAdF( const variableMatrix &value ){
+            /*!
+             * The setter function for dSIGMAdF
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dSIGMAdF );
+
+        }
+
+        void residual::setdSIGMAdFn( const variableMatrix &value ){
+            /*!
+             * The setter function for dSIGMAdFn
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dSIGMAdFn );
+
+        }
+
+        void residual::setdSIGMAdChi( const variableMatrix &value ){
+            /*!
+             * The setter function for dSIGMAdChi
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dSIGMAdChi );
+
+        }
+
+        void residual::setdSIGMAdChin( const variableMatrix &value ){
+            /*!
+             * The setter function for dSIGMAdChin
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dSIGMAdChin );
+
+        }
+
+        void residual::setdSIGMAdGradChi( const variableMatrix &value ){
+            /*!
+             * The setter function for dSIGMAdGradChi
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dSIGMAdGradChi );
+
+        }
+
+        void residual::setdSIGMAdGradChin( const variableMatrix &value ){
+            /*!
+             * The setter function for dSIGMAdGradChin
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dSIGMAdGradChin );
+
+        }
+
+        void residual::setdMdF( const variableMatrix &value ){
+            /*!
+             * The setter function for dMdF
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dMdF );
+
+        }
+
+        void residual::setdMdFn( const variableMatrix &value ){
+            /*!
+             * The setter function for dMdFn
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dMdFn );
+
+        }
+
+        void residual::setdMdChi( const variableMatrix &value ){
+            /*!
+             * The setter function for dMdChi
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dMdChi );
+
+        }
+
+        void residual::setdMdChin( const variableMatrix &value ){
+            /*!
+             * The setter function for dMdChin
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dMdChin );
+
+        }
+
+        void residual::setdMdGradChi( const variableMatrix &value ){
+            /*!
+             * The setter function for dMdGradChin
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dMdGradChi );
+
+        }
+
+        void residual::setdMdGradChin( const variableMatrix &value ){
+            /*!
+             * The setter function for dMdGradChin
+             * 
+             * \param &value: The value
+             */
+
+            setIterationData( value, _dMdGradChin );
+
+        }
+
+        void residual::setPreviousdPK2dF( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdPK2dF
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdPK2dF );
+
+        }
+
+        void residual::setPreviousdPK2dFn( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdPK2dFn
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdPK2dFn );
+
+        }
+
+        void residual::setPreviousdPK2dChi( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdPK2dChi
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdPK2dChi );
+
+        }
+
+        void residual::setPreviousdPK2dChin( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdPK2dChin
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdPK2dChin );
+
+        }
+
+        void residual::setPreviousdPK2dGradChi( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdPK2dGradChi
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdPK2dGradChi );
+
+        }
+
+        void residual::setPreviousdPK2dGradChin( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdPK2dGradChin
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdPK2dGradChin );
+
+        }
+
+        void residual::setPreviousdSIGMAdF( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdSIGMAdF
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdSIGMAdF );
+
+        }
+
+        void residual::setPreviousdSIGMAdFn( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdSIGMAdFn
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdSIGMAdFn );
+
+        }
+
+        void residual::setPreviousdSIGMAdChi( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdSIGMAdChi
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdSIGMAdChi );
+
+        }
+
+        void residual::setPreviousdSIGMAdChin( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdSIGMAdChin
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdSIGMAdChin );
+
+        }
+
+        void residual::setPreviousdSIGMAdGradChi( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdSIGMAdGradChi
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdSIGMAdGradChi );
+
+        }
+
+        void residual::setPreviousdSIGMAdGradChin( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdSIGMAdGradChin
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdSIGMAdGradChin );
+
+        }
+
+        void residual::setPreviousdMdF( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdMdF
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdMdF );
+
+        }
+
+        void residual::setPreviousdMdFn( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdMdFn
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdMdFn );
+
+        }
+
+        void residual::setPreviousdMdChi( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdMdChi
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdMdChi );
+
+        }
+
+        void residual::setPreviousdMdChin( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdMdChin
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdMdChin );
+
+        }
+
+        void residual::setPreviousdMdGradChi( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdMdGradChi
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdMdGradChi );
+
+        }
+
+        void residual::setPreviousdMdGradChin( const variableMatrix &value ){
+            /*!
+             * The setter function for previousdMdGradChin
+             * 
+             * \param &value: The value
+             */
+
+            setPreviousData( value, _previousdMdGradChin );
+
+        }
+
+        void residual::setReferenceStressJacobians( const bool isPrevious ){
+            /*!
+             * Set the values and Jacobians of the reference stresses
+             * 
+             * \param isPrevious: Flag for if the stresses to be calculated are the current (false) or previous (true)
+             */
+
+            const unsigned int *dim = hydra->getDimension( );
+
+            const variableVector *C;
+
+            const variableVector *Psi;
+
+            const variableVector *Gamma;
+
+            const variableMatrix *dCdF;
+
+            const variableMatrix *dCdFn;
+
+            const variableMatrix *dPsidF;
+
+            const variableMatrix *dPsidFn;
+
+            const variableMatrix *dPsidChi;
+
+            const variableMatrix *dPsidChin;
+
+            const variableMatrix *dGammadF;
+
+            const variableMatrix *dGammadFn;
+
+            const variableMatrix *dGammadChi;
+
+            const variableMatrix *dGammadChin;
+
+            const variableMatrix *dGammadGradChi;
+
+            const variableMatrix *dGammadGradChin;
+
+            variableMatrix dFFollowdFs;
+
+            variableMatrix dChiFollowdChis;
+
+            variableVector followingConfiguration;
+
+            variableVector followingMicroConfiguration;
+
+            if ( isPrevious ){
+
+                dCdF            = getPreviousdRightCauchyGreendF( );
+
+                dCdFn           = getPreviousdRightCauchyGreendFn( );
+
+                C               = getPreviousRightCauchyGreen( );
+
+                dPsidF          = getPreviousdPsidF( );
+
+                dPsidFn         = getPreviousdPsidFn( );
+
+                dPsidChi        = getPreviousdPsidChi( );
+
+                dPsidChin       = getPreviousdPsidChin( );
+
+                Psi             = getPreviousPsi( );
+
+                dGammadF        = getPreviousdGammadF( );
+
+                dGammadFn       = getPreviousdGammadFn( );
+
+                dGammadChi      = getPreviousdGammadChi( );
+
+                dGammadChin     = getPreviousdGammadChin( );
+
+                dGammadGradChi  = getPreviousdGammadGradChi( );
+
+                dGammadGradChin = getPreviousdGammadGradChin( );
+
+                Gamma           = getPreviousGamma( );
+
+                dFFollowdFs     = hydra->getPreviousFollowingConfigurationJacobian( 0 );
+
+                dChiFollowdChis = hydra->getPreviousFollowingMicroConfigurationJacobian( 0 );
+
+                followingConfiguration = hydra->getPreviousFollowingConfiguration( 0 );
+
+                followingMicroConfiguration = hydra->getPreviousFollowingMicroConfiguration( 0 );
+
+            }
+            else{
+
+                dCdF            = getdRightCauchyGreendF( );
+
+                dCdFn           = getdRightCauchyGreendFn( );
+
+                C               = getRightCauchyGreen( );
+
+                dPsidF          = getdPsidF( );
+
+                dPsidFn         = getdPsidFn( );
+
+                dPsidChi        = getdPsidChi( );
+
+                dPsidChin       = getdPsidChin( );
+
+                Psi             = getPsi( );
+
+                dGammadF        = getdGammadF( );
+
+                dGammadFn       = getdGammadFn( );
+
+                dGammadChi      = getdGammadChi( );
+
+                dGammadChin     = getdGammadChin( );
+
+                dGammadGradChi  = getdGammadGradChi( );
+
+                dGammadGradChin = getdGammadGradChin( );
+
+                Gamma           = getGamma( );
+
+                dFFollowdFs     = hydra->getFollowingConfigurationJacobian( 0 );
+
+                dChiFollowdChis = hydra->getFollowingMicroConfigurationJacobian( 0 );
+
+                followingConfiguration = hydra->getFollowingConfiguration( 0 );
+    
+                followingMicroConfiguration = hydra->getFollowingMicroConfiguration( 0 );
+
+            }
+
+            variableMatrix dFFollowdFn( ( *dim ) * ( *dim ), variableVector( ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( ( *dim ) * ( *dim ) ), 0 ) );
+
+            variableMatrix dChiFollowdChin( ( *dim ) * ( *dim ), variableVector( ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( ( *dim ) * ( *dim ) ), 0 ) );
+
+            for ( unsigned int i = 0; i < ( *dim ) * ( *dim ); i++ ){
+
+                for ( unsigned int j = 0; j < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( ( *dim ) * ( *dim ) ); j++ ){
+
+                    dFFollowdFn[ i ][ j ]     = dFFollowdFs[ i ][ j + ( *dim ) * ( *dim ) ];
+
+                    dChiFollowdChin[ i ][ j ] = dChiFollowdChis[ i ][ j + ( *dim ) * ( *dim ) ];
+
+                }
+
+            }
+
+            floatVector localPK2Stress;
+
+            floatVector localReferenceSymmetricMicroStress;
+
+            floatVector localReferenceHigherOrderStress;
+
+            floatMatrix dlocalPK2dC;
+
+            floatMatrix dlocalPK2dPsi;
+
+            floatMatrix dlocalPK2dGamma;
+
+            floatMatrix dlocalSIGMAdC;
+
+            floatMatrix dlocalSIGMAdPsi;
+
+            floatMatrix dlocalSIGMAdGamma;
+
+            floatMatrix dlocalMdGamma;
+
+            // Compute the stresses in the local configuration
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( linearElasticityReferenceDerivedMeasures( *C, *Psi, *Gamma, *getAMatrix( ), *getBMatrix( ), *getCMatrix( ), *getDMatrix( ),
+                                                                                                 localPK2Stress, localReferenceSymmetricMicroStress, localReferenceHigherOrderStress,
+                                                                                                 dlocalPK2dC, dlocalPK2dPsi, dlocalPK2dGamma, dlocalSIGMAdC, dlocalSIGMAdPsi, dlocalSIGMAdGamma,
+                                                                                                 dlocalMdGamma ) );
+
+            floatVector PK2Stress;
+
+            floatVector referenceSymmetricMicroStress;
+
+            floatVector referenceHigherOrderStress;
+
+            floatMatrix dPK2dlocalPK2;
+
+            floatMatrix dPK2dFFollow;
+
+            floatMatrix dSIGMAdlocalSIGMA;
+
+            floatMatrix dSIGMAdFFollow;
+
+            floatMatrix dMdlocalM;
+
+            floatMatrix dMdFFollow;
+
+            floatMatrix dMdChiFollow;
+
+            // Pull the stresses back to the true reference configuration
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, PK2Stress, dPK2dlocalPK2, dPK2dFFollow ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, followingConfiguration, referenceSymmetricMicroStress,
+                                                                                                         dSIGMAdlocalSIGMA, dSIGMAdFFollow ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
+                                                                                                               referenceHigherOrderStress, dMdlocalM, dMdFFollow, dMdChiFollow ) );
+
+            floatMatrix dPK2dF = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot(     dlocalPK2dC,     *dCdF )
+                                                                          + tardigradeVectorTools::dot(   dlocalPK2dPsi,   *dPsidF )
+                                                                          + tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadF ) );
+
+            floatMatrix term1 = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot(     dlocalPK2dC,     *dCdFn )
+                                                                           + tardigradeVectorTools::dot(   dlocalPK2dPsi,   *dPsidFn )
+                                                                           + tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadFn ) );
+            floatMatrix term2 = tardigradeVectorTools::dot( dPK2dFFollow, dFFollowdFn );
+            floatMatrix dPK2dFn = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot(     dlocalPK2dC,     *dCdFn )
+                                                                           + tardigradeVectorTools::dot(   dlocalPK2dPsi,   *dPsidFn )
+                                                                           + tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadFn ) )
+                                + tardigradeVectorTools::dot( dPK2dFFollow, dFFollowdFn );
+
+            floatMatrix dPK2dChi = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot(   dlocalPK2dPsi,   *dPsidChi )
+                                                                            + tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadChi ) );
+
+            floatMatrix dPK2dChin = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot(   dlocalPK2dPsi,   *dPsidChin )
+                                                                             + tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadChin ) );
+
+            floatMatrix dPK2dGradChi = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadGradChi ) );
+
+            floatMatrix dPK2dGradChin = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadGradChin ) );
+
+            floatMatrix dSIGMAdF = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot(     dlocalSIGMAdC,     *dCdF )
+                                                                                + tardigradeVectorTools::dot(   dlocalSIGMAdPsi,   *dPsidF )
+                                                                                + tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadF ) );
+
+            floatMatrix dSIGMAdFn = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot(     dlocalSIGMAdC,     *dCdFn )
+                                                                                 + tardigradeVectorTools::dot(   dlocalSIGMAdPsi,   *dPsidFn )
+                                                                                 + tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadFn ) )
+                                  + tardigradeVectorTools::dot( dSIGMAdFFollow, dFFollowdFn );
+
+            floatMatrix dSIGMAdChi = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot(   dlocalSIGMAdPsi,   *dPsidChi )
+                                                                                  + tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadChi ) );
+
+            floatMatrix dSIGMAdChin = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot(   dlocalSIGMAdPsi,   *dPsidChin )
+                                                                                   + tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadChin ) );
+
+            floatMatrix dSIGMAdGradChi = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadGradChi ) );
+
+            floatMatrix dSIGMAdGradChin = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadGradChin ) );
+
+            floatMatrix dMdF = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadF ) );
+
+            floatMatrix dMdFn = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadFn ) )
+                              + tardigradeVectorTools::dot( dMdFFollow, dFFollowdFn );
+
+            floatMatrix dMdChi = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadChi ) );
+
+            floatMatrix dMdChin = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadChin ) )
+                                + tardigradeVectorTools::dot( dMdChiFollow, dChiFollowdChin );
+
+            floatMatrix dMdGradChi = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadGradChi ) );
+
+            floatMatrix dMdGradChin = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadGradChin ) );
+
+            if ( isPrevious ){
+
+                setPreviousPK2Stress( PK2Stress );
+
+                setPreviousReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
+
+                setPreviousReferenceHigherOrderStress( referenceHigherOrderStress );
+
+                setPreviousdPK2dF( dPK2dF );
+
+                setPreviousdPK2dFn( dPK2dFn );
+
+                setPreviousdPK2dChi( dPK2dChi );
+
+                setPreviousdPK2dChin( dPK2dChin );
+
+                setPreviousdPK2dGradChi( dPK2dGradChi );
+
+                setPreviousdPK2dGradChin( dPK2dGradChin );
+
+                setPreviousdSIGMAdF( dSIGMAdF );
+
+                setPreviousdSIGMAdFn( dSIGMAdFn );
+
+                setPreviousdSIGMAdChi( dSIGMAdChi );
+
+                setPreviousdSIGMAdChin( dSIGMAdChin );
+
+                setPreviousdSIGMAdGradChi( dSIGMAdGradChi );
+
+                setPreviousdSIGMAdGradChin( dSIGMAdGradChin );
+
+                setPreviousdMdF( dMdF );
+
+                setPreviousdMdFn( dMdFn );
+
+                setPreviousdMdChi( dMdChi );
+
+                setPreviousdMdChin( dMdChin );
+
+                setPreviousdMdGradChi( dMdGradChi );
+
+                setPreviousdMdGradChin( dMdGradChin );
+
+            }
+            else{
+
+                setPK2Stress( PK2Stress );
+
+                setReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
+
+                setReferenceHigherOrderStress( referenceHigherOrderStress );
+
+                setdPK2dF( dPK2dF );
+
+                setdPK2dFn( dPK2dFn );
+
+                setdPK2dChi( dPK2dChi );
+
+                setdPK2dChin( dPK2dChin );
+
+                setdPK2dGradChi( dPK2dGradChi );
+
+                setdPK2dGradChin( dPK2dGradChin );
+
+                setdSIGMAdF( dSIGMAdF );
+
+                setdSIGMAdFn( dSIGMAdFn );
+
+                setdSIGMAdChi( dSIGMAdChi );
+
+                setdSIGMAdChin( dSIGMAdChin );
+
+                setdSIGMAdGradChi( dSIGMAdGradChi );
+
+                setdSIGMAdGradChin( dSIGMAdGradChin );
+
+                setdMdF( dMdF );
+
+                setdMdFn( dMdFn );
+
+                setdMdChi( dMdChi );
+
+                setdMdChin( dMdChin );
+
+                setdMdGradChi( dMdGradChi );
+
+                setdMdGradChin( dMdGradChin );
+
+            }
 
         }
 

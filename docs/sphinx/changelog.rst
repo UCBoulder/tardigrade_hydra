@@ -16,6 +16,7 @@ Breaking Changes
 New Features
 ============
 - Added micromorphic hydra object (:pull:`7`). By `Nathan Miller`_.
+- Added general setter functions for iteration and previous data (:pull:`20`). By `Nathan Miller`_.
 
 Internal Changes
 ================
@@ -29,6 +30,7 @@ Internal Changes
 - Copied over micromorphic linear elasticity subroutines to tardigrade hydra (:pull:`17`). By `Nathan Miller`_.
 - Added initial micromorphic linear elastic residual (:pull:`18`). By `Nathan Miller`_.
 - Added the calculation of the derived deformation measures (:pull:`19`). By `Nathan Miller`_.
+- Added the calculation of the reference stress measures (:pull:`20`). By `Nathan Miller`_.
 
 ******************
 0.1.2 (12-06-2023)

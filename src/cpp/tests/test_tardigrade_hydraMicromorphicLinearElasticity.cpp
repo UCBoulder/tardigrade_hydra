@@ -6,6 +6,7 @@
 
 #include<tardigrade_hydraMicromorphicLinearElasticity.h>
 #include<tardigrade_constitutive_tools.h>
+#include<tardigrade_micromorphic_tools.h>
 #include<sstream>
 #include<fstream>
 
@@ -843,6 +844,635 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures ){
     }
 }
 
+BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
+    /*!
+     * Test the computation of the deformation metrics when there are multiple configurations.
+     *
+     */
+
+    // Form a hydra class and residual class
+    floatType time = 1.23;
+
+    floatType deltaTime = 2.34;
+
+    floatType temperature = 3.45;
+
+    floatType previousTemperature = 4.56;
+
+    variableVector deformationGradient = { 0.99326911, -0.02363891,  0.02288332,  0.00674376,  1.03339616,
+        -0.04624458,  0.07948457,  0.02889643,  1.0042246  };
+
+    variableVector microDeformation = { 0.97376126, -0.03545076,  0.01496646,  0.01111296,  0.99189296,
+        -0.00927561,  0.03923156, -0.02509436,  0.97939958 };
+
+    variableVector gradientMicroDeformation = { 0.02197053,  0.0370446 , -0.02739394,  0.06279444, -0.00127596,
+                                               -0.01796094,  0.02814145, -0.05906054,  0.02578498, -0.01458269,
+                                                0.00048507, -0.03393819, -0.03257968, -0.00138203, -0.04167585,
+                                               -0.03382795,  0.01151479, -0.03641219,  0.01271894,  0.04506872,
+                                                0.03179861,  0.04033839,  0.0440033 , -0.05450839, -0.05968426,
+                                               -0.02910144,  0.0279304 };
+
+    floatVector previousDeformationGradient = { 9.94656270e-01,  4.82152400e-02,  3.31984800e-02,  2.81918700e-02,
+         1.02086536e+00, -1.77592100e-02, -2.24798000e-03, -1.28410000e-04,
+         9.77165250e-01 };
+
+    floatVector previousMicroDeformation = { 0.96917405, -0.01777599,  0.00870406, -0.02163002,  0.9998683 ,
+        -0.01669352,  0.03355217,  0.04427456,  1.01778466 };
+
+    floatVector previousGradientMicroDeformation = { 0.05043761,  0.02160516, -0.0565408 ,  0.01218304, -0.05851034,
+         0.00485749, -0.00962607, -0.03455912,  0.04490067,  0.01552915,
+        -0.02878364,  0.00595866,  0.04750406, -0.02377005, -0.05041534,
+        -0.02922214,  0.06280788,  0.02850865, -0.00226005,  0.0146049 ,
+         0.01560184,  0.03224767,  0.05822091, -0.05294424, -0.03518206,
+         0.01831308,  0.03774438 };
+
+    floatVector previousStateVariables = {-0.02495446, -0.00169657,  0.04855598,  0.00194851,  0.01128945,
+       -0.03793713,  0.03263408,  0.01030601,  0.0045068 , -0.01572362,
+       -0.01958792, -0.00829778,  0.01813008,  0.03754568,  0.00104223,
+        0.01693138,  0.00859366,  0.01249035,  0.01746891,  0.03423424,
+       -0.0416805 ,  0.02636828, -0.02563336, -0.0305777 ,  0.0072457 ,
+       -0.04042875,  0.03853268,  0.0127249 ,  0.02234164, -0.04838708,
+        0.00944319,  0.00567852, -0.03410404, -0.03469295,  0.01955295,
+       -0.01812336,  0.01919703,  0.00543832, -0.01110494,  0.04251325,
+        0.034167  , -0.01426024, -0.04564085, -0.01952319, -0.01018143 };
+
+    floatVector parameters = { 2, 0.1, 0.2, 5, 0.3, 0.4, 0.5, 0.6, 0.7, 11, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2, 1.9, 2.0 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    unsigned int configuration_unknown_count = 45;
+
+    floatType tolr = 1e-2;
+
+    floatType tola = 1e-3;
+
+    unsigned int maxIterations = 24;
+
+    unsigned int maxLSIterations = 45;
+
+    floatType lsAlpha = 2.3;
+
+    class hydraBaseMicromorphicMock : public tardigradeHydra::hydraBaseMicromorphic{
+
+        public:
+
+            using tardigradeHydra::hydraBaseMicromorphic::hydraBaseMicromorphic;
+
+    };
+
+    hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                     microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables,
+                                     dimension, configuration_unknown_count,
+                                     tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    tardigradeHydra::micromorphicLinearElasticity::residual R( &hydra, 45, parameters );
+
+    tardigradeHydra::micromorphicLinearElasticity::residual RJ( &hydra, 45, parameters );
+
+    variableVector localPK2Stress;
+
+    variableVector localReferenceSymmetricMicroStress;
+
+    variableVector localReferenceHigherOrderStress;
+
+    variableVector previousLocalPK2Stress;
+
+    variableVector previousLocalReferenceSymmetricMicroStress;
+
+    variableVector previousLocalReferenceHigherOrderStress;
+
+    variableVector answerPK2Stress;
+
+    variableVector answerReferenceSymmetricMicroStress;
+
+    variableVector answerReferenceHigherOrderStress;
+
+    variableVector previousAnswerPK2Stress;
+
+    variableVector previousAnswerReferenceSymmetricMicroStress;
+
+    variableVector previousAnswerReferenceHigherOrderStress;
+
+    floatVector eye( 9 );
+
+    tardigradeVectorTools::eye( eye );
+
+    floatVector F2( previousStateVariables.begin( ), previousStateVariables.begin( ) + 9 );
+
+    floatVector chi2( previousStateVariables.begin( ) + 9, previousStateVariables.begin( ) + 18 );
+
+    F2 += eye;
+
+    chi2 += eye;
+
+    tardigradeHydra::micromorphicLinearElasticity::linearElasticityReferenceDerivedMeasures( *R.getRightCauchyGreen( ), *R.getPsi( ), *R.getGamma( ),
+                                                                                             *R.getAMatrix( ), *R.getBMatrix( ), *R.getCMatrix( ), *R.getDMatrix( ),
+                                                                                             localPK2Stress, localReferenceSymmetricMicroStress, localReferenceHigherOrderStress );
+
+    tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, F2, answerPK2Stress );
+
+    tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, F2, answerReferenceSymmetricMicroStress );
+
+    tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, F2, chi2, answerReferenceHigherOrderStress );
+
+    tardigradeHydra::micromorphicLinearElasticity::linearElasticityReferenceDerivedMeasures( *R.getPreviousRightCauchyGreen( ), *R.getPreviousPsi( ), *R.getPreviousGamma( ),
+                                                                                             *R.getAMatrix( ), *R.getBMatrix( ), *R.getCMatrix( ), *R.getDMatrix( ),
+                                                                                             previousLocalPK2Stress, previousLocalReferenceSymmetricMicroStress, previousLocalReferenceHigherOrderStress );
+
+    tardigradeMicromorphicTools::pullBackCauchyStress( previousLocalPK2Stress, F2, previousAnswerPK2Stress );
+
+    tardigradeMicromorphicTools::pullBackMicroStress( previousLocalReferenceSymmetricMicroStress, F2, previousAnswerReferenceSymmetricMicroStress );
+
+    tardigradeMicromorphicTools::pullBackHigherOrderStress( previousLocalReferenceHigherOrderStress, F2, chi2, previousAnswerReferenceHigherOrderStress );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getPK2Stress( ), answerPK2Stress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getReferenceSymmetricMicroStress( ), answerReferenceSymmetricMicroStress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getReferenceHigherOrderStress( ), answerReferenceHigherOrderStress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getPreviousPK2Stress( ),                     previousAnswerPK2Stress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getPreviousReferenceSymmetricMicroStress( ), previousAnswerReferenceSymmetricMicroStress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.getPreviousReferenceHigherOrderStress( ),    previousAnswerReferenceHigherOrderStress ) );
+
+    RJ.getdPK2dF( ); //Set the values of the deformation Jacobians
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getPK2Stress( ), answerPK2Stress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getReferenceSymmetricMicroStress( ), answerReferenceSymmetricMicroStress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getReferenceHigherOrderStress( ), answerReferenceHigherOrderStress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getPreviousPK2Stress( ),                     previousAnswerPK2Stress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getPreviousReferenceSymmetricMicroStress( ), previousAnswerReferenceSymmetricMicroStress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *RJ.getPreviousReferenceHigherOrderStress( ),    previousAnswerReferenceHigherOrderStress ) );
+
+    //Test jacobians w.r.t. the deformation gradient
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < deformationGradient.size(); i++ ){
+        constantVector delta( deformationGradient.size(), 0 );
+        delta[i] = eps * fabs( deformationGradient[i] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
+
+        variableVector gradCol = ( ( *rp.getPK2Stress( ) ) - ( *rm.getPK2Stress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdPK2dF( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getReferenceSymmetricMicroStress( ) ) - ( *rm.getReferenceSymmetricMicroStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdSIGMAdF( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getReferenceHigherOrderStress( ) ) - ( *rm.getReferenceHigherOrderStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdMdF( ) )[ j ][ i ] ) );
+        }
+    }
+
+    //Test jacobians w.r.t. the micro deformation
+    for ( unsigned int i = 0; i < microDeformation.size(); i++ ){
+        constantVector delta( microDeformation.size(), 0 );
+        delta[i] = eps * fabs( microDeformation[i] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation + delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation - delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
+
+        variableVector gradCol = ( ( *rp.getPK2Stress( ) ) - ( *rm.getPK2Stress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdPK2dChi( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getReferenceSymmetricMicroStress( ) ) - ( *rm.getReferenceSymmetricMicroStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdSIGMAdChi( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getReferenceHigherOrderStress( ) ) - ( *rm.getReferenceHigherOrderStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdMdChi( ) )[ j ][ i ] ) );
+        }
+    }
+
+    //Test jacobians w.r.t. the gradient of the micro deformation
+    for ( unsigned int i = 0; i < gradientMicroDeformation.size(); i++ ){
+        constantVector delta( gradientMicroDeformation.size(), 0 );
+        delta[i] = eps * fabs( gradientMicroDeformation[i] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation + delta, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation - delta, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
+
+        variableVector gradCol = ( ( *rp.getPK2Stress( ) ) - ( *rm.getPK2Stress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdPK2dGradChi( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getReferenceSymmetricMicroStress( ) ) - ( *rm.getReferenceSymmetricMicroStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdSIGMAdGradChi( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getReferenceHigherOrderStress( ) ) - ( *rm.getReferenceHigherOrderStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getdMdGradChi( ) )[ j ][ i ] ) );
+        }
+    }
+
+    //Test jacobians w.r.t. the previous deformation gradient
+    for ( unsigned int i = 0; i < deformationGradient.size(); i++ ){
+        constantVector delta( deformationGradient.size(), 0 );
+        delta[i] = eps * fabs( deformationGradient[i] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
+
+        variableVector gradCol = ( ( *rp.getPreviousPK2Stress( ) ) - ( *rm.getPreviousPK2Stress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdPK2dF( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getPreviousReferenceSymmetricMicroStress( ) ) - ( *rm.getPreviousReferenceSymmetricMicroStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdSIGMAdF( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getPreviousReferenceHigherOrderStress( ) ) - ( *rm.getPreviousReferenceHigherOrderStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdMdF( ) )[ j ][ i ] ) );
+        }
+    }
+
+    //Test jacobians w.r.t. the micro deformation
+    for ( unsigned int i = 0; i < microDeformation.size(); i++ ){
+        constantVector delta( microDeformation.size(), 0 );
+        delta[i] = eps * fabs( microDeformation[i] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation + delta, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation - delta, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
+
+        variableVector gradCol = ( ( *rp.getPreviousPK2Stress( ) ) - ( *rm.getPreviousPK2Stress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdPK2dChi( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getPreviousReferenceSymmetricMicroStress( ) ) - ( *rm.getPreviousReferenceSymmetricMicroStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdSIGMAdChi( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getPreviousReferenceHigherOrderStress( ) ) - ( *rm.getPreviousReferenceHigherOrderStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdMdChi( ) )[ j ][ i ] ) );
+        }
+    }
+
+    //Test jacobians w.r.t. the gradient of the micro deformation
+    for ( unsigned int i = 0; i < gradientMicroDeformation.size(); i++ ){
+        constantVector delta( gradientMicroDeformation.size(), 0 );
+        delta[i] = eps * fabs( gradientMicroDeformation[i] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation + delta,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation - delta,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
+
+        variableVector gradCol = ( ( *rp.getPreviousPK2Stress( ) ) - ( *rm.getPreviousPK2Stress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdPK2dGradChi( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getPreviousReferenceSymmetricMicroStress( ) ) - ( *rm.getPreviousReferenceSymmetricMicroStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdSIGMAdGradChi( ) )[ j ][ i ] ) );
+        }
+
+        gradCol = ( ( *rp.getPreviousReferenceHigherOrderStress( ) ) - ( *rm.getPreviousReferenceHigherOrderStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], ( *RJ.getPreviousdMdGradChi( ) )[ j ][ i ] ) );
+        }
+    }
+
+    floatMatrix dPK2dStateVariables( 9, floatVector( 45, 0 ) );
+    floatMatrix dSIGMAdStateVariables( 9, floatVector( 45, 0 ) );
+    floatMatrix dMdStateVariables( 27, floatVector( 45, 0 ) );
+
+    floatMatrix previousdPK2dStateVariables( 9, floatVector( 45, 0 ) );
+    floatMatrix previousdSIGMAdStateVariables( 9, floatVector( 45, 0 ) );
+    floatMatrix previousdMdStateVariables( 27, floatVector( 45, 0 ) );
+
+    //Test jacobians w.r.t. the previous non-linear state variables
+    for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
+        constantVector delta( previousStateVariables.size( ), 0 );
+        delta[i] = eps * fabs( previousStateVariables[i] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables + delta, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables - delta, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rp( &hydrap, 45, parameters );
+
+        tardigradeHydra::micromorphicLinearElasticity::residual rm( &hydram, 45, parameters );
+
+        variableVector gradCol = ( ( *rp.getPK2Stress( ) ) - ( *rm.getPK2Stress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            dPK2dStateVariables[ j ][ i ] = gradCol[ j ];
+        }
+
+        gradCol = ( ( *rp.getReferenceSymmetricMicroStress( ) ) - ( *rm.getReferenceSymmetricMicroStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            dSIGMAdStateVariables[ j ][ i ] = gradCol[ j ];
+        }
+
+        gradCol = ( ( *rp.getReferenceHigherOrderStress( ) ) - ( *rm.getReferenceHigherOrderStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            dMdStateVariables[ j ][ i ] = gradCol [ j ];
+        }
+
+        gradCol = ( ( *rp.getPreviousPK2Stress( ) ) - ( *rm.getPreviousPK2Stress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            previousdPK2dStateVariables[ j ][ i ] = gradCol[ j ];
+        }
+
+        gradCol = ( ( *rp.getPreviousReferenceSymmetricMicroStress( ) ) - ( *rm.getPreviousReferenceSymmetricMicroStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            previousdSIGMAdStateVariables[ j ][ i ] = gradCol[ j ];
+        }
+
+        gradCol = ( ( *rp.getPreviousReferenceHigherOrderStress( ) ) - ( *rm.getPreviousReferenceHigherOrderStress( ) ) ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            previousdMdStateVariables[ j ][ i ] = gradCol [ j ];
+        }
+    }
+
+    //Check the expected Jacobians
+    for ( unsigned int j = 0; j < 9; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2dStateVariables[ i ][ j ], ( *RJ.getdPK2dFn( ) )[ i ][ j ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dSIGMAdStateVariables[ i ][ j ], ( *RJ.getdSIGMAdFn( ) )[ i ][ j ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMdStateVariables[ i ][ j ], ( *RJ.getdMdFn( ) )[ i ][ j ] ) );
+
+        }
+
+    }
+
+    for ( unsigned int j = 9; j < 18; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2dStateVariables[ i ][ j ], ( *RJ.getdPK2dChin( ) )[ i ][ j - 9 ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dSIGMAdStateVariables[ i ][ j ], ( *RJ.getdSIGMAdChin( ) )[ i ][ j - 9 ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMdStateVariables[ i ][ j ], ( *RJ.getdMdChin( ) )[ i ][ j - 9 ] ) );
+
+        }
+
+    }
+
+    for ( unsigned int j = 18; j < 45; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2dStateVariables[ i ][ j ], ( *RJ.getdPK2dGradChin( ) )[ i ][ j - 18 ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dSIGMAdStateVariables[ i ][ j ], ( *RJ.getdSIGMAdGradChin( ) )[ i ][ j - 18 ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMdStateVariables[ i ][ j ], ( *RJ.getdMdGradChin( ) )[ i ][ j - 18 ] ) );
+
+        }
+
+    }
+
+    //Check the expected Jacobians
+    for ( unsigned int j = 0; j < 9; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2dStateVariables[ i ][ j ], ( *RJ.getPreviousdPK2dFn( ) )[ i ][ j ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdSIGMAdStateVariables[ i ][ j ], ( *RJ.getPreviousdSIGMAdFn( ) )[ i ][ j ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMdStateVariables[ i ][ j ], ( *RJ.getPreviousdMdFn( ) )[ i ][ j ] ) );
+
+        }
+
+    }
+
+    for ( unsigned int j = 9; j < 18; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2dStateVariables[ i ][ j ], ( *RJ.getPreviousdPK2dChin( ) )[ i ][ j - 9 ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdSIGMAdStateVariables[ i ][ j ], ( *RJ.getPreviousdSIGMAdChin( ) )[ i ][ j - 9 ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMdStateVariables[ i ][ j ], ( *RJ.getPreviousdMdChin( ) )[ i ][ j - 9 ] ) );
+
+        }
+
+    }
+
+    for ( unsigned int j = 18; j < 45; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2dStateVariables[ i ][ j ], ( *RJ.getPreviousdPK2dGradChin( ) )[ i ][ j - 18 ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdSIGMAdStateVariables[ i ][ j ], ( *RJ.getPreviousdSIGMAdGradChin( ) )[ i ][ j - 18 ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMdStateVariables[ i ][ j ], ( *RJ.getPreviousdMdGradChin( ) )[ i ][ j - 18 ] ) );
+
+        }
+
+    }
+}
+
 BOOST_AUTO_TEST_CASE( testLinearElasticityReference ){
     /*!
      * Test the micromorphic linear elastic constitutive model.
@@ -1625,7 +2255,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
 
     floatVector previousStateVariables = { };
 
-    floatVector parameters = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8 };
+    floatVector parameters = { 2, 0.1, 0.2, 5, 0.3, 0.4, 0.5, 0.6, 0.7, 11, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2, 1.9, 2.0 };
 
     unsigned int numConfigurations = 1;
 
@@ -2051,7 +2681,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
        -0.01812336,  0.01919703,  0.00543832, -0.01110494,  0.04251325,
         0.034167  , -0.01426024, -0.04564085, -0.01952319, -0.01018143 };
 
-    floatVector parameters = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8 };
+    floatVector parameters = { 2, 0.1, 0.2, 5, 0.3, 0.4, 0.5, 0.6, 0.7, 11, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2, 1.9, 2.0 };
 
     unsigned int numConfigurations = 2;
 
@@ -2503,6 +3133,72 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
         for ( unsigned int i = 0; i < 27; i++ ){
 
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGammadStateVariables[ i ][ j ], ( *RJ.getdGammadGradChin( ) )[ i ][ j - 18 ] ) );
+
+        }
+
+    }
+
+    for ( unsigned int j = 0; j < 9; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdCdStateVariables[ i ][ j ], ( *RJ.getPreviousdRightCauchyGreendFn( ) )[ i ][ j ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPsidStateVariables[ i ][ j ], ( *RJ.getPreviousdPsidFn( ) )[ i ][ j ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdGammadStateVariables[ i ][ j ], ( *RJ.getPreviousdGammadFn( ) )[ i ][ j ] ) );
+
+        }
+
+    }
+
+    for ( unsigned int j = 9; j < 18; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdCdStateVariables[ i ][ j ], 0. ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPsidStateVariables[ i ][ j ], ( *RJ.getPreviousdPsidChin( ) )[ i ][ j - 9 ] ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdGammadStateVariables[ i ][ j ], ( *RJ.getPreviousdGammadChin( ) )[ i ][ j - 9 ] ) );
+
+        }
+
+    }
+
+    for ( unsigned int j = 18; j < 45; j++ ){
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdCdStateVariables[ i ][ j ], 0. ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 9; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPsidStateVariables[ i ][ j ], 0. ) );
+
+        }
+
+        for ( unsigned int i = 0; i < 27; i++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdGammadStateVariables[ i ][ j ], ( *RJ.getPreviousdGammadGradChin( ) )[ i ][ j - 18 ] ) );
 
         }
 
