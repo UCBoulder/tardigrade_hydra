@@ -94,14 +94,6 @@ namespace tardigradeHydra{
 
                 void setQuadraticParameters( const floatVector &quadraticParameters );
 
-                void setThermalGreenLagrangeStrain( const floatVector &thermalGreenLagrangeStrain );
-
-                void setThermalDeformationGradient( const floatVector &thermalDeformationGradient );
-
-                void setdThermalGreenLagrangeStraindT( const floatVector &dThermalGreenLagrangeStraindT );
-
-                void setdThermalDeformationGradientdT( const floatVector &dThermalDeformationGradientdT );
-
                 //! Get the index of the thermal deformation configuration
                 const unsigned int* getThermalConfigurationIndex( ){ return &_thermalConfigurationIndex; };
 
@@ -122,22 +114,7 @@ namespace tardigradeHydra{
 
                 const floatVector* getdThermalDeformationGradientdT( );
 
-            private:
-
-                // Friend classes
-                friend class tardigradeHydra::thermalExpansion::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
-
-                using tardigradeHydra::residualBase::residualBase;
-
-                using tardigradeHydra::residualBase::setResidual;
-
-                using tardigradeHydra::residualBase::setJacobian;
-
-                using tardigradeHydra::residualBase::setdRdF;
-
-                using tardigradeHydra::residualBase::setdRdT;
-
-                using tardigradeHydra::residualBase::setAdditionalDerivatives;
+            protected:
 
                 virtual void setThermalGreenLagrangeStrain( );
 
@@ -155,6 +132,23 @@ namespace tardigradeHydra{
 
                 virtual void setdRdF( ) override;
 
+            private:
+
+                // Friend classes
+                friend class tardigradeHydra::thermalExpansion::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
+
+                using tardigradeHydra::residualBase::residualBase;
+
+                using tardigradeHydra::residualBase::setResidual;
+
+                using tardigradeHydra::residualBase::setJacobian;
+
+                using tardigradeHydra::residualBase::setdRdF;
+
+                using tardigradeHydra::residualBase::setdRdT;
+
+                using tardigradeHydra::residualBase::setAdditionalDerivatives;
+
                 unsigned int _thermalConfigurationIndex;
 
                 floatType _referenceTemperature;
@@ -163,13 +157,13 @@ namespace tardigradeHydra{
 
                 floatVector _quadraticParameters;
 
-                tardigradeHydra::dataStorage< floatVector > _thermalGreenLagrangeStrain;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalGreenLagrangeStrain, floatVector)
 
-                tardigradeHydra::dataStorage< floatVector > _dThermalGreenLagrangeStraindT;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalGreenLagrangeStraindT, floatVector)
 
-                tardigradeHydra::dataStorage< floatVector > _thermalDeformationGradient;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalDeformationGradient, floatVector)
 
-                tardigradeHydra::dataStorage< floatVector > _dThermalDeformationGradientdT;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalDeformationGradientdT, floatVector)
 
                 virtual void decomposeParameters( const floatVector &parameters );
 
