@@ -16,6 +16,7 @@ Breaking Changes
 New Features
 ============
 - Added micromorphic hydra object (:pull:`7`). By `Nathan Miller`_.
+- Added general setter functions for iteration and previous data (:pull:`20`). By `Nathan Miller`_.
 
 Internal Changes
 ================
