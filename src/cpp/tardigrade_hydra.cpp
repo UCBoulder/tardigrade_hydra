@@ -28,12 +28,7 @@ namespace tardigradeHydra{
          * \param &residual: The current value of the residual
          */
 
-
-        _residual.second = residual;
-
-        _residual.first = true;
-
-        addIterationData( &_residual );
+        setIterationData( residual, _residual );
 
     }
 
@@ -44,11 +39,7 @@ namespace tardigradeHydra{
          * \param &jacobian: The jacobian matrix
          */
 
-        _jacobian.second = jacobian;
-
-        _jacobian.first = true;
-
-        addIterationData( &_jacobian );
+        setIterationData( jacobian, _jacobian );
 
     }
 
@@ -59,11 +50,7 @@ namespace tardigradeHydra{
          * \param &dRdF: The derivative of the residual w.r.t. the deformation gradient
          */
 
-        _dRdF.second = dRdF;
-
-        _dRdF.first = true;
-
-        addIterationData( &_dRdF );
+        setIterationData( dRdF, _dRdF );
 
     }
 
@@ -74,11 +61,7 @@ namespace tardigradeHydra{
          * \param &dRdT: The derivative of the residual w.r.t. the temperature
          */
 
-        _dRdT.second = dRdT;
-
-        _dRdT.first = true;
-
-        addIterationData( &_dRdT );
+        setIterationData( dRdT, _dRdT );
 
     }
 
@@ -89,11 +72,7 @@ namespace tardigradeHydra{
          * \param &additionalDerivatives: Additional derivatives of the residual
          */
 
-        _additionalDerivatives.second = additionalDerivatives;
-
-        _additionalDerivatives.first = true;
-
-        addIterationData( &_additionalDerivatives );
+        setIterationData( additionalDerivatives, _additionalDerivatives );
 
     }
 
@@ -104,11 +83,7 @@ namespace tardigradeHydra{
          * \param &stress: The stress in row-major form
          */
 
-        _stress.second = stress;
-
-        _stress.first = true;
-
-        addIterationData( &_stress );
+        setIterationData( stress, _stress );
 
     }
 
@@ -119,9 +94,7 @@ namespace tardigradeHydra{
          * \param &previousStress: The previous stress in row-major form
          */
 
-        _previousStress.second = previousStress;
-
-        _previousStress.first = true;
+        setPreviousData( previousStress, _previousStress );
 
     }
 
@@ -238,11 +211,7 @@ namespace tardigradeHydra{
          * \param &currentAdditionalStateVariables: The current values of the additional state variables
          */
 
-        _currentAdditionalStateVariables.second = currentAdditionalStateVariables;
-
-        _currentAdditionalStateVariables.first = true;
-
-        addIterationData( &_currentAdditionalStateVariables );
+        setIterationData( currentAdditionalStateVariables, _currentAdditionalStateVariables );
 
     }
 
@@ -329,11 +298,7 @@ namespace tardigradeHydra{
          * \param &stress: The stress in row-major form
          */
 
-        _stress.second = stress;
-
-        _stress.first = true;
-
-        addIterationData( &_stress );
+        setIterationData( stress, _stress );
 
     }
 
@@ -344,11 +309,8 @@ namespace tardigradeHydra{
          * \param &configurations: The configurations matrix. Each row is a different configuration.
          */
 
-        _configurations.second = configurations;
+        setIterationData( configurations, _configurations );
 
-        _configurations.first = true;
-
-        addIterationData( &_configurations );
     }
 
     void hydraBase::setInverseConfigurations( const floatMatrix &inverseConfigurations ){
@@ -358,11 +320,8 @@ namespace tardigradeHydra{
          * \param &inverseConfigurations: The inverse configurations matrix. Each row is a different configuration.
          */
 
-        _inverseConfigurations.second = inverseConfigurations;
+        setIterationData( inverseConfigurations, _inverseConfigurations );
 
-        _inverseConfigurations.first = true;
-
-        addIterationData( &_inverseConfigurations );
     }
 
     void hydraBase::setPreviousConfigurations( const floatMatrix &previousConfigurations ){
@@ -372,9 +331,7 @@ namespace tardigradeHydra{
          * \param &previousConfigurations: The previous configurations matrix. Each row is a different configuration.
          */
 
-        _previousConfigurations.second = previousConfigurations;
-
-        _previousConfigurations.first = true;
+        setPreviousData( previousConfigurations, _previousConfigurations );
 
     }
 
@@ -385,9 +342,7 @@ namespace tardigradeHydra{
          * \param &previousInverseConfigurations: The previous inverse configurations matrix. Each row is a different configuration.
          */
 
-        _previousInverseConfigurations.second = previousInverseConfigurations;
-
-        _previousInverseConfigurations.first = true;
+        setPreviousData( previousInverseConfigurations, _previousInverseConfigurations );
 
     }
 
@@ -398,11 +353,7 @@ namespace tardigradeHydra{
          * \param &nonLinearSolveStateVariables
          */
 
-        _nonLinearSolveStateVariables.second = nonLinearSolveStateVariables;
-
-        _nonLinearSolveStateVariables.first = true;
-
-        addIterationData( &_nonLinearSolveStateVariables );
+        setIterationData( nonLinearSolveStateVariables, _nonLinearSolveStateVariables );
 
     }
 
@@ -413,9 +364,7 @@ namespace tardigradeHydra{
          * \param &previousNonLinearSolveStateVariables
          */
 
-        _previousNonLinearSolveStateVariables.second = previousNonLinearSolveStateVariables;
-
-        _previousNonLinearSolveStateVariables.first = true;
+        setPreviousData( previousNonLinearSolveStateVariables, _previousNonLinearSolveStateVariables );
 
     }
 
@@ -426,11 +375,7 @@ namespace tardigradeHydra{
          * \param &additionalStateVariables
          */
 
-        _additionalStateVariables.second = additionalStateVariables;
-
-        _additionalStateVariables.first = true;
-
-        addIterationData( &_additionalStateVariables );
+        setIterationData( additionalStateVariables, _additionalStateVariables );
 
     }
 
@@ -441,9 +386,7 @@ namespace tardigradeHydra{
          * \param &previousAdditionalStateVariables
          */
 
-        _previousAdditionalStateVariables.second = previousAdditionalStateVariables;
-
-        _previousAdditionalStateVariables.first = true;
+        setPreviousData( previousAdditionalStateVariables, _previousAdditionalStateVariables );
 
     }
 
@@ -901,11 +844,7 @@ namespace tardigradeHydra{
          * \param &dF1dF: The value of the jacobian
          */
 
-        _dF1dF.second = dF1dF;
-
-        _dF1dF.first = true;
-
-        addIterationData( &_dF1dF );
+        setIterationData( dF1dF, _dF1dF );
 
     }
 
@@ -916,11 +855,7 @@ namespace tardigradeHydra{
          * \param &dF1dFn: The value of the jacobian
          */
 
-        _dF1dFn.second = dF1dFn;
-
-        _dF1dFn.first = true;
-
-        addIterationData( &_dF1dFn );
+        setIterationData( dF1dFn, _dF1dFn );
 
     }
 
@@ -931,9 +866,7 @@ namespace tardigradeHydra{
          * \param &previousdF1dF: The value of the jacobian
          */
 
-        _previousdF1dF.second = previousdF1dF;
-
-        _previousdF1dF.first = true;
+        setPreviousData( previousdF1dF, _previousdF1dF );
 
     }
 
@@ -944,9 +877,7 @@ namespace tardigradeHydra{
          * \param &previousdF1dFn: The value of the jacobian
          */
 
-        _previousdF1dFn.second = previousdF1dFn;
-
-        _previousdF1dFn.first = true;
+        setPreviousData( previousdF1dFn, _previousdF1dFn );
 
     }
 
@@ -1624,9 +1555,7 @@ namespace tardigradeHydra{
          * \param tolerance: The tolerance vector for each value of the residual
          */
 
-        _tolerance.second = tolerance;
-
-        _tolerance.first = true;
+        setConstantData( tolerance, _tolerance );
 
     }
 
