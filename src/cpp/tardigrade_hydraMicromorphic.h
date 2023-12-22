@@ -44,24 +44,6 @@ namespace tardigradeHydra{
             //! Get the previous spatial gradient w.r.t. the reference configuration of the micro-deformation tensor
             const floatVector *getPreviousGradientMicroDeformation( ){ return &_previousGradientMicroDeformation; }
 
-            //! Get a reference to the micro configurations
-            const floatMatrix* getMicroConfigurations( ){ return &_microConfigurations.second; }
-
-            //! Get a reference to the inverse micro configurations
-            const floatMatrix* getInverseMicroConfigurations( ){ return &_inverseMicroConfigurations.second; }
-
-            //! Get a reference to the gradient of the micro configurations
-            const floatMatrix* getGradientMicroConfigurations( ){ return &_gradientMicroConfigurations.second; }
-
-            //! Get a reference to the previous micro configurations
-            const floatMatrix* getPreviousMicroConfigurations( ){ return &_previousMicroConfigurations.second; }
-
-            //! Get a reference to the previous inverse micro configurations
-            const floatMatrix* getPreviousInverseMicroConfigurations( ){ return &_previousInverseMicroConfigurations.second; }
-
-            //! Get a reference to the gradient of the previous micro configurations
-            const floatMatrix* getPreviousGradientMicroConfigurations( ){ return &_previousGradientMicroConfigurations.second; }
-
             floatVector getSubMicroConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getPrecedingMicroConfiguration( const unsigned int &index );
@@ -90,34 +72,6 @@ namespace tardigradeHydra{
 
             floatMatrix getPreviousFollowingMicroConfigurationJacobian( const unsigned int &index );
 
-            const floatMatrix *getdChi1dChi( );
-
-            const floatMatrix *getdChi1dChin( );
-
-            const floatMatrix *getPreviousdChi1dChi( );
-
-            const floatMatrix *getPreviousdChi1dChin( );
-
-            const floatMatrix *getdGradChi1dFn( );
-
-            const floatMatrix *getdGradChi1dChi( );
-
-            const floatMatrix *getdGradChi1dChin( );
-
-            const floatMatrix *getdGradChi1dGradChi( );
-
-            const floatMatrix *getdGradChi1dGradChin( );
-
-            const floatMatrix *getPreviousdGradChi1dFn( );
-
-            const floatMatrix *getPreviousdGradChi1dChi( );
-
-            const floatMatrix *getPreviousdGradChi1dChin( );
-
-            const floatMatrix *getPreviousdGradChi1dGradChi( );
-
-            const floatMatrix *getPreviousdGradChi1dGradChin( );
-
         protected:
 
             //Utility functions
@@ -134,46 +88,6 @@ namespace tardigradeHydra{
             floatVector _gradientMicroDeformation; //!< The spatial gradient of the micro-deformation w.r.t. the reference coordinates
 
             floatVector _previousGradientMicroDeformation; //!< The previous spatial gradient of the micro-deformation w.r.t. the reference coordinates
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microConfigurations,                 floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, inverseMicroConfigurations,          floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, gradientMicroConfigurations,         floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroConfigurations,         floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousInverseMicroConfigurations,  floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousGradientMicroConfigurations, floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dChi1dChi,                           floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dChi1dChin,                          floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdChi1dChi,                   floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdChi1dChin,                  floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dFn,                        floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dChi,                       floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dChin,                      floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dGradChi,                   floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dGradChin,                  floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dFn,                 floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dChi,                floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dChin,               floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dGradChi,            floatMatrix )
-
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dGradChin,           floatMatrix )
 
             void setFirstMicroConfigurationJacobians( );
 
@@ -196,6 +110,46 @@ namespace tardigradeHydra{
                                                              floatMatrix &dGradChi1dCn,
                                                              floatMatrix &dGradChi1dChi, floatMatrix &dGradChi1dChin,
                                                              floatMatrix &dGradChi1dGradChi, floatMatrix &dGradChi1dGradChin );
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microConfigurations,                 floatMatrix, unexpectedError )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, inverseMicroConfigurations,          floatMatrix, unexpectedError )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, gradientMicroConfigurations,         floatMatrix, unexpectedError )
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroConfigurations,         floatMatrix, unexpectedError )
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousInverseMicroConfigurations,  floatMatrix, unexpectedError )
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousGradientMicroConfigurations, floatMatrix, unexpectedError )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dChi1dChi,                           floatMatrix, setFirstMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dChi1dChin,                          floatMatrix, setFirstMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdChi1dChi,                   floatMatrix, setPreviousFirstMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdChi1dChin,                  floatMatrix, setPreviousFirstMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dFn,                        floatMatrix, setFirstGradientMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dChi,                       floatMatrix, setFirstGradientMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dChin,                      floatMatrix, setFirstGradientMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dGradChi,                   floatMatrix, setFirstGradientMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dGradChin,                  floatMatrix, setFirstGradientMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dFn,                 floatMatrix, setPreviousFirstGradientMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dChi,                floatMatrix, setPreviousFirstGradientMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dChin,               floatMatrix, setPreviousFirstGradientMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dGradChi,            floatMatrix, setPreviousFirstGradientMicroConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dGradChin,           floatMatrix, setPreviousFirstGradientMicroConfigurationJacobians )
 
     };
 
