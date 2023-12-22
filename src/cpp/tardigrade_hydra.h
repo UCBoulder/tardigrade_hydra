@@ -511,19 +511,19 @@ namespace tardigradeHydra{
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setResidual,                         getResidual,                        residual,                        floatVector, setResidual )
                                                                                                                                               
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setJacobian,                         getJacobian,                        jacobian,                        floatMatrix, setResidual )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setJacobian,                         getJacobian,                        jacobian,                        floatMatrix, setJacobian )
                                                                                                                                               
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdF,                             getdRdF,                            dRdF,                            floatMatrix, setResidual )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdF,                             getdRdF,                            dRdF,                            floatMatrix, setdRdF )
                                                                                                                                               
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdT,                             getdRdT,                            dRdT,                            floatVector, setResidual )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdT,                             getdRdT,                            dRdT,                            floatVector, setdRdT )
                                                                                                                                               
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setAdditionalDerivatives,            getAdditionalDerivatives,           additionalDerivatives,           floatMatrix, setResidual )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setAdditionalDerivatives,            getAdditionalDerivatives,           additionalDerivatives,           floatMatrix, setAdditionalDerivatives )
                                                                                                                                               
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setStress,                           getStress,                          stress,                          floatVector, setResidual )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setStress,                           getStress,                          stress,                          floatVector, setStress )
                                                                                                                                               
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setPreviousStress,                   getPreviousStress,                  previousStress,                  floatVector, setResidual )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setPreviousStress,                   getPreviousStress,                  previousStress,                  floatVector, setPreviousStress )
                                                                                                                                               
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setCurrentAdditionalStateVariables,  getCurrentAdditionalStateVariables, currentAdditionalStateVariables, floatVector, setResidual )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setCurrentAdditionalStateVariables,  getCurrentAdditionalStateVariables, currentAdditionalStateVariables, floatVector, setCurrentAdditionalStateVariables )
 
     };
 
@@ -764,6 +764,9 @@ namespace tardigradeHydra{
 
             }
 
+            //!A pass through function that does nothing
+            void passThrough( ){ }
+
         private:
 
             // Friend classes
@@ -857,21 +860,21 @@ namespace tardigradeHydra{
 
             void resetIterationData( );
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatMatrix, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatMatrix, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousConfigurations,               floatMatrix, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousConfigurations,               floatMatrix, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, inverseConfigurations,                floatMatrix, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, inverseConfigurations,                floatMatrix, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousInverseConfigurations,        floatMatrix, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousInverseConfigurations,        floatMatrix, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, nonLinearSolveStateVariables,         floatVector, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, nonLinearSolveStateVariables,         floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousNonLinearSolveStateVariables, floatVector, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousNonLinearSolveStateVariables, floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, additionalStateVariables,             floatVector, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, additionalStateVariables,             floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousAdditionalStateVariables,     floatVector, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousAdditionalStateVariables,     floatVector, passThrough )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,          get_dF1dF,          dF1dF,          floatMatrix, setFirstConfigurationJacobians )
 
