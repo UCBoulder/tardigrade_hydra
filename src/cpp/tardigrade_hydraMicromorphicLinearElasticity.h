@@ -398,78 +398,6 @@ namespace tardigradeHydra{
 
             protected:
 
-                void setRightCauchyGreen( const variableVector &rightCauchyGreen );
-
-                void setPsi( const variableVector &psi );
-
-                void setGamma( const variableVector &gamma );
-
-                void setPreviousRightCauchyGreen( const variableVector &previousRightCauchyGreen );
-
-                void setPreviousPsi( const variableVector &previousPsi );
-
-                void setPreviousGamma( const variableVector &previousGamma );
-
-                void setPK2Stress( const variableVector &value );
-
-                void setReferenceSymmetricMicroStress( const variableVector &value );
-
-                void setReferenceHigherOrderStress( const variableVector &value );
-
-                void setPreviousPK2Stress( const variableVector &value );
-
-                void setPreviousReferenceSymmetricMicroStress( const variableVector &value );
-
-                void setPreviousReferenceHigherOrderStress( const variableVector &value );
-
-                void setdRightCauchyGreendF( const floatMatrix &value );
-
-                void setdRightCauchyGreendFn( const floatMatrix &value );
-
-                void setdPsidF( const floatMatrix &value );
-
-                void setdPsidFn( const floatMatrix &value );
-
-                void setdPsidChi( const floatMatrix &value );
-
-                void setdPsidChin( const floatMatrix &value );
-
-                void setdGammadF( const floatMatrix &value );
-
-                void setdGammadFn( const floatMatrix &value );
-
-                void setdGammadChi( const floatMatrix &value );
-
-                void setdGammadChin( const floatMatrix &value );
-
-                void setdGammadGradChi( const floatMatrix &value );
-
-                void setdGammadGradChin( const floatMatrix &value );
-
-                void setPreviousdRightCauchyGreendF( const floatMatrix &value );
-
-                void setPreviousdRightCauchyGreendFn( const floatMatrix &value );
-
-                void setPreviousdPsidF( const floatMatrix &value );
-
-                void setPreviousdPsidFn( const floatMatrix &value );
-
-                void setPreviousdPsidChi( const floatMatrix &value );
-
-                void setPreviousdPsidChin( const floatMatrix &value );
-
-                void setPreviousdGammadF( const floatMatrix &value );
-
-                void setPreviousdGammadFn( const floatMatrix &value );
-
-                void setPreviousdGammadChi( const floatMatrix &value );
-
-                void setPreviousdGammadChin( const floatMatrix &value );
-
-                void setPreviousdGammadGradChi( const floatMatrix &value );
-
-                void setPreviousdGammadGradChin( const floatMatrix &value );
-
                 virtual void setDeformation( const bool isPrevious );
 
                 virtual void setRightCauchyGreen( );
@@ -620,78 +548,6 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousdMdGradChin( );
 
-                void setdPK2dF( const variableMatrix &value );
-
-                void setdPK2dFn( const variableMatrix &value );
-
-                void setdPK2dChi( const variableMatrix &value );
-
-                void setdPK2dChin( const variableMatrix &value );
-
-                void setdPK2dGradChi( const variableMatrix &value );
-
-                void setdPK2dGradChin( const variableMatrix &value );
-
-                void setdSIGMAdF( const variableMatrix &value );
-
-                void setdSIGMAdFn( const variableMatrix &value );
-
-                void setdSIGMAdChi( const variableMatrix &value );
-
-                void setdSIGMAdChin( const variableMatrix &value );
-
-                void setdSIGMAdGradChi( const variableMatrix &value );
-
-                void setdSIGMAdGradChin( const variableMatrix &value );
-
-                void setdMdF( const variableMatrix &value );
-
-                void setdMdFn( const variableMatrix &value );
-
-                void setdMdChi( const variableMatrix &value );
-
-                void setdMdChin( const variableMatrix &value );
-
-                void setdMdGradChi( const variableMatrix &value );
-
-                void setdMdGradChin( const variableMatrix &value );
-
-                void setPreviousdPK2dF( const variableMatrix &value );
-
-                void setPreviousdPK2dFn( const variableMatrix &value );
-
-                void setPreviousdPK2dChi( const variableMatrix &value );
-
-                void setPreviousdPK2dChin( const variableMatrix &value );
-
-                void setPreviousdPK2dGradChi( const variableMatrix &value );
-
-                void setPreviousdPK2dGradChin( const variableMatrix &value );
-
-                void setPreviousdSIGMAdF( const variableMatrix &value );
-
-                void setPreviousdSIGMAdFn( const variableMatrix &value );
-
-                void setPreviousdSIGMAdChi( const variableMatrix &value );
-
-                void setPreviousdSIGMAdChin( const variableMatrix &value );
-
-                void setPreviousdSIGMAdGradChi( const variableMatrix &value );
-
-                void setPreviousdSIGMAdGradChin( const variableMatrix &value );
-
-                void setPreviousdMdF( const variableMatrix &value );
-
-                void setPreviousdMdFn( const variableMatrix &value );
-
-                void setPreviousdMdChi( const variableMatrix &value );
-
-                void setPreviousdMdChin( const variableMatrix &value );
-
-                void setPreviousdMdGradChi( const variableMatrix &value );
-
-                void setPreviousdMdGradChin( const variableMatrix &value );
-
                 virtual void setReferenceStressJacobians( const bool isPrevious );
 
             private:
@@ -704,149 +560,149 @@ namespace tardigradeHydra{
 
                 parameterVector _Dmatrix; //!< The D stiffness matrix
 
-                tardigradeHydra::dataStorage< variableVector > _rightCauchyGreen; //!< The current right Cauchy-Green deformation tensor
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, rightCauchyGreen,                      floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dRightCauchyGreendF; //!< The Jacobian of the right Cauchy-Green deformation tensor w.r.t. the total deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dRightCauchyGreendF,                   floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dRightCauchyGreendFn; //!< The Jacobian of the right Cauchy-Green deformation tensor w.r.t. the remaining sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dRightCauchyGreendFn,                  floatMatrix )
 
-                tardigradeHydra::dataStorage< variableVector > _psi; //!< The current micro-deformation tensor Psi
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, psi,                                   floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dPsidF; //!< The Jacobian of the micro deformation measure Psi w.r.t. the total deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPsidF,                                floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dPsidFn; //!< The Jacobian of the micro deformation measure Psi w.r.t. the remaining sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPsidFn,                               floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dPsidChi; //!< The Jacobian of the micro deformation measure Psi w.r.t. the total micro deformation
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPsidChi,                              floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dPsidChin; //!< The Jacobian of the micro deformation measure Psi w.r.t. the remaining sub micro deformations
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPsidChin,                             floatMatrix )
 
-                tardigradeHydra::dataStorage< variableVector > _gamma; //!< The current gradient micro-deformation tensor Gamma
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, gamma,                                 floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dGammadF; //!< The Jacobian of the micro deformation measure Gamma w.r.t. the total deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGammadF,                              floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dGammadChi; //!< The Jacobian of the micro deformation measure Gamma w.r.t. the total micro-deformation
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGammadChi,                            floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dGammadGradChi; //!< The Jacobian of the micro deformation measure Gamma w.r.t. the reference spatial gradient of the total micro deformation
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGammadGradChi,                        floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dGammadFn; //!< The Jacobian of the micro deformation measure Gamma w.r.t. the remaining sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGammadFn,                             floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dGammadChin; //!< The Jacobian of the micro deformation measure Gamma w.r.t. the remaining sub micro-deformation
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGammadChin,                           floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dGammadGradChin; //!< The Jacobian of the micro deformation measure Gamma w.r.t. the local reference spatial gradients of the remaining sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGammadGradChin,                       floatMatrix )
 
-                tardigradeHydra::dataStorage< variableVector > _previousRightCauchyGreen; //!< The previous right Cauchy-Green deformation tensor
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousRightCauchyGreen,              floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdRightCauchyGreendF; //!< The Jacobian of the previous right Cauchy-Green deformation tensor w.r.t. the total deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdRightCauchyGreendF,           floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdRightCauchyGreendFn; //!< The Jacobian of the previous right Cauchy-Green deformation tensor w.r.t. the remaining sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdRightCauchyGreendFn,          floatMatrix )
 
-                tardigradeHydra::dataStorage< variableVector > _previousPsi; //!< The previous micro-deformation tensor Psi
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPsi,                           floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdPsidF; //!< The Jacobian of the previous micro deformation measure Psi w.r.t. the total deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPsidF,                        floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdPsidFn; //!< The Jacobian of the previous micro deformation measure Psi w.r.t. the remaining sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPsidFn,                       floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdPsidChi; //!< The Jacobian of the previous micro deformation measure Psi w.r.t. the total micro deformation
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPsidChi,                      floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdPsidChin; //!< The Jacobian of the previous micro deformation measure Psi w.r.t. the remaining sub micro deformations
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPsidChin,                     floatMatrix )
 
-                tardigradeHydra::dataStorage< variableVector > _previousGamma; //!< The previous gradient micro-deformation tensor Gamma
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousGamma,                         floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadF; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the total deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdGammadF,                      floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadChi; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the total micro-deformation
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdGammadChi,                    floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadGradChi; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the reference spatial gradient of the total micro deformation
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdGammadGradChi,                floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadFn; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the remaining sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdGammadFn,                     floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadChin; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the remaining sub micro-deformation
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdGammadChin,                   floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdGammadGradChin; //!< The Jacobian of the previous micro deformation measure Gamma w.r.t. the local reference spatial gradients of the remaining sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdGammadGradChin,               floatMatrix )
 
-                tardigradeHydra::dataStorage< variableVector > _pk2Stress; //!< The value of the second Piola-Kirchoff stress
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2Stress,                             floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dPK2dF; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2dF,                                floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dPK2dFn; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2dFn,                               floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dPK2dChi; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2dChi,                              floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dPK2dChin; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2dChin,                             floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dPK2dGradChi; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the spatial gradient of the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2dGradChi,                          floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dPK2dGradChin; //!< The value of the derivative of the second Piola-Kirchoff stress w.r.t. the spatial gradient of the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2dGradChin,                         floatMatrix )
 
-                tardigradeHydra::dataStorage< variableVector > _referenceSymmetricMicroStress; //!< The value of the reference symmetric micro stress
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, referenceSymmetricMicroStress,         floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdF; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSIGMAdF,                              floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdFn; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSIGMAdFn,                             floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdChi; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSIGMAdChi,                            floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdChin; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSIGMAdChin,                           floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdGradChi; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSIGMAdGradChi,                        floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dSIGMAdGradChin; //!< The value of the derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSIGMAdGradChin,                       floatMatrix )
 
-                tardigradeHydra::dataStorage< variableVector > _referenceHigherOrderStress; //!< The value of the reference higher order stress
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, referenceHigherOrderStress,            floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dMdF; //!< The value of the derivative of the reference higher order stress w.r.t. the deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMdF,                                  floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dMdFn; //!< The value of the derivative of the reference higher order stress w.r.t. the sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMdFn,                                 floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dMdChi; //!< The value of the derivative of the reference higher order stress w.r.t. the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMdChi,                                floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dMdChin; //!< The value of the derivative of the reference higher order stress w.r.t. the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMdChin,                               floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dMdGradChi; //!< The value of the derivative of the reference higher order stress w.r.t. the spatial gradient of the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMdGradChi,                            floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _dMdGradChin; //!< The value of the derivative of the reference higher order stress w.r.t. the spatial gradient of the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMdGradChin,                           floatMatrix )
 
-                tardigradeHydra::dataStorage< variableVector > _previouspk2Stress; //!< The value of the previous second Piola-Kirchoff stress
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPK2Stress,                     floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dF; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2dF,                        floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dFn; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2dFn,                       floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dChi; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2dChi,                      floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dChin; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2dChin,                     floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dGradChi; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the spatial gradient of the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2dGradChi,                  floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdPK2dGradChin; //!< The value of the previous derivative of the second Piola-Kirchoff stress w.r.t. the spatial gradient of the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2dGradChin,                 floatMatrix )
 
-                tardigradeHydra::dataStorage< variableVector > _previousreferenceSymmetricMicroStress; //!< The value of the previous reference symmetric micro stress
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousReferenceSymmetricMicroStress, floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdF; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdSIGMAdF,                      floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdFn; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdSIGMAdFn,                     floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdChi; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdSIGMAdChi,                    floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdChin; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdSIGMAdChin,                   floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdGradChi; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdSIGMAdGradChi,                floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdSIGMAdGradChin; //!< The value of the previous derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdSIGMAdGradChin,               floatMatrix )
 
-                tardigradeHydra::dataStorage< variableVector > _previousreferenceHigherOrderStress; //!< The value of the previous reference higher order stress
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousReferenceHigherOrderStress,    floatVector )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdMdF; //!< The value of the previous derivative of the reference higher order stress w.r.t. the deformation gradient
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMdF,                          floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdMdFn; //!< The value of the previous derivative of the reference higher order stress w.r.t. the sub-deformation gradients
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMdFn,                         floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdMdChi; //!< The value of the previous derivative of the reference higher order stress w.r.t. the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMdChi,                        floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdMdChin; //!< The value of the previous derivative of the reference higher order stress w.r.t. the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMdChin,                       floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdMdGradChi; //!< The value of the previous derivative of the reference higher order stress w.r.t. the spatial gradient of the micro deformation
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMdGradChi,                    floatMatrix )
 
-                tardigradeHydra::dataStorage< variableMatrix > _previousdMdGradChin; //!< The value of the previous derivative of the reference higher order stress w.r.t. the spatial gradient of the sub-micro deformations
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMdGradChin,                   floatMatrix )
 
         };
 

@@ -202,9 +202,9 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->getConfigurations( ) )[ 0 ], Je, Fehat ) );
 
-            setJe( Je );
+            set_Je( Je );
 
-            setFehat( Fehat );
+            set_Fehat( Fehat );
 
         }
 
@@ -219,9 +219,9 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->getPreviousConfigurations( ) )[ 0 ], previousJe, previousFehat ) );
 
-            setPreviousJe( previousJe );
+            set_previousJe( previousJe );
 
-            setPreviousFehat( previousFehat );
+            set_previousFehat( previousFehat );
 
         }
 
@@ -241,50 +241,6 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( J = tardigradeVectorTools::determinant( F, ( *dim ), ( *dim ) ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( Fhat = F / std::pow( J, 1./3 ) );
-
-        }
-
-        void residual::setJe( const floatType &Je ){
-            /*!
-             * Set the elastic Jacobian of deformation
-             * 
-             * \param &Je: The elastic Jacobian of deformation
-             */
-
-            setIterationData( Je, _Je );
-
-        }
-
-        void residual::setFehat( const floatVector &Fehat ){
-            /*!
-             * Set the isochoric part of the elastic deformation gradient
-             * 
-             * \param &Fehat: The isochoric part of the elastic deformation gradient
-             */
-
-            setIterationData( Fehat, _Fehat );
-
-        }
-
-        void residual::setPreviousJe( const floatType &previousJe ){
-            /*!
-             * Set the previous elastic Jacobian of deformation
-             * 
-             * \param &previousJe: The previous elastic Jacobian of deformation
-             */
-
-            setPreviousData( previousJe, _previousJe );
-
-        }
-
-        void residual::setPreviousFehat( const floatVector &previousFehat ){
-            /*!
-             * Set the previous isochoric part of the elastic deformation gradient
-             * 
-             * \param &previousFehat: The previous isochoric part of the elastic deformation gradient
-             */
-
-            setPreviousData( previousFehat, _previousFehat );
 
         }
 
@@ -356,20 +312,7 @@ namespace tardigradeHydra{
 
             const unsigned int* dim = hydra->getDimension( );
 
-            setdJedFe( tardigradeVectorTools::computeDDetADA( ( *hydra->getConfigurations( ) )[ 0 ], ( *dim ), ( *dim ) ) );
-
-        }
-
-        void residual::setdJedFe( const floatVector &dJedFe ){
-            /*!
-             * Set the derivative of the elastic Jacobian of deformation w.r.t.
-             * the elastic deformation gradient.
-             * 
-             * \param &dJedFe: The derivative of the elastic Jacobian of deformation
-             *     w.r.t. the elastic deformation gradient
-             */
-
-            setIterationData( dJedFe, _dJedFe );
+            set_dJedFe( tardigradeVectorTools::computeDDetADA( ( *hydra->getConfigurations( ) )[ 0 ], ( *dim ), ( *dim ) ) );
 
         }
 
@@ -401,20 +344,7 @@ namespace tardigradeHydra{
 
             dFehatdFe -= tardigradeVectorTools::dyadic( ( *hydra->getConfigurations( ) )[ 0 ], *getdJedFe( ) ) * std::pow( ( *getJe( ) ), -4. / 3 ) / 3.;
 
-            setdFehatdFe( dFehatdFe );
-
-        }
-
-        void residual::setdFehatdFe( const floatMatrix &dFehatdFe ){
-            /*!
-             * Set the derivative of the isochoric part of the elastic deformation gradient
-             * w.r.t. the elastic deformation gradient.
-             * 
-             * \param &dFehatdFe: The derivative of the isochoric part of the elastic
-             *     deformation gradient the elastic deformation gradient
-             */
-
-            setIterationData( dFehatdFe, _dFehatdFe );
+            set_dFehatdFe( dFehatdFe );
 
         }
 
@@ -531,7 +461,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getTemperature( ) },
                                                                        *getVolumetricTemperatureParameters( ) ) );
 
-            setVolumetricRateMultiplier( rateMultiplier );
+            set_volumetricRateMultiplier( rateMultiplier );
 
         }
 
@@ -545,7 +475,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
                                                                        *getVolumetricTemperatureParameters( ) ) );
 
-            setPreviousVolumetricRateMultiplier( rateMultiplier );
+            set_previousVolumetricRateMultiplier( rateMultiplier );
 
         }
 
@@ -559,7 +489,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getTemperature( ) },
                                                                        *getIsochoricTemperatureParameters( ) ) );
 
-            setIsochoricRateMultiplier( rateMultiplier );
+            set_isochoricRateMultiplier( rateMultiplier );
 
         }
 
@@ -573,7 +503,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
                                                                        *getIsochoricTemperatureParameters( ) ) );
 
-            setPreviousIsochoricRateMultiplier( rateMultiplier );
+            set_previousIsochoricRateMultiplier( rateMultiplier );
 
         }
 
@@ -588,7 +518,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
                                                                                        *getVolumetricTemperatureParameters( ) )[ 0 ] );
 
-            setdVolumetricRateMultiplierdT( dRateMultiplierdT );
+            set_dVolumetricRateMultiplierdT( dRateMultiplierdT );
 
         }
 
@@ -603,7 +533,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
                                                                                        *getVolumetricTemperatureParameters( ) )[ 0 ] );
 
-            setdPreviousVolumetricRateMultiplierdPreviousT( dRateMultiplierdT );
+            set_dPreviousVolumetricRateMultiplierdPreviousT( dRateMultiplierdT );
 
         }
 
@@ -618,7 +548,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
                                                                                        *getIsochoricTemperatureParameters( ) )[ 0 ] );
 
-            setdIsochoricRateMultiplierdT( dRateMultiplierdT );
+            set_dIsochoricRateMultiplierdT( dRateMultiplierdT );
 
         }
 
@@ -632,104 +562,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
                                                                                        *getIsochoricTemperatureParameters( ) )[ 0 ] );
 
-            setdPreviousIsochoricRateMultiplierdPreviousT( dRateMultiplierdT );
-
-        }
-
-        void residual::setVolumetricRateMultiplier( const floatType &volumetricRateMultiplier ){
-            /*!
-             * Set the volumetric rate multiplier for the viscous term evolution
-             * 
-             * \param &volumetricRateMultiplier: The value of the volumetric rate multiplier
-             */
-
-            setIterationData( volumetricRateMultiplier, _volumetricRateMultiplier );
-
-        }
-
-        void residual::setPreviousVolumetricRateMultiplier( const floatType &previousVolumetricRateMultiplier ){
-            /*!
-             * Set the previous volumetric rate multiplier for the viscous term evolution
-             * 
-             * \param &previousVolumetricRateMultiplier: The value of the previous volumetric rate multiplier
-             */
-
-            setPreviousData( previousVolumetricRateMultiplier, _previousVolumetricRateMultiplier );
-
-        }
-
-        void residual::setIsochoricRateMultiplier( const floatType &isochoricRateMultiplier ){
-            /*!
-             * Set the isochoric rate multiplier for the viscous term evolution
-             * 
-             * \param &isochoricRateMultiplier: The value of the isochoric rate multiplier
-             */
-
-            setIterationData( isochoricRateMultiplier, _isochoricRateMultiplier );
-
-        }
-
-        void residual::setPreviousIsochoricRateMultiplier( const floatType &previousIsochoricRateMultiplier ){
-            /*!
-             * Set the previous isochoric rate multiplier for the viscous term evolution
-             * 
-             * \param &previousIsochoricRateMultiplier: The value of the previous isochoric rate multiplier
-             */
-
-            setPreviousData( previousIsochoricRateMultiplier, _previousIsochoricRateMultiplier );
-
-        }
-
-        void residual::setdVolumetricRateMultiplierdT( const floatType &dVolumetricRateMultiplierdT ){
-            /*!
-             * Set the derivative of the volumetric rate multiplier for the viscous
-             * term evolution w.r.t. the temperature
-             * 
-             * \param &dVolumetricRateMultiplierdT: The value of the derivative of the
-             *     volumetric rate multiplier w.r.t. T
-             */
-
-            setIterationData( dVolumetricRateMultiplierdT, _dVolumetricRateMultiplierdT );
-
-        }
-
-        void residual::setdPreviousVolumetricRateMultiplierdPreviousT( const floatType &dPreviousVolumetricRateMultiplierdPreviousT ){
-            /*!
-             * Set the derivative of the previous volumetric rate multiplier for the
-             * viscous term evolution w.r.t. the previous temperature.
-             * 
-             * \param &dPreviousVolumetricRateMultiplierdPreviousT: The value of the
-             *     derivative of the previous volumetric rate multiplier w.r.t. the
-             *     previous temperature.
-             */
-
-            setPreviousData( dPreviousVolumetricRateMultiplierdPreviousT, _dPreviousVolumetricRateMultiplierdPreviousT );
-
-        }
-
-        void residual::setdIsochoricRateMultiplierdT( const floatType &dIsochoricRateMultiplierdT ){
-            /*!
-             * Set the derivative of the isochoric rate multiplier for the viscous
-             * term evolution w.r.t. the temperature
-             * 
-             * \param &dIsochoricRateMultiplierdT: The value of the derivative of the isochoric
-             *     rate multiplier w.r.t. the temperature
-             */
-
-            setIterationData( dIsochoricRateMultiplierdT, _dIsochoricRateMultiplierdT );
-
-        }
-
-        void residual::setdPreviousIsochoricRateMultiplierdPreviousT( const floatType &dPreviousIsochoricRateMultiplierdPreviousT ){
-            /*!
-             * Set the derivative of the previous isochoric rate multiplier for the
-             * viscous term evolution w.r.t. the previous temperature
-             * 
-             * \param &dPreviousIsochoricRateMultiplierdPreviousT: The value of the derivative
-             *     of the previous isochoric rate multiplier w.r.t. the previous temperature
-             */
-
-            setPreviousData( dPreviousIsochoricRateMultiplierdPreviousT, _dPreviousIsochoricRateMultiplierdPreviousT );
+            set_dPreviousIsochoricRateMultiplierdPreviousT( dRateMultiplierdT );
 
         }
 
@@ -959,13 +792,13 @@ namespace tardigradeHydra{
                                                                                 *getIntegrationAlpha( ), deltaPK2MeanStress,
                                                                                 PK2MeanStress, currentVolumetricStateVariables, dPK2MeanStressdJe, dPK2MeanStressdRateModifier ) );
 
-            setPK2MeanStress( PK2MeanStress[ 0 ] );
+            set_PK2MeanStress( PK2MeanStress[ 0 ] );
 
-            setUpdatedVolumetricViscoelasticStateVariables( currentVolumetricStateVariables );
+            set_volumetricViscoelasticStateVariables( currentVolumetricStateVariables );
 
-            setdPK2MeanStressdFe( dPK2MeanStressdJe[ 0 ][ 0 ] * ( *getdJedFe( ) ) );
+            set_dPK2MeanStressdFe( dPK2MeanStressdJe[ 0 ][ 0 ] * ( *getdJedFe( ) ) );
 
-            setdPK2MeanStressdT( dPK2MeanStressdRateModifier[ 0 ] * ( *getdVolumetricRateMultiplierdT( ) ) );
+            set_dPK2MeanStressdT( dPK2MeanStressdRateModifier[ 0 ] * ( *getdVolumetricRateMultiplierdT( ) ) );
 
         }
 
@@ -984,42 +817,6 @@ namespace tardigradeHydra{
              */
 
             getPK2MeanStress( );
-
-        }
-
-        void residual::setPK2MeanStress( const floatType &PK2MeanStress ){
-            /*!
-             * Set the PK2 mean stress
-             * 
-             * \param &PK2MeanStress: The second Piola-Kirchhoff mean stress
-             */
-
-            setIterationData( PK2MeanStress, _PK2MeanStress );
-
-        }
-
-        void residual::setdPK2MeanStressdT( const floatType &dPK2MeanStressdT ){
-            /*!
-             * Set the derivative of the PK2 mean stress w.r.t. the temperature
-             * 
-             * \param &dPK2MeanStressdT: The derivative of the second Piola-Kirchhoff
-             *     mean stress w.r.t. the temperature
-             */
-
-            setIterationData( dPK2MeanStressdT, _dPK2MeanStressdT );
-
-        }
-
-        void residual::setdPK2MeanStressdFe( const floatVector &dPK2MeanStressdFe ){
-            /*!
-             * Set the derivative of the PK2 mean stress w.r.t. the elastic deformation
-             * gradient
-             * 
-             * \param &dPK2MeanStressdFe: The gradient of the second Piola-Kirchhoff
-             *     mean stress w.r.t. the temperature
-             */
-
-            setIterationData( dPK2MeanStressdFe, _dPK2MeanStressdFe );
 
         }
 
@@ -1113,13 +910,13 @@ namespace tardigradeHydra{
                                                                                 *getIntegrationAlpha( ), deltaPK2IsochoricStress,
                                                                                 PK2IsochoricStress, currentIsochoricStateVariables, dPK2IsochoricStressdEe, dPK2IsochoricStressdRateMultiplier ) );
 
-            setPK2IsochoricStress( PK2IsochoricStress );
+            set_PK2IsochoricStress( PK2IsochoricStress );
 
-            setUpdatedIsochoricViscoelasticStateVariables( currentIsochoricStateVariables );
+            set_isochoricViscoelasticStateVariables( currentIsochoricStateVariables );
 
-            setdPK2IsochoricStressdFe( tardigradeVectorTools::dot( dPK2IsochoricStressdEe, dEehatdFe ) );
+            set_dPK2IsochoricStressdFe( tardigradeVectorTools::dot( dPK2IsochoricStressdEe, dEehatdFe ) );
 
-            setdPK2IsochoricStressdT( dPK2IsochoricStressdRateMultiplier * ( *getdIsochoricRateMultiplierdT( ) ) );
+            set_dPK2IsochoricStressdT( dPK2IsochoricStressdRateMultiplier * ( *getdIsochoricRateMultiplierdT( ) ) );
 
         }
 
@@ -1139,31 +936,6 @@ namespace tardigradeHydra{
              */
 
             getPK2IsochoricStress( );
-
-        }
-
-        void residual::setdPK2IsochoricStressdFe( const floatMatrix &dPK2IsochoricStressdFe ){
-            /*!
-             * Set the derivative of the isochoric PK2 stress w.r.t. the elastic
-             * deformation gradient
-             * 
-             * \param &dPK2IsochoricStressdFe: The derivative of the PK2 stress w.r.t.
-             * the elastic deformation gradient
-             */
-
-            setIterationData( dPK2IsochoricStressdFe, _dPK2IsochoricStressdFe );
-
-        }
-
-        void residual::setdPK2IsochoricStressdT( const floatVector &dPK2IsochoricStressdT ){
-            /*!
-             * Set the derivative of the isochoric PK2 stress w.r.t. the temperature
-             * 
-             * \param &dPK2IsochoricStressdT: The derivative of the PK2 stress w.r.t.
-             * the temperature
-             */
-
-            setIterationData( dPK2IsochoricStressdT, _dPK2IsochoricStressdT );
 
         }
 
@@ -1207,17 +979,6 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setUpdatedVolumetricViscoelasticStateVariables( floatVector &volumetricViscoelasticStateVariables ){
-            /*!
-             * Set the updated values of the volumetric viscoelastic state variables
-             * 
-             * \param &volumetricViscoelasticStateVariables: The updated volumetric viscoelastic state variables
-             */
-
-            setIterationData( volumetricViscoelasticStateVariables, _volumetricViscoelasticStateVariables );
-
-        }
-
         const floatVector* residual::getUpdatedVolumetricViscoelasticStateVariables( ){
             /*!
              * Get the updated values of the volumetric viscoelastic state variables
@@ -1256,17 +1017,6 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setUpdatedIsochoricViscoelasticStateVariables( floatVector &isochoricViscoelasticStateVariables ){
-            /*!
-             * Set the updated values of the isochoric viscoelastic state variables
-             * 
-             * \param &isochoricViscoelasticStateVariables: The updated isochoric viscoelastic state variables
-             */
-
-            setIterationData( isochoricViscoelasticStateVariables, _isochoricViscoelasticStateVariables );
-
-        }
-
         const floatVector* residual::getUpdatedIsochoricViscoelasticStateVariables( ){
             /*!
              * Get the updated values of the isochoric viscoelastic state variables
@@ -1279,17 +1029,6 @@ namespace tardigradeHydra{
             }
 
             return &_isochoricViscoelasticStateVariables.second;
-
-        }
-
-        void residual::setPK2IsochoricStress( const floatVector &PK2IsochoricStress ){
-            /*!
-             * Set the PK2 isochoric stress
-             * 
-             * \param &PK2IsochoricStress: The second Piola-Kirchhoff isochoric stress
-             */
-
-            setIterationData( PK2IsochoricStress, _PK2IsochoricStress );
 
         }
 
@@ -1320,7 +1059,7 @@ namespace tardigradeHydra{
 
             floatVector PK2Stress = ( *getPK2IsochoricStress( ) ) + ( *getPK2MeanStress( ) ) * eye;
 
-            setPK2Stress( PK2Stress );
+            set_PK2Stress( PK2Stress );
 
         }
 
@@ -1336,7 +1075,7 @@ namespace tardigradeHydra{
 
             floatMatrix dPK2StressdFe = *getdPK2IsochoricStressdFe( ) + tardigradeVectorTools::dyadic( eye, *getdPK2MeanStressdFe( ) );
 
-            setdPK2StressdFe( dPK2StressdFe );
+            set_dPK2StressdFe( dPK2StressdFe );
 
         }
 
@@ -1352,20 +1091,7 @@ namespace tardigradeHydra{
 
             floatVector dPK2StressdT = *getdPK2IsochoricStressdT( ) + *getdPK2MeanStressdT( ) * eye;
 
-            setdPK2StressdT( dPK2StressdT );
-
-        }
-
-        void residual::setdPK2StressdT( const floatVector &dPK2StressdT ){
-            /*!
-             * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the
-             * temperature
-             *
-             * \param &dPK2StressdT: The derivative of the second Piola-Kirchoff stress
-             *     w.r.t. the temperature
-             */
-
-            setIterationData( dPK2StressdT, _dPK2StressdT );
+            set_dPK2StressdT( dPK2StressdT );
 
         }
 
@@ -1392,20 +1118,7 @@ namespace tardigradeHydra{
 
             floatVector dCauchyStressdT = tardigradeVectorTools::dot( *getdCauchyStressdPK2Stress( ), *getdPK2StressdT( ) );
 
-            setdCauchyStressdT( dCauchyStressdT );
-
-        }
-
-        void residual::setdCauchyStressdT( const floatVector &dCauchyStressdT ){
-            /*!
-             * Set the derivative of the Cauchy stress w.r.t. the
-             * temperature
-             *
-             * \param &dCauchyStressdT: The derivative of the Cauchy stress
-             *     w.r.t. the temperature
-             */
-
-            setIterationData( dCauchyStressdT, _dCauchyStressdT );
+            set_dCauchyStressdT( dCauchyStressdT );
 
         }
 
@@ -1432,31 +1145,6 @@ namespace tardigradeHydra{
 
             setdRdT( *getdCauchyStressdT( ) );
 
-        }
-
-        void residual::setPK2Stress( const floatVector &PK2Stress ){
-            /*!
-             * Pass-through function to linearElasticity::setPK2Stress
-             *
-             * Required because of overloading
-             *
-             * \param &PK2Stress: The second Piola-Kirchhoff stress
-             */
-
-            tardigradeHydra::linearElasticity::residual::setPK2Stress( PK2Stress );
-        }
-
-        void residual::setdPK2StressdFe( const floatMatrix &dPK2StressdFe ){
-            /*!
-             * Pass-through function to linearElasticity::setdPK2StressdFe
-             *
-             * Required because of overloading
-             *
-             * \param &dPK2StressdFe: The derivative of the second Piola-Kirchhoff
-             *     stress w.r.t. the elastic deformation gradient
-             */
-
-            tardigradeHydra::linearElasticity::residual::setdPK2StressdFe( dPK2StressdFe );
         }
 
         void residual::setdRdT( const floatVector &dRdT ){

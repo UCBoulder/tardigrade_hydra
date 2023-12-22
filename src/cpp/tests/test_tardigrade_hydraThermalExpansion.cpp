@@ -557,13 +557,13 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradient ){
 
             virtual void setThermalGreenLagrangeStrain( ){
 
-                tardigradeHydra::thermalExpansion::residual::setThermalGreenLagrangeStrain( thermalGreenLagrangeStrain );
+                tardigradeHydra::thermalExpansion::residual::set_thermalGreenLagrangeStrain( thermalGreenLagrangeStrain );
 
             }
 
             virtual void setdThermalGreenLagrangeStraindT( ){
 
-                tardigradeHydra::thermalExpansion::residual::setdThermalGreenLagrangeStraindT( dThermalGreenLagrangeStraindT );
+                tardigradeHydra::thermalExpansion::residual::set_dThermalGreenLagrangeStraindT( dThermalGreenLagrangeStraindT );
 
 
             }
@@ -837,7 +837,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual ){
 
             virtual void setThermalDeformationGradient( ){
 
-                tardigradeHydra::thermalExpansion::residual::setThermalDeformationGradient( thermalDeformationGradient );
+                tardigradeHydra::thermalExpansion::residual::set_thermalDeformationGradient( thermalDeformationGradient );
 
             }
 

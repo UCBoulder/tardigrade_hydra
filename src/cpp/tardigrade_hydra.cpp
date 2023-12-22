@@ -21,83 +21,6 @@ namespace tardigradeHydra{
     /** \brief Define required number of Abaqus material constants for the Abaqus interface. */
     const int nMaterialParameters = 2;
 
-    void residualBase::setResidual( const floatVector &residual ){
-        /*!
-         * Set the value of the residual
-         * 
-         * \param &residual: The current value of the residual
-         */
-
-        setIterationData( residual, _residual );
-
-    }
-
-    void residualBase::setJacobian( const floatMatrix &jacobian ){
-        /*!
-         * Set the value of the jacobian
-         * 
-         * \param &jacobian: The jacobian matrix
-         */
-
-        setIterationData( jacobian, _jacobian );
-
-    }
-
-    void residualBase::setdRdF( const floatMatrix &dRdF ){
-        /*!
-         * Set the value of dRdF
-         * 
-         * \param &dRdF: The derivative of the residual w.r.t. the deformation gradient
-         */
-
-        setIterationData( dRdF, _dRdF );
-
-    }
-
-    void residualBase::setdRdT( const floatVector &dRdT ){
-        /*!
-         * Set the value of dRdT
-         * 
-         * \param &dRdT: The derivative of the residual w.r.t. the temperature
-         */
-
-        setIterationData( dRdT, _dRdT );
-
-    }
-
-    void residualBase::setAdditionalDerivatives( const floatMatrix &additionalDerivatives ){
-        /*!
-         * Set the value of the additional derivatives of the residual
-         * 
-         * \param &additionalDerivatives: Additional derivatives of the residual
-         */
-
-        setIterationData( additionalDerivatives, _additionalDerivatives );
-
-    }
-
-    void residualBase::setStress( const floatVector &stress ){
-        /*!
-         * Set the value of the stress
-         * 
-         * \param &stress: The stress in row-major form
-         */
-
-        setIterationData( stress, _stress );
-
-    }
-
-    void residualBase::setPreviousStress( const floatVector &previousStress ){
-        /*!
-         * Set the previous value of the stress
-         * 
-         * \param &previousStress: The previous stress in row-major form
-         */
-
-        setPreviousData( previousStress, _previousStress );
-
-    }
-
     const floatVector* residualBase::getResidual( ){
         /*!
          * Get the residual equations. Must be of size numEquations
@@ -204,17 +127,6 @@ namespace tardigradeHydra{
 
     }
 
-    void residualBase::setCurrentAdditionalStateVariables( const floatVector &currentAdditionalStateVariables ){
-        /*!
-         * Set the current additional state variables
-         * 
-         * \param &currentAdditionalStateVariables: The current values of the additional state variables
-         */
-
-        setIterationData( currentAdditionalStateVariables, _currentAdditionalStateVariables );
-
-    }
-
     const floatVector* residualBase::getCurrentAdditionalStateVariables( ){
         /*!
          * Get the updated additional state variables which don't require the
@@ -299,94 +211,6 @@ namespace tardigradeHydra{
          */
 
         setIterationData( stress, _stress );
-
-    }
-
-    void hydraBase::setConfigurations( const floatMatrix &configurations ){
-        /*!
-         * Set the value of the configurations
-         *
-         * \param &configurations: The configurations matrix. Each row is a different configuration.
-         */
-
-        setIterationData( configurations, _configurations );
-
-    }
-
-    void hydraBase::setInverseConfigurations( const floatMatrix &inverseConfigurations ){
-        /*!
-         * Set the value of the inverse configurations
-         *
-         * \param &inverseConfigurations: The inverse configurations matrix. Each row is a different configuration.
-         */
-
-        setIterationData( inverseConfigurations, _inverseConfigurations );
-
-    }
-
-    void hydraBase::setPreviousConfigurations( const floatMatrix &previousConfigurations ){
-        /*!
-         * Set the value of the previous configurations
-         *
-         * \param &previousConfigurations: The previous configurations matrix. Each row is a different configuration.
-         */
-
-        setPreviousData( previousConfigurations, _previousConfigurations );
-
-    }
-
-    void hydraBase::setPreviousInverseConfigurations( const floatMatrix &previousInverseConfigurations ){
-        /*!
-         * Set the value of the previous inverse configurations
-         *
-         * \param &previousInverseConfigurations: The previous inverse configurations matrix. Each row is a different configuration.
-         */
-
-        setPreviousData( previousInverseConfigurations, _previousInverseConfigurations );
-
-    }
-
-    void hydraBase::setNonLinearSolveStateVariables( const floatVector &nonLinearSolveStateVariables ){
-        /*!
-         * Set the value of the state variables which are a part of the non-linear solve
-         * 
-         * \param &nonLinearSolveStateVariables
-         */
-
-        setIterationData( nonLinearSolveStateVariables, _nonLinearSolveStateVariables );
-
-    }
-
-    void hydraBase::setPreviousNonLinearSolveStateVariables( const floatVector &previousNonLinearSolveStateVariables ){
-        /*!
-         * Set the previous value of the state variables which are a part of the non-linear solve
-         * 
-         * \param &previousNonLinearSolveStateVariables
-         */
-
-        setPreviousData( previousNonLinearSolveStateVariables, _previousNonLinearSolveStateVariables );
-
-    }
-
-    void hydraBase::setAdditionalStateVariables( const floatVector &additionalStateVariables ){
-        /*!
-         * Set the value of the additional state variables which are not part of the non-linear solve
-         * 
-         * \param &additionalStateVariables
-         */
-
-        setIterationData( additionalStateVariables, _additionalStateVariables );
-
-    }
-
-    void hydraBase::setPreviousAdditionalStateVariables( const floatVector &previousAdditionalStateVariables ){
-        /*!
-         * Set the previous value of the additional state variables which are not part of the non-linear solve
-         * 
-         * \param &previousAdditionalStateVariables
-         */
-
-        setPreviousData( previousAdditionalStateVariables, _previousAdditionalStateVariables );
 
     }
 
@@ -478,13 +302,13 @@ namespace tardigradeHydra{
 
         computeConfigurations( unknownVector, getStress( )->size( ), *getDeformationGradient( ), configurations, inverseConfigurations );
 
-        setConfigurations( configurations );
+        set_configurations( configurations );
 
-        setInverseConfigurations( inverseConfigurations );
+        set_inverseConfigurations( inverseConfigurations );
 
         // Extract the remaining state variables required for the non-linear solve
-        setNonLinearSolveStateVariables( floatVector( unknownVector->begin( ) + ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ),
-                                                      unknownVector->end( ) ) );
+        set_nonLinearSolveStateVariables( floatVector( unknownVector->begin( ) + ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ),
+                                                       unknownVector->end( ) ) );
 
     }
 
@@ -543,25 +367,25 @@ namespace tardigradeHydra{
 
         // Set the configurations
 
-        setConfigurations( configurations );
+        set_configurations( configurations );
 
-        setInverseConfigurations( inverseConfigurations );
+        set_inverseConfigurations( inverseConfigurations );
 
-        setPreviousConfigurations( previousConfigurations );
+        set_previousConfigurations( previousConfigurations );
 
-        setPreviousInverseConfigurations( previousInverseConfigurations );
+        set_previousInverseConfigurations( previousInverseConfigurations );
 
         // Extract the remaining state variables required for the non-linear solve
-        setPreviousNonLinearSolveStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ),
-                                                              getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV ) );
+        set_previousNonLinearSolveStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ),
+                                                               getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV ) );
 
-        setNonLinearSolveStateVariables( *getPreviousNonLinearSolveStateVariables( ) );
+        set_nonLinearSolveStateVariables( *getPreviousNonLinearSolveStateVariables( ) );
 
         // Extract the additional state variables
-        setPreviousAdditionalStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV,
-                                                          getPreviousStateVariables( )->end( ) ) );
+        set_previousAdditionalStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV,
+                                                           getPreviousStateVariables( )->end( ) ) );
 
-        setAdditionalStateVariables( *getPreviousAdditionalStateVariables( ) );
+        set_additionalStateVariables( *getPreviousAdditionalStateVariables( ) );
 
     }
 
@@ -837,50 +661,6 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::setdF1dF( const floatMatrix &dF1dF ){
-        /*!
-         * Set the jacobian of the first sub configuration w.r.t. the deformation gradient
-         * 
-         * \param &dF1dF: The value of the jacobian
-         */
-
-        setIterationData( dF1dF, _dF1dF );
-
-    }
-
-    void hydraBase::setdF1dFn( const floatMatrix &dF1dFn ){
-        /*!
-         * Set the jacobian of the first sub configuration w.r.t. the sub-deformation gradients
-         * 
-         * \param &dF1dFn: The value of the jacobian
-         */
-
-        setIterationData( dF1dFn, _dF1dFn );
-
-    }
-
-    void hydraBase::setPreviousdF1dF( const floatMatrix &previousdF1dF ){
-        /*!
-         * Set the jacobian of the previous first sub configuration w.r.t. the deformation gradient
-         * 
-         * \param &previousdF1dF: The value of the jacobian
-         */
-
-        setPreviousData( previousdF1dF, _previousdF1dF );
-
-    }
-
-    void hydraBase::setPreviousdF1dFn( const floatMatrix &previousdF1dFn ){
-        /*!
-         * Set the previous jacobian of the first sub configuration w.r.t. the sub-deformation gradients
-         * 
-         * \param &previousdF1dFn: The value of the jacobian
-         */
-
-        setPreviousData( previousdF1dFn, _previousdF1dFn );
-
-    }
-
     void hydraBase::calculateFirstConfigurationJacobians( const floatMatrix &configurations, floatMatrix &dC1dC, floatMatrix &dC1dCn ){
         /*!
          * Get the Jacobian of the first configuration w.r.t. the total mapping and the remaining configurations.
@@ -953,9 +733,9 @@ namespace tardigradeHydra{
 
         calculateFirstConfigurationJacobians( *getConfigurations( ), dF1dF, dF1dFn );
 
-        setdF1dF( dF1dF );
+        set_dF1dF( dF1dF );
 
-        setdF1dFn( dF1dFn );
+        set_dF1dFn( dF1dFn );
 
     }
 
@@ -970,9 +750,9 @@ namespace tardigradeHydra{
 
         calculateFirstConfigurationJacobians( *getPreviousConfigurations( ), dF1dF, dF1dFn );
 
-        setPreviousdF1dF( dF1dF );
+        set_previousdF1dF( dF1dF );
 
-        setPreviousdF1dFn( dF1dFn );
+        set_previousdF1dFn( dF1dFn );
 
     }
 

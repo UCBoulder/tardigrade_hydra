@@ -1814,72 +1814,6 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setRightCauchyGreen( const variableVector &rightCauchyGreen ){
-            /*!
-             * Set the value of the right Cauchy-Green deformation tensor
-             * 
-             * \param &rightCauchyGreen: The value
-             */
-
-            setIterationData( rightCauchyGreen, _rightCauchyGreen );
-
-        }
-
-        void residual::setPsi( const variableVector &psi ){
-            /*!
-             * Set the value of the micro deformation measure psi
-             * 
-             * \param &psi: The value
-             */
-
-            setIterationData( psi, _psi );
-
-        }
-
-        void residual::setGamma( const variableVector &gamma ){
-            /*!
-             * Set the value of the micro deformation measure gamma
-             * 
-             * \param &gamma: The value
-             */
-
-            setIterationData( gamma, _gamma );
-
-        }
-
-        void residual::setPreviousRightCauchyGreen( const variableVector &previousRightCauchyGreen ){
-            /*!
-             * Set the value of the previous right Cauchy-Green deformation tensor
-             * 
-             * \param &previousRightCauchyGreen: The value
-             */
-
-            setPreviousData( previousRightCauchyGreen, _previousRightCauchyGreen );
-
-        }
-
-        void residual::setPreviousPsi( const variableVector &previousPsi ){
-            /*!
-             * Set the value of the previous micro deformation measure psi
-             * 
-             * \param &previousPsi: The value
-             */
-
-            setPreviousData( previousPsi, _previousPsi );
-
-        }
-
-        void residual::setPreviousGamma( const variableVector &previousGamma ){
-            /*!
-             * Set the value of the previous micro deformation measure gamma
-             * 
-             * \param &previousGamma: The value
-             */
-
-            setPreviousData( previousGamma, _previousGamma );
-
-        }
-
         void residual::setRightCauchyGreen( ){
             /*!
              * Set the value of the right Cauchy-Green deformation tensor
@@ -1978,286 +1912,22 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousRightCauchyGreen( rightCauchyGreen );
+                set_previousRightCauchyGreen( rightCauchyGreen );
 
-                setPreviousPsi( Psi );
+                set_previousPsi( Psi );
 
-                setPreviousGamma( Gamma );
+                set_previousGamma( Gamma );
 
             }
             else{
 
-                setRightCauchyGreen( rightCauchyGreen );
+                set_rightCauchyGreen( rightCauchyGreen );
 
-                setPsi( Psi );
+                set_psi( Psi );
 
-                setGamma( Gamma );
+                set_gamma( Gamma );
 
             }
-
-        }
-
-        void residual::setdRightCauchyGreendF( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the right Cauchy-Green deformation measure w.r.t. the total deformation gradient
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dRightCauchyGreendF );
-
-        }
-
-        void residual::setdRightCauchyGreendFn( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the right Cauchy-Green deformation measure w.r.t. the remaining sub-deformation gradients
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dRightCauchyGreendFn );
-
-        }
-
-        void residual::setdPsidF( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the micro deformation measure w.r.t. the total deformation gradient
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dPsidF );
-
-        }
-
-        void residual::setdPsidFn( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the micro deformation measure w.r.t. the remaining sub-deformation gradients
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dPsidFn );
-
-        }
-
-        void residual::setdPsidChi( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the micro deformation measure w.r.t. the total micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dPsidChi );
-
-        }
-
-        void residual::setdPsidChin( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the micro deformation measure w.r.t. the remaining sub-micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dPsidChin );
-
-        }
-
-        void residual::setdGammadF( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the micro deformation measure gamma w.r.t. the total deformation gradient
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dGammadF );
-
-        }
-
-        void residual::setdGammadFn( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the micro deformation measure gamma w.r.t. the remaining sub-deformation gradients
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dGammadFn );
-
-        }
-
-        void residual::setdGammadChi( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the micro deformation measure gamma w.r.t. the total micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dGammadChi );
-
-        }
-
-        void residual::setdGammadChin( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the micro deformation measure gamma w.r.t. the remaining sub-micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dGammadChin );
-
-        }
-
-        void residual::setdGammadGradChi( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the micro deformation measure gamma w.r.t. the reference spatial gradient of the total micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dGammadGradChi );
-
-        }
-
-        void residual::setdGammadGradChin( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the micro deformation measure gamma w.r.t. the local reference spatial gradient of the remaining sub-micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setIterationData( value, _dGammadGradChin );
-
-        }
-
-        void residual::setPreviousdRightCauchyGreendF( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous right Cauchy-Green deformation measure w.r.t. the total deformation gradient
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdRightCauchyGreendF );
-
-        }
-
-        void residual::setPreviousdRightCauchyGreendFn( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous right Cauchy-Green deformation measure w.r.t. the remaining sub-deformation gradients
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdRightCauchyGreendFn );
-
-        }
-
-        void residual::setPreviousdPsidF( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous micro deformation measure w.r.t. the total deformation gradient
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdPsidF );
-
-        }
-
-        void residual::setPreviousdPsidFn( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous micro deformation measure w.r.t. the remaining sub-deformation gradients
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdPsidFn );
-
-        }
-
-        void residual::setPreviousdPsidChi( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous micro deformation measure w.r.t. the total micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdPsidChi );
-
-        }
-
-        void residual::setPreviousdPsidChin( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous micro deformation measure w.r.t. the remaining sub-micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdPsidChin );
-
-        }
-
-        void residual::setPreviousdGammadF( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous micro deformation measure gamma w.r.t. the total deformation gradient
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdGammadF );
-
-        }
-
-        void residual::setPreviousdGammadFn( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous micro deformation measure gamma w.r.t. the remaining sub-deformation gradients
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdGammadFn );
-
-        }
-
-        void residual::setPreviousdGammadChi( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous micro deformation measure gamma w.r.t. the total micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdGammadChi );
-
-        }
-
-        void residual::setPreviousdGammadChin( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous micro deformation measure gamma w.r.t. the remaining sub-micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdGammadChin );
-
-        }
-
-        void residual::setPreviousdGammadGradChi( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous micro deformation measure gamma w.r.t. the reference spatial gradient of the total micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdGammadGradChi );
-
-        }
-
-        void residual::setPreviousdGammadGradChin( const floatMatrix &value ){
-            /*!
-             * Set the derivative of the previous micro deformation measure gamma w.r.t. the local reference spatial gradient of the remaining sub-micro deformation
-             * 
-             * \param &value: The value of the Jacobian
-             */
-
-            setPreviousData( value, _previousdGammadGradChin );
 
         }
 
@@ -2477,72 +2147,6 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setPK2Stress( const variableVector &value ){
-            /*!
-             * Set the value of the second Piola-Kirchhoff stress
-             * 
-             * \param &value: The value of the stress
-             */
-
-            setIterationData( value, _pk2Stress );
-
-        }
-
-        void residual::setReferenceSymmetricMicroStress( const variableVector &value ){
-            /*!
-             * Set the value of the reference symmetric micro stress
-             * 
-             * \param &value: The value of the stress
-             */
-
-            setIterationData( value, _referenceSymmetricMicroStress );
-
-        }
-
-        void residual::setReferenceHigherOrderStress( const variableVector &value ){
-            /*!
-             * Set the value of the reference higher order stress
-             * 
-             * \param &value: The value of the stress
-             */
-
-            setIterationData( value, _referenceHigherOrderStress );
-
-        }
-
-        void residual::setPreviousPK2Stress( const variableVector &value ){
-            /*!
-             * Set the value of the previous second Piola-Kirchhoff stress
-             * 
-             * \param &value: The value of the stress
-             */
-
-            setPreviousData( value, _previouspk2Stress );
-
-        }
-
-        void residual::setPreviousReferenceSymmetricMicroStress( const variableVector &value ){
-            /*!
-             * Set the value of the previous reference symmetric micro stress
-             * 
-             * \param &value: The value of the stress
-             */
-
-            setPreviousData( value, _previousreferenceSymmetricMicroStress );
-
-        }
-
-        void residual::setPreviousReferenceHigherOrderStress( const variableVector &value ){
-            /*!
-             * Set the value of the previous reference higher order stress
-             * 
-             * \param &value: The value of the stress
-             */
-
-            setPreviousData( value, _previousreferenceHigherOrderStress );
-
-        }
-
         void residual::setPK2Stress( ){
             /*!
              * Set the value of the second Piola-Kirchhoff stress
@@ -2602,13 +2206,13 @@ namespace tardigradeHydra{
              * Get the value of the second Piola-Kirchhoff stress
              */
 
-            if ( !_pk2Stress.first ){
+            if ( !_PK2Stress.first ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( setPK2Stress( ) );
 
             }
 
-            return &_pk2Stress.second;
+            return &_PK2Stress.second;
 
         }
 
@@ -2647,13 +2251,13 @@ namespace tardigradeHydra{
              * Get the value of the previous second Piola-Kirchhoff stress
              */
 
-            if ( !_previouspk2Stress.first ){
+            if ( !_previousPK2Stress.first ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousPK2Stress( ) );
 
             }
 
-            return &_previouspk2Stress.second;
+            return &_previousPK2Stress.second;
 
         }
 
@@ -2662,13 +2266,13 @@ namespace tardigradeHydra{
              * Get the value of the previous reference symmetric micro stress
              */
 
-            if ( !_previousreferenceSymmetricMicroStress.first ){
+            if ( !_previousReferenceSymmetricMicroStress.first ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousReferenceSymmetricMicroStress( ) );
 
             }
 
-            return &_previousreferenceSymmetricMicroStress.second;
+            return &_previousReferenceSymmetricMicroStress.second;
 
         }
 
@@ -2677,13 +2281,13 @@ namespace tardigradeHydra{
              * Get the value of the previous reference higher order stress
              */
 
-            if ( !_previousreferenceHigherOrderStress.first ){
+            if ( !_previousReferenceHigherOrderStress.first ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousReferenceHigherOrderStress( ) );
 
             }
 
-            return &_previousreferenceHigherOrderStress.second;
+            return &_previousReferenceHigherOrderStress.second;
 
         }
 
@@ -2757,20 +2361,20 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousPK2Stress( PK2Stress );
+                set_previousPK2Stress( PK2Stress );
 
-                setPreviousReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
+                set_previousReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
 
-                setPreviousReferenceHigherOrderStress( referenceHigherOrderStress );
+                set_previousReferenceHigherOrderStress( referenceHigherOrderStress );
 
             }
             else{
 
-                setPK2Stress( PK2Stress );
+                set_PK2Stress( PK2Stress );
 
-                setReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
+                set_referenceSymmetricMicroStress( referenceSymmetricMicroStress );
 
-                setReferenceHigherOrderStress( referenceHigherOrderStress );
+                set_referenceHigherOrderStress( referenceHigherOrderStress );
 
             }
 
@@ -4000,402 +3604,6 @@ namespace tardigradeHydra{
 
         };
 
-        void residual::setdPK2dF( const variableMatrix &value ){
-            /*!
-             * The setter function for dPK2dF
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dPK2dF );
-
-        }
-
-        void residual::setdPK2dFn( const variableMatrix &value ){
-            /*!
-             * The setter function for dPK2dFn
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dPK2dFn );
-
-        }
-
-        void residual::setdPK2dChi( const variableMatrix &value ){
-            /*!
-             * The setter function for dPK2dChi
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dPK2dChi );
-
-        }
-
-        void residual::setdPK2dChin( const variableMatrix &value ){
-            /*!
-             * The setter function for dPK2dChin
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dPK2dChin );
-
-        }
-
-        void residual::setdPK2dGradChi( const variableMatrix &value ){
-            /*!
-             * The setter function for dPK2dGradChi
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dPK2dGradChi );
-
-        }
-
-        void residual::setdPK2dGradChin( const variableMatrix &value ){
-            /*!
-             * The setter function for dPK2dGradChin
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dPK2dGradChin );
-
-        }
-
-        void residual::setdSIGMAdF( const variableMatrix &value ){
-            /*!
-             * The setter function for dSIGMAdF
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dSIGMAdF );
-
-        }
-
-        void residual::setdSIGMAdFn( const variableMatrix &value ){
-            /*!
-             * The setter function for dSIGMAdFn
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dSIGMAdFn );
-
-        }
-
-        void residual::setdSIGMAdChi( const variableMatrix &value ){
-            /*!
-             * The setter function for dSIGMAdChi
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dSIGMAdChi );
-
-        }
-
-        void residual::setdSIGMAdChin( const variableMatrix &value ){
-            /*!
-             * The setter function for dSIGMAdChin
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dSIGMAdChin );
-
-        }
-
-        void residual::setdSIGMAdGradChi( const variableMatrix &value ){
-            /*!
-             * The setter function for dSIGMAdGradChi
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dSIGMAdGradChi );
-
-        }
-
-        void residual::setdSIGMAdGradChin( const variableMatrix &value ){
-            /*!
-             * The setter function for dSIGMAdGradChin
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dSIGMAdGradChin );
-
-        }
-
-        void residual::setdMdF( const variableMatrix &value ){
-            /*!
-             * The setter function for dMdF
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dMdF );
-
-        }
-
-        void residual::setdMdFn( const variableMatrix &value ){
-            /*!
-             * The setter function for dMdFn
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dMdFn );
-
-        }
-
-        void residual::setdMdChi( const variableMatrix &value ){
-            /*!
-             * The setter function for dMdChi
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dMdChi );
-
-        }
-
-        void residual::setdMdChin( const variableMatrix &value ){
-            /*!
-             * The setter function for dMdChin
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dMdChin );
-
-        }
-
-        void residual::setdMdGradChi( const variableMatrix &value ){
-            /*!
-             * The setter function for dMdGradChin
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dMdGradChi );
-
-        }
-
-        void residual::setdMdGradChin( const variableMatrix &value ){
-            /*!
-             * The setter function for dMdGradChin
-             * 
-             * \param &value: The value
-             */
-
-            setIterationData( value, _dMdGradChin );
-
-        }
-
-        void residual::setPreviousdPK2dF( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdPK2dF
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdPK2dF );
-
-        }
-
-        void residual::setPreviousdPK2dFn( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdPK2dFn
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdPK2dFn );
-
-        }
-
-        void residual::setPreviousdPK2dChi( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdPK2dChi
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdPK2dChi );
-
-        }
-
-        void residual::setPreviousdPK2dChin( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdPK2dChin
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdPK2dChin );
-
-        }
-
-        void residual::setPreviousdPK2dGradChi( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdPK2dGradChi
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdPK2dGradChi );
-
-        }
-
-        void residual::setPreviousdPK2dGradChin( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdPK2dGradChin
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdPK2dGradChin );
-
-        }
-
-        void residual::setPreviousdSIGMAdF( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdSIGMAdF
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdSIGMAdF );
-
-        }
-
-        void residual::setPreviousdSIGMAdFn( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdSIGMAdFn
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdSIGMAdFn );
-
-        }
-
-        void residual::setPreviousdSIGMAdChi( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdSIGMAdChi
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdSIGMAdChi );
-
-        }
-
-        void residual::setPreviousdSIGMAdChin( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdSIGMAdChin
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdSIGMAdChin );
-
-        }
-
-        void residual::setPreviousdSIGMAdGradChi( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdSIGMAdGradChi
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdSIGMAdGradChi );
-
-        }
-
-        void residual::setPreviousdSIGMAdGradChin( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdSIGMAdGradChin
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdSIGMAdGradChin );
-
-        }
-
-        void residual::setPreviousdMdF( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdMdF
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdMdF );
-
-        }
-
-        void residual::setPreviousdMdFn( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdMdFn
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdMdFn );
-
-        }
-
-        void residual::setPreviousdMdChi( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdMdChi
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdMdChi );
-
-        }
-
-        void residual::setPreviousdMdChin( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdMdChin
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdMdChin );
-
-        }
-
-        void residual::setPreviousdMdGradChi( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdMdGradChi
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdMdGradChi );
-
-        }
-
-        void residual::setPreviousdMdGradChin( const variableMatrix &value ){
-            /*!
-             * The setter function for previousdMdGradChin
-             * 
-             * \param &value: The value
-             */
-
-            setPreviousData( value, _previousdMdGradChin );
-
-        }
-
         void residual::setReferenceStressJacobians( const bool isPrevious ){
             /*!
              * Set the values and Jacobians of the reference stresses
@@ -4655,92 +3863,92 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousPK2Stress( PK2Stress );
+                set_previousPK2Stress( PK2Stress );
 
-                setPreviousReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
+                set_previousReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
 
-                setPreviousReferenceHigherOrderStress( referenceHigherOrderStress );
+                set_previousReferenceHigherOrderStress( referenceHigherOrderStress );
 
-                setPreviousdPK2dF( dPK2dF );
+                set_previousdPK2dF( dPK2dF );
 
-                setPreviousdPK2dFn( dPK2dFn );
+                set_previousdPK2dFn( dPK2dFn );
 
-                setPreviousdPK2dChi( dPK2dChi );
+                set_previousdPK2dChi( dPK2dChi );
 
-                setPreviousdPK2dChin( dPK2dChin );
+                set_previousdPK2dChin( dPK2dChin );
 
-                setPreviousdPK2dGradChi( dPK2dGradChi );
+                set_previousdPK2dGradChi( dPK2dGradChi );
 
-                setPreviousdPK2dGradChin( dPK2dGradChin );
+                set_previousdPK2dGradChin( dPK2dGradChin );
 
-                setPreviousdSIGMAdF( dSIGMAdF );
+                set_previousdSIGMAdF( dSIGMAdF );
 
-                setPreviousdSIGMAdFn( dSIGMAdFn );
+                set_previousdSIGMAdFn( dSIGMAdFn );
 
-                setPreviousdSIGMAdChi( dSIGMAdChi );
+                set_previousdSIGMAdChi( dSIGMAdChi );
 
-                setPreviousdSIGMAdChin( dSIGMAdChin );
+                set_previousdSIGMAdChin( dSIGMAdChin );
 
-                setPreviousdSIGMAdGradChi( dSIGMAdGradChi );
+                set_previousdSIGMAdGradChi( dSIGMAdGradChi );
 
-                setPreviousdSIGMAdGradChin( dSIGMAdGradChin );
+                set_previousdSIGMAdGradChin( dSIGMAdGradChin );
 
-                setPreviousdMdF( dMdF );
+                set_previousdMdF( dMdF );
 
-                setPreviousdMdFn( dMdFn );
+                set_previousdMdFn( dMdFn );
 
-                setPreviousdMdChi( dMdChi );
+                set_previousdMdChi( dMdChi );
 
-                setPreviousdMdChin( dMdChin );
+                set_previousdMdChin( dMdChin );
 
-                setPreviousdMdGradChi( dMdGradChi );
+                set_previousdMdGradChi( dMdGradChi );
 
-                setPreviousdMdGradChin( dMdGradChin );
+                set_previousdMdGradChin( dMdGradChin );
 
             }
             else{
 
-                setPK2Stress( PK2Stress );
+                set_PK2Stress( PK2Stress );
 
-                setReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
+                set_referenceSymmetricMicroStress( referenceSymmetricMicroStress );
 
-                setReferenceHigherOrderStress( referenceHigherOrderStress );
+                set_referenceHigherOrderStress( referenceHigherOrderStress );
 
-                setdPK2dF( dPK2dF );
+                set_dPK2dF( dPK2dF );
 
-                setdPK2dFn( dPK2dFn );
+                set_dPK2dFn( dPK2dFn );
 
-                setdPK2dChi( dPK2dChi );
+                set_dPK2dChi( dPK2dChi );
 
-                setdPK2dChin( dPK2dChin );
+                set_dPK2dChin( dPK2dChin );
 
-                setdPK2dGradChi( dPK2dGradChi );
+                set_dPK2dGradChi( dPK2dGradChi );
 
-                setdPK2dGradChin( dPK2dGradChin );
+                set_dPK2dGradChin( dPK2dGradChin );
 
-                setdSIGMAdF( dSIGMAdF );
+                set_dSIGMAdF( dSIGMAdF );
 
-                setdSIGMAdFn( dSIGMAdFn );
+                set_dSIGMAdFn( dSIGMAdFn );
 
-                setdSIGMAdChi( dSIGMAdChi );
+                set_dSIGMAdChi( dSIGMAdChi );
 
-                setdSIGMAdChin( dSIGMAdChin );
+                set_dSIGMAdChin( dSIGMAdChin );
 
-                setdSIGMAdGradChi( dSIGMAdGradChi );
+                set_dSIGMAdGradChi( dSIGMAdGradChi );
 
-                setdSIGMAdGradChin( dSIGMAdGradChin );
+                set_dSIGMAdGradChin( dSIGMAdGradChin );
 
-                setdMdF( dMdF );
+                set_dMdF( dMdF );
 
-                setdMdFn( dMdFn );
+                set_dMdFn( dMdFn );
 
-                setdMdChi( dMdChi );
+                set_dMdChi( dMdChi );
 
-                setdMdChin( dMdChin );
+                set_dMdChin( dMdChin );
 
-                setdMdGradChi( dMdGradChi );
+                set_dMdGradChi( dMdGradChi );
 
-                setdMdGradChin( dMdGradChin );
+                set_dMdGradChin( dMdGradChin );
 
             }
 
@@ -4856,68 +4064,68 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousRightCauchyGreen( rightCauchyGreen );
+                set_previousRightCauchyGreen( rightCauchyGreen );
 
-                setPreviousPsi( Psi );
+                set_previousPsi( Psi );
 
-                setPreviousGamma( Gamma );
+                set_previousGamma( Gamma );
 
-                setPreviousdRightCauchyGreendF( tardigradeVectorTools::dot( dCdF1, *dF1dF ) );
+                set_previousdRightCauchyGreendF( tardigradeVectorTools::dot( dCdF1, *dF1dF ) );
 
-                setPreviousdRightCauchyGreendFn( tardigradeVectorTools::dot( dCdF1, *dF1dFn ) );
+                set_previousdRightCauchyGreendFn( tardigradeVectorTools::dot( dCdF1, *dF1dFn ) );
 
-                setPreviousdPsidF( tardigradeVectorTools::dot( dPsidF1, *dF1dF ) );
+                set_previousdPsidF( tardigradeVectorTools::dot( dPsidF1, *dF1dF ) );
 
-                setPreviousdPsidFn( tardigradeVectorTools::dot( dPsidF1, *dF1dFn ) );
+                set_previousdPsidFn( tardigradeVectorTools::dot( dPsidF1, *dF1dFn ) );
 
-                setPreviousdPsidChi( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChi ) );
+                set_previousdPsidChi( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChi ) );
 
-                setPreviousdPsidChin( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChin ) );
+                set_previousdPsidChin( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChin ) );
 
-                setPreviousdGammadF( tardigradeVectorTools::dot( dGammadF1, *dF1dF ) );
+                set_previousdGammadF( tardigradeVectorTools::dot( dGammadF1, *dF1dF ) );
 
-                setPreviousdGammadFn( tardigradeVectorTools::dot( dGammadF1, *dF1dFn ) + tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dFn ) );
+                set_previousdGammadFn( tardigradeVectorTools::dot( dGammadF1, *dF1dFn ) + tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dFn ) );
 
-                setPreviousdGammadChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChi ) );
+                set_previousdGammadChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChi ) );
 
-                setPreviousdGammadChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChin ) );
+                set_previousdGammadChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChin ) );
 
-                setPreviousdGammadGradChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChi ) );
+                set_previousdGammadGradChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChi ) );
 
-                setPreviousdGammadGradChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChin ) );
+                set_previousdGammadGradChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChin ) );
 
             }
             else{
 
-                setRightCauchyGreen( rightCauchyGreen );
+                set_rightCauchyGreen( rightCauchyGreen );
 
-                setPsi( Psi );
+                set_psi( Psi );
 
-                setGamma( Gamma );
+                set_gamma( Gamma );
 
-                setdRightCauchyGreendF( tardigradeVectorTools::dot( dCdF1, *dF1dF ) );
+                set_dRightCauchyGreendF( tardigradeVectorTools::dot( dCdF1, *dF1dF ) );
 
-                setdRightCauchyGreendFn( tardigradeVectorTools::dot( dCdF1, *dF1dFn ) );
+                set_dRightCauchyGreendFn( tardigradeVectorTools::dot( dCdF1, *dF1dFn ) );
 
-                setdPsidF( tardigradeVectorTools::dot( dPsidF1, *dF1dF ) );
+                set_dPsidF( tardigradeVectorTools::dot( dPsidF1, *dF1dF ) );
 
-                setdPsidFn( tardigradeVectorTools::dot( dPsidF1, *dF1dFn ) );
+                set_dPsidFn( tardigradeVectorTools::dot( dPsidF1, *dF1dFn ) );
 
-                setdPsidChi( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChi ) );
+                set_dPsidChi( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChi ) );
 
-                setdPsidChin( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChin ) );
+                set_dPsidChin( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChin ) );
 
-                setdGammadF( tardigradeVectorTools::dot( dGammadF1, *dF1dF ) );
+                set_dGammadF( tardigradeVectorTools::dot( dGammadF1, *dF1dF ) );
 
-                setdGammadFn( tardigradeVectorTools::dot( dGammadF1, *dF1dFn ) + tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dFn ) );
+                set_dGammadFn( tardigradeVectorTools::dot( dGammadF1, *dF1dFn ) + tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dFn ) );
 
-                setdGammadChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChi ) );
+                set_dGammadChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChi ) );
 
-                setdGammadChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChin ) );
+                set_dGammadChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChin ) );
 
-                setdGammadGradChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChi ) );
+                set_dGammadGradChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChi ) );
 
-                setdGammadGradChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChin ) );
+                set_dGammadGradChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChin ) );
 
             }
 

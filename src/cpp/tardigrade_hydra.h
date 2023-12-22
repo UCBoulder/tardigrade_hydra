@@ -17,6 +17,112 @@
 #include<tardigrade_vector_tools.h>
 #include<tardigrade_abaqus_tools.h>
 
+/*!
+ * \brief Declares a named setter function
+ * \param setname: The name of the setter function
+ * \param varname: The name of the variable
+ * \param vartype: The ctype of the variable
+ * \param setfun: The class member function that sets the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_NAMED_SETTER(setname,varname,vartype,setfun) \
+    void setname(const vartype &varname ){                                    \
+    /*!                                                                       \
+     * Declaration of the storage variable varname of type vartype            \
+     *                                                                        \
+     * \param &varname: The value of varname                                  \
+     */                                                                       \
+        setfun( varname, _##varname );                                        \
+    }
+
+/*!
+ * \brief Declares a setter function
+ * \param varname: The name of the variable
+ * \param vartype: The ctype of the variable
+ * \param setfun: The class member function that sets the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_SETTER(varname,vartype,setfun)                      \
+    TARDIGRADE_HYDRA_DECLARE_NAMED_SETTER( set_##varname, varname, vartype, setfun )
+
+/*!
+ * \brief Declare a dataStorage variable and the associated named setters and getters
+ * \param context: The context (public, protected, private) that the macro should return to
+ * \param setname: The name of the setter function
+ * \param varname: The name of the variable
+ * \param vartype: The ctype of the variable
+ * \param setfun: The class member function that sets the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,varname,vartype,setfun) \
+    private: dataStorage<vartype> _##varname;                       \
+    public: TARDIGRADE_HYDRA_DECLARE_NAMED_SETTER(setname,varname,vartype,setfun) \
+    context:
+
+/*!
+ * \brief Declare a dataStorage variable and the associated setters and getters
+ * \param context: The context (public, protected, private) that the macro should return to
+ * \param varname: The name of the variable
+ * \param vartype: The ctype of the variable
+ * \param setfun: The class member function that sets the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setfun) \
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,varname,vartype,setfun)
+
+/*!
+ * \brief Declare a named dataStorage variable that uses setIterationData as the setter function
+ * \param context: The context (public, protected, private) that the macro should return to
+ * \param setname: The name of the setter
+ * \param varname: The name of the variable
+ * \param vartype: The type of the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(context,setname,varname,vartype) \
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,varname,vartype,setIterationData)
+
+/*!
+ * \brief Declare a dataStorage variable that uses setIterationData as the setter function
+ * \param context: The context (public, protected, private) that the macro should return to
+ * \param varname: The name of the variable
+ * \param vartype: The type of the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(context,varname,vartype) \
+    TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setIterationData)
+
+/*!
+ * \brief Declare a named dataStorage variable that uses setPreviousData as the setter function
+ * \param context: The context (public, protected, private) that the macro should return to
+ * \param setname: The name of the setter
+ * \param varname: The name of the variable
+ * \param vartype: The type of the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(context,setname,varname,vartype) \
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,varname,vartype,setPreviousData)
+
+/*!
+ * \brief Declare a dataStorage variable that uses setPreviousData as the setter function
+ * \param context: The context (public, protected, private) that the macro should return to
+ * \param varname: The name of the variable
+ * \param vartype: The type of the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(context,varname,vartype) \
+    TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setPreviousData)
+
+/*!
+ * \brief Declare a named dataStorage variable that uses setConstantData as the setter function
+ * \param context: The context (public, protected, private) that the macro should return to
+ * \param setname: The name of the setter
+ * \param varname: The name of the variable
+ * \param vartype: The type of the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_NAMED_CONSTANT_STORAGE(context,setname,varname,vartype) \
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,varname,vartype,setConstantData)
+
+/*!
+ * \brief Declare a dataStorage variable that uses setContantData as the setter function
+ * \param context: The context (public, protected, private) that the macro should return to
+ * \param varname: The name of the variable
+ * \param vartype: The type of the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(context,varname,vartype) \
+    TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setConstantData)
+
 namespace tardigradeHydra{
 
     // forward class definitions
@@ -292,24 +398,6 @@ namespace tardigradeHydra{
 
             }
 
-            // Setters
-
-            void setResidual( const floatVector &residual );
-
-            void setJacobian( const floatMatrix &jacobian );
-
-            void setdRdF( const floatMatrix &dRdF );
-
-            void setdRdT( const floatVector &dRdT );
-
-            void setAdditionalDerivatives( const floatMatrix &additionalDerivatives );
-
-            void setStress( const floatVector &stress );
-
-            void setPreviousStress( const floatVector &previousStress );
-
-            void setCurrentAdditionalStateVariables( const floatVector &currentAdditionalStateVariables );
-
             // Getter functions
 
             //! Get the number of equations the residual defined
@@ -384,21 +472,21 @@ namespace tardigradeHydra{
 
             unsigned int _numEquations; //!< The number of residual equations
 
-            dataStorage< floatVector > _residual; //!< The residual equations
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setResidual,                        residual,                        floatVector )
 
-            dataStorage< floatMatrix > _jacobian; //!< The jacobian
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setJacobian,                        jacobian,                        floatMatrix )
 
-            dataStorage< floatMatrix > _dRdF; //!< The derivative of the residual w.r.t. the deformation gradient
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdF,                            dRdF,                            floatMatrix )
 
-            dataStorage< floatVector > _dRdT; //!< The derivative of the residual w.r.t. the temperature
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdT,                            dRdT,                            floatVector )
 
-            dataStorage< floatMatrix > _additionalDerivatives; //!< Additional derivatives of the residual
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setAdditionalDerivatives,           additionalDerivatives,           floatMatrix )
 
-            dataStorage< floatVector > _stress; //!< The stress. Only needs to be defined for the first residual
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setStress,                          stress,                          floatVector )
 
-            dataStorage< floatVector > _previousStress; //!< The previous stress. Only needs to be defined for the first residual
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setPreviousStress,                  previousStress,                  floatVector )
 
-            dataStorage< floatVector > _currentAdditionalStateVariables; //!< The current additional state variables.
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setCurrentAdditionalStateVariables, currentAdditionalStateVariables, floatVector )
 
     };
 
@@ -590,22 +678,6 @@ namespace tardigradeHydra{
 
             void setStress( const floatVector &stress );
 
-            void setConfigurations( const floatMatrix &configurations );
-
-            void setInverseConfigurations( const floatMatrix &inverseConfigurations );
-
-            void setPreviousConfigurations( const floatMatrix &previousConfigurations );
-
-            void setPreviousInverseConfigurations( const floatMatrix &previousInverseConfigurations );
-
-            void setNonLinearSolveStateVariables( const floatVector &nonLinearSolveStateVariables );
-
-            void setPreviousNonLinearSolveStateVariables( const floatVector &previousNonLinearSolveStateVariables );
-
-            void setAdditionalStateVariables( const floatVector &additionalStateVariables );
-
-            void setPreviousAdditionalStateVariables( const floatVector &previousAdditionalStateVariables );
-
             // Utility functions
             virtual void computeConfigurations( const floatVector *data_vector, const unsigned int start_index,
                                                 const floatVector &total_transformation,
@@ -717,29 +789,29 @@ namespace tardigradeHydra{
 
             floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
 
-            dataStorage< floatMatrix > _configurations; //!< The current values of the configurations
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatMatrix )
 
-            dataStorage< floatMatrix > _previousConfigurations; //!< The previous values of the configurations
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousConfigurations,               floatMatrix )
 
-            dataStorage< floatMatrix > _inverseConfigurations; //!< The inverses of the configurations
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, inverseConfigurations,                floatMatrix )
 
-            dataStorage< floatMatrix > _previousInverseConfigurations; //!< The inverses of the previous configurations
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousInverseConfigurations,        floatMatrix )
 
-            dataStorage< floatVector > _nonLinearSolveStateVariables; //!< The current values of the state variables involved in the non-linear solve
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, nonLinearSolveStateVariables,         floatVector )
 
-            dataStorage< floatVector > _previousNonLinearSolveStateVariables; //!< The previous values of the state variables involved in the non-linear solve
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousNonLinearSolveStateVariables, floatVector )
 
-            dataStorage< floatVector > _additionalStateVariables; //!< The current values of the additional state variables
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, additionalStateVariables,             floatVector )
 
-            dataStorage< floatVector > _previousAdditionalStateVariables; //!< The previous values of the additional state variables
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousAdditionalStateVariables,     floatVector )
 
-            dataStorage< floatMatrix > _dF1dF; //!< The partial derivative of the first configuration w.r.t. the deformation gradient
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dF1dF,                                floatMatrix )
 
-            dataStorage< floatMatrix > _dF1dFn; //!< The partial derivative of the first configuration w.r.t. all the other configurations
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dF1dFn,                               floatMatrix )
 
-            dataStorage< floatMatrix > _previousdF1dF; //!< The partial derivative of the previous first configuration w.r.t. the deformation gradient
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdF1dF,                        floatMatrix )
 
-            dataStorage< floatMatrix > _previousdF1dFn; //!< The partial derivative of the previous first configuration w.r.t. all the other configurations
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdF1dFn,                       floatMatrix )
 
             std::vector< dataBase* > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration
 
@@ -774,14 +846,6 @@ namespace tardigradeHydra{
             void setFirstConfigurationJacobians( );
 
             void setPreviousFirstConfigurationJacobians( );
-
-            void setdF1dF( const floatMatrix &dF1dF );
-
-            void setdF1dFn( const floatMatrix &dF1dFn );
-
-            void setPreviousdF1dF( const floatMatrix &previousdF1dF );
-
-            void setPreviousdF1dFn( const floatMatrix &previousdF1dFn );
 
             void solveNonLinearProblem( );
 
