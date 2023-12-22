@@ -104,6 +104,22 @@ namespace tardigradeHydra{
 
             protected:
 
+                virtual void setFe( const bool isPrevious );
+
+                virtual void setFe( );
+
+                virtual void setPreviousFe( );
+
+                virtual void setFeDerivatives( const bool isPrevious );
+
+                virtual void setdFedF( );
+
+                virtual void setdFedFn( );
+
+                virtual void setPreviousdFedF( );
+
+                virtual void setPreviousdFedFn( );
+
                 virtual void setEe( const bool isPrevious );
 
                 virtual void setEe( );
@@ -161,13 +177,25 @@ namespace tardigradeHydra{
         
                 floatType _mu;
         
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Fe,                      floatVector, setFe                      )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFedF,                   floatMatrix, setdFedF                   )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFedFn,                  floatMatrix, setdFedFn                  )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousFe,              floatVector, setPreviousFe              )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdFedF,           floatMatrix, setPreviousdFedF           )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdFedFn,          floatMatrix, setPreviousdFedFn          )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Ee,                      floatVector, setEe                      )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dEedFe,                  floatMatrix, setdEedFe                  )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousEe,              floatVector, setPreviousEe              )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousEe,              floatVector, setPreviousEe              )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdEedFe,          floatMatrix, setPreviousdEedFe          )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdEedFe,          floatMatrix, setPreviousdEedFe          )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2Stress,               floatVector, setPK2Stress               )
 
