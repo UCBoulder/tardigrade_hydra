@@ -151,9 +151,9 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalGreenLagrangeStrain,    floatVector, setThermalGreenLagrangeStrain    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalGreenLagrangeStraindT, floatVector, setThermalDeformationGradient    )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalGreenLagrangeStraindT, floatVector, setdThermalGreenLagrangeStraindT )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalDeformationGradient,    floatVector, setdThermalGreenLagrangeStraindT )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalDeformationGradient,    floatVector, setThermalDeformationGradient    )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalDeformationGradientdT, floatVector, setdThermalDeformationGradientdT )
 
