@@ -728,6 +728,22 @@ namespace tardigradeHydra{
 
             floatVector dPK2MeanStressdRateModifier;
 
+            floatMatrix dPK2MeanStressdPreviousJe;
+
+            floatVector dPK2MeanStressdPreviousRateModifier;
+
+            floatMatrix dPK2MeanStressdPreviousISVs;
+
+            floatMatrix dISVsdJe;
+
+            floatVector dISVsdRateModifier;
+
+            floatMatrix dISVsdPreviousJe;
+
+            floatVector dISVsdPreviousRateModifier;
+
+            floatMatrix dISVsdPreviousISVs;
+
             floatVector currentVolumetricStateVariables;
 
             // Compute the viscous mean stress
@@ -740,7 +756,12 @@ namespace tardigradeHydra{
                                                                                                      getVolumetricViscoelasticParameters( ),
                                                                                                      *getIntegrationAlpha( ), deltaPK2MeanStress,
                                                                                                      PK2MeanStress, currentVolumetricStateVariables,
-                                                                                                     dPK2MeanStressdJe, dPK2MeanStressdRateModifier ) );
+                                                                                                     dPK2MeanStressdJe, dPK2MeanStressdRateModifier,
+                                                                                                     dPK2MeanStressdPreviousJe, dPK2MeanStressdPreviousRateModifier,
+                                                                                                     dPK2MeanStressdPreviousISVs,
+                                                                                                     dISVsdJe, dISVsdRateModifier,
+                                                                                                     dISVsdPreviousJe, dISVsdPreviousRateModifier,
+                                                                                                     dISVsdPreviousISVs ) );
 
             if( isPrevious ){
 
@@ -758,8 +779,24 @@ namespace tardigradeHydra{
                 set_volumetricViscoelasticStateVariables( currentVolumetricStateVariables );
     
                 set_dPK2MeanStressdFe( dPK2MeanStressdJe[ 0 ][ 0 ] * ( *dJedFe ) );
-    
+
                 set_dPK2MeanStressdT( dPK2MeanStressdRateModifier[ 0 ] * ( *dVolumetricRateMultiplierdT ) );
+
+                set_dPK2MeanStressdPreviousFe( dPK2MeanStressdPreviousJe[ 0 ][ 0 ] * ( *get_previousdJedFe( ) ) );
+
+                set_dPK2MeanStressdPreviousT( dPK2MeanStressdPreviousRateModifier[ 0 ] * ( *get_dPreviousVolumetricRateMultiplierdPreviousT( ) ) );
+
+                set_dPK2MeanStressdPreviousISVs( dPK2MeanStressdPreviousISVs[ 0 ] );
+
+//                set_dVolumetricISVsdFe( dISVsdJe[ 0 ][ 0 ] * ( *dJedFe ) );
+//
+//                set_dVolumetricISVsdT( dISVsdRateModifier[ 0 ] * ( *dVolumetricRateMultiplierdT ) );
+//
+//                set_dVolumetricISVsdPreviousFe( dISVsdPreviousJe[ 0 ][ 0 ] * ( *get_previousdJedFe( ) ) );
+//
+//                set_dVolumetricISVsdPreviousT( dISVsdPreviousRateModifier[ 0 ] * ( *get_dPreviousVolumetricRateMultiplierdPreviousT( ) ) );
+//
+//                set_dVolumetricISVsdPreviousISVs( dISVsdPreviousISVs[ 0 ] );
 
             }
 

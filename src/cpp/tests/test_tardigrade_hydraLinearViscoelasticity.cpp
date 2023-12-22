@@ -995,7 +995,23 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStressDerivatives ){
 
     floatVector dPK2MeanStressdFe( deformationGradient.size( ), 0 );
 
-    floatType dPK2MeanStressdT;
+    floatType   dPK2MeanStressdT;
+
+    floatVector dPK2MeanStressdPreviousFe( deformationGradient.size( ), 0 );
+
+    floatType   dPK2MeanStressdPreviousT;
+
+    floatVector dPK2MeanStressdPreviousISVs;
+
+    floatMatrix dVolumetricISVsdFe( 2, floatVector( 9, 0 ) );
+
+    floatVector dVolumetricISVsdT( 2, 0 );
+
+    floatMatrix dVolumetricISVsdPreviousFe( 2, floatVector( deformationGradient.size( ), 0 ) );
+
+    floatVector dVolumetricISVsdPreviousT( 2, 0 );
+
+    floatMatrix dVolumetricISVsdPreviousISVs( 2, floatVector( 2, 0 ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -1016,6 +1032,12 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStressDerivatives ){
         for ( unsigned int j = 0; j < 1; j++ ){
 
             dPK2MeanStressdFe[ i ] = ( ( *Rp.get_PK2MeanStress( ) ) - ( *Rm.get_PK2MeanStress( ) ) ) / ( 2 * deltas[ i ] );
+
+        }
+
+        for ( unsigned int j = 0; j < 2; j++ ){
+
+            dVolumetricISVsdFe[ j ][ i ] = ( ( *Rp.get_volumetricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_volumetricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -1040,6 +1062,12 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStressDerivatives ){
         for ( unsigned int j = 0; j < 1; j++ ){
 
             dPK2MeanStressdT = ( ( *Rp.get_PK2MeanStress( ) ) - ( *Rm.get_PK2MeanStress( ) ) ) / ( 2 * deltas[ i ] );
+
+        }
+
+        for ( unsigned int j = 0; j < 2; j++ ){
+
+            dVolumetricISVsdT[ j ] = ( ( *Rp.get_volumetricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_volumetricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -1071,7 +1099,15 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStressDerivatives ){
 
         for ( unsigned int j = 0; j < 1; j++ ){
 
+            dPK2MeanStressdPreviousFe[ i ] = ( ( *Rp.get_PK2MeanStress( ) ) - ( *Rm.get_PK2MeanStress( ) ) ) / ( 2 * deltas[ i ] );
+
             previousdPK2MeanStressdFe[ i ] = ( ( *Rp.get_previousPK2MeanStress( ) ) - ( *Rm.get_previousPK2MeanStress( ) ) ) / ( 2 * deltas[ i ] );
+
+        }
+
+        for ( unsigned int j = 0; j < 2; j++ ){
+
+            dVolumetricISVsdPreviousT[ j ] = ( ( *Rp.get_volumetricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_volumetricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -1095,7 +1131,45 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStressDerivatives ){
 
         for ( unsigned int j = 0; j < 1; j++ ){
 
+            dPK2MeanStressdPreviousT = ( ( *Rp.get_PK2MeanStress( ) ) - ( *Rm.get_PK2MeanStress( ) ) ) / ( 2 * deltas[ i ] );
+
             previousdPK2MeanStressdT = ( ( *Rp.get_previousPK2MeanStress( ) ) - ( *Rm.get_previousPK2MeanStress( ) ) ) / ( 2 * deltas[ i ] );
+
+        }
+
+        for ( unsigned int j = 0; j < 2; j++ ){
+
+            dVolumetricISVsdPreviousT[ j ] = ( ( *Rp.get_volumetricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_volumetricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
+        }
+
+    }
+
+    for ( unsigned int i = 0; i < 2; i++ ){
+
+        floatVector deltas( previousStateVariables.size( ), 0 );
+
+        deltas[ i + ISVlb ] = eps * std::fabs( previousStateVariables[ i + ISVlb ] ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables + deltas, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        residualMock Rp( &hydrap, 9, parameters, ISVlb, ISVub, 0.5 );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables - deltas, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        residualMock Rm( &hydram, 9, parameters, ISVlb, ISVub, 0.5 );
+
+        for ( unsigned int j = 0; j < 1; j++ ){
+
+            dPK2MeanStressdPreviousISVs[ i ] = ( ( *Rp.get_previousPK2MeanStress( ) ) - ( *Rm.get_previousPK2MeanStress( ) ) ) / ( 2 * deltas[ i ] );
+
+        }
+
+        for ( unsigned int j = 0; j < 2; j++ ){
+
+            dVolumetricISVsdPreviousISVs[ j ][ i ] = ( ( *Rp.get_volumetricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_volumetricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i + ISVlb ] );
 
         }
 
@@ -1104,6 +1178,22 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStressDerivatives ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2MeanStressdFe, *R.get_previousdPK2MeanStressdFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2MeanStressdT, *R.get_previousdPK2MeanStressdT( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2MeanStressdPreviousFe, *R.get_dPK2MeanStressdPreviousFe( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2MeanStressdPreviousT, *R.get_dPK2MeanStressdPreviousT( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2MeanStressdPreviousISVs, *R.get_dPK2MeanStressdPreviousISVs( ) ) );
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVolumetricISVsdPreviousFe,    *R.get_dVolumetricISVsdFe( ) ) );
+//
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVolumetricISVsdPreviousT,     *R.get_dVolumetricISVsdT( ) ) );
+//
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVolumetricISVsdPreviousFe,    *R.get_dVolumetricISVsdPreviousFe( ) ) );
+//
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVolumetricISVsdPreviousT,     *R.get_dVolumetricISVsdPreviousT( ) ) );
+//
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVolumetricISVsdPreviousISVs,  *R.get_dVolumetricISVsdPreviousISVs( ) ) );
 
 }
 
