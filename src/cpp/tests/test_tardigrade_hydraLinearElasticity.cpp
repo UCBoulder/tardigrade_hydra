@@ -274,7 +274,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2Stress ){
 
             using tardigradeHydra::linearElasticity::residual::residual;
 
-            void setEe( floatVector &Ee ){ tardigradeHydra::linearElasticity::residual::setEe( Ee ); }
+            void setEe( floatVector &Ee ){ tardigradeHydra::linearElasticity::residual::set_Ee( Ee ); }
 
             floatVector Ee = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -361,7 +361,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdEe ){
 
             using tardigradeHydra::linearElasticity::residual::residual;
 
-            void setEe( floatVector &Ee ){ tardigradeHydra::linearElasticity::residual::setEe( Ee ); }
+            void setEe( floatVector &Ee ){ tardigradeHydra::linearElasticity::residual::set_Ee( Ee ); }
 
             floatVector Ee = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -578,7 +578,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setStress ){
 
             using tardigradeHydra::linearElasticity::residual::residual;
 
-            void setPK2Stress( floatVector &PK2 ){ tardigradeHydra::linearElasticity::residual::setPK2Stress( PK2 ); }
+            void setPK2Stress( floatVector &PK2 ){ tardigradeHydra::linearElasticity::residual::set_PK2Stress( PK2 ); }
 
             floatVector PK2Stress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -667,7 +667,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdPK2Stress ){
 
             void setPK2Stress( floatVector &value ){
 
-                tardigradeHydra::linearElasticity::residual::setPK2Stress( value );
+                tardigradeHydra::linearElasticity::residual::set_PK2Stress( value );
 
             }
 
