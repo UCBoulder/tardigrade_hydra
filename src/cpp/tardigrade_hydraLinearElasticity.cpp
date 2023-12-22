@@ -211,23 +211,66 @@ namespace tardigradeHydra{
     
         }
     
-        void residual::setPK2Stress( ){
+        void residual::setPK2Stress( const bool isPrevious ){
             /*!
              * Compute the Second Piola-Kirchhoff stress
+             * 
+             * \param isPrevious: Flag for whether to compute the current (false) or previous (true) PK2 stress
              */
     
             floatVector eye( get_Ee( )->size( ), 0 );
             tardigradeVectorTools::eye( eye );
-    
-            floatVector PK2Stress = ( *getLambda( ) ) * tardigradeVectorTools::trace( *get_Ee( ) ) * eye + 2 * ( *getMu( ) ) * ( *get_Ee( ) );
-    
-            set_PK2Stress( PK2Stress );
+
+            const floatVector *Ee;
+
+            if ( isPrevious ){
+
+                Ee = get_previousEe( );
+
+            }
+            else{
+
+                Ee = get_Ee( );
+
+            }
+            floatVector PK2Stress = ( *getLambda( ) ) * tardigradeVectorTools::trace( *Ee ) * eye + 2 * ( *getMu( ) ) * ( *Ee );
+
+            if ( isPrevious ){
+
+                set_previousPK2Stress( PK2Stress );
+
+            }
+            else{
+ 
+                set_PK2Stress( PK2Stress );
+
+            }
     
         }
     
-        void residual::setdPK2StressdEe( ){
+        void residual::setPK2Stress( ){
+            /*!
+             * Compute the Second Piola-Kirchhoff stress
+             */
+
+            setPK2Stress( false );
+    
+        }
+
+        void residual::setPreviousPK2Stress( ){
+            /*!
+             * Compute the previous Second Piola-Kirchhoff stress
+             */
+
+            setPK2Stress( true );
+    
+        }
+    
+        void residual::setdPK2StressdEe( const bool isPrevious ){
             /*!
              * Compute the gradient of the PK2 stress w.r.t. the elastic Green-Lagrange strain
+             * 
+             * \param isPrevious: Flag for whether to compute the current (false) or previous (true) value
              */
     
             floatVector eye( get_Ee( )->size( ), 0 );
@@ -236,8 +279,28 @@ namespace tardigradeHydra{
             floatMatrix EYE = tardigradeVectorTools::eye< floatType >( get_Ee( )->size( ) );
     
             floatMatrix dPK2StressdEe = ( *getLambda( ) ) * tardigradeVectorTools::dyadic( eye, eye ) + 2 * ( *getMu( ) ) * EYE;
-    
+   
             set_dPK2StressdEe( dPK2StressdEe );
+
+            set_previousdPK2StressdEe( dPK2StressdEe );
+    
+        }
+    
+        void residual::setdPK2StressdEe( ){
+            /*!
+             * Compute the gradient of the PK2 stress w.r.t. the elastic Green-Lagrange strain
+             */
+
+            setdPK2StressdEe( false );
+    
+        }
+    
+        void residual::setPreviousdPK2StressdEe( ){
+            /*!
+             * Compute the previous gradient of the PK2 stress w.r.t. the elastic Green-Lagrange strain
+             */
+
+            setdPK2StressdEe( true );
     
         }
     
@@ -250,6 +313,18 @@ namespace tardigradeHydra{
              floatMatrix dPK2StressdFe = tardigradeVectorTools::dot( *get_dPK2StressdEe( ), *get_dEedFe( ) );
 
              set_dPK2StressdFe( dPK2StressdFe );
+
+        }
+
+        void residual::setPreviousdPK2StressdFe( ){
+            /*!
+             * Set the derivative of the previous second Piola-Kirchhoff stress w.r.t. the elastic
+             * deformation gradient
+             */
+
+             floatMatrix previousdPK2StressdFe = tardigradeVectorTools::dot( *get_previousdPK2StressdEe( ), *get_previousdEedFe( ) );
+
+             set_previousdPK2StressdFe( previousdPK2StressdFe );
 
         }
 

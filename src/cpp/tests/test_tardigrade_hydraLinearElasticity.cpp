@@ -507,17 +507,27 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2Stress ){
 
             using tardigradeHydra::linearElasticity::residual::residual;
 
-            void setEe( floatVector &Ee ){ tardigradeHydra::linearElasticity::residual::set_Ee( Ee ); }
+            void set_Ee( floatVector &Ee ){ tardigradeHydra::linearElasticity::residual::set_Ee( Ee ); }
+
+            void set_previousEe( floatVector &previousEe ){ tardigradeHydra::linearElasticity::residual::set_previousEe( previousEe ); }
 
             floatVector Ee = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector previousEe = { -1, -2, -3, -4, -5, -6, -7, -8, -9 };
 
         private:
 
             virtual void setEe( ) override {
 
-                setEe( Ee );
+                set_Ee( Ee );
 
             }
+            virtual void setPreviousEe( ) override {
+
+                set_previousEe( previousEe );
+
+            }
+
 
     };
 
@@ -584,6 +594,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2Stress ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( PK2StressAnswer, *R.get_PK2Stress( ) ) );
 
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( -PK2StressAnswer, *R.get_previousPK2Stress( ) ) );
+
 }
 
 BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdEe ){
@@ -594,17 +606,27 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdEe ){
 
             using tardigradeHydra::linearElasticity::residual::residual;
 
-            void setEe( floatVector &Ee ){ tardigradeHydra::linearElasticity::residual::set_Ee( Ee ); }
+            void set_Ee( floatVector &Ee ){ tardigradeHydra::linearElasticity::residual::set_Ee( Ee ); }
+
+            void set_previousEe( floatVector &previousEe ){ tardigradeHydra::linearElasticity::residual::set_previousEe( previousEe ); }
 
             floatVector Ee = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector previousEe = { -1, -2, -3, -4, -5, -6, -7, -8, -9 };
 
         private:
 
             virtual void setEe( ) override {
 
-                setEe( Ee );
+                set_Ee( Ee );
 
             }
+            virtual void setPreviousEe( ) override {
+
+                set_previousEe( previousEe );
+
+            }
+
 
     };
 
@@ -696,6 +718,32 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdEe ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_dPK2StressdEe( ) ) );
+
+    gradient = floatMatrix( R.previousEe.size( ), floatVector( R.previousEe.size( ), 0 ) );
+
+    for ( unsigned int i = 0; i < R.previousEe.size( ); i++ ){
+
+        floatVector delta( R.previousEe.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( R.previousEe[ i ] ) + eps;
+
+        residualMock Rp( &hydra, 9, parameters );
+
+        residualMock Rm( &hydra, 9, parameters );
+
+        Rp.previousEe += delta;
+
+        Rm.previousEe -= delta;
+
+        for ( unsigned int j = 0; j < R.Ee.size( ); j++ ){
+
+            gradient[ j ][ i ] = ( ( *Rp.get_previousPK2Stress( ) )[ j ] - ( *Rm.get_previousPK2Stress( ) )[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_previousdPK2StressdEe( ) ) );
 
 }
 
@@ -800,6 +848,35 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdFe ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_dPK2StressdFe( ) ) );
+
+    gradient = floatMatrix( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
+
+    for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
+
+        floatVector delta( deformationGradient.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+
+        residualMock Rp( &hydrap, 9, parameters );
+
+        residualMock Rm( &hydram, 9, parameters );
+
+        for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
+
+            gradient[ j ][ i ] = ( ( *Rp.get_previousPK2Stress( ) )[ j ] - ( *Rm.get_previousPK2Stress( ) )[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_previousdPK2StressdFe( ) ) );
 
 }
 

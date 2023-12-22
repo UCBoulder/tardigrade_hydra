@@ -129,12 +129,22 @@ namespace tardigradeHydra{
                 virtual void setPreviousEe( );
 
                 virtual void setPreviousdEedFe( );
+
+                virtual void setPK2Stress( const bool isPrevious );
  
-                virtual void setPK2Stress( );            
+                virtual void setPK2Stress( ); 
+
+                virtual void setdPK2StressdEe( const bool isPrevious );
 
                 virtual void setdPK2StressdEe( );
 
                 virtual void setdPK2StressdFe( );
+
+                virtual void setPreviousPK2Stress( ); 
+
+                virtual void setPreviousdPK2StressdEe( );
+
+                virtual void setPreviousdPK2StressdFe( );
 
                 virtual void setStress( ) override;
 
@@ -202,6 +212,12 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdEe,           floatMatrix, setdPK2StressdEe           )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdFe,           floatMatrix, setdPK2StressdFe           )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPK2Stress,       floatVector, setPreviousPK2Stress       )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdEe,   floatMatrix, setPreviousdPK2StressdEe   )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdFe,   floatMatrix, setPreviousdPK2StressdFe   )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPK2Stress, floatMatrix, setdCauchyStressdPK2Stress )
 
