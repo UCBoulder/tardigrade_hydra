@@ -200,7 +200,7 @@ namespace tardigradeHydra{
 
             floatVector Fehat;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->get_configurations( ) )[ 0 ], Je, Fehat ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( *get_Fe( ), Je, Fehat ) );
 
             set_Je( Je );
 
@@ -217,7 +217,7 @@ namespace tardigradeHydra{
 
             floatVector previousFehat;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->get_previousConfigurations( ) )[ 0 ], previousJe, previousFehat ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( *get_previousFe( ), previousJe, previousFehat ) );
 
             set_previousJe( previousJe );
 
@@ -244,15 +244,51 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdJedFe( const bool isPrevious ){
+            /*!
+             * Set the derivative of the elastic Jacobian of deformation w.r.t.
+             * the elastic deformation gradient.
+             * 
+             * \param isPrevious: Flag for if the derivative is of the current (false) or previous (true) value
+             */
+
+            const unsigned int* dim = hydra->getDimension( );
+
+            const floatVector *Fe;
+
+            if ( isPrevious ){
+
+                Fe = get_previousFe( );
+
+            }
+            else{
+
+                Fe = get_Fe( );
+
+            }
+
+            floatVector dJedFe = tardigradeVectorTools::computeDDetADA( *Fe, ( *dim ), ( *dim ) );
+
+            if ( isPrevious ){
+
+                set_previousdJedFe( dJedFe );
+
+            }
+            else{
+
+                set_dJedFe( dJedFe );
+
+            }
+
+        }
+
         void residual::setdJedFe( ){
             /*!
              * Set the derivative of the elastic Jacobian of deformation w.r.t.
              * the elastic deformation gradient.
              */
 
-            const unsigned int* dim = hydra->getDimension( );
-
-            set_dJedFe( tardigradeVectorTools::computeDDetADA( ( *hydra->get_configurations( ) )[ 0 ], ( *dim ), ( *dim ) ) );
+            setdJedFe( false );
 
         }
 
@@ -262,13 +298,79 @@ namespace tardigradeHydra{
              * w.r.t. the elastic deformation gradient.
              */
 
+            setdFehatdFe( false );
+
+        }
+
+        void residual::setPreviousdJedFe( ){
+            /*!
+             * Set the previous derivative of the elastic Jacobian of deformation w.r.t.
+             * the elastic deformation gradient.
+             */
+
+            setdJedFe( true );
+
+        }
+
+        void residual::setPreviousdFehatdFe( ){
+            /*!
+             * Set the previous derivative of the isochoric part of the elastic deformation gradient
+             * w.r.t. the elastic deformation gradient.
+             */
+
+            setdFehatdFe( true );
+
+        }
+
+        void residual::setdFehatdFe( const bool isPrevious ){
+            /*!
+             * Set the derivative of the isochoric part of the elastic deformation gradient
+             * w.r.t. the elastic deformation gradient.
+             * 
+             * \param isPrevious: Flag for if the derivative is of the current (false) or previous (true) value
+             */
+
             const unsigned int* dim = hydra->getDimension( );
 
-            floatMatrix dFehatdFe = tardigradeVectorTools::eye< floatType >( ( *dim ) * ( *dim ) ) * std::pow( ( *get_Je( ) ), -1. / 3 );
+            const floatType   *Je;
 
-            dFehatdFe -= tardigradeVectorTools::dyadic( ( *hydra->get_configurations( ) )[ 0 ], *get_dJedFe( ) ) * std::pow( ( *get_Je( ) ), -4. / 3 ) / 3.;
+            const floatVector *Fe;
 
-            set_dFehatdFe( dFehatdFe );
+            const floatVector *dJedFe;
+
+            if ( isPrevious ){
+
+                Je     = get_previousJe( );
+
+                Fe     = get_previousFe( );
+
+                dJedFe = get_previousdJedFe( );
+
+            }
+            else{
+
+                Je     = get_Je( );
+
+                Fe     = get_Fe( );
+
+                dJedFe = get_dJedFe( );
+
+            }
+
+            floatMatrix dFehatdFe = tardigradeVectorTools::eye< floatType >( ( *dim ) * ( *dim ) ) * std::pow( ( *Je ), -1. / 3 );
+
+            dFehatdFe -= tardigradeVectorTools::dyadic( *Fe, *dJedFe ) * std::pow( ( *Je ), -4. / 3 ) / 3.;
+
+            if ( isPrevious ){
+
+                set_previousdFehatdFe( dFehatdFe );
+
+            }
+            else{
+
+                set_dFehatdFe( dFehatdFe );
+
+            }
 
         }
 

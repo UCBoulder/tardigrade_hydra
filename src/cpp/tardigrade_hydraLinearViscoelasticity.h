@@ -135,9 +135,17 @@ namespace tardigradeHydra{
 
                 virtual void decomposePreviousElasticDeformation( );
 
+                virtual void setdJedFe( const bool isPrevious );
+
                 virtual void setdJedFe( );
 
+                virtual void setdFehatdFe( const bool isPrevious );
+
                 virtual void setdFehatdFe( );
+
+                virtual void setPreviousdJedFe( );
+
+                virtual void setPreviousdFehatdFe( );
 
                 void setNumStateVariables( const unsigned int numStateVariables );
 
@@ -270,6 +278,10 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dJedFe,                                      floatVector, setdJedFe                                      )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFehatdFe,                                   floatMatrix, setdFehatdFe                                   )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdJedFe,                              floatVector, setPreviousdJedFe                              )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdFehatdFe,                           floatMatrix, setPreviousdFehatdFe                           )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, volumetricRateMultiplier,                    floatType,   setVolumetricRateMultiplier                    )
 
