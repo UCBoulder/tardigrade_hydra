@@ -328,33 +328,61 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setStress( ){
+        void residual::setCauchyStress( const bool isPrevious ){
             /*!
              * Set the Cauchy stress
+             * 
+             * \param isPrevious: Whether to compute the current (false) or previous (true) Cauchy stress
              */
-    
-            const floatVector    *Fe  = get_Fe( );
-    
-            const floatMatrix *dFedF  = get_dFedF( );
 
-            const floatMatrix *dFedFn = get_dFedFn( );
-    
-            // Compute the gradient of the PK2 stress w.r.t. the elastic deformation gradient
-            floatMatrix dPK2StressdFe = *get_dPK2StressdFe( );
+            const floatVector *Fe;
+
+            const floatMatrix *dFedF;
+
+            const floatMatrix *dFedFn;
+
+            const floatVector *PK2Stress;
+
+            const floatMatrix *dPK2StressdFe;
+
+            if ( isPrevious ){
+
+                Fe            = get_previousFe( );
+
+                dFedF         = get_previousdFedF( );
+
+                dFedFn        = get_previousdFedFn( );
+
+                PK2Stress     = get_previousPK2Stress( );
+
+                dPK2StressdFe = get_previousdPK2StressdFe( );
+
+            }
+            else{
+
+                Fe            = get_Fe( );
+
+                dFedF         = get_dFedF( );
+
+                dFedFn        = get_dFedFn( );
+
+                PK2Stress     = get_PK2Stress( );
+
+                dPK2StressdFe = get_dPK2StressdFe( );
+
+            }
 
             // Compute the Second Piola-Kirchhoff stress and it's gradients
-            floatMatrix dPK2StressdF = tardigradeVectorTools::dot( *get_dPK2StressdFe( ), *dFedF );
+            floatMatrix dPK2StressdF = tardigradeVectorTools::dot( *dPK2StressdFe, *dFedF );
     
-            floatMatrix dPK2StressdFn = tardigradeVectorTools::dot( *get_dPK2StressdFe( ), *dFedFn );
+            floatMatrix dPK2StressdFn = tardigradeVectorTools::dot( *dPK2StressdFe, *dFedFn );
     
             // Map the PK2 stress to the current configuration
             floatVector cauchyStress;
             floatMatrix dCauchyStressdPK2Stress;
             floatMatrix dCauchyStressdFe;
-    
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::pushForwardPK2Stress( *get_PK2Stress( ), *Fe, cauchyStress, dCauchyStressdPK2Stress, dCauchyStressdFe ) );
-    
-            setStress( cauchyStress );
+ 
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::pushForwardPK2Stress( *PK2Stress, *Fe, cauchyStress, dCauchyStressdPK2Stress, dCauchyStressdFe ) );
     
             floatMatrix dCauchyStressdF  = tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdF )
                                          + tardigradeVectorTools::dot( dCauchyStressdFe, *dFedF );
@@ -362,12 +390,73 @@ namespace tardigradeHydra{
             floatMatrix dCauchyStressdFn = tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdFn )
                                          + tardigradeVectorTools::dot( dCauchyStressdFe, *dFedFn );
 
-            set_dCauchyStressdPK2Stress( dCauchyStressdPK2Stress );   
+            if ( isPrevious ){
 
-            set_dCauchyStressdF( dCauchyStressdF );
+                set_previousCauchyStress( cauchyStress );
     
-            set_dCauchyStressdFn( dCauchyStressdFn );
+                set_previousdCauchyStressdPK2Stress( dCauchyStressdPK2Stress );   
+
+                set_previousdCauchyStressdF( dCauchyStressdF );
     
+                set_previousdCauchyStressdFn( dCauchyStressdFn );
+
+            }
+            else{
+
+                set_cauchyStress( cauchyStress );
+    
+                set_dCauchyStressdPK2Stress( dCauchyStressdPK2Stress );   
+
+                set_dCauchyStressdF( dCauchyStressdF );
+    
+                set_dCauchyStressdFn( dCauchyStressdFn );
+
+            }
+
+        }
+
+        void residual::setCauchyStress( ){
+            /*!
+             * Set the value of the Cauchy stress
+             */
+
+            setCauchyStress( false );
+
+        }
+
+        void residual::setPreviousCauchyStress( ){
+            /*!
+             * Set the previous value of the Cauchy stress
+             */
+
+            setCauchyStress( true );
+
+        }
+
+        void residual::setStress( ){
+            /*!
+             * Set the stress
+             *
+             * Currently uses the Cauchy stress
+             */
+
+            setCauchyStress( false );
+
+            setStress( *get_cauchyStress( ) );
+
+        }
+    
+        void residual::setPreviousStress( ){
+            /*!
+             * Set the previous stress
+             *
+             * Currently uses the Cauchy stress
+             */
+
+            setCauchyStress( true );
+
+            setPreviousStress( *get_previousCauchyStress( ) );
+
         }
     
         void residual::setdCauchyStressdPK2Stress( ){
@@ -375,7 +464,7 @@ namespace tardigradeHydra{
              * Set the derivative of the computed Cauchy stress w.r.t. the second Piola-Kirchoff stress (this is a partial derivative generally)
              */
     
-            setStress( );
+            setCauchyStress( false );
     
         }
 
@@ -384,7 +473,7 @@ namespace tardigradeHydra{
              * Set the derivative of the computed Cauchy stress w.r.t. F (this is a partial derivative generally)
              */
     
-            setStress( );
+            setCauchyStress( false );
     
         }
 
@@ -394,7 +483,35 @@ namespace tardigradeHydra{
              * (this is a partial derivative generally)
              */
     
-            setStress( );
+            setCauchyStress( false );
+    
+        }
+    
+        void residual::setPreviousdCauchyStressdPK2Stress( ){
+            /*!
+             * Set the previous derivative of the computed Cauchy stress w.r.t. the second Piola-Kirchoff stress (this is a partial derivative generally)
+             */
+    
+            setCauchyStress( true );
+    
+        }
+
+        void residual::setPreviousdCauchyStressdF( ){
+            /*!
+             * Set the previous derivative of the computed Cauchy stress w.r.t. F (this is a partial derivative generally)
+             */
+    
+            setCauchyStress( true );
+    
+        }
+
+        void residual::setPreviousdCauchyStressdFn( ){
+            /*!
+             * Set the previous derivative of the computed Cauchy stress w.r.t. the configurations solved for in the non-linear solve
+             * (this is a partial derivative generally)
+             */
+    
+            setCauchyStress( true );
     
         }
     

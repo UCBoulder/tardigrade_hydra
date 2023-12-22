@@ -880,7 +880,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdFe ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_setStress ){
+BOOST_AUTO_TEST_CASE( test_residual_setCauchyStress ){
 
     class residualMock : public tardigradeHydra::linearElasticity::residual {
 
@@ -888,15 +888,25 @@ BOOST_AUTO_TEST_CASE( test_residual_setStress ){
 
             using tardigradeHydra::linearElasticity::residual::residual;
 
-            void setPK2Stress( floatVector &PK2 ){ tardigradeHydra::linearElasticity::residual::set_PK2Stress( PK2 ); }
+            void set_PK2Stress( floatVector &PK2 ){ tardigradeHydra::linearElasticity::residual::set_PK2Stress( PK2 ); }
+
+            void set_previousPK2Stress( floatVector &previousPK2 ){ tardigradeHydra::linearElasticity::residual::set_previousPK2Stress( previousPK2 ); }
 
             floatVector PK2Stress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector previousPK2Stress = { -1, -2, -3, -4, -5, -6, -7, -8, -9 };
 
         private:
 
             virtual void setPK2Stress( ) override {
 
-                setPK2Stress( PK2Stress );
+                set_PK2Stress( PK2Stress );
+
+            }
+
+            virtual void setPreviousPK2Stress( ) override {
+
+                set_previousPK2Stress( previousPK2Stress );
 
             }
 
@@ -958,12 +968,121 @@ BOOST_AUTO_TEST_CASE( test_residual_setStress ){
                                         -3.63500538,   1.23317213,   3.91668732,
                                        -11.2428648 ,   3.52605015,  11.10630669 };
 
+    floatVector previousCauchyStressAnswer = {  0.88800978,  10.67302743,   6.73691146,
+                                                1.94755853, -40.89370509, -34.2541294 ,
+                                                0.08381629, -48.02194605, -36.74857461 };
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    residualMock R( &hydra, 9, parameters );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *R.get_cauchyStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousCauchyStressAnswer, *R.get_previousCauchyStress( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_setStress ){
+
+    class residualMock : public tardigradeHydra::linearElasticity::residual {
+
+        public:
+
+            using tardigradeHydra::linearElasticity::residual::residual;
+
+            void set_PK2Stress( floatVector &PK2 ){ tardigradeHydra::linearElasticity::residual::set_PK2Stress( PK2 ); }
+
+            void set_previousPK2Stress( floatVector &previousPK2 ){ tardigradeHydra::linearElasticity::residual::set_previousPK2Stress( previousPK2 ); }
+
+            floatVector PK2Stress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector previousPK2Stress = { -1, -2, -3, -4, -5, -6, -7, -8, -9 };
+
+        private:
+
+            virtual void setPK2Stress( ) override {
+
+                set_PK2Stress( PK2Stress );
+
+            }
+
+            virtual void setPreviousPK2Stress( ) override {
+
+                set_previousPK2Stress( previousPK2Stress );
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            residualMock elasticity;
+
+            unsigned int elasticitySize = 9;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            virtual void setResidualClasses( ){
+
+                elasticity = residualMock( this, elasticitySize, *getParameters( ) );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 1 );
+
+                residuals[ 0 ] = &elasticity;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { };
+
+    floatVector parameters = { 123.4, 56.7 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    floatVector cauchyStressAnswer = {  13.48087078,  -7.20925572, -23.74654442,
+                                        -3.63500538,   1.23317213,   3.91668732,
+                                       -11.2428648 ,   3.52605015,  11.10630669 };
+
+    floatVector previousCauchyStressAnswer = {  0.88800978,  10.67302743,   6.73691146,
+                                                1.94755853, -40.89370509, -34.2541294 ,
+                                                0.08381629, -48.02194605, -36.74857461 };
+
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, parameters );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *R.getStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousCauchyStressAnswer, *R.getPreviousStress( ) ) );
 
 }
 
@@ -1076,7 +1195,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdPK2Stress ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            gradient[ j ][ i ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * delta[ i ] );
+            gradient[ j ][ i ] = ( ( *Rp.get_cauchyStress( ) )[ j ] - ( *Rm.get_cauchyStress( ) )[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
@@ -1167,7 +1286,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdF ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            gradient[ j ][ i ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * delta[ i ] );
+            gradient[ j ][ i ] = ( ( *Rp.get_cauchyStress( ) )[ j ] - ( *Rm.get_cauchyStress( ) )[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
@@ -1330,7 +1449,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn2 ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            gradient[ j ][ i ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * delta[ i ] );
+            gradient[ j ][ i ] = ( ( *Rp.get_cauchyStress( ) )[ j ] - ( *Rm.get_cauchyStress( ) )[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
