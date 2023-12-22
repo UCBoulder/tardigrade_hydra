@@ -1871,7 +1871,7 @@ namespace tardigradeHydra{
             /*!
              * Evaluate the derived deformation measures
              * 
-             * We assume that the first configuration in hydra.getConfigurations is the elastic one
+             * We assume that the first configuration in hydra.get_configurations is the elastic one
              *
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
              */
@@ -1884,20 +1884,20 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                deformationGradient1 = ( *hydra->getPreviousConfigurations( ) )[ 0 ];
+                deformationGradient1 = ( *hydra->get_previousConfigurations( ) )[ 0 ];
 
-                microDeformation1 = ( *hydra->getPreviousMicroConfigurations( ) )[ 0 ];
+                microDeformation1 = ( *hydra->get_previousMicroConfigurations( ) )[ 0 ];
 
-                gradientMicroDeformation1 = ( *hydra->getPreviousGradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = ( *hydra->get_previousGradientMicroConfigurations( ) )[ 0 ];
 
             }
             else{
 
-                deformationGradient1 = ( *hydra->getConfigurations( ) )[ 0 ];
+                deformationGradient1 = ( *hydra->get_configurations( ) )[ 0 ];
 
-                microDeformation1 = ( *hydra->getMicroConfigurations( ) )[ 0 ];
+                microDeformation1 = ( *hydra->get_microConfigurations( ) )[ 0 ];
 
-                gradientMicroDeformation1 = ( *hydra->getGradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = ( *hydra->get_gradientMicroConfigurations( ) )[ 0 ];
 
             }
 
@@ -2201,96 +2201,6 @@ namespace tardigradeHydra{
 
         }
 
-        const variableVector *residual::getPK2Stress( ){
-            /*!
-             * Get the value of the second Piola-Kirchhoff stress
-             */
-
-            if ( !_PK2Stress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPK2Stress( ) );
-
-            }
-
-            return &_PK2Stress.second;
-
-        }
-
-        const variableVector *residual::getReferenceSymmetricMicroStress( ){
-            /*!
-             * Get the value of the reference symmetric micro stress
-             */
-
-            if ( !_referenceSymmetricMicroStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setReferenceSymmetricMicroStress( ) );
-
-            }
-
-            return &_referenceSymmetricMicroStress.second;
-
-        }
-
-        const variableVector *residual::getReferenceHigherOrderStress( ){
-            /*!
-             * Get the value of the reference higher order stress
-             */
-
-            if ( !_referenceHigherOrderStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setReferenceHigherOrderStress( ) );
-
-            }
-
-            return &_referenceHigherOrderStress.second;
-
-        }
-
-        const variableVector *residual::getPreviousPK2Stress( ){
-            /*!
-             * Get the value of the previous second Piola-Kirchhoff stress
-             */
-
-            if ( !_previousPK2Stress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousPK2Stress( ) );
-
-            }
-
-            return &_previousPK2Stress.second;
-
-        }
-
-        const variableVector *residual::getPreviousReferenceSymmetricMicroStress( ){
-            /*!
-             * Get the value of the previous reference symmetric micro stress
-             */
-
-            if ( !_previousReferenceSymmetricMicroStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousReferenceSymmetricMicroStress( ) );
-
-            }
-
-            return &_previousReferenceSymmetricMicroStress.second;
-
-        }
-
-        const variableVector *residual::getPreviousReferenceHigherOrderStress( ){
-            /*!
-             * Get the value of the previous reference higher order stress
-             */
-
-            if ( !_previousReferenceHigherOrderStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousReferenceHigherOrderStress( ) );
-
-            }
-
-            return &_previousReferenceHigherOrderStress.second;
-
-        }
-
         void residual::setReferenceStresses( const bool isPrevious ){
             /*!
              * Set the values of the reference stresses
@@ -2310,11 +2220,11 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                C     = getPreviousRightCauchyGreen( );
+                C     = get_previousRightCauchyGreen( );
 
-                Psi   = getPreviousPsi( );
+                Psi   = get_previousPsi( );
 
-                Gamma = getPreviousGamma( );
+                Gamma = get_previousGamma( );
 
                 followingConfiguration = hydra->getPreviousFollowingConfiguration( 0 );
 
@@ -2323,11 +2233,11 @@ namespace tardigradeHydra{
             }
             else{
 
-                C     = getRightCauchyGreen( );
+                C     = get_rightCauchyGreen( );
 
-                Psi   = getPsi( );
+                Psi   = get_psi( );
 
-                Gamma = getGamma( );
+                Gamma = get_gamma( );
 
                 followingConfiguration = hydra->getFollowingConfiguration( 0 );
     
@@ -2377,906 +2287,6 @@ namespace tardigradeHydra{
                 set_referenceHigherOrderStress( referenceHigherOrderStress );
 
             }
-
-        }
-
-        const variableMatrix *residual::getdRightCauchyGreendF( ){
-            /*!
-             * Get the jacobian of the right Cauchy-Green deformation tensor w.r.t. the total deformation gradient
-             */
-
-            if ( !_dRightCauchyGreendF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdRightCauchyGreendF( ) );
-
-            }
-
-            return &_dRightCauchyGreendF.second;
-
-        }
-
-        const variableMatrix *residual::getdRightCauchyGreendFn( ){
-            /*!
-             * Get the jacobian of the right Cauchy-Green deformation tensor w.r.t. the remaining sub-deformation gradients
-             */
-
-            if ( !_dRightCauchyGreendFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdRightCauchyGreendFn( ) );
-
-            }
-
-            return &_dRightCauchyGreendFn.second;
-
-        }
-
-        const variableMatrix *residual::getdPsidF( ){
-            /*!
-             * Get the jacobian of the micro deformation measure psi w.r.t. the total deformation gradient
-             */
-
-            if ( !_dPsidF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPsidF( ) );
-
-            }
-
-            return &_dPsidF.second;
-
-        }
-
-        const variableMatrix *residual::getdPsidFn( ){
-            /*!
-             * Get the jacobian of the micro deformation tensor psi w.r.t. the remaining sub-deformation gradients
-             */
-
-            if ( !_dPsidFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPsidFn( ) );
-
-            }
-
-            return &_dPsidFn.second;
-
-        }
-
-        const variableMatrix *residual::getdPsidChi( ){
-            /*!
-             * Get the jacobian of the micro deformation measure psi w.r.t. the total micro-deformation
-             */
-
-            if ( !_dPsidChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPsidChi( ) );
-
-            }
-
-            return &_dPsidChi.second;
-
-        }
-
-        const variableMatrix *residual::getdPsidChin( ){
-            /*!
-             * Get the jacobian of the micro deformation tensor psi w.r.t. the remaining sub-micro deformations
-             */
-
-            if ( !_dPsidChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPsidChin( ) );
-
-            }
-
-            return &_dPsidChin.second;
-
-        }
-
-        const variableMatrix *residual::getdGammadF( ){
-            /*!
-             * Get the jacobian of the micro deformation measure gamma w.r.t. the total deformation gradient
-             */
-
-            if ( !_dGammadF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadF( ) );
-
-            }
-
-            return &_dGammadF.second;
-
-        }
-
-        const variableMatrix *residual::getdGammadFn( ){
-            /*!
-             * Get the jacobian of the micro deformation tensor gamma w.r.t. the remaining sub-deformation gradients
-             */
-
-            if ( !_dGammadFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadFn( ) );
-
-            }
-
-            return &_dGammadFn.second;
-
-        }
-
-        const variableMatrix *residual::getdGammadChi( ){
-            /*!
-             * Get the jacobian of the micro deformation measure gamma w.r.t. the total micro-deformation
-             */
-
-            if ( !_dGammadChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadChi( ) );
-
-            }
-
-            return &_dGammadChi.second;
-
-        }
-
-        const variableMatrix *residual::getdGammadChin( ){
-            /*!
-             * Get the jacobian of the micro deformation tensor gamma w.r.t. the remaining sub-micro deformations
-             */
-
-            if ( !_dGammadChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadChin( ) );
-
-            }
-
-            return &_dGammadChin.second;
-
-        }
-
-        const variableMatrix *residual::getdGammadGradChi( ){
-            /*!
-             * Get the jacobian of the micro deformation measure gamma w.r.t. the reference spatial gradient of the total micro-deformation
-             */
-
-            if ( !_dGammadGradChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadGradChi( ) );
-
-            }
-
-            return &_dGammadGradChi.second;
-
-        }
-
-        const variableMatrix *residual::getdGammadGradChin( ){
-            /*!
-             * Get the jacobian of the micro deformation tensor gamma w.r.t. the local reference spatial gradient of the remaining sub-micro deformations
-             */
-
-            if ( !_dGammadGradChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdGammadGradChin( ) );
-
-            }
-
-            return &_dGammadGradChin.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdRightCauchyGreendF( ){
-            /*!
-             * Get the jacobian of the previous right Cauchy-Green deformation tensor w.r.t. the total deformation gradient
-             */
-
-            if ( !_previousdRightCauchyGreendF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdRightCauchyGreendF( ) );
-
-            }
-
-            return &_previousdRightCauchyGreendF.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdRightCauchyGreendFn( ){
-            /*!
-             * Get the jacobian of the previous right Cauchy-Green deformation tensor w.r.t. the remaining sub-deformation gradients
-             */
-
-            if ( !_previousdRightCauchyGreendFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdRightCauchyGreendFn( ) );
-
-            }
-
-            return &_previousdRightCauchyGreendFn.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdPsidF( ){
-            /*!
-             * Get the jacobian of the previous micro deformation measure psi w.r.t. the total deformation gradient
-             */
-
-            if ( !_previousdPsidF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPsidF( ) );
-
-            }
-
-            return &_previousdPsidF.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdPsidFn( ){
-            /*!
-             * Get the jacobian of the previous micro deformation tensor psi w.r.t. the remaining sub-deformation gradients
-             */
-
-            if ( !_previousdPsidFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPsidFn( ) );
-
-            }
-
-            return &_previousdPsidFn.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdPsidChi( ){
-            /*!
-             * Get the jacobian of the previous micro deformation measure psi w.r.t. the total micro-deformation
-             */
-
-            if ( !_previousdPsidChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPsidChi( ) );
-
-            }
-
-            return &_previousdPsidChi.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdPsidChin( ){
-            /*!
-             * Get the jacobian of the previous micro deformation tensor psi w.r.t. the remaining sub-micro deformations
-             */
-
-            if ( !_previousdPsidChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPsidChin( ) );
-
-            }
-
-            return &_previousdPsidChin.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdGammadF( ){
-            /*!
-             * Get the jacobian of the previous micro deformation measure gamma w.r.t. the total deformation gradient
-             */
-
-            if ( !_previousdGammadF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdGammadF( ) );
-
-            }
-
-            return &_previousdGammadF.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdGammadFn( ){
-            /*!
-             * Get the jacobian of the previous micro deformation tensor gamma w.r.t. the remaining sub-deformation gradients
-             */
-
-            if ( !_previousdGammadFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdGammadFn( ) );
-
-            }
-
-            return &_previousdGammadFn.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdGammadChi( ){
-            /*!
-             * Get the jacobian of the previous micro deformation measure gamma w.r.t. the total micro-deformation
-             */
-
-            if ( !_previousdGammadChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdGammadChi( ) );
-
-            }
-
-            return &_previousdGammadChi.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdGammadChin( ){
-            /*!
-             * Get the jacobian of the previous micro deformation tensor gamma w.r.t. the remaining sub-micro deformations
-             */
-
-            if ( !_previousdGammadChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdGammadChin( ) );
-
-            }
-
-            return &_previousdGammadChin.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdGammadGradChi( ){
-            /*!
-             * Get the jacobian of the previous micro deformation measure gamma w.r.t. the reference spatial gradient of the total micro-deformation
-             */
-
-            if ( !_previousdGammadGradChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdGammadGradChi( ) );
-
-            }
-
-            return &_previousdGammadGradChi.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdGammadGradChin( ){
-            /*!
-             * Get the jacobian of the previous micro deformation tensor gamma w.r.t. the local reference spatial gradient of the remaining sub-micro deformations
-             */
-
-            if ( !_previousdGammadGradChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdGammadGradChin( ) );
-
-            }
-
-            return &_previousdGammadGradChin.second;
-
-        }
-
-        const variableMatrix *residual::getdPK2dF( ){
-            /*!
-             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the deformation gradient
-             */
-
-            if ( !_dPK2dF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dF( ) );
-
-            }
-
-            return &_dPK2dF.second;
-
-        }
-
-        const variableMatrix *residual::getdPK2dFn( ){
-            /*!
-             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dPK2dFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dFn( ) );
-
-            }
-
-            return &_dPK2dFn.second;
-
-        }
-
-        const variableMatrix *residual::getdPK2dChi( ){
-            /*!
-             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the micro-deformation
-             */
-
-            if ( !_dPK2dChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dChi( ) );
-
-            }
-
-            return &_dPK2dChi.second;
-
-        }
-
-        const variableMatrix *residual::getdPK2dChin( ){
-            /*!
-             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the sub-micro deformations
-             */
-
-            if ( !_dPK2dChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dChin( ) );
-
-            }
-
-            return &_dPK2dChin.second;
-
-        }
-
-        const variableMatrix *residual::getdPK2dGradChi( ){
-            /*!
-             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the spatial gradient of the micro-deformation
-             */
-
-            if ( !_dPK2dGradChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dGradChi( ) );
-
-            }
-
-            return &_dPK2dGradChi.second;
-
-        }
-
-        const variableMatrix *residual::getdPK2dGradChin( ){
-            /*!
-             * Get the value of the derivative second Piola-Kirchhoff stress w.r.t. the local spatial gradients of the sub-micro deformations
-             */
-
-            if ( !_dPK2dGradChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2dGradChin( ) );
-
-            }
-
-            return &_dPK2dGradChin.second;
-
-        }
-
-        const variableMatrix *residual::getdSIGMAdF( ){
-            /*!
-             * Get the value of the derivative of the reference symmetric micro stress w.r.t. the deformation gradient
-             */
-
-            if ( !_dSIGMAdF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdF( ) );
-
-            }
-
-            return &_dSIGMAdF.second;
-
-        }
-
-        const variableMatrix *residual::getdSIGMAdFn( ){
-            /*!
-             * Get the value of the reference symmetric micro stress w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dSIGMAdFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdFn( ) );
-
-            }
-
-            return &_dSIGMAdFn.second;
-
-        }
-
-        const variableMatrix *residual::getdSIGMAdChi( ){
-            /*!
-             * Get the value of the derivative of the reference symmetric micro stress w.r.t. the micro-deformation
-             */
-
-            if ( !_dSIGMAdChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdChi( ) );
-
-            }
-
-            return &_dSIGMAdChi.second;
-
-        }
-
-        const variableMatrix *residual::getdSIGMAdChin( ){
-            /*!
-             * Get the value of the derivative of the reference symmetric micro stress w.r.t. the sub-micro deformations
-             */
-
-            if ( !_dSIGMAdChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdChin( ) );
-
-            }
-
-            return &_dSIGMAdChin.second;
-
-        }
-
-        const variableMatrix *residual::getdSIGMAdGradChi( ){
-            /*!
-             * Get the value of the derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the micro-deformation
-             */
-
-            if ( !_dSIGMAdGradChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdGradChi( ) );
-
-            }
-
-            return &_dSIGMAdGradChi.second;
-
-        }
-
-        const variableMatrix *residual::getdSIGMAdGradChin( ){
-            /*!
-             * Get the value of the derivative of the reference symmetric micro stress w.r.t. the local spatial gradients of the sub-micro deformations
-             */
-
-            if ( !_dSIGMAdGradChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdSIGMAdGradChin( ) );
-
-            }
-
-            return &_dSIGMAdGradChin.second;
-
-        }
-
-        const variableMatrix *residual::getdMdF( ){
-            /*!
-             * Get the value of the derivative of the higher order stress w.r.t. the deformation gradient
-             */
-
-            if ( !_dMdF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdF( ) );
-
-            }
-
-            return &_dMdF.second;
-
-        }
-
-        const variableMatrix *residual::getdMdFn( ){
-            /*!
-             * Get the value of the derivative of the higher order stress w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dMdFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdFn( ) );
-
-            }
-
-            return &_dMdFn.second;
-
-        }
-
-        const variableMatrix *residual::getdMdChi( ){
-            /*!
-             * Get the value of the derivative of the reference higher order stress w.r.t. the micro-deformation
-             */
-
-            if ( !_dMdChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdChi( ) );
-
-            }
-
-            return &_dMdChi.second;
-
-        }
-
-        const variableMatrix *residual::getdMdChin( ){
-            /*!
-             * Get the value of the derivative of the higher order stress w.r.t. the sub-micro deformations
-             */
-
-            if ( !_dMdChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdChin( ) );
-
-            }
-
-            return &_dMdChin.second;
-
-        }
-
-        const variableMatrix *residual::getdMdGradChi( ){
-            /*!
-             * Get the value of the derivative of the reference higher order stress w.r.t. the spatial gradient of the micro-deformation
-             */
-
-            if ( !_dMdGradChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdGradChi( ) );
-
-            }
-
-            return &_dMdGradChi.second;
-
-        }
-
-        const variableMatrix *residual::getdMdGradChin( ){
-            /*!
-             * Get the value of the derivative of the reference higher order stress w.r.t. the local spatial gradients of the sub-micro deformations
-             */
-
-            if ( !_dMdGradChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdMdGradChin( ) );
-
-            }
-
-            return &_dMdGradChin.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdPK2dF( ){
-            /*!
-             * Get the value of the previous derivative second Piola-Kirchhoff stress w.r.t. the deformation gradient
-             */
-
-            if ( !_previousdPK2dF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dF( ) );
-
-            }
-
-            return &_previousdPK2dF.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdPK2dFn( ){
-            /*!
-             * Get the previous value of the derivative second Piola-Kirchhoff stress w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_previousdPK2dFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dFn( ) );
-
-            }
-
-            return &_previousdPK2dFn.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdPK2dChi( ){
-            /*!
-             * Get the previous value of the derivative second Piola-Kirchhoff stress w.r.t. the micro-deformation
-             */
-
-            if ( !_previousdPK2dChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dChi( ) );
-
-            }
-
-            return &_previousdPK2dChi.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdPK2dChin( ){
-            /*!
-             * Get the previous value of the derivative second Piola-Kirchhoff stress w.r.t. the sub-micro deformations
-             */
-
-            if ( !_previousdPK2dChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dChin( ) );
-
-            }
-
-            return &_previousdPK2dChin.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdPK2dGradChi( ){
-            /*!
-             * Get the previous value of the derivative second Piola-Kirchhoff stress w.r.t. the spatial gradient of the micro-deformation
-             */
-
-            if ( !_previousdPK2dGradChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dGradChi( ) );
-
-            }
-
-            return &_previousdPK2dGradChi.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdPK2dGradChin( ){
-            /*!
-             * Get the previous value of the derivative second Piola-Kirchhoff stress w.r.t. the local spatial gradients of the sub-micro deformations
-             */
-
-            if ( !_previousdPK2dGradChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdPK2dGradChin( ) );
-
-            }
-
-            return &_previousdPK2dGradChin.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdSIGMAdF( ){
-            /*!
-             * Get the previous value of the derivative of the reference symmetric micro stress w.r.t. the deformation gradient
-             */
-
-            if ( !_previousdSIGMAdF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdF( ) );
-
-            }
-
-            return &_previousdSIGMAdF.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdSIGMAdFn( ){
-            /*!
-             * Get the previous value of the reference symmetric micro stress w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_previousdSIGMAdFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdFn( ) );
-
-            }
-
-            return &_previousdSIGMAdFn.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdSIGMAdChi( ){
-            /*!
-             * Get the previous value of the derivative of the reference symmetric micro stress w.r.t. the micro-deformation
-             */
-
-            if ( !_previousdSIGMAdChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdChi( ) );
-
-            }
-
-            return &_previousdSIGMAdChi.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdSIGMAdChin( ){
-            /*!
-             * Get the previous value of the derivative of the reference symmetric micro stress w.r.t. the sub-micro deformations
-             */
-
-            if ( !_previousdSIGMAdChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdChin( ) );
-
-            }
-
-            return &_previousdSIGMAdChin.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdSIGMAdGradChi( ){
-            /*!
-             * Get the previous value of the derivative of the reference symmetric micro stress w.r.t. the spatial gradient of the micro-deformation
-             */
-
-            if ( !_previousdSIGMAdGradChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdGradChi( ) );
-
-            }
-
-            return &_previousdSIGMAdGradChi.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdSIGMAdGradChin( ){
-            /*!
-             * Get the previous value of the derivative of the reference symmetric micro stress w.r.t. the local spatial gradients of the sub-micro deformations
-             */
-
-            if ( !_previousdSIGMAdGradChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdSIGMAdGradChin( ) );
-
-            }
-
-            return &_previousdSIGMAdGradChin.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdMdF( ){
-            /*!
-             * Get the previous value of the derivative of the higher order stress w.r.t. the deformation gradient
-             */
-
-            if ( !_previousdMdF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdF( ) );
-
-            }
-
-            return &_previousdMdF.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdMdFn( ){
-            /*!
-             * Get the previous value of the derivative of the higher order stress w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_previousdMdFn.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdFn( ) );
-
-            }
-
-            return &_previousdMdFn.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdMdChi( ){
-            /*!
-             * Get the previous value of the derivative of the reference higher order stress w.r.t. the micro-deformation
-             */
-
-            if ( !_previousdMdChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdChi( ) );
-
-            }
-
-            return &_previousdMdChi.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdMdChin( ){
-            /*!
-             * Get the previous value of the derivative of the higher order stress w.r.t. the sub-micro deformations
-             */
-
-            if ( !_previousdMdChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdChin( ) );
-
-            }
-
-            return &_previousdMdChin.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdMdGradChi( ){
-            /*!
-             * Get the previous value of the derivative of the reference higher order stress w.r.t. the spatial gradient of the micro-deformation
-             */
-
-            if ( !_previousdMdGradChi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdGradChi( ) );
-
-            }
-
-            return &_previousdMdGradChi.second;
-
-        }
-
-        const variableMatrix *residual::getPreviousdMdGradChin( ){
-            /*!
-             * Get the previous value of the derivative of the reference higher order stress w.r.t. the local spatial gradients of the sub-micro deformations
-             */
-
-            if ( !_previousdMdGradChin.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousdMdGradChin( ) );
-
-            }
-
-            return &_previousdMdGradChin.second;
 
         }
 
@@ -3653,35 +2663,35 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                dCdF            = getPreviousdRightCauchyGreendF( );
+                dCdF            = get_previousdRightCauchyGreendF( );
 
-                dCdFn           = getPreviousdRightCauchyGreendFn( );
+                dCdFn           = get_previousdRightCauchyGreendFn( );
 
-                C               = getPreviousRightCauchyGreen( );
+                C               = get_previousRightCauchyGreen( );
 
-                dPsidF          = getPreviousdPsidF( );
+                dPsidF          = get_previousdPsidF( );
 
-                dPsidFn         = getPreviousdPsidFn( );
+                dPsidFn         = get_previousdPsidFn( );
 
-                dPsidChi        = getPreviousdPsidChi( );
+                dPsidChi        = get_previousdPsidChi( );
 
-                dPsidChin       = getPreviousdPsidChin( );
+                dPsidChin       = get_previousdPsidChin( );
 
-                Psi             = getPreviousPsi( );
+                Psi             = get_previousPsi( );
 
-                dGammadF        = getPreviousdGammadF( );
+                dGammadF        = get_previousdGammadF( );
 
-                dGammadFn       = getPreviousdGammadFn( );
+                dGammadFn       = get_previousdGammadFn( );
 
-                dGammadChi      = getPreviousdGammadChi( );
+                dGammadChi      = get_previousdGammadChi( );
 
-                dGammadChin     = getPreviousdGammadChin( );
+                dGammadChin     = get_previousdGammadChin( );
 
-                dGammadGradChi  = getPreviousdGammadGradChi( );
+                dGammadGradChi  = get_previousdGammadGradChi( );
 
-                dGammadGradChin = getPreviousdGammadGradChin( );
+                dGammadGradChin = get_previousdGammadGradChin( );
 
-                Gamma           = getPreviousGamma( );
+                Gamma           = get_previousGamma( );
 
                 dFFollowdFs     = hydra->getPreviousFollowingConfigurationJacobian( 0 );
 
@@ -3694,35 +2704,35 @@ namespace tardigradeHydra{
             }
             else{
 
-                dCdF            = getdRightCauchyGreendF( );
+                dCdF            = get_dRightCauchyGreendF( );
 
-                dCdFn           = getdRightCauchyGreendFn( );
+                dCdFn           = get_dRightCauchyGreendFn( );
 
-                C               = getRightCauchyGreen( );
+                C               = get_rightCauchyGreen( );
 
-                dPsidF          = getdPsidF( );
+                dPsidF          = get_dPsidF( );
 
-                dPsidFn         = getdPsidFn( );
+                dPsidFn         = get_dPsidFn( );
 
-                dPsidChi        = getdPsidChi( );
+                dPsidChi        = get_dPsidChi( );
 
-                dPsidChin       = getdPsidChin( );
+                dPsidChin       = get_dPsidChin( );
 
-                Psi             = getPsi( );
+                Psi             = get_psi( );
 
-                dGammadF        = getdGammadF( );
+                dGammadF        = get_dGammadF( );
 
-                dGammadFn       = getdGammadFn( );
+                dGammadFn       = get_dGammadFn( );
 
-                dGammadChi      = getdGammadChi( );
+                dGammadChi      = get_dGammadChi( );
 
-                dGammadChin     = getdGammadChin( );
+                dGammadChin     = get_dGammadChin( );
 
-                dGammadGradChi  = getdGammadGradChi( );
+                dGammadGradChi  = get_dGammadGradChi( );
 
-                dGammadGradChin = getdGammadGradChin( );
+                dGammadGradChin = get_dGammadGradChin( );
 
-                Gamma           = getGamma( );
+                Gamma           = get_gamma( );
 
                 dFFollowdFs     = hydra->getFollowingConfigurationJacobian( 0 );
 
@@ -3958,7 +2968,7 @@ namespace tardigradeHydra{
             /*!
              * Evaluate the derived deformation Jacobians
              * 
-             * We assume that the first configuration in hydra.getConfigurations is the elastic one
+             * We assume that the first configuration in hydra.get_configurations is the elastic one
              *
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
              */
@@ -3989,56 +2999,56 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                deformationGradient1 = ( *hydra->getPreviousConfigurations( ) )[ 0 ];
+                deformationGradient1 = ( *hydra->get_previousConfigurations( ) )[ 0 ];
 
-                microDeformation1 = ( *hydra->getPreviousMicroConfigurations( ) )[ 0 ];
+                microDeformation1 = ( *hydra->get_previousMicroConfigurations( ) )[ 0 ];
 
-                gradientMicroDeformation1 = ( *hydra->getPreviousGradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = ( *hydra->get_previousGradientMicroConfigurations( ) )[ 0 ];
 
-                dF1dF              = hydra->getPreviousdF1dF( );
+                dF1dF              = hydra->get_previousdF1dF( );
 
-                dF1dFn             = hydra->getPreviousdF1dFn( );
+                dF1dFn             = hydra->get_previousdF1dFn( );
 
-                dChi1dChi          = hydra->getPreviousdChi1dChi( );
+                dChi1dChi          = hydra->get_previousdChi1dChi( );
 
-                dChi1dChin         = hydra->getPreviousdChi1dChin( );
+                dChi1dChin         = hydra->get_previousdChi1dChin( );
 
-                dGradChi1dFn       = hydra->getPreviousdGradChi1dFn( );
+                dGradChi1dFn       = hydra->get_previousdGradChi1dFn( );
 
-                dGradChi1dChi      = hydra->getPreviousdGradChi1dChi( );
+                dGradChi1dChi      = hydra->get_previousdGradChi1dChi( );
 
-                dGradChi1dChin     = hydra->getPreviousdGradChi1dChin( );
+                dGradChi1dChin     = hydra->get_previousdGradChi1dChin( );
 
-                dGradChi1dGradChi  = hydra->getPreviousdGradChi1dGradChi( );
+                dGradChi1dGradChi  = hydra->get_previousdGradChi1dGradChi( );
 
-                dGradChi1dGradChin = hydra->getPreviousdGradChi1dGradChin( );
+                dGradChi1dGradChin = hydra->get_previousdGradChi1dGradChin( );
 
             }
             else{
 
-                deformationGradient1 = ( *hydra->getConfigurations( ) )[ 0 ];
+                deformationGradient1 = ( *hydra->get_configurations( ) )[ 0 ];
 
-                microDeformation1 = ( *hydra->getMicroConfigurations( ) )[ 0 ];
+                microDeformation1 = ( *hydra->get_microConfigurations( ) )[ 0 ];
 
-                gradientMicroDeformation1 = ( *hydra->getGradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = ( *hydra->get_gradientMicroConfigurations( ) )[ 0 ];
 
-                dF1dF              = hydra->getdF1dF( );
+                dF1dF              = hydra->get_dF1dF( );
 
-                dF1dFn             = hydra->getdF1dFn( );
+                dF1dFn             = hydra->get_dF1dFn( );
 
-                dChi1dChi          = hydra->getdChi1dChi( );
+                dChi1dChi          = hydra->get_dChi1dChi( );
 
-                dChi1dChin         = hydra->getdChi1dChin( );
+                dChi1dChin         = hydra->get_dChi1dChin( );
 
-                dGradChi1dFn       = hydra->getdGradChi1dFn( );
+                dGradChi1dFn       = hydra->get_dGradChi1dFn( );
 
-                dGradChi1dChi      = hydra->getdGradChi1dChi( );
+                dGradChi1dChi      = hydra->get_dGradChi1dChi( );
 
-                dGradChi1dChin     = hydra->getdGradChi1dChin( );
+                dGradChi1dChin     = hydra->get_dGradChi1dChin( );
 
-                dGradChi1dGradChi  = hydra->getdGradChi1dGradChi( );
+                dGradChi1dGradChi  = hydra->get_dGradChi1dGradChi( );
 
-                dGradChi1dGradChin = hydra->getdGradChi1dGradChin( );
+                dGradChi1dGradChin = hydra->get_dGradChi1dGradChin( );
 
             }
 
@@ -4128,98 +3138,6 @@ namespace tardigradeHydra{
                 set_dGammadGradChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChin ) );
 
             }
-
-        }
-
-        const variableVector *residual::getRightCauchyGreen( ){
-            /*!
-             * Set the value of the right Cauchy-Green deformation tensor
-             */
-
-            if ( !_rightCauchyGreen.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( false ) );
-
-            }
-
-            return &_rightCauchyGreen.second;
-
-        }
-
-        const variableVector *residual::getPsi( ){
-            /*!
-             * Set the value of the micro deformation measure Psi
-             */
-
-            if ( !_psi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( false ) );
-
-            }
-
-            return &_psi.second;
-
-        }
-
-
-        const variableVector *residual::getGamma( ){
-            /*!
-             * Set the value of the micro deformation measure Gamma
-             */
-
-            if ( !_gamma.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( false ) );
-
-            }
-
-            return &_gamma.second;
-
-        }
-
-        const variableVector *residual::getPreviousRightCauchyGreen( ){
-            /*!
-             * Set the previous value of the right Cauchy-Green deformation tensor
-             */
-
-            if ( !_previousRightCauchyGreen.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( true ) );
-
-            }
-
-            return &_previousRightCauchyGreen.second;
-
-        }
-
-        const variableVector *residual::getPreviousPsi( ){
-            /*!
-             * Set the value of the previous micro deformation measure Psi
-             */
-
-            if ( !_previousPsi.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( true ) );
-
-            }
-
-            return &_previousPsi.second;
-
-        }
-
-
-        const variableVector *residual::getPreviousGamma( ){
-            /*!
-             * Set the value of the previous micro deformation measure Gamma
-             */
-
-            if ( !_previousGamma.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setDeformation( true ) );
-
-            }
-
-            return &_previousGamma.second;
 
         }
 

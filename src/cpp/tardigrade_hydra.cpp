@@ -21,128 +21,6 @@ namespace tardigradeHydra{
     /** \brief Define required number of Abaqus material constants for the Abaqus interface. */
     const int nMaterialParameters = 2;
 
-    const floatVector* residualBase::getResidual( ){
-        /*!
-         * Get the residual equations. Must be of size numEquations
-         */
-
-        if ( !_residual.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( ) );
-
-        }
-
-        return &_residual.second;
-
-    }
-
-    const floatMatrix* residualBase::getJacobian( ){
-        /*!
-         * Get the Jacobian matrix. Must be of size numEquations x numUnknowns
-         * numUnknowns is of the size numConfigurations * dim * dim + numNonLinearSolveStateVariables
-         */
-
-        if ( !_jacobian.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setJacobian( ) );
-
-        }
-
-        return &_jacobian.second;
-
-    }
-
-    const floatMatrix* residualBase::getdRdF( ){
-        /*!
-         * Get the derivative of the residual w.r.t. the deformation gradient
-         */
-
-        if ( !_dRdF.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setdRdF( ) );
-
-        }
-
-        return &_dRdF.second;
-
-    }
-
-    const floatVector* residualBase::getdRdT( ){
-        /*!
-         * Get the derivative of the residual w.r.t. the temperature
-         */
-
-        if ( !_dRdT.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setdRdT( ) );
-
-        }
-
-        return &_dRdT.second;
-
-    }
-
-    const floatMatrix* residualBase::getAdditionalDerivatives( ){
-        /*!
-         * Get the derivative of the residual w.r.t. additional terms
-         */
-
-        if ( !_additionalDerivatives.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setAdditionalDerivatives( ) );
-
-        }
-
-        return &_additionalDerivatives.second;
-
-    }
-
-    const floatVector* residualBase::getStress( ){
-        /*!
-         * Get the stress
-         */
-
-        if ( !_stress.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setStress( ) );
-
-        }
-
-        return &_stress.second;
-
-    }
-
-    const floatVector* residualBase::getPreviousStress( ){
-        /*!
-         * Get the previous stress
-         */
-
-        if ( !_previousStress.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousStress( ) );
-
-        }
-
-        return &_previousStress.second;
-
-    }
-
-    const floatVector* residualBase::getCurrentAdditionalStateVariables( ){
-        /*!
-         * Get the updated additional state variables which don't require the
-         * hydra non-linear solve to find
-         */
-
-        if ( !_currentAdditionalStateVariables.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setCurrentAdditionalStateVariables( ) );
-
-        }
-
-        return &_currentAdditionalStateVariables.second;
-
-    }
-
     void residualBase::addIterationData( dataBase *data ){
         /*!
          * Add data to the vector of values which will be cleared after each iteration
@@ -379,13 +257,13 @@ namespace tardigradeHydra{
         set_previousNonLinearSolveStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ),
                                                                getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV ) );
 
-        set_nonLinearSolveStateVariables( *getPreviousNonLinearSolveStateVariables( ) );
+        set_nonLinearSolveStateVariables( *get_previousNonLinearSolveStateVariables( ) );
 
         // Extract the additional state variables
         set_previousAdditionalStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV,
                                                            getPreviousStateVariables( )->end( ) ) );
 
-        set_additionalStateVariables( *getPreviousAdditionalStateVariables( ) );
+        set_additionalStateVariables( *get_previousAdditionalStateVariables( ) );
 
     }
 
@@ -497,7 +375,7 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfiguration( *getConfigurations( ), lowerIndex, upperIndex );
+        return getSubConfiguration( *get_configurations( ), lowerIndex, upperIndex );
 
     }
 
@@ -544,7 +422,7 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfiguration( *getPreviousConfigurations( ), lowerIndex, upperIndex );
+        return getSubConfiguration( *get_previousConfigurations( ), lowerIndex, upperIndex );
 
     }
 
@@ -594,7 +472,7 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfigurationJacobian( *getConfigurations( ), lowerIndex, upperIndex );
+        return getSubConfigurationJacobian( *get_configurations( ), lowerIndex, upperIndex );
 
     }
 
@@ -633,7 +511,7 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        return getSubConfigurationJacobian( *getPreviousConfigurations( ), lowerIndex, upperIndex );
+        return getSubConfigurationJacobian( *get_previousConfigurations( ), lowerIndex, upperIndex );
 
     }
 
@@ -731,7 +609,7 @@ namespace tardigradeHydra{
 
         floatMatrix dF1dFn;
 
-        calculateFirstConfigurationJacobians( *getConfigurations( ), dF1dF, dF1dFn );
+        calculateFirstConfigurationJacobians( *get_configurations( ), dF1dF, dF1dFn );
 
         set_dF1dF( dF1dF );
 
@@ -748,71 +626,11 @@ namespace tardigradeHydra{
 
         floatMatrix dF1dFn;
 
-        calculateFirstConfigurationJacobians( *getPreviousConfigurations( ), dF1dF, dF1dFn );
+        calculateFirstConfigurationJacobians( *get_previousConfigurations( ), dF1dF, dF1dFn );
 
         set_previousdF1dF( dF1dF );
 
         set_previousdF1dFn( dF1dFn );
-
-    }
-
-    const floatMatrix* hydraBase::getdF1dF( ){
-        /*!
-         * Get the partial derivative of the first deformation gradient w.r.t. the deformation gradient
-         */
-
-        if ( !_dF1dF.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationJacobians( ) );
-
-        }
-
-        return &_dF1dF.second;
-
-    }
-
-    const floatMatrix* hydraBase::getdF1dFn( ){
-        /*!
-         * Get the partial derivative of the first deformation gradient w.r.t. the other deformation gradients
-         */
-
-        if ( !_dF1dFn.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setFirstConfigurationJacobians( ) );
-
-        }
-
-        return &_dF1dFn.second;
-
-    }
-
-    const floatMatrix* hydraBase::getPreviousdF1dF( ){
-        /*!
-         * Get the partial derivative of the previous first deformation gradient w.r.t. the deformation gradient
-         */
-
-        if ( !_previousdF1dF.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationJacobians( ) );
-
-        }
-
-        return &_previousdF1dF.second;
-
-    }
-
-    const floatMatrix* hydraBase::getPreviousdF1dFn( ){
-        /*!
-         * Get the partial derivative of the previous first deformation gradient w.r.t. the other deformation gradients
-         */
-
-        if ( !_previousdF1dFn.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFirstConfigurationJacobians( ) );
-
-        }
-
-        return &_previousdF1dFn.second;
 
     }
 
@@ -1276,9 +1094,9 @@ namespace tardigradeHydra{
         const floatVector *cauchyStress;
         TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = getStress( ) );
 
-        const floatMatrix *configurations = getConfigurations( );
+        const floatMatrix *configurations = get_configurations( );
 
-        const floatVector *nonLinearSolveStateVariables = getNonLinearSolveStateVariables( );
+        const floatVector *nonLinearSolveStateVariables = get_nonLinearSolveStateVariables( );
 
         floatMatrix Xmat( 1 + configurations->size( ) );
 
