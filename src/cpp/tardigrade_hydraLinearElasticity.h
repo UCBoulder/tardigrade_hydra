@@ -88,22 +88,6 @@ namespace tardigradeHydra{
                 //! Get a pointer to the value of the mu Lame parameter
                 const floatType* getMu( ){ return &_mu; }
         
-                const floatVector* getEe( );
-
-                const floatMatrix* getdEedFe( );
-       
-                const floatVector* getPK2Stress( );
-    
-                const floatMatrix* getdPK2StressdEe( );
-
-                const floatMatrix* getdPK2StressdFe( );
-    
-                const floatMatrix* getdCauchyStressdPK2Stress( );
-
-                const floatMatrix* getdCauchyStressdF( );
-    
-                const floatMatrix* getdCauchyStressdFn( );
-    
                 /*!
                  * Set the value of the lambda Lame parameter
                  * 
@@ -141,21 +125,21 @@ namespace tardigradeHydra{
         
                 floatType _mu;
         
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Ee,                      floatVector )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Ee,                      floatVector, setEe )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dEedFe,                  floatMatrix )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dEedFe,                  floatMatrix, setdEedFe )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2Stress,               floatVector )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2Stress,               floatVector, setPK2Stress )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdEe,           floatMatrix )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdEe,           floatMatrix, setdPK2StressdEe )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdFe,           floatMatrix )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdFe,           floatMatrix, setdPK2StressdFe )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPK2Stress, floatMatrix )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPK2Stress, floatMatrix, setdCauchyStressdPK2Stress )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdF,         floatMatrix )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdF,         floatMatrix, setdCauchyStressdF )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdFn,        floatMatrix )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdFn,        floatMatrix, setdCauchyStressdFn )
 
                 virtual void setEe( );
 
