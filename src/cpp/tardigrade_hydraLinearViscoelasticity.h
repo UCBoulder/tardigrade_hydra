@@ -206,6 +206,10 @@ namespace tardigradeHydra{
 
                 virtual void setdPreviousIsochoricRateMultiplierdPreviousT( );
 
+                virtual void setPK2MeanStress( const bool isPrevious );
+
+                virtual void setPK2IsochoricStress( const bool isPrevious );
+
                 virtual void setPK2MeanStress( );
 
                 virtual void setPK2IsochoricStress( );
@@ -217,6 +221,18 @@ namespace tardigradeHydra{
                 virtual void setdPK2MeanStressdT( );
 
                 virtual void setdPK2IsochoricStressdT( );
+
+                virtual void setPreviousPK2MeanStress( );
+
+                virtual void setPreviousPK2IsochoricStress( );
+
+                virtual void setPreviousdPK2MeanStressdFe( );
+
+                virtual void setPreviousdPK2IsochoricStressdFe( );
+
+                virtual void setPreviousdPK2MeanStressdT( );
+
+                virtual void setPreviousdPK2IsochoricStressdT( );
 
                 virtual void setdPK2StressdFe( ) override;
 
@@ -314,6 +330,18 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2IsochoricStressdT,                       floatVector, setdPK2IsochoricStressdT                       )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2IsochoricStressdFe,                      floatMatrix, setdPK2IsochoricStressdFe                      )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousPK2MeanStress,                       floatType,   setPreviousPK2MeanStress                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousPK2IsochoricStress,                  floatVector, setPreviousPK2IsochoricStress                  )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdPK2MeanStressdT,                    floatType,   setPreviousdPK2MeanStressdT                    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdPK2MeanStressdFe,                   floatVector, setPreviousdPK2MeanStressdFe                   )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdPK2IsochoricStressdT,               floatVector, setPreviousdPK2IsochoricStressdT               )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdPK2IsochoricStressdFe,              floatMatrix, setPreviousdPK2IsochoricStressdFe              )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdT,                                floatVector, setdPK2StressdT                                )
 
