@@ -1267,6 +1267,22 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
 
     floatVector dPK2IsochoricStressdT( deformationGradient.size( ), 0 );
 
+    floatMatrix dPK2IsochoricStressdPreviousFe( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
+
+    floatVector dPK2IsochoricStressdPreviousT( deformationGradient.size( ), 0 );
+
+    floatMatrix dPK2IsochoricStressdPreviousISVs( deformationGradient.size( ), floatVector( 3*9, 0 ) );
+
+    floatMatrix dIsochoricISVsdFe( 3*9, floatVector( deformationGradient.size( ), 0 ) );
+
+    floatVector dIsochoricISVsdT( 3*9, 0 );
+
+    floatMatrix dIsochoricISVsdPreviousFe( 3*9, floatVector( deformationGradient.size( ), 0 ) );
+
+    floatVector dIsochoricISVsdPreviousT( 3*9, 0 );
+
+    floatMatrix dIsochoricISVsdPreviousISVs( 3*9, floatVector( 3*9, 0 ) );
+
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
         floatVector deltas( deformationGradient.size( ), 0 );
@@ -1286,6 +1302,12 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
             dPK2IsochoricStressdFe[ j ][ i ] = ( ( *Rp.get_PK2IsochoricStress( ) )[ j ] - ( *Rm.get_PK2IsochoricStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
+        }
+
+        for ( unsigned int j = 0; j < 3*9; j++ ){
+
+            dIsochoricISVsdFe[ j ][ i ] = ( ( *Rp.get_isochoricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_isochoricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -1313,11 +1335,21 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
 
         }
 
+        for ( unsigned int j = 0; j < 3*9; j++ ){
+
+            dIsochoricISVsdT[ j ] = ( ( *Rp.get_isochoricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_isochoricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
+        }
+
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2IsochoricStressdFe, *R.get_dPK2IsochoricStressdFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2IsochoricStressdT, *R.get_dPK2IsochoricStressdT( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dIsochoricISVsdFe, *R.get_dIsochoricISVsdFe( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dIsochoricISVsdT, *R.get_dIsochoricISVsdT( ) ) );
 
     floatMatrix previousdPK2IsochoricStressdFe( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
 
@@ -1341,7 +1373,15 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
+            dPK2IsochoricStressdPreviousFe[ j ][ i ] = ( ( *Rp.get_PK2IsochoricStress( ) )[ j ] - ( *Rm.get_PK2IsochoricStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
             previousdPK2IsochoricStressdFe[ j ][ i ] = ( ( *Rp.get_previousPK2IsochoricStress( ) )[ j ] - ( *Rm.get_previousPK2IsochoricStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
+        }
+
+        for ( unsigned int j = 0; j < 3*9; j++ ){
+
+            dIsochoricISVsdPreviousFe[ j ][ i ] = ( ( *Rp.get_isochoricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_isochoricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -1365,15 +1405,65 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
+            dPK2IsochoricStressdPreviousT[ j ] = ( ( *Rp.get_PK2IsochoricStress( ) )[ j ] - ( *Rm.get_PK2IsochoricStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
             previousdPK2IsochoricStressdT[ j ] = ( ( *Rp.get_previousPK2IsochoricStress( ) )[ j ] - ( *Rm.get_previousPK2IsochoricStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
+        }
+
+        for ( unsigned int j = 0; j < 3*9; j++ ){
+
+            dIsochoricISVsdPreviousT[ j ] = ( ( *Rp.get_isochoricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_isochoricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
     }
 
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2IsochoricStressdPreviousFe, *R.get_dPK2IsochoricStressdPreviousFe( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2IsochoricStressdPreviousT, *R.get_dPK2IsochoricStressdPreviousT( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dIsochoricISVsdPreviousFe, *R.get_dIsochoricISVsdPreviousFe( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dIsochoricISVsdPreviousT, *R.get_dIsochoricISVsdPreviousT( ) ) );
+
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2IsochoricStressdFe, *R.get_previousdPK2IsochoricStressdFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2IsochoricStressdT, *R.get_previousdPK2IsochoricStressdT( ) ) );
+
+    for ( unsigned int i = 0; i < 3*9; i++ ){
+
+        floatVector deltas( previousStateVariables.size( ), 0 );
+
+        deltas[ i + ISVlb + 2 ] = eps * std::fabs( previousStateVariables[ i + ISVlb + 2 ] ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                             previousStateVariables + deltas, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        residualMock Rp( &hydrap, 9, parameters, ISVlb, ISVub, 0.5 );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                             previousStateVariables - deltas, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        residualMock Rm( &hydram, 9, parameters, ISVlb, ISVub, 0.5 );
+
+        for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
+
+            dPK2IsochoricStressdPreviousISVs[ j ][ i ] = ( ( *Rp.get_PK2IsochoricStress( ) )[ j ] - ( *Rm.get_PK2IsochoricStress( ) )[ j ] ) / ( 2 * deltas[ i + ISVlb + 2 ] );
+
+        }
+
+        for ( unsigned int j = 0; j < 3*9; j++ ){
+
+            dIsochoricISVsdPreviousISVs[ j ][ i ] = ( ( *Rp.get_isochoricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_isochoricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i + ISVlb + 2 ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2IsochoricStressdPreviousISVs, *R.get_dPK2IsochoricStressdPreviousISVs( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dIsochoricISVsdPreviousISVs, *R.get_dIsochoricISVsdPreviousISVs( ) ) );
 
 }
 

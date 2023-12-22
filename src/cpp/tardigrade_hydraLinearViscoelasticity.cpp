@@ -783,6 +783,33 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPK2MeanStressdPreviousT( ){
+            /*!
+             * Set the derivative of the PK2 mean stress w.r.t. the previous temperature
+             */
+
+            get_PK2MeanStress( );
+
+        }
+
+        void residual::setdPK2MeanStressdPreviousFe( ){
+            /*!
+             * Set the derivative of the PK2 mean stress w.r.t. the previous elastic deformation gradient
+             */
+
+            get_PK2MeanStress( );
+
+        }
+
+        void residual::setdPK2MeanStressdPreviousISVs( ){
+            /*!
+             * Set the derivative of the PK2 mean stress w.r.t. the previous state variables
+             */
+
+            get_PK2MeanStress( );
+
+        }
+
         void residual::setPreviousdPK2MeanStressdT( ){
             /*!
              * Set the previous derivative of the PK2 mean stress w.r.t. the temperature
@@ -872,10 +899,10 @@ namespace tardigradeHydra{
             // Compute the strain measures
 
             floatVector isochoricStrain, previousIsochoricStrain;
-            floatMatrix dEehatdFehat;
+            floatMatrix dEehatdFehat, previousdEehatdFehat;
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fehat, isochoricStrain, dEehatdFehat ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *previousFehat, previousIsochoricStrain ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *previousFehat, previousIsochoricStrain, previousdEehatdFehat ) );
 
             floatMatrix dEehatdFe = tardigradeVectorTools::dot( dEehatdFehat, *dFehatdFe );
 
@@ -898,6 +925,22 @@ namespace tardigradeHydra{
 
             floatVector dPK2IsochoricStressdRateMultiplier;
 
+            floatMatrix dPK2IsochoricStressdPreviousEe;
+
+            floatVector dPK2IsochoricStressdPreviousRateMultiplier;
+
+            floatMatrix dPK2IsochoricStressdPreviousISVs;
+
+            floatMatrix dISVsdEe;
+
+            floatVector dISVsdRateMultiplier;
+
+            floatMatrix dISVsdPreviousEe;
+
+            floatVector dISVsdPreviousRateMultiplier;
+
+            floatMatrix dISVsdPreviousISVs;
+
             // Compute the viscous isochoric stress
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::linearViscoelasticity( time, isochoricStrain,
                                                                                                      previousTime, previousIsochoricStrain,
@@ -905,9 +948,14 @@ namespace tardigradeHydra{
                                                                                                      *previousIsochoricRateMultiplier,
                                                                                                      previousIsochoricStateVariables,
                                                                                                      getIsochoricViscoelasticParameters( ),
-                                                                                                     *getIntegrationAlpha( ), deltaPK2IsochoricStress,
-                                                                                                     PK2IsochoricStress, currentIsochoricStateVariables,
-                                                                                                     dPK2IsochoricStressdEe, dPK2IsochoricStressdRateMultiplier ) );
+                                                                                                     *getIntegrationAlpha( ),
+                                                                                                     deltaPK2IsochoricStress, PK2IsochoricStress, currentIsochoricStateVariables,
+                                                                                                     dPK2IsochoricStressdEe,         dPK2IsochoricStressdRateMultiplier,
+                                                                                                     dPK2IsochoricStressdPreviousEe, dPK2IsochoricStressdPreviousRateMultiplier,
+                                                                                                     dPK2IsochoricStressdPreviousISVs,
+                                                                                                     dISVsdEe,                       dISVsdRateMultiplier,
+                                                                                                     dISVsdPreviousEe,               dISVsdPreviousRateMultiplier,
+                                                                                                     dISVsdPreviousISVs ) );
 
             if ( isPrevious ){
 
@@ -921,12 +969,30 @@ namespace tardigradeHydra{
             else{
 
                 set_PK2IsochoricStress( PK2IsochoricStress );
-    
+
                 set_isochoricViscoelasticStateVariables( currentIsochoricStateVariables );
-    
+
                 set_dPK2IsochoricStressdFe( tardigradeVectorTools::dot( dPK2IsochoricStressdEe, dEehatdFe ) );
-    
+
                 set_dPK2IsochoricStressdT( dPK2IsochoricStressdRateMultiplier * ( *dIsochoricRateMultiplierdT ) );
+
+                floatMatrix previousdEehatdFe = tardigradeVectorTools::dot( previousdEehatdFehat, *get_previousdFehatdFe( ) );
+
+                set_dPK2IsochoricStressdPreviousFe( tardigradeVectorTools::dot( dPK2IsochoricStressdPreviousEe, previousdEehatdFe ) );
+
+                set_dPK2IsochoricStressdPreviousT( dPK2IsochoricStressdPreviousRateMultiplier * ( *get_dPreviousIsochoricRateMultiplierdPreviousT( ) ) );
+
+                set_dPK2IsochoricStressdPreviousISVs( dPK2IsochoricStressdPreviousISVs );
+
+                set_dIsochoricISVsdFe( tardigradeVectorTools::dot( dISVsdEe, dEehatdFe ) );
+
+                set_dIsochoricISVsdT( dISVsdRateMultiplier * ( *dIsochoricRateMultiplierdT ) );
+
+                set_dIsochoricISVsdPreviousFe( tardigradeVectorTools::dot( dISVsdPreviousEe, previousdEehatdFe ) );
+
+                set_dIsochoricISVsdPreviousT( dISVsdPreviousRateMultiplier * ( *get_dPreviousIsochoricRateMultiplierdPreviousT( ) ) );
+
+                set_dIsochoricISVsdPreviousISVs( dISVsdPreviousISVs );
 
             }
 
@@ -945,6 +1011,81 @@ namespace tardigradeHydra{
         void residual::setdPK2IsochoricStressdT( ){
             /*!
              * Set the derivative of the isochoric PK2 stress w.r.t. the temperature
+             */
+
+            get_PK2IsochoricStress( );
+
+        }
+
+        void residual::setdPK2IsochoricStressdPreviousFe( ){
+            /*!
+             * Set the derivative of the isochoric PK2 stress w.r.t. the previous elastic
+             * deformation gradient
+             */
+
+            get_PK2IsochoricStress( );
+
+        }
+
+        void residual::setdPK2IsochoricStressdPreviousT( ){
+            /*!
+             * Set the derivative of the isochoric PK2 stress w.r.t. the previous temperature
+             */
+
+            get_PK2IsochoricStress( );
+
+        }
+
+        void residual::setdPK2IsochoricStressdPreviousISVs( ){
+            /*!
+             * Set the derivative of the isochoric PK2 stress w.r.t. the previous state variables
+             */
+
+            get_PK2IsochoricStress( );
+
+        }
+
+        void residual::setdIsochoricISVsdFe( ){
+            /*!
+             * Set the derivative of the isochoric isvs w.r.t. the elastic
+             * deformation gradient
+             */
+
+            get_PK2IsochoricStress( );
+
+        }
+
+        void residual::setdIsochoricISVsdT( ){
+            /*!
+             * Set the derivative of the isochoric isvs w.r.t. the temperature
+             */
+
+            get_PK2IsochoricStress( );
+
+        }
+
+        void residual::setdIsochoricISVsdPreviousFe( ){
+            /*!
+             * Set the derivative of the isochoric isvs w.r.t. the previous elastic
+             * deformation gradient
+             */
+
+            get_PK2IsochoricStress( );
+
+        }
+
+        void residual::setdIsochoricISVsdPreviousT( ){
+            /*!
+             * Set the derivative of the isochoric isvs w.r.t. the previous temperature
+             */
+
+            get_PK2IsochoricStress( );
+
+        }
+
+        void residual::setdIsochoricISVsdPreviousISVs( ){
+            /*!
+             * Set the derivative of the isochoric isvs w.r.t. the previous state variables
              */
 
             get_PK2IsochoricStress( );
