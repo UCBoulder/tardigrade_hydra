@@ -106,14 +106,6 @@ namespace tardigradeHydra{
                 //! Get the quadratic parameters for the thermal expansion
                 const floatVector* getQuadraticParameters( ){ return &_quadraticParameters; }
 
-                const floatVector* getThermalGreenLagrangeStrain( );
-
-                const floatVector* getThermalDeformationGradient( );
-
-                const floatVector* getdThermalGreenLagrangeStraindT( );
-
-                const floatVector* getdThermalDeformationGradientdT( );
-
             protected:
 
                 virtual void setThermalGreenLagrangeStrain( );
@@ -157,13 +149,13 @@ namespace tardigradeHydra{
 
                 floatVector _quadraticParameters;
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalGreenLagrangeStrain, floatVector)
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalGreenLagrangeStrain,    floatVector, setThermalGreenLagrangeStrain    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalGreenLagrangeStraindT, floatVector)
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalGreenLagrangeStraindT, floatVector, setThermalDeformationGradient    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalDeformationGradient, floatVector)
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalDeformationGradient,    floatVector, setdThermalGreenLagrangeStraindT )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalDeformationGradientdT, floatVector)
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalDeformationGradientdT, floatVector, setdThermalDeformationGradientdT )
 
                 virtual void decomposeParameters( const floatVector &parameters );
 
