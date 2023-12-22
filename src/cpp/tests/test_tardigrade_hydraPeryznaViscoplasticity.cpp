@@ -398,20 +398,14 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
 
     unsigned int dimension = 3;
 
-    try{
-        hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-        residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
+    residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
     
-        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
     
-        tardigradeHydra::peryznaViscoplasticity::unit_test::residualTester::runBasicGetTests( R );
-    }
-    catch( std::exception &e ){
-        tardigradeErrorTools::printNestedExceptions( e );
-        throw e;
-    }
+    tardigradeHydra::peryznaViscoplasticity::unit_test::residualTester::runBasicGetTests( R );
 
 }
 
@@ -4168,12 +4162,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.get_previousVelocityGradient( ) ) );
 
-    try{
     Rjac.get_dVelocityGradientdCauchyStress( );
 
     Rjac.get_dPreviousVelocityGradientdPreviousCauchyStress( );
-    }
-    catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rjac.get_velocityGradient( ) ) );
 
@@ -5809,12 +5800,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.get_plasticDeformationGradient( ) ) );
 
-    try{
     Rjac1.get_dPlasticDeformationGradientdCauchyStress( );
 
     Rjac2.get_dPlasticDeformationGradientdPreviousCauchyStress( );
-    }
-    catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rjac1.get_plasticDeformationGradient( ) ) );
 
@@ -6618,12 +6606,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.get_plasticStateVariables( ) ) );
 
-    try{
     R1.get_dPlasticStateVariablesdCauchyStress( );
 
     R2.get_dPlasticStateVariablesdPreviousCauchyStress( );
-    }
-    catch(std::exception &e){tardigradeErrorTools::printNestedExceptions( e );}
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R1.get_plasticStateVariables( ) ) );
 
