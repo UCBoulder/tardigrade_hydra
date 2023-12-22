@@ -1002,9 +1002,11 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setPK2Stress( ){
+        void residual::setPK2Stress( const bool isPrevious ){
             /*!
              * Set the PK2 stress
+             * 
+             * \param isPrevious: Flag for if to compute the current (false) or previous (true) PK2 stress
              */
 
             const unsigned int* dim = hydra->getDimension( );
@@ -1012,9 +1014,37 @@ namespace tardigradeHydra{
             floatVector eye( ( *dim ) * ( *dim ), 0 );
             tardigradeVectorTools::eye( eye );
 
-            floatVector PK2Stress = ( *get_PK2IsochoricStress( ) ) + ( *get_PK2MeanStress( ) ) * eye;
+            const floatVector *isochoric;
 
-            set_PK2Stress( PK2Stress );
+            const floatType *mean;
+
+            if ( isPrevious ){
+
+                isochoric = get_previousPK2IsochoricStress( );
+
+                mean      = get_previousPK2MeanStress( );
+
+            }
+            else{
+
+                isochoric = get_PK2IsochoricStress( );
+
+                mean      = get_PK2MeanStress( );
+
+            }
+
+            floatVector PK2Stress = ( *isochoric ) + ( *mean ) * eye;
+
+            if ( isPrevious ){
+
+                set_previousPK2Stress( PK2Stress );
+
+            }
+            else{
+
+                set_PK2Stress( PK2Stress );
+
+            }
 
         }
 
@@ -1023,14 +1053,62 @@ namespace tardigradeHydra{
              * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the elastic deformation gradient
              */
 
+            setdPK2StressdFe( false );
+
+        }
+
+        void residual::setPreviousdPK2StressdFe( ){
+            /*!
+             * Set the previous derivative of the second Piola-Kirchhoff stress w.r.t. the elastic deformation gradient
+             */
+
+            setdPK2StressdFe( true );
+
+        }
+
+        void residual::setdPK2StressdFe( const bool isPrevious ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the elastic deformation gradient
+             * 
+             * \param isPrevious: Flag for whether to compute the derivative of the current (false) or previous (true) stress
+             */
+
             const unsigned int* dim = hydra->getDimension( );
 
             floatVector eye( ( *dim ) * ( *dim ), 0 );
             tardigradeVectorTools::eye( eye );
 
-            floatMatrix dPK2StressdFe = *get_dPK2IsochoricStressdFe( ) + tardigradeVectorTools::dyadic( eye, *get_dPK2MeanStressdFe( ) );
+            const floatMatrix *dIsodFe;
 
-            set_dPK2StressdFe( dPK2StressdFe );
+            const floatVector *dMeandFe;
+
+            if ( isPrevious ){
+
+                dIsodFe  = get_previousdPK2IsochoricStressdFe( );
+
+                dMeandFe = get_previousdPK2MeanStressdFe( );
+
+            }
+            else{
+
+                dIsodFe  = get_dPK2IsochoricStressdFe( );
+
+                dMeandFe = get_dPK2MeanStressdFe( );
+
+            }
+
+            floatMatrix dPK2StressdFe = *dIsodFe + tardigradeVectorTools::dyadic( eye, *dMeandFe );
+
+            if ( isPrevious ){
+
+                set_previousdPK2StressdFe( dPK2StressdFe );
+
+            }
+            else{
+
+                set_dPK2StressdFe( dPK2StressdFe );
+
+            }
 
         }
 
@@ -1050,6 +1128,22 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPreviousdPK2StressdT( ){
+            /*!
+             * Set the prevoius derivative of the second Piola-Kirchhoff stress w.r.t. the temperature
+             */
+
+            const unsigned int* dim = hydra->getDimension( );
+
+            floatVector eye( ( *dim ) * ( *dim ), 0 );
+            tardigradeVectorTools::eye( eye );
+
+            floatVector dPK2StressdT = *get_previousdPK2IsochoricStressdT( ) + *get_previousdPK2MeanStressdT( ) * eye;
+
+            set_previousdPK2StressdT( dPK2StressdT );
+
+        }
+
         void residual::setdCauchyStressdT( ){
             /*!
              * Set the derivative of the Cauchy stress w.r.t. the temperature
@@ -1058,6 +1152,17 @@ namespace tardigradeHydra{
             floatVector dCauchyStressdT = tardigradeVectorTools::dot( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdT( ) );
 
             set_dCauchyStressdT( dCauchyStressdT );
+
+        }
+
+        void residual::setPreviousdCauchyStressdT( ){
+            /*!
+             * Set previous the derivative of the Cauchy stress w.r.t. the temperature
+             */
+
+            floatVector previousdCauchyStressdT = tardigradeVectorTools::dot( *get_dCauchyStressdPK2Stress( ), *get_previousdPK2StressdT( ) );
+
+            set_previousdCauchyStressdT( previousdCauchyStressdT );
 
         }
 

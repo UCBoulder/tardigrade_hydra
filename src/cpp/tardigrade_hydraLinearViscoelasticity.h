@@ -186,8 +186,8 @@ namespace tardigradeHydra{
 
                 virtual void setIsochoricTaus( const floatVector &taus );
 
-                virtual void setPK2Stress( ) override;
-    
+                virtual void setPK2Stress( const bool isPrevious ) override;
+
                 virtual void decomposeParameterVector( const floatVector &parameters );
 
                 virtual void setVolumetricRateMultiplier( );
@@ -234,11 +234,19 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousdPK2IsochoricStressdT( );
 
+                virtual void setdPK2StressdFe( const bool isPrevious );
+
                 virtual void setdPK2StressdFe( ) override;
+
+                virtual void setPreviousdPK2StressdFe( ) override;
 
                 virtual void setdPK2StressdT( );
 
+                virtual void setPreviousdPK2StressdT( );
+
                 virtual void setdCauchyStressdT( );
+
+                virtual void setPreviousdCauchyStressdT( );
 
                 virtual void setdRdT( ) override;
 
@@ -345,7 +353,11 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdT,                                floatVector, setdPK2StressdT                                )
 
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdT,                        floatVector, setPreviousdPK2StressdT                        )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdT,                             floatVector, setdCauchyStressdT                             )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdT,                     floatVector, setPreviousdCauchyStressdT                     )
 
         };
 
