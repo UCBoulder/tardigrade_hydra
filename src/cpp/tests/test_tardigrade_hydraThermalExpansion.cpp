@@ -55,13 +55,13 @@ namespace tardigradeHydra{
 
                         BOOST_CHECK( &R._quadraticParameters == R.getQuadraticParameters( ) );
 
-                        BOOST_CHECK( &R._thermalGreenLagrangeStrain.second == R.getThermalGreenLagrangeStrain( ) );
+                        BOOST_CHECK( &R._thermalGreenLagrangeStrain.second == R.get_thermalGreenLagrangeStrain( ) );
 
-                        BOOST_CHECK( &R._thermalDeformationGradient.second == R.getThermalDeformationGradient( ) );
+                        BOOST_CHECK( &R._thermalDeformationGradient.second == R.get_thermalDeformationGradient( ) );
 
-                        BOOST_CHECK( &R._dThermalGreenLagrangeStraindT.second == R.getdThermalGreenLagrangeStraindT( ) );
+                        BOOST_CHECK( &R._dThermalGreenLagrangeStraindT.second == R.get_dThermalGreenLagrangeStraindT( ) );
 
-                        BOOST_CHECK( &R._dThermalDeformationGradientdT.second == R.getdThermalDeformationGradientdT( ) );
+                        BOOST_CHECK( &R._dThermalDeformationGradientdT.second == R.get_dThermalDeformationGradientdT( ) );
 
                     }
 
@@ -382,7 +382,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrain ){
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( thermalGreenLagrangeStrain, *R.getThermalGreenLagrangeStrain( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( thermalGreenLagrangeStrain, *R.get_thermalGreenLagrangeStrain( ) ) );
 
 }
 
@@ -504,7 +504,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dThermalGreenLagrangeStraindF[ j ][ i ] = ( ( *Rp.getThermalGreenLagrangeStrain( ) )[ j ] - ( *Rm.getThermalGreenLagrangeStrain( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            dThermalGreenLagrangeStraindF[ j ][ i ] = ( ( *Rp.get_thermalGreenLagrangeStrain( ) )[ j ] - ( *Rm.get_thermalGreenLagrangeStrain( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -529,7 +529,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dThermalGreenLagrangeStraindT[ j ] = ( ( *Rp.getThermalGreenLagrangeStrain( ) )[ j ] - ( *Rm.getThermalGreenLagrangeStrain( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            dThermalGreenLagrangeStraindT[ j ] = ( ( *Rp.get_thermalGreenLagrangeStrain( ) )[ j ] - ( *Rm.get_thermalGreenLagrangeStrain( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -537,7 +537,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dThermalGreenLagrangeStraindF, floatMatrix( 9, floatVector( 9, 0 ) ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dThermalGreenLagrangeStraindT, *R.getdThermalGreenLagrangeStraindT( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dThermalGreenLagrangeStraindT, *R.get_dThermalGreenLagrangeStraindT( ) ) );
 
 }
 
@@ -664,7 +664,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradient ){
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( thermalDeformationGradient, *R.getThermalDeformationGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( thermalDeformationGradient, *R.get_thermalDeformationGradient( ) ) );
 
 }
 
@@ -786,7 +786,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dThermalDeformationGradientdF[ j ][ i ] = ( ( *Rp.getThermalDeformationGradient( ) )[ j ] - ( *Rm.getThermalDeformationGradient( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            dThermalDeformationGradientdF[ j ][ i ] = ( ( *Rp.get_thermalDeformationGradient( ) )[ j ] - ( *Rm.get_thermalDeformationGradient( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -811,7 +811,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dThermalDeformationGradientdT[ j ] = ( ( *Rp.getThermalDeformationGradient( ) )[ j ] - ( *Rm.getThermalDeformationGradient( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            dThermalDeformationGradientdT[ j ] = ( ( *Rp.get_thermalDeformationGradient( ) )[ j ] - ( *Rm.get_thermalDeformationGradient( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -819,7 +819,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dThermalDeformationGradientdF, floatMatrix( 9, floatVector( 9, 0 ) ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dThermalDeformationGradientdT, *R.getdThermalDeformationGradientdT( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dThermalDeformationGradientdT, *R.get_dThermalDeformationGradientdT( ) ) );
 
 }
 
