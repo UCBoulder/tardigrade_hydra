@@ -32,23 +32,55 @@ namespace tardigradeHydra{
             setMu( parameters[ 1 ] );
     
         }
+   
+        void residual::setEe( const bool isPrevious ){
+            /*!
+             * Set the value of the elastic Green-Lagrange strain
+             * 
+             * \param isPrevious: Flag for whether to compute the strain (false) or the previous strain (true)
+             */
+
+            floatVector Fe;
     
+            floatMatrix dEedFe;
+
+            if ( isPrevious ){
+
+                Fe = ( *hydra->get_previousConfigurations( ) )[ 0 ];
+
+            }
+            else{
+
+                Fe = ( *hydra->get_configurations( ) )[ 0 ];
+
+            }
+
+            floatVector Ee;
+   
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( Fe, Ee, dEedFe ) );
+
+            if ( isPrevious ){
+    
+                set_previousEe( Ee );
+    
+                set_previousdEedFe( dEedFe );
+            }
+            else{
+
+                set_Ee( Ee );
+    
+                set_dEedFe( dEedFe );
+
+            }
+
+        }
+ 
         void residual::setEe( ){
             /*!
              * Set the current value of the elastic Green-Lagrange strain
              */
-    
-            floatVector Fe = ( *hydra->get_configurations( ) )[ 0 ];
-    
-            floatVector Ee;
-   
-            floatMatrix dEedFe;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( Fe, Ee, dEedFe ) );
-    
-            set_Ee( Ee );
-    
-            set_dEedFe( dEedFe );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setEe( false ) )
     
         }
     
@@ -59,7 +91,27 @@ namespace tardigradeHydra{
              * Default assumption is that this happens when the Green-Lagrange strain is computed; 
              */
     
-            TARDIGRADE_ERROR_TOOLS_CATCH( get_Ee( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setEe( false ) );
+    
+        }
+    
+        void residual::setPreviousEe( ){
+            /*!
+             * Set the previous value of the elastic Green-Lagrange strain
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setEe( true ) )
+    
+        }
+    
+        void residual::setPreviousdEedFe( ){
+            /*!
+             * Set the previous gradient of the elastic Green-Lagrange strain w.r.t. the elastic deformation gradient
+             * 
+             * Default assumption is that this happens when the Green-Lagrange strain is computed; 
+             */
+    
+            TARDIGRADE_ERROR_TOOLS_CATCH( setEe( true ) );
     
         }
     

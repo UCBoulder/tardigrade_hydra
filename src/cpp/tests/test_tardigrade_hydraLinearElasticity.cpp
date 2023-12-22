@@ -53,6 +53,10 @@ namespace tardigradeHydra{
 
                         BOOST_CHECK( &R._dEedFe.second == R.get_dEedFe( ) );
 
+                        BOOST_CHECK( &R._previousEe.second == R.get_previousEe( ) );
+
+                        BOOST_CHECK( &R._previousdEedFe.second == R.get_previousdEedFe( ) );
+
                         BOOST_CHECK( &R._PK2Stress.second == R.get_PK2Stress( ) );
     
                         BOOST_CHECK( &R._dPK2StressdEe.second == R.get_dPK2StressdEe( ) );
@@ -188,12 +192,18 @@ BOOST_AUTO_TEST_CASE( test_residual_setEe ){
                              0.11620898, -0.24386991,  0.07603126,
                             -0.13355661,  0.07603126, -0.33822733 };
 
+    floatVector previousEeAnswer = { -0.35589238, -0.06319833, -0.19137706,
+                                     -0.06319833,  0.13857639,  0.22404018,
+                                     -0.19137706,  0.22404018, -0.16361939 };
+
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     tardigradeHydra::linearElasticity::residual R( &hydra, 9, parameters );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( EeAnswer, *R.get_Ee( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousEeAnswer, *R.get_previousEe( ) ) );
 
 }
 
@@ -253,9 +263,15 @@ BOOST_AUTO_TEST_CASE( test_residual_setdEedFe ){
 
     floatVector EeAnswer;
 
+    floatVector previousEeAnswer;
+
     floatMatrix dEedFeAnswer;
 
+    floatMatrix previousdEedFeAnswer;
+
     TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( deformationGradient, EeAnswer, dEedFeAnswer ) );
+
+    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( previousDeformationGradient, previousEeAnswer, previousdEedFeAnswer ) );
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
@@ -263,6 +279,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setdEedFe ){
     tardigradeHydra::linearElasticity::residual R( &hydra, 9, parameters );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dEedFeAnswer, *R.get_dEedFe( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdEedFeAnswer, *R.get_previousdEedFe( ) ) );
 
 }
 

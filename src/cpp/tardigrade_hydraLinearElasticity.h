@@ -101,49 +101,18 @@ namespace tardigradeHydra{
                  * \param &mu: The mu Lame parameter
                  */ 
                 void setMu( const floatType &mu ){ _mu = mu; }
-     
-            private:
-    
-                // Friend classes
-                friend class tardigradeHydra::linearElasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
-        
-                using tardigradeHydra::residualBase::residualBase;
-        
-                using tardigradeHydra::residualBase::setResidual;
-        
-                using tardigradeHydra::residualBase::setJacobian;
-        
-                using tardigradeHydra::residualBase::setdRdF;
-        
-                using tardigradeHydra::residualBase::setdRdT;
-        
-                using tardigradeHydra::residualBase::setAdditionalDerivatives;
-        
-                using tardigradeHydra::residualBase::setStress;
-        
-                floatType _lambda;
-        
-                floatType _mu;
-        
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Ee,                      floatVector, setEe )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dEedFe,                  floatMatrix, setdEedFe )
+            protected:
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2Stress,               floatVector, setPK2Stress )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdEe,           floatMatrix, setdPK2StressdEe )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdFe,           floatMatrix, setdPK2StressdFe )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPK2Stress, floatMatrix, setdCauchyStressdPK2Stress )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdF,         floatMatrix, setdCauchyStressdF )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdFn,        floatMatrix, setdCauchyStressdFn )
+                virtual void setEe( const bool isPrevious );
 
                 virtual void setEe( );
 
                 virtual void setdEedFe( );
+ 
+                virtual void setPreviousEe( );
+
+                virtual void setPreviousdEedFe( );
  
                 virtual void setPK2Stress( );            
 
@@ -168,7 +137,50 @@ namespace tardigradeHydra{
                 virtual void setdRdF( ) override;
 
                 virtual void decomposeParameterVector( const floatVector &parameters );
+     
+            private:
     
+                // Friend classes
+                friend class tardigradeHydra::linearElasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
+        
+                using tardigradeHydra::residualBase::residualBase;
+        
+                using tardigradeHydra::residualBase::setResidual;
+        
+                using tardigradeHydra::residualBase::setJacobian;
+        
+                using tardigradeHydra::residualBase::setdRdF;
+        
+                using tardigradeHydra::residualBase::setdRdT;
+        
+                using tardigradeHydra::residualBase::setAdditionalDerivatives;
+        
+                using tardigradeHydra::residualBase::setStress;
+        
+                floatType _lambda;
+        
+                floatType _mu;
+        
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Ee,                      floatVector, setEe                      )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dEedFe,                  floatMatrix, setdEedFe                  )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousEe,              floatVector, setPreviousEe              )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdEedFe,          floatMatrix, setPreviousdEedFe          )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2Stress,               floatVector, setPK2Stress               )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdEe,           floatMatrix, setdPK2StressdEe           )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdFe,           floatMatrix, setdPK2StressdFe           )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPK2Stress, floatMatrix, setdCauchyStressdPK2Stress )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdF,         floatMatrix, setdCauchyStressdF         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdFn,        floatMatrix, setdCauchyStressdFn        )
+
         };
 
     }
