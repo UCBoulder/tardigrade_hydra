@@ -153,83 +153,17 @@ namespace tardigradeHydra{
 
         // Set the configurations
 
-        setMicroConfigurations( microConfigurations );
+        set_microConfigurations( microConfigurations );
 
-        setInverseMicroConfigurations( inverseMicroConfigurations );
+        set_inverseMicroConfigurations( inverseMicroConfigurations );
 
-        setGradientMicroConfigurations( gradientMicroConfigurations );
+        set_gradientMicroConfigurations( gradientMicroConfigurations );
 
-        setPreviousMicroConfigurations( previousMicroConfigurations );
+        set_previousMicroConfigurations( previousMicroConfigurations );
 
-        setPreviousInverseMicroConfigurations( previousInverseMicroConfigurations );
+        set_previousInverseMicroConfigurations( previousInverseMicroConfigurations );
 
-        setPreviousGradientMicroConfigurations( previousGradientMicroConfigurations );
-
-    }
-
-    void hydraBaseMicromorphic::setMicroConfigurations( const floatMatrix &microConfigurations ){
-        /*!
-         * Set the micro-configurations
-         * 
-         * \param &microConfigurations: The list of micro-configurations in row-major matrix form
-         */
-
-        setIterationData( microConfigurations, _microConfigurations );
-
-    }
-
-    void hydraBaseMicromorphic::setInverseMicroConfigurations( const floatMatrix &inverseMicroConfigurations ){
-        /*!
-         * Set the inverse micro-configurations
-         * 
-         * \param &inverseMicroConfigurations: The list of inverse micro-configurations in row-major matrix form
-         */
-
-        setIterationData( inverseMicroConfigurations, _inverseMicroConfigurations );
-
-    }
-
-    void hydraBaseMicromorphic::setGradientMicroConfigurations( const floatMatrix &gradientMicroConfigurations ){
-        /*!
-         * Set the spatial gradients of the micro-configurations w.r.t. their reference configurations
-         * 
-         * \param &gradientMicroConfigurations: The list of the spatial gradients of the micro-configurations in row-major matrix form
-         */
-
-        setIterationData( gradientMicroConfigurations, _gradientMicroConfigurations );
-
-    }
-
-    void hydraBaseMicromorphic::setPreviousMicroConfigurations( const floatMatrix &previousMicroConfigurations ){
-        /*!
-         * Set the previous micro-configurations
-         * 
-         * \param &previousMicroConfigurations: The list of previous micro-configurations in row-major matrix form
-         */
-
-        setPreviousData( previousMicroConfigurations, _previousMicroConfigurations );
-
-    }
-
-    void hydraBaseMicromorphic::setPreviousInverseMicroConfigurations( const floatMatrix &previousInverseMicroConfigurations ){
-        /*!
-         * Set the previous inverse micro-configurations
-         * 
-         * \param &previousInverseMicroConfigurations: The list of previous inverse micro-configurations in row-major matrix form
-         */
-
-        setPreviousData( previousInverseMicroConfigurations, _previousInverseMicroConfigurations );
-
-    }
-
-    void hydraBaseMicromorphic::setPreviousGradientMicroConfigurations( const floatMatrix &previousGradientMicroConfigurations ){
-        /*!
-         * Set the spatial gradients of the previous micro-configurations w.r.t. their reference configurations
-         * 
-         * \param &previousGradientMicroConfigurations: The list of the spatial gradients of the previous micro-configurations in row-major matrix form
-         */
-
-        setPreviousData( previousGradientMicroConfigurations, _previousGradientMicroConfigurations );
+        set_previousGradientMicroConfigurations( previousGradientMicroConfigurations );
 
     }
 
@@ -405,160 +339,6 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBaseMicromorphic::setdChi1dChi( const floatMatrix &dChi1dChi ){
-        /*!
-         * Set the value of the derivative of the first micro-configuration w.r.t. the total micro configuration
-         * 
-         * \param &dChi1dChi: The value of the jacobian
-         */
-
-        setIterationData( dChi1dChi, _dChi1dChi );
-
-    }
-
-    void hydraBaseMicromorphic::setdChi1dChin( const floatMatrix &dChi1dChin ){
-        /*!
-         * Set the value of the derivative of the first micro-configuration w.r.t. the remaining micro configurationn
-         * 
-         * \param &dChi1dChin: The value of the jacobian
-         */
-
-        setIterationData( dChi1dChin, _dChi1dChin );
-
-    }
-
-    void hydraBaseMicromorphic::setPreviousdChi1dChi( const floatMatrix &previousdChi1dChi ){
-        /*!
-         * Set the value of the derivative of the previous first micro-configuration w.r.t. the total micro configuration
-         * 
-         * \param &previousdChi1dChi: The value of the jacobian
-         */
-
-        setPreviousData( previousdChi1dChi, _previousdChi1dChi );
-
-    }
-
-    void hydraBaseMicromorphic::setPreviousdChi1dChin( const floatMatrix &previousdChi1dChin ){
-        /*!
-         * Set the value of the derivative of the previous first micro-configuration w.r.t. the remaining micro configurationn
-         * 
-         * \param &previousdChi1dChin: The value of the jacobian
-         */
-
-        setPreviousData( previousdChi1dChin, _previousdChi1dChin );
-
-    }
-
-    void hydraBaseMicromorphic::setdGradChi1dFn( const floatMatrix &dGradChi1dFn ){
-        /*!
-         * Set the Jacobian of the spatial gradient of the first micro-configuration w.r.t. the configurations after the first.
-         * 
-         * \param &dGradChi1dFn: The value of the jacobian
-         */
-
-        setIterationData( dGradChi1dFn, _dGradChi1dFn );
-
-    }
-
-    void hydraBaseMicromorphic::setdGradChi1dChi( const floatMatrix &dGradChi1dChi ){
-        /*!
-         * Set the Jacobian of the spatial gradient of the first micro-configuration w.r.t. the total micro-configuration
-         * 
-         * \param &dGradChi1dChi: The value of the jacobian
-         */
-
-        setIterationData( dGradChi1dChi, _dGradChi1dChi );
-
-    }
-
-    void hydraBaseMicromorphic::setdGradChi1dChin( const floatMatrix &dGradChi1dChin ){
-        /*!
-         * Set the Jacobian of the spatial gradient of the first micro-configuration w.r.t. the sub micro-configurations
-         * 
-         * \param &dGradChi1dChin: The value of the jacobian
-         */
-
-        setIterationData( dGradChi1dChin, _dGradChi1dChin );
-
-    }
-
-    void hydraBaseMicromorphic::setdGradChi1dGradChi( const floatMatrix &dGradChi1dGradChi ){
-        /*!
-         * Set the Jacobian of the spatial gradient of the first micro-configuration w.r.t. the total spatial gradient of the micro-configuration
-         * 
-         * \param &dGradChi1dGradChi: The value of the jacobian
-         */
-
-        setIterationData( dGradChi1dGradChi, _dGradChi1dGradChi );
-
-    }
-
-    void hydraBaseMicromorphic::setdGradChi1dGradChin( const floatMatrix &dGradChi1dGradChin ){
-        /*!
-         * Set the Jacobian of the spatial gradient of the first micro-configuration w.r.t. the sub micro-configurations
-         * 
-         * \param &dGradChi1dGradChin: The value of the jacobian
-         */
-
-        setIterationData( dGradChi1dGradChin, _dGradChi1dGradChin );
-
-    }
-
-    void hydraBaseMicromorphic::setPreviousdGradChi1dFn( const floatMatrix &previousdGradChi1dFn ){
-        /*!
-         * Set the Jacobian of the previous spatial gradient of the first micro-configuration w.r.t. the configurations after the first.
-         * 
-         * \param &previousdGradChi1dFn: The value of the jacobian
-         */
-
-        setPreviousData( previousdGradChi1dFn, _previousdGradChi1dFn );
-
-    }
-
-    void hydraBaseMicromorphic::setPreviousdGradChi1dChi( const floatMatrix &previousdGradChi1dChi ){
-        /*!
-         * Set the Jacobian of the previous spatial gradient of the first micro-configuration w.r.t. the total micro-configuration
-         * 
-         * \param &previousdGradChi1dChi: The value of the jacobian
-         */
-
-        setPreviousData( previousdGradChi1dChi, _previousdGradChi1dChi );
-
-    }
-
-    void hydraBaseMicromorphic::setPreviousdGradChi1dChin( const floatMatrix &previousdGradChi1dChin ){
-        /*!
-         * Set the Jacobian of the previous spatial gradient of the first micro-configuration w.r.t. the sub micro-configurations
-         * 
-         * \param &previousdGradChi1dChin: The value of the jacobian
-         */
-
-        setPreviousData( previousdGradChi1dChin, _previousdGradChi1dChin );
-
-    }
-
-    void hydraBaseMicromorphic::setPreviousdGradChi1dGradChi( const floatMatrix &previousdGradChi1dGradChi ){
-        /*!
-         * Set the Jacobian of the previous spatial gradient of the first micro-configuration w.r.t. the total spatial gradient of the micro-configuration
-         * 
-         * \param &previousdGradChi1dGradChi: The value of the jacobian
-         */
-
-        setPreviousData( previousdGradChi1dGradChi, _previousdGradChi1dGradChi );
-
-    }
-
-    void hydraBaseMicromorphic::setPreviousdGradChi1dGradChin( const floatMatrix &previousdGradChi1dGradChin ){
-        /*!
-         * Set the Jacobian of the previous spatial gradient of the first micro-configuration w.r.t. the sub micro-configurations
-         * 
-         * \param &previousdGradChi1dGradChin: The value of the jacobian
-         */
-
-        setPreviousData( previousdGradChi1dGradChin, _previousdGradChi1dGradChin );
-
-    }
-
     void hydraBaseMicromorphic::setFirstMicroConfigurationJacobians( ){
         /*!
          * Set the Jacobians of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
@@ -570,9 +350,9 @@ namespace tardigradeHydra{
 
         calculateFirstConfigurationJacobians( *getMicroConfigurations( ), dChi1dChi, dChi1dChin );
 
-        setdChi1dChi( dChi1dChi );
+        set_dChi1dChi( dChi1dChi );
 
-        setdChi1dChin( dChi1dChin );
+        set_dChi1dChin( dChi1dChin );
 
     }
 
@@ -587,9 +367,9 @@ namespace tardigradeHydra{
 
         calculateFirstConfigurationJacobians( *getPreviousMicroConfigurations( ), previousdChi1dChi, previousdChi1dChin );
 
-        setPreviousdChi1dChi( previousdChi1dChi );
+        set_previousdChi1dChi( previousdChi1dChi );
 
-        setPreviousdChi1dChin( previousdChi1dChin );
+        set_previousdChi1dChin( previousdChi1dChin );
 
     }
 
@@ -613,15 +393,15 @@ namespace tardigradeHydra{
                                                     *getdChi1dChi( ), *getdChi1dChin( ),
                                                     dGradChi1dCn, dGradChi1dChi, dGradChi1dChin, dGradChi1dGradChi, dGradChi1dGradChin );
 
-        setdGradChi1dFn( dGradChi1dCn );
+        set_dGradChi1dFn( dGradChi1dCn );
 
-        setdGradChi1dChi( dGradChi1dChi );
+        set_dGradChi1dChi( dGradChi1dChi );
 
-        setdGradChi1dChin( dGradChi1dChin );
+        set_dGradChi1dChin( dGradChi1dChin );
 
-        setdGradChi1dGradChi( dGradChi1dGradChi );
+        set_dGradChi1dGradChi( dGradChi1dGradChi );
 
-        setdGradChi1dGradChin( dGradChi1dGradChin );
+        set_dGradChi1dGradChin( dGradChi1dGradChin );
 
     }
 
@@ -645,15 +425,15 @@ namespace tardigradeHydra{
                                                     *getPreviousdChi1dChi( ), *getPreviousdChi1dChin( ),
                                                     previousdGradChi1dCn, previousdGradChi1dChi, previousdGradChi1dChin, previousdGradChi1dGradChi, previousdGradChi1dGradChin );
 
-        setPreviousdGradChi1dFn( previousdGradChi1dCn );
+        set_previousdGradChi1dFn( previousdGradChi1dCn );
 
-        setPreviousdGradChi1dChi( previousdGradChi1dChi );
+        set_previousdGradChi1dChi( previousdGradChi1dChi );
 
-        setPreviousdGradChi1dChin( previousdGradChi1dChin );
+        set_previousdGradChi1dChin( previousdGradChi1dChin );
 
-        setPreviousdGradChi1dGradChi( previousdGradChi1dGradChi );
+        set_previousdGradChi1dGradChi( previousdGradChi1dGradChi );
 
-        setPreviousdGradChi1dGradChin( previousdGradChi1dGradChin );
+        set_previousdGradChi1dGradChin( previousdGradChi1dGradChin );
 
     }
 
