@@ -1871,7 +1871,7 @@ namespace tardigradeHydra{
             /*!
              * Evaluate the derived deformation measures
              * 
-             * We assume that the first configuration in hydra.getConfigurations is the elastic one
+             * We assume that the first configuration in hydra.get_configurations is the elastic one
              *
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
              */
@@ -1884,7 +1884,7 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                deformationGradient1 = ( *hydra->getPreviousConfigurations( ) )[ 0 ];
+                deformationGradient1 = ( *hydra->get_previousConfigurations( ) )[ 0 ];
 
                 microDeformation1 = ( *hydra->getPreviousMicroConfigurations( ) )[ 0 ];
 
@@ -1893,7 +1893,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                deformationGradient1 = ( *hydra->getConfigurations( ) )[ 0 ];
+                deformationGradient1 = ( *hydra->get_configurations( ) )[ 0 ];
 
                 microDeformation1 = ( *hydra->getMicroConfigurations( ) )[ 0 ];
 
@@ -3958,7 +3958,7 @@ namespace tardigradeHydra{
             /*!
              * Evaluate the derived deformation Jacobians
              * 
-             * We assume that the first configuration in hydra.getConfigurations is the elastic one
+             * We assume that the first configuration in hydra.get_configurations is the elastic one
              *
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
              */
@@ -3989,15 +3989,15 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                deformationGradient1 = ( *hydra->getPreviousConfigurations( ) )[ 0 ];
+                deformationGradient1 = ( *hydra->get_previousConfigurations( ) )[ 0 ];
 
                 microDeformation1 = ( *hydra->getPreviousMicroConfigurations( ) )[ 0 ];
 
                 gradientMicroDeformation1 = ( *hydra->getPreviousGradientMicroConfigurations( ) )[ 0 ];
 
-                dF1dF              = hydra->getPreviousdF1dF( );
+                dF1dF              = hydra->get_previousdF1dF( );
 
-                dF1dFn             = hydra->getPreviousdF1dFn( );
+                dF1dFn             = hydra->get_previousdF1dFn( );
 
                 dChi1dChi          = hydra->getPreviousdChi1dChi( );
 
@@ -4016,15 +4016,15 @@ namespace tardigradeHydra{
             }
             else{
 
-                deformationGradient1 = ( *hydra->getConfigurations( ) )[ 0 ];
+                deformationGradient1 = ( *hydra->get_configurations( ) )[ 0 ];
 
                 microDeformation1 = ( *hydra->getMicroConfigurations( ) )[ 0 ];
 
                 gradientMicroDeformation1 = ( *hydra->getGradientMicroConfigurations( ) )[ 0 ];
 
-                dF1dF              = hydra->getdF1dF( );
+                dF1dF              = hydra->get_dF1dF( );
 
-                dF1dFn             = hydra->getdF1dFn( );
+                dF1dFn             = hydra->get_dF1dFn( );
 
                 dChi1dChi          = hydra->getdChi1dChi( );
 

@@ -171,9 +171,9 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getPreviousStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->getPreviousdF1dF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->get_previousdF1dF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->getPreviousdF1dFn( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->get_previousdF1dFn( ) );
 
             }
             else{
@@ -184,9 +184,9 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->getdF1dF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->get_dF1dF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->getdF1dFn( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->get_dF1dFn( ) );
 
             }
 
@@ -2740,12 +2740,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                allStateVariables =  hydra->getPreviousNonLinearSolveStateVariables( );
+                allStateVariables =  hydra->get_previousNonLinearSolveStateVariables( );
 
             }
             else{
 
-                allStateVariables =  hydra->getNonLinearSolveStateVariables( );
+                allStateVariables =  hydra->get_nonLinearSolveStateVariables( );
 
             }
 

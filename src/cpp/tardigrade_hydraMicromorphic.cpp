@@ -145,10 +145,10 @@ namespace tardigradeHydra{
 
         start_index += ( ( *getNumConfigurations( ) ) - 1 ) * ( *getDimension( ) ) * ( *getDimension( ) );
 
-        computeGradientMicroConfigurations( getPreviousStateVariables( ), start_index, *getConfigurations( ), microConfigurations,
+        computeGradientMicroConfigurations( getPreviousStateVariables( ), start_index, *get_configurations( ), microConfigurations,
                                             *getGradientMicroDeformation( ), gradientMicroConfigurations );
 
-        computeGradientMicroConfigurations( getPreviousStateVariables( ), start_index, *getPreviousConfigurations( ), previousMicroConfigurations,
+        computeGradientMicroConfigurations( getPreviousStateVariables( ), start_index, *get_previousConfigurations( ), previousMicroConfigurations,
                                             *getPreviousGradientMicroDeformation( ), previousGradientMicroConfigurations );
 
         // Set the configurations
@@ -388,7 +388,7 @@ namespace tardigradeHydra{
 
         floatMatrix dGradChi1dGradChin;
 
-        calculateFirstConfigurationGradChiJacobian( *getConfigurations( ), *getMicroConfigurations( ),
+        calculateFirstConfigurationGradChiJacobian( *get_configurations( ), *getMicroConfigurations( ),
                                                     *getGradientMicroDeformation( ), *getGradientMicroConfigurations( ),
                                                     *getdChi1dChi( ), *getdChi1dChin( ),
                                                     dGradChi1dCn, dGradChi1dChi, dGradChi1dChin, dGradChi1dGradChi, dGradChi1dGradChin );
@@ -420,7 +420,7 @@ namespace tardigradeHydra{
 
         floatMatrix previousdGradChi1dGradChin;
 
-        calculateFirstConfigurationGradChiJacobian( *getPreviousConfigurations( ), *getPreviousMicroConfigurations( ),
+        calculateFirstConfigurationGradChiJacobian( *get_previousConfigurations( ), *getPreviousMicroConfigurations( ),
                                                     *getPreviousGradientMicroDeformation( ), *getPreviousGradientMicroConfigurations( ),
                                                     *getPreviousdChi1dChi( ), *getPreviousdChi1dChin( ),
                                                     previousdGradChi1dCn, previousdGradChi1dChi, previousdGradChi1dChin, previousdGradChi1dGradChi, previousdGradChi1dGradChin );

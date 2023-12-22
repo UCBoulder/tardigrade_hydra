@@ -38,7 +38,7 @@ namespace tardigradeHydra{
              * Set the current value of the elastic Green-Lagrange strain
              */
     
-            floatVector Fe = ( *hydra->getConfigurations( ) )[ 0 ];
+            floatVector Fe = ( *hydra->get_configurations( ) )[ 0 ];
     
             floatVector Ee;
    
@@ -186,11 +186,11 @@ namespace tardigradeHydra{
              * Set the Cauchy stress
              */
     
-            floatVector Fe = ( *hydra->getConfigurations( ) )[ 0 ];
+            floatVector Fe = ( *hydra->get_configurations( ) )[ 0 ];
     
-            floatMatrix dFedF = ( *hydra->getdF1dF( ) );
+            floatMatrix dFedF = ( *hydra->get_dF1dF( ) );
     
-            floatMatrix dFedFn = ( *hydra->getdF1dFn( ) );
+            floatMatrix dFedFn = ( *hydra->get_dF1dFn( ) );
     
             // Compute the gradient of the PK2 stress w.r.t. the elastic deformation gradient
             floatMatrix dPK2StressdFe = *getdPK2StressdFe( );

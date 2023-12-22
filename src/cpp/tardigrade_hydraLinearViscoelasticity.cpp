@@ -200,7 +200,7 @@ namespace tardigradeHydra{
 
             floatVector Fehat;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->getConfigurations( ) )[ 0 ], Je, Fehat ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->get_configurations( ) )[ 0 ], Je, Fehat ) );
 
             set_Je( Je );
 
@@ -217,7 +217,7 @@ namespace tardigradeHydra{
 
             floatVector previousFehat;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->getPreviousConfigurations( ) )[ 0 ], previousJe, previousFehat ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( ( *hydra->get_previousConfigurations( ) )[ 0 ], previousJe, previousFehat ) );
 
             set_previousJe( previousJe );
 
@@ -312,7 +312,7 @@ namespace tardigradeHydra{
 
             const unsigned int* dim = hydra->getDimension( );
 
-            set_dJedFe( tardigradeVectorTools::computeDDetADA( ( *hydra->getConfigurations( ) )[ 0 ], ( *dim ), ( *dim ) ) );
+            set_dJedFe( tardigradeVectorTools::computeDDetADA( ( *hydra->get_configurations( ) )[ 0 ], ( *dim ), ( *dim ) ) );
 
         }
 
@@ -342,7 +342,7 @@ namespace tardigradeHydra{
 
             floatMatrix dFehatdFe = tardigradeVectorTools::eye< floatType >( ( *dim ) * ( *dim ) ) * std::pow( ( *getJe( ) ), -1. / 3 );
 
-            dFehatdFe -= tardigradeVectorTools::dyadic( ( *hydra->getConfigurations( ) )[ 0 ], *getdJedFe( ) ) * std::pow( ( *getJe( ) ), -4. / 3 ) / 3.;
+            dFehatdFe -= tardigradeVectorTools::dyadic( ( *hydra->get_configurations( ) )[ 0 ], *getdJedFe( ) ) * std::pow( ( *getJe( ) ), -4. / 3 ) / 3.;
 
             set_dFehatdFe( dFehatdFe );
 

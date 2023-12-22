@@ -181,7 +181,7 @@ namespace tardigradeHydra{
              * Defined as the residual's computed thermal deformation gradient minus the value stored in hydra's configurations.
              */
 
-            setResidual( *getThermalDeformationGradient( ) - ( *hydra->getConfigurations( ) )[ *getThermalConfigurationIndex( ) ] );
+            setResidual( *getThermalDeformationGradient( ) - ( *hydra->get_configurations( ) )[ *getThermalConfigurationIndex( ) ] );
 
         }
 
