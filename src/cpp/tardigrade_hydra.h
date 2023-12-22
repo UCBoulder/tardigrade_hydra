@@ -215,15 +215,6 @@ namespace tardigradeHydra{
 
     typedef void ( hydraBase::*hydraBaseFxn )( ); //!< Typedef for passing pointers to hydraBase functions
 
-    void unexpectedError( ){
-        /*!
-         * Function to throw for an unexpected error. A user should never get here!
-         */
-
-        TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "You shouldn't have gotten here. If you aren't developing the code then contact a developer with the stack trace." ) )
-
-    }
-
     /*!
      * Base class for data objects which defines the clear command
      */
@@ -503,6 +494,17 @@ namespace tardigradeHydra{
 
             }
 
+        protected:
+
+            void unexpectedError( ){
+                /*!
+                 * Function to throw for an unexpected error. A user should never get here!
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "You shouldn't have gotten here. If you aren't developing the code then contact a developer with the stack trace." ) )
+
+            }
+
         private:
 
             unsigned int _numEquations; //!< The number of residual equations
@@ -750,6 +752,15 @@ namespace tardigradeHydra{
                 storage.second = data;
 
                 storage.first = true;
+
+            }
+
+            void unexpectedError( ){
+                /*!
+                 * Function to throw for an unexpected error. A user should never get here!
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "You shouldn't have gotten here. If you aren't developing the code then contact a developer with the stack trace." ) )
 
             }
 
