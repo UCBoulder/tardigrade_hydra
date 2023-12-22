@@ -194,9 +194,9 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousIsochoricRateMultiplier( const floatType &previousIsochoricRateMultiplier );
 
-                virtual void setdIsochoricRateMultiplierdT( const floatType &dRateMultiplierdT );
+                virtual void setdIsochoricRateMultiplierdT( const floatType &dIsochoricRateMultiplierdT );
 
-                virtual void setdPreviousIsochoricRateMultiplierdPreviousT( const floatType &dPreviousRateMultiplierdPreviousT );
+                virtual void setdPreviousIsochoricRateMultiplierdPreviousT( const floatType &dPreviousIsochoricRateMultiplierdPreviousT );
 
                 const floatType* getIsochoricRateMultiplier( );
 

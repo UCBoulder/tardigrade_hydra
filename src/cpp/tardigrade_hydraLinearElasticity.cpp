@@ -58,12 +58,8 @@ namespace tardigradeHydra{
              * 
              * \param &Ee: The elastic Green-Lagrange strain
              */
-    
-            _Ee.second = Ee;
-    
-            _Ee.first = true;
-    
-            addIterationData( &_Ee );
+
+            setIterationData( Ee, _Ee ); 
     
         } 
     
@@ -99,12 +95,8 @@ namespace tardigradeHydra{
              * 
              * \param &dEedFe: The derivative of the elastic Green-Lagrange strain w.r.t. the elastic deformation gradient
              */
-    
-            _dEedFe.second = dEedFe;
-    
-            _dEedFe.first = true;
-    
-            addIterationData( &_dEedFe );
+
+            setIterationData( dEedFe, _dEedFe ); 
     
         }
     
@@ -143,12 +135,8 @@ namespace tardigradeHydra{
              * 
              * \param &PK2Stress: The Second Piola-Kirchhoff stress
              */
-    
-            _PK2Stress.second = PK2Stress;
-    
-            _PK2Stress.first = true;
-    
-            addIterationData( &_PK2Stress );
+
+            setIterationData( PK2Stress, _PK2Stress ); 
     
         }
     
@@ -189,12 +177,8 @@ namespace tardigradeHydra{
              *
              * \param &dPK2StressdEe: The gradient of the Second Piola-Kirchhoff stress w.r.t. the elastic Green-Lagrange strain
              */
-    
-            _dPK2StressdEe.second = dPK2StressdEe;
-    
-            _dPK2StressdEe.first = true;
-    
-            addIterationData( &_dPK2StressdEe );
+
+            setIterationData( dPK2StressdEe, _dPK2StressdEe );
     
         }
     
@@ -234,11 +218,7 @@ namespace tardigradeHydra{
              *     the elastic deformation gradient
              */
 
-            _dPK2StressdFe.second = dPK2StressdFe;
-
-            _dPK2StressdFe.first = true;
-
-            addIterationData( &_dPK2StressdFe );
+            setIterationData( dPK2StressdFe, _dPK2StressdFe );
 
         }
 
@@ -324,12 +304,8 @@ namespace tardigradeHydra{
              * 
              * \param &dCauchyStressdPK2Stress: The partial derivative of the Cauchy stress w.r.t. the second Piola-Kirchhoff stress
              */
-    
-            _dCauchyStressdPK2Stress.second = dCauchyStressdPK2Stress;
-    
-            _dCauchyStressdPK2Stress.first = true;
-    
-            addIterationData( &_dCauchyStressdPK2Stress );
+
+            setIterationData( dCauchyStressdPK2Stress, _dCauchyStressdPK2Stress );
     
         }
 
@@ -339,12 +315,8 @@ namespace tardigradeHydra{
              * 
              * \param &dCauchyStressdF: The partial derivative of the Cauchy stress w.r.t. the deformation gradient
              */
-    
-            _dCauchyStressdF.second = dCauchyStressdF;
-    
-            _dCauchyStressdF.first = true;
-    
-            addIterationData( &_dCauchyStressdF );
+   
+            setIterationData( dCauchyStressdF, _dCauchyStressdF ); 
     
         }
 
@@ -395,12 +367,8 @@ namespace tardigradeHydra{
              * \param &dCauchyStressdFn: The partial derivative of the Cauchy stress w.r.t. the configurations solve for
              *     in the non-linear solve
              */
-    
-            _dCauchyStressdFn.second = dCauchyStressdFn;
-    
-            _dCauchyStressdFn.first = true;
-    
-            addIterationData( &_dCauchyStressdFn );
+
+            setIterationData( dCauchyStressdFn, _dCauchyStressdFn ); 
     
         }
 

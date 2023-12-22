@@ -174,11 +174,7 @@ namespace tardigradeHydra{
          * \param &microConfigurations: The list of micro-configurations in row-major matrix form
          */
 
-        _microConfigurations.second = microConfigurations;
-
-        _microConfigurations.first = true;
-
-        addIterationData( &_microConfigurations );
+        setIterationData( microConfigurations, _microConfigurations );
 
     }
 
@@ -189,11 +185,7 @@ namespace tardigradeHydra{
          * \param &inverseMicroConfigurations: The list of inverse micro-configurations in row-major matrix form
          */
 
-        _inverseMicroConfigurations.second = inverseMicroConfigurations;
-
-        _inverseMicroConfigurations.first = true;
-
-        addIterationData( &_inverseMicroConfigurations );
+        setIterationData( inverseMicroConfigurations, _inverseMicroConfigurations );
 
     }
 
@@ -204,11 +196,7 @@ namespace tardigradeHydra{
          * \param &gradientMicroConfigurations: The list of the spatial gradients of the micro-configurations in row-major matrix form
          */
 
-        _gradientMicroConfigurations.second = gradientMicroConfigurations;
-
-        _gradientMicroConfigurations.first = true;
-
-        addIterationData( &_gradientMicroConfigurations );
+        setIterationData( gradientMicroConfigurations, _gradientMicroConfigurations );
 
     }
 
@@ -219,9 +207,7 @@ namespace tardigradeHydra{
          * \param &previousMicroConfigurations: The list of previous micro-configurations in row-major matrix form
          */
 
-        _previousMicroConfigurations.second = previousMicroConfigurations;
-
-        _previousMicroConfigurations.first = true;
+        setPreviousData( previousMicroConfigurations, _previousMicroConfigurations );
 
     }
 
@@ -232,9 +218,7 @@ namespace tardigradeHydra{
          * \param &previousInverseMicroConfigurations: The list of previous inverse micro-configurations in row-major matrix form
          */
 
-        _previousInverseMicroConfigurations.second = previousInverseMicroConfigurations;
-
-        _previousInverseMicroConfigurations.first = true;
+        setPreviousData( previousInverseMicroConfigurations, _previousInverseMicroConfigurations );
 
     }
 
@@ -245,9 +229,7 @@ namespace tardigradeHydra{
          * \param &previousGradientMicroConfigurations: The list of the spatial gradients of the previous micro-configurations in row-major matrix form
          */
 
-        _previousGradientMicroConfigurations.second = previousGradientMicroConfigurations;
-
-        _previousGradientMicroConfigurations.first = true;
+        setPreviousData( previousGradientMicroConfigurations, _previousGradientMicroConfigurations );
 
     }
 
@@ -430,11 +412,7 @@ namespace tardigradeHydra{
          * \param &dChi1dChi: The value of the jacobian
          */
 
-        _dChi1dChi.second = dChi1dChi;
-
-        _dChi1dChi.first = true;
-
-        addIterationData( &_dChi1dChi );
+        setIterationData( dChi1dChi, _dChi1dChi );
 
     }
 
@@ -445,11 +423,7 @@ namespace tardigradeHydra{
          * \param &dChi1dChin: The value of the jacobian
          */
 
-        _dChi1dChin.second = dChi1dChin;
-
-        _dChi1dChin.first = true;
-
-        addIterationData( &_dChi1dChin );
+        setIterationData( dChi1dChin, _dChi1dChin );
 
     }
 
@@ -460,9 +434,7 @@ namespace tardigradeHydra{
          * \param &previousdChi1dChi: The value of the jacobian
          */
 
-        _previousdChi1dChi.second = previousdChi1dChi;
-
-        _previousdChi1dChi.first = true;
+        setPreviousData( previousdChi1dChi, _previousdChi1dChi );
 
     }
 
@@ -473,9 +445,7 @@ namespace tardigradeHydra{
          * \param &previousdChi1dChin: The value of the jacobian
          */
 
-        _previousdChi1dChin.second = previousdChi1dChin;
-
-        _previousdChi1dChin.first = true;
+        setPreviousData( previousdChi1dChin, _previousdChi1dChin );
 
     }
 
@@ -486,11 +456,7 @@ namespace tardigradeHydra{
          * \param &dGradChi1dFn: The value of the jacobian
          */
 
-        _dGradChi1dFn.second = dGradChi1dFn;
-
-        _dGradChi1dFn.first = true;
-
-        addIterationData( &_dGradChi1dFn );
+        setIterationData( dGradChi1dFn, _dGradChi1dFn );
 
     }
 
@@ -501,11 +467,7 @@ namespace tardigradeHydra{
          * \param &dGradChi1dChi: The value of the jacobian
          */
 
-        _dGradChi1dChi.second = dGradChi1dChi;
-
-        _dGradChi1dChi.first = true;
-
-        addIterationData( &_dGradChi1dChi );
+        setIterationData( dGradChi1dChi, _dGradChi1dChi );
 
     }
 
@@ -516,11 +478,7 @@ namespace tardigradeHydra{
          * \param &dGradChi1dChin: The value of the jacobian
          */
 
-        _dGradChi1dChin.second = dGradChi1dChin;
-
-        _dGradChi1dChin.first = true;
-
-        addIterationData( &_dGradChi1dChin );
+        setIterationData( dGradChi1dChin, _dGradChi1dChin );
 
     }
 
@@ -531,11 +489,7 @@ namespace tardigradeHydra{
          * \param &dGradChi1dGradChi: The value of the jacobian
          */
 
-        _dGradChi1dGradChi.second = dGradChi1dGradChi;
-
-        _dGradChi1dGradChi.first = true;
-
-        addIterationData( &_dGradChi1dGradChi );
+        setIterationData( dGradChi1dGradChi, _dGradChi1dGradChi );
 
     }
 
@@ -546,11 +500,7 @@ namespace tardigradeHydra{
          * \param &dGradChi1dGradChin: The value of the jacobian
          */
 
-        _dGradChi1dGradChin.second = dGradChi1dGradChin;
-
-        _dGradChi1dGradChin.first = true;
-
-        addIterationData( &_dGradChi1dGradChin );
+        setIterationData( dGradChi1dGradChin, _dGradChi1dGradChin );
 
     }
 
@@ -561,9 +511,7 @@ namespace tardigradeHydra{
          * \param &previousdGradChi1dFn: The value of the jacobian
          */
 
-        _previousdGradChi1dFn.second = previousdGradChi1dFn;
-
-        _previousdGradChi1dFn.first = true;
+        setPreviousData( previousdGradChi1dFn, _previousdGradChi1dFn );
 
     }
 
@@ -574,11 +522,7 @@ namespace tardigradeHydra{
          * \param &previousdGradChi1dChi: The value of the jacobian
          */
 
-        _previousdGradChi1dChi.second = previousdGradChi1dChi;
-
-        _previousdGradChi1dChi.first = true;
-
-        addIterationData( &_previousdGradChi1dChi );
+        setPreviousData( previousdGradChi1dChi, _previousdGradChi1dChi );
 
     }
 
@@ -589,9 +533,7 @@ namespace tardigradeHydra{
          * \param &previousdGradChi1dChin: The value of the jacobian
          */
 
-        _previousdGradChi1dChin.second = previousdGradChi1dChin;
-
-        _previousdGradChi1dChin.first = true;
+        setPreviousData( previousdGradChi1dChin, _previousdGradChi1dChin );
 
     }
 
@@ -602,9 +544,7 @@ namespace tardigradeHydra{
          * \param &previousdGradChi1dGradChi: The value of the jacobian
          */
 
-        _previousdGradChi1dGradChi.second = previousdGradChi1dGradChi;
-
-        _previousdGradChi1dGradChi.first = true;
+        setPreviousData( previousdGradChi1dGradChi, _previousdGradChi1dGradChi );
 
     }
 
@@ -615,9 +555,7 @@ namespace tardigradeHydra{
          * \param &previousdGradChi1dGradChin: The value of the jacobian
          */
 
-        _previousdGradChi1dGradChin.second = previousdGradChi1dGradChin;
-
-        _previousdGradChi1dGradChin.first = true;
+        setPreviousData( previousdGradChi1dGradChin, _previousdGradChi1dGradChin );
 
     }
 

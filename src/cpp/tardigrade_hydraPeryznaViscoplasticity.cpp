@@ -296,11 +296,7 @@ namespace tardigradeHydra{
              * \param &drivingStress: The driving stress
              */
 
-            _drivingStress.second = drivingStress;
-
-            _drivingStress.first = true;
-
-            addIterationData( &_drivingStress );
+            setIterationData( drivingStress, _drivingStress );
 
         }
 
@@ -312,11 +308,7 @@ namespace tardigradeHydra{
              * \param &dDrivingStressdCauchyStress: The derivative of the driving stress w.r.t. the Cauchy stress
              */
 
-            _dDrivingStressdCauchyStress.second = dDrivingStressdCauchyStress;
-
-            _dDrivingStressdCauchyStress.first = true;
-
-            addIterationData( &_dDrivingStressdCauchyStress );
+            setIterationData( dDrivingStressdCauchyStress, _dDrivingStressdCauchyStress );
 
         }
 
@@ -328,11 +320,7 @@ namespace tardigradeHydra{
              * \param &dDrivingStressdF: The derivative of the driving stress w.r.t. the deformation gradient
              */
 
-            _dDrivingStressdF.second = dDrivingStressdF;
-
-            _dDrivingStressdF.first = true;
-
-            addIterationData( &_dDrivingStressdF );
+            setIterationData( dDrivingStressdF, _dDrivingStressdF );
 
         }
 
@@ -344,11 +332,7 @@ namespace tardigradeHydra{
              * \param &dDrivingStressdSubFs: The derivative of the driving stress w.r.t. the sub-deformation gradients
              */
 
-            _dDrivingStressdSubFs.second = dDrivingStressdSubFs;
-
-            _dDrivingStressdSubFs.first = true;
-
-            addIterationData( &_dDrivingStressdSubFs );
+            setIterationData( dDrivingStressdSubFs, _dDrivingStressdSubFs );
 
         }
 
@@ -360,9 +344,7 @@ namespace tardigradeHydra{
              * \param &previousDrivingStress: The previous driving stress
              */
 
-            _previousDrivingStress.second = previousDrivingStress;
-
-            _previousDrivingStress.first = true;
+            setPreviousData( previousDrivingStress, _previousDrivingStress );
 
         }
 
@@ -374,9 +356,7 @@ namespace tardigradeHydra{
              * \param &dPreviousDrivingStressdPreviousCauchyStress: The derivative of the previous driving stress w.r.t. the previous Cauchy stress
              */
 
-            _dPreviousDrivingStressdPreviousCauchyStress.second = dPreviousDrivingStressdPreviousCauchyStress;
-
-            _dPreviousDrivingStressdPreviousCauchyStress.first = true;
+            setPreviousData( dPreviousDrivingStressdPreviousCauchyStress, _dPreviousDrivingStressdPreviousCauchyStress );
 
         }
 
@@ -388,9 +368,7 @@ namespace tardigradeHydra{
              * \param &dPreviousDrivingStressdPreviousF: The derivative of the previous driving stress w.r.t. the previous deformation gradient
              */
 
-            _dPreviousDrivingStressdPreviousF.second = dPreviousDrivingStressdPreviousF;
-
-            _dPreviousDrivingStressdPreviousF.first = true;
+            setPreviousData( dPreviousDrivingStressdPreviousF, _dPreviousDrivingStressdPreviousF );
 
         }
 
@@ -402,9 +380,7 @@ namespace tardigradeHydra{
              * \param &dPreviousDrivingStressdPreviousSubFs: The derivative of the previous driving stress w.r.t. the previous sub-deformation gradients
              */
 
-            _dPreviousDrivingStressdPreviousSubFs.second = dPreviousDrivingStressdPreviousSubFs;
-
-            _dPreviousDrivingStressdPreviousSubFs.first = true;
+            setPreviousData( dPreviousDrivingStressdPreviousSubFs, _dPreviousDrivingStressdPreviousSubFs );
 
         }
 
@@ -806,11 +782,7 @@ namespace tardigradeHydra{
              *     of the plastic configuration.
              */
 
-            _flowDirection.second = flowDirection;
-
-            _flowDirection.first = true;
-
-            addIterationData( &_flowDirection );
+            setIterationData( flowDirection, _flowDirection );
 
         }
 
@@ -823,11 +795,7 @@ namespace tardigradeHydra{
              *     of the plastic configuration with respect to the Cauchy stress
              */
 
-            _dFlowDirectiondCauchyStress.second = dFlowDirectiondCauchyStress;
-
-            _dFlowDirectiondCauchyStress.first = true;
-
-            addIterationData( &_dFlowDirectiondCauchyStress );
+            setIterationData( dFlowDirectiondCauchyStress, _dFlowDirectiondCauchyStress );
 
         }
 
@@ -840,11 +808,7 @@ namespace tardigradeHydra{
              *     of the plastic configuration with respect to the deformation gradient
              */
 
-            _dFlowDirectiondF.second = dFlowDirectiondF;
-
-            _dFlowDirectiondF.first = true;
-
-            addIterationData( &_dFlowDirectiondF );
+            setIterationData( dFlowDirectiondF, _dFlowDirectiondF );
 
         }
 
@@ -857,11 +821,7 @@ namespace tardigradeHydra{
              *     of the plastic configuration with respect to the sub-deformation gradients
              */
 
-            _dFlowDirectiondSubFs.second = dFlowDirectiondSubFs;
-
-            _dFlowDirectiondSubFs.first = true;
-
-            addIterationData( &_dFlowDirectiondSubFs );
+            setIterationData( dFlowDirectiondSubFs, _dFlowDirectiondSubFs );
 
         }
 
@@ -874,9 +834,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration.
              */
 
-            _previousFlowDirection.second = previousFlowDirection;
-
-            _previousFlowDirection.first = true;
+            setPreviousData( previousFlowDirection, _previousFlowDirection );
 
         }
 
@@ -889,9 +847,7 @@ namespace tardigradeHydra{
              *     of the plastic configuration with respect to the previous Cauchy stress
              */
 
-            _dPreviousFlowDirectiondPreviousCauchyStress.second = dPreviousFlowDirectiondPreviousCauchyStress;
-
-            _dPreviousFlowDirectiondPreviousCauchyStress.first = true;
+            setPreviousData( dPreviousFlowDirectiondPreviousCauchyStress, _dPreviousFlowDirectiondPreviousCauchyStress );
 
         }
 
@@ -904,9 +860,7 @@ namespace tardigradeHydra{
              *     of the plastic configuration with respect to the previous deformation gradient
              */
 
-            _dPreviousFlowDirectiondPreviousF.second = dPreviousFlowDirectiondPreviousF;
-
-            _dPreviousFlowDirectiondPreviousF.first = true;
+            setPreviousData( dPreviousFlowDirectiondPreviousF, _dPreviousFlowDirectiondPreviousF );
 
         }
 
@@ -919,9 +873,7 @@ namespace tardigradeHydra{
              *     of the plastic configuration with respect to the previous sub-deformation gradients
              */
 
-            _dPreviousFlowDirectiondPreviousSubFs.second = dPreviousFlowDirectiondPreviousSubFs;
-
-            _dPreviousFlowDirectiondPreviousSubFs.first = true;
+            setPreviousData( dPreviousFlowDirectiondPreviousSubFs, _dPreviousFlowDirectiondPreviousSubFs );
 
         }
 
@@ -1156,11 +1108,7 @@ namespace tardigradeHydra{
              * Set the value of the yield function
              */
 
-            _yieldFunction.second = yieldFunction;
-
-            _yieldFunction.first = true;
-
-            addIterationData( &_yieldFunction );
+            setIterationData( yieldFunction, _yieldFunction );
 
         }
 
@@ -1169,11 +1117,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the yield function w.r.t. the Cauchy stress
              */
 
-            _dYieldFunctiondCauchyStress.second = dYieldFunctiondCauchyStress;
-
-            _dYieldFunctiondCauchyStress.first = true;
-
-            addIterationData( &_dYieldFunctiondCauchyStress );
+            setIterationData( dYieldFunctiondCauchyStress, _dYieldFunctiondCauchyStress );
 
         }
 
@@ -1182,11 +1126,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the yield function w.r.t. the deformation gradient
              */
 
-            _dYieldFunctiondF.second = dYieldFunctiondF;
-
-            _dYieldFunctiondF.first = true;
-
-            addIterationData( &_dYieldFunctiondF );
+            setIterationData( dYieldFunctiondF, _dYieldFunctiondF );
 
         }
 
@@ -1195,11 +1135,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the yield function w.r.t. the sub-deformation gradients
              */
 
-            _dYieldFunctiondSubFs.second = dYieldFunctiondSubFs;
-
-            _dYieldFunctiondSubFs.first = true;
-
-            addIterationData( &_dYieldFunctiondSubFs );
+            setIterationData( dYieldFunctiondSubFs, _dYieldFunctiondSubFs );
 
         }
 
@@ -1208,9 +1144,7 @@ namespace tardigradeHydra{
              * Set the value of the previous yield function
              */
 
-            _previousYieldFunction.second = previousYieldFunction;
-
-            _previousYieldFunction.first = true;
+            setPreviousData( previousYieldFunction, _previousYieldFunction );
 
         }
 
@@ -1219,9 +1153,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the previous yield function w.r.t. the previous Cauchy stress
              */
 
-            _dPreviousYieldFunctiondPreviousCauchyStress.second = dPreviousYieldFunctiondPreviousCauchyStress;
-
-            _dPreviousYieldFunctiondPreviousCauchyStress.first = true;
+            setPreviousData( dPreviousYieldFunctiondPreviousCauchyStress, _dPreviousYieldFunctiondPreviousCauchyStress );
 
         }
 
@@ -1230,9 +1162,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the previous yield function w.r.t. the previous deformation gradient
              */
 
-            _dPreviousYieldFunctiondPreviousF.second = dPreviousYieldFunctiondPreviousF;
-
-            _dPreviousYieldFunctiondPreviousF.first = true;
+            setPreviousData( dPreviousYieldFunctiondPreviousF, _dPreviousYieldFunctiondPreviousF );
 
         }
 
@@ -1241,9 +1171,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the previous yield function w.r.t. the previous sub-deformation gradients
              */
 
-            _dPreviousYieldFunctiondPreviousSubFs.second = dPreviousYieldFunctiondPreviousSubFs;
-
-            _dPreviousYieldFunctiondPreviousSubFs.first = true;
+            setPreviousData( dPreviousYieldFunctiondPreviousSubFs, _dPreviousYieldFunctiondPreviousSubFs );
 
         }
 
@@ -1390,11 +1318,7 @@ namespace tardigradeHydra{
              * \param &plasticThermalMultiplier: The multiplicative term which gives the evolution equation temperature dependence
              */
 
-            _plasticThermalMultiplier.second = plasticThermalMultiplier;
-
-            _plasticThermalMultiplier.first = true;
-
-            addIterationData( &_plasticThermalMultiplier );
+            setIterationData( plasticThermalMultiplier, _plasticThermalMultiplier );
 
         }
 
@@ -1405,11 +1329,7 @@ namespace tardigradeHydra{
              * \param &dPlasticThermalMultiplierdT: The derivative of the plastic thermal multiplier w.r.t. temperature
              */
 
-            _dPlasticThermalMultiplierdT.second = dPlasticThermalMultiplierdT;
-
-            _dPlasticThermalMultiplierdT.first = true;
-
-            addIterationData( &_dPlasticThermalMultiplierdT );
+            setIterationData( dPlasticThermalMultiplierdT, _dPlasticThermalMultiplierdT );
 
         }
 
@@ -1420,9 +1340,7 @@ namespace tardigradeHydra{
              * \param &previousPlasticThermalMultiplier: The previous value of the multiplicative term which gives the evolution equation temperature dependence
              */
 
-            _previousPlasticThermalMultiplier.second = previousPlasticThermalMultiplier;
-
-            _previousPlasticThermalMultiplier.first = true;
+            setPreviousData( previousPlasticThermalMultiplier, _previousPlasticThermalMultiplier );
 
         }
 
@@ -1433,9 +1351,7 @@ namespace tardigradeHydra{
              * \param &dPreviousPlasticThermalMultiplierdPreviousT: The derivative of the previous plastic thermal multiplier w.r.t. the previous temperature
              */
 
-            _dPreviousPlasticThermalMultiplierdPreviousT.second = dPreviousPlasticThermalMultiplierdPreviousT;
-
-            _dPreviousPlasticThermalMultiplierdPreviousT.first = true;
+            setPreviousData( dPreviousPlasticThermalMultiplierdPreviousT, _dPreviousPlasticThermalMultiplierdPreviousT );
 
         }
 
@@ -1583,11 +1499,7 @@ namespace tardigradeHydra{
              * \param &dragStress: The value of the drag stress
              */
 
-            _dragStress.second = dragStress;
-
-            _dragStress.first = true;
-
-            addIterationData( &_dragStress );
+            setIterationData( dragStress, _dragStress );
 
         }
 
@@ -1598,11 +1510,7 @@ namespace tardigradeHydra{
              * \param &dDragStressdStateVariables: The value of the derivative of the drag stress w.r.t. the state variables
              */
 
-            _dDragStressdStateVariables.second = dDragStressdStateVariables;
-
-            _dDragStressdStateVariables.first = true;
-
-            addIterationData( &_dDragStressdStateVariables );
+            setIterationData( dDragStressdStateVariables, _dDragStressdStateVariables );
 
         }
 
@@ -1613,9 +1521,7 @@ namespace tardigradeHydra{
              * \param &previousDragStress: The value of the drag stress
              */
 
-            _previousDragStress.second = previousDragStress;
-
-            _previousDragStress.first = true;
+            setPreviousData( previousDragStress, _previousDragStress );
 
         }
 
@@ -1626,9 +1532,7 @@ namespace tardigradeHydra{
              * \param &dPreviousDragStressdPreviousStateVariables: The value of the derivative of the drag stress w.r.t. the previous state variables
              */
 
-            _dPreviousDragStressdPreviousStateVariables.second = dPreviousDragStressdPreviousStateVariables;
-
-            _dPreviousDragStressdPreviousStateVariables.first = true;
+            setPreviousData( dPreviousDragStressdPreviousStateVariables, _dPreviousDragStressdPreviousStateVariables );
 
         }
 
@@ -1776,11 +1680,7 @@ namespace tardigradeHydra{
              * \param &hardeningFunction: The value of the hardening function
              */
 
-            _hardeningFunction.second = hardeningFunction;
-
-            _hardeningFunction.first = true;
-
-            addIterationData( &_hardeningFunction );
+            setIterationData( hardeningFunction, _hardeningFunction );
 
         }
 
@@ -1791,11 +1691,7 @@ namespace tardigradeHydra{
              * \param &dHardeningFunctiondStateVariables: The derivative of the hardening function w.r.t. the state variables
              */
 
-            _dHardeningFunctiondStateVariables.second = dHardeningFunctiondStateVariables;
-
-            _dHardeningFunctiondStateVariables.first = true;
-
-            addIterationData( &_dHardeningFunctiondStateVariables );
+            setIterationData( dHardeningFunctiondStateVariables, _dHardeningFunctiondStateVariables );
 
         }
 
@@ -1806,9 +1702,7 @@ namespace tardigradeHydra{
              * \param &previousHardeningFunction: The previous value of the hardening function
              */
 
-            _previousHardeningFunction.second = previousHardeningFunction;
-
-            _previousHardeningFunction.first = true;
+            setPreviousData( previousHardeningFunction, _previousHardeningFunction );
 
         }
 
@@ -1819,9 +1713,7 @@ namespace tardigradeHydra{
              * \param &dPreviousHardeningFunctiondPreviousStateVariables: The derivative of the previous value of the hardening function w.r.t. the previous state variables
              */
 
-            _dPreviousHardeningFunctiondPreviousStateVariables.second = dPreviousHardeningFunctiondPreviousStateVariables;
-
-            _dPreviousHardeningFunctiondPreviousStateVariables.first = true;
+            setPreviousData( dPreviousHardeningFunctiondPreviousStateVariables, _dPreviousHardeningFunctiondPreviousStateVariables );
 
         }
 
@@ -2191,11 +2083,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration
              */
 
-            _plasticMultiplier.second = plasticMultiplier;
-
-            _plasticMultiplier.first = true;
-
-            addIterationData( &_plasticMultiplier );
+            setIterationData( plasticMultiplier, _plasticMultiplier );
 
         }
 
@@ -2208,11 +2096,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration w.r.t. the Cauchy stress
              */
 
-            _dPlasticMultiplierdCauchyStress.second = dPlasticMultiplierdCauchyStress;
-
-            _dPlasticMultiplierdCauchyStress.first = true;
-
-            addIterationData( &_dPlasticMultiplierdCauchyStress );
+            setIterationData( dPlasticMultiplierdCauchyStress, _dPlasticMultiplierdCauchyStress );
 
         }
 
@@ -2225,11 +2109,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration w.r.t. the deformation gradient
              */
 
-            _dPlasticMultiplierdF.second = dPlasticMultiplierdF;
-
-            _dPlasticMultiplierdF.first = true;
-
-            addIterationData( &_dPlasticMultiplierdF );
+            setIterationData( dPlasticMultiplierdF, _dPlasticMultiplierdF );
 
         }
 
@@ -2242,11 +2122,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration w.r.t. the sub-deformation gradient
              */
 
-            _dPlasticMultiplierdSubFs.second = dPlasticMultiplierdSubFs;
-
-            _dPlasticMultiplierdSubFs.first = true;
-
-            addIterationData( &_dPlasticMultiplierdSubFs );
+            setIterationData( dPlasticMultiplierdSubFs, _dPlasticMultiplierdSubFs );
 
         }
 
@@ -2259,11 +2135,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration w.r.t. the temperature
              */
 
-            _dPlasticMultiplierdT.second = dPlasticMultiplierdT;
-
-            _dPlasticMultiplierdT.first = true;
-
-            addIterationData( &_dPlasticMultiplierdT );
+            setIterationData( dPlasticMultiplierdT, _dPlasticMultiplierdT );
 
         }
 
@@ -2276,11 +2148,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration w.r.t. the state variables
              */
 
-            _dPlasticMultiplierdStateVariables.second = dPlasticMultiplierdStateVariables;
-
-            _dPlasticMultiplierdStateVariables.first = true;
-
-            addIterationData( &_dPlasticMultiplierdStateVariables );
+            setIterationData( dPlasticMultiplierdStateVariables, _dPlasticMultiplierdStateVariables );
 
         }
 
@@ -2293,9 +2161,7 @@ namespace tardigradeHydra{
              *     the current configuration of the plastic configuration
              */
 
-            _previousPlasticMultiplier.second = previousPlasticMultiplier;
-
-            _previousPlasticMultiplier.first = true;
+            setPreviousData( previousPlasticMultiplier, _previousPlasticMultiplier );
 
         }
 
@@ -2308,9 +2174,7 @@ namespace tardigradeHydra{
              *     the current configuration of the plastic configuration w.r.t. the previous Cauchy stress
              */
 
-            _dPreviousPlasticMultiplierdPreviousCauchyStress.second = dPreviousPlasticMultiplierdPreviousCauchyStress;
-
-            _dPreviousPlasticMultiplierdPreviousCauchyStress.first = true;
+            setPreviousData( dPreviousPlasticMultiplierdPreviousCauchyStress, _dPreviousPlasticMultiplierdPreviousCauchyStress );
 
         }
 
@@ -2323,9 +2187,7 @@ namespace tardigradeHydra{
              *     the current configuration of the plastic configuration w.r.t. the previous deformation gradient
              */
 
-            _dPreviousPlasticMultiplierdPreviousF.second = dPreviousPlasticMultiplierdPreviousF;
-
-            _dPreviousPlasticMultiplierdPreviousF.first = true;
+            setPreviousData( dPreviousPlasticMultiplierdPreviousF, _dPreviousPlasticMultiplierdPreviousF );
 
         }
 
@@ -2338,9 +2200,7 @@ namespace tardigradeHydra{
              *     the current configuration of the plastic configuration w.r.t. the previous sub-deformation gradients
              */
 
-            _dPreviousPlasticMultiplierdPreviousSubFs.second = dPreviousPlasticMultiplierdPreviousSubFs;
-
-            _dPreviousPlasticMultiplierdPreviousSubFs.first = true;
+            setPreviousData( dPreviousPlasticMultiplierdPreviousSubFs, _dPreviousPlasticMultiplierdPreviousSubFs );
 
         }
 
@@ -2353,9 +2213,7 @@ namespace tardigradeHydra{
              *     the current configuration of the plastic configuration w.r.t. the previous temperature
              */
 
-            _dPreviousPlasticMultiplierdPreviousT.second = dPreviousPlasticMultiplierdPreviousT;
-
-            _dPreviousPlasticMultiplierdPreviousT.first = true;
+            setPreviousData( dPreviousPlasticMultiplierdPreviousT, _dPreviousPlasticMultiplierdPreviousT );
 
         }
 
@@ -2368,9 +2226,7 @@ namespace tardigradeHydra{
              *     the current configuration of the plastic configuration w.r.t. the previous state variables
              */
 
-            _dPreviousPlasticMultiplierdPreviousStateVariables.second = dPreviousPlasticMultiplierdPreviousStateVariables;
-
-            _dPreviousPlasticMultiplierdPreviousStateVariables.first = true;
+            setPreviousData( dPreviousPlasticMultiplierdPreviousStateVariables, _dPreviousPlasticMultiplierdPreviousStateVariables );
 
         }
 
@@ -2699,11 +2555,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration
              */
 
-            _velocityGradient.second = velocityGradient;
-
-            _velocityGradient.first = true;
-
-            addIterationData( &_velocityGradient );
+            setIterationData( velocityGradient, _velocityGradient );
 
         }
 
@@ -2716,11 +2568,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration w.r.t. the Cauchy stress
              */
 
-            _dVelocityGradientdCauchyStress.second = dVelocityGradientdCauchyStress;
-
-            _dVelocityGradientdCauchyStress.first = true;
-
-            addIterationData( &_dVelocityGradientdCauchyStress );
+            setIterationData( dVelocityGradientdCauchyStress, _dVelocityGradientdCauchyStress );
 
         }
 
@@ -2733,11 +2581,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration w.r.t. the deformation gradient
              */
 
-            _dVelocityGradientdF.second = dVelocityGradientdF;
-
-            _dVelocityGradientdF.first = true;
-
-            addIterationData( &_dVelocityGradientdF );
+            setIterationData( dVelocityGradientdF, _dVelocityGradientdF );
 
         }
 
@@ -2750,11 +2594,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration w.r.t. the sub-deformation gradients
              */
 
-            _dVelocityGradientdSubFs.second = dVelocityGradientdSubFs;
-
-            _dVelocityGradientdSubFs.first = true;
-
-            addIterationData( &_dVelocityGradientdSubFs );
+            setIterationData( dVelocityGradientdSubFs, _dVelocityGradientdSubFs );
 
         }
 
@@ -2767,11 +2607,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration w.r.t. the temperature
              */
 
-            _dVelocityGradientdT.second = dVelocityGradientdT;
-
-            _dVelocityGradientdT.first = true;
-
-            addIterationData( &_dVelocityGradientdT );
+            setIterationData( dVelocityGradientdT, _dVelocityGradientdT );
 
         }
 
@@ -2784,11 +2620,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration w.r.t. the state variables
              */
 
-            _dVelocityGradientdStateVariables.second = dVelocityGradientdStateVariables;
-
-            _dVelocityGradientdStateVariables.first = true;
-
-            addIterationData( &_dVelocityGradientdStateVariables );
+            setIterationData( dVelocityGradientdStateVariables, _dVelocityGradientdStateVariables );
 
         }
 
@@ -2801,9 +2633,7 @@ namespace tardigradeHydra{
              *     configuration of the plastic configuration
              */
 
-            _previousVelocityGradient.second = previousVelocityGradient;
-
-            _previousVelocityGradient.first = true;
+            setPreviousData( previousVelocityGradient, _previousVelocityGradient );
 
         }
 
@@ -2816,9 +2646,7 @@ namespace tardigradeHydra{
              *     w.r.t. the previous Cauchy stress
              */
 
-            _dPreviousVelocityGradientdPreviousCauchyStress.second = dPreviousVelocityGradientdPreviousCauchyStress;
-
-            _dPreviousVelocityGradientdPreviousCauchyStress.first = true;
+            setPreviousData( dPreviousVelocityGradientdPreviousCauchyStress, _dPreviousVelocityGradientdPreviousCauchyStress );
 
         }
 
@@ -2831,9 +2659,7 @@ namespace tardigradeHydra{
              *     w.r.t. the previous deforamtion gradient
              */
 
-            _dPreviousVelocityGradientdPreviousF.second = dPreviousVelocityGradientdPreviousF;
-
-            _dPreviousVelocityGradientdPreviousF.first = true;
+            setPreviousData( dPreviousVelocityGradientdPreviousF, _dPreviousVelocityGradientdPreviousF );
 
         }
 
@@ -2846,9 +2672,7 @@ namespace tardigradeHydra{
              *     w.r.t. the previous sub-deforamtion gradients
              */
 
-            _dPreviousVelocityGradientdPreviousSubFs.second = dPreviousVelocityGradientdPreviousSubFs;
-
-            _dPreviousVelocityGradientdPreviousSubFs.first = true;
+            setPreviousData( dPreviousVelocityGradientdPreviousSubFs, _dPreviousVelocityGradientdPreviousSubFs );
 
         }
 
@@ -2861,9 +2685,7 @@ namespace tardigradeHydra{
              *     w.r.t. the previous temperature
              */
 
-            _dPreviousVelocityGradientdPreviousT.second = dPreviousVelocityGradientdPreviousT;
-
-            _dPreviousVelocityGradientdPreviousT.first = true;
+            setPreviousData( dPreviousVelocityGradientdPreviousT, _dPreviousVelocityGradientdPreviousT );
 
         }
 
@@ -2876,9 +2698,7 @@ namespace tardigradeHydra{
              *     w.r.t. the previous state variables
              */
 
-            _dPreviousVelocityGradientdPreviousStateVariables.second = dPreviousVelocityGradientdPreviousStateVariables;
-
-            _dPreviousVelocityGradientdPreviousStateVariables.first = true;
+            setPreviousData( dPreviousVelocityGradientdPreviousStateVariables, _dPreviousVelocityGradientdPreviousStateVariables );
 
         }
 
@@ -3202,11 +3022,7 @@ namespace tardigradeHydra{
              * \param &stateVariableEvolutionRates: The current state variable evolution rate
              */
 
-            _stateVariableEvolutionRates.second = stateVariableEvolutionRates;
-
-            _stateVariableEvolutionRates.first = true;
-
-            addIterationData( &_stateVariableEvolutionRates );
+            setIterationData( stateVariableEvolutionRates, _stateVariableEvolutionRates );
 
         }
 
@@ -3217,11 +3033,7 @@ namespace tardigradeHydra{
              * \param &dStateVariableEvolutionRatesdCauchyStress: The value of the derivative
              */
 
-            _dStateVariableEvolutionRatesdCauchyStress.second = dStateVariableEvolutionRatesdCauchyStress;
-
-            _dStateVariableEvolutionRatesdCauchyStress.first = true;
-
-            addIterationData( &_dStateVariableEvolutionRatesdCauchyStress );
+            setIterationData( dStateVariableEvolutionRatesdCauchyStress, _dStateVariableEvolutionRatesdCauchyStress );
 
         }
 
@@ -3232,11 +3044,7 @@ namespace tardigradeHydra{
              * \param &dStateVariableEvolutionRatesdF: The value of the derivative
              */
 
-            _dStateVariableEvolutionRatesdF.second = dStateVariableEvolutionRatesdF;
-
-            _dStateVariableEvolutionRatesdF.first = true;
-
-            addIterationData( &_dStateVariableEvolutionRatesdF );
+            setIterationData( dStateVariableEvolutionRatesdF, _dStateVariableEvolutionRatesdF );
 
         }
 
@@ -3247,11 +3055,7 @@ namespace tardigradeHydra{
              * \param &dStateVariableEvolutionRatesdSubFs: The value of the derivative
              */
 
-            _dStateVariableEvolutionRatesdSubFs.second = dStateVariableEvolutionRatesdSubFs;
-
-            _dStateVariableEvolutionRatesdSubFs.first = true;
-
-            addIterationData( &_dStateVariableEvolutionRatesdSubFs );
+            setIterationData( dStateVariableEvolutionRatesdSubFs, _dStateVariableEvolutionRatesdSubFs );
 
         }
 
@@ -3262,11 +3066,7 @@ namespace tardigradeHydra{
              * \param &dStateVariableEvolutionRatesdT: The value of the derivative
              */
 
-            _dStateVariableEvolutionRatesdT.second = dStateVariableEvolutionRatesdT;
-
-            _dStateVariableEvolutionRatesdT.first = true;
-
-            addIterationData( &_dStateVariableEvolutionRatesdT );
+            setIterationData( dStateVariableEvolutionRatesdT, _dStateVariableEvolutionRatesdT );
 
         }
 
@@ -3277,11 +3077,7 @@ namespace tardigradeHydra{
              * \param &dStateVariableEvolutionRatesdStateVariables: The value of the derivative
              */
 
-            _dStateVariableEvolutionRatesdStateVariables.second = dStateVariableEvolutionRatesdStateVariables;
-
-            _dStateVariableEvolutionRatesdStateVariables.first = true;
-
-            addIterationData( &_dStateVariableEvolutionRatesdStateVariables );
+            setIterationData( dStateVariableEvolutionRatesdStateVariables, _dStateVariableEvolutionRatesdStateVariables );
 
         }
 
@@ -3292,9 +3088,7 @@ namespace tardigradeHydra{
              * \param &previousStateVariableEvolutionRates: The previous state variable evolution rate
              */
 
-            _previousStateVariableEvolutionRates.second = previousStateVariableEvolutionRates;
-
-            _previousStateVariableEvolutionRates.first = true;
+            setPreviousData( previousStateVariableEvolutionRates, _previousStateVariableEvolutionRates );
 
         }
 
@@ -3305,9 +3099,7 @@ namespace tardigradeHydra{
              * \param &dPreviousStateVariableEvolutionRatesdPreviousCauchyStress: The value of the derivative
              */
 
-            _dPreviousStateVariableEvolutionRatesdPreviousCauchyStress.second = dPreviousStateVariableEvolutionRatesdPreviousCauchyStress;
-
-            _dPreviousStateVariableEvolutionRatesdPreviousCauchyStress.first = true;
+            setPreviousData( dPreviousStateVariableEvolutionRatesdPreviousCauchyStress, _dPreviousStateVariableEvolutionRatesdPreviousCauchyStress );
 
         }
 
@@ -3318,9 +3110,7 @@ namespace tardigradeHydra{
              * \param &dPreviousStateVariableEvolutionRatesdPreviousF: The value of the derivative
              */
 
-            _dPreviousStateVariableEvolutionRatesdPreviousF.second = dPreviousStateVariableEvolutionRatesdPreviousF;
-
-            _dPreviousStateVariableEvolutionRatesdPreviousF.first = true;
+            setPreviousData( dPreviousStateVariableEvolutionRatesdPreviousF, _dPreviousStateVariableEvolutionRatesdPreviousF );
 
         }
 
@@ -3331,9 +3121,7 @@ namespace tardigradeHydra{
              * \param &dPreviousStateVariableEvolutionRatesdPreviousSubFs: The value of the derivative
              */
 
-            _dPreviousStateVariableEvolutionRatesdPreviousSubFs.second = dPreviousStateVariableEvolutionRatesdPreviousSubFs;
-
-            _dPreviousStateVariableEvolutionRatesdPreviousSubFs.first = true;
+            setPreviousData( dPreviousStateVariableEvolutionRatesdPreviousSubFs, _dPreviousStateVariableEvolutionRatesdPreviousSubFs );
 
         }
 
@@ -3344,9 +3132,7 @@ namespace tardigradeHydra{
              * \param &dPreviousStateVariableEvolutionRatesdPreviousT: The value of the derivative
              */
 
-            _dPreviousStateVariableEvolutionRatesdPreviousT.second = dPreviousStateVariableEvolutionRatesdPreviousT;
-
-            _dPreviousStateVariableEvolutionRatesdPreviousT.first = true;
+            setPreviousData( dPreviousStateVariableEvolutionRatesdPreviousT, _dPreviousStateVariableEvolutionRatesdPreviousT );
 
         }
 
@@ -3357,9 +3143,7 @@ namespace tardigradeHydra{
              * \param &dPreviousStateVariableEvolutionRatesdPreviousStateVariables: The value of the derivative
              */
 
-            _dPreviousStateVariableEvolutionRatesdPreviousStateVariables.second = dPreviousStateVariableEvolutionRatesdPreviousStateVariables;
-
-            _dPreviousStateVariableEvolutionRatesdPreviousStateVariables.first = true;
+            setPreviousData( dPreviousStateVariableEvolutionRatesdPreviousStateVariables, _dPreviousStateVariableEvolutionRatesdPreviousStateVariables );
 
         }
 
@@ -3564,11 +3348,7 @@ namespace tardigradeHydra{
              * \param &plasticDeformationGradient: The plastic deformation gradient
              */
 
-            _plasticDeformationGradient.second = plasticDeformationGradient;
-
-            _plasticDeformationGradient.first = true;
-
-            addIterationData( &_plasticDeformationGradient );
+            setIterationData( plasticDeformationGradient, _plasticDeformationGradient );
 
         }
 
@@ -3579,11 +3359,7 @@ namespace tardigradeHydra{
              * \param &dPlasticDeformationGradientdCauchyStress: The value of the derivative
              */
 
-            _dPlasticDeformationGradientdCauchyStress.second = dPlasticDeformationGradientdCauchyStress;
-
-            _dPlasticDeformationGradientdCauchyStress.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdCauchyStress );
+            setIterationData( dPlasticDeformationGradientdCauchyStress, _dPlasticDeformationGradientdCauchyStress );
 
         }
 
@@ -3594,11 +3370,7 @@ namespace tardigradeHydra{
              * \param &dPlasticDeformationGradientdF: The value of the derivative
              */
 
-            _dPlasticDeformationGradientdF.second = dPlasticDeformationGradientdF;
-
-            _dPlasticDeformationGradientdF.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdF );
+            setIterationData( dPlasticDeformationGradientdF, _dPlasticDeformationGradientdF );
 
         }
 
@@ -3609,11 +3381,7 @@ namespace tardigradeHydra{
              * \param &dPlasticDeformationGradientdSubFs: The value of the derivative
              */
 
-            _dPlasticDeformationGradientdSubFs.second = dPlasticDeformationGradientdSubFs;
-
-            _dPlasticDeformationGradientdSubFs.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdSubFs );
+            setIterationData( dPlasticDeformationGradientdSubFs, _dPlasticDeformationGradientdSubFs );
 
         }
 
@@ -3624,11 +3392,7 @@ namespace tardigradeHydra{
              * \param &dPlasticDeformationGradientdT: The value of the derivative
              */
 
-            _dPlasticDeformationGradientdT.second = dPlasticDeformationGradientdT;
-
-            _dPlasticDeformationGradientdT.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdT );
+            setIterationData( dPlasticDeformationGradientdT, _dPlasticDeformationGradientdT );
 
         }
 
@@ -3639,11 +3403,7 @@ namespace tardigradeHydra{
              * \param &dPlasticDeformationGradientdStateVariables: The value of the derivative
              */
 
-            _dPlasticDeformationGradientdStateVariables.second = dPlasticDeformationGradientdStateVariables;
-
-            _dPlasticDeformationGradientdStateVariables.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdStateVariables );
+            setIterationData( dPlasticDeformationGradientdStateVariables, _dPlasticDeformationGradientdStateVariables );
 
         }
 
@@ -3654,11 +3414,7 @@ namespace tardigradeHydra{
              * \param &dPlasticDeformationGradientdPreviousCauchyStress: The value of the derivative
              */
 
-            _dPlasticDeformationGradientdPreviousCauchyStress.second = dPlasticDeformationGradientdPreviousCauchyStress;
-
-            _dPlasticDeformationGradientdPreviousCauchyStress.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdPreviousCauchyStress );
+            setIterationData( dPlasticDeformationGradientdPreviousCauchyStress, _dPlasticDeformationGradientdPreviousCauchyStress );
 
         }
 
@@ -3669,11 +3425,7 @@ namespace tardigradeHydra{
              * \param &dPlasticDeformationGradientdPreviousF: The value of the derivative
              */
 
-            _dPlasticDeformationGradientdPreviousF.second = dPlasticDeformationGradientdPreviousF;
-
-            _dPlasticDeformationGradientdPreviousF.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdPreviousF );
+            setIterationData( dPlasticDeformationGradientdPreviousF, _dPlasticDeformationGradientdPreviousF );
 
         }
 
@@ -3684,11 +3436,7 @@ namespace tardigradeHydra{
              * \param &dPlasticDeformationGradientdPreviousSubFs: The value of the derivative
              */
 
-            _dPlasticDeformationGradientdPreviousSubFs.second = dPlasticDeformationGradientdPreviousSubFs;
-
-            _dPlasticDeformationGradientdPreviousSubFs.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdPreviousSubFs );
+            setIterationData( dPlasticDeformationGradientdPreviousSubFs, _dPlasticDeformationGradientdPreviousSubFs );
 
         }
 
@@ -3699,11 +3447,7 @@ namespace tardigradeHydra{
              * \param &dPlasticDeformationGradientdPreviousT: The value of the derivative
              */
 
-            _dPlasticDeformationGradientdPreviousT.second = dPlasticDeformationGradientdPreviousT;
-
-            _dPlasticDeformationGradientdPreviousT.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdPreviousT );
+            setIterationData( dPlasticDeformationGradientdPreviousT, _dPlasticDeformationGradientdPreviousT );
 
         }
 
@@ -3714,11 +3458,7 @@ namespace tardigradeHydra{
              * \param &dPlasticDeformationGradientdPreviousStateVariables: The value of the derivative
              */
 
-            _dPlasticDeformationGradientdPreviousStateVariables.second = dPlasticDeformationGradientdPreviousStateVariables;
-
-            _dPlasticDeformationGradientdPreviousStateVariables.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdPreviousStateVariables );
+            setIterationData( dPlasticDeformationGradientdPreviousStateVariables, _dPlasticDeformationGradientdPreviousStateVariables );
 
         }
 
@@ -3951,11 +3691,7 @@ namespace tardigradeHydra{
              * \param &plasticStateVariables
              */
 
-            _plasticStateVariables.second = plasticStateVariables;
-
-            _plasticStateVariables.first = true;
-
-            addIterationData( &_plasticStateVariables );
+            setIterationData( plasticStateVariables, _plasticStateVariables );
 
         }
 
@@ -3966,11 +3702,7 @@ namespace tardigradeHydra{
              * \param &dPlasticStateVariablesdCauchyStress: The derivative of the plastic state variables w.r.t. the Cauchy stress
              */
 
-            _dPlasticStateVariablesdCauchyStress.second = dPlasticStateVariablesdCauchyStress;
-
-            _dPlasticStateVariablesdCauchyStress.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdCauchyStress );
+            setIterationData( dPlasticStateVariablesdCauchyStress, _dPlasticStateVariablesdCauchyStress );
 
         }
 
@@ -3981,11 +3713,7 @@ namespace tardigradeHydra{
              * \param &dPlasticStateVariablesdF: The derivative of the plastic state variables w.r.t. the deformation gradient
              */
 
-            _dPlasticStateVariablesdF.second = dPlasticStateVariablesdF;
-
-            _dPlasticStateVariablesdF.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdF );
+            setIterationData( dPlasticStateVariablesdF, _dPlasticStateVariablesdF );
 
         }
 
@@ -3996,11 +3724,7 @@ namespace tardigradeHydra{
              * \param &dPlasticStateVariablesdSubFs: The derivative of the plastic state variables w.r.t. the sub-deformation gradients
              */
 
-            _dPlasticStateVariablesdSubFs.second = dPlasticStateVariablesdSubFs;
-
-            _dPlasticStateVariablesdSubFs.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdSubFs );
+            setIterationData( dPlasticStateVariablesdSubFs, _dPlasticStateVariablesdSubFs );
 
         }
 
@@ -4011,11 +3735,7 @@ namespace tardigradeHydra{
              * \param &dPlasticStateVariablesdT: The derivative of the plastic state variables w.r.t. the temperature
              */
 
-            _dPlasticStateVariablesdT.second = dPlasticStateVariablesdT;
-
-            _dPlasticStateVariablesdT.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdT );
+            setIterationData( dPlasticStateVariablesdT, _dPlasticStateVariablesdT );
 
         }
 
@@ -4026,11 +3746,7 @@ namespace tardigradeHydra{
              * \param &dPlasticStateVariablesdStateVariables: The derivative of the plastic state variables w.r.t. the state variables
              */
 
-            _dPlasticStateVariablesdStateVariables.second = dPlasticStateVariablesdStateVariables;
-
-            _dPlasticStateVariablesdStateVariables.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdStateVariables );
+            setIterationData( dPlasticStateVariablesdStateVariables, _dPlasticStateVariablesdStateVariables );
 
         }
 
@@ -4041,11 +3757,7 @@ namespace tardigradeHydra{
              * \param &dPlasticStateVariablesdPreviousCauchyStress: The derivative of the plastic state variables w.r.t. the previous Cauchy stress
              */
 
-            _dPlasticStateVariablesdPreviousCauchyStress.second = dPlasticStateVariablesdPreviousCauchyStress;
-
-            _dPlasticStateVariablesdPreviousCauchyStress.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdPreviousCauchyStress );
+            setIterationData( dPlasticStateVariablesdPreviousCauchyStress, _dPlasticStateVariablesdPreviousCauchyStress );
 
         }
 
@@ -4056,11 +3768,7 @@ namespace tardigradeHydra{
              * \param &dPlasticStateVariablesdPreviousF: The derivative of the plastic state variables w.r.t. the previous deformation gradient
              */
 
-            _dPlasticStateVariablesdPreviousF.second = dPlasticStateVariablesdPreviousF;
-
-            _dPlasticStateVariablesdPreviousF.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdPreviousF );
+            setIterationData( dPlasticStateVariablesdPreviousF, _dPlasticStateVariablesdPreviousF );
 
         }
 
@@ -4071,11 +3779,7 @@ namespace tardigradeHydra{
              * \param &dPlasticStateVariablesdPreviousSubFs: The derivative of the plastic state variables w.r.t. the previous sub-deformation gradients
              */
 
-            _dPlasticStateVariablesdPreviousSubFs.second = dPlasticStateVariablesdPreviousSubFs;
-
-            _dPlasticStateVariablesdPreviousSubFs.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdPreviousSubFs );
+            setIterationData( dPlasticStateVariablesdPreviousSubFs, _dPlasticStateVariablesdPreviousSubFs );
 
         }
 
@@ -4086,11 +3790,7 @@ namespace tardigradeHydra{
              * \param &dPlasticStateVariablesdPreviousT: The derivative of the plastic state variables w.r.t. the previous temperature
              */
 
-            _dPlasticStateVariablesdPreviousT.second = dPlasticStateVariablesdPreviousT;
-
-            _dPlasticStateVariablesdPreviousT.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdPreviousT );
+            setIterationData( dPlasticStateVariablesdPreviousT, _dPlasticStateVariablesdPreviousT );
 
         }
 
@@ -4101,11 +3801,7 @@ namespace tardigradeHydra{
              * \param &dPlasticStateVariablesdPreviousStateVariables: The derivative of the plastic state variables w.r.t. the previous state variables
              */
 
-            _dPlasticStateVariablesdPreviousStateVariables.second = dPlasticStateVariablesdPreviousStateVariables;
-
-            _dPlasticStateVariablesdPreviousStateVariables.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdPreviousStateVariables );
+            setIterationData( dPlasticStateVariablesdPreviousStateVariables, _dPlasticStateVariablesdPreviousStateVariables );
 
         }
 
@@ -4186,11 +3882,7 @@ namespace tardigradeHydra{
              * \param &stateVariables: The state variables
              */
 
-            _stateVariables.second = stateVariables;
-
-            _stateVariables.first = true;
-
-            addIterationData( &_stateVariables );
+            setIterationData( stateVariables, _stateVariables );
 
         }
 
@@ -4201,9 +3893,7 @@ namespace tardigradeHydra{
              * \param &previousStateVariables: The previous state variables
              */
 
-            _previousStateVariables.second = previousStateVariables;
-
-            _previousStateVariables.first = true;
+            setPreviousData( previousStateVariables, _previousStateVariables );
 
         }
 
@@ -4214,9 +3904,7 @@ namespace tardigradeHydra{
              * \param &peryznaParameters: The Peryzna parameters
              */
 
-            _peryznaParameters.second = peryznaParameters;
-
-            _peryznaParameters.first = true;
+            setConstantData( peryznaParameters, _peryznaParameters );
 
         }
 
@@ -4227,9 +3915,7 @@ namespace tardigradeHydra{
              * \param &dragStressParameters: The drag stress parameters
              */
 
-            _dragStressParameters.second = dragStressParameters;
-
-            _dragStressParameters.first = true;
+            setConstantData( dragStressParameters, _dragStressParameters );
 
         }
 
@@ -4240,9 +3926,7 @@ namespace tardigradeHydra{
              * \param &thermalParameters: The thermal parameters
              */
 
-            _thermalParameters.second = thermalParameters;
-
-            _thermalParameters.first = true;
+            setConstantData( thermalParameters, _thermalParameters );
 
         }
 
@@ -4253,9 +3937,7 @@ namespace tardigradeHydra{
              * \param &yieldParameters: The yield parameters
              */
 
-            _yieldParameters.second = yieldParameters;
-
-            _yieldParameters.first = true;
+            setConstantData( yieldParameters, _yieldParameters );
 
         }
 
@@ -4266,9 +3948,7 @@ namespace tardigradeHydra{
              * \param &flowParameters: The flow parameters
              */
 
-            _flowParameters.second = flowParameters;
-
-            _flowParameters.first = true;
+            setConstantData( flowParameters, _flowParameters );
 
         }
 
@@ -4279,9 +3959,7 @@ namespace tardigradeHydra{
              * \param &hardeningParameters: The hardening parameters
              */
 
-            _hardeningParameters.second = hardeningParameters;
-
-            _hardeningParameters.first = true;
+            setConstantData( hardeningParameters, _hardeningParameters );
 
         }
 

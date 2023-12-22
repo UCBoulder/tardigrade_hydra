@@ -60,11 +60,7 @@ namespace tardigradeHydra{
              *     deformation gradient
              */
 
-            _thermalGreenLagrangeStrain.second = thermalGreenLagrangeStrain;
-
-            _thermalGreenLagrangeStrain.first = true;
-
-            addIterationData( &_thermalGreenLagrangeStrain );
+            setIterationData( thermalGreenLagrangeStrain, _thermalGreenLagrangeStrain );
 
         }
 
@@ -75,11 +71,7 @@ namespace tardigradeHydra{
              * \param &thermalDeformationGradient: The thermal deformation gradient
              */
 
-            _thermalDeformationGradient.second = thermalDeformationGradient;
-
-            _thermalDeformationGradient.first = true;
-
-            addIterationData( &_thermalDeformationGradient );
+            setIterationData( thermalDeformationGradient, _thermalDeformationGradient );
 
         }
 
@@ -94,11 +86,7 @@ namespace tardigradeHydra{
              *     gradient.
              */
 
-            _dThermalGreenLagrangeStraindT.second = dThermalGreenLagrangeStraindT;
-
-            _dThermalGreenLagrangeStraindT.first = true;
-
-            addIterationData( &_dThermalGreenLagrangeStraindT );
+            setIterationData( dThermalGreenLagrangeStraindT, _dThermalGreenLagrangeStraindT );
 
         }
 
@@ -111,11 +99,7 @@ namespace tardigradeHydra{
              *     thermal deformation gradient w.r..t the temperature.
              */
 
-            _dThermalDeformationGradientdT.second = dThermalDeformationGradientdT;
-
-            _dThermalDeformationGradientdT.first = true;
-
-            addIterationData( &_dThermalDeformationGradientdT );
+            setIterationData( dThermalDeformationGradientdT, _dThermalDeformationGradientdT );
 
         }
 
