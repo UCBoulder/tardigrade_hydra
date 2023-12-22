@@ -13,6 +13,7 @@
 #include<functional>
 
 #include<tardigrade_error_tools.h>
+//!We will use the functions that depend on Eigen
 #define USE_EIGEN
 #include<tardigrade_vector_tools.h>
 #include<tardigrade_abaqus_tools.h>
@@ -43,7 +44,7 @@
  * \param uncall:  The function that is called if the variable is undefined.
  *     This should set the variable or throw an error
  */
-#define TARDIGRADE_HYDRA_DECLARE_GETTER(varname,vartype,setfun)                 \
+#define TARDIGRADE_HYDRA_DECLARE_GETTER(varname,vartype,uncall)                \
     TARDIGRADE_HYDRA_DECLARE_NAMED_GETTER(get_##varname,varname,vartype,uncall)
 
 /*!

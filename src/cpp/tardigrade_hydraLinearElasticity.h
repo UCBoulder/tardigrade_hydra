@@ -101,6 +101,82 @@ namespace tardigradeHydra{
                  * \param &mu: The mu Lame parameter
                  */ 
                 void setMu( const floatType &mu ){ _mu = mu; }
+
+            protected:
+
+                virtual void setFe( const bool isPrevious );
+
+                virtual void setFe( );
+
+                virtual void setPreviousFe( );
+
+                virtual void setFeDerivatives( const bool isPrevious );
+
+                virtual void setdFedF( );
+
+                virtual void setdFedFn( );
+
+                virtual void setPreviousdFedF( );
+
+                virtual void setPreviousdFedFn( );
+
+                virtual void setEe( const bool isPrevious );
+
+                virtual void setEe( );
+
+                virtual void setdEedFe( );
+ 
+                virtual void setPreviousEe( );
+
+                virtual void setPreviousdEedFe( );
+
+                virtual void setPK2Stress( const bool isPrevious );
+ 
+                virtual void setPK2Stress( ); 
+
+                virtual void setdPK2StressdEe( const bool isPrevious );
+
+                virtual void setdPK2StressdEe( );
+
+                virtual void setdPK2StressdFe( );
+
+                virtual void setPreviousPK2Stress( ); 
+
+                virtual void setPreviousdPK2StressdEe( );
+
+                virtual void setPreviousdPK2StressdFe( );
+
+                virtual void setStress( ) override;
+
+                virtual void setPreviousStress( ) override;
+
+                virtual void setCauchyStress( const bool isPrevious );
+
+                virtual void setCauchyStress( );
+
+                virtual void setPreviousCauchyStress( );
+
+                virtual void setdCauchyStressdPK2Stress( );
+
+                virtual void setdCauchyStressdF( );
+
+                virtual void setdCauchyStressdFn( );
+
+                virtual void setPreviousdCauchyStressdPK2Stress( );
+
+                virtual void setPreviousdCauchyStressdF( );
+
+                virtual void setPreviousdCauchyStressdFn( );
+
+                virtual void setResidual( ) override;
+
+                virtual void setJacobian( ) override;
+
+                virtual void setdRdT( ) override;
+
+                virtual void setdRdF( ) override;
+
+                virtual void decomposeParameterVector( const floatVector &parameters );
      
             private:
     
@@ -120,55 +196,61 @@ namespace tardigradeHydra{
                 using tardigradeHydra::residualBase::setAdditionalDerivatives;
         
                 using tardigradeHydra::residualBase::setStress;
+
+                using tardigradeHydra::residualBase::setPreviousStress;
         
                 floatType _lambda;
         
                 floatType _mu;
         
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Ee,                      floatVector, setEe )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Fe,                              floatVector, setFe                              )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dEedFe,                  floatMatrix, setdEedFe )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFedF,                           floatMatrix, setdFedF                           )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2Stress,               floatVector, setPK2Stress )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFedFn,                          floatMatrix, setdFedFn                          )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdEe,           floatMatrix, setdPK2StressdEe )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousFe,                      floatVector, setPreviousFe                      )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdFe,           floatMatrix, setdPK2StressdFe )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdFedF,                   floatMatrix, setPreviousdFedF                   )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPK2Stress, floatMatrix, setdCauchyStressdPK2Stress )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdFedFn,                  floatMatrix, setPreviousdFedFn                  )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdF,         floatMatrix, setdCauchyStressdF )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Ee,                              floatVector, setEe                              )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdFn,        floatMatrix, setdCauchyStressdFn )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dEedFe,                          floatMatrix, setdEedFe                          )
 
-                virtual void setEe( );
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousEe,                      floatVector, setPreviousEe                      )
 
-                virtual void setdEedFe( );
- 
-                virtual void setPK2Stress( );            
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdEedFe,                  floatMatrix, setPreviousdEedFe                  )
 
-                virtual void setdPK2StressdEe( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2Stress,                       floatVector, setPK2Stress                       )
 
-                virtual void setdPK2StressdFe( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdEe,                   floatMatrix, setdPK2StressdEe                   )
 
-                virtual void setStress( ) override;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdFe,                   floatMatrix, setdPK2StressdFe                   )
 
-                virtual void setdCauchyStressdPK2Stress( );
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPK2Stress,               floatVector, setPreviousPK2Stress               )
 
-                virtual void setdCauchyStressdF( );
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdEe,           floatMatrix, setPreviousdPK2StressdEe           )
 
-                virtual void setdCauchyStressdFn( );
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdFe,           floatMatrix, setPreviousdPK2StressdFe           )
 
-                virtual void setResidual( ) override;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, cauchyStress,                    floatVector, setCauchyStress                    )
 
-                virtual void setJacobian( ) override;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPK2Stress,         floatMatrix, setdCauchyStressdPK2Stress         )
 
-                virtual void setdRdT( ) override;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdF,                 floatMatrix, setdCauchyStressdF                 )
 
-                virtual void setdRdF( ) override;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdFn,                floatMatrix, setdCauchyStressdFn                )
 
-                virtual void decomposeParameterVector( const floatVector &parameters );
-    
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousCauchyStress,            floatVector, setPreviousCauchyStress            )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdPK2Stress, floatMatrix, setPreviousdCauchyStressdPK2Stress )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdF,         floatMatrix, setPreviousdCauchyStressdF         )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdFn,        floatMatrix, setPreviousdCauchyStressdFn        )
+
         };
 
     }

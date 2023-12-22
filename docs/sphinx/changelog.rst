@@ -12,11 +12,14 @@ Changelog
 Breaking Changes
 ================
 - Changed hydra function calls to be more general (:pull:`1`, :pull:`2`, :pull:`3`, :pull:`4`, :pull:`5`, :pull:`6`). By `Nathan Miller`_.
+- Added macros for the setter functions (:pull:`24`). By `Nathan Miller`_.
+- Added macros for the getter functions (:pull:`25`). By `Nathan Miller`_.
 
 New Features
 ============
 - Added micromorphic hydra object (:pull:`7`). By `Nathan Miller`_.
-- Added general setter functions for iteration and previous data (:pull:`20`). By `Nathan Miller`_.
+- Added general setter functions for iteration and previous data (:pull:`23`). By `Nathan Miller`_.
+- Added calculation of previous linear elastic stress (:pull:`26`). By `Nathan Miller`_.
 
 Internal Changes
 ================
@@ -29,8 +32,8 @@ Internal Changes
 - Added computation of Jacobian of the gradient of the micro-deformations in their local reference configurations (:pull:`14`). By `Nathan Miller`_.
 - Copied over micromorphic linear elasticity subroutines to tardigrade hydra (:pull:`17`). By `Nathan Miller`_.
 - Added initial micromorphic linear elastic residual (:pull:`18`). By `Nathan Miller`_.
-- Added the calculation of the derived deformation measures (:pull:`19`). By `Nathan Miller`_.
-- Added the calculation of the reference stress measures (:pull:`20`). By `Nathan Miller`_.
+- Added the calculation of the micromorphic linear elastic derived deformation measures (:pull:`19`). By `Nathan Miller`_.
+- Added the calculation of the micromorphic linear elastic reference stress measures (:pull:`20`). By `Nathan Miller`_.
 
 ******************
 0.1.2 (12-06-2023)
