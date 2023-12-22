@@ -121,13 +121,13 @@ namespace tardigradeHydra{
 
                 static void checkInverseConfigurations( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._inverseConfigurations.second == hydra.getInverseConfigurations( ) );
+                    BOOST_CHECK( &hydra._inverseConfigurations.second == hydra.get_inverseConfigurations( ) );
 
                 }
 
                 static void checkPreviousInverseConfigurations( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._previousInverseConfigurations.second == hydra.getPreviousInverseConfigurations( ) );
+                    BOOST_CHECK( &hydra._previousInverseConfigurations.second == hydra.get_previousInverseConfigurations( ) );
 
                 }
 
@@ -145,7 +145,7 @@ namespace tardigradeHydra{
 
                 static void checkAdditionalStateVariables( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._additionalStateVariables.second == hydra.getAdditionalStateVariables( ) );
+                    BOOST_CHECK( &hydra._additionalStateVariables.second == hydra.get_additionalStateVariables( ) );
 
                 }
 
@@ -518,7 +518,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_get_previousConfigurations ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getInverseConfigurations ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_get_inverseConfigurations ){
 
     tardigradeHydra::hydraBase hydra;
 
@@ -526,7 +526,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getInverseConfigurations ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousInverseConfigurations ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_get_previousInverseConfigurations ){
 
     tardigradeHydra::hydraBase hydra;
 
@@ -550,7 +550,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_get_previousNonLinearSolveStateVariables ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getAdditionalStateVariables ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_get_additionalStateVariables ){
 
     tardigradeHydra::hydraBase hydra;
 
@@ -687,15 +687,15 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousConfigurationsAnswer, *hydra.get_previousConfigurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( inverseConfigurationsAnswer, *hydra.getInverseConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( inverseConfigurationsAnswer, *hydra.get_inverseConfigurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousInverseConfigurationsAnswer, *hydra.getPreviousInverseConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousInverseConfigurationsAnswer, *hydra.get_previousInverseConfigurations( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( nonLinearSolveStateVariablesAnswer, *hydra.get_nonLinearSolveStateVariables( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousNonLinearSolveStateVariablesAnswer, *hydra.get_previousNonLinearSolveStateVariables( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( additionalStateVariablesAnswer, *hydra.getAdditionalStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( additionalStateVariablesAnswer, *hydra.get_additionalStateVariables( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAdditionalStateVariablesAnswer, *hydra.get_previousAdditionalStateVariables( ) ) );
 
@@ -3554,7 +3554,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdF ){
 
     BOOST_CHECK_NO_THROW( hydra.evaluate( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( PK2Answer, *hydra.elasticity.getPK2Stress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( PK2Answer, *hydra.elasticity.get_PK2Stress( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *hydra.getStress( ) ) );
 
