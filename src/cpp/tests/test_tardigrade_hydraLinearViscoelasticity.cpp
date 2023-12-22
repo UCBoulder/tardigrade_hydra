@@ -772,7 +772,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStress ){
 
             void setJe( const floatType &Je ){
 
-                tardigradeHydra::linearViscoelasticity::residual::setJe( Je );
+                tardigradeHydra::linearViscoelasticity::residual::set_Je( Je );
 
             }
 
@@ -1206,13 +1206,13 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2Stress ){
 
             void setPK2MeanStress( const floatType &value ){
 
-                tardigradeHydra::linearViscoelasticity::residual::setPK2MeanStress( value );
+                tardigradeHydra::linearViscoelasticity::residual::set_PK2MeanStress( value );
 
             }
 
             void setPK2IsochoricStress( const floatVector &value ){
 
-                tardigradeHydra::linearViscoelasticity::residual::setPK2IsochoricStress( value );
+                tardigradeHydra::linearViscoelasticity::residual::set_PK2IsochoricStress( value );
 
             }
 
