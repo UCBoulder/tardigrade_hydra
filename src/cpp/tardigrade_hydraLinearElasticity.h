@@ -140,6 +140,8 @@ namespace tardigradeHydra{
 
                 virtual void setdPK2StressdFe( );
 
+                virtual void setdPK2StressdPreviousFe( );
+
                 virtual void setPreviousPK2Stress( ); 
 
                 virtual void setPreviousdPK2StressdEe( );
@@ -161,6 +163,10 @@ namespace tardigradeHydra{
                 virtual void setdCauchyStressdF( );
 
                 virtual void setdCauchyStressdFn( );
+
+                virtual void setdCauchyStressdPreviousF( );
+
+                virtual void setdCauchyStressdPreviousFn( );
 
                 virtual void setPreviousdCauchyStressdPK2Stress( );
 
@@ -229,6 +235,8 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdFe,                   floatMatrix, setdPK2StressdFe                   )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdPreviousFe,           floatMatrix, setdPK2StressdPreviousFe           )
+
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPK2Stress,               floatVector, setPreviousPK2Stress               )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdEe,           floatMatrix, setPreviousdPK2StressdEe           )
@@ -242,6 +250,10 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdF,                 floatMatrix, setdCauchyStressdF                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdFn,                floatMatrix, setdCauchyStressdFn                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPreviousF,         floatMatrix, setdCauchyStressdPreviousF         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPreviousFn,        floatMatrix, setdCauchyStressdPreviousFn        )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousCauchyStress,            floatVector, setPreviousCauchyStress            )
 
