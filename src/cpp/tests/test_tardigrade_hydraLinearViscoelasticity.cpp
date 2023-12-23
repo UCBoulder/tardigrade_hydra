@@ -1972,6 +1972,10 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdT ){
 
     floatVector dCauchyStressdT( deformationGradient.size( ), 0 );
 
+    floatMatrix dCauchyStressdPreviousF( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) ); // NOTE: This isn't strictly required! I'm just doing it for the warm fuzzies.
+
+    floatVector dCauchyStressdPreviousT( deformationGradient.size( ), 0 );
+
     floatMatrix previousdCauchyStressdF( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) ); // NOTE: This isn't strictly required! I'm just doing it for the warm fuzzies.
 
     floatVector previousdCauchyStressdT( deformationGradient.size( ), 0 );
@@ -2053,6 +2057,11 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdT ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
+            dCauchyStressdPreviousF[ j ][ i ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
+        }
+        for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
+
             previousdCauchyStressdF[ j ][ i ] = ( ( *Rp.getPreviousStress( ) )[ j ] - ( *Rm.getPreviousStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
@@ -2077,6 +2086,11 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdT ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
+            dCauchyStressdPreviousT[ j ] = ( ( *Rp.getStress( ) )[ j ] - ( *Rm.getStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
+        }
+        for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
+
             dCauchyStressdT[ j ] = ( ( *Rp.getPreviousStress( ) )[ j ] - ( *Rm.getPreviousStress( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
@@ -2086,6 +2100,10 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdT ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdCauchyStressdF, *R.get_previousdCauchyStressdF( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdCauchyStressdT, *R.get_previousdCauchyStressdT( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCauchyStressdPreviousF, *R.get_dCauchyStressdPreviousF( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCauchyStressdPreviousT, *R.get_dCauchyStressdPreviousT( ) ) );
 
 }
 

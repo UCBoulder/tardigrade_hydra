@@ -1465,6 +1465,28 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdCauchyStressdPreviousT( ){
+            /*!
+             * Set the derivative of the Cauchy stress w.r.t. the previous temperature
+             */
+
+            floatVector dCauchyStressdPreviousT = tardigradeVectorTools::dot( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdPreviousT( ) );
+
+            set_dCauchyStressdPreviousT( dCauchyStressdPreviousT );
+
+        }
+
+        void residual::setdCauchyStressdPreviousISVs( ){
+            /*!
+             * Set the derivative of the Cauchy stress w.r.t. the previous internal state variables
+             */
+
+            floatMatrix dCauchyStressdPreviousISVs = tardigradeVectorTools::dot( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdPreviousISVs( ) );
+
+            set_dCauchyStressdPreviousISVs( dCauchyStressdPreviousISVs );
+
+        }
+
         void residual::setPreviousdCauchyStressdT( ){
             /*!
              * Set previous the derivative of the Cauchy stress w.r.t. the temperature

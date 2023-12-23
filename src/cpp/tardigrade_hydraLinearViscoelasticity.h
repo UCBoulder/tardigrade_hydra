@@ -272,7 +272,7 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousdPK2StressdFe( ) override;
 
-                virtual void setdPK2StressdPreviousFe( );
+                virtual void setdPK2StressdPreviousFe( ) override;
 
                 virtual void setdPK2StressdT( );
 
@@ -283,6 +283,10 @@ namespace tardigradeHydra{
                 virtual void setPreviousdPK2StressdT( );
 
                 virtual void setdCauchyStressdT( );
+
+                virtual void setdCauchyStressdPreviousT( );
+
+                virtual void setdCauchyStressdPreviousISVs( );
 
                 virtual void setPreviousdCauchyStressdT( );
 
@@ -421,8 +425,6 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdPK2IsochoricStressdFe,              floatMatrix, setPreviousdPK2IsochoricStressdFe              )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdPreviousFe,                       floatMatrix, setdPK2StressdPreviousFe                       )
-
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdT,                                floatVector, setdPK2StressdT                                )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdPreviousT,                        floatVector, setdPK2StressdPreviousT                        )
@@ -432,6 +434,10 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdT,                        floatVector, setPreviousdPK2StressdT                        )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdT,                             floatVector, setdCauchyStressdT                             )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPreviousT,                     floatVector, setdCauchyStressdPreviousT                     )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPreviousISVs,                  floatMatrix, setdCauchyStressdPreviousISVs                  )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdT,                     floatVector, setPreviousdCauchyStressdT                     )
 
