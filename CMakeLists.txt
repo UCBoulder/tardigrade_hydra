@@ -16,7 +16,7 @@ set(SPHINX_SRC_PATH "docs/sphinx")
 set(TARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built for hydra")
 
 # Set the internal support libraries
-set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPeryznaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity")
+set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPeryznaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPeryznaViscodamage")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
@@ -28,6 +28,7 @@ set(TARDIGRADE_HYDRALINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive
 set(TARDIGRADE_HYDRALINEARVISCOELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
 set(TARDIGRADE_HYDRATHERMALEXPANSION_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
 set(TARDIGRADE_HYDRAPERYZNAVISCOPLASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
+set(TARDIGRADE_HYDRAPERYZNAVISCODAMAGE_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
 set(TARDIGRADE_HYDRAMICROMORPHICLINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
 # Set some Abaqus integration variables
 set(UMAT "${PROJECT_NAME}_umat")
