@@ -1001,7 +1001,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStressDerivatives ){
 
     floatType   dPK2MeanStressdPreviousT;
 
-    floatVector dPK2MeanStressdPreviousISVs( 2, 0 );
+    floatVector dPK2MeanStressdPreviousISVs( 2 + 3*9, 0 );
 
     floatMatrix dVolumetricISVsdFe( 2, floatVector( 9, 0 ) );
 
@@ -1011,7 +1011,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStressDerivatives ){
 
     floatVector dVolumetricISVsdPreviousT( 2, 0 );
 
-    floatMatrix dVolumetricISVsdPreviousISVs( 2, floatVector( 2, 0 ) );
+    floatMatrix dVolumetricISVsdPreviousISVs( 2, floatVector( 2 + 3*9, 0 ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -1145,7 +1145,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStressDerivatives ){
 
     }
 
-    for ( unsigned int i = 0; i < 2; i++ ){
+    for ( unsigned int i = 0; i < 2 + 3*9; i++ ){
 
         floatVector deltas( previousStateVariables.size( ), 0 );
 
@@ -1362,7 +1362,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
 
     floatVector dPK2IsochoricStressdPreviousT( deformationGradient.size( ), 0 );
 
-    floatMatrix dPK2IsochoricStressdPreviousISVs( deformationGradient.size( ), floatVector( 3*9, 0 ) );
+    floatMatrix dPK2IsochoricStressdPreviousISVs( deformationGradient.size( ), floatVector( 2 + 3*9, 0 ) );
 
     floatMatrix dIsochoricISVsdFe( 3*9, floatVector( deformationGradient.size( ), 0 ) );
 
@@ -1372,7 +1372,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
 
     floatVector dIsochoricISVsdPreviousT( 3*9, 0 );
 
-    floatMatrix dIsochoricISVsdPreviousISVs( 3*9, floatVector( 3*9, 0 ) );
+    floatMatrix dIsochoricISVsdPreviousISVs( 3*9, floatVector( 2 + 3*9, 0 ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -1522,11 +1522,11 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2IsochoricStressdT, *R.get_previousdPK2IsochoricStressdT( ) ) );
 
-    for ( unsigned int i = 0; i < 3*9; i++ ){
+    for ( unsigned int i = 0; i < 2 + 3*9; i++ ){
 
         floatVector deltas( previousStateVariables.size( ), 0 );
 
-        deltas[ i + ISVlb + 2 ] = eps * std::fabs( previousStateVariables[ i + ISVlb + 2 ] ) + eps;
+        deltas[ i + ISVlb ] = eps * std::fabs( previousStateVariables[ i + ISVlb ] ) + eps;
 
         hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                              previousStateVariables + deltas, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
@@ -1540,13 +1540,13 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dPK2IsochoricStressdPreviousISVs[ j ][ i ] = ( ( *Rp.get_PK2IsochoricStress( ) )[ j ] - ( *Rm.get_PK2IsochoricStress( ) )[ j ] ) / ( 2 * deltas[ i + ISVlb + 2 ] );
+            dPK2IsochoricStressdPreviousISVs[ j ][ i ] = ( ( *Rp.get_PK2IsochoricStress( ) )[ j ] - ( *Rm.get_PK2IsochoricStress( ) )[ j ] ) / ( 2 * deltas[ i + ISVlb ] );
 
         }
 
         for ( unsigned int j = 0; j < 3*9; j++ ){
 
-            dIsochoricISVsdPreviousISVs[ j ][ i ] = ( ( *Rp.get_isochoricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_isochoricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i + ISVlb + 2 ] );
+            dIsochoricISVsdPreviousISVs[ j ][ i ] = ( ( *Rp.get_isochoricViscoelasticStateVariables( ) )[ j ] - ( *Rm.get_isochoricViscoelasticStateVariables( ) )[ j ] ) / ( 2 * deltas[ i + ISVlb ] );
 
         }
 
