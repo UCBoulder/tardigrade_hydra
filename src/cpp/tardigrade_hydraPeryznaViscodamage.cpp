@@ -76,7 +76,7 @@ namespace tardigradeHydra{
     
             floatVector Fd;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::matrixSqrt( 2.0 * Ed + eye, *dim ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( Fd = tardigradeVectorTools::matrixSqrt( 2.0 * Ed + eye, *dim ) );
     
             set_damageDeformationGradient( Fd );
 
