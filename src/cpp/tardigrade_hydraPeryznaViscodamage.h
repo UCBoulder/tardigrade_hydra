@@ -69,6 +69,9 @@ namespace tardigradeHydra{
 
             public:
 
+                //! Default constructor
+                residual( ) : tardigradeHydra::peryznaViscoplasticity::residual( ), _elasticConfigurationIndex( 0 ){ }
+
                 residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int &damageConfigurationIndex, const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const unsigned int elasticConfigurationIndex = 0, const floatType integrationParameter = 0.5 ) : tardigradeHydra::peryznaViscoplasticity::residual( hydra, numEquations, damageConfigurationIndex, stateVariableIndices, parameters, integrationParameter ),
                     _elasticConfigurationIndex( elasticConfigurationIndex ){
                     /*!
@@ -114,7 +117,7 @@ namespace tardigradeHydra{
 
             private:
 
-                const unsigned int _elasticConfigurationIndex;
+                unsigned int _elasticConfigurationIndex;
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, damage,                    floatType,   setDamage                    )
 
