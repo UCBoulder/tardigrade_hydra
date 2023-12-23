@@ -732,7 +732,7 @@ namespace tardigradeHydra{
 
             floatVector dPK2MeanStressdPreviousRateModifier;
 
-            floatMatrix dPK2MeanStressdPreviousISVs;
+            floatMatrix dPK2MeanStressdPreviousVolumetricISVs;
 
             floatMatrix dISVsdJe;
 
@@ -742,7 +742,7 @@ namespace tardigradeHydra{
 
             floatVector dISVsdPreviousRateModifier;
 
-            floatMatrix dISVsdPreviousISVs;
+            floatMatrix dISVsdPreviousVolumetricISVs;
 
             floatVector currentVolumetricStateVariables;
 
@@ -758,10 +758,10 @@ namespace tardigradeHydra{
                                                                                                      PK2MeanStress, currentVolumetricStateVariables,
                                                                                                      dPK2MeanStressdJe, dPK2MeanStressdRateModifier,
                                                                                                      dPK2MeanStressdPreviousJe, dPK2MeanStressdPreviousRateModifier,
-                                                                                                     dPK2MeanStressdPreviousISVs,
+                                                                                                     dPK2MeanStressdPreviousVolumetricISVs,
                                                                                                      dISVsdJe, dISVsdRateModifier,
                                                                                                      dISVsdPreviousJe, dISVsdPreviousRateModifier,
-                                                                                                     dISVsdPreviousISVs ) );
+                                                                                                     dISVsdPreviousVolumetricISVs ) );
 
             if( isPrevious ){
 
@@ -786,7 +786,29 @@ namespace tardigradeHydra{
 
                 set_dPK2MeanStressdPreviousT( dPK2MeanStressdPreviousRateModifier[ 0 ] * ( *get_dPreviousVolumetricRateMultiplierdPreviousT( ) ) );
 
-                set_dPK2MeanStressdPreviousISVs( dPK2MeanStressdPreviousISVs[ 0 ] );
+
+                floatVector dPK2MeanStressdPreviousISVs( previousVolumetricStateVariables.size( ) + previousIsochoricStateVariables.size( ), 0 );
+
+                floatMatrix dVolumetricISVsdPreviousISVs( previousVolumetricStateVariables.size( ),
+                                                          floatVector( previousVolumetricStateVariables.size( ) + previousIsochoricStateVariables.size( ), 0 ) );
+
+                for ( unsigned int j = 0; j < previousVolumetricStateVariables.size( ); j++ ){
+
+                    for ( unsigned int i = 0; i < 1; i++ ){
+
+                        dPK2MeanStressdPreviousISVs[ j ] = dPK2MeanStressdPreviousVolumetricISVs[ i ][ j ];
+
+                    }
+
+                    for ( unsigned int i = 0; i < previousVolumetricStateVariables.size( ); i++ ){
+
+                        dVolumetricISVsdPreviousISVs[ i ][ j ] = dISVsdPreviousVolumetricISVs[ i ][ j ];
+
+                    }
+
+                }
+
+                set_dPK2MeanStressdPreviousISVs( dPK2MeanStressdPreviousISVs );
 
                 set_dVolumetricISVsdFe( tardigradeVectorTools::dot( dISVsdJe,  tardigradeVectorTools::inflate( *dJedFe, 1, dJedFe->size( ) ) ) );
 
@@ -796,7 +818,7 @@ namespace tardigradeHydra{
 
                 set_dVolumetricISVsdPreviousT( dISVsdPreviousRateModifier * ( *get_dPreviousVolumetricRateMultiplierdPreviousT( ) ) );
 
-                set_dVolumetricISVsdPreviousISVs( dISVsdPreviousISVs );
+                set_dVolumetricISVsdPreviousISVs( dVolumetricISVsdPreviousISVs );
 
             }
 
@@ -1011,7 +1033,7 @@ namespace tardigradeHydra{
 
             floatVector dPK2IsochoricStressdPreviousRateMultiplier;
 
-            floatMatrix dPK2IsochoricStressdPreviousISVs;
+            floatMatrix dPK2IsochoricStressdPreviousIsochoricISVs;
 
             floatMatrix dISVsdEe;
 
@@ -1021,7 +1043,7 @@ namespace tardigradeHydra{
 
             floatVector dISVsdPreviousRateMultiplier;
 
-            floatMatrix dISVsdPreviousISVs;
+            floatMatrix dISVsdPreviousIsochoricISVs;
 
             // Compute the viscous isochoric stress
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::linearViscoelasticity( time, isochoricStrain,
@@ -1034,10 +1056,10 @@ namespace tardigradeHydra{
                                                                                                      deltaPK2IsochoricStress, PK2IsochoricStress, currentIsochoricStateVariables,
                                                                                                      dPK2IsochoricStressdEe,         dPK2IsochoricStressdRateMultiplier,
                                                                                                      dPK2IsochoricStressdPreviousEe, dPK2IsochoricStressdPreviousRateMultiplier,
-                                                                                                     dPK2IsochoricStressdPreviousISVs,
+                                                                                                     dPK2IsochoricStressdPreviousIsochoricISVs,
                                                                                                      dISVsdEe,                       dISVsdRateMultiplier,
                                                                                                      dISVsdPreviousEe,               dISVsdPreviousRateMultiplier,
-                                                                                                     dISVsdPreviousISVs ) );
+                                                                                                     dISVsdPreviousIsochoricISVs ) );
 
             if ( isPrevious ){
 
@@ -1064,6 +1086,28 @@ namespace tardigradeHydra{
 
                 set_dPK2IsochoricStressdPreviousT( dPK2IsochoricStressdPreviousRateMultiplier * ( *get_dPreviousIsochoricRateMultiplierdPreviousT( ) ) );
 
+                floatMatrix dPK2IsochoricStressdPreviousISVs( PK2IsochoricStress.size( ),
+                                                              floatVector( previousVolumetricStateVariables.size( ) + previousIsochoricStateVariables.size( ), 0 ) );
+
+                floatMatrix dIsochoricISVsdPreviousISVs( previousIsochoricStateVariables.size( ),
+                                                         floatVector( previousVolumetricStateVariables.size( ) + previousIsochoricStateVariables.size( ), 0 ) );
+
+                for ( unsigned int j = 0; j < previousIsochoricStateVariables.size( ); j++ ){
+
+                    for ( unsigned int i = 0; i < PK2IsochoricStress.size( ); i++ ){
+
+                        dPK2IsochoricStressdPreviousISVs[ i ][ j + previousVolumetricStateVariables.size( ) ] = dPK2IsochoricStressdPreviousIsochoricISVs[ i ][ j ];
+
+                    }
+
+                    for ( unsigned int i = 0; i < previousIsochoricStateVariables.size( ); i++ ){
+
+                        dIsochoricISVsdPreviousISVs[ i ][ j + previousVolumetricStateVariables.size( ) ] = dISVsdPreviousIsochoricISVs[ i ][ j ];
+
+                    }
+
+                }
+
                 set_dPK2IsochoricStressdPreviousISVs( dPK2IsochoricStressdPreviousISVs );
 
                 set_dIsochoricISVsdFe( tardigradeVectorTools::dot( dISVsdEe, dEehatdFe ) );
@@ -1074,7 +1118,7 @@ namespace tardigradeHydra{
 
                 set_dIsochoricISVsdPreviousT( dISVsdPreviousRateMultiplier * ( *get_dPreviousIsochoricRateMultiplierdPreviousT( ) ) );
 
-                set_dIsochoricISVsdPreviousISVs( dISVsdPreviousISVs );
+                set_dIsochoricISVsdPreviousISVs( dIsochoricISVsdPreviousISVs );
 
             }
 
@@ -1331,7 +1375,18 @@ namespace tardigradeHydra{
 
                 set_dPK2StressdFe( dPK2StressdFe );
 
+                set_dPK2StressdPreviousFe( *get_dPK2IsochoricStressdPreviousFe( ) + tardigradeVectorTools::dyadic( eye, *get_dPK2MeanStressdPreviousFe( ) ) );
+
             }
+
+        }
+
+        void residual::setdPK2StressdPreviousFe( ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the previous elastic deformation gradient
+             */
+
+            setdPK2StressdFe( false );
 
         }
 
@@ -1351,6 +1406,22 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPK2StressdPreviousT( ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the previous temperature
+             */
+
+            const unsigned int* dim = hydra->getDimension( );
+
+            floatVector eye( ( *dim ) * ( *dim ), 0 );
+            tardigradeVectorTools::eye( eye );
+
+            floatVector dPK2StressdPreviousT = *get_dPK2IsochoricStressdPreviousT( ) + *get_dPK2MeanStressdPreviousT( ) * eye;
+
+            set_dPK2StressdPreviousT( dPK2StressdPreviousT );
+
+        }
+
         void residual::setPreviousdPK2StressdT( ){
             /*!
              * Set the prevoius derivative of the second Piola-Kirchhoff stress w.r.t. the temperature
@@ -1364,6 +1435,22 @@ namespace tardigradeHydra{
             floatVector dPK2StressdT = *get_previousdPK2IsochoricStressdT( ) + *get_previousdPK2MeanStressdT( ) * eye;
 
             set_previousdPK2StressdT( dPK2StressdT );
+
+        }
+
+        void residual::setdPK2StressdPreviousISVs( ){
+            /*!
+             * Set the prevoius derivative of the second Piola-Kirchhoff stress w.r.t. the previous ISVs
+             */
+
+            const unsigned int* dim = hydra->getDimension( );
+
+            floatVector eye( ( *dim ) * ( *dim ), 0 );
+            tardigradeVectorTools::eye( eye );
+
+            floatMatrix dPK2StressdPreviousISVs = *get_dPK2IsochoricStressdPreviousISVs( ) + tardigradeVectorTools::dyadic( eye, *get_dPK2MeanStressdPreviousISVs( ) );
+
+            set_dPK2StressdPreviousISVs( dPK2StressdPreviousISVs );
 
         }
 

@@ -1748,6 +1748,12 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2StressDerivatives ){
 
     floatVector dPK2StressdT( deformationGradient.size( ), 0 );
 
+    floatMatrix dPK2StressdPreviousFe( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
+
+    floatVector dPK2StressdPreviousT( deformationGradient.size( ), 0 );
+
+    floatMatrix dPK2StressdPreviousISVs( deformationGradient.size( ), floatVector( 2+3*9, 0 ) );
+
     floatMatrix previousdPK2StressdFe( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
 
     floatVector previousdPK2StressdT( deformationGradient.size( ), 0 );
@@ -1829,6 +1835,12 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2StressDerivatives ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
+            dPK2StressdPreviousFe[ j ][ i ] = ( ( *Rp.get_PK2Stress( ) )[ j ] - ( *Rm.get_PK2Stress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
+        }
+
+        for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
+
             previousdPK2StressdFe[ j ][ i ] = ( ( *Rp.get_previousPK2Stress( ) )[ j ] - ( *Rm.get_previousPK2Stress( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
@@ -1853,7 +1865,37 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2StressDerivatives ){
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
+            dPK2StressdPreviousT[ j ] = ( ( *Rp.get_PK2Stress( ) )[ j ] - ( *Rm.get_PK2Stress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
+        }
+
+        for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
+
             previousdPK2StressdT[ j ] = ( ( *Rp.get_previousPK2Stress( ) )[ j ] - ( *Rm.get_previousPK2Stress( ) )[ j ] ) / ( 2 * deltas[ i ] );
+
+        }
+
+    }
+
+    for ( unsigned int i = 0; i < 2+3*9; i++ ){
+
+        floatVector deltas( previousStateVariables.size( ), 0 );
+
+        deltas[ i + ISVlb ] = eps * std::fabs( previousStateVariables[ i + ISVlb ] ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables + deltas, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        residualMock Rp( &hydrap, 9, parameters, ISVlb, ISVub, 0.5 );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables - deltas, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        residualMock Rm( &hydram, 9, parameters, ISVlb, ISVub, 0.5 );
+
+        for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
+
+            dPK2StressdPreviousISVs[ j ][ i ] = ( ( *Rp.get_PK2Stress( ) )[ j ] - ( *Rm.get_PK2Stress( ) )[ j ] ) / ( 2 * deltas[ i + ISVlb ] );
 
         }
 
@@ -1862,6 +1904,12 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2StressDerivatives ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2StressdFe, *R.get_previousdPK2StressdFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2StressdT, *R.get_previousdPK2StressdT( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2StressdPreviousFe, *R.get_dPK2StressdPreviousFe( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2StressdPreviousT, *R.get_dPK2StressdPreviousT( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2StressdPreviousISVs, *R.get_dPK2StressdPreviousISVs( ) ) );
 
 }
 
