@@ -316,6 +316,18 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPK2StressdPreviousFe( ){
+            /*!
+             * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the previous elastic
+             * deformation gradient
+             */
+
+             floatMatrix dPK2StressdPreviousFe( get_PK2Stress( )->size( ), floatVector( get_previousEe( )->size( ), 0 ) );
+
+             set_dPK2StressdPreviousFe( dPK2StressdPreviousFe );
+
+        }
+
         void residual::setPreviousdPK2StressdFe( ){
             /*!
              * Set the derivative of the previous second Piola-Kirchhoff stress w.r.t. the elastic
@@ -411,6 +423,14 @@ namespace tardigradeHydra{
     
                 set_dCauchyStressdFn( dCauchyStressdFn );
 
+                floatMatrix dPK2StressdPreviousF  = tardigradeVectorTools::dot( *get_dPK2StressdPreviousFe( ), *get_previousdFedF( ) );
+
+                floatMatrix dPK2StressdPreviousFn = tardigradeVectorTools::dot( *get_dPK2StressdPreviousFe( ), *get_previousdFedFn( ) );
+
+                set_dCauchyStressdPreviousF( tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdPreviousF ) );
+
+                set_dCauchyStressdPreviousFn( tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdPreviousFn ) );
+
             }
 
         }
@@ -480,6 +500,25 @@ namespace tardigradeHydra{
         void residual::setdCauchyStressdFn( ){
             /*!
              * Set the derivative of the computed Cauchy stress w.r.t. the configurations solved for in the non-linear solve
+             * (this is a partial derivative generally)
+             */
+    
+            setCauchyStress( false );
+    
+        }
+    
+        void residual::setdCauchyStressdPreviousF( ){
+            /*!
+             * Set the derivative of the computed Cauchy stress w.r.t. the previous value of F (this is a partial derivative generally)
+             */
+    
+            setCauchyStress( false );
+    
+        }
+
+        void residual::setdCauchyStressdPreviousFn( ){
+            /*!
+             * Set the derivative of the computed Cauchy stress w.r.t. the previous configurations solved for in the non-linear solve
              * (this is a partial derivative generally)
              */
     
