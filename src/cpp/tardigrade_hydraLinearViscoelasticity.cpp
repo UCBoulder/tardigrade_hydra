@@ -788,15 +788,15 @@ namespace tardigradeHydra{
 
                 set_dPK2MeanStressdPreviousISVs( dPK2MeanStressdPreviousISVs[ 0 ] );
 
-//                set_dVolumetricISVsdFe( dISVsdJe[ 0 ][ 0 ] * ( *dJedFe ) );
-//
-//                set_dVolumetricISVsdT( dISVsdRateModifier[ 0 ] * ( *dVolumetricRateMultiplierdT ) );
-//
-//                set_dVolumetricISVsdPreviousFe( dISVsdPreviousJe[ 0 ][ 0 ] * ( *get_previousdJedFe( ) ) );
-//
-//                set_dVolumetricISVsdPreviousT( dISVsdPreviousRateModifier[ 0 ] * ( *get_dPreviousVolumetricRateMultiplierdPreviousT( ) ) );
-//
-//                set_dVolumetricISVsdPreviousISVs( dISVsdPreviousISVs[ 0 ] );
+                set_dVolumetricISVsdFe( tardigradeVectorTools::dot( dISVsdJe,  tardigradeVectorTools::inflate( *dJedFe, 1, dJedFe->size( ) ) ) );
+
+                set_dVolumetricISVsdT( dISVsdRateModifier * ( *dVolumetricRateMultiplierdT ) );
+
+                set_dVolumetricISVsdPreviousFe( tardigradeVectorTools::dot( dISVsdPreviousJe, tardigradeVectorTools::inflate( *get_previousdJedFe( ), 1, get_previousdJedFe( )->size( ) ) ) );
+
+                set_dVolumetricISVsdPreviousT( dISVsdPreviousRateModifier * ( *get_dPreviousVolumetricRateMultiplierdPreviousT( ) ) );
+
+                set_dVolumetricISVsdPreviousISVs( dISVsdPreviousISVs );
 
             }
 
@@ -841,6 +841,51 @@ namespace tardigradeHydra{
         void residual::setdPK2MeanStressdPreviousISVs( ){
             /*!
              * Set the derivative of the PK2 mean stress w.r.t. the previous state variables
+             */
+
+            get_PK2MeanStress( );
+
+        }
+
+        void residual::setdVolumetricISVsdT( ){
+            /*!
+             * Set the derivative of the volumetric isvs w.r.t. the temperature
+             */
+
+            get_PK2MeanStress( );
+
+        }
+
+        void residual::setdVolumetricISVsdFe( ){
+            /*!
+             * Set the derivative of the volumetric ISVs w.r.t. the elastic deformation gradient
+             */
+
+            get_PK2MeanStress( );
+
+        }
+
+        void residual::setdVolumetricISVsdPreviousT( ){
+            /*!
+             * Set the derivative of the volumetric ISVs w.r.t. the previous temperature
+             */
+
+            get_PK2MeanStress( );
+
+        }
+
+        void residual::setdVolumetricISVsdPreviousFe( ){
+            /*!
+             * Set the derivative of the volumetric ISVs w.r.t. the previous elastic deformation gradient
+             */
+
+            get_PK2MeanStress( );
+
+        }
+
+        void residual::setdVolumetricISVsdPreviousISVs( ){
+            /*!
+             * Set the derivative of the volumetric ISVs w.r.t. the previous state variables
              */
 
             get_PK2MeanStress( );
