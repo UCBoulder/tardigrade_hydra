@@ -87,6 +87,12 @@ namespace tardigradeHydra{
                      * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
                      */
 
+                    //Setting the contribution of damage to the calculation of the drag stress to zero
+                    set_dragStressParameters( { parameters[ 1 ], parameters[  2 ], 0. } );
+
+                    //Setting the contribution of damage to the hardening of the damage state variable to zero
+                    set_hardeningParameters(  { parameters[ 9 ], parameters[ 10 ], 0. } );
+
                 }
 
             public:
@@ -110,7 +116,13 @@ namespace tardigradeHydra{
                 const unsigned int *getDamageConfigurationIndex( ){ return &( *getPlasticConfigurationIndex( ) ); }
 
                 virtual void setDamage( );
-                
+
+                virtual void setDamageDerivatives( );
+
+                virtual void setAllDamageDerivatives( );
+
+                virtual void setDamageDerivatives( const bool withPrevious );
+
                 virtual void setDamageDeformationGradient( );
 
                 const unsigned int *getElasticConfigurationIndex( ){ return &_elasticConfigurationIndex; }
@@ -119,9 +131,29 @@ namespace tardigradeHydra{
 
                 unsigned int _elasticConfigurationIndex;
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, damage,                    floatType,   setDamage                    )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, damage,                         floatType,   setDamage                       )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, damageDeformationGradient, floatVector, setDamageDeformationGradient )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, damageDeformationGradient,      floatVector, setDamageDeformationGradient    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedCauchyStress,           floatVector, setDamageDerivatives            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedF,                      floatVector, setDamageDerivatives            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedSubFs,                  floatVector, setDamageDerivatives            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedT,                      floatType,   setDamageDerivatives            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedStateVariables,         floatVector, setDamageDerivatives            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedPreviousCauchyStress,   floatVector, setAllDamageDerivatives         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedPreviousF,              floatVector, setAllDamageDerivatives         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedPreviousSubFs,          floatVector, setAllDamageDerivatives         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedPreviousT,              floatType,   setAllDamageDerivatives         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedPreviousStateVariables, floatVector, setAllDamageDerivatives         )
 
         };
 

@@ -20,9 +20,13 @@ namespace tardigradeHydra{
              * Set the value of the damage
              */
 
-            const floatType   *damageMultiplier         = get_plasticMultiplier( );
+            const floatType   *damageMultiplier;
 
-            const floatType   *previousDamageMultiplier = get_previousPlasticMultiplier( );
+            const floatType   *previousDamageMultiplier;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( damageMultiplier = get_plasticMultiplier( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousDamageMultiplier = get_previousPlasticMultiplier( ) );
 
             floatVector previousDamage( get_previousStateVariables( )->begin( ) + 1,
                                         get_previousStateVariables( )->begin( ) + 2 ); //The first state variable is the hardening variable and the second is the damage
@@ -36,6 +40,93 @@ namespace tardigradeHydra{
                                                                                                        deltaDamage, updatedDamage, 1 - ( *getIntegrationParameter( ) ) ) );
 
             set_damage( updatedDamage[ 0 ] );
+
+        }
+
+        void residual::setDamageDerivatives( const bool withPrevious){
+            /*!
+             * Set the damage along with the derivatives of the damage.
+             * 
+             * \param withPrevious: Flag for whether to include the derivatives w.r.t. the previous values.
+             */
+
+            const floatType   *damageMultiplier;
+
+            const floatType   *previousDamageMultiplier;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( damageMultiplier = get_plasticMultiplier( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousDamageMultiplier = get_previousPlasticMultiplier( ) );
+
+            floatVector previousDamage( get_previousStateVariables( )->begin( ) + 1,
+                                        get_previousStateVariables( )->begin( ) + 2 ); //The first state variable is the hardening variable and the second is the damage
+
+            floatVector deltaDamage;
+
+            floatVector updatedDamage;
+
+            floatMatrix dDdDdot;
+
+            if ( withPrevious ){
+
+                floatMatrix dDdDdotp;
+
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ),       previousDamage,
+                                                                                                           { *previousDamageMultiplier }, { *damageMultiplier },
+                                                                                                           deltaDamage, updatedDamage, dDdDdot, dDdDdotp, 1 - ( *getIntegrationParameter( ) ) ) );
+
+                set_dDamagedPreviousCauchyStress( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousCauchyStress( ) ) );
+    
+                set_dDamagedPreviousF( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousF( ) ) );
+    
+                set_dDamagedPreviousSubFs( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousSubFs( ) ) );
+    
+                set_dDamagedPreviousT( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousT( ) ) );
+    
+                floatVector previousDamageDerivative = { 0, 1 };
+
+                set_dDamagedPreviousStateVariables( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousStateVariables( ) ) + previousDamageDerivative );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ),       previousDamage,
+                                                                                                           { *previousDamageMultiplier }, { *damageMultiplier },
+                                                                                                           deltaDamage, updatedDamage, dDdDdot, 1 - ( *getIntegrationParameter( ) ) ) );
+
+            }
+
+            set_damage( updatedDamage[ 0 ] );
+
+            set_dDamagedCauchyStress( dDdDdot[ 0 ][ 0 ] * ( *get_dPlasticMultiplierdCauchyStress( ) ) );
+
+            set_dDamagedF( dDdDdot[ 0 ][ 0 ] * ( *get_dPlasticMultiplierdF( ) ) );
+
+            set_dDamagedSubFs( dDdDdot[ 0 ][ 0 ] * ( *get_dPlasticMultiplierdSubFs( ) ) );
+
+            set_dDamagedT( dDdDdot[ 0 ][ 0 ] * ( *get_dPlasticMultiplierdT( ) ) );
+
+            set_dDamagedStateVariables( dDdDdot[ 0 ][ 0 ] * ( *get_dPlasticMultiplierdStateVariables( ) ) );
+
+        }
+
+        void residual::setDamageDerivatives( ){
+            /*!
+             * Set the damage along with the derivatives of the damage.
+             * This routine will not set the derivatives w.r.t. the previous values.
+             */
+
+            setDamageDerivatives( false );
+
+        }
+
+        void residual::setAllDamageDerivatives( ){
+            /*!
+             * Set the damage along with the derivatives of the damage.
+             * This routine will set the derivatives w.r.t. the previous values.
+             */
+
+            setDamageDerivatives( true );
 
         }
 
