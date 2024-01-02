@@ -57,9 +57,22 @@ namespace tardigradeHydra{
 
             floatVector updatedDamage;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ),       previousDamage,
-                                                                                                       { *previousDamageMultiplier }, { *damageMultiplier },
-                                                                                                       deltaDamage, updatedDamage, 1 - ( *getIntegrationParameter( ) ) ) );
+            floatMatrix dDdDdot;
+
+            if ( withPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ),       previousDamage,
+                                                                                                           { *previousDamageMultiplier }, { *damageMultiplier },
+                                                                                                           deltaDamage, updatedDamage, 1 - ( *getIntegrationParameter( ) ) ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ),       previousDamage,
+                                                                                                           { *previousDamageMultiplier }, { *damageMultiplier },
+                                                                                                           deltaDamage, updatedDamage, 1 - ( *getIntegrationParameter( ) ) ) );
+
+            }
 
             set_damage( updatedDamage[ 0 ] );
 

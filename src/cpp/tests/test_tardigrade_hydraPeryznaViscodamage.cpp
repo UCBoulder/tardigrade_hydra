@@ -205,9 +205,21 @@ BOOST_AUTO_TEST_CASE( test_setDamage ){
 
     residualMock R_ngrad( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
+    residualMock R_grad1( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+
+    residualMock R_grad2( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+
     floatType damageAnswer = 7.06; 
 
+    R_grad1.get_dDamagedCauchyStress( );
+
+    R_grad1.get_dDamagedPreviousCauchyStress( );
+
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( damageAnswer, *R_ngrad.get_damage( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( damageAnswer, *R_grad1.get_damage( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( damageAnswer, *R_grad2.get_damage( ) ) );
 
 }
 
