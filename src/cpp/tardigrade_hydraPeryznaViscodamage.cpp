@@ -75,15 +75,17 @@ namespace tardigradeHydra{
                                                                                                            { *previousDamageMultiplier }, { *damageMultiplier },
                                                                                                            deltaDamage, updatedDamage, dDdDdot, dDdDdotp, 1 - ( *getIntegrationParameter( ) ) ) );
 
-//                set_dDamagedPreviousCauchyStress( dDdDdotp[ 0 ][ 0 ] * ( *get_previousdPlasticMultiplierdCauchyStress( ) ) );
-//    
-//                set_dDamagedPreviousF( dDdDdotp[ 0 ][ 0 ] * ( *get_previousdPlasticMultiplierdF( ) ) );
-//    
-//                set_dDamagedPreviousSubFs( dDdDdotp[ 0 ][ 0 ] * ( *get_previousdPlasticMultiplierdSubFs( ) ) );
-//    
-//                set_dDamagedPreviousT( dDdDdotp[ 0 ][ 0 ] * ( *get_previousdPlasticMultiplierdT( ) ) );
-//    
-//                set_dDamagedPreviousStateVariables( dDdDdotp[ 0 ][ 0 ] * ( *get_previousdPlasticMultiplierdStateVariables( ) ) );
+                set_dDamagedPreviousCauchyStress( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousCauchyStress( ) ) );
+    
+                set_dDamagedPreviousF( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousF( ) ) );
+    
+                set_dDamagedPreviousSubFs( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousSubFs( ) ) );
+    
+                set_dDamagedPreviousT( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousT( ) ) );
+    
+                floatVector previousDamageDerivative = { 0, 1 };
+
+                set_dDamagedPreviousStateVariables( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousStateVariables( ) ) + previousDamageDerivative );
 
             }
             else{
