@@ -110,7 +110,13 @@ namespace tardigradeHydra{
                 const unsigned int *getDamageConfigurationIndex( ){ return &( *getPlasticConfigurationIndex( ) ); }
 
                 virtual void setDamage( );
-                
+
+                virtual void setDamageDerivatives( );
+
+                virtual void setAllDamageDerivatives( );
+
+                virtual void setDamageDerivatives( const bool withPrevious );
+
                 virtual void setDamageDeformationGradient( );
 
                 const unsigned int *getElasticConfigurationIndex( ){ return &_elasticConfigurationIndex; }
@@ -122,6 +128,12 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, damage,                    floatType,   setDamage                    )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, damageDeformationGradient, floatVector, setDamageDeformationGradient )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedF,                 floatVector, setDamageDerivatives         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedT,                 floatType,   setDamageDerivatives         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedCauchyStress,      floatVector, setDamageDerivatives         )
 
         };
 

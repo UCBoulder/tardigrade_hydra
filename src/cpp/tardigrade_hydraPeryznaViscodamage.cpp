@@ -39,6 +39,52 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setDamageDerivatives( const bool withPrevious){
+            /*!
+             * Set the damage along with the derivatives of the damage.
+             * 
+             * \param withPrevious: Flag for whether to include the derivatives w.r.t. the previous values.
+             */
+
+            const floatType   *damageMultiplier         = get_plasticMultiplier( );
+
+            const floatType   *previousDamageMultiplier = get_previousPlasticMultiplier( );
+
+            floatVector previousDamage( get_previousStateVariables( )->begin( ) + 1,
+                                        get_previousStateVariables( )->begin( ) + 2 ); //The first state variable is the hardening variable and the second is the damage
+
+            floatVector deltaDamage;
+
+            floatVector updatedDamage;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ),       previousDamage,
+                                                                                                       { *previousDamageMultiplier }, { *damageMultiplier },
+                                                                                                       deltaDamage, updatedDamage, 1 - ( *getIntegrationParameter( ) ) ) );
+
+            set_damage( updatedDamage[ 0 ] );
+
+        }
+
+        void residual::setDamageDerivatives( ){
+            /*!
+             * Set the damage along with the derivatives of the damage.
+             * This routine will not set the derivatives w.r.t. the previous values.
+             */
+
+            setDamageDerivatives( false );
+
+        }
+
+        void residual::setAllDamageDerivatives( ){
+            /*!
+             * Set the damage along with the derivatives of the damage.
+             * This routine will set the derivatives w.r.t. the previous values.
+             */
+
+            setDamageDerivatives( true );
+
+        }
+
         void residual::setDamageDeformationGradient( ){
             /*!
              * Set the deformation gradient of the damage
