@@ -87,8 +87,11 @@ namespace tardigradeHydra{
                      * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
                      */
 
+                    //Setting the contribution of damage to the calculation of the drag stress to zero
+                    set_dragStressParameters( { parameters[ 1 ], parameters[  2 ], 0. } );
+
                     //Setting the contribution of damage to the hardening of the damage state variable to zero
-                    set_hardeningParameters( { parameters[ 9 ], parameters[ 10 ], 0. } );
+                    set_hardeningParameters(  { parameters[ 9 ], parameters[ 10 ], 0. } );
 
                 }
 
