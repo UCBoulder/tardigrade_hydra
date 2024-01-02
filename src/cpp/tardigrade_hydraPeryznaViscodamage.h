@@ -87,6 +87,9 @@ namespace tardigradeHydra{
                      * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
                      */
 
+                    //Setting the contribution of damage to the hardening of the damage state variable to zero
+                    set_hardeningParameters( { parameters[ 9 ], parameters[ 10 ], 0. } );
+
                 }
 
             public:
@@ -129,11 +132,15 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, damageDeformationGradient, floatVector, setDamageDeformationGradient )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedCauchyStress,      floatVector, setDamageDerivatives         )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedF,                 floatVector, setDamageDerivatives         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedSubFs,             floatVector, setDamageDerivatives         )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedT,                 floatType,   setDamageDerivatives         )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedCauchyStress,      floatVector, setDamageDerivatives         )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedStateVariables,    floatVector, setDamageDerivatives         )
 
         };
 
