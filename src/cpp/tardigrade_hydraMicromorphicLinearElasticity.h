@@ -426,6 +426,44 @@ namespace tardigradeHydra{
 
                 virtual void setReferenceStressJacobians( const bool isPrevious );
 
+                virtual void setdCauchyStressdF( );
+
+                virtual void setdCauchyStressdFn( );
+
+                virtual void setdCauchyStressdChi( );
+
+                virtual void setdCauchyStressdChin( );
+
+                virtual void setdCauchyStressdGradChi( );
+
+                virtual void setdCauchyStressdGradChin( );
+
+                virtual void setdSymmetricMicroStressdF( );
+
+                virtual void setdSymmetricMicroStressdFn( );
+
+                virtual void setdSymmetricMicroStressdChi( );
+
+                virtual void setdSymmetricMicroStressdChin( );
+
+                virtual void setdSymmetricMicroStressdGradChi( );
+
+                virtual void setdSymmetricMicroStressdGradChin( );
+
+                virtual void setdHigherOrderStressdF( );
+
+                virtual void setdHigherOrderStressdFn( );
+
+                virtual void setdHigherOrderStressdChi( );
+
+                virtual void setdHigherOrderStressdChin( );
+
+                virtual void setdHigherOrderStressdGradChi( );
+
+                virtual void setdHigherOrderStressdGradChin( );
+
+                virtual void setStressesJacobians( const bool isPrevious );
+
             private:
 
                 parameterVector _Amatrix; //!< The A stiffness matrix
@@ -582,9 +620,45 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, cauchyStress,                          floatVector, setCauchyStress                          )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdF,                       floatMatrix, setdCauchyStressdF                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdFn,                      floatMatrix, setdCauchyStressdFn                      )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdChi,                     floatMatrix, setdCauchyStressdChi                     )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdChin,                    floatMatrix, setdCauchyStressdChin                    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdGradChi,                 floatMatrix, setdCauchyStressdGradChi                 )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdGradChin,                floatMatrix, setdCauchyStressdGradChin                )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, symmetricMicroStress,                  floatVector, setSymmetricMicroStress                  )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroStressdF,               floatMatrix, setdSymmetricMicroStressdF               )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroStressdFn,              floatMatrix, setdSymmetricMicroStressdFn              )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroStressdChi,             floatMatrix, setdSymmetricMicroStressdChi             )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroStressdChin,            floatMatrix, setdSymmetricMicroStressdChin            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroStressdGradChi,         floatMatrix, setdSymmetricMicroStressdGradChi         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroStressdGradChin,        floatMatrix, setdSymmetricMicroStressdGradChin        )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, higherOrderStress,                     floatVector, setHigherOrderStress                     )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderStressdF,                  floatMatrix, setdHigherOrderStressdF                  )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderStressdFn,                 floatMatrix, setdHigherOrderStressdFn                 )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderStressdChi,                floatMatrix, setdHigherOrderStressdChi                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderStressdChin,               floatMatrix, setdHigherOrderStressdChin               )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderStressdGradChi,            floatMatrix, setdHigherOrderStressdGradChi            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderStressdGradChin,           floatMatrix, setdHigherOrderStressdGradChin           )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousCauchyStress,                  floatVector, setPreviousCauchyStress                  )
 

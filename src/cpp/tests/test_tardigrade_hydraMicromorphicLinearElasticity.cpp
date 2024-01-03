@@ -44,6 +44,26 @@ struct cout_redirect{
         std::streambuf * old;
 };
 
+namespace tardigradeHydra{
+
+    namespace unit_test{
+
+        class hydraBaseTester{
+
+            public:
+
+                static void updateUnknownVector( tardigradeHydra::hydraBase &hydra, const floatVector &value ){
+
+                    BOOST_CHECK_NO_THROW( hydra.updateUnknownVector( value ) );
+
+                }
+
+        };
+
+    }
+
+}
+
 BOOST_AUTO_TEST_CASE( testLinearElasticity ){
     /*!
      * Test the micromorphic linear elasticity model where the 
@@ -2348,6 +2368,133 @@ BOOST_AUTO_TEST_CASE( testMapStressesToCurrent ){
             BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dHigherOrderStressdReferenceHigherOrderStress[j][i] ) );
         }
     }
+}
+
+BOOST_AUTO_TEST_CASE( testSetStresses ){
+    /*!
+     * Test mapping the stresses from the reference configuration 
+     * to the current configuration.
+     *
+     */
+
+    // Form a hydra class and residual class
+    floatType time = 1.23;
+
+    floatType deltaTime = 2.34;
+
+    floatType temperature = 3.45;
+
+    floatType previousTemperature = 4.56;
+
+    variableVector deformationGradient = { 0.99326911, -0.02363891,  0.02288332,  0.00674376,  1.03339616,
+        -0.04624458,  0.07948457,  0.02889643,  1.0042246  };
+
+    variableVector microDeformation = { 0.97376126, -0.03545076,  0.01496646,  0.01111296,  0.99189296,
+        -0.00927561,  0.03923156, -0.02509436,  0.97939958 };
+
+    variableVector gradientMicroDeformation = { 0.02197053,  0.0370446 , -0.02739394,  0.06279444, -0.00127596,
+                                               -0.01796094,  0.02814145, -0.05906054,  0.02578498, -0.01458269,
+                                                0.00048507, -0.03393819, -0.03257968, -0.00138203, -0.04167585,
+                                               -0.03382795,  0.01151479, -0.03641219,  0.01271894,  0.04506872,
+                                                0.03179861,  0.04033839,  0.0440033 , -0.05450839, -0.05968426,
+                                               -0.02910144,  0.0279304 };
+
+    floatVector previousDeformationGradient = { 9.94656270e-01,  4.82152400e-02,  3.31984800e-02,  2.81918700e-02,
+         1.02086536e+00, -1.77592100e-02, -2.24798000e-03, -1.28410000e-04,
+         9.77165250e-01 };
+
+    floatVector previousMicroDeformation = { 0.96917405, -0.01777599,  0.00870406, -0.02163002,  0.9998683 ,
+        -0.01669352,  0.03355217,  0.04427456,  1.01778466 };
+
+    floatVector previousGradientMicroDeformation = { 0.05043761,  0.02160516, -0.0565408 ,  0.01218304, -0.05851034,
+         0.00485749, -0.00962607, -0.03455912,  0.04490067,  0.01552915,
+        -0.02878364,  0.00595866,  0.04750406, -0.02377005, -0.05041534,
+        -0.02922214,  0.06280788,  0.02850865, -0.00226005,  0.0146049 ,
+         0.01560184,  0.03224767,  0.05822091, -0.05294424, -0.03518206,
+         0.01831308,  0.03774438 };
+
+    floatVector previousStateVariables = {-0.02495446, -0.00169657,  0.04855598,  0.00194851,  0.01128945,
+       -0.03793713,  0.03263408,  0.01030601,  0.0045068 , -0.01572362,
+       -0.01958792, -0.00829778,  0.01813008,  0.03754568,  0.00104223,
+        0.01693138,  0.00859366,  0.01249035,  0.01746891,  0.03423424,
+       -0.0416805 ,  0.02636828, -0.02563336, -0.0305777 ,  0.0072457 ,
+       -0.04042875,  0.03853268,  0.0127249 ,  0.02234164, -0.04838708,
+        0.00944319,  0.00567852, -0.03410404, -0.03469295,  0.01955295,
+       -0.01812336,  0.01919703,  0.00543832, -0.01110494,  0.04251325,
+        0.034167  , -0.01426024, -0.04564085, -0.01952319, -0.01018143 };
+
+    floatVector parameters = { 2, 0.1, 0.2, 5, 0.3, 0.4, 0.5, 0.6, 0.7, 11, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2, 1.9, 2.0 };
+
+    floatVector unknownVector = { -0.81740732, -0.07269455,  0.00443267, -0.3726621 , -0.90532093,
+                                  -0.51662873, -0.80894072, -0.52350019,  0.61558217,  0.78995658,
+                                  -0.91355422, -0.39610633,  0.9611644 ,  0.07900965,  0.25261872,
+                                  -0.98890918, -0.03018111,  0.97665707, -0.24962895, -0.80592368,
+                                  -0.07618248,  0.92600893, -0.31633877,  0.59784547,  0.59769266,
+                                  -0.58350341, -0.1132646 ,  0.43120255, -0.17896043, -0.61798609,
+                                   0.93498861,  0.30150073,  0.7309197 , -0.94951528, -0.46618837,
+                                   0.0041422 , -0.86510273,  0.98606652, -0.52707521, -0.25141564,
+                                  -0.57197617, -0.78910827, -0.53504043, -0.39877973,  0.26888454,
+                                  -0.02187652, -0.01377232, -0.04940572, -0.01342809,  0.0033886 ,
+                                  -0.03379842,  0.00974331, -0.02068475,  0.01320505, -0.04738034,
+                                   0.03875935, -0.04838814, -0.0373042 ,  0.02771625, -0.04541048,
+                                   0.02109987,  0.04710461,  0.03716829,  0.02101617,  0.04585097,
+                                  -0.00701867,  0.03728789, -0.01440423,  0.04297637, -0.03512223,
+                                   0.0440029 ,  0.03327162,  0.03460548, -0.0376077 ,  0.00964869,
+                                  -0.04836075,  0.02211844, -0.04922625, -0.04151777, -0.02745016,
+                                   0.03751245, -0.01364237,  0.00399599,  0.00681032, -0.02745366,
+                                   0.00721468,  0.01609518, -0.02017546, -0.00813731, -0.00469111 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    unsigned int configuration_unknown_count = 45;
+
+    floatType tolr = 1e-2;
+
+    floatType tola = 1e-3;
+
+    unsigned int maxIterations = 24;
+
+    unsigned int maxLSIterations = 45;
+
+    floatType lsAlpha = 2.3;
+
+    class hydraBaseMicromorphicMock : public tardigradeHydra::hydraBaseMicromorphic{
+
+        public:
+
+            using tardigradeHydra::hydraBaseMicromorphic::hydraBaseMicromorphic;
+
+    };
+
+    hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                     microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables,
+                                     dimension, configuration_unknown_count,
+                                     tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
+    tardigradeHydra::micromorphicLinearElasticity::residual R( &hydra, 45, parameters );
+
+    tardigradeHydra::micromorphicLinearElasticity::residual RnJ( &hydra, 45, parameters );
+
+    try{
+    R.get_dCauchyStressdF( );
+    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.get_cauchyStress( ), *RnJ.get_cauchyStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.get_symmetricMicroStress( ), *RnJ.get_symmetricMicroStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.get_higherOrderStress( ), *RnJ.get_higherOrderStress( ) ) );
+
+    //Test Jacobians
+    constantType eps = 1e-6;
 }
 
 BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
