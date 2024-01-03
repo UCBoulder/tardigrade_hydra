@@ -2964,6 +2964,134 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setCauchyStress( ){
+            /*!
+             * Set the value of the Cauchy stress
+             */
+
+            setStresses( false );
+
+        }
+
+        void residual::setSymmetricMicroStress( ){
+            /*!
+             * Set the value of the symmetric micro stress
+             */
+
+            setStresses( false );
+
+        }
+
+        void residual::setHigherOrderStress( ){
+            /*!
+             * Set the value of the higher order stress
+             */
+
+            setStresses( false );
+
+        }
+
+        void residual::setPreviousCauchyStress( ){
+            /*!
+             * Set the value of the previous Cauchy stress
+             */
+
+            setStresses( true );
+
+        }
+
+        void residual::setPreviousSymmetricMicroStress( ){
+            /*!
+             * Set the value of the previous symmetric micro stress
+             */
+
+            setStresses( true );
+
+        }
+
+        void residual::setPreviousHigherOrderStress( ){
+            /*!
+             * Set the value of the previous higher order stress
+             */
+
+            setStresses( true );
+
+        }
+
+        void residual::setStresses( const bool isPrevious ){
+            /*!
+             * Set the values of the stresses in the current configuration
+             * 
+             * \param isPrevious: Flag for whether to compute the previous (true) or current (false) stresses
+             */
+
+            const floatVector *PK2Stress;
+
+            const floatVector *referenceSymmetricMicroStress;
+
+            const floatVector *referenceHigherOrderStress;
+
+            const floatVector *deformationGradient;
+
+            const floatVector *microDeformation;
+
+            if ( isPrevious ){
+
+                PK2Stress = get_previousPK2Stress( );
+
+                referenceSymmetricMicroStress = get_previousReferenceSymmetricMicroStress( );
+
+                referenceHigherOrderStress = get_previousReferenceHigherOrderStress( );
+
+                deformationGradient = hydra->getPreviousDeformationGradient( );
+
+                microDeformation = hydra->getPreviousMicroDeformation( );
+
+            }
+            else{
+
+                PK2Stress = get_PK2Stress( );
+
+                referenceSymmetricMicroStress = get_referenceSymmetricMicroStress( );
+
+                referenceHigherOrderStress = get_referenceHigherOrderStress( );
+
+                deformationGradient = hydra->getDeformationGradient( );
+
+                microDeformation = hydra->getMicroDeformation( );
+
+            }
+
+            floatVector cauchyStress;
+
+            floatVector symmetricMicroStress;
+
+            floatVector higherOrderStress;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( mapStressMeasuresToCurrent( *deformationGradient, *microDeformation, *PK2Stress, *referenceSymmetricMicroStress,
+                                                                                   *referenceHigherOrderStress, cauchyStress, symmetricMicroStress, higherOrderStress )  );
+
+            if ( isPrevious ){
+
+                set_previousCauchyStress( cauchyStress );
+
+                set_previousSymmetricMicroStress( symmetricMicroStress );
+
+                set_previousHigherOrderStress( higherOrderStress );
+
+            }
+            else{
+
+                set_cauchyStress( cauchyStress );
+
+                set_symmetricMicroStress( symmetricMicroStress );
+
+                set_higherOrderStress( higherOrderStress );
+
+            }
+
+        }
+
         void residual::setDeformationJacobians( const bool isPrevious ){
             /*!
              * Evaluate the derived deformation Jacobians

@@ -288,6 +288,20 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousReferenceHigherOrderStress( );
 
+                virtual void setStresses( const bool isPrevious );
+
+                virtual void setCauchyStress( );
+
+                virtual void setSymmetricMicroStress( );
+
+                virtual void setHigherOrderStress( );
+
+                virtual void setPreviousCauchyStress( );
+
+                virtual void setPreviousSymmetricMicroStress( );
+
+                virtual void setPreviousHigherOrderStress( );
+
                 virtual void setDeformationJacobians( const bool isPrevious );
 
                 virtual void setdRightCauchyGreendF( );
@@ -565,6 +579,18 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMdGradChi,                    floatMatrix, setPreviousdMdGradChi                    )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMdGradChin,                   floatMatrix, setPreviousdMdGradChin                   )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, cauchyStress,                          floatVector, setCauchyStress                          )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, symmetricMicroStress,                  floatVector, setSymmetricMicroStress                  )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, higherOrderStress,                     floatVector, setHigherOrderStress                     )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousCauchyStress,                  floatVector, setPreviousCauchyStress                  )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousSymmetricMicroStress,          floatVector, setPreviousSymmetricMicroStress          )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousHigherOrderStress,             floatVector, setPreviousHigherOrderStress             )
 
         };
 

@@ -1920,7 +1920,162 @@ BOOST_AUTO_TEST_CASE( testMapStressesToCurrent ){
                                                132.51680884,  -69.47891023,  164.77681737,  -79.65682209,
                                                 95.84907668, -208.69345804,  102.08397015 };
 
+    // Form a hydra class and residual class
+    floatType time = 1.23;
+
+    floatType deltaTime = 2.34;
+
+    floatType temperature = 3.45;
+
+    floatType previousTemperature = 4.56;
+
+    variableVector gradientMicroDeformation = { 0.02197053,  0.0370446 , -0.02739394,  0.06279444, -0.00127596,
+                                               -0.01796094,  0.02814145, -0.05906054,  0.02578498, -0.01458269,
+                                                0.00048507, -0.03393819, -0.03257968, -0.00138203, -0.04167585,
+                                               -0.03382795,  0.01151479, -0.03641219,  0.01271894,  0.04506872,
+                                                0.03179861,  0.04033839,  0.0440033 , -0.05450839, -0.05968426,
+                                               -0.02910144,  0.0279304 };
+
+    floatVector previousDeformationGradient = { 9.94656270e-01,  4.82152400e-02,  3.31984800e-02,  2.81918700e-02,
+         1.02086536e+00, -1.77592100e-02, -2.24798000e-03, -1.28410000e-04,
+         9.77165250e-01 };
+
+    floatVector previousMicroDeformation = { 0.96917405, -0.01777599,  0.00870406, -0.02163002,  0.9998683 ,
+        -0.01669352,  0.03355217,  0.04427456,  1.01778466 };
+
+    floatVector previousGradientMicroDeformation = { 0.05043761,  0.02160516, -0.0565408 ,  0.01218304, -0.05851034,
+         0.00485749, -0.00962607, -0.03455912,  0.04490067,  0.01552915,
+        -0.02878364,  0.00595866,  0.04750406, -0.02377005, -0.05041534,
+        -0.02922214,  0.06280788,  0.02850865, -0.00226005,  0.0146049 ,
+         0.01560184,  0.03224767,  0.05822091, -0.05294424, -0.03518206,
+         0.01831308,  0.03774438 };
+
+    floatVector previousStateVariables = {-0.02495446, -0.00169657,  0.04855598,  0.00194851,  0.01128945,
+       -0.03793713,  0.03263408,  0.01030601,  0.0045068 , -0.01572362,
+       -0.01958792, -0.00829778,  0.01813008,  0.03754568,  0.00104223,
+        0.01693138,  0.00859366,  0.01249035,  0.01746891,  0.03423424,
+       -0.0416805 ,  0.02636828, -0.02563336, -0.0305777 ,  0.0072457 ,
+       -0.04042875,  0.03853268,  0.0127249 ,  0.02234164, -0.04838708,
+        0.00944319,  0.00567852, -0.03410404, -0.03469295,  0.01955295,
+       -0.01812336,  0.01919703,  0.00543832, -0.01110494,  0.04251325,
+        0.034167  , -0.01426024, -0.04564085, -0.01952319, -0.01018143 };
+
+    floatVector parameters = { 2, 0.1, 0.2, 5, 0.3, 0.4, 0.5, 0.6, 0.7, 11, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 2, 1.9, 2.0 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    unsigned int configuration_unknown_count = 45;
+
+    floatType tolr = 1e-2;
+
+    floatType tola = 1e-3;
+
+    unsigned int maxIterations = 24;
+
+    unsigned int maxLSIterations = 45;
+
+    floatType lsAlpha = 2.3;
+
+    class residualMock : public tardigradeHydra::micromorphicLinearElasticity::residual{
+
+        public:
+
+            using tardigradeHydra::micromorphicLinearElasticity::residual::residual;
+
+            variableVector PK2Stress = { 314.71116295,   30.09663087,  -97.50775502,
+                                         275.16187648,   28.28022151,  -85.63390628,
+                                         345.9794607 ,   29.69720043, -103.26896348 };
+
+            variableVector referenceMicroStress = { 630.03379183,  306.44161512,  248.73797179,
+                                                    306.21515887,   59.80476285,  -54.44381993,
+                                                    251.26329613,  -53.54715409, -206.44832422 };
+
+            variableVector referenceHigherOrderStress = { -6.34180841, -8.44235442, -7.66602685, -6.62791667, -6.30156652,
+                                                          -7.81093903, -9.08319118, -7.62283755, -8.7120047 , -7.96533995,
+                                                          -7.29110914, -7.63480242, -6.0360827 , -6.66816385, -6.38308499,
+                                                          -8.06776472, -7.29777722, -7.77952498, -7.6470537 , -9.94159411,
+                                                          -7.65257834, -5.90193479, -6.5591572 , -8.12839975, -8.56024681,
+                                                          -7.40823637, -8.875604 };
+
+            variableVector previousPK2Stress = { -0.62906449,  0.36196664, -0.69650326,
+                                                 -0.42034981,  0.19946123,  0.80903275,
+                                                 -0.87770825,  0.19201649, -0.70285358 };
+
+            variableVector previousReferenceMicroStress = {  0.91675847,  0.11047011,  0.60659758,
+                                                            -0.27269854, -0.86047337, -0.12953809,
+                                                            -0.79183507,  0.27307473,  0.47043854 };
+
+            variableVector previousReferenceHigherOrderStress = {  0.14344884, -0.86393765, -0.84262914, -0.23492967,  0.26264296,
+                                                                   0.74350686,  0.56638433,  0.54470146,  0.19332713, -0.57813336,
+                                                                   0.93086224,  0.35550634, -0.47034267, -0.70825353,  0.16329667,
+                                                                   0.38307543,  0.71659027,  0.84387525, -0.19005113, -0.86754104,
+                                                                  -0.9760368 , -0.30208891, -0.81368484,  0.69224126, -0.41253127,
+                                                                  -0.56640551, -0.12965791 };
+
+        protected:
+
+            virtual void setPreviousPK2Stress( ){
+
+                set_previousPK2Stress( previousPK2Stress );
+
+            }
+
+            virtual void setPreviousReferenceSymmetricMicroStress( ){
+
+                set_previousReferenceSymmetricMicroStress( previousReferenceMicroStress );
+
+            }
+
+            virtual void setPreviousReferenceHigherOrderStress( ){
+
+                set_previousReferenceHigherOrderStress( previousReferenceHigherOrderStress );
+
+            }
+
+            virtual void setPK2Stress( ){
+
+                set_PK2Stress( PK2Stress );
+
+            }
+
+            virtual void setReferenceSymmetricMicroStress( ){
+
+                set_referenceSymmetricMicroStress( referenceMicroStress );
+
+            }
+
+            virtual void setReferenceHigherOrderStress( ){
+
+                set_referenceHigherOrderStress( referenceHigherOrderStress );
+
+            }
+
+    };
+
+    class hydraBaseMicromorphicMock : public tardigradeHydra::hydraBaseMicromorphic{
+
+        public:
+
+            using tardigradeHydra::hydraBaseMicromorphic::hydraBaseMicromorphic;
+
+    };
+
+    hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                     microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables,
+                                     dimension, configuration_unknown_count,
+                                     tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    residualMock R( &hydra, 45, parameters );
+
     variableVector resultCauchyStress, resultMicroStress, resultHigherOrderStress;
+
+    variableVector answerPreviousCauchyStress, answerPreviousMicroStress, answerPreviousHigherOrderStress;
 
     errorOut error = tardigradeHydra::micromorphicLinearElasticity::mapStressMeasuresToCurrent( deformationGradient, microDeformation,
                                                                                                 PK2Stress, referenceMicroStress,
@@ -1934,6 +2089,23 @@ BOOST_AUTO_TEST_CASE( testMapStressesToCurrent ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicroStress, answerMicroStress, 1e-5 ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultHigherOrderStress, answerHigherOrderStress, 1e-5 ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.get_cauchyStress( ), answerCauchyStress, 1e-5 ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.get_symmetricMicroStress( ), answerMicroStress, 1e-5 ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.get_higherOrderStress( ), answerHigherOrderStress, 1e-5 ) );
+
+    error = tardigradeHydra::micromorphicLinearElasticity::mapStressMeasuresToCurrent( previousDeformationGradient, previousMicroDeformation,
+                                                                                       R.previousPK2Stress, R.previousReferenceMicroStress,
+                                                                                       R.previousReferenceHigherOrderStress, answerPreviousCauchyStress,
+                                                                                       answerPreviousMicroStress, answerPreviousHigherOrderStress );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.get_previousCauchyStress( ), answerPreviousCauchyStress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.get_previousSymmetricMicroStress( ), answerPreviousMicroStress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.get_previousHigherOrderStress( ), answerPreviousHigherOrderStress ) );
 
     //Test the Jacobians
 
