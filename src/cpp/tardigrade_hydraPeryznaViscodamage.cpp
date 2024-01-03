@@ -383,9 +383,11 @@ namespace tardigradeHydra{
 
             }
 
-            residual[ get_damageDeformationGradient( )->size( ) + 0 ] = ( *get_stateVariables( ) )[ 0 ] - ( *get_plasticStateVariables( ) ) [ 0 ]; //Evolution of the damage hardening state variable
+            for ( unsigned int i = 0; i < get_plasticStateVariables( )->size( ); i++ ){
 
-            residual[ get_damageDeformationGradient( )->size( ) + 1 ] = ( *get_stateVariables( ) )[ 1 ] - ( *get_damage( ) ); //Evolution of the damage
+                residual[ get_damageDeformationGradient( )->size( ) + i ] = ( *get_stateVariables( ) )[ i ] - ( *get_plasticStateVariables( ) )[ i ];
+
+            }
 
             setResidual( residual );
 
@@ -398,12 +400,12 @@ namespace tardigradeHydra{
 
             floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
 
-           // Jacobians of the damage deformation gradient
-            for ( unsigned int i = 0; i < get_damageDeformationGradient( )->size( ); i++ ){
+            // Jacobians of the damage deformation gradient
+            for ( unsigned int i = 0; i < get_dDamageDeformationGradientdCauchyStress( )->size( ); i++ ){
                 unsigned int row = i;
 
-                // Jacobians w.r.t. the previous Cauchy stress
-                for ( unsigned int j = 0; j < getStress( )->size( ); j++ ){
+                // Jacobians w.r.t. the Cauchy stress
+                for ( unsigned int j = 0; j < ( *get_dDamageDeformationGradientdCauchyStress( ) )[ i ].size( ); j++ ){
                     unsigned int col = j;
 
                     jacobian[ row ][ col ] -= ( *get_dDamageDeformationGradientdCauchyStress( ) )[ i ][ j ];
@@ -430,11 +432,11 @@ namespace tardigradeHydra{
 
             }
 
-            // Jacobians of the damage hardening state variable
-            for ( unsigned int i = 0; i < 1; i++ ){
+            // Jacobians of the damage hardening state variables
+            for ( unsigned int i = 0; i < get_dPlasticStateVariablesdCauchyStress( )->size( ); i++ ){
                 unsigned int row = get_damageDeformationGradient( )->size( ) + i;
 
-                // Jacobians w.r.t. the previous Cauchy stress
+                // Jacobians w.r.t. the Cauchy stress
                 for ( unsigned int j = 0; j < ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ].size( ); j++ ){
                     unsigned int col = j;
 
@@ -455,38 +457,7 @@ namespace tardigradeHydra{
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
                     unsigned int col = ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *get_dPlasticStateVariablesdSubFs( ) )[ i ].size( ) + *ind;
 
-                    jacobian[ row ][ col ] += ( *get_dPlasticStateVariablesdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
-
-                }
-
-            }
-
-            //Jacobians of the damage
-            for ( unsigned int i = 1; i < 2; i++ ){
-                unsigned int row = get_damageDeformationGradient( )->size( ) + i;
-
-                // Jacobians w.r.t. the previous Cauchy stress
-                for ( unsigned int j = 0; j < ( *get_dDamagedCauchyStress( ) ).size( ); j++ ){
-                    unsigned int col = j;
-
-                    jacobian[ row ][ col ] -= ( *get_dDamagedCauchyStress( ) )[ j ];
-
-                }
-
-                // Jacobians w.r.t. the sub configurations
-                for ( unsigned int j = 0; j < ( *get_dDamagedSubFs( ) ).size( ); j++ ){
-                    unsigned int col = ( *get_dDamagedCauchyStress( ) ).size( ) + j;
-
-                    jacobian[ row ][ col ] -= ( *get_dDamagedSubFs( ) )[ j ];
-
-                }
-
-                // Jacobians w.r.t. the state variables
-                jacobian[ row ][ ( *get_dDamagedCauchyStress( ) ).size( ) + ( *get_dDamagedSubFs( ) ).size( ) + ( *getStateVariableIndices( ) )[ i ] ] += 1;
-                for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
-                    unsigned int col = ( *get_dDamagedCauchyStress( ) ).size( ) + ( *get_dDamagedSubFs( ) ).size( ) + *ind;
-
-                    jacobian[ row ][ col ] -= ( *get_dDamagedStateVariables( ) )[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    jacobian[ row ][ col ] -= ( *get_dPlasticStateVariablesdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
@@ -503,15 +474,17 @@ namespace tardigradeHydra{
 
             floatVector dRdT( *getNumEquations( ), 0 );
 
-            for ( unsigned int i = 0; i < get_damageDeformationGradient( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < get_dDamageDeformationGradientdT( )->size( ); i++ ){
 
                 dRdT[ i ] -= ( *get_dDamageDeformationGradientdT( ) )[ i ];
 
             }
 
-            dRdT[ get_damageDeformationGradient( )->size( ) ] = -( *get_dPlasticStateVariablesdT( ) )[ 0 ];
+            for ( unsigned int i = 0; i < get_dPlasticStateVariablesdT( )->size( ); i++ ){
 
-            dRdT[ get_damageDeformationGradient( )->size( ) + 1 ] = -( *get_dDamagedT( ) );
+                dRdT[ get_damageDeformationGradient( )->size( ) + i ] = -( *get_dPlasticStateVariablesdT( ) )[ i ];
+
+            }
 
             setdRdT( dRdT );
 
@@ -524,19 +497,17 @@ namespace tardigradeHydra{
 
             floatMatrix dRdF( *getNumEquations( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
 
-            for ( unsigned int i = 0; i < get_damageDeformationGradient( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < get_dDamageDeformationGradientdF( )->size( ); i++ ){
 
-                for ( unsigned int j = 0; j < ( *get_dDamageDeformationGradientdF( ) )[ i ].size( ); j++ ){
-
-                    dRdF[ i ][ j ] -= ( *get_dDamageDeformationGradientdF( ) )[ i ][ j ];
-
-                }
+                dRdF[ i ] = -( *get_dDamageDeformationGradientdF( ) )[ i ];
 
             }
 
-            dRdF[ get_damageDeformationGradient( )->size( ) ] = -( *get_dPlasticStateVariablesdF( ) )[ 0 ];
+            for ( unsigned int i = 0; i < get_dPlasticStateVariablesdF( )->size( ); i++ ){
 
-            dRdF[ get_damageDeformationGradient( )->size( ) + 1 ] = -( *get_dDamagedF( ) );
+                dRdF[ get_damageDeformationGradient( )->size( ) + i ] = -( *get_dPlasticStateVariablesdF( ) )[ i ];
+
+            }
 
             setdRdF( dRdF );
 
