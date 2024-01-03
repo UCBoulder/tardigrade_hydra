@@ -2333,11 +2333,9 @@ BOOST_AUTO_TEST_CASE( test_setResidual ){
 
             floatVector damageDeformationGradient = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            floatVector plasticStateVariables = { 10, 11 };
+            floatVector plasticStateVariables = { 10, 0.3 };
 
             floatVector stateVariables = { 5, 6 };
-
-            floatType damage = 0.3;
 
         protected:
 
@@ -2350,12 +2348,6 @@ BOOST_AUTO_TEST_CASE( test_setResidual ){
             virtual void setPlasticStateVariables( ) override{
 
                 set_plasticStateVariables( plasticStateVariables );
-
-            }
-
-            virtual void setDamage( ) override{
-
-                set_damage( damage );
 
             }
 
@@ -2599,7 +2591,6 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
     floatVector dRdT( nvals, 0 );
 
     floatType eps = 1e-6;
-    std::cout << "jacobian\n";
     for ( unsigned int i = 0; i < unknownVector.size( ); i++ ){
 
         floatVector delta( unknownVector.size( ), 0 );
@@ -2632,10 +2623,8 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
     }
 
-    std::cout << "jacobian:\n"; tardigradeVectorTools::print( jacobian );
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, *R.getJacobian( ) ) );
 
-    std::cout << "dRdF\n";
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
         floatVector delta( deformationGradient.size( ), 0 );
@@ -2668,10 +2657,8 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
     }
 
-    std::cout << "dRdF:\n"; tardigradeVectorTools::print( dRdF );
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdF, *R.getdRdF( ) ) );
 
-    std::cout << "dRdT\n";
     for ( unsigned int i = 0; i < 1; i++ ){
 
         floatVector delta( 1, 0 );
@@ -2704,7 +2691,6 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
     }
 
-    std::cout << "dRdT:\n"; tardigradeVectorTools::print( dRdT );
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdT, *R.getdRdT( ) ) );
 
 }
