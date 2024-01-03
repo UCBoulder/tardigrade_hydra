@@ -17,29 +17,10 @@ namespace tardigradeHydra{
 
         void residual::setDamage( ){
             /*!
-             * Set the value of the damage
+             * Get the value of the damage from the evolved state variables
              */
 
-            const floatType   *damageMultiplier;
-
-            const floatType   *previousDamageMultiplier;
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( damageMultiplier = get_plasticMultiplier( ) );
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( previousDamageMultiplier = get_previousPlasticMultiplier( ) );
-
-            floatVector previousDamage( get_previousStateVariables( )->begin( ) + 1,
-                                        get_previousStateVariables( )->begin( ) + 2 ); //The first state variable is the hardening variable and the second is the damage
-
-            floatVector deltaDamage;
-
-            floatVector updatedDamage;
-
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ),       previousDamage,
-                                                                                                       { *previousDamageMultiplier }, { *damageMultiplier },
-                                                                                                       deltaDamage, updatedDamage, 1 - ( *getIntegrationParameter( ) ) ) );
-
-            set_damage( updatedDamage[ 0 ] );
+            set_damage( ( *get_plasticStateVariables( ) )[ damageISVIndex ] );
 
         }
 
@@ -50,63 +31,31 @@ namespace tardigradeHydra{
              * \param withPrevious: Flag for whether to include the derivatives w.r.t. the previous values.
              */
 
-            const floatType   *damageMultiplier;
-
-            const floatType   *previousDamageMultiplier;
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( damageMultiplier = get_plasticMultiplier( ) );
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( previousDamageMultiplier = get_previousPlasticMultiplier( ) );
-
-            floatVector previousDamage( get_previousStateVariables( )->begin( ) + 1,
-                                        get_previousStateVariables( )->begin( ) + 2 ); //The first state variable is the hardening variable and the second is the damage
-
-            floatVector deltaDamage;
-
-            floatVector updatedDamage;
-
-            floatMatrix dDdDdot;
-
             if ( withPrevious ){
 
-                floatMatrix dDdDdotp;
+                set_dDamagedPreviousCauchyStress( ( *get_dPlasticStateVariablesdPreviousCauchyStress( ) )[ damageISVIndex ] );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ),       previousDamage,
-                                                                                                           { *previousDamageMultiplier }, { *damageMultiplier },
-                                                                                                           deltaDamage, updatedDamage, dDdDdot, dDdDdotp, 1 - ( *getIntegrationParameter( ) ) ) );
+                set_dDamagedPreviousF( ( *get_dPlasticStateVariablesdPreviousF( ) )[ damageISVIndex ] );
 
-                set_dDamagedPreviousCauchyStress( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousCauchyStress( ) ) );
-    
-                set_dDamagedPreviousF( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousF( ) ) );
-    
-                set_dDamagedPreviousSubFs( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousSubFs( ) ) );
-    
-                set_dDamagedPreviousT( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousT( ) ) );
-    
-                floatVector previousDamageDerivative = { 0, 1 };
+                set_dDamagedPreviousSubFs( ( *get_dPlasticStateVariablesdPreviousSubFs( ) )[ damageISVIndex ] );
 
-                set_dDamagedPreviousStateVariables( dDdDdotp[ 0 ][ 0 ] * ( *get_dPreviousPlasticMultiplierdPreviousStateVariables( ) ) + previousDamageDerivative );
+                set_dDamagedPreviousT( ( *get_dPlasticStateVariablesdPreviousT( ) )[ damageISVIndex ] );
 
-            }
-            else{
-
-                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ),       previousDamage,
-                                                                                                           { *previousDamageMultiplier }, { *damageMultiplier },
-                                                                                                           deltaDamage, updatedDamage, dDdDdot, 1 - ( *getIntegrationParameter( ) ) ) );
+                set_dDamagedPreviousStateVariables( ( *get_dPlasticStateVariablesdPreviousStateVariables( ) )[ damageISVIndex ] );
 
             }
 
-            set_damage( updatedDamage[ 0 ] );
+            set_damage( ( *get_plasticStateVariables( ) )[ damageISVIndex ] );
 
-            set_dDamagedCauchyStress( dDdDdot[ 0 ][ 0 ] * ( *get_dPlasticMultiplierdCauchyStress( ) ) );
+            set_dDamagedCauchyStress( ( *get_dPlasticStateVariablesdCauchyStress( ) )[ damageISVIndex ] );
 
-            set_dDamagedF( dDdDdot[ 0 ][ 0 ] * ( *get_dPlasticMultiplierdF( ) ) );
+            set_dDamagedF( ( *get_dPlasticStateVariablesdF( ) )[ damageISVIndex ] );
 
-            set_dDamagedSubFs( dDdDdot[ 0 ][ 0 ] * ( *get_dPlasticMultiplierdSubFs( ) ) );
+            set_dDamagedSubFs( ( *get_dPlasticStateVariablesdSubFs( ) )[ damageISVIndex ] );
 
-            set_dDamagedT( dDdDdot[ 0 ][ 0 ] * ( *get_dPlasticMultiplierdT( ) ) );
+            set_dDamagedT( ( *get_dPlasticStateVariablesdT( ) )[ damageISVIndex ] );
 
-            set_dDamagedStateVariables( dDdDdot[ 0 ][ 0 ] * ( *get_dPlasticMultiplierdStateVariables( ) ) );
+            set_dDamagedStateVariables( ( *get_dPlasticStateVariablesdStateVariables( ) )[ damageISVIndex ] );
 
         }
 

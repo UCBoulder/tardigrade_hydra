@@ -147,6 +147,8 @@ namespace tardigradeHydra{
                 //! Get the index of the elastic configuration
                 const unsigned int *getElasticConfigurationIndex( ){ return &_elasticConfigurationIndex; }
 
+                unsigned int damageISVIndex = 1;
+
             private:
 
                 unsigned int _elasticConfigurationIndex;
