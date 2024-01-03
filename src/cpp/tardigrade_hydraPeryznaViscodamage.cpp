@@ -256,9 +256,8 @@ namespace tardigradeHydra{
             /*!
              * Set the state variable evolution rates including the damage
              * 
-             * \param &isPrevious:Whether to compute the previous values or not
+             * \param &isPrevious: Whether to compute the previous values or not
              */
-
 
             floatVector evolutionRates;
 
@@ -285,9 +284,8 @@ namespace tardigradeHydra{
             /*!
              * Set the jacobians of the state variable evolution rates including the damage
              * 
-             * \param &isPrevious:Whether to compute the previous values or not
+             * \param &isPrevious: Whether to compute the previous values or not
              */
-
 
             floatVector evolutionRates;
 
@@ -326,8 +324,8 @@ namespace tardigradeHydra{
                 set_dPreviousStateVariableEvolutionRatesdPreviousT( tempJacVec );
 
                 // Set the derivatives w.r.t. the previous state variables
-                tempJac[ 0 ] = ( *get_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) )[ 0 ];
-                tempJac[ 1 ] = *get_dPreviousPlasticMultiplierdPreviousStateVariables( );
+                tempJac[ 0 ] = { ( *get_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) )[ 0 ][ 0 ], 0. };
+                tempJac[ 1 ] = { ( *get_dPreviousPlasticMultiplierdPreviousStateVariables( ) )[ 0 ], 0. };
 
                 set_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( tempJac );
 
@@ -363,8 +361,8 @@ namespace tardigradeHydra{
                 set_dStateVariableEvolutionRatesdT( tempJacVec );
 
                 // Set the derivatives w.r.t. the previous state variables
-                tempJac[ 0 ] = ( *get_dStateVariableEvolutionRatesdStateVariables( ) )[ 0 ];
-                tempJac[ 1 ] = *get_dPlasticMultiplierdStateVariables( );
+                tempJac[ 0 ] = { ( *get_dStateVariableEvolutionRatesdStateVariables( ) )[ 0 ][ 0 ], 0. };
+                tempJac[ 1 ] = { ( *get_dPlasticMultiplierdStateVariables( ) )[ 0 ], 0. };
 
                 set_dStateVariableEvolutionRatesdStateVariables( tempJac );
 
@@ -377,7 +375,6 @@ namespace tardigradeHydra{
              * Set the residual vector
              */
 
-            std::cout << "initializing \n";
             floatVector residual( *getNumEquations( ), 0 );
 
             for ( unsigned int i = 0; i < get_damageDeformationGradient( )->size( ); i++ ){
@@ -385,11 +382,6 @@ namespace tardigradeHydra{
                 residual[ i ] = hydra->getConfiguration( *getDamageConfigurationIndex( ) )[ i ] - ( *get_damageDeformationGradient( ) )[ i ];
 
             }
-
-            std::cout << "residual 1:\n"; tardigradeVectorTools::print( residual );
-
-            std::cout << "stateVariables:\n"; tardigradeVectorTools::print( *get_stateVariables( ) );
-            std::cout << "plasticStateVariables:\n"; tardigradeVectorTools::print( *get_plasticStateVariables( ) );
 
             residual[ get_damageDeformationGradient( )->size( ) + 0 ] = ( *get_stateVariables( ) )[ 0 ] - ( *get_plasticStateVariables( ) ) [ 0 ]; //Evolution of the damage hardening state variable
 
