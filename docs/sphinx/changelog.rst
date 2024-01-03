@@ -6,8 +6,16 @@ Changelog
 #########
 
 ******************
-0.2.0 (unreleased)
+0.3.1 (unreleased)
 ******************
+
+******************
+0.3.0 (01-03-2023)
+******************
+
+Release
+=======
+- Released version (:pull:`33`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
@@ -20,6 +28,7 @@ New Features
 - Added micromorphic hydra object (:pull:`7`). By `Nathan Miller`_.
 - Added general setter functions for iteration and previous data (:pull:`23`). By `Nathan Miller`_.
 - Added calculation of previous linear elastic stress (:pull:`26`). By `Nathan Miller`_.
+- Added an isotropic damage configuration residual (:pull:`32`). By `Nathan Miller`_.
 
 Internal Changes
 ================
