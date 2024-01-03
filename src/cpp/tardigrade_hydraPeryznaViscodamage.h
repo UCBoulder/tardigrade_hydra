@@ -116,6 +116,10 @@ namespace tardigradeHydra{
                 //! Get the configuration of the damage
                 const unsigned int *getDamageConfigurationIndex( ){ return &( *getPlasticConfigurationIndex( ) ); }
 
+                virtual void setStateVariableEvolutionRates( const bool isPrevious ) override;
+
+                virtual void setStateVariableEvolutionRateDerivatives( const bool isPrevious ) override;
+
                 virtual void setDamage( );
 
                 virtual void setDamageJacobians( );

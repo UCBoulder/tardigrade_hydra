@@ -303,11 +303,132 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setStateVariableEvolutionRates( const bool isPrevious ){
+            /*!
+             * Set the state variable evolution rates including the damage
+             * 
+             * \param &isPrevious:Whether to compute the previous values or not
+             */
+
+
+            floatVector evolutionRates;
+
+            tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRates( isPrevious );
+
+            if ( isPrevious ){
+
+                evolutionRates = { ( *get_previousStateVariableEvolutionRates( ) )[ 0 ], *get_previousPlasticMultiplier( ) };
+
+                set_previousStateVariableEvolutionRates( evolutionRates );
+
+            }
+            else{
+
+                evolutionRates = { ( *get_stateVariableEvolutionRates( ) )[ 0 ], *get_plasticMultiplier( ) };
+
+                set_stateVariableEvolutionRates( evolutionRates );
+
+            }
+
+        }
+
+        void residual::setStateVariableEvolutionRateDerivatives( const bool isPrevious ){
+            /*!
+             * Set the jacobians of the state variable evolution rates including the damage
+             * 
+             * \param &isPrevious:Whether to compute the previous values or not
+             */
+
+
+            floatVector evolutionRates;
+
+            floatMatrix tempJac( 2 );
+
+            tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRateDerivatives( isPrevious );
+
+            if ( isPrevious ){
+
+                evolutionRates = { ( *get_previousStateVariableEvolutionRates( ) )[ 0 ], *get_previousPlasticMultiplier( ) };
+
+                set_previousStateVariableEvolutionRates( evolutionRates );
+
+                // Set the derivatives w.r.t. the previous Cauchy stress
+                tempJac[ 0 ] = ( *get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ) )[ 0 ];
+                tempJac[ 1 ] = *get_dPreviousPlasticMultiplierdPreviousCauchyStress( );
+
+                set_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( tempJac );
+
+                // Set the derivatives w.r.t. the previous deformation gradient
+                tempJac[ 0 ] = ( *get_dPreviousStateVariableEvolutionRatesdPreviousF( ) )[ 0 ];
+                tempJac[ 1 ] = *get_dPreviousPlasticMultiplierdPreviousF( );
+
+                set_dPreviousStateVariableEvolutionRatesdPreviousF( tempJac );
+
+                // Set the derivatives w.r.t. the previous sub-deformation gradients
+                tempJac[ 0 ] = ( *get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( ) )[ 0 ];
+                tempJac[ 1 ] = *get_dPreviousPlasticMultiplierdPreviousSubFs( );
+
+                set_dPreviousStateVariableEvolutionRatesdPreviousSubFs( tempJac );
+
+                // Set the derivatives w.r.t. the previous temperature
+                floatVector tempJacVec = tardigradeVectorTools::appendVectors( { *get_dPreviousStateVariableEvolutionRatesdPreviousT( ),
+                                                                               { *get_dPreviousPlasticMultiplierdPreviousT( ) } } );
+
+                set_dPreviousStateVariableEvolutionRatesdPreviousT( tempJacVec );
+
+                // Set the derivatives w.r.t. the previous state variables
+                tempJac[ 0 ] = ( *get_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) )[ 0 ];
+                tempJac[ 1 ] = *get_dPreviousPlasticMultiplierdPreviousStateVariables( );
+
+                set_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( tempJac );
+
+            }
+            else{
+
+                evolutionRates = { ( *get_stateVariableEvolutionRates( ) )[ 0 ], *get_plasticMultiplier( ) };
+
+                set_stateVariableEvolutionRates( evolutionRates );
+
+                // Set the derivatives w.r.t. the previous Cauchy stress
+                tempJac[ 0 ] = ( *get_dStateVariableEvolutionRatesdCauchyStress( ) )[ 0 ];
+                tempJac[ 1 ] = *get_dPlasticMultiplierdCauchyStress( );
+
+                set_dStateVariableEvolutionRatesdCauchyStress( tempJac );
+
+                // Set the derivatives w.r.t. the previous deformation gradient
+                tempJac[ 0 ] = ( *get_dStateVariableEvolutionRatesdF( ) )[ 0 ];
+                tempJac[ 1 ] = *get_dPlasticMultiplierdF( );
+
+                set_dStateVariableEvolutionRatesdF( tempJac );
+
+                // Set the derivatives w.r.t. the previous sub-deformation gradients
+                tempJac[ 0 ] = ( *get_dStateVariableEvolutionRatesdSubFs( ) )[ 0 ];
+                tempJac[ 1 ] = *get_dPlasticMultiplierdSubFs( );
+
+                set_dStateVariableEvolutionRatesdSubFs( tempJac );
+
+                // Set the derivatives w.r.t. the previous temperature
+                floatVector tempJacVec = tardigradeVectorTools::appendVectors( { *get_dStateVariableEvolutionRatesdT( ),
+                                                                               { *get_dPlasticMultiplierdT( ) } } );
+
+                set_dStateVariableEvolutionRatesdT( tempJacVec );
+
+                // Set the derivatives w.r.t. the previous state variables
+                tempJac[ 0 ] = ( *get_dStateVariableEvolutionRatesdStateVariables( ) )[ 0 ];
+                tempJac[ 1 ] = *get_dPlasticMultiplierdStateVariables( );
+
+                set_dStateVariableEvolutionRatesdStateVariables( tempJac );
+
+            }
+
+        }
+
         void residual::setResidual( ){
             /*!
              * Set the residual vector
              */
 
+            std::cout << "initializing \n";
             floatVector residual( *getNumEquations( ), 0 );
 
             for ( unsigned int i = 0; i < get_damageDeformationGradient( )->size( ); i++ ){
@@ -315,6 +436,11 @@ namespace tardigradeHydra{
                 residual[ i ] = hydra->getConfiguration( *getDamageConfigurationIndex( ) )[ i ] - ( *get_damageDeformationGradient( ) )[ i ];
 
             }
+
+            std::cout << "residual 1:\n"; tardigradeVectorTools::print( residual );
+
+            std::cout << "stateVariables:\n"; tardigradeVectorTools::print( *get_stateVariables( ) );
+            std::cout << "plasticStateVariables:\n"; tardigradeVectorTools::print( *get_plasticStateVariables( ) );
 
             residual[ get_damageDeformationGradient( )->size( ) + 0 ] = ( *get_stateVariables( ) )[ 0 ] - ( *get_plasticStateVariables( ) ) [ 0 ]; //Evolution of the damage hardening state variable
 
