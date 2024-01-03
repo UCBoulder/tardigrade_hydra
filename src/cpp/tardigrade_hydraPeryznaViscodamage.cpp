@@ -316,9 +316,9 @@ namespace tardigradeHydra{
 
             }
 
-            residual[ get_damageDeformationGradient( )->size( ) + 0 ] = ( *get_previousStateVariables( ) )[ 0 ] - ( *get_plasticStateVariables( ) ) [ 0 ]; //Evolution of the damage hardening state variable
+            residual[ get_damageDeformationGradient( )->size( ) + 0 ] = ( *get_stateVariables( ) )[ 0 ] - ( *get_plasticStateVariables( ) ) [ 0 ]; //Evolution of the damage hardening state variable
 
-            residual[ get_damageDeformationGradient( )->size( ) + 1 ] = ( *get_previousStateVariables( ) )[ 1 ] - ( *get_damage( ) ); //Evolution of the damage
+            residual[ get_damageDeformationGradient( )->size( ) + 1 ] = ( *get_stateVariables( ) )[ 1 ] - ( *get_damage( ) ); //Evolution of the damage
 
             setResidual( residual );
 
