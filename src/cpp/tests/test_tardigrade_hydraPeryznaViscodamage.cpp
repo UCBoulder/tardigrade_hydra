@@ -123,6 +123,10 @@ BOOST_AUTO_TEST_CASE( test_setDamage ){
 
             floatVector stateVariables = { 3, 4 };
 
+            floatMatrix tmpMat = { { 1, 2 }, { 3, 4 } };
+
+            floatVector tmpVec = { 5, 6 };
+
         protected:
 
             virtual void setPlasticMultiplier( ) override{
@@ -146,6 +150,36 @@ BOOST_AUTO_TEST_CASE( test_setDamage ){
             virtual void setPreviousStateVariables( ) override{
 
                 set_previousStateVariables( previousStateVariables );
+
+            }
+
+            virtual void setdPlasticStateVariablesdPreviousCauchyStress( ) override{
+
+                set_dPlasticStateVariablesdPreviousCauchyStress( tmpMat );
+
+            }
+
+            virtual void setdPlasticStateVariablesdPreviousF( ) override{
+
+                set_dPlasticStateVariablesdPreviousF( tmpMat );
+
+            }
+
+            virtual void setdPlasticStateVariablesdPreviousSubFs( ) override{
+
+                set_dPlasticStateVariablesdPreviousSubFs( tmpMat );
+
+            }
+
+            virtual void setdPlasticStateVariablesdPreviousT( ) override{
+
+                set_dPlasticStateVariablesdPreviousT( tmpVec );
+
+            }
+
+            virtual void setdPlasticStateVariablesdPreviousStateVariables( ) override{
+
+                set_dPlasticStateVariablesdPreviousStateVariables( tmpMat );
 
             }
 
@@ -1581,5 +1615,255 @@ BOOST_AUTO_TEST_CASE( test_setResidual ){
     floatVector residualAnswer = { 0.2, -2. , -3. , -4. , -4. , -6. , -7. , -8. , -8. , -5. ,  5.7 };
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( residualAnswer, *R_ngrad.getResidual( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_setResidual2 ){
+
+    class stressMock : public tardigradeHydra::residualBase {
+
+        public:
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        private:
+
+            virtual void setPreviousStress( ){
+
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            floatVector elasticityParameters = { 123.4, 56.7 };
+
+            floatVector viscoDamageParameters = { 2.0,
+                                                  1e1, 1e2,
+                                                  10, 200, 293.15,
+                                                  1, 0.34,
+                                                  0.12,
+                                                  13., 14.};
+
+            std::vector< unsigned int > stateVariableIndices = { 1, 2 };
+
+            floatVector _local_deltaPreviousCauchyStress = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            stressMock elasticity;
+
+            tardigradeHydra::peryznaViscodamage::residual damage;
+
+            tardigradeHydra::residualBase remainder;
+
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+
+            }
+
+        protected:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+
+                elasticity = stressMock( this, 9 );
+
+                elasticity.previousCauchyStress += _local_deltaPreviousCauchyStress;
+
+                damage = tardigradeHydra::peryznaViscodamage::residual( this, 11, 1, stateVariableIndices, viscoDamageParameters );
+
+                remainder = tardigradeHydra::residualBase( this, 12 );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &damage;
+
+                residuals[ 2 ] = &remainder;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0.01, 0.02, 0.03, 0.04, 0.05 };
+
+    floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+
+    floatVector unknownVector = { 3, 1, 4, 1, 5, 1, 1, 1, 8,
+                                  1.2, 0.0, 0.0,
+                                  0.0, 1.0, 0.0,
+                                  0.0, 0.0, 1.0,
+                                  1.01, 0.0, 0.0,
+                                  0.0,  1.2, 0.0,
+                                  0.0,  0.0, 0.9,
+                                  0.04, 0.05, 0.06, 0.07, 0.08 };
+
+    unsigned int numConfigurations = 3;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
+    tardigradeHydra::peryznaViscodamage::residual R( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+
+    // Test the computation of the Jacobians
+    unsigned int nvals = 11;
+
+    floatMatrix jacobian( nvals, floatVector( unknownVector.size( ), 0 ) );
+
+    floatMatrix dRdF( nvals, floatVector( 9, 0 ) );
+
+    floatVector dRdT( nvals, 0 );
+
+    floatType eps = 1e-6;
+    std::cout << "jacobian\n";
+    for ( unsigned int i = 0; i < unknownVector.size( ); i++ ){
+        std::cout << "i " << i << "\n";
+
+        try{
+        std::cout << "delta\n";
+        floatVector delta( unknownVector.size( ), 0 );
+
+        delta[ i ] += eps * std::fabs( unknownVector[ i ] ) + eps;
+
+        std::cout << "hydra\n";
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        std::cout << "unknown vector\n";
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector + delta );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
+
+        std::cout << "form residual\n";
+        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+
+        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+
+        std::cout << "get residual\n";
+        floatVector vp = *Rp.getResidual( );
+
+        floatVector vm = *Rm.getResidual( );
+
+        std::cout << "adding to jacobian\n";
+        for ( unsigned int j = 0; j < nvals; j++ ){
+
+            jacobian[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+        }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
+
+    }
+
+    std::cout << "jacobian:\n"; tardigradeVectorTools::print( jacobian );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, *R.getJacobian( ) ) );
+
+    std::cout << "dRdF\n";
+    for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
+
+        floatVector delta( deformationGradient.size( ), 0 );
+
+        delta[ i ] += eps * std::fabs( deformationGradient[ i ] ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+
+        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+
+        floatVector vp = *Rp.getResidual( );
+
+        floatVector vm = *Rm.getResidual( );
+
+        for ( unsigned int j = 0; j < nvals; j++ ){
+
+            dRdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    std::cout << "dRdF:\n"; tardigradeVectorTools::print( dRdF );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdF, *R.getdRdF( ) ) );
+
+    std::cout << "dRdT\n";
+    for ( unsigned int i = 0; i < 1; i++ ){
+
+        floatVector delta( 1, 0 );
+
+        delta[ i ] += eps * std::fabs( temperature ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature + delta[ 0 ], previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature - delta[ 0 ], previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+
+        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+
+        floatVector vp = *Rp.getResidual( );
+
+        floatVector vm = *Rm.getResidual( );
+
+        for ( unsigned int j = 0; j < nvals; j++ ){
+
+            dRdT[ j ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    std::cout << "dRdT:\n"; tardigradeVectorTools::print( dRdT );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdT, *R.getdRdT( ) ) );
 
 }
