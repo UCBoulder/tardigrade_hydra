@@ -32,53 +32,151 @@ namespace tardigradeHydra{
             setMu( parameters[ 1 ] );
     
         }
-    
-        void residual::setEe( ){
+
+        void residual::setFe( const bool isPrevious ){
             /*!
-             * Set the current value of the elastic Green-Lagrange strain
+             * Set the value of the elastic deformation gradient
+             * 
+             * \param isPrevious: Flag for whether to set the current (false) or previous (true) elastic deformation gradient
              */
+
+            if ( isPrevious ){
+
+                set_previousFe( ( *hydra->get_previousConfigurations( ) )[ 0 ] );
+
+            }
+            else{
+
+                set_Fe( ( *hydra->get_configurations( ) )[ 0 ] );
+
+            }
+
+        }
+
+        void residual::setFe( ){
+            /*!
+             * Set the value of the elastic deformation gradient
+             */
+
+            setFe( false );
+
+        }
+
+        void residual::setPreviousFe( ){
+            /*!
+             * Set the value of the previous elastic deformation gradient
+             */
+
+            setFe( true );
+
+        }
+
+        void residual::setFeDerivatives( const bool isPrevious ){
+            /*!
+             * Set the value of the derivatives of the elastic strain
+             */
+
+            if ( isPrevious ){
+
+                set_previousdFedF( *hydra->get_previousdF1dF( ) );
+
+                set_previousdFedFn( *hydra->get_previousdF1dFn( ) );
+
+            }
+            else{
+
+                set_dFedF( *hydra->get_dF1dF( ) );
+
+                set_dFedFn( *hydra->get_dF1dFn( ) );
+
+            }
+
+        }
+
+        void residual::setdFedF( ){
+            /*!
+             * Set the value of the derivative of the elastic deformation gradient w.r.t. the deformation gradient
+             */
+
+            setFeDerivatives( false );
+
+        }
+
+        void residual::setdFedFn( ){
+            /*!
+             * Set the value of the derivative of the elastic deformation gradient w.r.t. the sub-deformation gradients
+             */
+
+            setFeDerivatives( false );
+
+        }
+
+        void residual::setPreviousdFedF( ){
+            /*!
+             * Set the value of the previous derivative of the elastic deformation gradient w.r.t. the deformation gradient
+             */
+
+            setFeDerivatives( true );
+
+        }
+
+        void residual::setPreviousdFedFn( ){
+            /*!
+             * Set the value of the previous derivative of the elastic deformation gradient w.r.t. the sub-deformation gradients
+             */
+
+            setFeDerivatives( true );
+
+        }
+
+        void residual::setEe( const bool isPrevious ){
+            /*!
+             * Set the value of the elastic Green-Lagrange strain
+             * 
+             * \param isPrevious: Flag for whether to compute the strain (false) or the previous strain (true)
+             */
+
+            const floatVector *Fe;
     
-            floatVector Fe = ( *hydra->getConfigurations( ) )[ 0 ];
-    
+            if ( isPrevious ){
+
+                Fe = get_previousFe( );
+
+            }
+            else{
+
+                Fe = get_Fe( );
+
+            }
+
             floatVector Ee;
    
             floatMatrix dEedFe;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( Fe, Ee, dEedFe ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fe, Ee, dEedFe ) );
+
+            if ( isPrevious ){
     
-            setEe( Ee );
+                set_previousEe( Ee );
     
-            setdEedFe( dEedFe );
-    
-        }
-    
-        void residual::setEe( const floatVector &Ee ){
-            /*!
-             * Set the elastic Green-Lagrange strain
-             * 
-             * \param &Ee: The elastic Green-Lagrange strain
-             */
-    
-            _Ee.second = Ee;
-    
-            _Ee.first = true;
-    
-            addIterationData( &_Ee );
-    
-        } 
-    
-        const floatVector* residual::getEe( ){
-            /*!
-             * Get the elastic Green-Lagrange strain
-             */
-    
-            if ( !_Ee.first ){
-    
-                TARDIGRADE_ERROR_TOOLS_CATCH( setEe( ) );
-    
+                set_previousdEedFe( dEedFe );
             }
+            else{
+
+                set_Ee( Ee );
     
-            return &_Ee.second;
+                set_dEedFe( dEedFe );
+
+            }
+
+        }
+ 
+        void residual::setEe( ){
+            /*!
+             * Set the current value of the elastic Green-Lagrange strain
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setEe( false ) )
     
         }
     
@@ -89,37 +187,64 @@ namespace tardigradeHydra{
              * Default assumption is that this happens when the Green-Lagrange strain is computed; 
              */
     
-            TARDIGRADE_ERROR_TOOLS_CATCH( getEe( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setEe( false ) );
     
         }
     
-        void residual::setdEedFe( const floatMatrix &dEedFe ){
+        void residual::setPreviousEe( ){
             /*!
-             * Set the gradient of the elastic Green-Lagrange strain w.r.t. the elastic deformation gradient
+             * Set the previous value of the elastic Green-Lagrange strain
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setEe( true ) )
+    
+        }
+    
+        void residual::setPreviousdEedFe( ){
+            /*!
+             * Set the previous gradient of the elastic Green-Lagrange strain w.r.t. the elastic deformation gradient
              * 
-             * \param &dEedFe: The derivative of the elastic Green-Lagrange strain w.r.t. the elastic deformation gradient
+             * Default assumption is that this happens when the Green-Lagrange strain is computed; 
              */
     
-            _dEedFe.second = dEedFe;
-    
-            _dEedFe.first = true;
-    
-            addIterationData( &_dEedFe );
+            TARDIGRADE_ERROR_TOOLS_CATCH( setEe( true ) );
     
         }
     
-        const floatMatrix* residual::getdEedFe( ){
+        void residual::setPK2Stress( const bool isPrevious ){
             /*!
-             * Get the elastic Green-Lagrange strain
+             * Compute the Second Piola-Kirchhoff stress
+             * 
+             * \param isPrevious: Flag for whether to compute the current (false) or previous (true) PK2 stress
              */
     
-            if ( !_dEedFe.first ){
-    
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdEedFe( ) );
-    
+            floatVector eye( get_Ee( )->size( ), 0 );
+            tardigradeVectorTools::eye( eye );
+
+            const floatVector *Ee;
+
+            if ( isPrevious ){
+
+                Ee = get_previousEe( );
+
             }
-    
-            return &_dEedFe.second;
+            else{
+
+                Ee = get_Ee( );
+
+            }
+            floatVector PK2Stress = ( *getLambda( ) ) * tardigradeVectorTools::trace( *Ee ) * eye + 2 * ( *getMu( ) ) * ( *Ee );
+
+            if ( isPrevious ){
+
+                set_previousPK2Stress( PK2Stress );
+
+            }
+            else{
+ 
+                set_PK2Stress( PK2Stress );
+
+            }
     
         }
     
@@ -127,43 +252,37 @@ namespace tardigradeHydra{
             /*!
              * Compute the Second Piola-Kirchhoff stress
              */
+
+            setPK2Stress( false );
     
-            floatVector eye( getEe( )->size( ), 0 );
+        }
+
+        void residual::setPreviousPK2Stress( ){
+            /*!
+             * Compute the previous Second Piola-Kirchhoff stress
+             */
+
+            setPK2Stress( true );
+    
+        }
+    
+        void residual::setdPK2StressdEe( const bool isPrevious ){
+            /*!
+             * Compute the gradient of the PK2 stress w.r.t. the elastic Green-Lagrange strain
+             * 
+             * \param isPrevious: Flag for whether to compute the current (false) or previous (true) value
+             */
+    
+            floatVector eye( get_Ee( )->size( ), 0 );
             tardigradeVectorTools::eye( eye );
     
-            floatVector PK2Stress = ( *getLambda( ) ) * tardigradeVectorTools::trace( *getEe( ) ) * eye + 2 * ( *getMu( ) ) * ( *getEe( ) );
+            floatMatrix EYE = tardigradeVectorTools::eye< floatType >( get_Ee( )->size( ) );
     
-            setPK2Stress( PK2Stress );
-    
-        }
-    
-        void residual::setPK2Stress( const floatVector &PK2Stress ){
-            /*!
-             * Compute the Second Piola-Kirchhoff stress
-             * 
-             * \param &PK2Stress: The Second Piola-Kirchhoff stress
-             */
-    
-            _PK2Stress.second = PK2Stress;
-    
-            _PK2Stress.first = true;
-    
-            addIterationData( &_PK2Stress );
-    
-        }
-    
-        const floatVector* residual::getPK2Stress( ){
-            /*!
-             * Get the Second Piola-Kirchhoff stress
-             */
-    
-            if ( !_PK2Stress.first ){
-    
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPK2Stress( ) );
-    
-            }
-    
-            return &_PK2Stress.second;
+            floatMatrix dPK2StressdEe = ( *getLambda( ) ) * tardigradeVectorTools::dyadic( eye, eye ) + 2 * ( *getMu( ) ) * EYE;
+   
+            set_dPK2StressdEe( dPK2StressdEe );
+
+            set_previousdPK2StressdEe( dPK2StressdEe );
     
         }
     
@@ -171,133 +290,193 @@ namespace tardigradeHydra{
             /*!
              * Compute the gradient of the PK2 stress w.r.t. the elastic Green-Lagrange strain
              */
-    
-            floatVector eye( getEe( )->size( ), 0 );
-            tardigradeVectorTools::eye( eye );
-    
-            floatMatrix EYE = tardigradeVectorTools::eye< floatType >( getEe( )->size( ) );
-    
-            floatMatrix dPK2StressdEe = ( *getLambda( ) ) * tardigradeVectorTools::dyadic( eye, eye ) + 2 * ( *getMu( ) ) * EYE;
-    
-            setdPK2StressdEe( dPK2StressdEe );
-    
-        }
-    
-        void residual::setdPK2StressdEe( const floatMatrix &dPK2StressdEe ){
-            /*!
-             * Set the gradient of the PK2 stress w.r.t. the elastic Green-Lagrange strain
-             *
-             * \param &dPK2StressdEe: The gradient of the Second Piola-Kirchhoff stress w.r.t. the elastic Green-Lagrange strain
-             */
-    
-            _dPK2StressdEe.second = dPK2StressdEe;
-    
-            _dPK2StressdEe.first = true;
-    
-            addIterationData( &_dPK2StressdEe );
-    
-        }
-    
-        const floatMatrix* residual::getdPK2StressdEe( ){
-            /*!
-             * Get the gradient of the Second Piola-Kirchhoff stress w.r.t. the elastic Green-Lagrange strain
-             */
-    
-            if ( !_dPK2StressdEe.first ){
-    
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2StressdEe( ) );
-    
-            }
-    
-            return &_dPK2StressdEe.second;
-    
-        }
 
+            setdPK2StressdEe( false );
+    
+        }
+    
+        void residual::setPreviousdPK2StressdEe( ){
+            /*!
+             * Compute the previous gradient of the PK2 stress w.r.t. the elastic Green-Lagrange strain
+             */
+
+            setdPK2StressdEe( true );
+    
+        }
+    
         void residual::setdPK2StressdFe( ){
             /*!
              * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the elastic
              * deformation gradient
              */
 
-             floatMatrix dPK2StressdFe = tardigradeVectorTools::dot( *getdPK2StressdEe( ), *getdEedFe( ) );
+             floatMatrix dPK2StressdFe = tardigradeVectorTools::dot( *get_dPK2StressdEe( ), *get_dEedFe( ) );
 
-             setdPK2StressdFe( dPK2StressdFe );
+             set_dPK2StressdFe( dPK2StressdFe );
 
         }
 
-        void residual::setdPK2StressdFe( const floatMatrix &dPK2StressdFe ){
+        void residual::setdPK2StressdPreviousFe( ){
             /*!
-             * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the elastic
+             * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the previous elastic
              * deformation gradient
+             */
+
+             floatMatrix dPK2StressdPreviousFe( get_PK2Stress( )->size( ), floatVector( get_previousEe( )->size( ), 0 ) );
+
+             set_dPK2StressdPreviousFe( dPK2StressdPreviousFe );
+
+        }
+
+        void residual::setPreviousdPK2StressdFe( ){
+            /*!
+             * Set the derivative of the previous second Piola-Kirchhoff stress w.r.t. the elastic
+             * deformation gradient
+             */
+
+             floatMatrix previousdPK2StressdFe = tardigradeVectorTools::dot( *get_previousdPK2StressdEe( ), *get_previousdEedFe( ) );
+
+             set_previousdPK2StressdFe( previousdPK2StressdFe );
+
+        }
+
+        void residual::setCauchyStress( const bool isPrevious ){
+            /*!
+             * Set the Cauchy stress
              * 
-             * \param &dPK2StressdFe: The derivative of the second Piola-Kirchhoff stress w.r.t.
-             *     the elastic deformation gradient
+             * \param isPrevious: Whether to compute the current (false) or previous (true) Cauchy stress
              */
 
-            _dPK2StressdFe.second = dPK2StressdFe;
+            const floatVector *Fe;
 
-            _dPK2StressdFe.first = true;
+            const floatMatrix *dFedF;
 
-            addIterationData( &_dPK2StressdFe );
+            const floatMatrix *dFedFn;
 
-        }
+            const floatVector *PK2Stress;
 
-        const floatMatrix* residual::getdPK2StressdFe( ){
-            /*!
-             * Get the derivative of the second Piola-Kirchhoff stress w.r.t. the elastic
-             * deformation gradient
-             */
+            const floatMatrix *dPK2StressdFe;
 
-            if ( !_dPK2StressdFe.first ){
+            if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPK2StressdFe( ) )
+                Fe            = get_previousFe( );
+
+                dFedF         = get_previousdFedF( );
+
+                dFedFn        = get_previousdFedFn( );
+
+                PK2Stress     = get_previousPK2Stress( );
+
+                dPK2StressdFe = get_previousdPK2StressdFe( );
+
+            }
+            else{
+
+                Fe            = get_Fe( );
+
+                dFedF         = get_dFedF( );
+
+                dFedFn        = get_dFedFn( );
+
+                PK2Stress     = get_PK2Stress( );
+
+                dPK2StressdFe = get_dPK2StressdFe( );
 
             }
 
-            return &_dPK2StressdFe.second;
-
-        }
-
-        void residual::setStress( ){
-            /*!
-             * Set the Cauchy stress
-             */
-    
-            floatVector Fe = ( *hydra->getConfigurations( ) )[ 0 ];
-    
-            floatMatrix dFedF = ( *hydra->getdF1dF( ) );
-    
-            floatMatrix dFedFn = ( *hydra->getdF1dFn( ) );
-    
-            // Compute the gradient of the PK2 stress w.r.t. the elastic deformation gradient
-            floatMatrix dPK2StressdFe = *getdPK2StressdFe( );
-
             // Compute the Second Piola-Kirchhoff stress and it's gradients
-            floatMatrix dPK2StressdF = tardigradeVectorTools::dot( *getdPK2StressdFe( ), dFedF );
+            floatMatrix dPK2StressdF = tardigradeVectorTools::dot( *dPK2StressdFe, *dFedF );
     
-            floatMatrix dPK2StressdFn = tardigradeVectorTools::dot( *getdPK2StressdFe( ), dFedFn );
+            floatMatrix dPK2StressdFn = tardigradeVectorTools::dot( *dPK2StressdFe, *dFedFn );
     
             // Map the PK2 stress to the current configuration
             floatVector cauchyStress;
             floatMatrix dCauchyStressdPK2Stress;
             floatMatrix dCauchyStressdFe;
-    
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::pushForwardPK2Stress( *getPK2Stress( ), Fe, cauchyStress, dCauchyStressdPK2Stress, dCauchyStressdFe ) );
-    
-            setStress( cauchyStress );
+ 
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::pushForwardPK2Stress( *PK2Stress, *Fe, cauchyStress, dCauchyStressdPK2Stress, dCauchyStressdFe ) );
     
             floatMatrix dCauchyStressdF  = tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdF )
-                                         + tardigradeVectorTools::dot( dCauchyStressdFe, dFedF );
+                                         + tardigradeVectorTools::dot( dCauchyStressdFe, *dFedF );
     
             floatMatrix dCauchyStressdFn = tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdFn )
-                                         + tardigradeVectorTools::dot( dCauchyStressdFe, dFedFn );
+                                         + tardigradeVectorTools::dot( dCauchyStressdFe, *dFedFn );
 
-            setdCauchyStressdPK2Stress( dCauchyStressdPK2Stress );   
+            if ( isPrevious ){
 
-            setdCauchyStressdF( dCauchyStressdF );
+                set_previousCauchyStress( cauchyStress );
     
-            setdCauchyStressdFn( dCauchyStressdFn );
+                set_previousdCauchyStressdPK2Stress( dCauchyStressdPK2Stress );   
+
+                set_previousdCauchyStressdF( dCauchyStressdF );
     
+                set_previousdCauchyStressdFn( dCauchyStressdFn );
+
+            }
+            else{
+
+                set_cauchyStress( cauchyStress );
+    
+                set_dCauchyStressdPK2Stress( dCauchyStressdPK2Stress );   
+
+                set_dCauchyStressdF( dCauchyStressdF );
+    
+                set_dCauchyStressdFn( dCauchyStressdFn );
+
+                floatMatrix dPK2StressdPreviousF  = tardigradeVectorTools::dot( *get_dPK2StressdPreviousFe( ), *get_previousdFedF( ) );
+
+                floatMatrix dPK2StressdPreviousFn = tardigradeVectorTools::dot( *get_dPK2StressdPreviousFe( ), *get_previousdFedFn( ) );
+
+                set_dCauchyStressdPreviousF( tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdPreviousF ) );
+
+                set_dCauchyStressdPreviousFn( tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdPreviousFn ) );
+
+            }
+
+        }
+
+        void residual::setCauchyStress( ){
+            /*!
+             * Set the value of the Cauchy stress
+             */
+
+            setCauchyStress( false );
+
+        }
+
+        void residual::setPreviousCauchyStress( ){
+            /*!
+             * Set the previous value of the Cauchy stress
+             */
+
+            setCauchyStress( true );
+
+        }
+
+        void residual::setStress( ){
+            /*!
+             * Set the stress
+             *
+             * Currently uses the Cauchy stress
+             */
+
+            setCauchyStress( false );
+
+            setStress( *get_cauchyStress( ) );
+
+        }
+    
+        void residual::setPreviousStress( ){
+            /*!
+             * Set the previous stress
+             *
+             * Currently uses the Cauchy stress
+             */
+
+            setCauchyStress( true );
+
+            setPreviousStress( *get_previousCauchyStress( ) );
+
         }
     
         void residual::setdCauchyStressdPK2Stress( ){
@@ -305,7 +484,7 @@ namespace tardigradeHydra{
              * Set the derivative of the computed Cauchy stress w.r.t. the second Piola-Kirchoff stress (this is a partial derivative generally)
              */
     
-            setStress( );
+            setCauchyStress( false );
     
         }
 
@@ -314,68 +493,8 @@ namespace tardigradeHydra{
              * Set the derivative of the computed Cauchy stress w.r.t. F (this is a partial derivative generally)
              */
     
-            setStress( );
+            setCauchyStress( false );
     
-        }
-
-        void residual::setdCauchyStressdPK2Stress( const floatMatrix &dCauchyStressdPK2Stress ){
-            /*!
-             * Set the partial derivative of the Cauchy stress w.r.t. the second Piola-Kirchhoff stress
-             * 
-             * \param &dCauchyStressdPK2Stress: The partial derivative of the Cauchy stress w.r.t. the second Piola-Kirchhoff stress
-             */
-    
-            _dCauchyStressdPK2Stress.second = dCauchyStressdPK2Stress;
-    
-            _dCauchyStressdPK2Stress.first = true;
-    
-            addIterationData( &_dCauchyStressdPK2Stress );
-    
-        }
-
-        void residual::setdCauchyStressdF( const floatMatrix &dCauchyStressdF ){
-            /*!
-             * Set the partial derivative of the Cauchy stress w.r.t. the deformation gradient
-             * 
-             * \param &dCauchyStressdF: The partial derivative of the Cauchy stress w.r.t. the deformation gradient
-             */
-    
-            _dCauchyStressdF.second = dCauchyStressdF;
-    
-            _dCauchyStressdF.first = true;
-    
-            addIterationData( &_dCauchyStressdF );
-    
-        }
-
-        const floatMatrix* residual::getdCauchyStressdPK2Stress( ){
-            /*!
-             * Get the derivative of the Cauchy stress w.r.t. the second Piola-Kirchhoff stress
-             */
-
-            if ( !_dCauchyStressdPK2Stress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdCauchyStressdPK2Stress( ) );
-
-            }
-
-            return &_dCauchyStressdPK2Stress.second;
-
-        }
-
-        const floatMatrix* residual::getdCauchyStressdF( ){
-            /*!
-             * Get the derivative of the Cauchy stress w.r.t. the deformation gradient
-             */
-
-            if ( !_dCauchyStressdF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdCauchyStressdF( ) );
-
-            }
-
-            return &_dCauchyStressdF.second;
-
         }
 
         void residual::setdCauchyStressdFn( ){
@@ -384,39 +503,55 @@ namespace tardigradeHydra{
              * (this is a partial derivative generally)
              */
     
-            setStress( );
+            setCauchyStress( false );
     
         }
     
-        void residual::setdCauchyStressdFn( const floatMatrix &dCauchyStressdFn ){
+        void residual::setdCauchyStressdPreviousF( ){
             /*!
-             * Set the partial derivative of the Cauchy stress w.r.t. the configurations solve for in the non-linear solve
-             * 
-             * \param &dCauchyStressdFn: The partial derivative of the Cauchy stress w.r.t. the configurations solve for
-             *     in the non-linear solve
+             * Set the derivative of the computed Cauchy stress w.r.t. the previous value of F (this is a partial derivative generally)
              */
     
-            _dCauchyStressdFn.second = dCauchyStressdFn;
-    
-            _dCauchyStressdFn.first = true;
-    
-            addIterationData( &_dCauchyStressdFn );
+            setCauchyStress( false );
     
         }
 
-        const floatMatrix* residual::getdCauchyStressdFn( ){
+        void residual::setdCauchyStressdPreviousFn( ){
             /*!
-             * Get the derivative of the Cauchy stress w.r.t. the configurations solve for in the non-linear solve
+             * Set the derivative of the computed Cauchy stress w.r.t. the previous configurations solved for in the non-linear solve
+             * (this is a partial derivative generally)
              */
+    
+            setCauchyStress( false );
+    
+        }
+    
+        void residual::setPreviousdCauchyStressdPK2Stress( ){
+            /*!
+             * Set the previous derivative of the computed Cauchy stress w.r.t. the second Piola-Kirchoff stress (this is a partial derivative generally)
+             */
+    
+            setCauchyStress( true );
+    
+        }
 
-            if ( !_dCauchyStressdFn.first ){
+        void residual::setPreviousdCauchyStressdF( ){
+            /*!
+             * Set the previous derivative of the computed Cauchy stress w.r.t. F (this is a partial derivative generally)
+             */
+    
+            setCauchyStress( true );
+    
+        }
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdCauchyStressdFn( ) );
-
-            }
-
-            return &_dCauchyStressdFn.second;
-
+        void residual::setPreviousdCauchyStressdFn( ){
+            /*!
+             * Set the previous derivative of the computed Cauchy stress w.r.t. the configurations solved for in the non-linear solve
+             * (this is a partial derivative generally)
+             */
+    
+            setCauchyStress( true );
+    
         }
     
         void residual::setResidual( ){
@@ -448,7 +583,7 @@ namespace tardigradeHydra{
     
                     for ( unsigned int I = 0; I < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( *dim ) * ( *dim ); I++ ){
     
-                        jacobian[ ( *dim ) * i + j ][ getStress( )->size( ) + I ] = ( *getdCauchyStressdFn( ) )[ ( *dim ) * i + j ][ I ];
+                        jacobian[ ( *dim ) * i + j ][ getStress( )->size( ) + I ] = ( *get_dCauchyStressdFn( ) )[ ( *dim ) * i + j ][ I ];
     
                     }
     
@@ -474,7 +609,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
     
-            setdRdF( *getdCauchyStressdF( ) );
+            setdRdF( *get_dCauchyStressdF( ) );
     
         }
 

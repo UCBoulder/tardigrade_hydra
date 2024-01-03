@@ -6,8 +6,44 @@ Changelog
 #########
 
 ******************
-0.2.0 (unreleased)
+0.3.1 (unreleased)
 ******************
+
+******************
+0.3.0 (01-03-2023)
+******************
+
+Release
+=======
+- Released version (:pull:`33`). By `Nathan Miller`_.
+
+Breaking Changes
+================
+- Added macros for the setter functions (:pull:`24`). By `Nathan Miller`_.
+- Added macros for the getter functions (:pull:`25`). By `Nathan Miller`_.
+
+New Features
+============
+- Added general setter functions for iteration and previous data (:pull:`23`). By `Nathan Miller`_.
+- Added calculation of previous linear elastic stress (:pull:`26`). By `Nathan Miller`_.
+- Added an isotropic damage configuration residual (:pull:`32`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Copied over micromorphic linear elasticity subroutines to tardigrade hydra (:pull:`17`). By `Nathan Miller`_.
+- Added initial micromorphic linear elastic residual (:pull:`18`). By `Nathan Miller`_.
+- Added the calculation of the micromorphic linear elastic derived deformation measures (:pull:`19`). By `Nathan Miller`_.
+- Added the calculation of the micromorphic linear elastic reference stress measures (:pull:`20`). By `Nathan Miller`_.
+- Added the calculation of the Peryzna-based damage and the Jacobians (:pull:`30`). By `Nathan Miller`_.
+- Added the calculation of the Peryzna-based damage deformation gradient's Jacobians (:pull:`31`). By `Nathan Miller`_.
+
+******************
+0.2.0 (12-11-2023)
+******************
+
+Release
+=======
+- Released version 0.2.0 (:pull:`15`). By `Nathan Miller`_.
 
 Breaking Changes
 ================

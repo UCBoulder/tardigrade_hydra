@@ -132,12 +132,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousDrivingStress( drivingStress );
+                set_previousDrivingStress( drivingStress );
 
             }
             else{
 
-                setDrivingStress( drivingStress );
+                set_drivingStress( drivingStress );
 
             }
 
@@ -171,9 +171,9 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getPreviousStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->getPreviousdF1dF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->get_previousdF1dF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->getPreviousdF1dFn( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->get_previousdF1dFn( ) );
 
             }
             else{
@@ -184,9 +184,9 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->getdF1dF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->get_dF1dF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->getdF1dFn( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->get_dF1dFn( ) );
 
             }
 
@@ -231,24 +231,24 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousDrivingStress( drivingStress );
+                set_previousDrivingStress( drivingStress );
 
-                setdPreviousDrivingStressdPreviousCauchyStress( dDrivingStressdCauchyStress );
+                set_dPreviousDrivingStressdPreviousCauchyStress( dDrivingStressdCauchyStress );
 
-                setdPreviousDrivingStressdPreviousF( dDrivingStressdF );
+                set_dPreviousDrivingStressdPreviousF( dDrivingStressdF );
 
-                setdPreviousDrivingStressdPreviousSubFs( dDrivingStressdSubFs );
+                set_dPreviousDrivingStressdPreviousSubFs( dDrivingStressdSubFs );
 
             }
             else{
 
-                setDrivingStress( drivingStress );
+                set_drivingStress( drivingStress );
 
-                setdDrivingStressdCauchyStress( dDrivingStressdCauchyStress );
+                set_dDrivingStressdCauchyStress( dDrivingStressdCauchyStress );
 
-                setdDrivingStressdF( dDrivingStressdF );
+                set_dDrivingStressdF( dDrivingStressdF );
 
-                setdDrivingStressdSubFs( dDrivingStressdSubFs );
+                set_dDrivingStressdSubFs( dDrivingStressdSubFs );
 
             }
 
@@ -285,126 +285,6 @@ namespace tardigradeHydra{
              */
 
             TARDIGRADE_ERROR_TOOLS_CATCH( setDrivingStressDerivatives( isPrevious ) );
-
-        }
-
-        void residual::setDrivingStress( const floatVector &drivingStress ){
-            /*!
-             * Set the driving stress i.e. the Cauchy stress pulled back to the
-             * current configuration of the plastic configuration.
-             * 
-             * \param &drivingStress: The driving stress
-             */
-
-            _drivingStress.second = drivingStress;
-
-            _drivingStress.first = true;
-
-            addIterationData( &_drivingStress );
-
-        }
-
-        void residual::setdDrivingStressdCauchyStress( const floatMatrix &dDrivingStressdCauchyStress ){
-            /*!
-             * Set the derivative of the driving stress i.e. the Cauchy stress pulled back to the current
-             * configuration of the plastic configuration with respect to the Cauchy stress
-             * 
-             * \param &dDrivingStressdCauchyStress: The derivative of the driving stress w.r.t. the Cauchy stress
-             */
-
-            _dDrivingStressdCauchyStress.second = dDrivingStressdCauchyStress;
-
-            _dDrivingStressdCauchyStress.first = true;
-
-            addIterationData( &_dDrivingStressdCauchyStress );
-
-        }
-
-        void residual::setdDrivingStressdF( const floatMatrix &dDrivingStressdF ){
-            /*!
-             * Set the derivative of the driving stress i.e. the Cauchy stress pulled back to the current
-             * configuration of the plastic configuration with respect to the deformation gradient
-             * 
-             * \param &dDrivingStressdF: The derivative of the driving stress w.r.t. the deformation gradient
-             */
-
-            _dDrivingStressdF.second = dDrivingStressdF;
-
-            _dDrivingStressdF.first = true;
-
-            addIterationData( &_dDrivingStressdF );
-
-        }
-
-        void residual::setdDrivingStressdSubFs( const floatMatrix &dDrivingStressdSubFs ){
-            /*!
-             * Set the derivative of the driving stress i.e. the Cauchy stress pulled back to the current
-             * configuration of the plastic configuration with respect to the sub-deformation gradients
-             * 
-             * \param &dDrivingStressdSubFs: The derivative of the driving stress w.r.t. the sub-deformation gradients
-             */
-
-            _dDrivingStressdSubFs.second = dDrivingStressdSubFs;
-
-            _dDrivingStressdSubFs.first = true;
-
-            addIterationData( &_dDrivingStressdSubFs );
-
-        }
-
-        void residual::setPreviousDrivingStress( const floatVector &previousDrivingStress ){
-            /*!
-             * Set the previous driving stress i.e. the Cauchy stress pulled back to the
-             * current configuration of the plastic configuration.
-             * 
-             * \param &previousDrivingStress: The previous driving stress
-             */
-
-            _previousDrivingStress.second = previousDrivingStress;
-
-            _previousDrivingStress.first = true;
-
-        }
-
-        void residual::setdPreviousDrivingStressdPreviousCauchyStress( const floatMatrix &dPreviousDrivingStressdPreviousCauchyStress ){
-            /*!
-             * Set the derivative of the previous driving stress i.e. the previous Cauchy stress pulled back to the previous current
-             * configuration of the plastic configuration with respect to the previous Cauchy stress
-             * 
-             * \param &dPreviousDrivingStressdPreviousCauchyStress: The derivative of the previous driving stress w.r.t. the previous Cauchy stress
-             */
-
-            _dPreviousDrivingStressdPreviousCauchyStress.second = dPreviousDrivingStressdPreviousCauchyStress;
-
-            _dPreviousDrivingStressdPreviousCauchyStress.first = true;
-
-        }
-
-        void residual::setdPreviousDrivingStressdPreviousF( const floatMatrix &dPreviousDrivingStressdPreviousF ){
-            /*!
-             * Set the derivative of the previous driving stress i.e. the Cauchy stress pulled back to the current
-             * configuration of the plastic configuration with respect to the previous deformation gradient
-             * 
-             * \param &dPreviousDrivingStressdPreviousF: The derivative of the previous driving stress w.r.t. the previous deformation gradient
-             */
-
-            _dPreviousDrivingStressdPreviousF.second = dPreviousDrivingStressdPreviousF;
-
-            _dPreviousDrivingStressdPreviousF.first = true;
-
-        }
-
-        void residual::setdPreviousDrivingStressdPreviousSubFs( const floatMatrix &dPreviousDrivingStressdPreviousSubFs ){
-            /*!
-             * Set the derivative of the previous driving stress i.e. the Cauchy stress pulled back to the current
-             * configuration of the plastic configuration with respect to the previous sub-deformation gradients
-             * 
-             * \param &dPreviousDrivingStressdPreviousSubFs: The derivative of the previous driving stress w.r.t. the previous sub-deformation gradients
-             */
-
-            _dPreviousDrivingStressdPreviousSubFs.second = dPreviousDrivingStressdPreviousSubFs;
-
-            _dPreviousDrivingStressdPreviousSubFs.first = true;
 
         }
 
@@ -672,16 +552,16 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getPreviousDrivingStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_previousDrivingStress( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getDrivingStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_drivingStress( ) );
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( flowParameters = getFlowParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( flowParameters = get_flowParameters( ) );
 
             floatVector dgdDrivingStress( drivingStress->size( ), 0 );
 
@@ -691,12 +571,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousFlowDirection( flowDirection );
+                set_previousFlowDirection( flowDirection );
 
             }
             else{
 
-                setFlowDirection( flowDirection );
+                set_flowDirection( flowDirection );
 
             }
 
@@ -735,28 +615,28 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = getdPreviousDrivingStressdPreviousCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = get_dPreviousDrivingStressdPreviousCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = getdPreviousDrivingStressdPreviousF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = get_dPreviousDrivingStressdPreviousF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = getdPreviousDrivingStressdPreviousSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = get_dPreviousDrivingStressdPreviousSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getPreviousDrivingStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_previousDrivingStress( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = getdDrivingStressdCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = get_dDrivingStressdCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = getdDrivingStressdF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = get_dDrivingStressdF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = getdDrivingStressdSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = get_dDrivingStressdSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getDrivingStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_drivingStress( ) );
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( flowParameters = getFlowParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( flowParameters = get_flowParameters( ) );
 
             floatVector dgdDrivingStress( drivingStress->size( ), 0 );
 
@@ -774,154 +654,26 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousFlowDirection( flowDirection );
+                set_previousFlowDirection( flowDirection );
 
-                setdPreviousFlowDirectiondPreviousCauchyStress( dFlowDirectiondCauchyStress );
+                set_dPreviousFlowDirectiondPreviousCauchyStress( dFlowDirectiondCauchyStress );
 
-                setdPreviousFlowDirectiondPreviousF( dFlowDirectiondF );
+                set_dPreviousFlowDirectiondPreviousF( dFlowDirectiondF );
 
-                setdPreviousFlowDirectiondPreviousSubFs( dFlowDirectiondSubFs );
+                set_dPreviousFlowDirectiondPreviousSubFs( dFlowDirectiondSubFs );
 
             }
             else{
 
-                setFlowDirection( flowDirection );
+                set_flowDirection( flowDirection );
 
-                setdFlowDirectiondCauchyStress( dFlowDirectiondCauchyStress );
+                set_dFlowDirectiondCauchyStress( dFlowDirectiondCauchyStress );
 
-                setdFlowDirectiondF( dFlowDirectiondF );
+                set_dFlowDirectiondF( dFlowDirectiondF );
 
-                setdFlowDirectiondSubFs( dFlowDirectiondSubFs );
+                set_dFlowDirectiondSubFs( dFlowDirectiondSubFs );
 
             }
-
-        }
-
-        void residual::setFlowDirection( const floatVector &flowDirection ){
-            /*!
-             * Set the flow direction in the current configuration of the
-             * plastic configuration.
-             * 
-             * \param &flowDirection: The flow direction in the current configuration
-             *     of the plastic configuration.
-             */
-
-            _flowDirection.second = flowDirection;
-
-            _flowDirection.first = true;
-
-            addIterationData( &_flowDirection );
-
-        }
-
-        void residual::setdFlowDirectiondCauchyStress( const floatMatrix &dFlowDirectiondCauchyStress ){
-            /*!
-             * Set the derivative of the flow direction in the current configuration of the
-             * plastic configuration w.r.t. the Cauchy stress
-             * 
-             * \param &dFlowDirectiondCauchyStress: The derivative of the flow direction in the current configuration
-             *     of the plastic configuration with respect to the Cauchy stress
-             */
-
-            _dFlowDirectiondCauchyStress.second = dFlowDirectiondCauchyStress;
-
-            _dFlowDirectiondCauchyStress.first = true;
-
-            addIterationData( &_dFlowDirectiondCauchyStress );
-
-        }
-
-        void residual::setdFlowDirectiondF( const floatMatrix &dFlowDirectiondF ){
-            /*!
-             * Set the derivative of the flow direction in the current configuration of the
-             * plastic configuration w.r.t. the deformation gradient
-             * 
-             * \param &dFlowDirectiondF: The derivative of the flow direction in the current configuration
-             *     of the plastic configuration with respect to the deformation gradient
-             */
-
-            _dFlowDirectiondF.second = dFlowDirectiondF;
-
-            _dFlowDirectiondF.first = true;
-
-            addIterationData( &_dFlowDirectiondF );
-
-        }
-
-        void residual::setdFlowDirectiondSubFs( const floatMatrix &dFlowDirectiondSubFs ){
-            /*!
-             * Set the derivative of the flow direction in the current configuration of the
-             * plastic configuration w.r.t. the sub-deformation gradients
-             * 
-             * \param &dFlowDirectiondSubFs: The derivative of the flow direction in the current configuration
-             *     of the plastic configuration with respect to the sub-deformation gradients
-             */
-
-            _dFlowDirectiondSubFs.second = dFlowDirectiondSubFs;
-
-            _dFlowDirectiondSubFs.first = true;
-
-            addIterationData( &_dFlowDirectiondSubFs );
-
-        }
-
-        void residual::setPreviousFlowDirection( const floatVector &previousFlowDirection ){
-            /*!
-             * Set the previous flow direction in the current configuration of the
-             * plastic configuration.
-             * 
-             * \param &previousFlowDirection: The previous flow direction in the current
-             *     configuration of the plastic configuration.
-             */
-
-            _previousFlowDirection.second = previousFlowDirection;
-
-            _previousFlowDirection.first = true;
-
-        }
-
-        void residual::setdPreviousFlowDirectiondPreviousCauchyStress( const floatMatrix &dPreviousFlowDirectiondPreviousCauchyStress ){
-            /*!
-             * Set the derivative of the previous flow direction in the current configuration of the
-             * plastic configuration w.r.t. the previous Cauchy stress
-             * 
-             * \param &dPreviousFlowDirectiondPreviousCauchyStress: The derivative of the previous flow direction in the current configuration
-             *     of the plastic configuration with respect to the previous Cauchy stress
-             */
-
-            _dPreviousFlowDirectiondPreviousCauchyStress.second = dPreviousFlowDirectiondPreviousCauchyStress;
-
-            _dPreviousFlowDirectiondPreviousCauchyStress.first = true;
-
-        }
-
-        void residual::setdPreviousFlowDirectiondPreviousF( const floatMatrix &dPreviousFlowDirectiondPreviousF ){
-            /*!
-             * Set the derivative of the previous flow direction in the current configuration of the
-             * plastic configuration w.r.t. the previous deformation gradient
-             * 
-             * \param &dPreviousFlowDirectiondPreviousF: The derivative of the previous flow direction in the current configuration
-             *     of the plastic configuration with respect to the previous deformation gradient
-             */
-
-            _dPreviousFlowDirectiondPreviousF.second = dPreviousFlowDirectiondPreviousF;
-
-            _dPreviousFlowDirectiondPreviousF.first = true;
-
-        }
-
-        void residual::setdPreviousFlowDirectiondPreviousSubFs( const floatMatrix &dPreviousFlowDirectiondPreviousSubFs ){
-            /*!
-             * Set the derivative of the previous flow direction in the current configuration of the
-             * plastic configuration w.r.t. the previous sub-deformation gradients
-             * 
-             * \param &dPreviousFlowDirectiondPreviousSubFs: The derivative of the previous flow direction in the current configuration
-             *     of the plastic configuration with respect to the previous sub-deformation gradients
-             */
-
-            _dPreviousFlowDirectiondPreviousSubFs.second = dPreviousFlowDirectiondPreviousSubFs;
-
-            _dPreviousFlowDirectiondPreviousSubFs.first = true;
 
         }
 
@@ -1045,27 +797,27 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getPreviousDrivingStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_previousDrivingStress( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getDrivingStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_drivingStress( ) );
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( yieldParameters = getYieldParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( yieldParameters = get_yieldParameters( ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( *drivingStress, ( *yieldParameters )[ 1 ], ( *yieldParameters )[ 0 ], yieldFunction ) );
 
             if ( isPrevious ){
 
-                setPreviousYieldFunction( yieldFunction );
+                set_previousYieldFunction( yieldFunction );
 
             }
             else{
 
-                setYieldFunction( yieldFunction );
+                set_yieldFunction( yieldFunction );
 
             }
 
@@ -1092,28 +844,28 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = getdPreviousDrivingStressdPreviousCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = get_dPreviousDrivingStressdPreviousCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = getdPreviousDrivingStressdPreviousF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = get_dPreviousDrivingStressdPreviousF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = getdPreviousDrivingStressdPreviousSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = get_dPreviousDrivingStressdPreviousSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getPreviousDrivingStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_previousDrivingStress( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = getdDrivingStressdCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdCauchyStress = get_dDrivingStressdCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = getdDrivingStressdF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdF = get_dDrivingStressdF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = getdDrivingStressdSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDrivingStressdSubFs = get_dDrivingStressdSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = getDrivingStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_drivingStress( ) );
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( yieldParameters = getYieldParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( yieldParameters = get_yieldParameters( ) );
 
             floatVector dYieldFunctiondDrivingStress( drivingStress->size( ), 0 );
 
@@ -1127,123 +879,26 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousYieldFunction( yieldFunction );
+                set_previousYieldFunction( yieldFunction );
 
-                setdPreviousYieldFunctiondPreviousCauchyStress( dYieldFunctiondCauchyStress );
+                set_dPreviousYieldFunctiondPreviousCauchyStress( dYieldFunctiondCauchyStress );
 
-                setdPreviousYieldFunctiondPreviousF( dYieldFunctiondF );
+                set_dPreviousYieldFunctiondPreviousF( dYieldFunctiondF );
 
-                setdPreviousYieldFunctiondPreviousSubFs( dYieldFunctiondSubFs );
+                set_dPreviousYieldFunctiondPreviousSubFs( dYieldFunctiondSubFs );
 
             }
             else{
 
-                setYieldFunction( yieldFunction );
+                set_yieldFunction( yieldFunction );
 
-                setdYieldFunctiondCauchyStress( dYieldFunctiondCauchyStress );
+                set_dYieldFunctiondCauchyStress( dYieldFunctiondCauchyStress );
 
-                setdYieldFunctiondF( dYieldFunctiondF );
+                set_dYieldFunctiondF( dYieldFunctiondF );
 
-                setdYieldFunctiondSubFs( dYieldFunctiondSubFs );
+                set_dYieldFunctiondSubFs( dYieldFunctiondSubFs );
 
             }
-
-        }
-
-
-        void residual::setYieldFunction( const floatType &yieldFunction ){
-            /*!
-             * Set the value of the yield function
-             */
-
-            _yieldFunction.second = yieldFunction;
-
-            _yieldFunction.first = true;
-
-            addIterationData( &_yieldFunction );
-
-        }
-
-        void residual::setdYieldFunctiondCauchyStress( const floatVector &dYieldFunctiondCauchyStress ){
-            /*!
-             * Set the value of the derivative of the yield function w.r.t. the Cauchy stress
-             */
-
-            _dYieldFunctiondCauchyStress.second = dYieldFunctiondCauchyStress;
-
-            _dYieldFunctiondCauchyStress.first = true;
-
-            addIterationData( &_dYieldFunctiondCauchyStress );
-
-        }
-
-        void residual::setdYieldFunctiondF( const floatVector &dYieldFunctiondF ){
-            /*!
-             * Set the value of the derivative of the yield function w.r.t. the deformation gradient
-             */
-
-            _dYieldFunctiondF.second = dYieldFunctiondF;
-
-            _dYieldFunctiondF.first = true;
-
-            addIterationData( &_dYieldFunctiondF );
-
-        }
-
-        void residual::setdYieldFunctiondSubFs( const floatVector &dYieldFunctiondSubFs ){
-            /*!
-             * Set the value of the derivative of the yield function w.r.t. the sub-deformation gradients
-             */
-
-            _dYieldFunctiondSubFs.second = dYieldFunctiondSubFs;
-
-            _dYieldFunctiondSubFs.first = true;
-
-            addIterationData( &_dYieldFunctiondSubFs );
-
-        }
-
-        void residual::setPreviousYieldFunction( const floatType &previousYieldFunction ){
-            /*!
-             * Set the value of the previous yield function
-             */
-
-            _previousYieldFunction.second = previousYieldFunction;
-
-            _previousYieldFunction.first = true;
-
-        }
-
-        void residual::setdPreviousYieldFunctiondPreviousCauchyStress( const floatVector &dPreviousYieldFunctiondPreviousCauchyStress ){
-            /*!
-             * Set the value of the derivative of the previous yield function w.r.t. the previous Cauchy stress
-             */
-
-            _dPreviousYieldFunctiondPreviousCauchyStress.second = dPreviousYieldFunctiondPreviousCauchyStress;
-
-            _dPreviousYieldFunctiondPreviousCauchyStress.first = true;
-
-        }
-
-        void residual::setdPreviousYieldFunctiondPreviousF( const floatVector &dPreviousYieldFunctiondPreviousF ){
-            /*!
-             * Set the value of the derivative of the previous yield function w.r.t. the previous deformation gradient
-             */
-
-            _dPreviousYieldFunctiondPreviousF.second = dPreviousYieldFunctiondPreviousF;
-
-            _dPreviousYieldFunctiondPreviousF.first = true;
-
-        }
-
-        void residual::setdPreviousYieldFunctiondPreviousSubFs( const floatVector &dPreviousYieldFunctiondPreviousSubFs ){
-            /*!
-             * Set the value of the derivative of the previous yield function w.r.t. the previous sub-deformation gradients
-             */
-
-            _dPreviousYieldFunctiondPreviousSubFs.second = dPreviousYieldFunctiondPreviousSubFs;
-
-            _dPreviousYieldFunctiondPreviousSubFs.first = true;
 
         }
 
@@ -1318,18 +973,18 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( temperatureParameters = getThermalParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( temperatureParameters = get_thermalParameters( ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::WLF( *temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] }, plasticThermalMultiplier ) ); 
 
             if ( isPrevious ){
 
-                setPreviousPlasticThermalMultiplier( plasticThermalMultiplier );
+                set_previousPlasticThermalMultiplier( plasticThermalMultiplier );
 
             }
             else{
 
-                setPlasticThermalMultiplier( plasticThermalMultiplier );
+                set_plasticThermalMultiplier( plasticThermalMultiplier );
 
             }
 
@@ -1361,81 +1016,24 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( temperatureParameters = getThermalParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( temperatureParameters = get_thermalParameters( ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::WLF( *temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] }, plasticThermalMultiplier, dPlasticThermalMultiplierdT ) ); 
 
             if ( isPrevious ){
 
-                setPreviousPlasticThermalMultiplier( plasticThermalMultiplier );
+                set_previousPlasticThermalMultiplier( plasticThermalMultiplier );
 
-                setdPreviousPlasticThermalMultiplierdPreviousT( dPlasticThermalMultiplierdT );
+                set_dPreviousPlasticThermalMultiplierdPreviousT( dPlasticThermalMultiplierdT );
 
             }
             else{
 
-                setPlasticThermalMultiplier( plasticThermalMultiplier );
+                set_plasticThermalMultiplier( plasticThermalMultiplier );
 
-                setdPlasticThermalMultiplierdT( dPlasticThermalMultiplierdT );
+                set_dPlasticThermalMultiplierdT( dPlasticThermalMultiplierdT );
 
             }
-
-        }
-
-
-        void residual::setPlasticThermalMultiplier( const floatType &plasticThermalMultiplier ){
-            /*!
-             * Set the plastic thermal multiplier
-             * 
-             * \param &plasticThermalMultiplier: The multiplicative term which gives the evolution equation temperature dependence
-             */
-
-            _plasticThermalMultiplier.second = plasticThermalMultiplier;
-
-            _plasticThermalMultiplier.first = true;
-
-            addIterationData( &_plasticThermalMultiplier );
-
-        }
-
-        void residual::setdPlasticThermalMultiplierdT( const floatType &dPlasticThermalMultiplierdT ){
-            /*!
-             * Set the derivative of the plastic thermal multiplier w.r.t. the temperature
-             * 
-             * \param &dPlasticThermalMultiplierdT: The derivative of the plastic thermal multiplier w.r.t. temperature
-             */
-
-            _dPlasticThermalMultiplierdT.second = dPlasticThermalMultiplierdT;
-
-            _dPlasticThermalMultiplierdT.first = true;
-
-            addIterationData( &_dPlasticThermalMultiplierdT );
-
-        }
-
-        void residual::setPreviousPlasticThermalMultiplier( const floatType &previousPlasticThermalMultiplier ){
-            /*!
-             * Set the previous plastic thermal multiplier
-             * 
-             * \param &previousPlasticThermalMultiplier: The previous value of the multiplicative term which gives the evolution equation temperature dependence
-             */
-
-            _previousPlasticThermalMultiplier.second = previousPlasticThermalMultiplier;
-
-            _previousPlasticThermalMultiplier.first = true;
-
-        }
-
-        void residual::setdPreviousPlasticThermalMultiplierdPreviousT( const floatType &dPreviousPlasticThermalMultiplierdPreviousT ){
-            /*!
-             * Set the previous plastic thermal multiplier
-             * 
-             * \param &dPreviousPlasticThermalMultiplierdPreviousT: The derivative of the previous plastic thermal multiplier w.r.t. the previous temperature
-             */
-
-            _dPreviousPlasticThermalMultiplierdPreviousT.second = dPreviousPlasticThermalMultiplierdPreviousT;
-
-            _dPreviousPlasticThermalMultiplierdPreviousT.first = true;
 
         }
 
@@ -1500,16 +1098,16 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getPreviousStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dragStressParameters = getDragStressParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( dragStressParameters = get_dragStressParameters( ) );
 
             floatType dragStress;
 
@@ -1517,12 +1115,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousDragStress( dragStress );
+                set_previousDragStress( dragStress );
 
             }
             else{
 
-                setDragStress( dragStress );
+                set_dragStress( dragStress );
 
             }
 
@@ -1542,16 +1140,16 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getPreviousStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dragStressParameters = getDragStressParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( dragStressParameters = get_dragStressParameters( ) );
 
             floatType dragStress;
 
@@ -1561,74 +1159,18 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousDragStress( dragStress );
+                set_previousDragStress( dragStress );
 
-                setdPreviousDragStressdPreviousStateVariables( dDragStressdStateVariables );
+                set_dPreviousDragStressdPreviousStateVariables( dDragStressdStateVariables );
 
             }
             else{
 
-                setDragStress( dragStress );
+                set_dragStress( dragStress );
 
-                setdDragStressdStateVariables( dDragStressdStateVariables );
+                set_dDragStressdStateVariables( dDragStressdStateVariables );
 
             }
-
-        }
-
-        void residual::setDragStress( const floatType &dragStress ){
-            /*!
-             * Set the drag stress
-             * 
-             * \param &dragStress: The value of the drag stress
-             */
-
-            _dragStress.second = dragStress;
-
-            _dragStress.first = true;
-
-            addIterationData( &_dragStress );
-
-        }
-
-        void residual::setdDragStressdStateVariables( const floatVector &dDragStressdStateVariables ){
-            /*!
-             * Set the derivative of the drag stress w.r.t. the state variables
-             * 
-             * \param &dDragStressdStateVariables: The value of the derivative of the drag stress w.r.t. the state variables
-             */
-
-            _dDragStressdStateVariables.second = dDragStressdStateVariables;
-
-            _dDragStressdStateVariables.first = true;
-
-            addIterationData( &_dDragStressdStateVariables );
-
-        }
-
-        void residual::setPreviousDragStress( const floatType &previousDragStress ){
-            /*!
-             * Set the previous drag stress
-             * 
-             * \param &previousDragStress: The value of the drag stress
-             */
-
-            _previousDragStress.second = previousDragStress;
-
-            _previousDragStress.first = true;
-
-        }
-
-        void residual::setdPreviousDragStressdPreviousStateVariables( const floatVector &dPreviousDragStressdPreviousStateVariables ){
-            /*!
-             * Set the derivative of the previous drag stress w.r.t. the previous state variables
-             * 
-             * \param &dPreviousDragStressdPreviousStateVariables: The value of the derivative of the drag stress w.r.t. the previous state variables
-             */
-
-            _dPreviousDragStressdPreviousStateVariables.second = dPreviousDragStressdPreviousStateVariables;
-
-            _dPreviousDragStressdPreviousStateVariables.first = true;
 
         }
 
@@ -1693,16 +1235,16 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getPreviousStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = getHardeningParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = get_hardeningParameters( ) );
 
             floatType hardeningFunction;
 
@@ -1710,12 +1252,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousHardeningFunction( hardeningFunction );
+                set_previousHardeningFunction( hardeningFunction );
 
             }
             else{
 
-                setHardeningFunction( hardeningFunction );
+                set_hardeningFunction( hardeningFunction );
 
             }
 
@@ -1735,16 +1277,16 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getPreviousStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = getStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = getHardeningParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = get_hardeningParameters( ) );
 
             floatType hardeningFunction;
 
@@ -1754,74 +1296,18 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousHardeningFunction( hardeningFunction );
+                set_previousHardeningFunction( hardeningFunction );
 
-                setdPreviousHardeningFunctiondPreviousStateVariables( dHardeningFunctiondStateVariables );
+                set_dPreviousHardeningFunctiondPreviousStateVariables( dHardeningFunctiondStateVariables );
 
             }
             else{
 
-                setHardeningFunction( hardeningFunction );
+                set_hardeningFunction( hardeningFunction );
 
-                setdHardeningFunctiondStateVariables( dHardeningFunctiondStateVariables );
+                set_dHardeningFunctiondStateVariables( dHardeningFunctiondStateVariables );
 
             }
-
-        }
-
-        void residual::setHardeningFunction( const floatType &hardeningFunction ){
-            /*!
-             * Set the hardening function
-             * 
-             * \param &hardeningFunction: The value of the hardening function
-             */
-
-            _hardeningFunction.second = hardeningFunction;
-
-            _hardeningFunction.first = true;
-
-            addIterationData( &_hardeningFunction );
-
-        }
-
-        void residual::setdHardeningFunctiondStateVariables( const floatVector &dHardeningFunctiondStateVariables ){
-            /*!
-             * Set the derivative of the hardening function w.r.t. the state variables
-             * 
-             * \param &dHardeningFunctiondStateVariables: The derivative of the hardening function w.r.t. the state variables
-             */
-
-            _dHardeningFunctiondStateVariables.second = dHardeningFunctiondStateVariables;
-
-            _dHardeningFunctiondStateVariables.first = true;
-
-            addIterationData( &_dHardeningFunctiondStateVariables );
-
-        }
-
-        void residual::setPreviousHardeningFunction( const floatType &previousHardeningFunction ){
-            /*!
-             * Set the previous hardening function
-             * 
-             * \param &previousHardeningFunction: The previous value of the hardening function
-             */
-
-            _previousHardeningFunction.second = previousHardeningFunction;
-
-            _previousHardeningFunction.first = true;
-
-        }
-
-        void residual::setdPreviousHardeningFunctiondPreviousStateVariables( const floatVector &dPreviousHardeningFunctiondPreviousStateVariables ){
-            /*!
-             * Set the previous hardening function
-             * 
-             * \param &dPreviousHardeningFunctiondPreviousStateVariables: The derivative of the previous value of the hardening function w.r.t. the previous state variables
-             */
-
-            _dPreviousHardeningFunctiondPreviousStateVariables.second = dPreviousHardeningFunctiondPreviousStateVariables;
-
-            _dPreviousHardeningFunctiondPreviousStateVariables.first = true;
 
         }
 
@@ -2026,35 +1512,35 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = getPreviousYieldFunction( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = get_previousYieldFunction( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = getPreviousDragStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = get_previousDragStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = getPreviousPlasticThermalMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = get_previousPlasticThermalMultiplier( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = getYieldFunction( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = get_yieldFunction( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = getDragStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = get_dragStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = getPlasticThermalMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = get_plasticThermalMultiplier( ) );
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( peryznaParameters = getPeryznaParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( peryznaParameters = get_peryznaParameters( ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::peryznaModel( *yieldFunction, *dragStress, *plasticThermalMultiplier, ( *peryznaParameters )[ 0 ], plasticMultiplier ) );
 
             if ( isPrevious ){
 
-                setPreviousPlasticMultiplier( plasticMultiplier );
+                set_previousPlasticMultiplier( plasticMultiplier );
 
             }
             else{
 
-                setPlasticMultiplier( plasticMultiplier );
+                set_plasticMultiplier( plasticMultiplier );
 
             }
 
@@ -2091,44 +1577,44 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondCauchyStress = getdPreviousYieldFunctiondPreviousCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondCauchyStress = get_dPreviousYieldFunctiondPreviousCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = getdPreviousYieldFunctiondPreviousF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = get_dPreviousYieldFunctiondPreviousF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = getdPreviousYieldFunctiondPreviousSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = get_dPreviousYieldFunctiondPreviousSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = getdPreviousDragStressdPreviousStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = get_dPreviousDragStressdPreviousStateVariables( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticThermalMultiplierdT = getdPreviousPlasticThermalMultiplierdPreviousT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticThermalMultiplierdT = get_dPreviousPlasticThermalMultiplierdPreviousT( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = getPreviousYieldFunction( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = get_previousYieldFunction( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = getPreviousDragStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = get_previousDragStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = getPreviousPlasticThermalMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = get_previousPlasticThermalMultiplier( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondCauchyStress = getdYieldFunctiondCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondCauchyStress = get_dYieldFunctiondCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = getdYieldFunctiondF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = get_dYieldFunctiondF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = getdYieldFunctiondSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = get_dYieldFunctiondSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = getdDragStressdStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = get_dDragStressdStateVariables( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticThermalMultiplierdT = getdPlasticThermalMultiplierdT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticThermalMultiplierdT = get_dPlasticThermalMultiplierdT( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = getYieldFunction( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( yieldFunction = get_yieldFunction( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = getDragStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dragStress = get_dragStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = getPlasticThermalMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = get_plasticThermalMultiplier( ) );
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( peryznaParameters = getPeryznaParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( peryznaParameters = get_peryznaParameters( ) );
 
             floatType dPlasticMultiplierdYieldFunction;
 
@@ -2150,227 +1636,34 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousPlasticMultiplier( plasticMultiplier );
+                set_previousPlasticMultiplier( plasticMultiplier );
 
-                setdPreviousPlasticMultiplierdPreviousCauchyStress( dPlasticMultiplierdCauchyStress );
+                set_dPreviousPlasticMultiplierdPreviousCauchyStress( dPlasticMultiplierdCauchyStress );
 
-                setdPreviousPlasticMultiplierdPreviousF( dPlasticMultiplierdF );
+                set_dPreviousPlasticMultiplierdPreviousF( dPlasticMultiplierdF );
 
-                setdPreviousPlasticMultiplierdPreviousSubFs( dPlasticMultiplierdSubFs );
+                set_dPreviousPlasticMultiplierdPreviousSubFs( dPlasticMultiplierdSubFs );
 
-                setdPreviousPlasticMultiplierdPreviousT( dPlasticMultiplierdT );
+                set_dPreviousPlasticMultiplierdPreviousT( dPlasticMultiplierdT );
 
-                setdPreviousPlasticMultiplierdPreviousStateVariables( dPlasticMultiplierdStateVariables );
+                set_dPreviousPlasticMultiplierdPreviousStateVariables( dPlasticMultiplierdStateVariables );
 
             }
             else{
 
-                setPlasticMultiplier( plasticMultiplier );
+                set_plasticMultiplier( plasticMultiplier );
 
-                setdPlasticMultiplierdCauchyStress( dPlasticMultiplierdCauchyStress );
+                set_dPlasticMultiplierdCauchyStress( dPlasticMultiplierdCauchyStress );
 
-                setdPlasticMultiplierdF( dPlasticMultiplierdF );
+                set_dPlasticMultiplierdF( dPlasticMultiplierdF );
 
-                setdPlasticMultiplierdSubFs( dPlasticMultiplierdSubFs );
+                set_dPlasticMultiplierdSubFs( dPlasticMultiplierdSubFs );
 
-                setdPlasticMultiplierdT( dPlasticMultiplierdT );
+                set_dPlasticMultiplierdT( dPlasticMultiplierdT );
 
-                setdPlasticMultiplierdStateVariables( dPlasticMultiplierdStateVariables );
+                set_dPlasticMultiplierdStateVariables( dPlasticMultiplierdStateVariables );
 
             }
-
-        }
-
-
-        void residual::setPlasticMultiplier( const floatType &plasticMultiplier ){
-            /*!
-             * Set the plastic multiplier in the current configuration of the
-             * plastic configuration
-             * 
-             * \param &plasticMultiplier: The plastic multiplier in the current
-             *     configuration of the plastic configuration
-             */
-
-            _plasticMultiplier.second = plasticMultiplier;
-
-            _plasticMultiplier.first = true;
-
-            addIterationData( &_plasticMultiplier );
-
-        }
-
-        void residual::setdPlasticMultiplierdCauchyStress( const floatVector &dPlasticMultiplierdCauchyStress ){
-            /*!
-             * Set the derivative of the plastic multiplier in the current configuration of the
-             * plastic configuration with respect to the Cauchy stress
-             * 
-             * \param &dPlasticMultiplierdCauchyStress: The derivative of the plastic multiplier in the current
-             *     configuration of the plastic configuration w.r.t. the Cauchy stress
-             */
-
-            _dPlasticMultiplierdCauchyStress.second = dPlasticMultiplierdCauchyStress;
-
-            _dPlasticMultiplierdCauchyStress.first = true;
-
-            addIterationData( &_dPlasticMultiplierdCauchyStress );
-
-        }
-
-        void residual::setdPlasticMultiplierdF( const floatVector &dPlasticMultiplierdF ){
-            /*!
-             * Set the derivative of the plastic multiplier in the current configuration of the
-             * plastic configuration with respect to the deformation gradient
-             * 
-             * \param &dPlasticMultiplierdF: The derivative of the plastic multiplier in the current
-             *     configuration of the plastic configuration w.r.t. the deformation gradient
-             */
-
-            _dPlasticMultiplierdF.second = dPlasticMultiplierdF;
-
-            _dPlasticMultiplierdF.first = true;
-
-            addIterationData( &_dPlasticMultiplierdF );
-
-        }
-
-        void residual::setdPlasticMultiplierdSubFs( const floatVector &dPlasticMultiplierdSubFs ){
-            /*!
-             * Set the derivative of the plastic multiplier in the current configuration of the
-             * plastic configuration with respect to the sub-deformation gradients
-             * 
-             * \param &dPlasticMultiplierdSubFs: The derivative of the plastic multiplier in the current
-             *     configuration of the plastic configuration w.r.t. the sub-deformation gradient
-             */
-
-            _dPlasticMultiplierdSubFs.second = dPlasticMultiplierdSubFs;
-
-            _dPlasticMultiplierdSubFs.first = true;
-
-            addIterationData( &_dPlasticMultiplierdSubFs );
-
-        }
-
-        void residual::setdPlasticMultiplierdT( const floatType &dPlasticMultiplierdT ){
-            /*!
-             * Set the derivative of the plastic multiplier in the current configuration of the
-             * plastic configuration with respect to the temperature
-             * 
-             * \param &dPlasticMultiplierdT: The derivative of the plastic multiplier in the current
-             *     configuration of the plastic configuration w.r.t. the temperature
-             */
-
-            _dPlasticMultiplierdT.second = dPlasticMultiplierdT;
-
-            _dPlasticMultiplierdT.first = true;
-
-            addIterationData( &_dPlasticMultiplierdT );
-
-        }
-
-        void residual::setdPlasticMultiplierdStateVariables( const floatVector &dPlasticMultiplierdStateVariables ){
-            /*!
-             * Set the derivative of the plastic multiplier in the current configuration of the
-             * plastic configuration with respect to the state variables
-             * 
-             * \param &dPlasticMultiplierdStateVariables: The derivative of the plastic multiplier in the current
-             *     configuration of the plastic configuration w.r.t. the state variables
-             */
-
-            _dPlasticMultiplierdStateVariables.second = dPlasticMultiplierdStateVariables;
-
-            _dPlasticMultiplierdStateVariables.first = true;
-
-            addIterationData( &_dPlasticMultiplierdStateVariables );
-
-        }
-
-        void residual::setPreviousPlasticMultiplier( const floatType &previousPlasticMultiplier ){
-            /*!
-             * Set the previous plastic multiplier in the current configuration of the
-             * plastic configuration
-             * 
-             * \param &previousPlasticMultiplier: The previous plastic multiplier in
-             *     the current configuration of the plastic configuration
-             */
-
-            _previousPlasticMultiplier.second = previousPlasticMultiplier;
-
-            _previousPlasticMultiplier.first = true;
-
-        }
-
-        void residual::setdPreviousPlasticMultiplierdPreviousCauchyStress( const floatVector &dPreviousPlasticMultiplierdPreviousCauchyStress ){
-            /*!
-             * Set the derivative of the previous plastic multiplier in the current configuration of the
-             * plastic configuration w.r.t. the previous Cauchy stress
-             * 
-             * \param &dPreviousPlasticMultiplierdPreviousCauchyStress: The derivative of the previous plastic multiplier in
-             *     the current configuration of the plastic configuration w.r.t. the previous Cauchy stress
-             */
-
-            _dPreviousPlasticMultiplierdPreviousCauchyStress.second = dPreviousPlasticMultiplierdPreviousCauchyStress;
-
-            _dPreviousPlasticMultiplierdPreviousCauchyStress.first = true;
-
-        }
-
-        void residual::setdPreviousPlasticMultiplierdPreviousF( const floatVector &dPreviousPlasticMultiplierdPreviousF ){
-            /*!
-             * Set the derivative of the previous plastic multiplier in the current configuration of the
-             * plastic configuration w.r.t. the previous deformation gradient
-             * 
-             * \param &dPreviousPlasticMultiplierdPreviousF: The derivative of the previous plastic multiplier in
-             *     the current configuration of the plastic configuration w.r.t. the previous deformation gradient
-             */
-
-            _dPreviousPlasticMultiplierdPreviousF.second = dPreviousPlasticMultiplierdPreviousF;
-
-            _dPreviousPlasticMultiplierdPreviousF.first = true;
-
-        }
-
-        void residual::setdPreviousPlasticMultiplierdPreviousSubFs( const floatVector &dPreviousPlasticMultiplierdPreviousSubFs ){
-            /*!
-             * Set the derivative of the previous plastic multiplier in the current configuration of the
-             * plastic configuration w.r.t. the previous sub-deformation gradients
-             * 
-             * \param &dPreviousPlasticMultiplierdPreviousSubFs: The derivative of the previous plastic multiplier in
-             *     the current configuration of the plastic configuration w.r.t. the previous sub-deformation gradients
-             */
-
-            _dPreviousPlasticMultiplierdPreviousSubFs.second = dPreviousPlasticMultiplierdPreviousSubFs;
-
-            _dPreviousPlasticMultiplierdPreviousSubFs.first = true;
-
-        }
-
-        void residual::setdPreviousPlasticMultiplierdPreviousT( const floatType &dPreviousPlasticMultiplierdPreviousT ){
-            /*!
-             * Set the derivative of the previous plastic multiplier in the current configuration of the
-             * plastic configuration w.r.t. the previous temperature
-             * 
-             * \param &dPreviousPlasticMultiplierdPreviousT: The derivative of the previous plastic multiplier in
-             *     the current configuration of the plastic configuration w.r.t. the previous temperature
-             */
-
-            _dPreviousPlasticMultiplierdPreviousT.second = dPreviousPlasticMultiplierdPreviousT;
-
-            _dPreviousPlasticMultiplierdPreviousT.first = true;
-
-        }
-
-        void residual::setdPreviousPlasticMultiplierdPreviousStateVariables( const floatVector &dPreviousPlasticMultiplierdPreviousStateVariables ){
-            /*!
-             * Set the derivative of the previous plastic multiplier in the current configuration of the
-             * plastic configuration w.r.t. the previous state variables
-             * 
-             * \param &dPreviousPlasticMultiplierdPreviousStateVariables: The derivative of the previous plastic multiplier in
-             *     the current configuration of the plastic configuration w.r.t. the previous state variables
-             */
-
-            _dPreviousPlasticMultiplierdPreviousStateVariables.second = dPreviousPlasticMultiplierdPreviousStateVariables;
-
-            _dPreviousPlasticMultiplierdPreviousStateVariables.first = true;
 
         }
 
@@ -2569,20 +1862,20 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPreviousPlasticMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = get_previousPlasticMultiplier( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = getPreviousFlowDirection( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = get_previousFlowDirection( ) );
 
-                setPreviousVelocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
+                set_previousVelocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPlasticMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = get_plasticMultiplier( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = getFlowDirection( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = get_flowDirection( ) );
 
-                setVelocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
+                set_velocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
 
             }
 
@@ -2619,266 +1912,74 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress   = getdPreviousPlasticMultiplierdPreviousCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress   = get_dPreviousPlasticMultiplierdPreviousCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF              = getdPreviousPlasticMultiplierdPreviousF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF              = get_dPreviousPlasticMultiplierdPreviousF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs          = getdPreviousPlasticMultiplierdPreviousSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs          = get_dPreviousPlasticMultiplierdPreviousSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT              = getdPreviousPlasticMultiplierdPreviousT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT              = get_dPreviousPlasticMultiplierdPreviousT( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = getdPreviousPlasticMultiplierdPreviousStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = get_dPreviousPlasticMultiplierdPreviousStateVariables( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondCauchyStress       = getdPreviousFlowDirectiondPreviousCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondCauchyStress       = get_dPreviousFlowDirectiondPreviousCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondF                  = getdPreviousFlowDirectiondPreviousF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondF                  = get_dPreviousFlowDirectiondPreviousF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondSubFs              = getdPreviousFlowDirectiondPreviousSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondSubFs              = get_dPreviousFlowDirectiondPreviousSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPreviousPlasticMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = get_previousPlasticMultiplier( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = getPreviousFlowDirection( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = get_previousFlowDirection( ) );
 
-                setPreviousVelocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
+                set_previousVelocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
 
-                setdPreviousVelocityGradientdPreviousCauchyStress( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdCauchyStress ) + ( *plasticMultiplier ) * ( *dFlowDirectiondCauchyStress ) );
+                set_dPreviousVelocityGradientdPreviousCauchyStress( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdCauchyStress ) + ( *plasticMultiplier ) * ( *dFlowDirectiondCauchyStress ) );
 
-                setdPreviousVelocityGradientdPreviousF( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdF ) + ( *plasticMultiplier ) * ( *dFlowDirectiondF ) );
+                set_dPreviousVelocityGradientdPreviousF( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdF ) + ( *plasticMultiplier ) * ( *dFlowDirectiondF ) );
 
-                setdPreviousVelocityGradientdPreviousSubFs( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdSubFs ) + ( *plasticMultiplier ) * ( *dFlowDirectiondSubFs ) );
+                set_dPreviousVelocityGradientdPreviousSubFs( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdSubFs ) + ( *plasticMultiplier ) * ( *dFlowDirectiondSubFs ) );
 
-                setdPreviousVelocityGradientdPreviousT( ( *flowDirection ) * ( *dPlasticMultiplierdT ) );
+                set_dPreviousVelocityGradientdPreviousT( ( *flowDirection ) * ( *dPlasticMultiplierdT ) );
 
-                setdPreviousVelocityGradientdPreviousStateVariables( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdStateVariables ) );
+                set_dPreviousVelocityGradientdPreviousStateVariables( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdStateVariables ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress   = getdPlasticMultiplierdCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress   = get_dPlasticMultiplierdCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF              = getdPlasticMultiplierdF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF              = get_dPlasticMultiplierdF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs          = getdPlasticMultiplierdSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs          = get_dPlasticMultiplierdSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT              = getdPlasticMultiplierdT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT              = get_dPlasticMultiplierdT( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = getdPlasticMultiplierdStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = get_dPlasticMultiplierdStateVariables( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondCauchyStress       = getdFlowDirectiondCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondCauchyStress       = get_dFlowDirectiondCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondF                  = getdFlowDirectiondF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondF                  = get_dFlowDirectiondF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondSubFs              = getdFlowDirectiondSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dFlowDirectiondSubFs              = get_dFlowDirectiondSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPlasticMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = get_plasticMultiplier( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = getFlowDirection( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = get_flowDirection( ) );
 
-                setVelocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
+                set_velocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
 
-                setdVelocityGradientdCauchyStress( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdCauchyStress ) + ( *plasticMultiplier ) * ( *dFlowDirectiondCauchyStress ) );
+                set_dVelocityGradientdCauchyStress( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdCauchyStress ) + ( *plasticMultiplier ) * ( *dFlowDirectiondCauchyStress ) );
 
-                setdVelocityGradientdF( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdF ) + ( *plasticMultiplier ) * ( *dFlowDirectiondF ) );
+                set_dVelocityGradientdF( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdF ) + ( *plasticMultiplier ) * ( *dFlowDirectiondF ) );
 
-                setdVelocityGradientdSubFs( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdSubFs ) + ( *plasticMultiplier ) * ( *dFlowDirectiondSubFs ) );
+                set_dVelocityGradientdSubFs( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdSubFs ) + ( *plasticMultiplier ) * ( *dFlowDirectiondSubFs ) );
 
-                setdVelocityGradientdT( ( *flowDirection ) * ( *dPlasticMultiplierdT ) );
+                set_dVelocityGradientdT( ( *flowDirection ) * ( *dPlasticMultiplierdT ) );
 
-                setdVelocityGradientdStateVariables( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdStateVariables ) );
+                set_dVelocityGradientdStateVariables( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdStateVariables ) );
 
             }
-
-        }
-
-        void residual::setVelocityGradient( const floatVector &velocityGradient ){
-            /*!
-             * Set the velocity gradient in the current configuration of the plastic
-             * configuration
-             * 
-             * \param &velocityGradient: The velocity gradient in the current
-             *     configuration of the plastic configuration
-             */
-
-            _velocityGradient.second = velocityGradient;
-
-            _velocityGradient.first = true;
-
-            addIterationData( &_velocityGradient );
-
-        }
-
-        void residual::setdVelocityGradientdCauchyStress( const floatMatrix &dVelocityGradientdCauchyStress ){
-            /*!
-             * Set the derivative of the velocity gradient in the current configuration of the plastic
-             * configuration w.r.t. the Cauchy stress
-             * 
-             * \param &dVelocityGradientdCauchyStress: The derivative of the velocity gradient in the current
-             *     configuration of the plastic configuration w.r.t. the Cauchy stress
-             */
-
-            _dVelocityGradientdCauchyStress.second = dVelocityGradientdCauchyStress;
-
-            _dVelocityGradientdCauchyStress.first = true;
-
-            addIterationData( &_dVelocityGradientdCauchyStress );
-
-        }
-
-        void residual::setdVelocityGradientdF( const floatMatrix &dVelocityGradientdF ){
-            /*!
-             * Set the derivative of the velocity gradient in the current configuration of the plastic
-             * configuration w.r.t. the deformation gradient
-             * 
-             * \param &dVelocityGradientdF: The derivative of the velocity gradient in the current
-             *     configuration of the plastic configuration w.r.t. the deformation gradient
-             */
-
-            _dVelocityGradientdF.second = dVelocityGradientdF;
-
-            _dVelocityGradientdF.first = true;
-
-            addIterationData( &_dVelocityGradientdF );
-
-        }
-
-        void residual::setdVelocityGradientdSubFs( const floatMatrix &dVelocityGradientdSubFs ){
-            /*!
-             * Set the derivative of the velocity gradient in the current configuration of the plastic
-             * configuration w.r.t. the sub-deformation gradients
-             * 
-             * \param &dVelocityGradientdSubFs: The derivative of the velocity gradient in the current
-             *     configuration of the plastic configuration w.r.t. the sub-deformation gradients
-             */
-
-            _dVelocityGradientdSubFs.second = dVelocityGradientdSubFs;
-
-            _dVelocityGradientdSubFs.first = true;
-
-            addIterationData( &_dVelocityGradientdSubFs );
-
-        }
-
-        void residual::setdVelocityGradientdT( const floatVector &dVelocityGradientdT ){
-            /*!
-             * Set the derivative of the velocity gradient in the current configuration of the plastic
-             * configuration w.r.t. the temperature
-             * 
-             * \param &dVelocityGradientdT: The derivative of the velocity gradient in the current
-             *     configuration of the plastic configuration w.r.t. the temperature
-             */
-
-            _dVelocityGradientdT.second = dVelocityGradientdT;
-
-            _dVelocityGradientdT.first = true;
-
-            addIterationData( &_dVelocityGradientdT );
-
-        }
-
-        void residual::setdVelocityGradientdStateVariables( const floatMatrix &dVelocityGradientdStateVariables ){
-            /*!
-             * Set the derivative of the velocity gradient in the current configuration of the plastic
-             * configuration w.r.t. the state variables
-             * 
-             * \param &dVelocityGradientdStateVariables: The derivative of the velocity gradient in the current
-             *     configuration of the plastic configuration w.r.t. the state variables
-             */
-
-            _dVelocityGradientdStateVariables.second = dVelocityGradientdStateVariables;
-
-            _dVelocityGradientdStateVariables.first = true;
-
-            addIterationData( &_dVelocityGradientdStateVariables );
-
-        }
-
-        void residual::setPreviousVelocityGradient( const floatVector &previousVelocityGradient ){
-            /*!
-             * Set the previous velocity gradient in the current configuration of the plastic
-             * configuration
-             * 
-             * \param &previousVelocityGradient: The velocity gradient in the current
-             *     configuration of the plastic configuration
-             */
-
-            _previousVelocityGradient.second = previousVelocityGradient;
-
-            _previousVelocityGradient.first = true;
-
-        }
-
-        void residual::setdPreviousVelocityGradientdPreviousCauchyStress( const floatMatrix &dPreviousVelocityGradientdPreviousCauchyStress ){
-            /*!
-             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
-             * configuration w.r.t. the previous Cauchy stress
-             * 
-             * \param &dPreviousVelocityGradientdPreviousCauchyStress: The derivative of the velocity gradient in the current
-             *     w.r.t. the previous Cauchy stress
-             */
-
-            _dPreviousVelocityGradientdPreviousCauchyStress.second = dPreviousVelocityGradientdPreviousCauchyStress;
-
-            _dPreviousVelocityGradientdPreviousCauchyStress.first = true;
-
-        }
-
-        void residual::setdPreviousVelocityGradientdPreviousF( const floatMatrix &dPreviousVelocityGradientdPreviousF ){
-            /*!
-             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
-             * configuration w.r.t. the previous deformation gradient
-             * 
-             * \param &dPreviousVelocityGradientdPreviousF: The derivative of the velocity gradient in the current
-             *     w.r.t. the previous deforamtion gradient
-             */
-
-            _dPreviousVelocityGradientdPreviousF.second = dPreviousVelocityGradientdPreviousF;
-
-            _dPreviousVelocityGradientdPreviousF.first = true;
-
-        }
-
-        void residual::setdPreviousVelocityGradientdPreviousSubFs( const floatMatrix &dPreviousVelocityGradientdPreviousSubFs ){
-            /*!
-             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
-             * configuration w.r.t. the previous sub-deformation gradients
-             * 
-             * \param &dPreviousVelocityGradientdPreviousSubFs: The derivative of the velocity gradient in the current
-             *     w.r.t. the previous sub-deforamtion gradients
-             */
-
-            _dPreviousVelocityGradientdPreviousSubFs.second = dPreviousVelocityGradientdPreviousSubFs;
-
-            _dPreviousVelocityGradientdPreviousSubFs.first = true;
-
-        }
-
-        void residual::setdPreviousVelocityGradientdPreviousT( const floatVector &dPreviousVelocityGradientdPreviousT ){
-            /*!
-             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
-             * configuration w.r.t. the previous temperature
-             * 
-             * \param &dPreviousVelocityGradientdPreviousT: The derivative of the velocity gradient in the current
-             *     w.r.t. the previous temperature
-             */
-
-            _dPreviousVelocityGradientdPreviousT.second = dPreviousVelocityGradientdPreviousT;
-
-            _dPreviousVelocityGradientdPreviousT.first = true;
-
-        }
-
-        void residual::setdPreviousVelocityGradientdPreviousStateVariables( const floatMatrix &dPreviousVelocityGradientdPreviousStateVariables ){
-            /*!
-             * Set the derivative of the previous velocity gradient in the current configuration of the plastic
-             * configuration w.r.t. the previous state variables
-             * 
-             * \param &dPreviousVelocityGradientdPreviousStateVariables: The derivative of the velocity gradient in the current
-             *     w.r.t. the previous state variables
-             */
-
-            _dPreviousVelocityGradientdPreviousStateVariables.second = dPreviousVelocityGradientdPreviousStateVariables;
-
-            _dPreviousVelocityGradientdPreviousStateVariables.first = true;
 
         }
 
@@ -3059,16 +2160,16 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPreviousPlasticMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = get_previousPlasticMultiplier( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = getPreviousHardeningFunction( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = get_previousHardeningFunction( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPlasticMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = get_plasticMultiplier( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = getHardeningFunction( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = get_hardeningFunction( ) );
 
             }
 
@@ -3076,12 +2177,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousStateVariableEvolutionRates( stateVariableEvolutionRates );
+                set_previousStateVariableEvolutionRates( stateVariableEvolutionRates );
 
             }
             else{
 
-                setStateVariableEvolutionRates( stateVariableEvolutionRates );
+                set_stateVariableEvolutionRates( stateVariableEvolutionRates );
 
             }
 
@@ -3113,40 +2214,40 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress = getdPreviousPlasticMultiplierdPreviousCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress = get_dPreviousPlasticMultiplierdPreviousCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF = getdPreviousPlasticMultiplierdPreviousF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF = get_dPreviousPlasticMultiplierdPreviousF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs = getdPreviousPlasticMultiplierdPreviousSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs = get_dPreviousPlasticMultiplierdPreviousSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT = getdPreviousPlasticMultiplierdPreviousT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT = get_dPreviousPlasticMultiplierdPreviousT( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = getdPreviousPlasticMultiplierdPreviousStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = get_dPreviousPlasticMultiplierdPreviousStateVariables( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dHardeningFunctiondStateVariables = getdPreviousHardeningFunctiondPreviousStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dHardeningFunctiondStateVariables = get_dPreviousHardeningFunctiondPreviousStateVariables( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPreviousPlasticMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = get_previousPlasticMultiplier( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = getPreviousHardeningFunction( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = get_previousHardeningFunction( ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress = getdPlasticMultiplierdCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdCauchyStress = get_dPlasticMultiplierdCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF = getdPlasticMultiplierdF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdF = get_dPlasticMultiplierdF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs = getdPlasticMultiplierdSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdSubFs = get_dPlasticMultiplierdSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT = getdPlasticMultiplierdT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdT = get_dPlasticMultiplierdT( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = getdPlasticMultiplierdStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPlasticMultiplierdStateVariables = get_dPlasticMultiplierdStateVariables( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dHardeningFunctiondStateVariables = getdHardeningFunctiondStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dHardeningFunctiondStateVariables = get_dHardeningFunctiondStateVariables( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = getPlasticMultiplier( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( plasticMultiplier = get_plasticMultiplier( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = getHardeningFunction( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = get_hardeningFunction( ) );
 
             }
 
@@ -3164,202 +2265,34 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousStateVariableEvolutionRates( stateVariableEvolutionRates );
+                set_previousStateVariableEvolutionRates( stateVariableEvolutionRates );
 
-                setdPreviousStateVariableEvolutionRatesdPreviousCauchyStress( dStateVariableEvolutionRatesdCauchyStress );
+                set_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( dStateVariableEvolutionRatesdCauchyStress );
 
-                setdPreviousStateVariableEvolutionRatesdPreviousF( dStateVariableEvolutionRatesdF );
+                set_dPreviousStateVariableEvolutionRatesdPreviousF( dStateVariableEvolutionRatesdF );
 
-                setdPreviousStateVariableEvolutionRatesdPreviousSubFs( dStateVariableEvolutionRatesdSubFs );
+                set_dPreviousStateVariableEvolutionRatesdPreviousSubFs( dStateVariableEvolutionRatesdSubFs );
 
-                setdPreviousStateVariableEvolutionRatesdPreviousT( dStateVariableEvolutionRatesdT );
+                set_dPreviousStateVariableEvolutionRatesdPreviousT( dStateVariableEvolutionRatesdT );
 
-                setdPreviousStateVariableEvolutionRatesdPreviousStateVariables( dStateVariableEvolutionRatesdStateVariables );
+                set_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( dStateVariableEvolutionRatesdStateVariables );
 
             }
             else{
 
-                setStateVariableEvolutionRates( stateVariableEvolutionRates );
+                set_stateVariableEvolutionRates( stateVariableEvolutionRates );
 
-                setdStateVariableEvolutionRatesdCauchyStress( dStateVariableEvolutionRatesdCauchyStress );
+                set_dStateVariableEvolutionRatesdCauchyStress( dStateVariableEvolutionRatesdCauchyStress );
 
-                setdStateVariableEvolutionRatesdF( dStateVariableEvolutionRatesdF );
+                set_dStateVariableEvolutionRatesdF( dStateVariableEvolutionRatesdF );
 
-                setdStateVariableEvolutionRatesdSubFs( dStateVariableEvolutionRatesdSubFs );
+                set_dStateVariableEvolutionRatesdSubFs( dStateVariableEvolutionRatesdSubFs );
 
-                setdStateVariableEvolutionRatesdT( dStateVariableEvolutionRatesdT );
+                set_dStateVariableEvolutionRatesdT( dStateVariableEvolutionRatesdT );
 
-                setdStateVariableEvolutionRatesdStateVariables( dStateVariableEvolutionRatesdStateVariables );
+                set_dStateVariableEvolutionRatesdStateVariables( dStateVariableEvolutionRatesdStateVariables );
 
             }
-
-        }
-
-        void residual::setStateVariableEvolutionRates( const floatVector &stateVariableEvolutionRates ){
-            /*!
-             * Set the state variable evolution rate
-             * 
-             * \param &stateVariableEvolutionRates: The current state variable evolution rate
-             */
-
-            _stateVariableEvolutionRates.second = stateVariableEvolutionRates;
-
-            _stateVariableEvolutionRates.first = true;
-
-            addIterationData( &_stateVariableEvolutionRates );
-
-        }
-
-        void residual::setdStateVariableEvolutionRatesdCauchyStress( const floatMatrix &dStateVariableEvolutionRatesdCauchyStress ){
-            /*!
-             * Set the derivative of the state variable evolution rates w.r.t. the Cauchy stress
-             * 
-             * \param &dStateVariableEvolutionRatesdCauchyStress: The value of the derivative
-             */
-
-            _dStateVariableEvolutionRatesdCauchyStress.second = dStateVariableEvolutionRatesdCauchyStress;
-
-            _dStateVariableEvolutionRatesdCauchyStress.first = true;
-
-            addIterationData( &_dStateVariableEvolutionRatesdCauchyStress );
-
-        }
-
-        void residual::setdStateVariableEvolutionRatesdF( const floatMatrix &dStateVariableEvolutionRatesdF ){
-            /*!
-             * Set the derivative of the state variable evolution rates w.r.t. the deformation gradient
-             * 
-             * \param &dStateVariableEvolutionRatesdF: The value of the derivative
-             */
-
-            _dStateVariableEvolutionRatesdF.second = dStateVariableEvolutionRatesdF;
-
-            _dStateVariableEvolutionRatesdF.first = true;
-
-            addIterationData( &_dStateVariableEvolutionRatesdF );
-
-        }
-
-        void residual::setdStateVariableEvolutionRatesdSubFs( const floatMatrix &dStateVariableEvolutionRatesdSubFs ){
-            /*!
-             * Set the derivative of the state variable evolution rates w.r.t. the sub-deformation gradients
-             * 
-             * \param &dStateVariableEvolutionRatesdSubFs: The value of the derivative
-             */
-
-            _dStateVariableEvolutionRatesdSubFs.second = dStateVariableEvolutionRatesdSubFs;
-
-            _dStateVariableEvolutionRatesdSubFs.first = true;
-
-            addIterationData( &_dStateVariableEvolutionRatesdSubFs );
-
-        }
-
-        void residual::setdStateVariableEvolutionRatesdT( const floatVector &dStateVariableEvolutionRatesdT ){
-            /*!
-             * Set the derivative of the state variable evolution rates w.r.t. the temperature
-             * 
-             * \param &dStateVariableEvolutionRatesdT: The value of the derivative
-             */
-
-            _dStateVariableEvolutionRatesdT.second = dStateVariableEvolutionRatesdT;
-
-            _dStateVariableEvolutionRatesdT.first = true;
-
-            addIterationData( &_dStateVariableEvolutionRatesdT );
-
-        }
-
-        void residual::setdStateVariableEvolutionRatesdStateVariables( const floatMatrix &dStateVariableEvolutionRatesdStateVariables ){
-            /*!
-             * Set the derivative of the state variable evolution rates w.r.t. the state variables
-             * 
-             * \param &dStateVariableEvolutionRatesdStateVariables: The value of the derivative
-             */
-
-            _dStateVariableEvolutionRatesdStateVariables.second = dStateVariableEvolutionRatesdStateVariables;
-
-            _dStateVariableEvolutionRatesdStateVariables.first = true;
-
-            addIterationData( &_dStateVariableEvolutionRatesdStateVariables );
-
-        }
-
-        void residual::setPreviousStateVariableEvolutionRates( const floatVector &previousStateVariableEvolutionRates ){
-            /*!
-             * Set the previous state variable evolution rate
-             * 
-             * \param &previousStateVariableEvolutionRates: The previous state variable evolution rate
-             */
-
-            _previousStateVariableEvolutionRates.second = previousStateVariableEvolutionRates;
-
-            _previousStateVariableEvolutionRates.first = true;
-
-        }
-
-        void residual::setdPreviousStateVariableEvolutionRatesdPreviousCauchyStress( const floatMatrix &dPreviousStateVariableEvolutionRatesdPreviousCauchyStress ){
-            /*!
-             * Set the derivative of the state variable evolution rates w.r.t. the Cauchy stress
-             * 
-             * \param &dPreviousStateVariableEvolutionRatesdPreviousCauchyStress: The value of the derivative
-             */
-
-            _dPreviousStateVariableEvolutionRatesdPreviousCauchyStress.second = dPreviousStateVariableEvolutionRatesdPreviousCauchyStress;
-
-            _dPreviousStateVariableEvolutionRatesdPreviousCauchyStress.first = true;
-
-        }
-
-        void residual::setdPreviousStateVariableEvolutionRatesdPreviousF( const floatMatrix &dPreviousStateVariableEvolutionRatesdPreviousF ){
-            /*!
-             * Set the derivative of the state variable evolution rates w.r.t. the deformation gradient
-             * 
-             * \param &dPreviousStateVariableEvolutionRatesdPreviousF: The value of the derivative
-             */
-
-            _dPreviousStateVariableEvolutionRatesdPreviousF.second = dPreviousStateVariableEvolutionRatesdPreviousF;
-
-            _dPreviousStateVariableEvolutionRatesdPreviousF.first = true;
-
-        }
-
-        void residual::setdPreviousStateVariableEvolutionRatesdPreviousSubFs( const floatMatrix &dPreviousStateVariableEvolutionRatesdPreviousSubFs ){
-            /*!
-             * Set the derivative of the state variable evolution rates w.r.t. the sub-deformation gradients
-             * 
-             * \param &dPreviousStateVariableEvolutionRatesdPreviousSubFs: The value of the derivative
-             */
-
-            _dPreviousStateVariableEvolutionRatesdPreviousSubFs.second = dPreviousStateVariableEvolutionRatesdPreviousSubFs;
-
-            _dPreviousStateVariableEvolutionRatesdPreviousSubFs.first = true;
-
-        }
-
-        void residual::setdPreviousStateVariableEvolutionRatesdPreviousT( const floatVector &dPreviousStateVariableEvolutionRatesdPreviousT ){
-            /*!
-             * Set the derivative of the state variable evolution rates w.r.t. the temperature
-             * 
-             * \param &dPreviousStateVariableEvolutionRatesdPreviousT: The value of the derivative
-             */
-
-            _dPreviousStateVariableEvolutionRatesdPreviousT.second = dPreviousStateVariableEvolutionRatesdPreviousT;
-
-            _dPreviousStateVariableEvolutionRatesdPreviousT.first = true;
-
-        }
-
-        void residual::setdPreviousStateVariableEvolutionRatesdPreviousStateVariables( const floatMatrix &dPreviousStateVariableEvolutionRatesdPreviousStateVariables ){
-            /*!
-             * Set the derivative of the state variable evolution rates w.r.t. the state variables
-             * 
-             * \param &dPreviousStateVariableEvolutionRatesdPreviousStateVariables: The value of the derivative
-             */
-
-            _dPreviousStateVariableEvolutionRatesdPreviousStateVariables.second = dPreviousStateVariableEvolutionRatesdPreviousStateVariables;
-
-            _dPreviousStateVariableEvolutionRatesdPreviousStateVariables.first = true;
 
         }
 
@@ -3378,15 +2311,15 @@ namespace tardigradeHydra{
 
             floatVector plasticDeformationGradient;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = getVelocityGradient( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_velocityGradient( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( previousVelocityGradient = getPreviousVelocityGradient( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousVelocityGradient = get_previousVelocityGradient( ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( previousPlasticDeformationGradient = hydra->getPreviousConfiguration( *getPlasticConfigurationIndex( ) ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp, plasticDeformationGradient, 1 - ( *getIntegrationParameter( ) ), 1 ) );
 
-            setPlasticDeformationGradient( plasticDeformationGradient );
+            set_plasticDeformationGradient( plasticDeformationGradient );
 
         }
 
@@ -3499,9 +2432,9 @@ namespace tardigradeHydra{
 
             floatMatrix dFdL;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = getVelocityGradient( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_velocityGradient( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( previousVelocityGradient = getPreviousVelocityGradient( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousVelocityGradient = get_previousVelocityGradient( ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( previousPlasticDeformationGradient = hydra->getPreviousConfiguration( *getPlasticConfigurationIndex( ) ) );
 
@@ -3515,11 +2448,11 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp, plasticDeformationGradient, dFdL, ddFdPreviousF, dFdPreviousF, dFdPreviousL, 1 - ( *getIntegrationParameter( ) ), 1 ) );
 
-                setdPlasticDeformationGradientdPreviousCauchyStress( tardigradeVectorTools::dot( dFdPreviousL, *getdPreviousVelocityGradientdPreviousCauchyStress( ) ) );
+                set_dPlasticDeformationGradientdPreviousCauchyStress( tardigradeVectorTools::dot( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousCauchyStress( ) ) );
 
-                setdPlasticDeformationGradientdPreviousF( tardigradeVectorTools::dot( dFdPreviousL, *getdPreviousVelocityGradientdPreviousF( ) ) );
+                set_dPlasticDeformationGradientdPreviousF( tardigradeVectorTools::dot( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousF( ) ) );
 
-                floatMatrix dPlasticDeformationGradientdPreviousSubFs = tardigradeVectorTools::dot( dFdPreviousL, *getdPreviousVelocityGradientdPreviousSubFs( ) );
+                floatMatrix dPlasticDeformationGradientdPreviousSubFs = tardigradeVectorTools::dot( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousSubFs( ) );
 
                 for ( unsigned int i = 0; i < dFdPreviousF.size( ); i++ ){
 
@@ -3531,11 +2464,11 @@ namespace tardigradeHydra{
 
                 }
 
-                setdPlasticDeformationGradientdPreviousSubFs( dPlasticDeformationGradientdPreviousSubFs );
+                set_dPlasticDeformationGradientdPreviousSubFs( dPlasticDeformationGradientdPreviousSubFs );
 
-                setdPlasticDeformationGradientdPreviousT( tardigradeVectorTools::dot( dFdPreviousL, *getdPreviousVelocityGradientdPreviousT( ) ) );
+                set_dPlasticDeformationGradientdPreviousT( tardigradeVectorTools::dot( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousT( ) ) );
 
-                setdPlasticDeformationGradientdPreviousStateVariables( tardigradeVectorTools::dot( dFdPreviousL, *getdPreviousVelocityGradientdPreviousStateVariables( ) ) );
+                set_dPlasticDeformationGradientdPreviousStateVariables( tardigradeVectorTools::dot( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousStateVariables( ) ) );
 
             }
             else{
@@ -3543,182 +2476,17 @@ namespace tardigradeHydra{
                 TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp, plasticDeformationGradient, dFdL, 1 - ( *getIntegrationParameter( ) ), 1 ) );
             }
 
-            setPlasticDeformationGradient( plasticDeformationGradient );
+            set_plasticDeformationGradient( plasticDeformationGradient );
 
-            setdPlasticDeformationGradientdCauchyStress( tardigradeVectorTools::dot( dFdL, *getdVelocityGradientdCauchyStress( ) ) );
+            set_dPlasticDeformationGradientdCauchyStress( tardigradeVectorTools::dot( dFdL, *get_dVelocityGradientdCauchyStress( ) ) );
 
-            setdPlasticDeformationGradientdF( tardigradeVectorTools::dot( dFdL, *getdVelocityGradientdF( ) ) );
+            set_dPlasticDeformationGradientdF( tardigradeVectorTools::dot( dFdL, *get_dVelocityGradientdF( ) ) );
 
-            setdPlasticDeformationGradientdSubFs( tardigradeVectorTools::dot( dFdL, *getdVelocityGradientdSubFs( ) ) );
+            set_dPlasticDeformationGradientdSubFs( tardigradeVectorTools::dot( dFdL, *get_dVelocityGradientdSubFs( ) ) );
 
-            setdPlasticDeformationGradientdT( tardigradeVectorTools::dot( dFdL, *getdVelocityGradientdT( ) ) );
+            set_dPlasticDeformationGradientdT( tardigradeVectorTools::dot( dFdL, *get_dVelocityGradientdT( ) ) );
 
-            setdPlasticDeformationGradientdStateVariables( tardigradeVectorTools::dot( dFdL, *getdVelocityGradientdStateVariables( ) ) );
-
-        }
-
-        void residual::setPlasticDeformationGradient( const floatVector &plasticDeformationGradient ){
-            /*!
-             * Set the plastic deformation gradient
-             *
-             * \param &plasticDeformationGradient: The plastic deformation gradient
-             */
-
-            _plasticDeformationGradient.second = plasticDeformationGradient;
-
-            _plasticDeformationGradient.first = true;
-
-            addIterationData( &_plasticDeformationGradient );
-
-        }
-
-        void residual::setdPlasticDeformationGradientdCauchyStress( const floatMatrix &dPlasticDeformationGradientdCauchyStress ){
-            /*!
-             * Set the derivative of the plastic deformation gradient w.r.t. the Cauchy stress
-             *
-             * \param &dPlasticDeformationGradientdCauchyStress: The value of the derivative
-             */
-
-            _dPlasticDeformationGradientdCauchyStress.second = dPlasticDeformationGradientdCauchyStress;
-
-            _dPlasticDeformationGradientdCauchyStress.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdCauchyStress );
-
-        }
-
-        void residual::setdPlasticDeformationGradientdF( const floatMatrix &dPlasticDeformationGradientdF ){
-            /*!
-             * Set the derivative of the plastic deformation gradient w.r.t. the deformation gradient
-             *
-             * \param &dPlasticDeformationGradientdF: The value of the derivative
-             */
-
-            _dPlasticDeformationGradientdF.second = dPlasticDeformationGradientdF;
-
-            _dPlasticDeformationGradientdF.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdF );
-
-        }
-
-        void residual::setdPlasticDeformationGradientdSubFs( const floatMatrix &dPlasticDeformationGradientdSubFs ){
-            /*!
-             * Set the derivative of the plastic deformation gradient w.r.t. the sub-deformation gradients
-             *
-             * \param &dPlasticDeformationGradientdSubFs: The value of the derivative
-             */
-
-            _dPlasticDeformationGradientdSubFs.second = dPlasticDeformationGradientdSubFs;
-
-            _dPlasticDeformationGradientdSubFs.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdSubFs );
-
-        }
-
-        void residual::setdPlasticDeformationGradientdT( const floatVector &dPlasticDeformationGradientdT ){
-            /*!
-             * Set the derivative of the plastic deformation gradient w.r.t. the temperature
-             *
-             * \param &dPlasticDeformationGradientdT: The value of the derivative
-             */
-
-            _dPlasticDeformationGradientdT.second = dPlasticDeformationGradientdT;
-
-            _dPlasticDeformationGradientdT.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdT );
-
-        }
-
-        void residual::setdPlasticDeformationGradientdStateVariables( const floatMatrix &dPlasticDeformationGradientdStateVariables ){
-            /*!
-             * Set the derivative of the plastic deformation gradient w.r.t. the state variables
-             *
-             * \param &dPlasticDeformationGradientdStateVariables: The value of the derivative
-             */
-
-            _dPlasticDeformationGradientdStateVariables.second = dPlasticDeformationGradientdStateVariables;
-
-            _dPlasticDeformationGradientdStateVariables.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdStateVariables );
-
-        }
-
-        void residual::setdPlasticDeformationGradientdPreviousCauchyStress( const floatMatrix &dPlasticDeformationGradientdPreviousCauchyStress ){
-            /*!
-             * Set the derivative of the plastic deformation gradient w.r.t. the previous Cauchy stress
-             *
-             * \param &dPlasticDeformationGradientdPreviousCauchyStress: The value of the derivative
-             */
-
-            _dPlasticDeformationGradientdPreviousCauchyStress.second = dPlasticDeformationGradientdPreviousCauchyStress;
-
-            _dPlasticDeformationGradientdPreviousCauchyStress.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdPreviousCauchyStress );
-
-        }
-
-        void residual::setdPlasticDeformationGradientdPreviousF( const floatMatrix &dPlasticDeformationGradientdPreviousF ){
-            /*!
-             * Set the derivative of the plastic deformation gradient w.r.t. the previous deformation gradient
-             *
-             * \param &dPlasticDeformationGradientdPreviousF: The value of the derivative
-             */
-
-            _dPlasticDeformationGradientdPreviousF.second = dPlasticDeformationGradientdPreviousF;
-
-            _dPlasticDeformationGradientdPreviousF.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdPreviousF );
-
-        }
-
-        void residual::setdPlasticDeformationGradientdPreviousSubFs( const floatMatrix &dPlasticDeformationGradientdPreviousSubFs ){
-            /*!
-             * Set the derivative of the plastic deformation gradient w.r.t. the previous sub-deformation gradients
-             *
-             * \param &dPlasticDeformationGradientdPreviousSubFs: The value of the derivative
-             */
-
-            _dPlasticDeformationGradientdPreviousSubFs.second = dPlasticDeformationGradientdPreviousSubFs;
-
-            _dPlasticDeformationGradientdPreviousSubFs.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdPreviousSubFs );
-
-        }
-
-        void residual::setdPlasticDeformationGradientdPreviousT( const floatVector &dPlasticDeformationGradientdPreviousT ){
-            /*!
-             * Set the derivative of the plastic deformation gradient w.r.t. the previous temperature
-             *
-             * \param &dPlasticDeformationGradientdPreviousT: The value of the derivative
-             */
-
-            _dPlasticDeformationGradientdPreviousT.second = dPlasticDeformationGradientdPreviousT;
-
-            _dPlasticDeformationGradientdPreviousT.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdPreviousT );
-
-        }
-
-        void residual::setdPlasticDeformationGradientdPreviousStateVariables( const floatMatrix &dPlasticDeformationGradientdPreviousStateVariables ){
-            /*!
-             * Set the derivative of the plastic deformation gradient w.r.t. the previous state variables
-             *
-             * \param &dPlasticDeformationGradientdPreviousStateVariables: The value of the derivative
-             */
-
-            _dPlasticDeformationGradientdPreviousStateVariables.second = dPlasticDeformationGradientdPreviousStateVariables;
-
-            _dPlasticDeformationGradientdPreviousStateVariables.first = true;
-
-            addIterationData( &_dPlasticDeformationGradientdPreviousStateVariables );
+            set_dPlasticDeformationGradientdStateVariables( tardigradeVectorTools::dot( dFdL, *get_dVelocityGradientdStateVariables( ) ) );
 
         }
 
@@ -3737,15 +2505,15 @@ namespace tardigradeHydra{
 
             floatVector plasticStateVariables;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( stateVariableEvolutionRates = getStateVariableEvolutionRates( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( stateVariableEvolutionRates = get_stateVariableEvolutionRates( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariableEvolutionRates = getPreviousStateVariableEvolutionRates( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariableEvolutionRates = get_previousStateVariableEvolutionRates( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariables = getPreviousStateVariables( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariables = get_previousStateVariables( ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, plasticStateVariables, ( 1 - *getIntegrationParameter( ) ) ) );
 
-            setPlasticStateVariables( plasticStateVariables );
+            set_plasticStateVariables( plasticStateVariables );
 
         }
 
@@ -3876,33 +2644,33 @@ namespace tardigradeHydra{
 
             if ( setPreviousDerivatives ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPreviousStateVariableEvolutionRatesdPreviousCauchyStress = getdPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPreviousStateVariableEvolutionRatesdPreviousCauchyStress = get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPreviousStateVariableEvolutionRatesdPreviousF = getdPreviousStateVariableEvolutionRatesdPreviousF( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPreviousStateVariableEvolutionRatesdPreviousF = get_dPreviousStateVariableEvolutionRatesdPreviousF( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPreviousStateVariableEvolutionRatesdPreviousSubFs = getdPreviousStateVariableEvolutionRatesdPreviousSubFs( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPreviousStateVariableEvolutionRatesdPreviousSubFs = get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPreviousStateVariableEvolutionRatesdPreviousT = getdPreviousStateVariableEvolutionRatesdPreviousT( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPreviousStateVariableEvolutionRatesdPreviousT = get_dPreviousStateVariableEvolutionRatesdPreviousT( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dPreviousStateVariableEvolutionRatesdPreviousStateVariables = getdPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPreviousStateVariableEvolutionRatesdPreviousStateVariables = get_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) );
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dStateVariableEvolutionRatesdCauchyStress = getdStateVariableEvolutionRatesdCauchyStress( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( dStateVariableEvolutionRatesdCauchyStress = get_dStateVariableEvolutionRatesdCauchyStress( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dStateVariableEvolutionRatesdF = getdStateVariableEvolutionRatesdF( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( dStateVariableEvolutionRatesdF = get_dStateVariableEvolutionRatesdF( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dStateVariableEvolutionRatesdSubFs = getdStateVariableEvolutionRatesdSubFs( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( dStateVariableEvolutionRatesdSubFs = get_dStateVariableEvolutionRatesdSubFs( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dStateVariableEvolutionRatesdT = getdStateVariableEvolutionRatesdT( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( dStateVariableEvolutionRatesdT = get_dStateVariableEvolutionRatesdT( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dStateVariableEvolutionRatesdStateVariables = getdStateVariableEvolutionRatesdStateVariables( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( dStateVariableEvolutionRatesdStateVariables = get_dStateVariableEvolutionRatesdStateVariables( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( stateVariableEvolutionRates = getStateVariableEvolutionRates( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( stateVariableEvolutionRates = get_stateVariableEvolutionRates( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariableEvolutionRates = getPreviousStateVariableEvolutionRates( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariableEvolutionRates = get_previousStateVariableEvolutionRates( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariables = getPreviousStateVariables( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariables = get_previousStateVariables( ) );
 
             floatMatrix dXidXidot;
 
@@ -3912,15 +2680,15 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, plasticStateVariables, dXidXidot, dXidXidotp, ( 1 - *getIntegrationParameter( ) ) ) );
 
-                setdPlasticStateVariablesdPreviousCauchyStress( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousCauchyStress ) );
+                set_dPlasticStateVariablesdPreviousCauchyStress( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousCauchyStress ) );
 
-                setdPlasticStateVariablesdPreviousF( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousF ) );
+                set_dPlasticStateVariablesdPreviousF( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousF ) );
 
-                setdPlasticStateVariablesdPreviousSubFs( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousSubFs ) );
+                set_dPlasticStateVariablesdPreviousSubFs( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousSubFs ) );
 
-                setdPlasticStateVariablesdPreviousT( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousT ) );
+                set_dPlasticStateVariablesdPreviousT( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousT ) );
 
-                setdPlasticStateVariablesdPreviousStateVariables( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousStateVariables ) + tardigradeVectorTools::eye< floatType >( previousStateVariables->size( ) ) );
+                set_dPlasticStateVariablesdPreviousStateVariables( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousStateVariables ) + tardigradeVectorTools::eye< floatType >( previousStateVariables->size( ) ) );
 
             }
             else{
@@ -3929,183 +2697,17 @@ namespace tardigradeHydra{
 
             }
 
-            setdPlasticStateVariablesdCauchyStress( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdCauchyStress ) );
+            set_dPlasticStateVariablesdCauchyStress( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdCauchyStress ) );
 
-            setdPlasticStateVariablesdF( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdF ) );
+            set_dPlasticStateVariablesdF( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdF ) );
 
-            setdPlasticStateVariablesdSubFs( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdSubFs ) );
+            set_dPlasticStateVariablesdSubFs( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdSubFs ) );
 
-            setdPlasticStateVariablesdT( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdT ) );
+            set_dPlasticStateVariablesdT( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdT ) );
 
-            setdPlasticStateVariablesdStateVariables( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdStateVariables ) );
+            set_dPlasticStateVariablesdStateVariables( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdStateVariables ) );
 
-            setPlasticStateVariables( plasticStateVariables );
-
-        }
-
-
-        void residual::setPlasticStateVariables( const floatVector &plasticStateVariables ){
-            /*!
-             * Set the plastic state variables
-             * 
-             * \param &plasticStateVariables
-             */
-
-            _plasticStateVariables.second = plasticStateVariables;
-
-            _plasticStateVariables.first = true;
-
-            addIterationData( &_plasticStateVariables );
-
-        }
-
-        void residual::setdPlasticStateVariablesdCauchyStress( const floatMatrix &dPlasticStateVariablesdCauchyStress ){
-            /*!
-             * Set the derivative of the plastic state variables w.r.t. the Cauchy Stress
-             * 
-             * \param &dPlasticStateVariablesdCauchyStress: The derivative of the plastic state variables w.r.t. the Cauchy stress
-             */
-
-            _dPlasticStateVariablesdCauchyStress.second = dPlasticStateVariablesdCauchyStress;
-
-            _dPlasticStateVariablesdCauchyStress.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdCauchyStress );
-
-        }
-
-        void residual::setdPlasticStateVariablesdF( const floatMatrix &dPlasticStateVariablesdF ){
-            /*!
-             * Set the derivative of the plastic state variables w.r.t. the deformation gradient
-             * 
-             * \param &dPlasticStateVariablesdF: The derivative of the plastic state variables w.r.t. the deformation gradient
-             */
-
-            _dPlasticStateVariablesdF.second = dPlasticStateVariablesdF;
-
-            _dPlasticStateVariablesdF.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdF );
-
-        }
-
-        void residual::setdPlasticStateVariablesdSubFs( const floatMatrix &dPlasticStateVariablesdSubFs ){
-            /*!
-             * Set the derivative of the plastic state variables w.r.t. the sub-deformation gradients
-             * 
-             * \param &dPlasticStateVariablesdSubFs: The derivative of the plastic state variables w.r.t. the sub-deformation gradients
-             */
-
-            _dPlasticStateVariablesdSubFs.second = dPlasticStateVariablesdSubFs;
-
-            _dPlasticStateVariablesdSubFs.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdSubFs );
-
-        }
-
-        void residual::setdPlasticStateVariablesdT( const floatVector &dPlasticStateVariablesdT ){
-            /*!
-             * Set the derivative of the plastic state variables w.r.t. the temperature
-             * 
-             * \param &dPlasticStateVariablesdT: The derivative of the plastic state variables w.r.t. the temperature
-             */
-
-            _dPlasticStateVariablesdT.second = dPlasticStateVariablesdT;
-
-            _dPlasticStateVariablesdT.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdT );
-
-        }
-
-        void residual::setdPlasticStateVariablesdStateVariables( const floatMatrix &dPlasticStateVariablesdStateVariables ){
-            /*!
-             * Set the derivative of the plastic state variables w.r.t. the state variables
-             * 
-             * \param &dPlasticStateVariablesdStateVariables: The derivative of the plastic state variables w.r.t. the state variables
-             */
-
-            _dPlasticStateVariablesdStateVariables.second = dPlasticStateVariablesdStateVariables;
-
-            _dPlasticStateVariablesdStateVariables.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdStateVariables );
-
-        }
-
-        void residual::setdPlasticStateVariablesdPreviousCauchyStress( const floatMatrix &dPlasticStateVariablesdPreviousCauchyStress ){
-            /*!
-             * Set the derivative of the plastic state variables w.r.t. the previous Cauchy Stress
-             * 
-             * \param &dPlasticStateVariablesdPreviousCauchyStress: The derivative of the plastic state variables w.r.t. the previous Cauchy stress
-             */
-
-            _dPlasticStateVariablesdPreviousCauchyStress.second = dPlasticStateVariablesdPreviousCauchyStress;
-
-            _dPlasticStateVariablesdPreviousCauchyStress.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdPreviousCauchyStress );
-
-        }
-
-        void residual::setdPlasticStateVariablesdPreviousF( const floatMatrix &dPlasticStateVariablesdPreviousF ){
-            /*!
-             * Set the derivative of the plastic state variables w.r.t. the previous deformation gradient
-             * 
-             * \param &dPlasticStateVariablesdPreviousF: The derivative of the plastic state variables w.r.t. the previous deformation gradient
-             */
-
-            _dPlasticStateVariablesdPreviousF.second = dPlasticStateVariablesdPreviousF;
-
-            _dPlasticStateVariablesdPreviousF.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdPreviousF );
-
-        }
-
-        void residual::setdPlasticStateVariablesdPreviousSubFs( const floatMatrix &dPlasticStateVariablesdPreviousSubFs ){
-            /*!
-             * Set the derivative of the plastic state variables w.r.t. the previous sub-deformation gradients
-             * 
-             * \param &dPlasticStateVariablesdPreviousSubFs: The derivative of the plastic state variables w.r.t. the previous sub-deformation gradients
-             */
-
-            _dPlasticStateVariablesdPreviousSubFs.second = dPlasticStateVariablesdPreviousSubFs;
-
-            _dPlasticStateVariablesdPreviousSubFs.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdPreviousSubFs );
-
-        }
-
-        void residual::setdPlasticStateVariablesdPreviousT( const floatVector &dPlasticStateVariablesdPreviousT ){
-            /*!
-             * Set the derivative of the plastic state variables w.r.t. the previous temperature
-             * 
-             * \param &dPlasticStateVariablesdPreviousT: The derivative of the plastic state variables w.r.t. the previous temperature
-             */
-
-            _dPlasticStateVariablesdPreviousT.second = dPlasticStateVariablesdPreviousT;
-
-            _dPlasticStateVariablesdPreviousT.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdPreviousT );
-
-        }
-
-        void residual::setdPlasticStateVariablesdPreviousStateVariables( const floatMatrix &dPlasticStateVariablesdPreviousStateVariables ){
-            /*!
-             * Set the derivative of the plastic state variables w.r.t. the previous state variables
-             * 
-             * \param &dPlasticStateVariablesdPreviousStateVariables: The derivative of the plastic state variables w.r.t. the previous state variables
-             */
-
-            _dPlasticStateVariablesdPreviousStateVariables.second = dPlasticStateVariablesdPreviousStateVariables;
-
-            _dPlasticStateVariablesdPreviousStateVariables.first = true;
-
-            addIterationData( &_dPlasticStateVariablesdPreviousStateVariables );
+            set_plasticStateVariables( plasticStateVariables );
 
         }
 
@@ -4138,12 +2740,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                allStateVariables =  hydra->getPreviousNonLinearSolveStateVariables( );
+                allStateVariables =  hydra->get_previousNonLinearSolveStateVariables( );
 
             }
             else{
 
-                allStateVariables =  hydra->getNonLinearSolveStateVariables( );
+                allStateVariables =  hydra->get_nonLinearSolveStateVariables( );
 
             }
 
@@ -4168,120 +2770,14 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                setPreviousStateVariables( stateVariables );
+                set_previousStateVariables( stateVariables );
 
             }
             else{
 
-                setStateVariables( stateVariables );
+                set_stateVariables( stateVariables );
 
             }
-
-        }
-
-        void residual::setStateVariables( const floatVector &stateVariables ){
-            /*!
-             * Set the state variables
-             * 
-             * \param &stateVariables: The state variables
-             */
-
-            _stateVariables.second = stateVariables;
-
-            _stateVariables.first = true;
-
-            addIterationData( &_stateVariables );
-
-        }
-
-        void residual::setPreviousStateVariables( const floatVector &previousStateVariables ){
-            /*!
-             * Set the previous values of the state variables
-             * 
-             * \param &previousStateVariables: The previous state variables
-             */
-
-            _previousStateVariables.second = previousStateVariables;
-
-            _previousStateVariables.first = true;
-
-        }
-
-        void residual::setPeryznaParameters( const floatVector &peryznaParameters ){
-            /*!
-             * Set the Peryzna parameters
-             * 
-             * \param &peryznaParameters: The Peryzna parameters
-             */
-
-            _peryznaParameters.second = peryznaParameters;
-
-            _peryznaParameters.first = true;
-
-        }
-
-        void residual::setDragStressParameters( const floatVector &dragStressParameters ){
-            /*!
-             * Set the drag stress parameters
-             * 
-             * \param &dragStressParameters: The drag stress parameters
-             */
-
-            _dragStressParameters.second = dragStressParameters;
-
-            _dragStressParameters.first = true;
-
-        }
-
-        void residual::setThermalParameters( const floatVector &thermalParameters ){
-            /*!
-             * Set the thermal parameters
-             * 
-             * \param &thermalParameters: The thermal parameters
-             */
-
-            _thermalParameters.second = thermalParameters;
-
-            _thermalParameters.first = true;
-
-        }
-
-        void residual::setYieldParameters( const floatVector &yieldParameters ){
-            /*!
-             * Set the yield parameters
-             * 
-             * \param &yieldParameters: The yield parameters
-             */
-
-            _yieldParameters.second = yieldParameters;
-
-            _yieldParameters.first = true;
-
-        }
-
-        void residual::setFlowParameters( const floatVector &flowParameters ){
-            /*!
-             * Set the flow parameters
-             * 
-             * \param &flowParameters: The flow parameters
-             */
-
-            _flowParameters.second = flowParameters;
-
-            _flowParameters.first = true;
-
-        }
-
-        void residual::setHardeningParameters( const floatVector &hardeningParameters ){
-            /*!
-             * Set the hardening parameters
-             * 
-             * \param &hardeningParameters: The hardening parameters
-             */
-
-            _hardeningParameters.second = hardeningParameters;
-
-            _hardeningParameters.first = true;
 
         }
 
@@ -4296,16 +2792,16 @@ namespace tardigradeHydra{
             floatVector residual( *getNumEquations( ), 0 );
 
             // Set the residual for the plastic deformation gradient
-            for ( unsigned int i = 0; i < getPlasticDeformationGradient( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < get_plasticDeformationGradient( )->size( ); i++ ){
 
-                residual[ i ] = ( *getPlasticDeformationGradient( ) )[ i ] - hydra->getConfiguration( *getPlasticConfigurationIndex( ) )[ i ];
+                residual[ i ] = ( *get_plasticDeformationGradient( ) )[ i ] - hydra->getConfiguration( *getPlasticConfigurationIndex( ) )[ i ];
     
             }
 
             // Set the residual for the plastic state variables
-            for ( unsigned int i = 0; i < getStateVariables( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < get_stateVariables( )->size( ); i++ ){
 
-                residual[ i + getPlasticDeformationGradient( )->size( ) ] = ( *getPlasticStateVariables( ) )[ i ] - ( *getStateVariables( ) )[ i ];
+                residual[ i + get_plasticDeformationGradient( )->size( ) ] = ( *get_plasticStateVariables( ) )[ i ] - ( *get_stateVariables( ) )[ i ];
     
             }
 
@@ -4321,67 +2817,67 @@ namespace tardigradeHydra{
             floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
 
             // Set the derivatives
-            getdPlasticDeformationGradientdCauchyStress( );
+            get_dPlasticDeformationGradientdCauchyStress( );
 
-            getdPlasticStateVariablesdCauchyStress( );
+            get_dPlasticStateVariablesdCauchyStress( );
 
             // Get the Jacobians of the plastic deformation gradient
-            for ( unsigned int i = 0; i < getPlasticDeformationGradient( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < get_plasticDeformationGradient( )->size( ); i++ ){
                 unsigned int row = i;
 
                 // Set the Jacobian with respect to the Cauchy stress
-                for ( unsigned int j = 0; j < ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ); j++ ){
+                for ( unsigned int j = 0; j < ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ); j++ ){
                     unsigned int col = j;
 
-                    jacobian[ row ][ col ] += ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ][ j ];
+                    jacobian[ row ][ col ] += ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ][ j ];
 
                 }
 
                 // Set the Jacobian with respect to the sub-configurations
-                jacobian[ i ][ ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + i ] -= 1;
-                for ( unsigned int j = 0; j < ( *getdPlasticDeformationGradientdSubFs( ) )[ i ].size( ); j++ ){
-                    unsigned int col = ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + j;
+                jacobian[ i ][ ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + i ] -= 1;
+                for ( unsigned int j = 0; j < ( *get_dPlasticDeformationGradientdSubFs( ) )[ i ].size( ); j++ ){
+                    unsigned int col = ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + j;
 
-                    jacobian[ row ][ col ] += ( *getdPlasticDeformationGradientdSubFs( ) )[ i ][ j ];
+                    jacobian[ row ][ col ] += ( *get_dPlasticDeformationGradientdSubFs( ) )[ i ][ j ];
 
                 }
 
                 // Set the Jacobian with respect to the state variables
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
-                    unsigned int col = ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + ( *getdPlasticDeformationGradientdSubFs( ) )[ i ].size( ) + *ind;
+                    unsigned int col = ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + ( *get_dPlasticDeformationGradientdSubFs( ) )[ i ].size( ) + *ind;
 
-                    jacobian[ row ][ col ] += ( *getdPlasticDeformationGradientdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    jacobian[ row ][ col ] += ( *get_dPlasticDeformationGradientdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
             }
 
             // Get the Jacobians of the plastic state variables
-            for ( unsigned int i = 0; i < getPlasticStateVariables( )->size( ); i++ ){
-                unsigned int row = getPlasticDeformationGradient( )->size( ) + i;
+            for ( unsigned int i = 0; i < get_plasticStateVariables( )->size( ); i++ ){
+                unsigned int row = get_plasticDeformationGradient( )->size( ) + i;
 
                 // Set the Jacobian with respect to the Cauchy stress
-                for ( unsigned int j = 0; j < ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ].size( ); j++ ){
+                for ( unsigned int j = 0; j < ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ].size( ); j++ ){
                     unsigned int col = j;
 
-                    jacobian[ row ][ col ] += ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ][ j ];
+                    jacobian[ row ][ col ] += ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ][ j ];
 
                 }
 
                 // Set the Jacobian with respect to the other configurations
-                for ( unsigned int j = 0; j < ( *getdPlasticStateVariablesdSubFs( ) )[ i ].size( ); j++ ){
-                    unsigned int col = ( *getdPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + j;
+                for ( unsigned int j = 0; j < ( *get_dPlasticStateVariablesdSubFs( ) )[ i ].size( ); j++ ){
+                    unsigned int col = ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + j;
 
-                    jacobian[ row ][ col ] += ( *getdPlasticStateVariablesdSubFs( ) )[ i ][ j ];
+                    jacobian[ row ][ col ] += ( *get_dPlasticStateVariablesdSubFs( ) )[ i ][ j ];
 
                 }
 
                 // Set the Jacobian with respect to the state variables
-                jacobian[ row ][ ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *getdPlasticStateVariablesdSubFs( ) )[ i ].size( ) + ( *getStateVariableIndices( ) )[ i ] ] -= 1;
+                jacobian[ row ][ ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *get_dPlasticStateVariablesdSubFs( ) )[ i ].size( ) + ( *getStateVariableIndices( ) )[ i ] ] -= 1;
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
-                    unsigned int col = ( *getdPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *getdPlasticStateVariablesdSubFs( ) )[ i ].size( ) + *ind;
+                    unsigned int col = ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *get_dPlasticStateVariablesdSubFs( ) )[ i ].size( ) + *ind;
 
-                    jacobian[ row ][ col ] += ( *getdPlasticStateVariablesdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    jacobian[ row ][ col ] += ( *get_dPlasticStateVariablesdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
@@ -4399,21 +2895,21 @@ namespace tardigradeHydra{
             floatVector dRdT( *getNumEquations( ), 0 );
 
             // Set the derivatives
-            getdPlasticDeformationGradientdT( );
+            get_dPlasticDeformationGradientdT( );
 
-            getdPlasticStateVariablesdT( );
+            get_dPlasticStateVariablesdT( );
 
             // Get the Jacobians of the plastic deformation gradient
-            for ( unsigned int i = 0; i < getPlasticDeformationGradient( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < get_plasticDeformationGradient( )->size( ); i++ ){
 
-                dRdT[ i ] = ( *getdPlasticDeformationGradientdT( ) )[ i ];
+                dRdT[ i ] = ( *get_dPlasticDeformationGradientdT( ) )[ i ];
 
             }
 
             // Get the Jacobians of the plastic state variables
-            for ( unsigned int i = 0; i < getPlasticStateVariables( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < get_plasticStateVariables( )->size( ); i++ ){
 
-                dRdT[ i + getPlasticDeformationGradient( )->size( ) ] += ( *getdPlasticStateVariablesdT( ) )[ i ];
+                dRdT[ i + get_plasticDeformationGradient( )->size( ) ] += ( *get_dPlasticStateVariablesdT( ) )[ i ];
 
             }
 
@@ -4429,27 +2925,27 @@ namespace tardigradeHydra{
             floatMatrix dRdF( *getNumEquations( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
 
             // Set the derivatives
-            getdPlasticDeformationGradientdF( );
+            get_dPlasticDeformationGradientdF( );
 
-            getdPlasticStateVariablesdF( );
+            get_dPlasticStateVariablesdF( );
 
             // Get the Jacobians of the plastic deformation gradient
-            for ( unsigned int i = 0; i < getPlasticDeformationGradient( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < get_plasticDeformationGradient( )->size( ); i++ ){
 
-                for ( unsigned int j = 0; j < ( *getdPlasticDeformationGradientdF( ) )[ i ].size( ); j++ ){
+                for ( unsigned int j = 0; j < ( *get_dPlasticDeformationGradientdF( ) )[ i ].size( ); j++ ){
 
-                    dRdF[ i ][ j ] = ( *getdPlasticDeformationGradientdF( ) )[ i ][ j ];
+                    dRdF[ i ][ j ] = ( *get_dPlasticDeformationGradientdF( ) )[ i ][ j ];
 
                 }
 
             }
 
             // Get the Jacobians of the plastic state variables
-            for ( unsigned int i = 0; i < getPlasticStateVariables( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < get_plasticStateVariables( )->size( ); i++ ){
 
-                for ( unsigned int j = 0; j < ( *getdPlasticStateVariablesdF( ) )[ i ].size( ); j++ ){
+                for ( unsigned int j = 0; j < ( *get_dPlasticStateVariablesdF( ) )[ i ].size( ); j++ ){
 
-                    dRdF[ i + getPlasticDeformationGradient( )->size( ) ][ j ] += ( *getdPlasticStateVariablesdF( ) )[ i ][ j ];
+                    dRdF[ i + get_plasticDeformationGradient( )->size( ) ][ j ] += ( *get_dPlasticStateVariablesdF( ) )[ i ][ j ];
 
                 }
 
@@ -4474,1541 +2970,6 @@ namespace tardigradeHydra{
              */
 
             return &_stateVariableIndices;
-
-        }
-
-        const floatVector* residual::getDrivingStress( ){
-            /*!
-             * Get the driving stress
-             */
-
-            if ( !_drivingStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setDrivingStress( ) );
-
-            }
-
-            return &_drivingStress.second;
-
-        }
-
-        const floatMatrix* residual::getdDrivingStressdCauchyStress( ){
-            /*!
-             * Get the derivative of the driving stress w.r.t. the Cauchy stress
-             */
-
-            if ( !_dDrivingStressdCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdDrivingStressdCauchyStress( ) );
-
-            }
-
-            return &_dDrivingStressdCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdDrivingStressdF( ){
-            /*!
-             * Get the derivative of the driving stress w.r.t. the deformation gradient
-             */
-
-            if ( !_dDrivingStressdF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdDrivingStressdF( ) );
-
-            }
-
-            return &_dDrivingStressdF.second;
-
-        }
-
-        const floatMatrix* residual::getdDrivingStressdSubFs( ){
-            /*!
-             * Get the derivative of the driving stress w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dDrivingStressdSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdDrivingStressdSubFs( ) );
-
-            }
-
-            return &_dDrivingStressdSubFs.second;
-
-        }
-
-        const floatVector* residual::getFlowDirection( ){
-            /*!
-             * Get the flow direction
-             */
-
-            if ( !_flowDirection.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setFlowDirection( ) );
-
-            }
-
-            return &_flowDirection.second;
-
-        }
-
-        const floatMatrix* residual::getdFlowDirectiondCauchyStress( ){
-            /*!
-             * Get the derivative of the flow direction w.r.t. the Cauchy stress
-             */
-
-            if ( !_dFlowDirectiondCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdFlowDirectiondCauchyStress( ) );
-
-            }
-
-            return &_dFlowDirectiondCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdFlowDirectiondF( ){
-            /*!
-             * Get the derivative of the flow direction w.r.t. the deformation gradient
-             */
-
-            if ( !_dFlowDirectiondF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdFlowDirectiondF( ) );
-
-            }
-
-            return &_dFlowDirectiondF.second;
-
-        }
-
-        const floatMatrix* residual::getdFlowDirectiondSubFs( ){
-            /*!
-             * Get the derivative of the flow direction w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dFlowDirectiondSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdFlowDirectiondSubFs( ) );
-
-            }
-
-            return &_dFlowDirectiondSubFs.second;
-
-        }
-
-        const floatType* residual::getYieldFunction( ){
-            /*!
-             * Get the value of the yield function
-             */
-
-            if ( !_yieldFunction.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setYieldFunction( ) );
-
-            }
-
-            return &_yieldFunction.second;
-
-        }
-
-        const floatVector* residual::getdYieldFunctiondCauchyStress( ){
-            /*!
-             * Get the value of the derivative of the yield function w.r.t. the Cauchy stress
-             */
-
-            if ( !_dYieldFunctiondCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdYieldFunctiondCauchyStress( ) );
-
-            }
-
-            return &_dYieldFunctiondCauchyStress.second;
-
-        }
-
-        const floatVector* residual::getdYieldFunctiondF( ){
-            /*!
-             * Get the value of the derivative of the yield function w.r.t. the deformation gradient
-             */
-
-            if ( !_dYieldFunctiondF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdYieldFunctiondF( ) );
-
-            }
-
-            return &_dYieldFunctiondF.second;
-
-        }
-
-        const floatVector* residual::getdYieldFunctiondSubFs( ){
-            /*!
-             * Get the value of the derivative of the yield function w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dYieldFunctiondSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdYieldFunctiondSubFs( ) );
-
-            }
-
-            return &_dYieldFunctiondSubFs.second;
-
-        }
-
-        const floatVector* residual::getdPreviousYieldFunctiondPreviousCauchyStress( ){
-            /*!
-             * Get the value of the derivative of the previous yield function w.r.t. the previous Cauchy stress
-             */
-
-            if ( !_dPreviousYieldFunctiondPreviousCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousYieldFunctiondPreviousCauchyStress( ) );
-
-            }
-
-            return &_dPreviousYieldFunctiondPreviousCauchyStress.second;
-
-        }
-
-        const floatVector* residual::getdPreviousYieldFunctiondPreviousF( ){
-            /*!
-             * Get the value of the derivative of the previous yield function w.r.t. the previous deformation gradient
-             */
-
-            if ( !_dPreviousYieldFunctiondPreviousF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousYieldFunctiondPreviousF( ) );
-
-            }
-
-            return &_dPreviousYieldFunctiondPreviousF.second;
-
-        }
-
-        const floatVector* residual::getdPreviousYieldFunctiondPreviousSubFs( ){
-            /*!
-             * Get the value of the derivative of the previous yield function w.r.t. the previous sub-deformation gradients
-             */
-
-            if ( !_dPreviousYieldFunctiondPreviousSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousYieldFunctiondPreviousSubFs( ) );
-
-            }
-
-            return &_dPreviousYieldFunctiondPreviousSubFs.second;
-
-        }
-
-        const floatType* residual::getPlasticThermalMultiplier( ){
-            /*!
-             * Get the value of the plastic thermal multiplier
-             */
-
-            if ( !_plasticThermalMultiplier.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPlasticThermalMultiplier( ) );
-
-            }
-
-            return &_plasticThermalMultiplier.second;
-
-        }
-
-        const floatType* residual::getdPlasticThermalMultiplierdT( ){
-            /*!
-             * Get the value of the derivative of the plastic thermal multiplier w.r.t. the temperature
-             */
-
-            if ( !_dPlasticThermalMultiplierdT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticThermalMultiplierdT( ) );
-
-            }
-
-            return &_dPlasticThermalMultiplierdT.second;
-
-        }
-
-        const floatType* residual::getDragStress( ){
-            /*!
-             * Get the drag stress
-             */
-
-            if ( !_dragStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setDragStress( ) );
-
-            }
-
-            return &_dragStress.second;
-
-        }
-
-        const floatVector* residual::getdDragStressdStateVariables( ){
-            /*!
-             * Get the derivative drag stress w.r.t. the state variables
-             */
-
-            if ( !_dDragStressdStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdDragStressdStateVariables( ) );
-
-            }
-
-            return &_dDragStressdStateVariables.second;
-
-        }
-
-        const floatType* residual::getHardeningFunction( ){
-            /*!
-             * Get the value of the hardening function
-             */
-
-            if ( !_hardeningFunction.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setHardeningFunction( ) );
-
-            }
-
-            return &_hardeningFunction.second;
-
-        }
-
-        const floatVector* residual::getdHardeningFunctiondStateVariables( ){
-            /*!
-             * Get the value of the derivative of the hardening function w.r.t. the state variables
-             */
-
-            if ( !_dHardeningFunctiondStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdHardeningFunctiondStateVariables( ) );
-
-            }
-
-            return &_dHardeningFunctiondStateVariables.second;
-
-        }
-
-        const floatType* residual::getPlasticMultiplier( ){
-            /*!
-             * Get the plastic multiplier
-             */
-
-            if ( !_plasticMultiplier.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPlasticMultiplier( ) );
-
-            }
-
-            return &_plasticMultiplier.second;
-
-        }
-
-        const floatVector* residual::getdPlasticMultiplierdCauchyStress( ){
-            /*!
-             * Get the derivative of the plastic multiplier w.r.t. the Cauchy stress
-             */
-
-            if ( !_dPlasticMultiplierdCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticMultiplierdCauchyStress( ) );
-
-            }
-
-            return &_dPlasticMultiplierdCauchyStress.second;
-
-        }
-
-        const floatVector* residual::getdPlasticMultiplierdF( ){
-            /*!
-             * Get the derivative of the plastic multiplier w.r.t. the deformation gradient
-             */
-
-            if ( !_dPlasticMultiplierdF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticMultiplierdF( ) );
-
-            }
-
-            return &_dPlasticMultiplierdF.second;
-
-        }
-
-        const floatVector* residual::getdPlasticMultiplierdSubFs( ){
-            /*!
-             * Get the derivative of the plastic multiplier w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dPlasticMultiplierdSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticMultiplierdSubFs( ) );
-
-            }
-
-            return &_dPlasticMultiplierdSubFs.second;
-
-        }
-
-        const floatType* residual::getdPlasticMultiplierdT( ){
-            /*!
-             * Get the derivative of the plastic multiplier w.r.t. the temperature
-             */
-
-            if ( !_dPlasticMultiplierdT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticMultiplierdT( ) );
-
-            }
-
-            return &_dPlasticMultiplierdT.second;
-
-        }
-
-        const floatVector* residual::getdPlasticMultiplierdStateVariables( ){
-            /*!
-             * Get the derivative of the plastic multiplier w.r.t. the state variables
-             */
-
-            if ( !_dPlasticMultiplierdStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticMultiplierdStateVariables( ) );
-
-            }
-
-            return &_dPlasticMultiplierdStateVariables.second;
-
-        }
-
-        const floatVector* residual::getVelocityGradient( ){
-            /*!
-             * Get the velocity gradient
-             */
-
-            if ( !_velocityGradient.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setVelocityGradient( ) );
-
-            }
-
-            return &_velocityGradient.second;
-
-        }
-
-        const floatMatrix* residual::getdVelocityGradientdCauchyStress( ){
-            /*!
-             * Get the derivative of the velocity gradient w.r.t. the Cauchy stress
-             */
-
-            if ( !_dVelocityGradientdCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdVelocityGradientdCauchyStress( ) );
-
-            }
-
-            return &_dVelocityGradientdCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdVelocityGradientdF( ){
-            /*!
-             * Get the derivative of the velocity gradient w.r.t. the deformation gradient
-             */
-
-            if ( !_dVelocityGradientdF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdVelocityGradientdF( ) );
-
-            }
-
-            return &_dVelocityGradientdF.second;
-
-        }
-
-        const floatMatrix* residual::getdVelocityGradientdSubFs( ){
-            /*!
-             * Get the derivative of the velocity gradient w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dVelocityGradientdSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdVelocityGradientdSubFs( ) );
-
-            }
-
-            return &_dVelocityGradientdSubFs.second;
-
-        }
-
-        const floatVector* residual::getdVelocityGradientdT( ){
-            /*!
-             * Get the derivative of the velocity gradient w.r.t. the temperature
-             */
-
-            if ( !_dVelocityGradientdT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdVelocityGradientdT( ) );
-
-            }
-
-            return &_dVelocityGradientdT.second;
-
-        }
-
-        const floatMatrix* residual::getdVelocityGradientdStateVariables( ){
-            /*!
-             * Get the derivative of the velocity gradient w.r.t. the state variables
-             */
-
-            if ( !_dVelocityGradientdStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdVelocityGradientdStateVariables( ) );
-
-            }
-
-            return &_dVelocityGradientdStateVariables.second;
-
-        }
-
-        const floatVector* residual::getStateVariableEvolutionRates( ){
-            /*!
-             * Get the state variable evolution rate
-             */
-
-            if ( !_stateVariableEvolutionRates.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setStateVariableEvolutionRates( ) );
-
-            }
-
-            return &_stateVariableEvolutionRates.second;
-
-        }
-
-        const floatMatrix* residual::getdStateVariableEvolutionRatesdCauchyStress( ){
-            /*!
-             * Get the derivative of the state variable evolution rate w.r.t. the Cauchy stress
-             */
-
-            if ( !_dStateVariableEvolutionRatesdCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdStateVariableEvolutionRatesdCauchyStress( ) );
-
-            }
-
-            return &_dStateVariableEvolutionRatesdCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdStateVariableEvolutionRatesdF( ){
-            /*!
-             * Get the derivative of the state variable evolution rate w.r.t. the deformation gradient
-             */
-
-            if ( !_dStateVariableEvolutionRatesdF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdStateVariableEvolutionRatesdF( ) );
-
-            }
-
-            return &_dStateVariableEvolutionRatesdF.second;
-
-        }
-
-        const floatMatrix* residual::getdStateVariableEvolutionRatesdSubFs( ){
-            /*!
-             * Get the derivative of the state variable evolution rate w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dStateVariableEvolutionRatesdSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdStateVariableEvolutionRatesdSubFs( ) );
-
-            }
-
-            return &_dStateVariableEvolutionRatesdSubFs.second;
-
-        }
-
-        const floatVector* residual::getdStateVariableEvolutionRatesdT( ){
-            /*!
-             * Get the derivative of the state variable evolution rate w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dStateVariableEvolutionRatesdT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdStateVariableEvolutionRatesdT( ) );
-
-            }
-
-            return &_dStateVariableEvolutionRatesdT.second;
-
-        }
-
-        const floatMatrix* residual::getdStateVariableEvolutionRatesdStateVariables( ){
-            /*!
-             * Get the derivative of the state variable evolution rate w.r.t. the state variables
-             */
-
-            if ( !_dStateVariableEvolutionRatesdStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdStateVariableEvolutionRatesdStateVariables( ) );
-
-            }
-
-            return &_dStateVariableEvolutionRatesdStateVariables.second;
-
-        }
-
-        const floatVector* residual::getPlasticDeformationGradient( ){
-            /*!
-             * Get the plastic deformation gradient
-             */
-
-            if ( !_plasticDeformationGradient.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPlasticDeformationGradient( ) );
-
-            }
-
-            return &_plasticDeformationGradient.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticDeformationGradientdCauchyStress( ){
-            /*!
-             * Get the derivative of the plastic deformation gradient w.r.t. the Cauchy stress
-             */
-
-            if ( !_dPlasticDeformationGradientdCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticDeformationGradientdCauchyStress( ) );
-
-            }
-
-            return &_dPlasticDeformationGradientdCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticDeformationGradientdF( ){
-            /*!
-             * Get the derivative of the plastic deformation gradient w.r.t. the deformation gradient
-             */
-
-            if ( !_dPlasticDeformationGradientdF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticDeformationGradientdF( ) );
-
-            }
-
-            return &_dPlasticDeformationGradientdF.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticDeformationGradientdSubFs( ){
-            /*!
-             * Get the derivative of the plastic deformation gradient w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dPlasticDeformationGradientdSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticDeformationGradientdSubFs( ) );
-
-            }
-
-            return &_dPlasticDeformationGradientdSubFs.second;
-
-        }
-
-        const floatVector* residual::getdPlasticDeformationGradientdT( ){
-            /*!
-             * Get the derivative of the plastic deformation gradient w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dPlasticDeformationGradientdT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticDeformationGradientdT( ) );
-
-            }
-
-            return &_dPlasticDeformationGradientdT.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticDeformationGradientdStateVariables( ){
-            /*!
-             * Get the derivative of the plastic deformation gradient w.r.t. the state variables
-             */
-
-            if ( !_dPlasticDeformationGradientdStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticDeformationGradientdStateVariables( ) );
-
-            }
-
-            return &_dPlasticDeformationGradientdStateVariables.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticDeformationGradientdPreviousCauchyStress( ){
-            /*!
-             * Get the derivative of the plastic deformation gradient w.r.t. the previous Cauchy stress
-             */
-
-            if ( !_dPlasticDeformationGradientdPreviousCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticDeformationGradientdPreviousCauchyStress( ) );
-
-            }
-
-            return &_dPlasticDeformationGradientdPreviousCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticDeformationGradientdPreviousF( ){
-            /*!
-             * Get the derivative of the plastic deformation gradient w.r.t. the previous deformation gradient
-             */
-
-            if ( !_dPlasticDeformationGradientdPreviousF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticDeformationGradientdPreviousF( ) );
-
-            }
-
-            return &_dPlasticDeformationGradientdPreviousF.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticDeformationGradientdPreviousSubFs( ){
-            /*!
-             * Get the derivative of the plastic deformation gradient w.r.t. the previous sub-deformation gradients
-             */
-
-            if ( !_dPlasticDeformationGradientdPreviousSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticDeformationGradientdPreviousSubFs( ) );
-
-            }
-
-            return &_dPlasticDeformationGradientdPreviousSubFs.second;
-
-        }
-
-        const floatVector* residual::getdPlasticDeformationGradientdPreviousT( ){
-            /*!
-             * Get the derivative of the plastic deformation gradient w.r.t. the previous sub-deformation gradients
-             */
-
-            if ( !_dPlasticDeformationGradientdPreviousT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticDeformationGradientdPreviousT( ) );
-
-            }
-
-            return &_dPlasticDeformationGradientdPreviousT.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticDeformationGradientdPreviousStateVariables( ){
-            /*!
-             * Get the derivative of the plastic deformation gradient w.r.t. the previous state variables
-             */
-
-            if ( !_dPlasticDeformationGradientdPreviousStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticDeformationGradientdPreviousStateVariables( ) );
-
-            }
-
-            return &_dPlasticDeformationGradientdPreviousStateVariables.second;
-
-        }
-
-        const floatVector* residual::getPlasticStateVariables( ){
-            /*!
-             * Get the plastic state variables
-             */
-
-            if ( !_plasticStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPlasticStateVariables( ) );
-
-            }
-
-            return &_plasticStateVariables.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticStateVariablesdCauchyStress( ){
-            /*!
-             * Get the derivative of the plastic state variables w.r.t. the Cauchy stress
-             */
-
-            if ( !_dPlasticStateVariablesdCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticStateVariablesdCauchyStress( ) );
-
-            }
-
-            return &_dPlasticStateVariablesdCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticStateVariablesdF( ){
-            /*!
-             * Get the derivative of the plastic state variables w.r.t. the deformation gradient
-             */
-
-            if ( !_dPlasticStateVariablesdF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticStateVariablesdF( ) );
-
-            }
-
-            return &_dPlasticStateVariablesdF.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticStateVariablesdSubFs( ){
-            /*!
-             * Get the derivative of the plastic state variables w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dPlasticStateVariablesdSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticStateVariablesdSubFs( ) );
-
-            }
-
-            return &_dPlasticStateVariablesdSubFs.second;
-
-        }
-
-        const floatVector* residual::getdPlasticStateVariablesdT( ){
-            /*!
-             * Get the derivative of the plastic state variables w.r.t. the temperature
-             */
-
-            if ( !_dPlasticStateVariablesdT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticStateVariablesdT( ) );
-
-            }
-
-            return &_dPlasticStateVariablesdT.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticStateVariablesdStateVariables( ){
-            /*!
-             * Get the derivative of the plastic state variables w.r.t. the state variables
-             */
-
-            if ( !_dPlasticStateVariablesdStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticStateVariablesdStateVariables( ) );
-
-            }
-
-            return &_dPlasticStateVariablesdStateVariables.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticStateVariablesdPreviousCauchyStress( ){
-            /*!
-             * Get the derivative of the plastic state variables w.r.t. the previous Cauchy stress
-             */
-
-            if ( !_dPlasticStateVariablesdPreviousCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticStateVariablesdPreviousCauchyStress( ) );
-
-            }
-
-            return &_dPlasticStateVariablesdPreviousCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticStateVariablesdPreviousF( ){
-            /*!
-             * Get the derivative of the plastic state variables w.r.t. the previous deformation gradient
-             */
-
-            if ( !_dPlasticStateVariablesdPreviousF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticStateVariablesdPreviousF( ) );
-
-            }
-
-            return &_dPlasticStateVariablesdPreviousF.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticStateVariablesdPreviousSubFs( ){
-            /*!
-             * Get the derivative of the plastic state variables w.r.t. the previous sub-deformation gradients
-             */
-
-            if ( !_dPlasticStateVariablesdPreviousSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticStateVariablesdPreviousSubFs( ) );
-
-            }
-
-            return &_dPlasticStateVariablesdPreviousSubFs.second;
-
-        }
-
-        const floatVector* residual::getdPlasticStateVariablesdPreviousT( ){
-            /*!
-             * Get the derivative of the plastic state variables w.r.t. the previous temperature
-             */
-
-            if ( !_dPlasticStateVariablesdPreviousT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticStateVariablesdPreviousT( ) );
-
-            }
-
-            return &_dPlasticStateVariablesdPreviousT.second;
-
-        }
-
-        const floatMatrix* residual::getdPlasticStateVariablesdPreviousStateVariables( ){
-            /*!
-             * Get the derivative of the plastic state variables w.r.t. the previous state variables
-             */
-
-            if ( !_dPlasticStateVariablesdPreviousStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPlasticStateVariablesdPreviousStateVariables( ) );
-
-            }
-
-            return &_dPlasticStateVariablesdPreviousStateVariables.second;
-
-        }
-
-        const floatVector* residual::getStateVariables( ){
-            /*!
-             * Get the state variables
-             */
-
-            if ( !_stateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setStateVariables( ) );
-
-            }
-
-            return &_stateVariables.second;
-
-        }
-
-        const floatVector* residual::getPreviousDrivingStress( ){
-            /*!
-             * Get the previous driving stress
-             */
-
-            if ( !_previousDrivingStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousDrivingStress( ) );
-
-            }
-
-            return &_previousDrivingStress.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousDrivingStressdPreviousCauchyStress( ){
-            /*!
-             * Get the derivative of the previous driving stress with respect to the previous Cauchy stress
-             */
-
-            if ( !_dPreviousDrivingStressdPreviousCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousDrivingStressdPreviousCauchyStress( ) );
-
-            }
-
-            return &_dPreviousDrivingStressdPreviousCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousDrivingStressdPreviousF( ){
-            /*!
-             * Get the derivative of the previous driving stress with respect to the previous deformation gradient
-             */
-
-            if ( !_dPreviousDrivingStressdPreviousF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousDrivingStressdPreviousF( ) );
-
-            }
-
-            return &_dPreviousDrivingStressdPreviousF.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousDrivingStressdPreviousSubFs( ){
-            /*!
-             * Get the derivative of the previous driving stress with respect to the previous sub-deformation gradients
-             */
-
-            if ( !_dPreviousDrivingStressdPreviousSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousDrivingStressdPreviousSubFs( ) );
-
-            }
-
-            return &_dPreviousDrivingStressdPreviousSubFs.second;
-
-        }
-
-        const floatVector* residual::getPreviousFlowDirection( ){
-            /*!
-             * Get the previous flow direction
-             */
-
-            if ( !_previousFlowDirection.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousFlowDirection( ) );
-
-            }
-
-            return &_previousFlowDirection.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousFlowDirectiondPreviousCauchyStress( ){
-            /*!
-             * Get the derivative of the previous flow direction w.r.t. the Cauchy stress
-             */
-
-            if ( !_dPreviousFlowDirectiondPreviousCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousFlowDirectiondPreviousCauchyStress( ) );
-
-            }
-
-            return &_dPreviousFlowDirectiondPreviousCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousFlowDirectiondPreviousF( ){
-            /*!
-             * Get the derivative of the previous flow direction w.r.t. the deformation gradient
-             */
-
-            if ( !_dPreviousFlowDirectiondPreviousF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousFlowDirectiondPreviousF( ) );
-
-            }
-
-            return &_dPreviousFlowDirectiondPreviousF.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousFlowDirectiondPreviousSubFs( ){
-            /*!
-             * Get the derivative of the previous flow direction w.r.t. the sub-deformation gradients
-             */
-
-            if ( !_dPreviousFlowDirectiondPreviousSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousFlowDirectiondPreviousSubFs( ) );
-
-            }
-
-            return &_dPreviousFlowDirectiondPreviousSubFs.second;
-
-        }
-
-        const floatType* residual::getPreviousYieldFunction( ){
-            /*!
-             * Get the previous value of the yield function
-             */
-
-            if ( !_previousYieldFunction.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousYieldFunction( ) );
-
-            }
-
-            return &_previousYieldFunction.second;
-
-        }
-
-        const floatType* residual::getPreviousPlasticThermalMultiplier( ){
-            /*!
-             * Get the previous value of the plastic thermal multiplier
-             */
-
-            if ( !_previousPlasticThermalMultiplier.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousPlasticThermalMultiplier( ) );
-
-            }
-
-            return &_previousPlasticThermalMultiplier.second;
-
-        }
-
-        const floatType* residual::getdPreviousPlasticThermalMultiplierdPreviousT( ){
-            /*!
-             * Get the previous value of the derivative of the plastic thermal multiplier w.r.t. the previous temperature
-             */
-
-            if ( !_dPreviousPlasticThermalMultiplierdPreviousT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticThermalMultiplierdPreviousT( ) );
-
-            }
-
-            return &_dPreviousPlasticThermalMultiplierdPreviousT.second;
-
-        }
-
-        const floatType* residual::getPreviousDragStress( ){
-            /*!
-             * Get the previous value of the drag stress
-             */
-
-            if ( !_previousDragStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousDragStress( ) );
-
-            }
-
-            return &_previousDragStress.second;
-
-        }
-
-        const floatVector* residual::getdPreviousDragStressdPreviousStateVariables( ){
-            /*!
-             * Get the derivative of the previous value of the drag stress w.r.t. the previous state variables
-             */
-
-            if ( !_dPreviousDragStressdPreviousStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousDragStressdPreviousStateVariables( ) );
-
-            }
-
-            return &_dPreviousDragStressdPreviousStateVariables.second;
-
-        }
-
-        const floatType* residual::getPreviousHardeningFunction( ){
-            /*!
-             * Get the previous value of the hardening function
-             */
-
-            if ( !_previousHardeningFunction.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousHardeningFunction( ) );
-
-            }
-
-            return &_previousHardeningFunction.second;
-
-        }
-
-        const floatVector* residual::getdPreviousHardeningFunctiondPreviousStateVariables( ){
-            /*!
-             * Get the derivative of the previous value of the hardening function w.r.t. the previous state variables
-             */
-
-            if ( !_dPreviousHardeningFunctiondPreviousStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousHardeningFunctiondPreviousStateVariables( ) );
-
-            }
-
-            return &_dPreviousHardeningFunctiondPreviousStateVariables.second;
-
-        }
-
-        const floatType* residual::getPreviousPlasticMultiplier( ){
-            /*!
-             * Get the previous plastic multiplier
-             */
-
-            if ( !_previousPlasticMultiplier.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousPlasticMultiplier( ) );
-
-            }
-
-            return &_previousPlasticMultiplier.second;
-
-        }
-
-        const floatVector* residual::getdPreviousPlasticMultiplierdPreviousCauchyStress( ){
-            /*!
-             * Get the derivative of the previous plastic multiplier w.r.t. the previous Cauchy stress
-             */
-
-            if ( !_dPreviousPlasticMultiplierdPreviousCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticMultiplierdPreviousCauchyStress( ) );
-
-            }
-
-            return &_dPreviousPlasticMultiplierdPreviousCauchyStress.second;
-
-        }
-
-        const floatVector* residual::getdPreviousPlasticMultiplierdPreviousF( ){
-            /*!
-             * Get the derivative of the previous plastic multiplier w.r.t. the previous deformation gradient
-             */
-
-            if ( !_dPreviousPlasticMultiplierdPreviousF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticMultiplierdPreviousF( ) );
-
-            }
-
-            return &_dPreviousPlasticMultiplierdPreviousF.second;
-
-        }
-
-        const floatVector* residual::getdPreviousPlasticMultiplierdPreviousSubFs( ){
-            /*!
-             * Get the derivative of the previous plastic multiplier w.r.t. the previous sub-deformation gradients
-             */
-
-            if ( !_dPreviousPlasticMultiplierdPreviousSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticMultiplierdPreviousSubFs( ) );
-
-            }
-
-            return &_dPreviousPlasticMultiplierdPreviousSubFs.second;
-
-        }
-
-        const floatType* residual::getdPreviousPlasticMultiplierdPreviousT( ){
-            /*!
-             * Get the derivative of the previous plastic multiplier w.r.t. the previous temperature
-             */
-
-            if ( !_dPreviousPlasticMultiplierdPreviousT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticMultiplierdPreviousT( ) );
-
-            }
-
-            return &_dPreviousPlasticMultiplierdPreviousT.second;
-
-        }
-
-        const floatVector* residual::getdPreviousPlasticMultiplierdPreviousStateVariables( ){
-            /*!
-             * Get the derivative of the previous plastic multiplier w.r.t. the previous state variables
-             */
-
-            if ( !_dPreviousPlasticMultiplierdPreviousStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousPlasticMultiplierdPreviousStateVariables( ) );
-
-            }
-
-            return &_dPreviousPlasticMultiplierdPreviousStateVariables.second;
-
-        }
-
-        const floatVector* residual::getPreviousVelocityGradient( ){
-            /*!
-             * Get the previous velocity gradient
-             */
-
-            if ( !_previousVelocityGradient.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousVelocityGradient( ) );
-
-            }
-
-            return &_previousVelocityGradient.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousVelocityGradientdPreviousCauchyStress( ){
-            /*!
-             * Get the derivative of the previous velocity gradient w.r.t.
-             * the previous Cauchy stress.
-             */
-
-            if ( !_dPreviousVelocityGradientdPreviousCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousVelocityGradientdPreviousCauchyStress( ) );
-
-            }
-
-            return &_dPreviousVelocityGradientdPreviousCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousVelocityGradientdPreviousF( ){
-            /*!
-             * Get the derivative of the previous velocity gradient w.r.t.
-             * the previous deformation gradient
-             */
-
-            if ( !_dPreviousVelocityGradientdPreviousF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousVelocityGradientdPreviousF( ) );
-
-            }
-
-            return &_dPreviousVelocityGradientdPreviousF.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousVelocityGradientdPreviousSubFs( ){
-            /*!
-             * Get the derivative of the previous velocity gradient w.r.t.
-             * the previous sub-deformation gradients
-             */
-
-            if ( !_dPreviousVelocityGradientdPreviousSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousVelocityGradientdPreviousSubFs( ) );
-
-            }
-
-            return &_dPreviousVelocityGradientdPreviousSubFs.second;
-
-        }
-
-        const floatVector* residual::getdPreviousVelocityGradientdPreviousT( ){
-            /*!
-             * Get the derivative of the previous velocity gradient w.r.t.
-             * the previous temperature
-             */
-
-            if ( !_dPreviousVelocityGradientdPreviousT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousVelocityGradientdPreviousT( ) );
-
-            }
-
-            return &_dPreviousVelocityGradientdPreviousT.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousVelocityGradientdPreviousStateVariables( ){
-            /*!
-             * Get the derivative of the previous velocity gradient w.r.t.
-             * the previous state variables
-             */
-
-            if ( !_dPreviousVelocityGradientdPreviousStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousVelocityGradientdPreviousStateVariables( ) );
-
-            }
-
-            return &_dPreviousVelocityGradientdPreviousStateVariables.second;
-
-        }
-
-        const floatVector* residual::getPreviousStateVariableEvolutionRates( ){
-            /*!
-             * Get the previous state variable evolution rate
-             */
-
-            if ( !_previousStateVariableEvolutionRates.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousStateVariableEvolutionRates( ) );
-
-            }
-
-            return &_previousStateVariableEvolutionRates.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ){
-            /*!
-             * Get the derivative of the previous state variable evolution rate w.r.t. the previous Cauchy stress
-             */
-
-            if ( !_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ) );
-
-            }
-
-            return &_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousStateVariableEvolutionRatesdPreviousF( ){
-            /*!
-             * Get the derivative of the previous state variable evolution rate w.r.t. the previous deformation gradient
-             */
-
-            if ( !_dPreviousStateVariableEvolutionRatesdPreviousF.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousStateVariableEvolutionRatesdPreviousF( ) );
-
-            }
-
-            return &_dPreviousStateVariableEvolutionRatesdPreviousF.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousStateVariableEvolutionRatesdPreviousSubFs( ){
-            /*!
-             * Get the derivative of the previous state variable evolution rate w.r.t. the previous sub-deformation gradients
-             */
-
-            if ( !_dPreviousStateVariableEvolutionRatesdPreviousSubFs.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousStateVariableEvolutionRatesdPreviousSubFs( ) );
-
-            }
-
-            return &_dPreviousStateVariableEvolutionRatesdPreviousSubFs.second;
-
-        }
-
-        const floatVector* residual::getdPreviousStateVariableEvolutionRatesdPreviousT( ){
-            /*!
-             * Get the derivative of the previous state variable evolution rate w.r.t. the previous sub-deformation gradients
-             */
-
-            if ( !_dPreviousStateVariableEvolutionRatesdPreviousT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousStateVariableEvolutionRatesdPreviousT( ) );
-
-            }
-
-            return &_dPreviousStateVariableEvolutionRatesdPreviousT.second;
-
-        }
-
-        const floatMatrix* residual::getdPreviousStateVariableEvolutionRatesdPreviousStateVariables( ){
-            /*!
-             * Get the derivative of the previous state variable evolution rate w.r.t. the previous state variables
-             */
-
-            if ( !_dPreviousStateVariableEvolutionRatesdPreviousStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) );
-
-            }
-
-            return &_dPreviousStateVariableEvolutionRatesdPreviousStateVariables.second;
-
-        }
-
-        const floatVector* residual::getPreviousStateVariables( ){
-            /*!
-             * Get the previous state variables
-             */
-
-            if ( !_previousStateVariables.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setPreviousStateVariables( ) );
-
-            }
-
-            return &_previousStateVariables.second;
-
-        }
-
-        const floatVector* residual::getPeryznaParameters( ){
-            /*!
-             * Get the Peryzna parameters
-             */
-
-            if ( !_peryznaParameters.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Peryzna parameters not defined but required" ) );
-
-            }
-
-            return &_peryznaParameters.second;
-
-        }
-
-        const floatVector* residual::getDragStressParameters( ){
-            /*!
-             * Get the drag stress parameters
-             */
-
-            if ( !_dragStressParameters.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Drag stress parameters not defined but required" ) );
-
-            }
-
-            return &_dragStressParameters.second;
-
-        }
-
-        const floatVector* residual::getThermalParameters( ){
-            /*!
-             * Get the thermal parameters
-             */
-
-            if ( !_thermalParameters.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Thermal parameters not defined but required" ) );
-
-            }
-
-            return &_thermalParameters.second;
-
-        }
-
-        const floatVector* residual::getYieldParameters( ){
-            /*!
-             * Get the yield parameters
-             */
-
-            if ( !_yieldParameters.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Yield parameters not defined but required" ) );
-
-            }
-
-            return &_yieldParameters.second;
-
-        }
-
-        const floatVector* residual::getFlowParameters( ){
-            /*!
-             * Get the flow parameters
-             */
-
-            if ( !_flowParameters.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Flow parameters not defined but required" ) );
-
-            }
-
-            return &_flowParameters.second;
-
-        }
-
-        const floatVector* residual::getHardeningParameters( ){
-            /*!
-             * Get the hardening parameters
-             */
-
-            if ( !_hardeningParameters.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Hardening parameters not defined but required" ) );
-
-            }
-
-            return &_hardeningParameters.second;
 
         }
 
@@ -6049,17 +3010,17 @@ namespace tardigradeHydra{
 
             }
 
-            setPeryznaParameters( { parameters[ 0 ] } );
+            set_peryznaParameters( { parameters[ 0 ] } );
 
-            setDragStressParameters( { parameters[ 1 ], parameters[ 2 ] } );
+            set_dragStressParameters( { parameters[ 1 ], parameters[ 2 ] } );
 
-            setThermalParameters( { parameters[ 3 ], parameters[ 4 ], parameters[ 5 ] } );
+            set_thermalParameters( { parameters[ 3 ], parameters[ 4 ], parameters[ 5 ] } );
 
-            setYieldParameters( { parameters[ 6 ], parameters[ 7 ] } );
+            set_yieldParameters( { parameters[ 6 ], parameters[ 7 ] } );
 
-            setFlowParameters( { 0., parameters[ 8 ] } );
+            set_flowParameters( { 0., parameters[ 8 ] } );
 
-            setHardeningParameters( { parameters[ 9 ], parameters[ 10 ] } );
+            set_hardeningParameters( { parameters[ 9 ], parameters[ 10 ] } );
 
         }
 

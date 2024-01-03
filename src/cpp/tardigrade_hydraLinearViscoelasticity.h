@@ -135,33 +135,17 @@ namespace tardigradeHydra{
 
                 virtual void decomposePreviousElasticDeformation( );
 
-                void setJe( const floatType &Je );
-
-                const floatType* getJe( );
-
-                void setFehat( const floatVector &Fehat );
-
-                const floatVector* getFehat( );
-
-                void setPreviousJe( const floatType &previousJe );
-
-                const floatType* getPreviousJe( );
-
-                void setPreviousFehat( const floatVector &previousFehat );
-
-                const floatVector* getPreviousFehat( );
+                virtual void setdJedFe( const bool isPrevious );
 
                 virtual void setdJedFe( );
 
-                void setdJedFe( const floatVector &dJedFe );
-
-                const floatVector *getdJedFe( );
+                virtual void setdFehatdFe( const bool isPrevious );
 
                 virtual void setdFehatdFe( );
 
-                void setdFehatdFe( const floatMatrix &dFehatdFe );
+                virtual void setPreviousdJedFe( );
 
-                const floatMatrix *getdFehatdFe( );
+                virtual void setPreviousdFehatdFe( );
 
                 void setNumStateVariables( const unsigned int numStateVariables );
 
@@ -174,38 +158,6 @@ namespace tardigradeHydra{
 
                 virtual floatVector computedRateMultiplierdVariables( const floatVector &variables, const floatVector &parameters );
 
-                virtual void setVolumetricRateMultiplier( const floatType &volumetricRateMultiplier );
-
-                virtual void setPreviousVolumetricRateMultiplier( const floatType &previousVolumetricRateMultiplier );
-
-                virtual void setdVolumetricRateMultiplierdT( const floatType &dVolumetricRateMultiplierdT );
-
-                virtual void setdPreviousVolumetricRateMultiplierdPreviousT( const floatType &dPreviousVolumetricRateMultiplierdPreviousT );
-
-                const floatType* getVolumetricRateMultiplier( );
-
-                const floatType* getPreviousVolumetricRateMultiplier( );
-
-                const floatType* getdVolumetricRateMultiplierdT( );
-
-                const floatType* getdPreviousVolumetricRateMultiplierdPreviousT( );
-
-                virtual void setIsochoricRateMultiplier( const floatType &isochoricRateMultiplier );
-
-                virtual void setPreviousIsochoricRateMultiplier( const floatType &previousIsochoricRateMultiplier );
-
-                virtual void setdIsochoricRateMultiplierdT( const floatType &dRateMultiplierdT );
-
-                virtual void setdPreviousIsochoricRateMultiplierdPreviousT( const floatType &dPreviousRateMultiplierdPreviousT );
-
-                const floatType* getIsochoricRateMultiplier( );
-
-                const floatType* getPreviousIsochoricRateMultiplier( );
-
-                const floatType* getdIsochoricRateMultiplierdT( );
-
-                const floatType* getdPreviousIsochoricRateMultiplierdPreviousT( );
-
                 void setVolumetricTemperatureParameters( const floatVector &parameters );
 
                 void setIsochoricTemperatureParameters( const floatVector &parameters );
@@ -214,51 +166,7 @@ namespace tardigradeHydra{
 
                 virtual floatVector getIsochoricViscoelasticParameters( );
 
-                void setPK2Stress( const floatVector &PK2Stress );
-
-                void setPK2MeanStress( const floatType &PK2MeanStress );
-
-                void setPK2IsochoricStress( const floatVector &PK2IsochoricStress );
-
-                void setdPK2MeanStressdFe( const floatVector &dPK2MeanStressdFe );
-
-                void setdPK2IsochoricStressdFe( const floatMatrix &dPK2IsochoricStressdFe );
-
-                void setdPK2MeanStressdT( const floatType &dPK2MeanStressdT );
-
-                void setdPK2IsochoricStressdT( const floatVector &dPK2IsochoricStressdT );
-
-                void setdPK2StressdFe( const floatMatrix &dPK2StressdFe );
-
-                void setdPK2StressdT( const floatVector &dPK2StressdT );
-
-                void setdCauchyStressdT( const floatVector &dCauchyStressdT );
-
                 void setdRdT( const floatVector &dRdT );
-
-                const floatType* getPK2MeanStress( );
-
-                const floatVector* getPK2IsochoricStress( );
-
-                const floatVector* getdPK2MeanStressdFe( );
-
-                const floatMatrix* getdPK2IsochoricStressdFe( );
-
-                const floatType* getdPK2MeanStressdT( );
-
-                const floatVector* getdPK2IsochoricStressdT( );
-
-                const floatVector* getdPK2StressdT( );
-
-                const floatVector* getdCauchyStressdT( );
-
-                void setUpdatedVolumetricViscoelasticStateVariables( floatVector &volumetricViscoelasticStateVariables );
-
-                void setUpdatedIsochoricViscoelasticStateVariables( floatVector &isochoricViscoelasticStateVariables );
-
-                const floatVector* getUpdatedVolumetricViscoelasticStateVariables( );
-
-                const floatVector* getUpdatedIsochoricViscoelasticStateVariables( );
 
             protected:
 
@@ -277,6 +185,118 @@ namespace tardigradeHydra{
                 virtual void setVolumetricTaus( const floatVector &taus );
 
                 virtual void setIsochoricTaus( const floatVector &taus );
+
+                virtual void setPK2Stress( const bool isPrevious ) override;
+
+                virtual void decomposeParameterVector( const floatVector &parameters );
+
+                virtual void setVolumetricRateMultiplier( );
+
+                virtual void setPreviousVolumetricRateMultiplier( );
+
+                virtual void setIsochoricRateMultiplier( );
+
+                virtual void setPreviousIsochoricRateMultiplier( );
+
+                virtual void setdVolumetricRateMultiplierdT( );
+
+                virtual void setdPreviousVolumetricRateMultiplierdPreviousT( );
+
+                virtual void setdIsochoricRateMultiplierdT( );
+
+                virtual void setdPreviousIsochoricRateMultiplierdPreviousT( );
+
+                virtual void setPK2MeanStress( const bool isPrevious );
+
+                virtual void setPK2IsochoricStress( const bool isPrevious );
+
+                virtual void setPK2MeanStress( );
+
+                virtual void setPK2IsochoricStress( );
+
+                virtual void setdPK2MeanStressdFe( );
+
+                virtual void setdPK2IsochoricStressdFe( );
+
+                virtual void setdVolumetricISVsdFe( );
+
+                virtual void setdIsochoricISVsdFe( );
+
+                virtual void setdPK2MeanStressdT( );
+
+                virtual void setdPK2IsochoricStressdT( );
+
+                virtual void setdVolumetricISVsdT( );
+
+                virtual void setdIsochoricISVsdT( );
+
+                virtual void setdPK2MeanStressdPreviousFe( );
+
+                virtual void setdPK2IsochoricStressdPreviousFe( );
+
+                virtual void setdVolumetricISVsdPreviousFe( );
+
+                virtual void setdIsochoricISVsdPreviousFe( );
+
+                virtual void setdPK2MeanStressdPreviousT( );
+
+                virtual void setdPK2IsochoricStressdPreviousT( );
+
+                virtual void setdVolumetricISVsdPreviousT( );
+
+                virtual void setdIsochoricISVsdPreviousT( );
+
+                virtual void setdPK2MeanStressdPreviousISVs( );
+
+                virtual void setdPK2IsochoricStressdPreviousISVs( );
+
+                virtual void setdVolumetricISVsdPreviousISVs( );
+
+                virtual void setdIsochoricISVsdPreviousISVs( );
+
+                virtual void setPreviousPK2MeanStress( );
+
+                virtual void setPreviousPK2IsochoricStress( );
+
+                virtual void setPreviousdPK2MeanStressdFe( );
+
+                virtual void setPreviousdPK2IsochoricStressdFe( );
+
+                virtual void setPreviousdPK2MeanStressdT( );
+
+                virtual void setPreviousdPK2IsochoricStressdT( );
+
+                virtual void setdPK2StressdFe( const bool isPrevious );
+
+                virtual void setdPK2StressdFe( ) override;
+
+                virtual void setPreviousdPK2StressdFe( ) override;
+
+                virtual void setdPK2StressdPreviousFe( ) override;
+
+                virtual void setdPK2StressdT( );
+
+                virtual void setdPK2StressdPreviousT( );
+
+                virtual void setdPK2StressdPreviousISVs( );
+
+                virtual void setPreviousdPK2StressdT( );
+
+                virtual void setdCauchyStressdT( );
+
+                virtual void setdCauchyStressdPreviousT( );
+
+                virtual void setdCauchyStressdPreviousISVs( );
+
+                virtual void setPreviousdCauchyStressdT( );
+
+                virtual void setdRdT( ) override;
+
+                virtual void setUpdatedVolumetricViscoelasticStateVariables( );
+
+                virtual void setUpdatedIsochoricViscoelasticStateVariables( );
+
+                virtual void setCurrentAdditionalStateVariables( );
 
             private:
 
@@ -313,99 +333,113 @@ namespace tardigradeHydra{
                 // Friend classes
                 friend class tardigradeHydra::linearViscoelasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
         
-                dataStorage< floatType > _Je;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Je,                                          floatType,   decomposeElasticDeformation                    )
 
-                dataStorage< floatVector > _Fehat;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Fehat,                                       floatVector, decomposeElasticDeformation                    )
 
-                dataStorage< floatType > _previousJe;
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousJe,                                  floatType,   decomposePreviousElasticDeformation            )
 
-                dataStorage< floatVector > _previousFehat;
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousFehat,                               floatVector, decomposePreviousElasticDeformation            )
 
-                dataStorage< floatVector > _dJedFe;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dJedFe,                                      floatVector, setdJedFe                                      )
 
-                dataStorage< floatMatrix > _dFehatdFe;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFehatdFe,                                   floatMatrix, setdFehatdFe                                   )
 
-                dataStorage< floatType > _volumetricRateMultiplier;
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdJedFe,                              floatVector, setPreviousdJedFe                              )
 
-                dataStorage< floatType > _previousVolumetricRateMultiplier;
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdFehatdFe,                           floatMatrix, setPreviousdFehatdFe                           )
 
-                dataStorage< floatType > _isochoricRateMultiplier;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, volumetricRateMultiplier,                    floatType,   setVolumetricRateMultiplier                    )
 
-                dataStorage< floatType > _previousIsochoricRateMultiplier;
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousVolumetricRateMultiplier,            floatType,   setPreviousVolumetricRateMultiplier            )
 
-                dataStorage< floatType > _dVolumetricRateMultiplierdT;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, isochoricRateMultiplier,                     floatType,   setIsochoricRateMultiplier                     )
 
-                dataStorage< floatType > _dPreviousVolumetricRateMultiplierdPreviousT;
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousIsochoricRateMultiplier,             floatType,   setPreviousIsochoricRateMultiplier             )
 
-                dataStorage< floatType > _dIsochoricRateMultiplierdT;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVolumetricRateMultiplierdT,                 floatType,   setdVolumetricRateMultiplierdT                 )
 
-                dataStorage< floatType > _dPreviousIsochoricRateMultiplierdPreviousT;
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousVolumetricRateMultiplierdPreviousT, floatType,   setdPreviousVolumetricRateMultiplierdPreviousT )
 
-                dataStorage< floatVector > _volumetricViscoelasticStateVariables;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dIsochoricRateMultiplierdT,                  floatType,   setdIsochoricRateMultiplierdT                  )
 
-                dataStorage< floatVector > _isochoricViscoelasticStateVariables;
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousIsochoricRateMultiplierdPreviousT,  floatType,   setdPreviousIsochoricRateMultiplierdPreviousT  )
 
-                dataStorage< floatType > _PK2MeanStress;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, volumetricViscoelasticStateVariables,        floatVector, setUpdatedVolumetricViscoelasticStateVariables )
 
-                dataStorage< floatVector > _PK2IsochoricStress;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, isochoricViscoelasticStateVariables,         floatVector, setUpdatedIsochoricViscoelasticStateVariables  )
 
-                dataStorage< floatType > _dPK2MeanStressdT;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2MeanStress,                               floatType,   setPK2MeanStress                               )
 
-                dataStorage< floatVector > _dPK2MeanStressdFe;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2IsochoricStress,                          floatVector, setPK2IsochoricStress                          )
 
-                dataStorage< floatVector > _dPK2IsochoricStressdT;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2MeanStressdT,                            floatType,   setdPK2MeanStressdT                            )
 
-                dataStorage< floatMatrix > _dPK2IsochoricStressdFe;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2MeanStressdFe,                           floatVector, setdPK2MeanStressdFe                           )
 
-                dataStorage< floatVector > _dPK2StressdT;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2MeanStressdPreviousT,                    floatType,   setdPK2MeanStressdPreviousT                    )
 
-                dataStorage< floatVector > _dCauchyStressdT;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2MeanStressdPreviousFe,                   floatVector, setdPK2MeanStressdPreviousFe                   )
 
-                virtual void setPK2Stress( ) override;
-    
-                virtual void decomposeParameterVector( const floatVector &parameters );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2MeanStressdPreviousISVs,                 floatVector, setdPK2MeanStressdPreviousISVs                 )
 
-                virtual void setVolumetricRateMultiplier( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVolumetricISVsdT,                           floatVector, setdVolumetricISVsdT                           )
 
-                virtual void setPreviousVolumetricRateMultiplier( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVolumetricISVsdFe,                          floatMatrix, setdVolumetricISVsdFe                          )
 
-                virtual void setIsochoricRateMultiplier( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVolumetricISVsdPreviousT,                   floatVector, setdVolumetricISVsdPreviousT                   )
 
-                virtual void setPreviousIsochoricRateMultiplier( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVolumetricISVsdPreviousFe,                  floatMatrix, setdVolumetricISVsdPreviousFe                  )
 
-                virtual void setdVolumetricRateMultiplierdT( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVolumetricISVsdPreviousISVs,                floatMatrix, setdPK2MeanStressdPreviousISVs                 )
 
-                virtual void setdPreviousVolumetricRateMultiplierdPreviousT( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2IsochoricStressdT,                       floatVector, setdPK2IsochoricStressdT                       )
 
-                virtual void setdIsochoricRateMultiplierdT( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2IsochoricStressdFe,                      floatMatrix, setdPK2IsochoricStressdFe                      )
 
-                virtual void setdPreviousIsochoricRateMultiplierdPreviousT( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2IsochoricStressdPreviousT,               floatVector, setdPK2IsochoricStressdPreviousT               )
 
-                virtual void setPK2MeanStress( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2IsochoricStressdPreviousFe,              floatMatrix, setdPK2IsochoricStressdPreviousFe              )
 
-                virtual void setPK2IsochoricStress( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2IsochoricStressdPreviousISVs,            floatMatrix, setdPK2IsochoricStressdPreviousISVs            )
 
-                virtual void setdPK2MeanStressdFe( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dIsochoricISVsdT,                            floatVector, setdIsochoricISVsdT                            )
 
-                virtual void setdPK2IsochoricStressdFe( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dIsochoricISVsdFe,                           floatMatrix, setdIsochoricISVsdFe                           )
 
-                virtual void setdPK2MeanStressdT( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dIsochoricISVsdPreviousT,                    floatVector, setdIsochoricISVsdPreviousT                    )
 
-                virtual void setdPK2IsochoricStressdT( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dIsochoricISVsdPreviousFe,                   floatMatrix, setdIsochoricISVsdPreviousFe                   )
 
-                virtual void setdPK2StressdFe( ) override;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dIsochoricISVsdPreviousISVs,                 floatMatrix, setdIsochoricISVsdPreviousISVs                 )
 
-                virtual void setdPK2StressdT( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousPK2MeanStress,                       floatType,   setPreviousPK2MeanStress                       )
 
-                virtual void setdCauchyStressdT( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousPK2IsochoricStress,                  floatVector, setPreviousPK2IsochoricStress                  )
 
-                virtual void setdRdT( ) override;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdPK2MeanStressdT,                    floatType,   setPreviousdPK2MeanStressdT                    )
 
-                virtual void setUpdatedVolumetricViscoelasticStateVariables( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdPK2MeanStressdFe,                   floatVector, setPreviousdPK2MeanStressdFe                   )
 
-                virtual void setUpdatedIsochoricViscoelasticStateVariables( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdPK2IsochoricStressdT,               floatVector, setPreviousdPK2IsochoricStressdT               )
 
-                virtual void setCurrentAdditionalStateVariables( );
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdPK2IsochoricStressdFe,              floatMatrix, setPreviousdPK2IsochoricStressdFe              )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdT,                                floatVector, setdPK2StressdT                                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdPreviousT,                        floatVector, setdPK2StressdPreviousT                        )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdPreviousISVs,                     floatMatrix, setdPK2StressdPreviousISVs                     )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdT,                        floatVector, setPreviousdPK2StressdT                        )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdT,                             floatVector, setdCauchyStressdT                             )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPreviousT,                     floatVector, setdCauchyStressdPreviousT                     )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPreviousISVs,                  floatMatrix, setdCauchyStressdPreviousISVs                  )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdT,                     floatVector, setPreviousdCauchyStressdT                     )
 
         };
 

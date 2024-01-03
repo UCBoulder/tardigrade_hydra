@@ -49,138 +49,6 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setThermalGreenLagrangeStrain( const floatVector &thermalGreenLagrangeStrain ){
-            /*!
-             * Set the value of the thermal Green-Lagrange strain
-             * 
-             * \f$E^{\theta}_{IJ} = \frac{1}{2} \left( F_{iI}^{\theta} F_{iJ}^{\theta} - \delta_{IJ} \right) \f$
-             * 
-             * \param &thermalGreenLagrangeStrain: The thermal Green-Lagrange strain.
-             *     This strain is defined in the reference configuration of the thermal
-             *     deformation gradient
-             */
-
-            _thermalGreenLagrangeStrain.second = thermalGreenLagrangeStrain;
-
-            _thermalGreenLagrangeStrain.first = true;
-
-            addIterationData( &_thermalGreenLagrangeStrain );
-
-        }
-
-        void residual::setThermalDeformationGradient( const floatVector &thermalDeformationGradient ){
-            /*!
-             * Set the value of the thermal deformation gradient
-             * 
-             * \param &thermalDeformationGradient: The thermal deformation gradient
-             */
-
-            _thermalDeformationGradient.second = thermalDeformationGradient;
-
-            _thermalDeformationGradient.first = true;
-
-            addIterationData( &_thermalDeformationGradient );
-
-        }
-
-        void residual::setdThermalGreenLagrangeStraindT( const floatVector &dThermalGreenLagrangeStraindT ){
-            /*!
-             * Set the value of the derivative thermal Green-Lagrange strain w.r.t. the
-             * temperature.
-             * 
-             * \param &dThermalGreenLagrangeStraindT: The derivative of the thermal
-             *     Green-Lagrange strain w.r.t. the temperature. This strain is
-             *     defined in the reference configuration of the thermal deformation
-             *     gradient.
-             */
-
-            _dThermalGreenLagrangeStraindT.second = dThermalGreenLagrangeStraindT;
-
-            _dThermalGreenLagrangeStraindT.first = true;
-
-            addIterationData( &_dThermalGreenLagrangeStraindT );
-
-        }
-
-        void residual::setdThermalDeformationGradientdT( const floatVector &dThermalDeformationGradientdT ){
-            /*!
-             * Set the value of the derivative of the thermal deformation gradient
-             * w.r.t. the temperature.
-             * 
-             * \param &dThermalDeformationGradientdT: The derivative of the
-             *     thermal deformation gradient w.r..t the temperature.
-             */
-
-            _dThermalDeformationGradientdT.second = dThermalDeformationGradientdT;
-
-            _dThermalDeformationGradientdT.first = true;
-
-            addIterationData( &_dThermalDeformationGradientdT );
-
-        }
-
-        const floatVector* residual::getThermalGreenLagrangeStrain( ){
-            /*!
-             * Get the thermal Green-Lagrange strain
-             */
-
-            if ( !_thermalGreenLagrangeStrain.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setThermalGreenLagrangeStrain( ) );
-
-            }
-
-            return &_thermalGreenLagrangeStrain.second;
-
-        }
-
-        const floatVector* residual::getThermalDeformationGradient( ){
-            /*!
-             * Get the thermal deformation gradient
-             */
-
-            if ( !_thermalDeformationGradient.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setThermalDeformationGradient( ) );
-
-            }
-
-            return &_thermalDeformationGradient.second;
-
-        }
-
-        const floatVector* residual::getdThermalGreenLagrangeStraindT( ){
-            /*!
-             * Get the derivative of the thermal Green-Lagrange strain w.r.t.
-             * the temperature.
-             */
-
-            if ( !_dThermalGreenLagrangeStraindT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdThermalGreenLagrangeStraindT( ) );
-
-            }
-
-            return &_dThermalGreenLagrangeStraindT.second;
-
-        }
-
-        const floatVector* residual::getdThermalDeformationGradientdT( ){
-            /*!
-             * Get the derivative of the thermal deformation gradient w.r.t.
-             * the temperature.
-             */
-
-            if ( !_dThermalDeformationGradientdT.first ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( setdThermalDeformationGradientdT( ) );
-
-            }
-
-            return &_dThermalDeformationGradientdT.second;
-
-        }
-
         void residual::setThermalGreenLagrangeStrain( ){
             /*!
              * Set the thermal Green-Lagrange strain defined as
@@ -194,9 +62,9 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::quadraticThermalExpansion( *hydra->getTemperature( ), *getReferenceTemperature( ), *getLinearParameters( ), *getQuadraticParameters( ), thermalGreenLagrangeStrain, dThermalGreenLagrangeStraindT ) );
 
-            setThermalGreenLagrangeStrain( thermalGreenLagrangeStrain );
+            set_thermalGreenLagrangeStrain( thermalGreenLagrangeStrain );
 
-            setdThermalGreenLagrangeStraindT( dThermalGreenLagrangeStraindT );
+            set_dThermalGreenLagrangeStraindT( dThermalGreenLagrangeStraindT );
 
         }
 
@@ -214,15 +82,15 @@ namespace tardigradeHydra{
             floatVector eye( ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ) );
             tardigradeVectorTools::eye( eye );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( thermalDeformationGradient = tardigradeVectorTools::matrixSqrt( 2 * ( *getThermalGreenLagrangeStrain( ) ) + eye, *hydra->getDimension( ), dThermalGreenLagrangeStraindThermalDeformationGradient ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( thermalDeformationGradient = tardigradeVectorTools::matrixSqrt( 2 * ( *get_thermalGreenLagrangeStrain( ) ) + eye, *hydra->getDimension( ), dThermalGreenLagrangeStraindThermalDeformationGradient ) );
 
-            setThermalDeformationGradient( thermalDeformationGradient );
+            set_thermalDeformationGradient( thermalDeformationGradient );
 
             floatMatrix dThermalDeformationGradientdGreenLagrangeStrain;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( dThermalDeformationGradientdGreenLagrangeStrain = tardigradeVectorTools::inflate( 2 * tardigradeVectorTools::inverse( tardigradeVectorTools::appendVectors( dThermalGreenLagrangeStraindThermalDeformationGradient ), ( *dim ) * ( *dim ), ( *dim ) * ( *dim ) ), ( *dim ) * ( *dim ), ( *dim ) * ( *dim ) ) );
 
-            setdThermalDeformationGradientdT( tardigradeVectorTools::dot( dThermalDeformationGradientdGreenLagrangeStrain, *getdThermalGreenLagrangeStraindT( ) ) );
+            set_dThermalDeformationGradientdT( tardigradeVectorTools::dot( dThermalDeformationGradientdGreenLagrangeStrain, *get_dThermalGreenLagrangeStraindT( ) ) );
 
         }
 
@@ -251,7 +119,7 @@ namespace tardigradeHydra{
              * Defined as the residual's computed thermal deformation gradient minus the value stored in hydra's configurations.
              */
 
-            setResidual( *getThermalDeformationGradient( ) - ( *hydra->getConfigurations( ) )[ *getThermalConfigurationIndex( ) ] );
+            setResidual( *get_thermalDeformationGradient( ) - ( *hydra->get_configurations( ) )[ *getThermalConfigurationIndex( ) ] );
 
         }
 
@@ -279,7 +147,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            setdRdT( *getdThermalDeformationGradientdT( ) );
+            setdRdT( *get_dThermalDeformationGradientdT( ) );
 
         }
 

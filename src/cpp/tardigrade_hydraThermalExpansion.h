@@ -94,14 +94,6 @@ namespace tardigradeHydra{
 
                 void setQuadraticParameters( const floatVector &quadraticParameters );
 
-                void setThermalGreenLagrangeStrain( const floatVector &thermalGreenLagrangeStrain );
-
-                void setThermalDeformationGradient( const floatVector &thermalDeformationGradient );
-
-                void setdThermalGreenLagrangeStraindT( const floatVector &dThermalGreenLagrangeStraindT );
-
-                void setdThermalDeformationGradientdT( const floatVector &dThermalDeformationGradientdT );
-
                 //! Get the index of the thermal deformation configuration
                 const unsigned int* getThermalConfigurationIndex( ){ return &_thermalConfigurationIndex; };
 
@@ -114,13 +106,23 @@ namespace tardigradeHydra{
                 //! Get the quadratic parameters for the thermal expansion
                 const floatVector* getQuadraticParameters( ){ return &_quadraticParameters; }
 
-                const floatVector* getThermalGreenLagrangeStrain( );
+            protected:
 
-                const floatVector* getThermalDeformationGradient( );
+                virtual void setThermalGreenLagrangeStrain( );
 
-                const floatVector* getdThermalGreenLagrangeStraindT( );
+                virtual void setThermalDeformationGradient( );
 
-                const floatVector* getdThermalDeformationGradientdT( );
+                virtual void setdThermalGreenLagrangeStraindT( );
+
+                virtual void setdThermalDeformationGradientdT( );
+
+                virtual void setResidual( ) override;
+
+                virtual void setJacobian( ) override;
+
+                virtual void setdRdT( ) override;
+
+                virtual void setdRdF( ) override;
 
             private:
 
@@ -139,22 +141,6 @@ namespace tardigradeHydra{
 
                 using tardigradeHydra::residualBase::setAdditionalDerivatives;
 
-                virtual void setThermalGreenLagrangeStrain( );
-
-                virtual void setThermalDeformationGradient( );
-
-                virtual void setdThermalGreenLagrangeStraindT( );
-
-                virtual void setdThermalDeformationGradientdT( );
-
-                virtual void setResidual( ) override;
-
-                virtual void setJacobian( ) override;
-
-                virtual void setdRdT( ) override;
-
-                virtual void setdRdF( ) override;
-
                 unsigned int _thermalConfigurationIndex;
 
                 floatType _referenceTemperature;
@@ -163,13 +149,13 @@ namespace tardigradeHydra{
 
                 floatVector _quadraticParameters;
 
-                tardigradeHydra::dataStorage< floatVector > _thermalGreenLagrangeStrain;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalGreenLagrangeStrain,    floatVector, setThermalGreenLagrangeStrain    )
 
-                tardigradeHydra::dataStorage< floatVector > _dThermalGreenLagrangeStraindT;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalGreenLagrangeStraindT, floatVector, setdThermalGreenLagrangeStraindT )
 
-                tardigradeHydra::dataStorage< floatVector > _thermalDeformationGradient;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, thermalDeformationGradient,    floatVector, setThermalDeformationGradient    )
 
-                tardigradeHydra::dataStorage< floatVector > _dThermalDeformationGradientdT;
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(private, dThermalDeformationGradientdT, floatVector, setdThermalDeformationGradientdT )
 
                 virtual void decomposeParameters( const floatVector &parameters );
 
