@@ -2494,41 +2494,77 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
     //Test Jacobians
     constantType eps = 1e-6;
 
-    floatMatrix dCauchydF(                      9, floatVector(  9,                             0 ) );
+    floatMatrix dCauchydF(                              9, floatVector(  9,                             0 ) );
 
-    floatMatrix dSymmetricMicroStressdF(        9, floatVector(  9,                             0 ) );
+    floatMatrix dSymmetricMicroStressdF(                9, floatVector(  9,                             0 ) );
 
-    floatMatrix dHigherOrderStressdF(          27, floatVector(  9,                             0 ) );
+    floatMatrix dHigherOrderStressdF(                  27, floatVector(  9,                             0 ) );
 
-    floatMatrix dCauchydFn(                     9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+    floatMatrix dCauchydFn(                             9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
 
-    floatMatrix dSymmetricMicroStressdFn(       9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+    floatMatrix dSymmetricMicroStressdFn(               9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
 
-    floatMatrix dHigherOrderStressdFn(         27, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+    floatMatrix dHigherOrderStressdFn(                 27, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
 
-    floatMatrix dCauchydChi(                    9, floatVector(  9,                             0 ) );
+    floatMatrix dCauchydChi(                            9, floatVector(  9,                             0 ) );
 
-    floatMatrix dSymmetricMicroStressdChi(      9, floatVector(  9,                             0 ) );
+    floatMatrix dSymmetricMicroStressdChi(              9, floatVector(  9,                             0 ) );
 
-    floatMatrix dHigherOrderStressdChi(        27, floatVector(  9,                             0 ) );
+    floatMatrix dHigherOrderStressdChi(                27, floatVector(  9,                             0 ) );
 
-    floatMatrix dCauchydChin(                   9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+    floatMatrix dCauchydChin(                           9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
 
-    floatMatrix dSymmetricMicroStressdChin(     9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+    floatMatrix dSymmetricMicroStressdChin(             9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
 
-    floatMatrix dHigherOrderStressdChin(       27, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+    floatMatrix dHigherOrderStressdChin(               27, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
 
-    floatMatrix dCauchydGradChi(                9, floatVector( 27,                             0 ) );
+    floatMatrix dCauchydGradChi(                        9, floatVector( 27,                             0 ) );
 
-    floatMatrix dSymmetricMicroStressdGradChi(  9, floatVector( 27,                             0 ) );
+    floatMatrix dSymmetricMicroStressdGradChi(          9, floatVector( 27,                             0 ) );
 
-    floatMatrix dHigherOrderStressdGradChi(    27, floatVector( 27,                             0 ) );
+    floatMatrix dHigherOrderStressdGradChi(            27, floatVector( 27,                             0 ) );
 
-    floatMatrix dCauchydGradChin(               9, floatVector( ( numConfigurations - 1 ) * 27, 0 ) );
+    floatMatrix dCauchydGradChin(                       9, floatVector( ( numConfigurations - 1 ) * 27, 0 ) );
 
-    floatMatrix dSymmetricMicroStressdGradChin( 9, floatVector( ( numConfigurations - 1 ) * 27, 0 ) );
+    floatMatrix dSymmetricMicroStressdGradChin(         9, floatVector( ( numConfigurations - 1 ) * 27, 0 ) );
 
-    floatMatrix dHigherOrderStressdGradChin(   27, floatVector( ( numConfigurations - 1 ) * 27, 0 ) );
+    floatMatrix dHigherOrderStressdGradChin(           27, floatVector( ( numConfigurations - 1 ) * 27, 0 ) );
+
+    floatMatrix previousdCauchydF(                      9, floatVector(  9,                             0 ) );
+
+    floatMatrix previousdSymmetricMicroStressdF(        9, floatVector(  9,                             0 ) );
+
+    floatMatrix previousdHigherOrderStressdF(          27, floatVector(  9,                             0 ) );
+
+    floatMatrix previousdCauchydFn(                     9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+
+    floatMatrix previousdSymmetricMicroStressdFn(       9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+
+    floatMatrix previousdHigherOrderStressdFn(         27, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+
+    floatMatrix previousdCauchydChi(                    9, floatVector(  9,                             0 ) );
+
+    floatMatrix previousdSymmetricMicroStressdChi(      9, floatVector(  9,                             0 ) );
+
+    floatMatrix previousdHigherOrderStressdChi(        27, floatVector(  9,                             0 ) );
+
+    floatMatrix previousdCauchydChin(                   9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+
+    floatMatrix previousdSymmetricMicroStressdChin(     9, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+
+    floatMatrix previousdHigherOrderStressdChin(       27, floatVector(  ( numConfigurations - 1 ) * 9, 0 ) );
+
+    floatMatrix previousdCauchydGradChi(                9, floatVector( 27,                             0 ) );
+
+    floatMatrix previousdSymmetricMicroStressdGradChi(  9, floatVector( 27,                             0 ) );
+
+    floatMatrix previousdHigherOrderStressdGradChi(    27, floatVector( 27,                             0 ) );
+
+    floatMatrix previousdCauchydGradChin(               9, floatVector( ( numConfigurations - 1 ) * 27, 0 ) );
+
+    floatMatrix previousdSymmetricMicroStressdGradChin( 9, floatVector( ( numConfigurations - 1 ) * 27, 0 ) );
+
+    floatMatrix previousdHigherOrderStressdGradChin(   27, floatVector( ( numConfigurations - 1 ) * 27, 0 ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
