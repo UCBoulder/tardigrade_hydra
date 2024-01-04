@@ -171,6 +171,28 @@ namespace tardigradeHydra{
 
             hydraBaseMicromorphic *hydra; //!< A pointer to the containing hydra object
 
+            virtual void setdRdD( ){
+                /*!
+                 * Set the derivative of the residual w.r.t. the deformation.
+                 *
+                 * Pass-through to setdRdF just changing the naming convention
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( residualBase::setdRdF( ) );
+
+            }
+
+            const floatMatrix *getdRdD( ){
+                /*!
+                 * Get the derivative of the residual w.r.t. the deformation.
+                 *
+                 * Pass-through to setdRdF just changing the naming convention
+                 */
+
+                return residualBase::getdRdF( );
+
+            }
+
     };
 
 }
