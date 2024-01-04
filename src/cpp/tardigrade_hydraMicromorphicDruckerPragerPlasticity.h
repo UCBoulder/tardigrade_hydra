@@ -80,16 +80,69 @@ namespace tardigradeHydra{
 
             public:
 
-                residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const floatVector &parameters ) : tardigradeHydra::residualBaseMicromorphic( _hydra, _numEquations ){
+                residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const unsigned int &plasticConfigurationIndex,
+                          const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5 )
+                        : tardigradeHydra::residualBaseMicromorphic( _hydra, _numEquations ){
                     /*!
                      * The main initialization constructor for the Drucker Prager plasticity residual
                      * 
                      * \param *_hydra: A pointer to the containing hydra class
                      * \param &_numEquations: The number of equations the residual defines
+                     * \param &plasticConfigurationIndex: The index of the configuration which represents the plastic deformation
+                     * \param &stateVariable?Indices: The indices of the plastic state variables
                      * \param &parameters: The parameter vector
+                     * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
                      */
 
+                    _plasticConfigurationIndex = plasticConfigurationIndex;
+
+                    _stateVariableIndices = stateVariableIndices;
+
+                    _integrationParameter = integrationParameter;
+
                 }
+
+                const unsigned int* getPlasticConfigurationIndex( );
+
+                const std::vector< unsigned int >* getStateVariableIndices( );
+
+                const floatType* getIntegrationParameter( );
+
+            protected:
+
+                virtual void setMacroDrivingStress( );
+
+                virtual void setSymmetricMicroDrivingStress( );
+
+                virtual void setHigherOrderDrivingStress( );
+
+                virtual void setPreviousMacroDrivingStress( );
+
+                virtual void setPreviousSymmetricMicroDrivingStress( );
+
+                virtual void setPreviousHigherOrderDrivingStress( );
+
+                virtual void setDrivingStresses( const bool isPrevious );
+
+            private:
+
+                unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
+
+                std::vector< unsigned int > _stateVariableIndices; //! The indices of the state variables in the global solve
+
+                floatType _integrationParameter; //! The integration parameter (0 is explicit, 1 is implicit)
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, macroDrivingStress,                  floatVector, setMacroDrivingStress                  )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, symmetricMicroDrivingStress,         floatVector, setSymmetricMicroDrivingStress         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, higherOrderDrivingStress,            floatVector, setHigherOrderDrivingStress            )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMacroDrivingStress,          floatVector, setPreviousMacroDrivingStress          )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousSymmetricMicroDrivingStress, floatVector, setPreviousSymmetricMicroDrivingStress )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousHigherOrderDrivingStress,    floatVector, setPreviousHigherOrderDrivingStress    )
 
         };
 
