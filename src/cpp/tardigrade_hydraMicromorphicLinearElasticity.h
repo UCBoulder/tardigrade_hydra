@@ -219,10 +219,10 @@ namespace tardigradeHydra{
                                             parameterVector &Amatrix, parameterVector &Bmatrix,
                                             parameterVector &Cmatrix, parameterVector &Dmatrix );
 
+        /*!
+         * The residual for a micromorphic linear elasticity constitutive equation
+         */
         class residual : public tardigradeHydra::residualBaseMicromorphic {
-            /*!
-             * The residual for a micromorphic linear elasticity constitutive equation
-             */
 
             public:
 

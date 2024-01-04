@@ -73,10 +73,10 @@ namespace tardigradeHydra{
         typedef std::vector< constantType > constantVector; //!< Define a vector of constants
         typedef std::vector< std::vector< constantType > > constantMatrix; //!< Define a matrix of constants
 
+        /*!
+         * The residual for a micromorphic Drucker Prager plasticity model
+         */
         class residual : public tardigradeHydra::residualBaseMicromorphic {
-            /*!
-             * The residual for a micromorphic linear elasticity constitutive equation
-             */
 
             public:
 
@@ -89,7 +89,7 @@ namespace tardigradeHydra{
                      * \param *_hydra: A pointer to the containing hydra class
                      * \param &_numEquations: The number of equations the residual defines
                      * \param &plasticConfigurationIndex: The index of the configuration which represents the plastic deformation
-                     * \param &stateVariable?Indices: The indices of the plastic state variables
+                     * \param &stateVariableIndices: The indices of the plastic state variables
                      * \param &parameters: The parameter vector
                      * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
                      */
