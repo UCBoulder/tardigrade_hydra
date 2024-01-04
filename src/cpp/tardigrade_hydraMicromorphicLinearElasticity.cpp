@@ -3892,7 +3892,7 @@ namespace tardigradeHydra{
              * Set the Jacobian w.r.t. the deformation
              */
 
-            const floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getConfigurationUnknownCount( ), 0 ) );
+            const floatMatrix jacobian( *getNumEquations( ), floatVector( *hydra->getConfigurationUnknownCount( ), 0 ) );
 
         }
 
