@@ -9,6 +9,10 @@ Changelog
 0.3.1 (unreleased)
 ******************
 
+New Features
+============
+- Added the micromorphic linear elasticity residual (:pull:`36`). By `Nathan Miller`_.
+
 Internal Changes
 ================
 - Added the ability to update the micromorphic hydra object with a new unknown vector (:pull:`34`). By `Nathan Miller`_.
