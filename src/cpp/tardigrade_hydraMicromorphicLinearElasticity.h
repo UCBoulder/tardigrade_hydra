@@ -516,7 +516,7 @@ namespace tardigradeHydra{
 
                 using tardigradeHydra::residualBaseMicromorphic::setJacobian;
 
-                using tardigradeHydra::residualBaseMicromorphic::setdRdF;
+                using tardigradeHydra::residualBaseMicromorphic::setdRdD;
 
                 using tardigradeHydra::residualBaseMicromorphic::setdRdT;
 
