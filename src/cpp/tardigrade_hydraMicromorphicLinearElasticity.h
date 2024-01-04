@@ -500,6 +500,12 @@ namespace tardigradeHydra{
 
                 virtual void setStressesJacobians( const bool isPrevious );
 
+                virtual void setResidual( ) override;
+
+                virtual void setJacobian( ) override;
+
+                virtual void setdRdF( ) override;
+
             private:
 
                 parameterVector _Amatrix; //!< The A stiffness matrix
