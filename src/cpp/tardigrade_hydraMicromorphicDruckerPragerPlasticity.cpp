@@ -91,18 +91,18 @@ namespace tardigradeHydra{
 
                 stress = hydra->getPreviousStress( );
 
-                F      = hydra->getPreviousFollowingConfiguration(      ( *getPlasticConfigurationIndex( ) ) + 1 );
+                F      = hydra->getPreviousFollowingConfiguration(      ( *getPlasticConfigurationIndex( ) ) - 1 );
 
-                chi    = hydra->getPreviousFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) + 1 );
+                chi    = hydra->getPreviousFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) - 1 );
 
             }
             else{
 
                 stress = hydra->getStress( );
 
-                F      = hydra->getFollowingConfiguration(      ( *getPlasticConfigurationIndex( ) ) + 1 );
+                F      = hydra->getFollowingConfiguration(      ( *getPlasticConfigurationIndex( ) ) - 1 );
 
-                chi    = hydra->getFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) + 1 );
+                chi    = hydra->getFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) - 1 );
 
             }
 
@@ -119,6 +119,12 @@ namespace tardigradeHydra{
             floatVector symmetricMicroDrivingStress;
 
             floatVector higherOrderDrivingStress;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, F, macroDrivingStress ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, F, symmetricMicroDrivingStress ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, F, chi, higherOrderDrivingStress ) );
 
             if ( isPrevious ){
 
