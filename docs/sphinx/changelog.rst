@@ -9,6 +9,10 @@ Changelog
 0.3.1 (unreleased)
 ******************
 
+Internal Changes
+================
+- Added the ability to update the micromorphic hydra object with a new unknown vector (:pull:`34`). By `Nathan Miller`_.
+
 ******************
 0.3.0 (01-03-2023)
 ******************
