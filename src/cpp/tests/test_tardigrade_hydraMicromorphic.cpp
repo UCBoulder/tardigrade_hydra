@@ -3931,13 +3931,15 @@ BOOST_AUTO_TEST_CASE( test_updateUnknownVector ){
 
     floatVector unknownVector( 3 * configuration_unknown_count + numNonLinearSolveStateVariables, 0 );
 
+    floatVector previousAnswers = previousStateVariables;
+
     for ( unsigned int i = 0; i < unknownVector.size( ); i++ ){
 
         unknownVector[ i ] = 1e-2 * i + 1e-2;
 
     } 
 
-    for ( unsigned int i = 0; i < numConfigurations; i++ ){
+    for ( unsigned int i = 0; i < ( numConfigurations - 1 ); i++ ){
 
         // Make the deformation gradients invertable
         unknownVector[ 9 * i + 45     ] += 1;
@@ -3947,11 +3949,25 @@ BOOST_AUTO_TEST_CASE( test_updateUnknownVector ){
         unknownVector[ 9 * i + 45 + 8 ] += 1;
 
         // Make the micro-deformations invertable
-        unknownVector[ numConfigurations * 9 + 9 * i + 45     ] += 1;
+        unknownVector[ ( numConfigurations - 1 ) * 9 + 9 * i + 45     ] += 1;
 
-        unknownVector[ numConfigurations * 9 + 9 * i + 45 + 4 ] += 1;
+        unknownVector[ ( numConfigurations - 1 ) * 9 + 9 * i + 45 + 4 ] += 1;
 
-        unknownVector[ numConfigurations * 9 + 9 * i + 45 + 8 ] += 1;
+        unknownVector[ ( numConfigurations - 1 ) * 9 + 9 * i + 45 + 8 ] += 1;
+
+        // Set up the previous answers
+        previousAnswers[ 9 * i     ] += 1;
+
+        previousAnswers[ 9 * i + 4 ] += 1;
+
+        previousAnswers[ 9 * i + 8 ] += 1;
+
+        previousAnswers[ ( numConfigurations - 1 ) * 9 + 9 * i     ] += 1;
+
+        previousAnswers[ ( numConfigurations - 1 ) * 9 + 9 * i + 4 ] += 1;
+
+        previousAnswers[ ( numConfigurations - 1 ) * 9 + 9 * i + 8 ] += 1;
+
     }
 
     floatType tolr = 1e-2;
@@ -3989,28 +4005,56 @@ BOOST_AUTO_TEST_CASE( test_updateUnknownVector ){
 
     floatVector stressAnswer( unknownVector.begin( ), unknownVector.begin( ) + 45 );
 
-    floatVector stateVariableAnswer( unknownVector.begin( ) + 45 + 2 * numConfigurations * 9 + numConfigurations * 27,
-                                     unknownVector.begin( ) + 45 + 2 * numConfigurations * 9 + numConfigurations * 27 + numNonLinearSolveStateVariables );
+    floatVector stateVariableAnswer( unknownVector.begin( ) + 45 + 2 * ( numConfigurations - 1 ) * 9 + ( numConfigurations - 1 ) * 27,
+                                     unknownVector.begin( ) + 45 + 2 * ( numConfigurations - 1 ) * 9 + ( numConfigurations - 1 ) * 27 + numNonLinearSolveStateVariables );
+
+    floatVector previousStateVariableAnswer( previousAnswers.begin( ) + 2 * ( numConfigurations - 1 ) * 9 + ( numConfigurations - 1 ) * 27,
+                                             previousAnswers.begin( ) + 2 * ( numConfigurations - 1 ) * 9 + ( numConfigurations - 1 ) * 27 + numNonLinearSolveStateVariables );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getStress( ), stressAnswer ) );
 
-    for ( unsigned int i = 0; i < numConfigurations; i++ ){
+    for ( unsigned int i = 0; i < ( numConfigurations - 1 ); i++ ){
 
         floatVector FiAnswer( unknownVector.begin( ) + 45 + i * 9, unknownVector.begin( ) + 45 + ( i + 1 ) * 9 );
 
-        floatVector ChiiAnswer( unknownVector.begin( ) + 45 + numConfigurations * 9 + i * 9, unknownVector.begin( ) + 45 + numConfigurations * 9 + ( i + 1 ) * 9 );
+        floatVector ChiiAnswer( unknownVector.begin( ) + 45 + ( numConfigurations - 1 ) * 9 + i * 9, unknownVector.begin( ) + 45 + ( numConfigurations - 1 ) * 9 + ( i + 1 ) * 9 );
 
-        floatVector GradChiiAnswer( unknownVector.begin( ) + 45 + 2 * numConfigurations * 9 + i * 27,
-                                     unknownVector.begin( ) + 45 + 2 * numConfigurations * 9 + ( i + 1 ) * 27 );
+        floatVector GradChiiAnswer( unknownVector.begin( ) + 45 + 2 * ( numConfigurations - 1 ) * 9 + i * 27,
+                                    unknownVector.begin( ) + 45 + 2 * ( numConfigurations - 1 ) * 9 + ( i + 1 ) * 27 );
 
-        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( FiAnswer, *( hydra.getConfiguration( i ) ) ) );
+        floatVector previousFiAnswer( previousAnswers.begin( ) + i * 9,
+                                      previousAnswers.begin( ) + ( i + 1 ) * 9 );
 
-        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( ChiiAnswer, *( hydra.getMicroConfiguration( i ) ) ) );
+        floatVector previousChiiAnswer( previousAnswers.begin( ) + ( numConfigurations - 1 ) * 9 + i * 9,
+                                        previousAnswers.begin( ) + ( numConfigurations - 1 ) * 9 + ( i + 1 ) * 9 );
 
-        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( GradChiiAnswer, *( hydra.getGradientMicroConfiguration( i ) ) ) );
+        floatVector previousGradChiiAnswer( previousAnswers.begin( ) + 2 * ( numConfigurations - 1 ) * 9 + i * 27,
+                                            previousAnswers.begin( ) + 2 * ( numConfigurations - 1 ) * 9 + ( i + 1 ) * 27 );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( FiAnswer, hydra.getConfiguration( i + 1 ) ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( FiAnswer, ( *hydra.get_configurations( ) )[ i + 1 ] ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( ChiiAnswer, hydra.getMicroConfiguration( i + 1 ) ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( ChiiAnswer, ( *hydra.get_microConfigurations( ) )[ i + 1 ] ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( GradChiiAnswer, ( *hydra.get_gradientMicroConfigurations( ) )[ i + 1 ] ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousFiAnswer, hydra.getPreviousConfiguration( i + 1 ) ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousFiAnswer, ( *hydra.get_previousConfigurations( ) )[ i + 1 ] ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousChiiAnswer, hydra.getPreviousMicroConfiguration( i + 1 ) ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousChiiAnswer, ( *hydra.get_previousMicroConfigurations( ) )[ i + 1 ] ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousGradChiiAnswer, ( *hydra.get_previousGradientMicroConfigurations( ) )[ i + 1 ] ) );
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( stateVariableAnswer, *hydra.getStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( stateVariableAnswer, *hydra.get_nonLinearSolveStateVariables( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousStateVariableAnswer, *hydra.get_previousNonLinearSolveStateVariables( ) ) );
 
 }

@@ -156,7 +156,7 @@ namespace tardigradeHydra{
          * Decompose the micro-deformation parts of the unknown vector
          */
 
-        unsigned int start_index = getStress( )->size( );
+        unsigned int start_index = getStress( )->size( ) + ( ( *getNumConfigurations( ) ) - 1 ) * ( *getDimension( ) ) * ( *getDimension( ) );
 
         floatMatrix microConfigurations;
 
