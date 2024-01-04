@@ -2483,9 +2483,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
     tardigradeHydra::micromorphicLinearElasticity::residual RnJ( &hydra, 45, parameters );
 
-    try{
     R.get_dCauchyStressdF( );
-    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R.get_cauchyStress( ), *RnJ.get_cauchyStress( ) ) );
 
