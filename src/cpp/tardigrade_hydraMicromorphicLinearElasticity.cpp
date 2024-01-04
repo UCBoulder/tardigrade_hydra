@@ -3864,6 +3864,38 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setResidual( ){
+            /*!
+             * Set the residual w.r.t. the unknown vector
+             */
+
+            const floatVector *stress = hydra->getStress( );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( *stress 
+                                                       - tardigradeVectorTools::appendVectors( { *get_PK2Stress( ), *get_referenceSymmetricMicroStress( ), *get_referenceHigherOrderStress( ) } ) ) );
+    
+        }
+
+        void residual::setJacobian( ){
+            /*!
+             * Set the Jacobian w.r.t. the unknown vector
+             */
+
+            const floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+
+            setJacobian( jacobian );
+
+        }
+
+        void residual::setdRdD( ){
+            /*!
+             * Set the Jacobian w.r.t. the deformation
+             */
+
+            const floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getConfigurationUnknownCount( ), 0 ) );
+
+        }
+
     }
 
 }
