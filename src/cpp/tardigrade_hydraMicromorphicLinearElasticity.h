@@ -500,7 +500,31 @@ namespace tardigradeHydra{
 
                 virtual void setStressesJacobians( const bool isPrevious );
 
+                virtual void setResidual( ) override;
+
+                virtual void setJacobian( ) override;
+
+                virtual void setdRdD( ) override;
+
             private:
+                // Friend classes
+                friend class tardigradeHydra::micromorphicLinearElasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
+
+                using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+
+                using tardigradeHydra::residualBaseMicromorphic::setResidual;
+
+                using tardigradeHydra::residualBaseMicromorphic::setJacobian;
+
+                using tardigradeHydra::residualBaseMicromorphic::setdRdD;
+
+                using tardigradeHydra::residualBaseMicromorphic::setdRdT;
+
+                using tardigradeHydra::residualBaseMicromorphic::setAdditionalDerivatives;
+
+                using tardigradeHydra::residualBaseMicromorphic::setStress;
+
+                using tardigradeHydra::residualBaseMicromorphic::setPreviousStress;
 
                 parameterVector _Amatrix; //!< The A stiffness matrix
 

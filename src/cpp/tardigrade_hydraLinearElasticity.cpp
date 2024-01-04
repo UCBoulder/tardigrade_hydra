@@ -569,48 +569,48 @@ namespace tardigradeHydra{
             /*!
              * Set the Jacobian value
              */
-    
+
             const unsigned int *dim = hydra->getDimension( );
-    
+
             // Form the Jacobian
             floatMatrix jacobian = floatMatrix( getStress( )->size( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
-    
+
             for ( unsigned int i = 0; i < ( *dim ); i++ ){
-    
+
                 for ( unsigned int j = 0; j < ( *dim ); j++ ){
-    
+
                     jacobian[ ( *dim ) * i + j ][ ( *dim ) * i + j ] = -1;
-    
+
                     for ( unsigned int I = 0; I < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( *dim ) * ( *dim ); I++ ){
-    
+
                         jacobian[ ( *dim ) * i + j ][ getStress( )->size( ) + I ] = ( *get_dCauchyStressdFn( ) )[ ( *dim ) * i + j ][ I ];
-    
+
                     }
-    
+
                 }
-    
+
             }
-    
+
             setJacobian( jacobian );
-    
+
         }
-    
+
         void residual::setdRdT( ){
             /*!
              * Set the derivative of the residual w.r.t. the temperature
              */
-    
+
             setdRdT( floatVector( *getNumEquations( ), 0 ) );
-    
+
         }
-    
+
         void residual::setdRdF( ){
             /*!
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
-    
+
             setdRdF( *get_dCauchyStressdF( ) );
-    
+
         }
 
     }

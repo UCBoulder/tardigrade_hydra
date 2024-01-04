@@ -3864,6 +3864,148 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setResidual( ){
+            /*!
+             * Set the residual w.r.t. the unknown vector
+             */
+
+            const floatVector *stress = hydra->getStress( );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( *stress 
+                                                       - tardigradeVectorTools::appendVectors( { *get_PK2Stress( ), *get_referenceSymmetricMicroStress( ), *get_referenceHigherOrderStress( ) } ) ) );
+
+        }
+
+        void residual::setJacobian( ){
+            /*!
+             * Set the Jacobian w.r.t. the unknown vector
+             */
+
+            floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+
+            //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
+            const floatMatrix *dS1dFn       = get_dPK2dFn( );
+
+            const floatMatrix *dS1dChin     = get_dPK2dChin( );
+
+            const floatMatrix *dS1dGradChin = get_dPK2dGradChin( );
+
+            const floatMatrix *dS2dFn       = get_dSIGMAdFn( );
+
+            const floatMatrix *dS2dChin     = get_dSIGMAdChin( );
+
+            const floatMatrix *dS2dGradChin = get_dSIGMAdGradChin( );
+
+            const floatMatrix *dS3dFn       = get_dMdFn( );
+
+            const floatMatrix *dS3dChin     = get_dMdChin( );
+
+            const floatMatrix *dS3dGradChin = get_dMdGradChin( );
+
+            std::vector< std::vector< const floatMatrix * > > stressReferences = { { dS1dFn, dS1dChin, dS1dGradChin },
+                                                                                   { dS2dFn, dS2dChin, dS2dGradChin },
+                                                                                   { dS3dFn, dS3dChin, dS3dGradChin } };
+
+            unsigned int row = 0;
+            for ( auto S = stressReferences.begin( ); S != stressReferences.end( ); S++ ){
+
+                // Loop through the stress Jacobians
+
+                for ( unsigned int i = 0; i < ( *S )[ 0 ]->size( ); i++ ){
+
+                    unsigned int col = 0;
+
+                    // Jacobians w.r.t. the stress
+                    jacobian[ row ][ row ] += 1;
+
+                    // Jacobians w.r.t. the sub configurations
+                    col = *hydra->getConfigurationUnknownCount( );
+
+                    for ( auto Sn = S->begin( ); Sn != S->end( ); Sn++ ){
+
+                        for ( unsigned int j = 0; j < ( **Sn )[ i ].size( ); j++ ){
+
+                            jacobian[ row ][ col ] -= ( **Sn )[ i ][ j ];
+
+                            col++;
+
+                        }
+
+                    }
+
+                    row++;
+
+                }
+
+            }
+
+            setJacobian( jacobian );
+
+        }
+
+        void residual::setdRdD( ){
+            /*!
+             * Set the Jacobian w.r.t. the deformation
+             */
+
+            floatMatrix dRdD( *getNumEquations( ), floatVector( *hydra->getConfigurationUnknownCount( ), 0 ) );
+
+            //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
+            const floatMatrix *dS1dF       = get_dPK2dF( );
+
+            const floatMatrix *dS1dChi     = get_dPK2dChi( );
+
+            const floatMatrix *dS1dGradChi = get_dPK2dGradChi( );
+
+            const floatMatrix *dS2dF       = get_dSIGMAdF( );
+
+            const floatMatrix *dS2dChi     = get_dSIGMAdChi( );
+
+            const floatMatrix *dS2dGradChi = get_dSIGMAdGradChi( );
+
+            const floatMatrix *dS3dF       = get_dMdF( );
+
+            const floatMatrix *dS3dChi     = get_dMdChi( );
+
+            const floatMatrix *dS3dGradChi = get_dMdGradChi( );
+
+            std::vector< std::vector< const floatMatrix * > > stressReferences = { { dS1dF, dS1dChi, dS1dGradChi },
+                                                                                   { dS2dF, dS2dChi, dS2dGradChi },
+                                                                                   { dS3dF, dS3dChi, dS3dGradChi } };
+
+            unsigned int row = 0;
+            for ( auto S = stressReferences.begin( ); S != stressReferences.end( ); S++ ){
+
+                // Loop through the stress Jacobians
+
+                for ( unsigned int i = 0; i < ( *S )[ 0 ]->size( ); i++ ){
+
+                    unsigned int col = 0;
+
+                    // Jacobians w.r.t. the deformation
+
+                    for ( auto Sn = S->begin( ); Sn != S->end( ); Sn++ ){
+
+                        for ( unsigned int j = 0; j < ( **Sn )[ i ].size( ); j++ ){
+
+                            dRdD[ row ][ col ] -= ( **Sn )[ i ][ j ];
+
+                            col++;
+
+                        }
+
+                    }
+
+                    row++;
+
+                }
+
+            }
+
+            setdRdD( dRdD );
+
+        }
+
     }
 
 }
