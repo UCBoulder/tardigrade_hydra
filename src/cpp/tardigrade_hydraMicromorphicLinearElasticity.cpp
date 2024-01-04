@@ -3254,6 +3254,168 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPreviousdCauchyStressdF( ){
+            /*!
+             * Set the jacobian of the previous cauchy stress w.r.t. the deformation gradient
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdCauchyStressdFn( ){
+            /*!
+             * Set the jacobian of the previous cauchy stress w.r.t. the sub-deformation gradients
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdCauchyStressdChi( ){
+            /*!
+             * Set the jacobian of the previous cauchy stress w.r.t. the micro deformation
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdCauchyStressdChin( ){
+            /*!
+             * Set the jacobian of the previous cauchy stress w.r.t. the sub-micro deformations
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdCauchyStressdGradChi( ){
+            /*!
+             * Set the jacobian of the previous cauchy stress w.r.t. the spatial gradient of the micro deformation
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdCauchyStressdGradChin( ){
+            /*!
+             * Set the jacobian of the previous cauchy stress w.r.t. the local reference spatial gradient of the sub-micro deformations
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdSymmetricMicroStressdF( ){
+            /*!
+             * Set the jacobian of the previous symmetric micro stress w.r.t. the deformation gradient
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdSymmetricMicroStressdFn( ){
+            /*!
+             * Set the jacobian of the previous symmetric micro stress w.r.t. the sub-deformation gradients
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdSymmetricMicroStressdChi( ){
+            /*!
+             * Set the jacobian of the previous symmetric micro stress w.r.t. the micro deformation
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdSymmetricMicroStressdChin( ){
+            /*!
+             * Set the jacobian of the previous symmetric micro stress w.r.t. the sub-micro deformations
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdSymmetricMicroStressdGradChi( ){
+            /*!
+             * Set the jacobian of the previous symmetric micro stress w.r.t. the spatial gradient of the micro deformation
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdSymmetricMicroStressdGradChin( ){
+            /*!
+             * Set the jacobian of the previous symmetric micro stress w.r.t. the local reference spatial gradient of the sub micro deformations
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdHigherOrderStressdF( ){
+            /*!
+             * Set the jacobian of the previous higher order stress w.r.t. the deformation gradient
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdHigherOrderStressdFn( ){
+            /*!
+             * Set the jacobian of the previous higher order stress w.r.t. the sub-deformation gradients
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdHigherOrderStressdChi( ){
+            /*!
+             * Set the jacobian of the previous higher order stress w.r.t. the micro deformation
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdHigherOrderStressdChin( ){
+            /*!
+             * Set the jacobian of the previous higher order stress w.r.t. the sub micro deformations
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdHigherOrderStressdGradChi( ){
+            /*!
+             * Set the jacobian of the previous higher order stress w.r.t. the reference spatial gradient of the micro deformation
+             */
+
+            setStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdHigherOrderStressdGradChin( ){
+            /*!
+             * Set the jacobian of the previous higher order stress w.r.t. the local reference spatial gradient of the sub micro deformations
+             */
+
+            setStressesJacobians( true );
+
+        }
+
         void residual::setStressesJacobians( const bool isPrevious ){
             /*!
              * Set the stresses and their jacobians in the current configuration
@@ -3433,6 +3595,42 @@ namespace tardigradeHydra{
                                                                                     dHigherOrderStressdF, dHigherOrderStressdChi, dHigherOrderStressdM )  );
 
             if ( isPrevious ){
+
+                set_previousdCauchyStressdF(                       tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dF          ) + dCauchyStressdF        );
+
+                set_previousdCauchyStressdFn(                      tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dFn         )                          );
+
+                set_previousdCauchyStressdChi(                     tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dChi        )                          );
+
+                set_previousdCauchyStressdChin(                    tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dChin       )                          );
+
+                set_previousdCauchyStressdGradChi(                 tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dGradChi    )                          );
+
+                set_previousdCauchyStressdGradChin(                tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dGradChin   )                          );
+
+                set_previousdSymmetricMicroStressdF(               tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdF        ) + dMicroStressdF         );
+
+                set_previousdSymmetricMicroStressdFn(              tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdFn       )                          );
+
+                set_previousdSymmetricMicroStressdChi(             tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdChi      )                          );
+
+                set_previousdSymmetricMicroStressdChin(            tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdChin     )                          );
+
+                set_previousdSymmetricMicroStressdGradChi(         tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdGradChi  )                          );
+
+                set_previousdSymmetricMicroStressdGradChin(        tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdGradChin )                          );
+
+                set_previousdHigherOrderStressdF(                  tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdF            ) + dHigherOrderStressdF   );
+
+                set_previousdHigherOrderStressdFn(                 tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdFn           )                          );
+
+                set_previousdHigherOrderStressdChi(                tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdChi          ) + dHigherOrderStressdChi );
+
+                set_previousdHigherOrderStressdChin(               tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdChin         )                          );
+
+                set_previousdHigherOrderStressdGradChi(            tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdGradChi      )                          );
+
+                set_previousdHigherOrderStressdGradChin(           tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdGradChin     )                          );
 
                 set_previousCauchyStress( cauchyStress );
 
