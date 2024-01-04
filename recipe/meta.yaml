@@ -63,6 +63,7 @@ test:
     - src/cpp/tests/test_tardigrade_hydraThermalExpansion.cpp
     - src/cpp/tests/test_tardigrade_hydraPeryznaViscoplasticity.cpp
     - src/cpp/tests/test_tardigrade_hydraPeryznaViscodamage.cpp
+    - src/cpp/tests/test_tardigrade_hydraMicromorphicDruckerPragerPlasticity.cpp
     - src/abaqus/CMakeLists.txt
     - src/abaqus/single_element_c3d8.inp
     - src/abaqus/tests/CMakeLists.txt
