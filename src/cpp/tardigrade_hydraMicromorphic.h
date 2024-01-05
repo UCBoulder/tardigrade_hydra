@@ -157,9 +157,12 @@ namespace tardigradeHydra{
 
     };
 
+    //! The base class for micromorphic residuals
     class residualBaseMicromorphic : public residualBase{
 
         public:
+
+            using tardigradeHydra::residualBase::residualBase;
 
             /*!
              * Base class for micromorphic residuals
