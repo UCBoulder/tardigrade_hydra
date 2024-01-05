@@ -215,6 +215,35 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
     };
 
+    // compute the expected answer
+
+    floatVector PK2Stress( unknownVector.begin( ),
+                           unknownVector.begin( ) + dimension * dimension );
+
+    floatVector referenceMicroStress( unknownVector.begin( ) + dimension * dimension,
+                                      unknownVector.begin( ) + 2 * dimension * dimension );
+
+    floatVector referenceHigherOrderStress( unknownVector.begin( ) + 2 * dimension * dimension,
+                                            unknownVector.begin( ) + configuration_unknown_count );
+
+    floatVector F( unknownVector.begin( ) + configuration_unknown_count,
+                   unknownVector.begin( ) + configuration_unknown_count + dimension * dimension );
+
+    floatVector chi( unknownVector.begin( ) + configuration_unknown_count + dimension * dimension,
+                     unknownVector.begin( ) + configuration_unknown_count + 2 * dimension * dimension );
+
+    floatVector answerMacroStress;
+
+    floatVector answerMicroStress;
+
+    floatVector answerHigherOrderStress;
+
+    tardigradeMicromorphicTools::pushForwardPK2Stress(                          PK2Stress, F,      answerMacroStress       );
+
+    tardigradeMicromorphicTools::pushForwardReferenceMicroStress(    referenceMicroStress, F,      answerMicroStress       );
+
+    tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, F, chi, answerHigherOrderStress );
+
     hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                      microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
                                      previousStateVariables, parameters,
@@ -225,5 +254,11 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock R( &hydra, 45, 1, stateVariableIndices, parameters );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMacroStress,       *R.get_macroDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMicroStress,       *R.get_symmetricMicroDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerHigherOrderStress, *R.get_higherOrderDrivingStress( ) ) );
 
 }
