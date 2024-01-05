@@ -19,6 +19,7 @@ Internal Changes
 - Added the calculation of the current stress measures in micromorphic linear elasticity (:pull:`35`). By `Nathan Miller`_.
 - Initial commit of the micromorphic Drucker-Prager plasticity residual (:pull:`37`). By `Nathan Miller`_.
 - Added the calculation of the driving stress for the micromorphic Drucker-Prager plasticity residual (:pull:`38`). By `Nathan Miller`_.
+- Added the decomposition of the parameter vector (:pull:`39`). By `Nathan Miller`_.
 
 ******************
 0.3.0 (01-03-2023)
