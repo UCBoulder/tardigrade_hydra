@@ -655,6 +655,183 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPlasticStateVariables( const bool isPrevious ){
+            /*!
+             * Set the plastic state variables
+             * 
+             * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic state variables
+             */
+
+            floatVector plasticStateVariables( getStateVariableIndices( )->size( ), 0 );
+
+            const floatVector *nonlinearISVs;
+
+            if ( isPrevious ){
+
+                nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
+
+            }
+            else{
+
+                nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
+
+            }
+
+            for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
+
+                plasticStateVariables[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ] = ( *nonlinearISVs )[ *ind ];
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousPlasticStateVariables( plasticStateVariables );
+
+            }
+            else{
+
+                set_plasticStateVariables( plasticStateVariables );
+
+            }
+
+        }
+
+        void residual::setPlasticStateVariables( ){
+            /*!
+             * Set the plastic state variables
+             */
+
+            setPlasticStateVariables( false );
+
+        }
+
+        void residual::setPreviousPlasticStateVariables( ){
+            /*!
+             * Set the previous plastic state variables
+             */
+
+            setPlasticStateVariables( true );
+
+        }
+
+        void residual::setPlasticMultipliers( const bool isPrevious ){
+            /*!
+             * Set the plastic multipliers
+             * 
+             * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic multipliers
+             */
+
+            floatVector plasticMultipliers( *getNumPlasticMultipliers( ), 0 );
+
+            const floatVector *nonlinearISVs;
+
+            if ( isPrevious ){
+
+                nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
+
+            }
+            else{
+
+                nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
+
+            }
+
+            for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ); ind++ ){
+
+                plasticMultipliers[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ] = ( *nonlinearISVs )[ *ind ];
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousPlasticMultipliers( plasticMultipliers );
+
+            }
+            else{
+
+                set_plasticMultipliers( plasticMultipliers );
+
+            }
+
+        }
+
+        void residual::setPlasticMultipliers( ){
+            /*!
+             * Set the plastic multipliers
+             */
+
+            setPlasticMultipliers( false );
+
+        }
+
+        void residual::setPreviousPlasticMultipliers( ){
+            /*!
+             * Set the previous plastic multipliers
+             */
+
+            setPlasticMultipliers( true );
+
+        }
+
+        void residual::setPlasticStrainLikeISVs( const bool isPrevious ){
+            /*!
+             * Set the plastic strain-like internal state variables
+             * 
+             * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic multipliers
+             */
+
+            floatVector plasticStrainLikeISVs( getStateVariableIndices( )->size( ) - *getNumPlasticMultipliers( ), 0 );
+
+            const floatVector *nonlinearISVs;
+
+            if ( isPrevious ){
+
+                nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
+
+            }
+            else{
+
+                nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
+
+            }
+
+            for ( auto ind = getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ); ind != getStateVariableIndices( )->end( ); ind++ ){
+
+                plasticStrainLikeISVs[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) - *getNumPlasticMultipliers( ) ] = ( *nonlinearISVs )[ *ind ];
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousPlasticStrainLikeISVs( plasticStrainLikeISVs );
+
+            }
+            else{
+
+                set_plasticStrainLikeISVs( plasticStrainLikeISVs );
+
+            }
+
+        }
+
+        void residual::setPlasticStrainLikeISVs( ){
+            /*!
+             * Set the plastic strain-like isvs
+             */
+
+            setPlasticStrainLikeISVs( false );
+
+        }
+
+        void residual::setPreviousPlasticStrainLikeISVs( ){
+            /*!
+             * Set the previous plastic strain-like isvs
+             */
+
+            setPlasticStrainLikeISVs( true );
+
+        }
+
     }
 
 }

@@ -98,6 +98,8 @@ namespace tardigradeHydra{
 
                     _plasticConfigurationIndex = plasticConfigurationIndex;
 
+                    _numPlasticMultipliers = 5; //Hard-coding this because we couldn't handle a different number anyway.
+
                     _stateVariableIndices = stateVariableIndices;
 
                     _integrationParameter = integrationParameter;
@@ -106,6 +108,9 @@ namespace tardigradeHydra{
 
                 }
 
+                //Get the number of plastic multipliers expected for the problem
+                const unsigned int* getNumPlasticMultipliers( ){ return &_numPlasticMultipliers; }
+
                 const unsigned int* getPlasticConfigurationIndex( );
 
                 const std::vector< unsigned int >* getStateVariableIndices( );
@@ -113,6 +118,8 @@ namespace tardigradeHydra{
                 const floatType* getIntegrationParameter( );
 
             protected:
+
+                unsigned int _numPlasticMultipliers; //!< The number of plastic multipliers. Hard coded to 5 but setting as a variable just in case
 
                 virtual void extractMaterialParameters( const parameterVector &parameters );
 
@@ -175,6 +182,24 @@ namespace tardigradeHydra{
                 virtual void setPreviousdHigherOrderDrivingStressdChin( );
 
                 virtual void setDrivingStressesJacobians( const bool isPrevious );
+
+                virtual void setPlasticStateVariables( );
+
+                virtual void setPreviousPlasticStateVariables( );
+
+                virtual void setPlasticStateVariables( const bool isPrevious );
+
+                virtual void setPlasticMultipliers( );
+
+                virtual void setPreviousPlasticMultipliers( );
+
+                virtual void setPlasticMultipliers( const bool isPrevious );
+
+                virtual void setPlasticStrainLikeISVs( );
+
+                virtual void setPreviousPlasticStrainLikeISVs( );
+
+                virtual void setPlasticStrainLikeISVs( const bool isPrevious );
 
             private:
 
@@ -257,6 +282,18 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdHigherOrderDrivingStressdFn,                floatMatrix, setPreviousdHigherOrderDrivingStressdFn                )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdHigherOrderDrivingStressdChin,              floatMatrix, setPreviousdHigherOrderDrivingStressdChin              )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticMultipliers,                                  floatVector, setPlasticMultipliers                                  )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPlasticMultipliers,                          floatVector, setPreviousPlasticMultipliers                          )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticStrainLikeISVs,                               floatVector, setPlasticStrainLikeISVs                               )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPlasticStrainLikeISVs,                       floatVector, setPreviousPlasticStrainLikeISVs                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticStateVariables,                               floatVector, setPlasticStateVariables                               )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPlasticStateVariables,                       floatVector, setPreviousPlasticStateVariables                       )
 
         };
 
