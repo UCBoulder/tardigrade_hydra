@@ -567,14 +567,23 @@ namespace tardigradeHydra{
              *
              * :param const std::vector< double > &parameters: The incoming parameter vector
              * :param parameterVector &macroHardeningParameters: The parameters used in the hardening of the macro Strain ISV
+             *     (initial cohesion, hardening modulus)
              * :param parameterVector &microHardeningParameters: The parameters used in the hardening of the micro Strain ISV
+             *     (initial cohesion, hardening modulus)
              * :param parameterVector &microGradientHardeningParameters: The parameters used in the hardening of the micro Gradient Strain ISV
+             *     (initial cohesion, hardening modulus)
              * :param parameterVector &macroFlowParameters: The parameters used in the macro flow direction computation.
+             *     (friction angle, beta )
              * :param parameterVector &microFlowParameters: The parameters used in the micro flow direction computation
+             *     (friction angle, beta )
              * :param parameterVector &microGradientFlowParameters: The parameters used in the micro Gradient flow direction computation.
+             *     (friction angle, beta )
              * :param parameterVector &macroYieldParameters: The parameters used in the macro yielding computation.
+             *     (friction angle, beta )
              * :param parameterVector &microYieldParameters: The parameters used in the micro yielding computation
+             *     (friction angle, beta )
              * :param parameterVector &microGradientYieldParameters: The parameters used in the micro Gradient yielding computation.
+             *     (friction angle, beta )
              */
         
             if ( parameters.size() == 0 ){
