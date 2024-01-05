@@ -841,6 +841,108 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setMacroCohesion( ){
+            /*!
+             * Set the macro cohesion
+             */
+
+            setCohesions( false );
+
+        }
+
+        void residual::setMicroCohesion( ){
+            /*!
+             * Set the micro cohesion
+             */
+
+            setCohesions( false );
+
+        }
+
+        void residual::setMicroGradientCohesion( ){
+            /*!
+             * Set the micro gradient cohesion
+             */
+
+            setCohesions( false );
+
+        }
+
+        void residual::setPreviousMacroCohesion( ){
+            /*!
+             * Set the previous macro cohesion
+             */
+
+            setCohesions( true );
+
+        }
+
+        void residual::setPreviousMicroCohesion( ){
+            /*!
+             * Set the previous macro cohesion
+             */
+
+            setCohesions( true );
+
+        }
+
+        void residual::setPreviousMicroGradientCohesion( ){
+            /*!
+             * Set the micro gradient cohesion
+             */
+
+            setCohesions( true );
+
+        }
+
+        void residual::setCohesions( const bool isPrevious ){
+            /*!
+             * Set the values of the cohesion
+             * 
+             * \param isPrevious: Flag for whether to compute the current (false) or previous (true) cohesions
+             */
+
+            const floatVector *plasticStrainLikeISVs;
+
+            if ( isPrevious ){
+
+                plasticStrainLikeISVs = get_previousPlasticStrainLikeISVs( );
+
+            }
+            else{
+
+                plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+
+            }
+
+            floatType macroCohesion           = ( *get_macroHardeningParameters( ) )[ 0 ] + ( *get_macroHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 0 ];
+
+            floatType microCohesion           = ( *get_microHardeningParameters( ) )[ 0 ] + ( *get_microHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 1 ];
+
+            floatVector microGradientCohesion = ( *get_microGradientHardeningParameters( ) )[ 0 ] + ( *get_microGradientHardeningParameters( ) )[ 1 ] * floatVector( plasticStrainLikeISVs->begin( ) + 2,
+                                                                                                                                                                     plasticStrainLikeISVs->end( ) );
+
+            if ( isPrevious ){
+
+                set_previousMacroCohesion( macroCohesion );
+
+                set_previousMicroCohesion( microCohesion );
+
+                set_previousMicroGradientCohesion( microGradientCohesion );
+
+            }
+            else{
+
+                set_macroCohesion( macroCohesion );
+
+                set_microCohesion( microCohesion );
+
+                set_microGradientCohesion( microGradientCohesion );
+
+            }
+
+        }
+
     }
 
 }

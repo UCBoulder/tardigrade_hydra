@@ -201,6 +201,20 @@ namespace tardigradeHydra{
 
                 virtual void setPlasticStrainLikeISVs( const bool isPrevious );
 
+                virtual void setMacroCohesion( );
+
+                virtual void setMicroCohesion( );
+
+                virtual void setMicroGradientCohesion( );
+
+                virtual void setPreviousMacroCohesion( );
+
+                virtual void setPreviousMicroCohesion( );
+
+                virtual void setPreviousMicroGradientCohesion( );
+
+                virtual void setCohesions( const bool isPrevious );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -294,6 +308,18 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticStateVariables,                               floatVector, setPlasticStateVariables                               )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPlasticStateVariables,                       floatVector, setPreviousPlasticStateVariables                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, macroCohesion,                                       floatType,   setMacroCohesion                                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microCohesion,                                       floatType,   setMicroCohesion                                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microGradientCohesion,                               floatVector, setMicroGradientCohesion                               )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMacroCohesion,                               floatType,   setPreviousMacroCohesion                               )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroCohesion,                               floatType,   setPreviousMicroCohesion                               )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroGradientCohesion,                       floatVector, setPreviousMicroGradientCohesion                       )
 
         };
 
