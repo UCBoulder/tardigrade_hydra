@@ -102,6 +102,8 @@ namespace tardigradeHydra{
 
                     _integrationParameter = integrationParameter;
 
+                    TARDIGRADE_ERROR_TOOLS_CATCH( extractMaterialParameters( parameters ) );
+
                 }
 
                 const unsigned int* getPlasticConfigurationIndex( );
@@ -111,6 +113,8 @@ namespace tardigradeHydra{
                 const floatType* getIntegrationParameter( );
 
             protected:
+
+                virtual void extractMaterialParameters( const parameterVector &parameters );
 
                 virtual void setMacroDrivingStress( );
 
@@ -179,6 +183,24 @@ namespace tardigradeHydra{
                 std::vector< unsigned int > _stateVariableIndices; //! The indices of the state variables in the global solve
 
                 floatType _integrationParameter; //! The integration parameter (0 is explicit, 1 is implicit)
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroHardeningParameters,                            floatVector, unexpectedError                                        )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microHardeningParameters,                            floatVector, unexpectedError                                        )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microGradientHardeningParameters,                    floatVector, unexpectedError                                        )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroFlowParameters,                                 floatVector, unexpectedError                                        )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microFlowParameters,                                 floatVector, unexpectedError                                        )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microGradientFlowParameters,                         floatVector, unexpectedError                                        )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroYieldParameters,                                floatVector, unexpectedError                                        )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microYieldParameters,                                floatVector, unexpectedError                                        )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microGradientYieldParameters,                        floatVector, unexpectedError                                        )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, macroDrivingStress,                                  floatVector, setMacroDrivingStress                                  )
 
