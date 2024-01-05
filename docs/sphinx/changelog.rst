@@ -18,6 +18,7 @@ Internal Changes
 - Added the ability to update the micromorphic hydra object with a new unknown vector (:pull:`34`). By `Nathan Miller`_.
 - Added the calculation of the current stress measures in micromorphic linear elasticity (:pull:`35`). By `Nathan Miller`_.
 - Initial commit of the micromorphic Drucker-Prager plasticity residual (:pull:`37`). By `Nathan Miller`_.
+- Added the calculation of the driving stress for the micromorphic Drucker-Prager plasticity residual (:pull:`38`). By `Nathan Miller`_.
 
 ******************
 0.3.0 (01-03-2023)
