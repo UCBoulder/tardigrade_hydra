@@ -199,6 +199,32 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
     floatType lsAlpha = 2.3;
 
+    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+
+        public:
+
+            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+
+            floatVector previousPK2Stress = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
+
+            floatVector previousSigma     = { 10, 11, 12, 13, 14, 15, 16, 17, 18 };
+
+            floatVector previousM         = { 19, 20, 21, 22, 23, 24, 25, 26, 27,
+                                              28, 29, 30, 31, 32, 33, 34, 35, 36,
+                                              37, 38, 39, 40, 41, 42, 43, 44, 45 };
+
+        protected:
+
+            using tardigradeHydra::residualBase::setPreviousStress;
+
+            virtual void setPreviousStress( ) override{
+
+                setPreviousStress( tardigradeVectorTools::appendVectors( { previousPK2Stress, previousSigma, previousM } ) );
+
+            }
+
+    };
+
     class residualMock : public tardigradeHydra::micromorphicDruckerPragerPlasticity::residual{
 
         public:
@@ -213,9 +239,37 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
             using tardigradeHydra::hydraBaseMicromorphic::hydraBaseMicromorphic;
 
+            stressMock elasticity;
+
+            residualMock plasticity;
+
+            std::vector< unsigned int > stateVariableIndices = { 0, 1, 2, 3, 4 };
+
+            floatVector plasticParameters = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18 };
+
+        private:
+
+            using tardigradeHydra::hydraBaseMicromorphic::setResidualClasses;
+
+            virtual void setResidualClasses( ) override{
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                elasticity = stressMock( this, 45 );
+
+                plasticity = residualMock( this, 50, 1, stateVariableIndices, plasticParameters );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &plasticity;
+
+                setResidualClasses( residuals );
+
+            }
+
     };
 
-    // compute the expected answer
+    // compute the expected current answer
 
     floatVector PK2Stress( unknownVector.begin( ),
                            unknownVector.begin( ) + dimension * dimension );
@@ -244,6 +298,41 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
     tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, F, chi, answerHigherOrderStress );
 
+    // compute the expected previous answer
+    floatVector eye( dimension * dimension );
+
+    tardigradeVectorTools::eye( eye );
+
+    floatVector previousPK2Stress                  = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
+
+    floatVector previousReferenceMicroStress       = { 10, 11, 12, 13, 14, 15, 16, 17, 18 };
+
+    floatVector previousReferenceHigherOrderStress = { 19, 20, 21, 22, 23, 24, 25, 26, 27,
+                                                       28, 29, 30, 31, 32, 33, 34, 35, 36,
+                                                       37, 38, 39, 40, 41, 42, 43, 44, 45 };
+
+    floatVector previousF( previousStateVariables.begin( ),
+                           previousStateVariables.begin( ) + dimension * dimension );
+
+    previousF += eye;
+
+    floatVector previousChi( previousStateVariables.begin( ) + dimension * dimension,
+                             previousStateVariables.begin( ) + 2 * dimension * dimension );
+
+    previousChi += eye;
+
+    floatVector answerPreviousMacroStress;
+
+    floatVector answerPreviousMicroStress;
+
+    floatVector answerPreviousHigherOrderStress;
+
+    tardigradeMicromorphicTools::pushForwardPK2Stress(                          previousPK2Stress, previousF,              answerPreviousMacroStress       );
+
+    tardigradeMicromorphicTools::pushForwardReferenceMicroStress(    previousReferenceMicroStress, previousF,              answerPreviousMicroStress       );
+
+    tardigradeMicromorphicTools::pushForwardHigherOrderStress( previousReferenceHigherOrderStress, previousF, previousChi, answerPreviousHigherOrderStress );
+
     hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                      microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
                                      previousStateVariables, parameters,
@@ -255,10 +344,16 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
     residualMock R( &hydra, 45, 1, stateVariableIndices, parameters );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMacroStress,       *R.get_macroDrivingStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMacroStress,               *R.get_macroDrivingStress( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMicroStress,       *R.get_symmetricMicroDrivingStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMicroStress,               *R.get_symmetricMicroDrivingStress( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerHigherOrderStress, *R.get_higherOrderDrivingStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerHigherOrderStress,         *R.get_higherOrderDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMacroStress,       *R.get_previousMacroDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMicroStress,       *R.get_previousSymmetricMicroDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousHigherOrderStress, *R.get_previousHigherOrderDrivingStress( ) ) );
 
 }
