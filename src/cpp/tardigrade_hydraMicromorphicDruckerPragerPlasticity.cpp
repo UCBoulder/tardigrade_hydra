@@ -246,6 +246,105 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPreviousdMacroDrivingStressdMacroStress( ){
+            /*!
+             * Set the previous jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration) w.r.t. the macro stress
+             */
+
+            setDrivingStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdSymmetricMicroDrivingStressdMicroStress( ){
+            /*!
+             * Set the previous jacobian of the symmetric micro driving stress (stress in current configuration of plastic configuration) w.r.t. the micro stress
+             */
+
+            setDrivingStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdHigherOrderDrivingStressdHigherOrderStress( ){
+            /*!
+             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress
+             */
+
+            setDrivingStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdMacroDrivingStressdF( ){
+            /*!
+             * Set the previous jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration) w.r.t. the deformation gradient
+             */
+
+            setDrivingStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdSymmetricMicroDrivingStressdF( ){
+            /*!
+             * Set the previous jacobian of the symmetric micro driving stress (stress in current configuration of plastic configuration) w.r.t. the deformation gradient
+             */
+
+            setDrivingStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdHigherOrderDrivingStressdF( ){
+            /*!
+             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the deformation gradient
+             */
+
+            setDrivingStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdHigherOrderDrivingStressdChi( ){
+            /*!
+             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the micro deformation
+             */
+
+            setDrivingStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdMacroDrivingStressdFn( ){
+            /*!
+             * Set the previous jacobian of the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration) w.r.t. the sub deformation gradients
+             */
+
+            setDrivingStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdSymmetricMicroDrivingStressdFn( ){
+            /*!
+             * Set the previous jacobian of the symmetric micro driving stress (stress in current configuration of plastic configuration) w.r.t. the sub deformation gradients
+             */
+
+            setDrivingStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdHigherOrderDrivingStressdFn( ){
+            /*!
+             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the sub deformation gradients
+             */
+
+            setDrivingStressesJacobians( true );
+
+        }
+
+        void residual::setPreviousdHigherOrderDrivingStressdChin( ){
+            /*!
+             * Set the previous jacobian of the higher-order driving stress (stress in current configuration of plastic configuration) w.r.t. the higher order stress w.r.t. the sub micro deformations
+             */
+
+            setDrivingStressesJacobians( true );
+
+        }
+
         void residual::setDrivingStressesJacobians( const bool isPrevious ){
             /*!
              * Set the driving stresses for the plasticity along with the Jacobians
@@ -260,13 +359,13 @@ namespace tardigradeHydra{
 
             const floatVector *stress;
 
-            const floatMatrix dFpdSubFs;
+            floatMatrix dFpdSubFs;
 
             const floatMatrix *dF1dF;
 
             const floatMatrix *dF1dFn;
 
-            const floatMatrix dChipdSubChis;
+            floatMatrix dChipdSubChis;
 
             const floatMatrix *dChi1dChi;
 
@@ -280,29 +379,85 @@ namespace tardigradeHydra{
 
                 stress = hydra->getPreviousStress( );
 
-                Fp     = hydra->getPreviousFollowingConfiguration(      ( *getPlasticConfigurationIndex( ) ) - 1 );
+                dF1dF         = hydra->get_previousdF1dF( );
 
-                chip   = hydra->getPreviousFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                dF1dFn        = hydra->get_previousdF1dFn( );
+
+                dFpdSubFs     = hydra->getPreviousFollowingConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+
+                dChi1dChi     = hydra->get_previousdChi1dChi( );
+
+                dChi1dChin    = hydra->get_previousdChi1dChin( );
+
+                dChipdSubChis = hydra->getPreviousFollowingMicroConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+
+                Fp            = hydra->getPreviousFollowingConfiguration(         ( *getPlasticConfigurationIndex( ) ) - 1 );
+
+                chip          = hydra->getPreviousFollowingMicroConfiguration(    ( *getPlasticConfigurationIndex( ) ) - 1 );
 
             }
             else{
 
                 stress = hydra->getStress( );
 
-                Fp     = hydra->getFollowingConfiguration(      ( *getPlasticConfigurationIndex( ) ) - 1 );
+                dF1dF         = hydra->get_dF1dF( );
 
-                chip   = hydra->getFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                dF1dFn        = hydra->get_dF1dFn( );
+
+                dFpdSubFs     = hydra->getFollowingConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+
+                dChi1dChi     = hydra->get_dChi1dChi( );
+
+                dChi1dChin    = hydra->get_dChi1dChin( );
+
+                dChipdSubChis = hydra->getFollowingMicroConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+
+                Fp            = hydra->getFollowingConfiguration(         ( *getPlasticConfigurationIndex( ) ) - 1 );
+
+                chip          = hydra->getFollowingMicroConfiguration(    ( *getPlasticConfigurationIndex( ) ) - 1 );
 
             }
 
             // Assemble the derivatives of the deformation gradient map
-            floatMatrix dFpdF;
+            floatMatrix dFpdF(  Fp.size( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
 
-            floatMatrix dFpdFn;
+            floatMatrix dFpdFn( Fp.size( ), floatVector( ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getDeformationGradient( )->size( ), 0 ) );
 
-            floatMatrix dChipdChi;
+            floatMatrix dChipdChi(  chip.size( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
 
-            floatMatrix dChipdChin;
+            floatMatrix dChipdChin( chip.size( ), floatVector( ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getMicroDeformation( )->size( ), 0 ) );
+
+            for ( unsigned int i = 0; i < ( *dim ) * ( *dim ); i++ ){
+
+                for ( unsigned int j = 0; j < ( *dim ) * ( *dim ); j++ ){
+
+                    for ( unsigned int k = 0; k < ( *dim ) * ( *dim ); k++ ){
+
+                        dFpdF[ i ][ j ] += dFpdSubFs[ i ][ k ] * ( *dF1dF )[ k ][ j ];
+
+                        dChipdChi[ i ][ j ] += dChipdSubChis[ i ][ k ] * ( *dChi1dChi )[ k ][ j ];
+
+                    }
+
+                }
+
+                for ( unsigned int j = 0; j < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( *dim ) * ( *dim ); j++ ){
+
+                    dFpdFn[ i ][ j ] += dFpdSubFs[ i ][ j + ( *dim ) * ( *dim ) ];
+
+                    dChipdChin[ i ][ j ] += dChipdSubChis[ i ][ j + ( *dim ) * ( *dim ) ];
+
+                    for ( unsigned int k = 0; k < ( *dim ) * ( *dim ); k++ ){
+
+                        dFpdFn[ i ][ j ] += dFpdSubFs[ i ][ k ] * ( *dF1dFn )[ k ][ j ];
+
+                        dChipdChin[ i ][ j ] += dChipdSubChis[ i ][ k ] * ( *dChi1dChin )[ k ][ j ];
+
+                    }
+
+                }
+
+            }
 
             // Extract the stresses from the stress vector
             floatVector PK2Stress(                     stress->begin( ),                           stress->begin( ) + 1 * ( *dim ) * ( *dim ) );
@@ -349,6 +504,28 @@ namespace tardigradeHydra{
 
                 set_previousHigherOrderDrivingStress(    higherOrderDrivingStress );
 
+                set_previousdMacroDrivingStressdMacroStress( dMacrodPK2 );
+
+                set_previousdMacroDrivingStressdF( tardigradeVectorTools::dot( dMacrodFp, dFpdF ) );
+
+                set_previousdMacroDrivingStressdFn( tardigradeVectorTools::dot( dMacrodFp, dFpdFn ) );
+
+                set_previousdSymmetricMicroDrivingStressdMicroStress( dMicrodSigma );
+
+                set_previousdSymmetricMicroDrivingStressdF( tardigradeVectorTools::dot( dMicrodFp, dFpdF ) );
+
+                set_previousdSymmetricMicroDrivingStressdFn( tardigradeVectorTools::dot( dMicrodFp, dFpdFn ) );
+
+                set_previousdHigherOrderDrivingStressdHigherOrderStress( dHigherdM );
+
+                set_previousdHigherOrderDrivingStressdF( tardigradeVectorTools::dot( dHigherdFp, dFpdF ) );
+
+                set_previousdHigherOrderDrivingStressdFn( tardigradeVectorTools::dot( dHigherdFp, dFpdFn ) );
+
+                set_previousdHigherOrderDrivingStressdChi( tardigradeVectorTools::dot( dHigherdChip, dChipdChi ) );
+
+                set_previousdHigherOrderDrivingStressdChin( tardigradeVectorTools::dot( dHigherdChip, dChipdChin ) );
+
             }
             else{
 
@@ -360,25 +537,25 @@ namespace tardigradeHydra{
 
                 set_dMacroDrivingStressdMacroStress( dMacrodPK2 );
 
-                set_dMacroDrivingStressdF( dMacrodF  );
+                set_dMacroDrivingStressdF( tardigradeVectorTools::dot( dMacrodFp, dFpdF ) );
 
-                set_dMacroDrivingStressdFn( dMacrodFn );
+                set_dMacroDrivingStressdFn( tardigradeVectorTools::dot( dMacrodFp, dFpdFn ) );
 
                 set_dSymmetricMicroDrivingStressdMicroStress( dMicrodSigma );
 
-                set_dSymmetricMicroDrivingStressdF( dMicrodF );
+                set_dSymmetricMicroDrivingStressdF( tardigradeVectorTools::dot( dMicrodFp, dFpdF ) );
 
-                set_dSymmetricMicroDrivingStressdFn( dMicrodFn );
+                set_dSymmetricMicroDrivingStressdFn( tardigradeVectorTools::dot( dMicrodFp, dFpdFn ) );
 
                 set_dHigherOrderDrivingStressdHigherOrderStress( dHigherdM );
 
-                set_dHigherOrderDrivingStressdF( dHigherdF );
+                set_dHigherOrderDrivingStressdF( tardigradeVectorTools::dot( dHigherdFp, dFpdF ) );
 
-                set_dHigherOrderDrivingStressdFn( dHigherdFn );
+                set_dHigherOrderDrivingStressdFn( tardigradeVectorTools::dot( dHigherdFp, dFpdFn ) );
 
-                set_dHigherOrderDrivingStressdChi( dHigherdChi );
+                set_dHigherOrderDrivingStressdChi( tardigradeVectorTools::dot( dHigherdChip, dChipdChi ) );
 
-                set_dHigherOrderDrivingStressdChin( dHigherdChin );
+                set_dHigherOrderDrivingStressdChin( tardigradeVectorTools::dot( dHigherdChip, dChipdChin ) );
 
             }
 

@@ -148,6 +148,28 @@ namespace tardigradeHydra{
 
                 virtual void setdHigherOrderDrivingStressdChin( );
 
+                virtual void setPreviousdMacroDrivingStressdMacroStress( );
+
+                virtual void setPreviousdSymmetricMicroDrivingStressdMicroStress( );
+
+                virtual void setPreviousdHigherOrderDrivingStressdHigherOrderStress( );
+
+                virtual void setPreviousdMacroDrivingStressdF( );
+
+                virtual void setPreviousdSymmetricMicroDrivingStressdF( );
+
+                virtual void setPreviousdHigherOrderDrivingStressdF( );
+
+                virtual void setPreviousdHigherOrderDrivingStressdChi( );
+
+                virtual void setPreviousdMacroDrivingStressdFn( );
+
+                virtual void setPreviousdSymmetricMicroDrivingStressdFn( );
+
+                virtual void setPreviousdHigherOrderDrivingStressdFn( );
+
+                virtual void setPreviousdHigherOrderDrivingStressdChin( );
+
                 virtual void setDrivingStressesJacobians( const bool isPrevious );
 
             private:
@@ -158,39 +180,61 @@ namespace tardigradeHydra{
 
                 floatType _integrationParameter; //! The integration parameter (0 is explicit, 1 is implicit)
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, macroDrivingStress,                          floatVector, setMacroDrivingStress                          )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, macroDrivingStress,                                  floatVector, setMacroDrivingStress                                  )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, symmetricMicroDrivingStress,                 floatVector, setSymmetricMicroDrivingStress                 )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, symmetricMicroDrivingStress,                         floatVector, setSymmetricMicroDrivingStress                         )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, higherOrderDrivingStress,                    floatVector, setHigherOrderDrivingStress                    )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, higherOrderDrivingStress,                            floatVector, setHigherOrderDrivingStress                            )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroDrivingStressdMacroStress,             floatMatrix, setdMacroDrivingStressdMacroStress             )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroDrivingStressdMacroStress,                     floatMatrix, setdMacroDrivingStressdMacroStress                     )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroDrivingStressdMicroStress,    floatMatrix, setdSymmetricMicroDrivingStressdMicroStress    )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroDrivingStressdMicroStress,            floatMatrix, setdSymmetricMicroDrivingStressdMicroStress            )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderDrivingStressdHigherOrderStress, floatMatrix, setdHigherOrderDrivingStressdHigherOrderStress )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderDrivingStressdHigherOrderStress,         floatMatrix, setdHigherOrderDrivingStressdHigherOrderStress         )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroDrivingStressdF,                       floatMatrix, setdMacroDrivingStressdF                       )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroDrivingStressdF,                               floatMatrix, setdMacroDrivingStressdF                               )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroDrivingStressdF,              floatMatrix, setdSymmetricMicroDrivingStressdF              )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroDrivingStressdF,                      floatMatrix, setdSymmetricMicroDrivingStressdF                      )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderDrivingStressdF,                 floatMatrix, setdHigherOrderDrivingStressdF                 )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderDrivingStressdF,                         floatMatrix, setdHigherOrderDrivingStressdF                         )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderDrivingStressdChi,               floatMatrix, setdHigherOrderDrivingStressdChi               )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderDrivingStressdChi,                       floatMatrix, setdHigherOrderDrivingStressdChi                       )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroDrivingStressdFn,                      floatMatrix, setdMacroDrivingStressdFn                      )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroDrivingStressdFn,                              floatMatrix, setdMacroDrivingStressdFn                              )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroDrivingStressdFn,             floatMatrix, setdSymmetricMicroDrivingStressdFn             )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dSymmetricMicroDrivingStressdFn,                     floatMatrix, setdSymmetricMicroDrivingStressdFn                     )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderDrivingStressdFn,                floatMatrix, setdHigherOrderDrivingStressdFn                )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderDrivingStressdFn,                        floatMatrix, setdHigherOrderDrivingStressdFn                        )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderDrivingStressdChin,              floatMatrix, setdHigherOrderDrivingStressdChin              )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHigherOrderDrivingStressdChin,                      floatMatrix, setdHigherOrderDrivingStressdChin                      )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMacroDrivingStress,                  floatVector, setPreviousMacroDrivingStress                  )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMacroDrivingStress,                          floatVector, setPreviousMacroDrivingStress                          )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousSymmetricMicroDrivingStress,         floatVector, setPreviousSymmetricMicroDrivingStress         )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousSymmetricMicroDrivingStress,                 floatVector, setPreviousSymmetricMicroDrivingStress                 )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousHigherOrderDrivingStress,            floatVector, setPreviousHigherOrderDrivingStress            )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousHigherOrderDrivingStress,                    floatVector, setPreviousHigherOrderDrivingStress                    )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMacroDrivingStressdMacroStress,             floatMatrix, setPreviousdMacroDrivingStressdMacroStress             )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdSymmetricMicroDrivingStressdMicroStress,    floatMatrix, setPreviousdSymmetricMicroDrivingStressdMicroStress    )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdHigherOrderDrivingStressdHigherOrderStress, floatMatrix, setPreviousdHigherOrderDrivingStressdHigherOrderStress )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMacroDrivingStressdF,                       floatMatrix, setPreviousdMacroDrivingStressdF                       )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdSymmetricMicroDrivingStressdF,              floatMatrix, setPreviousdSymmetricMicroDrivingStressdF              )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdHigherOrderDrivingStressdF,                 floatMatrix, setPreviousdHigherOrderDrivingStressdF                 )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdHigherOrderDrivingStressdChi,               floatMatrix, setPreviousdHigherOrderDrivingStressdChi               )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMacroDrivingStressdFn,                      floatMatrix, setPreviousdMacroDrivingStressdFn                      )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdSymmetricMicroDrivingStressdFn,             floatMatrix, setPreviousdSymmetricMicroDrivingStressdFn             )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdHigherOrderDrivingStressdFn,                floatMatrix, setPreviousdHigherOrderDrivingStressdFn                )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdHigherOrderDrivingStressdChin,              floatMatrix, setPreviousdHigherOrderDrivingStressdChin              )
 
         };
 
