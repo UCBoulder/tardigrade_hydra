@@ -560,6 +560,74 @@ namespace tardigradeHydra{
             }
 
         }
+
+        void residual::extractMaterialParameters( const parameterVector &parameters ){
+            /*!
+             * Extract the parameters from the parameter vector
+             *
+             * :param const std::vector< double > &parameters: The incoming parameter vector
+             * :param parameterVector &macroHardeningParameters: The parameters used in the hardening of the macro Strain ISV
+             * :param parameterVector &microHardeningParameters: The parameters used in the hardening of the micro Strain ISV
+             * :param parameterVector &microGradientHardeningParameters: The parameters used in the hardening of the micro Gradient Strain ISV
+             * :param parameterVector &macroFlowParameters: The parameters used in the macro flow direction computation.
+             * :param parameterVector &microFlowParameters: The parameters used in the micro flow direction computation
+             * :param parameterVector &microGradientFlowParameters: The parameters used in the micro Gradient flow direction computation.
+             * :param parameterVector &macroYieldParameters: The parameters used in the macro yielding computation.
+             * :param parameterVector &microYieldParameters: The parameters used in the micro yielding computation
+             * :param parameterVector &microGradientYieldParameters: The parameters used in the micro Gradient yielding computation.
+             */
+        
+            if ( parameters.size() == 0 ){
+        
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "The parameter vector has a length of zero" ) );
+        
+            }
+        
+            unsigned int start = 0;
+            unsigned int span;
+        
+            std::vector< parameterVector > outputs( 9 );
+        
+            //Extract the material parameters
+            for ( unsigned int i = 0; i < outputs.size(); i++ ){
+                span = ( unsigned int )std::floor( parameters[ start ]  + 0.5 ); //Extract the span of the parameter set
+        
+                if ( parameters.size() < start + 1 + span ){
+                    std::string outstr = "fparams is not long enough to contain all of the required parameters:\n";
+                    outstr +=            "    filling variable " + std::to_string( i ) + "\n";
+                    outstr +=            "    size =          "  + std::to_string( parameters.size() ) + "\n";
+                    outstr +=            "    required size = "  + std::to_string( start + 1 + span );
+        
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( outstr ); )
+        
+                }
+        
+                outputs[ i ] = parameterVector( parameters.begin() + start + 1, parameters.begin() + start + 1 + span );
+        
+                start = start + 1 + span;
+            }
+
+            //Set the output values
+            set_macroHardeningParameters(         outputs[ 0 ] );
+        
+            set_microHardeningParameters(         outputs[ 1 ] );
+        
+            set_microGradientHardeningParameters( outputs[ 2 ] );
+        
+            set_macroFlowParameters(              outputs[ 3 ] );
+        
+            set_microFlowParameters(              outputs[ 4 ] );
+        
+            set_microGradientFlowParameters(      outputs[ 5 ] );
+        
+            set_macroYieldParameters(             outputs[ 6 ] );
+        
+            set_microYieldParameters(             outputs[ 7 ] );
+        
+            set_microGradientYieldParameters(     outputs[ 8 ] );
+        
+        }
+
         const unsigned int* residual::getPlasticConfigurationIndex( ){
             /*!
              * Get plastic configuration index
