@@ -215,6 +215,20 @@ namespace tardigradeHydra{
 
                 virtual void setCohesions( const bool isPrevious );
 
+                virtual void setdMacroCohesiondStateVariables( );
+
+                virtual void setdMicroCohesiondStateVariables( );
+
+                virtual void setdMicroGradientCohesiondStateVariables( );
+
+                virtual void setPreviousdMacroCohesiondStateVariables( );
+
+                virtual void setPreviousdMicroCohesiondStateVariables( );
+
+                virtual void setPreviousdMicroGradientCohesiondStateVariables( );
+
+                virtual void setCohesionsJacobians( const bool isPrevious );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -311,15 +325,27 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, macroCohesion,                                       floatType,   setMacroCohesion                                       )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroCohesiondStateVariables,                       floatVector, setdMacroCohesiondStateVariables                       )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microCohesion,                                       floatType,   setMicroCohesion                                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroCohesiondStateVariables,                       floatVector, setdMicroCohesiondStateVariables                       )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microGradientCohesion,                               floatVector, setMicroGradientCohesion                               )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroGradientCohesiondStateVariables,               floatMatrix, setdMicroGradientCohesiondStateVariables               )
+
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMacroCohesion,                               floatType,   setPreviousMacroCohesion                               )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMacroCohesiondStateVariables,               floatVector, setPreviousdMacroCohesiondStateVariables               )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroCohesion,                               floatType,   setPreviousMicroCohesion                               )
 
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroCohesiondStateVariables,               floatVector, setPreviousdMicroCohesiondStateVariables               )
+
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroGradientCohesion,                       floatVector, setPreviousMicroGradientCohesion                       )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroGradientCohesiondStateVariables,       floatMatrix, setPreviousdMicroGradientCohesiondStateVariables       )
 
         };
 

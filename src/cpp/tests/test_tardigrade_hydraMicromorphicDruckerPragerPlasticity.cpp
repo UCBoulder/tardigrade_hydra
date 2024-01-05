@@ -1681,8 +1681,6 @@ BOOST_AUTO_TEST_CASE( test_setCohesion ){
 
     floatVector answer6 = 0.53186824 + 0.75454313 * temp;
 
-    try{*R.get_macroCohesion( );}catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
-
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer1, *R.get_macroCohesion( )                 ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R.get_microCohesion( )                 ) );
@@ -1694,5 +1692,200 @@ BOOST_AUTO_TEST_CASE( test_setCohesion ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer5, *R.get_previousMicroCohesion( )         ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer6, *R.get_previousMicroGradientCohesion( ) ) );
+
+    // Test the Jacobian
+    floatType eps = 1e-6;
+
+    floatVector dMacroCohesiondX( unknownVector.size( ), 0 );
+
+    floatVector dMicroCohesiondX( unknownVector.size( ), 0 );
+
+    floatMatrix dMicroGradientCohesiondX( 3, floatVector( unknownVector.size( ), 0 ) );
+
+    floatVector previousdMacroCohesiondX( previousStateVariables.size( ), 0 );
+
+    floatVector previousdMicroCohesiondX( previousStateVariables.size( ), 0 );
+
+    floatMatrix previousdMicroGradientCohesiondX( 3, floatVector( previousStateVariables.size( ), 0 ) );
+
+    for ( unsigned int i = 0; i < unknownVector.size( ); i++ ){
+
+        floatVector delta( unknownVector.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector + delta );
+    
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
+    
+        residualMock Rp( &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm( &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatType sp = *Rp.get_macroCohesion( );
+
+        floatType sm = *Rm.get_macroCohesion( );
+
+        for ( unsigned int j = 0; j < 1; j++ ){
+
+            dMacroCohesiondX[ i ] = ( sp - sm ) / ( 2 * delta[ i ] );
+
+        }
+
+        sp = *Rp.get_microCohesion( );
+
+        sm = *Rm.get_microCohesion( );
+
+        for ( unsigned int j = 0; j < 1; j++ ){
+
+            dMicroCohesiondX[ i ] = ( sp - sm ) / ( 2 * delta[ i ] );
+
+        }
+
+        floatVector vp = *Rp.get_microGradientCohesion( );
+
+        floatVector vm = *Rm.get_microGradientCohesion( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            dMicroGradientCohesiondX[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    floatVector dMacroCohesiondXAssembled( unknownVector.size( ), 0 );
+
+    floatVector dMicroCohesiondXAssembled( unknownVector.size( ), 0 );
+
+    floatMatrix dMicroGradientCohesiondXAssembled( 3, floatVector( unknownVector.size( ), 0 ) );
+
+    for ( unsigned int i = 0; i < R.get_dMacroCohesiondStateVariables( )->size( ); i++ ){
+
+        dMacroCohesiondXAssembled[ i + numConfigurations * configuration_unknown_count ] = ( *R.get_dMacroCohesiondStateVariables( ) )[ i ];
+
+        dMicroCohesiondXAssembled[ i + numConfigurations * configuration_unknown_count ] = ( *R.get_dMicroCohesiondStateVariables( ) )[ i ];
+
+    }
+
+    for ( unsigned int i = 0; i < R.get_dMicroGradientCohesiondStateVariables( )->size( ); i++ ){
+
+        for ( unsigned int j = 0; j < ( *R.get_dMicroGradientCohesiondStateVariables( ) )[ i ].size( ); j++ ){
+
+            dMicroGradientCohesiondXAssembled[ i ][ j + numConfigurations * configuration_unknown_count ] = ( *R.get_dMicroGradientCohesiondStateVariables( ) )[ i ][ j ];
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroCohesiondXAssembled, dMacroCohesiondX ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroCohesiondXAssembled, dMicroCohesiondX ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientCohesiondXAssembled, dMicroGradientCohesiondX ) );
+
+    for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
+
+        floatVector delta( previousStateVariables.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( previousStateVariables[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables + delta, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables - delta, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+    
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+    
+        residualMock Rp( &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm( &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatType sp = *Rp.get_previousMacroCohesion( );
+
+        floatType sm = *Rm.get_previousMacroCohesion( );
+
+        for ( unsigned int j = 0; j < 1; j++ ){
+
+            previousdMacroCohesiondX[ i ] = ( sp - sm ) / ( 2 * delta[ i ] );
+
+        }
+
+        sp = *Rp.get_previousMicroCohesion( );
+
+        sm = *Rm.get_previousMicroCohesion( );
+
+        for ( unsigned int j = 0; j < 1; j++ ){
+
+            previousdMicroCohesiondX[ i ] = ( sp - sm ) / ( 2 * delta[ i ] );
+
+        }
+
+        floatVector vp = *Rp.get_previousMicroGradientCohesion( );
+
+        floatVector vm = *Rm.get_previousMicroGradientCohesion( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMicroGradientCohesiondX[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    floatVector previousdMacroCohesiondXAssembled( previousStateVariables.size( ), 0 );
+
+    floatVector previousdMicroCohesiondXAssembled( previousStateVariables.size( ), 0 );
+
+    floatMatrix previousdMicroGradientCohesiondXAssembled( 3, floatVector( previousStateVariables.size( ), 0 ) );
+
+    for ( unsigned int i = 0; i < R.get_dMacroCohesiondStateVariables( )->size( ); i++ ){
+
+        previousdMacroCohesiondXAssembled[ i + ( numConfigurations - 1 ) * configuration_unknown_count ] = ( *R.get_dMacroCohesiondStateVariables( ) )[ i ];
+
+        previousdMicroCohesiondXAssembled[ i + ( numConfigurations - 1 ) * configuration_unknown_count ] = ( *R.get_dMicroCohesiondStateVariables( ) )[ i ];
+
+    }
+
+    for ( unsigned int i = 0; i < R.get_dMicroGradientCohesiondStateVariables( )->size( ); i++ ){
+
+        for ( unsigned int j = 0; j < ( *R.get_dMicroGradientCohesiondStateVariables( ) )[ i ].size( ); j++ ){
+
+            previousdMicroGradientCohesiondXAssembled[ i ][ j + ( numConfigurations - 1 ) * configuration_unknown_count ] = ( *R.get_dMicroGradientCohesiondStateVariables( ) )[ i ][ j ];
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroCohesiondXAssembled, previousdMacroCohesiondX ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroCohesiondXAssembled, previousdMicroCohesiondX ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientCohesiondXAssembled, previousdMicroGradientCohesiondX ) );
 
 }
