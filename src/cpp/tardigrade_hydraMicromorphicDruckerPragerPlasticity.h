@@ -80,6 +80,8 @@ namespace tardigradeHydra{
 
             public:
 
+                using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+
                 residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const unsigned int &plasticConfigurationIndex,
                           const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5 )
                         : tardigradeHydra::residualBaseMicromorphic( _hydra, _numEquations ){
