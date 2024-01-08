@@ -1655,6 +1655,286 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setd2MacroFlowdDrivingStressdStress( ){
+            /*!
+             * Set the Jacobian of the derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the macro stress
+             */
+
+            setFlowPotentialGradientsJacobians( false );
+
+        }
+
+        void residual::setd2MacroFlowdDrivingStressdF( ){
+            /*!
+             * Set the Jacobian of the derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the deformation gradient
+             */
+
+            setFlowPotentialGradientsJacobians( false );
+
+        }
+
+        void residual::setd2MacroFlowdDrivingStressdFn( ){
+            /*!
+             * Set the Jacobian of the derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the sub deformation gradients
+             */
+
+            setFlowPotentialGradientsJacobians( false );
+
+        }
+
+        void residual::setd2MicroFlowdDrivingStressdStress( ){
+            /*!
+             * Set the Jacobian of the derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the micro stress
+             */
+
+            setFlowPotentialGradientsJacobians( false );
+
+        }
+
+        void residual::setd2MicroFlowdDrivingStressdF( ){
+            /*!
+             * Set the Jacobian of the derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the deformation gradient
+             */
+
+            setFlowPotentialGradientsJacobians( false );
+
+        }
+
+        void residual::setd2MicroFlowdDrivingStressdFn( ){
+            /*!
+             * Set the Jacobian of the derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the sub deformation gradients
+             */
+
+            setFlowPotentialGradientsJacobians( false );
+
+        }
+
+        void residual::setd2MicroGradientFlowdDrivingStressdStress( ){
+            /*!
+             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the micro gradient stress
+             */
+
+            setFlowPotentialGradientsJacobians( false );
+
+        }
+
+        void residual::setd2MicroGradientFlowdDrivingStressdF( ){
+            /*!
+             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the deformation gradient
+             */
+
+            setFlowPotentialGradientsJacobians( false );
+
+        }
+
+        void residual::setd2MicroGradientFlowdDrivingStressdFn( ){
+            /*!
+             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the sub deformation gradients
+             */
+
+            setFlowPotentialGradientsJacobians( false );
+
+        }
+
+        void residual::setPreviousd2MacroFlowdDrivingStressdStress( ){
+            /*!
+             * Set the Jacobian of the previous derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the macro stress
+             */
+
+            setFlowPotentialGradientsJacobians( true );
+
+        }
+
+        void residual::setPreviousd2MacroFlowdDrivingStressdF( ){
+            /*!
+             * Set the Jacobian of the previous derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the deformation gradient
+             */
+
+            setFlowPotentialGradientsJacobians( true );
+
+        }
+
+        void residual::setPreviousd2MacroFlowdDrivingStressdFn( ){
+            /*!
+             * Set the Jacobian of the previous derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the sub deformation gradients
+             */
+
+            setFlowPotentialGradientsJacobians( true );
+
+        }
+
+        void residual::setPreviousd2MicroFlowdDrivingStressdStress( ){
+            /*!
+             * Set the Jacobian of the previous derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the micro stress
+             */
+
+            setFlowPotentialGradientsJacobians( true );
+
+        }
+
+        void residual::setPreviousd2MicroFlowdDrivingStressdF( ){
+            /*!
+             * Set the Jacobian of the previous derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the deformation gradient
+             */
+
+            setFlowPotentialGradientsJacobians( true );
+
+        }
+
+        void residual::setPreviousd2MicroFlowdDrivingStressdFn( ){
+            /*!
+             * Set the Jacobian of the previous derivative of the micro flow potential w.r.t. the micro driving stress w.r.t. the sub deformation gradients
+             */
+
+            setFlowPotentialGradientsJacobians( true );
+
+        }
+
+        void residual::setPreviousd2MicroGradientFlowdDrivingStressdStress( ){
+            /*!
+             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the micro gradient stress
+             */
+
+            setFlowPotentialGradientsJacobians( true );
+
+        }
+
+        void residual::setPreviousd2MicroGradientFlowdDrivingStressdF( ){
+            /*!
+             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the deformation gradient
+             */
+
+            setFlowPotentialGradientsJacobians( true );
+
+        }
+
+        void residual::setPreviousd2MicroGradientFlowdDrivingStressdFn( ){
+            /*!
+             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the sub deformation gradients
+             */
+
+            setFlowPotentialGradientsJacobians( true );
+
+        }
+
+        void residual::setFlowPotentialGradientsJacobians( const bool isPrevious ){
+            /*!
+             * Set the Jacobians of the flow potential gradients
+             *
+             * \param isPrevious: A flag for whether to set the current (false) or previous (true) derivatives
+             */
+
+            const floatType   *macroCohesion;
+
+            const floatType   *microCohesion;
+
+            const floatVector *microGradientCohesion;
+
+            const floatVector *macroDrivingStress;
+
+            const floatVector *microDrivingStress;
+
+            const floatVector *microGradientDrivingStress;
+
+            floatVector precedingDeformationGradient;
+
+            const floatVector *macroFlowParameters         = get_macroFlowParameters( );
+
+            const floatVector *microFlowParameters         = get_microFlowParameters( );
+
+            const floatVector *microGradientFlowParameters = get_microGradientFlowParameters( );
+
+            if ( isPrevious ){
+
+                precedingDeformationGradient = hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) );
+
+                macroCohesion                = get_previousMacroCohesion( );
+
+                microCohesion                = get_previousMicroCohesion( );
+
+                microGradientCohesion        = get_previousMicroGradientCohesion( );
+
+                macroDrivingStress           = get_previousMacroDrivingStress( );
+
+                microDrivingStress           = get_previousSymmetricMicroDrivingStress( );
+
+                microGradientDrivingStress   = get_previousHigherOrderDrivingStress( );
+
+            }
+            else{
+
+                precedingDeformationGradient = hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) );
+
+                macroCohesion                = get_macroCohesion( );
+
+                microCohesion                = get_microCohesion( );
+
+                microGradientCohesion        = get_microGradientCohesion( );
+
+                macroDrivingStress           = get_macroDrivingStress( );
+
+                microDrivingStress           = get_symmetricMicroDrivingStress( );
+
+                microGradientDrivingStress   = get_higherOrderDrivingStress( );
+
+            }
+
+            floatType tempYield;
+
+            floatVector tempVectorYield;
+
+            floatType   dMacroFlowdCohesion, dMicroFlowdCohesion;
+
+            floatVector dMacroFlowdDrivingStress, dMicroFlowdDrivingStress,
+                        dMacroFlowdPrecedingF,    dMicroFlowdPrecedingF;
+
+            floatMatrix dMicroGradientFlowdDrivingStress, dMicroGradientFlowdCohesion, dMicroGradientFlowdPrecedingF;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *macroDrivingStress, *macroCohesion, precedingDeformationGradient,
+                                                                                        ( *macroFlowParameters )[ 0 ], ( *macroFlowParameters )[ 1 ],
+                                                                                        tempYield, dMacroFlowdDrivingStress, dMacroFlowdCohesion, dMacroFlowdPrecedingF ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *microDrivingStress, *microCohesion, precedingDeformationGradient,
+                                                                                        ( *microFlowParameters )[ 0 ], ( *microFlowParameters )[ 1 ],
+                                                                                        tempYield, dMicroFlowdDrivingStress, dMicroFlowdCohesion, dMicroFlowdPrecedingF ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, precedingDeformationGradient,
+                                                                                       ( *microGradientFlowParameters )[ 0 ], ( *microGradientFlowParameters )[ 1 ],
+                                                                                       tempVectorYield, dMicroGradientFlowdDrivingStress, dMicroGradientFlowdCohesion, dMicroGradientFlowdPrecedingF ) );
+
+            if ( isPrevious ){
+
+                set_previousdMacroFlowdc( dMacroFlowdCohesion );
+
+                set_previousdMicroFlowdc( dMicroFlowdCohesion );
+
+                set_previousdMicroGradientFlowdc( dMicroGradientFlowdCohesion );
+
+                set_previousdMacroFlowdDrivingStress( dMacroFlowdDrivingStress );
+
+                set_previousdMicroFlowdDrivingStress( dMicroFlowdDrivingStress );
+
+                set_previousdMicroGradientFlowdDrivingStress( dMicroGradientFlowdDrivingStress );
+
+            }
+            else{
+
+                set_dMacroFlowdc( dMacroFlowdCohesion );
+
+                set_dMicroFlowdc( dMicroFlowdCohesion );
+
+                set_dMicroGradientFlowdc( dMicroGradientFlowdCohesion );
+
+                set_dMacroFlowdDrivingStress( dMacroFlowdDrivingStress );
+
+                set_dMicroFlowdDrivingStress( dMicroFlowdDrivingStress );
+
+                set_dMicroGradientFlowdDrivingStress( dMicroGradientFlowdDrivingStress );
+
+            }
+
+        }
+
         void residual::setMacroCohesion( ){
             /*!
              * Set the macro cohesion

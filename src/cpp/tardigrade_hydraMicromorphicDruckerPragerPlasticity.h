@@ -300,6 +300,44 @@ namespace tardigradeHydra{
 
                 virtual void setFlowPotentialGradients( const bool isPrevious );
 
+                virtual void setd2MacroFlowdDrivingStressdStress( );
+
+                virtual void setd2MacroFlowdDrivingStressdF( );
+
+                virtual void setd2MacroFlowdDrivingStressdFn( );
+
+                virtual void setd2MicroFlowdDrivingStressdStress( );
+
+                virtual void setd2MicroFlowdDrivingStressdF( );
+
+                virtual void setd2MicroFlowdDrivingStressdFn( );
+
+                virtual void setd2MicroGradientFlowdDrivingStressdStress( );
+
+                virtual void setd2MicroGradientFlowdDrivingStressdF( );
+
+                virtual void setd2MicroGradientFlowdDrivingStressdFn( );
+
+                virtual void setPreviousd2MacroFlowdDrivingStressdStress( );
+
+                virtual void setPreviousd2MacroFlowdDrivingStressdF( );
+
+                virtual void setPreviousd2MacroFlowdDrivingStressdFn( );
+
+                virtual void setPreviousd2MicroFlowdDrivingStressdStress( );
+
+                virtual void setPreviousd2MicroFlowdDrivingStressdF( );
+
+                virtual void setPreviousd2MicroFlowdDrivingStressdFn( );
+
+                virtual void setPreviousd2MicroGradientFlowdDrivingStressdStress( );
+
+                virtual void setPreviousd2MicroGradientFlowdDrivingStressdF( );
+
+                virtual void setPreviousd2MicroGradientFlowdDrivingStressdFn( );
+
+                virtual void setFlowPotentialGradientsJacobians( const bool isPrevious );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -422,25 +460,61 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroFlowdDrivingStress,                            floatVector, setdMacroFlowdDrivingStress                            )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, d2MacroFlowdDrivingStressdStress,                    floatMatrix, setd2MacroFlowdDrivingStressdStress                    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, d2MacroFlowdDrivingStressdF,                         floatMatrix, setd2MacroFlowdDrivingStressdF                         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, d2MacroFlowdDrivingStressdFn,                        floatMatrix, setd2MacroFlowdDrivingStressdFn                        )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroFlowdc,                                        floatType,   setdMicroFlowdc                                        )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroFlowdDrivingStress,                            floatVector, setdMicroFlowdDrivingStress                            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, d2MicroFlowdDrivingStressdStress,                    floatMatrix, setd2MicroFlowdDrivingStressdStress                    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, d2MicroFlowdDrivingStressdF,                         floatMatrix, setd2MicroFlowdDrivingStressdF                         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, d2MicroFlowdDrivingStressdFn,                        floatMatrix, setd2MicroFlowdDrivingStressdFn                        )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroGradientFlowdc,                                floatMatrix, setdMicroGradientFlowdc                                )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroGradientFlowdDrivingStress,                    floatMatrix, setdMicroGradientFlowdDrivingStress                    )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, d2MicroGradientFlowdDrivingStressdStress,            floatMatrix, setd2MicroGradientFlowdDrivingStressdStress            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, d2MicroGradientFlowdDrivingStressdF,                 floatMatrix, setd2MicroGradientFlowdDrivingStressdF                 )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, d2MicroGradientFlowdDrivingStressdFn,                floatMatrix, setd2MicroGradientFlowdDrivingStressdFn                )
+
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMacroFlowdc,                                floatType,   setPreviousdMacroFlowdc                                )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMacroFlowdDrivingStress,                    floatVector, setPreviousdMacroFlowdDrivingStress                    )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MacroFlowdDrivingStressdStress,            floatMatrix, setPreviousd2MacroFlowdDrivingStressdStress            )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MacroFlowdDrivingStressdF,                 floatMatrix, setPreviousd2MacroFlowdDrivingStressdF                 )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MacroFlowdDrivingStressdFn,                floatMatrix, setPreviousd2MacroFlowdDrivingStressdFn                )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroFlowdc,                                floatType,   setPreviousdMicroFlowdc                                )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroFlowdDrivingStress,                    floatVector, setPreviousdMicroFlowdDrivingStress                    )
 
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MicroFlowdDrivingStressdStress,            floatMatrix, setPreviousd2MicroFlowdDrivingStressdStress            )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MicroFlowdDrivingStressdF,                 floatMatrix, setPreviousd2MicroFlowdDrivingStressdF                 )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MicroFlowdDrivingStressdFn,                floatMatrix, setPreviousd2MicroFlowdDrivingStressdFn                )
+
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroGradientFlowdc,                        floatMatrix, setPreviousdMicroGradientFlowdc                        )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroGradientFlowdDrivingStress,            floatMatrix, setPreviousdMicroGradientFlowdDrivingStress            )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MicroGradientFlowdDrivingStressdStress,    floatMatrix, setPreviousd2MicroGradientFlowdDrivingStressdStress    )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MicroGradientFlowdDrivingStressdF,         floatMatrix, setPreviousd2MicroGradientFlowdDrivingStressdF         )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MicroGradientFlowdDrivingStressdFn,        floatMatrix, setPreviousd2MicroGradientFlowdDrivingStressdFn        )
 
         };
 
