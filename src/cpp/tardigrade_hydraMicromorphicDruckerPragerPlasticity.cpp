@@ -15,6 +15,39 @@ namespace tardigradeHydra{
 
     namespace micromorphicDruckerPragerPlasticity{
 
+        void computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parameterType &beta,
+                                                     parameterType &A, parameterType &B ){
+            /*!
+             * Compute the Drucker-Prager internal parameters
+             *
+             * :param const parameterType &frictionAngle: The material friction angle ( 0 < frictionAngle < pi / 2 );
+             * :param const parameterType &beta: The beta parameter.
+             * :param parameterType &A: The A parameter.
+             * :param parameterType &B: The B parameter.
+             */
+    
+            //Make sure the parameters are within bounds
+            TARDIGRADE_ERROR_TOOLS_CATCH( 
+                if ( ( 0 > frictionAngle ) || ( frictionAngle > 1.570796 ) ){
+                    throw std::runtime_error( "The friction angle must be betwen 0 and pi / 2 not " + std::to_string( frictionAngle ) );
+                }
+            )
+    
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                if ( abs( beta ) > 1 ){
+                    throw std::runtime_error( "Beta must be between -1 and 1 not " + std::to_string( beta ) );
+                }
+            )
+    
+            //Compute the parameters
+            parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
+    
+            A = betaAngle * std::cos( frictionAngle );
+    
+            B = betaAngle * std::sin( frictionAngle );
+    
+        }
+
         void residual::setMacroDrivingStress( ){
             /*!
              * Set the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration)

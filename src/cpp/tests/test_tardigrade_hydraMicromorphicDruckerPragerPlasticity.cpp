@@ -1889,3 +1889,26 @@ BOOST_AUTO_TEST_CASE( test_setCohesion ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientCohesiondXAssembled, previousdMicroGradientCohesiondX ) );
 
 }
+
+BOOST_AUTO_TEST_CASE( testComputeDruckerPragerInternalParameters ){
+    /*!
+     * Test the computation of the internal parameters for the Drucker-Prager plasticity.
+     *
+     */
+
+    parameterType frictionAngle = 0.25;
+    parameterType beta = .423;
+
+    parameterType Aanswer = 1.528893501990677;
+    parameterType Banswer = 0.39039060414065774;
+
+    parameterType Aresult, Bresult;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeDruckerPragerInternalParameters( frictionAngle, beta, Aresult, Bresult );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( Aresult, Aanswer ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( Bresult, Banswer ) );
+
+}
+
