@@ -73,6 +73,24 @@ namespace tardigradeHydra{
         typedef std::vector< constantType > constantVector; //!< Define a vector of constants
         typedef std::vector< std::vector< constantType > > constantMatrix; //!< Define a matrix of constants
 
+        virtual void computeSecondOrderDruckerPragerYieldSurface( const floatVector   &stressMeasure,                 const floatType &cohesion,
+                                                                  const floatVector   &preceedingDeformationGradient,
+                                                                  const parameterType &frictionAngle, const parameterType &beta,
+                                                                  floatType &yieldValue );
+
+        virtual void computeSecondOrderDruckerPragerYieldSurface( const floatVector   &stressMeasure,                 const floatType &cohesion,
+                                                                  const floatVector   &preceedingDeformationGradient,
+                                                                  const parameterType &frictionAngle, const parameterType &beta,
+                                                                  floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
+                                                                  floatVector &dFdPreceedingF, double tol = 1e-9 );
+
+        virtual void computeSecondOrderDruckerPragerYieldSurface( const floatVector   &stressMeasure,                 const floatType &cohesion,
+                                                                  const floatVector   &preceedingDeformationGradient,
+                                                                  const parameterType &frictionAngle, const parameterType &beta,
+                                                                  floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
+                                                                  floatVector &dFdPreceedingF, floatMatrix &d2FdStress2,
+                                                                  floatMatrix &d2FdStressdPreceedingF, double tol = 1e-9 );
+
         /*!
          * The residual for a micromorphic Drucker Prager plasticity model
          */
