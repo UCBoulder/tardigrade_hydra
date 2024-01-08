@@ -76,18 +76,21 @@ namespace tardigradeHydra{
         void computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parameterType &beta,
                                                      parameterType &A, parameterType &B );
 
-        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,                 const floatType &cohesion,
+        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,
+                                                           const floatType     &cohesion,
                                                            const floatVector   &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            floatType &yieldValue );
 
-        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,                 const floatType &cohesion,
+        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,
+                                                           const floatType     &cohesion,
                                                            const floatVector   &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
                                                            floatVector &dFdPrecedingF, double tol = 1e-9 );
 
-        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,                 const floatType &cohesion,
+        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,
+                                                           const floatType     &cohesion,
                                                            const floatVector   &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
