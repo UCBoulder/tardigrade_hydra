@@ -91,6 +91,27 @@ namespace tardigradeHydra{
                                                                   floatVector &dFdPreceedingF, floatMatrix &d2FdStress2,
                                                                   floatMatrix &d2FdStressdPreceedingF, double tol = 1e-9 );
 
+        virtual void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
+                                                                   const variableVector &cohesion,
+                                                                   const variableVector &preceedingDeformationGradient,
+                                                                   const parameterType &frictionAngle, const parameterType &beta,
+                                                                   variableVector &yieldValue );
+    
+        virtual void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
+                                                                   const variableVector &cohesion,
+                                                                   const variableVector &preceedingDeformationGradient,
+                                                                   const parameterType &frictionAngle, const parameterType &beta,
+                                                                   variableVector &yieldValue, variableMatrix &dFdStress, variableMatrix &dFdc,
+                                                                   variableMatrix &dFdPreceedingF );
+    
+        virtual void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMEasure,
+                                                                   const variableVector &cohesion,
+                                                                   const variableVector &preceedingDeformationGradient,
+                                                                   const parameterType &frictionAngle, const parameterType &beta,
+                                                                   variableVector &yieldValue, variableMatrix &dFdStress, variableMatrix &dFdc,
+                                                                   variableMatrix &dFdPreceedingF, variableMatrix &d2FdStress2,
+                                                                   variableMatrix &d2FdStressdPreceedingF );
+
         /*!
          * The residual for a micromorphic Drucker Prager plasticity model
          */
