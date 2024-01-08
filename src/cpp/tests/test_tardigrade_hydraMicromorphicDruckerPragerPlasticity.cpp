@@ -2466,6 +2466,12 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives ){
 
             }
 
+            virtual void setDrivingStressesJacobians( const bool isPrevious ) override{
+
+                setDrivingStresses( isPrevious );
+
+            }
+
     };
 
     class hydraBaseMicromorphicMock : public tardigradeHydra::hydraBaseMicromorphic{

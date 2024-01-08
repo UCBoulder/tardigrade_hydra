@@ -1836,6 +1836,24 @@ namespace tardigradeHydra{
 
             const floatVector *microGradientDrivingStress;
 
+            const floatMatrix *dMacroDrivingStressdStress;
+
+            const floatMatrix *dMacroDrivingStressdF;
+
+            const floatMatrix *dMacroDrivingStressdFn;
+
+            const floatMatrix *dMicroDrivingStressdStress;
+
+            const floatMatrix *dMicroDrivingStressdF;
+
+            const floatMatrix *dMicroDrivingStressdFn;
+
+            const floatMatrix *dMicroGradientDrivingStressdStress;
+
+            const floatMatrix *dMicroGradientDrivingStressdF;
+
+            const floatMatrix *dMicroGradientDrivingStressdFn;
+
             floatVector precedingDeformationGradient;
 
             const floatVector *macroFlowParameters         = get_macroFlowParameters( );
@@ -1854,6 +1872,24 @@ namespace tardigradeHydra{
 
                 microGradientCohesion        = get_previousMicroGradientCohesion( );
 
+                dMacroDrivingStressdStress         = get_previousdMacroDrivingStressdMacroStress( );
+
+                dMicroDrivingStressdStress         = get_previousdSymmetricMicroDrivingStressdMicroStress( );
+
+                dMicroGradientDrivingStressdStress = get_previousdHigherOrderDrivingStressdHigherOrderStress( );
+
+                dMacroDrivingStressdF              = get_previousdMacroDrivingStressdF( );
+
+                dMicroDrivingStressdF              = get_previousdSymmetricMicroDrivingStressdF( );
+
+                dMicroGradientDrivingStressdF      = get_previousdHigherOrderDrivingStressdF( );
+
+                dMacroDrivingStressdFn             = get_previousdMacroDrivingStressdFn( );
+
+                dMicroDrivingStressdFn             = get_previousdSymmetricMicroDrivingStressdFn( );
+
+                dMicroGradientDrivingStressdFn     = get_previousdHigherOrderDrivingStressdFn( );
+
                 macroDrivingStress           = get_previousMacroDrivingStress( );
 
                 microDrivingStress           = get_previousSymmetricMicroDrivingStress( );
@@ -1870,6 +1906,24 @@ namespace tardigradeHydra{
                 microCohesion                = get_microCohesion( );
 
                 microGradientCohesion        = get_microGradientCohesion( );
+
+                dMacroDrivingStressdStress         = get_dMacroDrivingStressdMacroStress( );
+
+                dMicroDrivingStressdStress         = get_dSymmetricMicroDrivingStressdMicroStress( );
+
+                dMicroGradientDrivingStressdStress = get_dHigherOrderDrivingStressdHigherOrderStress( );
+
+                dMacroDrivingStressdF              = get_dMacroDrivingStressdF( );
+
+                dMicroDrivingStressdF              = get_dSymmetricMicroDrivingStressdF( );
+
+                dMicroGradientDrivingStressdF      = get_dHigherOrderDrivingStressdF( );
+
+                dMacroDrivingStressdFn             = get_dMacroDrivingStressdFn( );
+
+                dMicroDrivingStressdFn             = get_dSymmetricMicroDrivingStressdFn( );
+
+                dMicroGradientDrivingStressdFn     = get_dHigherOrderDrivingStressdFn( );
 
                 macroDrivingStress           = get_macroDrivingStress( );
 
