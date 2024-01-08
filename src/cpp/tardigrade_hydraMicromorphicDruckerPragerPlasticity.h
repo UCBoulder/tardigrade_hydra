@@ -73,6 +73,9 @@ namespace tardigradeHydra{
         typedef std::vector< constantType > constantVector; //!< Define a vector of constants
         typedef std::vector< std::vector< constantType > > constantMatrix; //!< Define a matrix of constants
 
+        virtual void computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parametertype &beta,
+                                                             parameterType &A, parameterType &B );
+
         virtual void computeSecondOrderDruckerPragerYieldSurface( const floatVector   &stressMeasure,                 const floatType &cohesion,
                                                                   const floatVector   &preceedingDeformationGradient,
                                                                   const parameterType &frictionAngle, const parameterType &beta,
