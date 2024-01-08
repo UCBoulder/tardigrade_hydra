@@ -48,6 +48,54 @@ namespace tardigradeHydra{
     
         }
 
+        void computeSecondOrderDruckerPragerYieldEquation( const variableVector &stressMeasure, const variableType &cohesion,
+                                                               const variableVector &preceedingDeformationGradient,
+                                                               const parameterType &frictionAngle, const parameterType &beta,
+                                                               variableType &yieldValue ){
+            /*!
+             * Compute the second-order Drucker Prager Yield equation
+             *
+             * \f$ F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
+             * 
+             * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
+             *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ}
+             *  dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p} elasticRightCauchyGreen_{IJ}^{-1}
+             *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
+             *  A^{angle} = \beta^{angle} \cos( frictionAngle )
+             *  B^{angle} = \beta^{angle} \sin( frictionAngle )
+             *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }
+             * \f$
+             *
+             * :param const variableVector &stressMeasure: The stress measure
+             * :param const variableType &cohesion: The cohesion measure.
+             * :param const variableVector &preceedingDeformationGradient: The deformation gradients preceeding the configuration of the stress measure
+             * :param const parameterType &frictionAngle: The friction angle
+             * :param const parameterType &beta: The beta parameter
+             * :param variableType &yieldValue: The yield value.
+             */
+
+            parameterType AAngle, BAngle;
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::micromorphicDruckerPragerPlasticity::computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
+
+            //Compute the right Cauchy-Green deformation tensor
+            floatVector rightCauchyGreen;
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( preceedingDeformationGradient, rightCauchyGreen ) );
+
+            //Compute the decomposition of the stress
+            variableType pressure;
+            variableVector deviatoricReferenceStress;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( stressMeasure,
+                                                                                                                                    rightCauchyGreen, deviatoricReferenceStress, pressure ) );
+
+            //Compute the l2norm of the deviatoric stress
+            variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
+
+            //Evaluate the yield equation
+            yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
+
+        }
+
         void residual::setMacroDrivingStress( ){
             /*!
              * Set the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration)

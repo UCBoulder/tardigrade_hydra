@@ -76,23 +76,23 @@ namespace tardigradeHydra{
         void computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parameterType &beta,
                                                      parameterType &A, parameterType &B );
 
-        void computeSecondOrderDruckerPragerYieldSurface( const floatVector   &stressMeasure,                 const floatType &cohesion,
-                                                          const floatVector   &preceedingDeformationGradient,
-                                                          const parameterType &frictionAngle, const parameterType &beta,
-                                                          floatType &yieldValue );
+        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,                 const floatType &cohesion,
+                                                           const floatVector   &preceedingDeformationGradient,
+                                                           const parameterType &frictionAngle, const parameterType &beta,
+                                                           floatType &yieldValue );
 
-        void computeSecondOrderDruckerPragerYieldSurface( const floatVector   &stressMeasure,                 const floatType &cohesion,
-                                                          const floatVector   &preceedingDeformationGradient,
-                                                          const parameterType &frictionAngle, const parameterType &beta,
-                                                          floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
-                                                          floatVector &dFdPreceedingF, double tol = 1e-9 );
+        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,                 const floatType &cohesion,
+                                                           const floatVector   &preceedingDeformationGradient,
+                                                           const parameterType &frictionAngle, const parameterType &beta,
+                                                           floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
+                                                           floatVector &dFdPreceedingF, double tol = 1e-9 );
 
-        void computeSecondOrderDruckerPragerYieldSurface( const floatVector   &stressMeasure,                 const floatType &cohesion,
-                                                          const floatVector   &preceedingDeformationGradient,
-                                                          const parameterType &frictionAngle, const parameterType &beta,
-                                                          floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
-                                                          floatVector &dFdPreceedingF, floatMatrix &d2FdStress2,
-                                                          floatMatrix &d2FdStressdPreceedingF, double tol = 1e-9 );
+        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,                 const floatType &cohesion,
+                                                           const floatVector   &preceedingDeformationGradient,
+                                                           const parameterType &frictionAngle, const parameterType &beta,
+                                                           floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
+                                                           floatVector &dFdPreceedingF, floatMatrix &d2FdStress2,
+                                                           floatMatrix &d2FdStressdPreceedingF, double tol = 1e-9 );
 
         void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
                                                            const variableVector &cohesion,
@@ -150,7 +150,7 @@ namespace tardigradeHydra{
 
                 }
 
-                //Get the number of plastic multipliers expected for the problem
+                //!Get the number of plastic multipliers expected for the problem
                 const unsigned int* getNumPlasticMultipliers( ){ return &_numPlasticMultipliers; }
 
                 const unsigned int* getPlasticConfigurationIndex( );
