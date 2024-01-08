@@ -2074,3 +2074,185 @@ BOOST_AUTO_TEST_CASE( testComputeSecondOrderDruckerPragerYieldEquation ){
 
 }
 
+BOOST_AUTO_TEST_CASE( testComputeHigherOrderDruckerPragerYieldEquation ){
+    /*!
+     * Test the computation of the higher order stress Drucker-Prager yield equation.
+     *
+     */
+
+    variableVector M = { 0.80732114,  0.79202055,  0.17990022,  0.97454675,  0.703207  ,
+                        -0.58236697,  0.53324571, -0.93438873, -0.40650796,  0.14071918,
+                         0.66933708, -0.67854069, -0.30317772, -0.93821882,  0.97270622,
+                         0.00295302, -0.12441126,  0.30539971, -0.0580227 ,  0.89696105,
+                         0.17567709, -0.9592962 ,  0.63535407,  0.95437804, -0.64531877,
+                         0.69978907,  0.81327586 };
+
+    variableVector precedingF = { 1.03482346, 0.01430697, 0.01134257,
+                                  0.02756574, 1.03597345, 0.02115532,
+                                  0.04903821, 0.03424149, 1.0240466 };
+
+    variableVector cohesion = { 0.51, 0.71, .14 };
+    parameterType frictionAngle = 0.46;
+    parameterType beta = 0.34;
+
+    constantVector answer = { 1.08862863, 1.39180044, 1.82194477 };
+    variableVector result;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF,
+                                                                                                        frictionAngle, beta, result );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( result, answer ) );
+
+    //Test the Jacobians
+
+    variableVector resultJ;
+    variableMatrix dFdStress, dFdc, dFdPrecedingF;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF,
+                                                                                                        frictionAngle, beta, resultJ,
+                                                                                                        dFdStress, dFdc, dFdPrecedingF );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultJ, answer ) );
+
+    variableVector resultJ2;
+    variableMatrix dFdStressJ2, dFdcJ2, dFdPrecedingFJ2;
+    variableMatrix d2FdStress2J2, d2FdStressdPrecedingFJ2;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF,
+                                                                                                        frictionAngle, beta, resultJ2,
+                                                                                                        dFdStressJ2, dFdcJ2, dFdPrecedingFJ2,
+                                                                                                        d2FdStress2J2, d2FdStressdPrecedingFJ2 );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultJ2, answer ) );
+
+    //Test derivatives w.r.t stress
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < M.size(); i++ ){
+        constantVector delta( M.size(), 0 );
+        delta[i] = eps * fabs( M[i] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M + delta, cohesion, precedingF,
+                                                                                                            frictionAngle, beta, resultP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M - delta, cohesion, precedingF,
+                                                                                                            frictionAngle, beta, resultM );
+
+        constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdStress[j][i] ) );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdStressJ2[j][i] ) );
+        }
+
+        variableMatrix dFdStressP, dFdcP, dFdPrecedingFP;
+        variableMatrix dFdStressM, dFdcM, dFdPrecedingFM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M + delta, cohesion, precedingF,
+                                                                                                            frictionAngle, beta, resultP,
+                                                                                                            dFdStressP, dFdcP, dFdPrecedingFP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M - delta, cohesion, precedingF,
+                                                                                                            frictionAngle, beta, resultM,
+                                                                                                            dFdStressM, dFdcM, dFdPrecedingFM );
+
+        constantMatrix gradMat = ( dFdStressP - dFdStressM ) / ( 2 * delta[i] );
+
+        unsigned int n, o, p;
+
+        for ( unsigned int j = 0; j < 3; j++ ){
+            for ( unsigned int k = 0; k < 3; k++ ){
+                for ( unsigned int l = 0; l < 3; l++ ){
+                    for ( unsigned int m = 0; m < 3; m++ ){
+                        n = ( int )( i / 9 );
+                        o = ( int )( (i - 9 * n ) / 3 );
+                        p = ( i - 9 * n - 3 * o ) % 3;
+                        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradMat[ j ][ 9 * k + 3 * l + m ],
+                                                        d2FdStress2J2[ j ][ 243 * k + 81 * l + 27 * m + 9 * n + 3 * o + p ] ) );
+                    }
+                }
+            }
+        }
+    }
+
+    //Test derivatives w.r.t. the cohesion
+    for ( unsigned int i = 0; i < cohesion.size(); i++ ){
+        constantVector delta( cohesion.size(), 0 );
+        delta[i] = eps * fabs( cohesion[i] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion + delta, precedingF,
+                                                                                                            frictionAngle, beta, resultP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion - delta, precedingF,
+                                                                                                            frictionAngle, beta, resultM );
+
+        constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdc[j][i] ) );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdcJ2[j][i] ) );
+        }
+    }
+
+    //Test derivatives w.r.t. the preceding deformation gradient
+    for ( unsigned int i = 0; i < precedingF.size(); i++ ){
+        constantVector delta( precedingF.size(), 0 );
+        delta[i] = eps * fabs( precedingF[i] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF + delta,
+                                                                                                            frictionAngle, beta, resultP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF - delta,
+                                                                                                            frictionAngle, beta, resultM );
+
+        constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdPrecedingF[j][i] ) );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdPrecedingF[j][i] ) );
+        }
+
+        variableMatrix dFdStressP, dFdcP, dFdPrecedingFP;
+        variableMatrix dFdStressM, dFdcM, dFdPrecedingFM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF + delta,
+                                                                                                            frictionAngle, beta, resultP,
+                                                                                                            dFdStressP, dFdcP, dFdPrecedingFP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF - delta,
+                                                                                                            frictionAngle, beta, resultM,
+                                                                                                            dFdStressM, dFdcM, dFdPrecedingFM );
+
+        constantMatrix gradMat = ( dFdStressP - dFdStressM ) / ( 2 * delta[i] );
+
+        unsigned int n, o;
+
+        for ( unsigned int j = 0; j < 3; j++ ){
+            for ( unsigned int k = 0; k < 3; k++ ){
+                for ( unsigned int l = 0; l < 3; l++ ){
+                    for ( unsigned int m = 0; m < 3; m++ ){
+                        n = ( int )( i / 3 );
+                        o = ( i % 3 );
+                        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradMat[ j ][ 9 * k + 3 * l + m ],
+                                                        d2FdStressdPrecedingFJ2[ j ][ 81 * k + 27 * l + 9 * m + 3 * n + o ] ) );
+                    }
+                }
+            }
+        }
+    }
+
+}
