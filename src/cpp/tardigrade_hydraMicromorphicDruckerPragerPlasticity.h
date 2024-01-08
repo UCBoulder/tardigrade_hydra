@@ -77,43 +77,43 @@ namespace tardigradeHydra{
                                                      parameterType &A, parameterType &B );
 
         void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,                 const floatType &cohesion,
-                                                           const floatVector   &preceedingDeformationGradient,
+                                                           const floatVector   &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            floatType &yieldValue );
 
         void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,                 const floatType &cohesion,
-                                                           const floatVector   &preceedingDeformationGradient,
+                                                           const floatVector   &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
-                                                           floatVector &dFdPreceedingF, double tol = 1e-9 );
+                                                           floatVector &dFdPrecedingF, double tol = 1e-9 );
 
         void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,                 const floatType &cohesion,
-                                                           const floatVector   &preceedingDeformationGradient,
+                                                           const floatVector   &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
-                                                           floatVector &dFdPreceedingF, floatMatrix &d2FdStress2,
-                                                           floatMatrix &d2FdStressdPreceedingF, double tol = 1e-9 );
+                                                           floatVector &dFdPrecedingF, floatMatrix &d2FdStress2,
+                                                           floatMatrix &d2FdStressdPrecedingF, double tol = 1e-9 );
 
         void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
                                                            const variableVector &cohesion,
-                                                           const variableVector &preceedingDeformationGradient,
+                                                           const variableVector &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            variableVector &yieldValue );
     
         void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
                                                            const variableVector &cohesion,
-                                                           const variableVector &preceedingDeformationGradient,
+                                                           const variableVector &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            variableVector &yieldValue, variableMatrix &dFdStress, variableMatrix &dFdc,
-                                                           variableMatrix &dFdPreceedingF );
+                                                           variableMatrix &dFdPrecedingF );
     
         void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMEasure,
                                                            const variableVector &cohesion,
-                                                           const variableVector &preceedingDeformationGradient,
+                                                           const variableVector &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            variableVector &yieldValue, variableMatrix &dFdStress, variableMatrix &dFdc,
-                                                           variableMatrix &dFdPreceedingF, variableMatrix &d2FdStress2,
-                                                           variableMatrix &d2FdStressdPreceedingF );
+                                                           variableMatrix &dFdPrecedingF, variableMatrix &d2FdStress2,
+                                                           variableMatrix &d2FdStressdPrecedingF );
 
         /*!
          * The residual for a micromorphic Drucker Prager plasticity model

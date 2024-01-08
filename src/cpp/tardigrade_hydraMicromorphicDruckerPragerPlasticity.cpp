@@ -49,7 +49,7 @@ namespace tardigradeHydra{
         }
 
         void computeSecondOrderDruckerPragerYieldEquation( const variableVector &stressMeasure, const variableType &cohesion,
-                                                               const variableVector &preceedingDeformationGradient,
+                                                               const variableVector &precedingDeformationGradient,
                                                                const parameterType &frictionAngle, const parameterType &beta,
                                                                variableType &yieldValue ){
             /*!
@@ -68,7 +68,7 @@ namespace tardigradeHydra{
              *
              * :param const variableVector &stressMeasure: The stress measure
              * :param const variableType &cohesion: The cohesion measure.
-             * :param const variableVector &preceedingDeformationGradient: The deformation gradients preceeding the configuration of the stress measure
+             * :param const variableVector &precedingDeformationGradient: The deformation gradients preceding the configuration of the stress measure
              * :param const parameterType &frictionAngle: The friction angle
              * :param const parameterType &beta: The beta parameter
              * :param variableType &yieldValue: The yield value.
@@ -79,7 +79,7 @@ namespace tardigradeHydra{
 
             //Compute the right Cauchy-Green deformation tensor
             floatVector rightCauchyGreen;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( preceedingDeformationGradient, rightCauchyGreen ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen ) );
 
             //Compute the decomposition of the stress
             variableType pressure;
@@ -93,6 +93,222 @@ namespace tardigradeHydra{
 
             //Evaluate the yield equation
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
+
+        }
+
+        void computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
+                                                           const variableVector &precedingDeformationGradient,
+                                                           const parameterType &frictionAngle, const parameterType &beta,
+                                                           variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
+                                                           variableVector &dFdPrecedingF, double tol ){
+            /*!
+             * Compute the second-order Drucker Prager Yield equation
+             *
+             * \f$F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
+             * 
+             * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
+             *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ}
+             *  dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p} elasticRightCauchyGreen_{IJ}^{-1}\f$
+             *
+             *  Also compute the Jacobians
+             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} }
+             * \frac{ \partial F }{ \partial \bar{c} } = -A^{\phi}
+             * \frac{ \partial F }{ \partial C_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{ \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial C_{IJ} }
+             *
+             *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
+             *  A^{angle} = \beta^{angle} \cos( frictionAngle )
+             *  B^{angle} = \beta^{angle} \sin( frictionAngle )
+             *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }\f$
+             *
+             * :param const variableVector &referenceStressMeasure: The stress measure in the reference configuration
+             * :param const variableType &cohesion: The cohesion measure.
+             * :param const variableVector &precedingDeformationGradient: The preceding deformation gradient.
+             * :param const parameterType &frictionAngle: The friction angle
+             * :param const parameterType &beta: The beta parameter
+             * :param variableType &yieldValue: The yield value.
+             * :param variableVector &dFdStress: The Jacobian of the yield surface w.r.t. the stress measure.
+             * :param variableType &dFdc: The Jacobian of the yield surface w.r.t. the cohesion.
+             * :param variableVector &dFdPrecedingF: The Jacobian of the yield surface w.r.t. the preceding deformation gradient from the stress-measure's configuration
+             * :param double tol: The tolerance used to prevent nans in the Jacobians
+             */
+    
+            parameterType AAngle, BAngle;
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
+   
+            //Compute the right Cauchy-Green deformation tensor
+            floatVector rightCauchyGreen;
+            floatMatrix dRCGdPrecedingF;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
+ 
+            //Compute the decomposition of the stress
+            variableType pressure;
+            variableVector deviatoricReferenceStress;
+    
+            variableMatrix dDevStressdStress, dDevStressdRCG;
+            variableVector dPressuredStress, dPressuredRCG;
+    
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
+                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
+                                                       dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
+   
+            variableMatrix dDevStressdPrecedingF = tardigradeVectorTools::dot( dDevStressdRCG, dRCGdPrecedingF );
+            variableVector dPressuredPrecedingF  = tardigradeVectorTools::Tdot( dRCGdPrecedingF, dPressuredRCG );
+ 
+            //Compute the l2norm of the deviatoric stress
+            variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
+    
+            //Evaluate the yield equation
+            yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
+    
+            //Evaluate the jacobians
+            variableVector devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
+    
+            dFdStress = tardigradeVectorTools::Tdot( dDevStressdStress, devStressDirection )
+                      + BAngle * dPressuredStress;
+    
+            dFdc = - AAngle;
+    
+            dFdPrecedingF = tardigradeVectorTools::Tdot( dDevStressdPrecedingF, devStressDirection )
+                          + BAngle * dPressuredPrecedingF;
+        }
+
+        void computeSecondOrderDruckerPragerYieldEquation( const variableVector &stressMeasure, const variableType &cohesion,
+                                                           const variableVector &precedingDeformationGradient,
+                                                           const parameterType &frictionAngle, const parameterType &beta,
+                                                           variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
+                                                           variableVector &dFdPrecedingF, variableMatrix &d2FdStress2,
+                                                           variableMatrix &d2FdStressdPrecedingF, double tol ){
+            /*!
+             * Compute the second-order Drucker Prager Yield equation
+             *
+             * \f$F = ||dev ( stressMeasure ) || - \left( A^{\phi} \bar{c} - B^{\phi} \bar{p} \right) \leq 0
+             * 
+             * || dev ( stressMeasure ) || = \sqrt{ dev( referenceStressMeasure ) : dev( referenceStressMeasure ) }
+             *  dev( referenceStressMeasure ) : dev( referenceStressMeasure ) = dev( referenceStressMeasure )_{IJ} dev( referenceStressMeasure )_{IJ}
+             *  dev( referenceStressMeasure )_{IJ} = referenceStressMeasure_{IJ} - \bar{p} elasticRightCauchyGreen_{IJ}^{-1}
+             *  \bar{p} = \frac{1}{3} elasticRightCauchyGreen_{IJ} referenceStressMeasure_{IJ}
+             *  A^{angle} = \beta^{angle} \cos( frictionAngle )
+             *  B^{angle} = \beta^{angle} \sin( frictionAngle )
+             *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }\f$
+             *
+             *  Also compute the Jacobians
+             * \f$\frac{ \partial F }{ \partial stressMeasure_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure ) \frac{ \partial dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial stressMeasure_{IJ} }
+             * \frac{ \partial F }{ \partial \bar{c} } = -A^{\phi}
+             * \frac{ \partial F }{ \partial C_{IJ} } = \frac{ dev ( stressMeasure )_{AB} }{ || dev ( stressMeasure ) || } \frac{ \partial dev( stressMeasure )_{AB} }{ \partial C_{IJ} } + B^{\phi} \frac{ \partial \bar{p} }{ \partial C_{IJ} }\f$
+             *
+             *  The second deriatives of \f$\frac{ \partial F }{ \partial \stressMeasure_{IJ}  }\f$ are
+             *  \f$\frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial stressMeasure_{KL} } = \frac{ \partial^2 || dev( stressMeasure ) || }{ \partial dev( stressMeasure )_{AB} \partial dev( stressMeasure )_{CD} } \frac{ \partial dev( stressMeasure )_{AB} } { \partial stressMeasure_{IJ} } \frac{ \partial dev( stressMeasure )_{CD} } { \partial stressMeasure_{KL} } + \frac{ dev ( stressMeasure )_{AB} }{ || dev( stressMeasure ) || } \frac{ \partial^2 dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} \partial stressMeasure_{KL} }
+             *  \frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial RCG_{KL} } = \frac{ \partial^2 || dev( stressMeasure ) || }{ \partial dev( stressMeasure )_{AB} \partial dev( stressMeasure )_{CD} } \frac{ \partial dev( stressMeasure )_{AB} } { \partial stressMeasure_{IJ} } \frac{ \partial dev( stressMeasure )_{CD} } { \partial C_{KL} } + \frac{ dev ( stressMeasure )_{AB} }{ || dev( stressMeasure ) || } \frac{ \partial^2 dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} \partial C_{KL} } + B^{\phi} \frac{ \partial^2 \bar{p} }{ \partial stressMeasure_{IJ} \partial C_{KL} } \f$
+             *  
+             * :param const variableVector &stressMeasure: The stress measure
+             * :param const variableType &cohesion: The cohesion measure.
+             * :param const variableVector &precedingDeformationGradient: The preceding deformation gradient
+             * :param const parameterType &frictionAngle: The friction angle
+             * :param const parameterType &beta: The beta parameter
+             * :param variableType &yieldValue: The yield value.
+             * :param variableVector &dFdStress: The Jacobian of the yield surface w.r.t. the stress measure.
+             * :param variableType &dFdc: The Jacobian of the yield surface w.r.t. the cohesion.
+             * :param variableVector &dFdElasticRCG: The Jacobian of the yield surface w.r.t. the elastic 
+             *     right Cauchy-Green deformation tensor.
+             * :param variableMatrix &d2FdStress2: The second derivative of the flow direction w.r.t. the stress. This 
+             *     is useful if one is using this expression as the flow potential and wants the jacobian of the flow direction \f$\frac{ \partial G }{\partial Stress_{IJ} }\f$
+             * :param variableMatrix &d2FdStressdPrecedingF: The second derivative of the flow direction w.r.t. the stress and the preceding deformation gradient
+             * :param double tol: The tolerance used to prevent nans in the Jacobians
+             */
+            //Assume 3D
+            unsigned int dim = 3;
+
+            parameterType AAngle, BAngle;
+            TARDIGRADE_ERROR_TOOLS_CATCH(  computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
+
+            //Compute the right Cauchy-Green deformation tensor
+            floatVector rightCauchyGreen;
+            floatMatrix dRCGdPrecedingF;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
+
+            //Compute the decomposition of the stress
+            variableType pressure;
+            variableVector deviatoricReferenceStress;
+
+            variableMatrix dDevStressdStress, dDevStressdRCG;
+            variableVector dPressuredStress, dPressuredRCG;
+
+            variableMatrix d2DevStressdStressdRCG, d2PressuredStressdRCG;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( stressMeasure,
+                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
+                                                       dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
+
+            variableMatrix dDevStressdPrecedingF = tardigradeVectorTools::dot( dDevStressdRCG, dRCGdPrecedingF );
+            variableVector dPressuredPrecedingF  = tardigradeVectorTools::Tdot( dRCGdPrecedingF, dPressuredRCG );
+
+            variableMatrix d2DevStressdStressdPrecedingF( deviatoricReferenceStress.size( ), floatVector( deviatoricReferenceStress.size( ) * precedingDeformationGradient.size( ), 0 ) );
+
+            variableMatrix d2PressuredStressdPrecedingF( deviatoricReferenceStress.size( ), floatVector( precedingDeformationGradient.size( ), 0 ) );
+
+            for ( unsigned int I = 0; I < deviatoricReferenceStress.size( ); I++ ){
+
+                for ( unsigned int J = 0; J < deviatoricReferenceStress.size( ); J++ ){
+
+                    for ( unsigned int K = 0; K < precedingDeformationGradient.size( ); K++ ){
+
+                        for ( unsigned int L = 0; L < rightCauchyGreen.size( ); L++ ){
+
+                            d2DevStressdStressdPrecedingF[ I ][ precedingDeformationGradient.size( ) * J + K ]
+                                += d2DevStressdStressdRCG[ I ][ rightCauchyGreen.size( ) * J + L ] * dRCGdPrecedingF[ L ][ K ];
+
+                        }
+
+                        d2PressuredStressdPrecedingF[ I ][ J ]
+                            += d2PressuredStressdRCG[ I ][ K ] * dRCGdPrecedingF[ K ][ J ];
+
+                    }
+
+                }
+
+            }
+
+            //Compute the l2norm of the deviatoric stress
+            variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
+
+            //Evaluate the yield equation
+            yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
+
+            //Evaluate the jacobians
+            variableVector devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
+
+            dFdStress = tardigradeVectorTools::Tdot( dDevStressdStress, devStressDirection )
+                      + BAngle * dPressuredStress;
+
+            dFdc = - AAngle;
+
+            dFdPrecedingF = tardigradeVectorTools::Tdot( dDevStressdPrecedingF, devStressDirection )
+                          + BAngle * dPressuredPrecedingF;
+
+            //Evaluate the second-order jacobians
+            constantMatrix EYE = tardigradeVectorTools::eye< constantType >( dim * dim );
+            variableMatrix dDevStressDirectiondDevStress = ( EYE - tardigradeVectorTools::dyadic( devStressDirection, devStressDirection ) ) / ( normDevStress + tol );
+
+            d2FdStress2 = tardigradeVectorTools::Tdot( dDevStressdStress, tardigradeVectorTools::dot( dDevStressDirectiondDevStress, dDevStressdStress ) );
+
+            d2FdStressdPrecedingF = tardigradeVectorTools::Tdot( tardigradeVectorTools::dot( dDevStressDirectiondDevStress, dDevStressdStress ), dDevStressdPrecedingF )
+                                  + BAngle * d2PressuredStressdPrecedingF;
+
+            for ( unsigned int I = 0; I < dim; I++ ){
+                for ( unsigned int J = 0; J < dim; J++ ){
+                    for ( unsigned int K = 0; K < dim; K++ ){
+                        for ( unsigned int L = 0; L < dim; L++ ){
+                            for ( unsigned int A = 0; A < dim; A++ ){
+                                for ( unsigned int B = 0; B < dim; B++ ){
+                                    d2FdStressdPrecedingF[ dim * I + J ][ dim * K + L ] += devStressDirection[ dim * A + B ] * d2DevStressdStressdPrecedingF[ dim * A + B ][ dim * dim * dim * I + dim * dim * J + dim * K + L ];
+                                }
+                            }
+                        }
+                    }
+                }
+            }
 
         }
 
