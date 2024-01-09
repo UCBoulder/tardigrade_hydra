@@ -2717,6 +2717,51 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setUpdatedPlasticStrainLikeISVs( ){
+            /*!
+             * Set the updated strain like ISVs
+             */
+
+            const floatVector *previousPlasticStrainLikeISVs = get_previousPlasticStrainLikeISVs( );
+
+            const floatVector *evolutionRates                = get_strainLikeISVEvolutionRates( );
+
+            const floatVector *previousEvolutionRates        = get_previousStrainLikeISVEvolutionRates( );
+
+            floatVector dISVs, updatedISVs;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, updatedISVs, *getIntegrationParameter( ) ) );
+
+            set_updatedPlasticStrainLikeISVs( updatedISVs );
+
+        }
+
+        void residual::setdUpdatedPlasticStrainLikeISVsdStateVariables( ){
+            /*!
+             * Set the updated plastic strain-like ISVs jacobians
+             */
+
+            setUpdatedPlasticStrainLikeISVsJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticStrainLikeISVsdPreviousStateVariables( ){
+            /*!
+             * Set the previous updated plastic strain-like ISVs jacobians
+             */
+
+            setUpdatedPlasticStrainLikeISVsJacobians( true );
+
+        }
+
+        void residual::setUpdatedPlasticStrainLikeISVsJacobians( const bool addPrevious ){
+            /*!
+             * Set the updated plastic strain like ISVs Jacobians
+             * 
+             * \param addPrevious: Flag for whether to add the Jacobians w.r.t. the previous state variables (true) or not (false)
+             */
+        }
+
     }
 
 }
