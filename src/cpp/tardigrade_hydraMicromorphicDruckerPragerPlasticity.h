@@ -346,17 +346,17 @@ namespace tardigradeHydra{
 
                 virtual void setFlowPotentialGradientsJacobians( const bool isPrevious );
 
-                virtual void setStrainLikeISVEvolutionRates( );
+                virtual void setPlasticStrainLikeISVEvolutionRates( );
 
-                virtual void setPreviousStrainLikeISVEvolutionRates( );
+                virtual void setPreviousPlasticStrainLikeISVEvolutionRates( );
 
-                virtual void setStrainLikeISVEvolutionRates( const bool isPrevious );
+                virtual void setPlasticStrainLikeISVEvolutionRates( const bool isPrevious );
 
-                virtual void setdStrainLikeISVEvolutionRatesdStateVariables( );
+                virtual void setdPlasticStrainLikeISVEvolutionRatesdStateVariables( );
 
-                virtual void setPreviousdStrainLikeISVEvolutionRatesdStateVariables( );
+                virtual void setPreviousdPlasticStrainLikeISVEvolutionRatesdStateVariables( );
 
-                virtual void setStrainLikeISVEvolutionRatesJacobians( const bool isPrevious );
+                virtual void setPlasticStrainLikeISVEvolutionRatesJacobians( const bool isPrevious );
 
                 virtual void setUpdatedPlasticStrainLikeISVs( );
 
@@ -552,13 +552,13 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MicroGradientFlowdDrivingStressdChin,       floatMatrix, setPreviousd2MicroGradientFlowdDrivingStressdChin       )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, strainLikeISVEvolutionRates,                          floatVector, setStrainLikeISVEvolutionRates                          )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticStrainLikeISVEvolutionRates,                   floatVector, setPlasticStrainLikeISVEvolutionRates                   )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dStrainLikeISVEvolutionRatesdStateVariables,          floatMatrix, setdStrainLikeISVEvolutionRatesdStateVariables          )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStrainLikeISVEvolutionRatesdStateVariables,   floatMatrix, setdPlasticStrainLikeISVEvolutionRatesdStateVariables   )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousStrainLikeISVEvolutionRates,                  floatVector, setPreviousStrainLikeISVEvolutionRates                  )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPlasticStrainLikeISVEvolutionRates,           floatVector, setPreviousPlasticStrainLikeISVEvolutionRates           )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdStrainLikeISVEvolutionRatesdStateVariables,  floatMatrix, setPreviousdStrainLikeISVEvolutionRatesdStateVariables  )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticStrainLikeISVEvolutionRatesdStateVariables,  floatMatrix, setPreviousdPlasticStrainLikeISVEvolutionRatesdStateVariables  )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, updatedPlasticStrainLikeISVs,                         floatVector, setUpdatedPlasticStrainLikeISVs                         )
 
