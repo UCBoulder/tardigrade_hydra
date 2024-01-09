@@ -366,6 +366,20 @@ namespace tardigradeHydra{
 
                 virtual void setUpdatedPlasticStrainLikeISVsJacobians( const bool addPrevious );
 
+                virtual void setMacroYield( );
+
+                virtual void setMicroYield( );
+
+                virtual void setMicroGradientYield( );
+
+                virtual void setPreviousMacroYield( );
+
+                virtual void setPreviousMicroYield( );
+
+                virtual void setPreviousMicroGradientYield( );
+
+                virtual void setYield( const bool isPrevious );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -565,6 +579,18 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticStrainLikeISVsdStateVariables,         floatMatrix, setdUpdatedPlasticStrainLikeISVsdStateVariables         )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticStrainLikeISVsdPreviousStateVariables, floatMatrix, setdUpdatedPlasticStrainLikeISVsdPreviousStateVariables )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, macroYield,                                           floatType,   setMacroYield                                           )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microYield,                                           floatType,   setMicroYield                                           )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microGradientYield,                                   floatVector, setMicroGradientYield                                   )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMacroYield,                                   floatType,   setPreviousMacroYield                                   )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroYield,                                   floatType,   setPreviousMicroYield                                   )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroGradientYield,                           floatVector, setPreviousMicroGradientYield                           )
 
         };
 

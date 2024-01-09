@@ -2800,6 +2800,161 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setMacroYield( ){
+            /*!
+             * Set the value of the macro-yield equation
+             */
+
+            setYield( false );
+
+        }
+
+        void residual::setMicroYield( ){
+            /*!
+             * Set the value of the micro-yield equation
+             */
+
+            setYield( false );
+
+        }
+
+        void residual::setMicroGradientYield( ){
+            /*!
+             * Set the value of the micro gradient-yield equation
+             */
+
+            setYield( false );
+
+        }
+
+        void residual::setPreviousMacroYield( ){
+            /*!
+             * Set the previous value of the macro-yield equation
+             */
+
+            setYield( true );
+
+        }
+
+        void residual::setPreviousMicroYield( ){
+            /*!
+             * Set the previous value of the micro-yield equation
+             */
+
+            setYield( true );
+
+        }
+
+        void residual::setPreviousMicroGradientYield( ){
+            /*!
+             * Set the previous value of the micro gradient-yield equation
+             */
+
+            setYield( true );
+
+        }
+
+        void residual::setYield( const bool isPrevious ){
+            /*!
+             * Set the values of the yield equations
+             * 
+             * \param isPrevious: A flag for if the current (false) or previous (true) values should be calculated
+             */
+
+            const floatVector *macroDrivingStress;
+
+            const floatVector *microDrivingStress;
+
+            const floatVector *microGradientDrivingStress;
+
+            const floatType   *macroCohesion;
+
+            const floatType   *microCohesion;
+
+            const floatVector *microGradientCohesion;
+
+            floatVector precedingDeformationGradient;
+
+            const floatVector *macroYieldParameters = get_macroYieldParameters( );
+
+            const floatVector *microYieldParameters = get_microYieldParameters( );
+
+            const floatVector *microGradientYieldParameters = get_microGradientYieldParameters( );
+
+            if ( isPrevious ){
+
+                precedingDeformationGradient = hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) );
+
+                macroDrivingStress         = get_previousMacroDrivingStress( );
+
+                microDrivingStress         = get_previousSymmetricMicroDrivingStress( );
+
+                microGradientDrivingStress = get_previousHigherOrderDrivingStress( );
+
+                macroCohesion              = get_previousMacroCohesion( );
+
+                microCohesion              = get_previousMicroCohesion( );
+
+                microGradientCohesion      = get_previousMicroGradientCohesion( );
+
+            }
+            else{
+
+                precedingDeformationGradient = hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) );
+
+                macroDrivingStress         = get_macroDrivingStress( );
+
+                microDrivingStress         = get_symmetricMicroDrivingStress( );
+
+                microGradientDrivingStress = get_higherOrderDrivingStress( );
+
+                macroCohesion              = get_macroCohesion( );
+
+                microCohesion              = get_microCohesion( );
+
+                microGradientCohesion      = get_microGradientCohesion( );
+
+            }
+
+            floatType macroYield;
+
+            floatType microYield;
+
+            floatVector microGradientYield;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *macroDrivingStress, *macroCohesion, precedingDeformationGradient,
+                                                                                        ( *macroYieldParameters )[ 0 ], ( *macroYieldParameters )[ 1 ],
+                                                                                        macroYield ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *microDrivingStress, *microCohesion, precedingDeformationGradient,
+                                                                                        ( *microYieldParameters )[ 0 ], ( *microYieldParameters )[ 1 ],
+                                                                                        microYield ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, precedingDeformationGradient,
+                                                                                        ( *microGradientYieldParameters )[ 0 ], ( *microGradientYieldParameters )[ 1 ],
+                                                                                        microGradientYield ) );
+
+            if ( isPrevious ){
+
+                set_previousMacroYield( macroYield );
+
+                set_previousMicroYield( microYield );
+
+                set_previousMicroGradientYield( microGradientYield );
+
+            }
+            else{
+
+                set_macroYield( macroYield );
+
+                set_microYield( microYield );
+
+                set_microGradientYield( microGradientYield );
+
+            }
+
+        }
+
     }
 
 }
