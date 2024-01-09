@@ -2414,6 +2414,10 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives ){
 
             floatMatrix dMicroGradientDrivingStressdFn                = initialize( 27,  9 );
 
+            floatMatrix dMicroGradientDrivingStressdChi               = initialize( 27,  9 );
+
+            floatMatrix dMicroGradientDrivingStressdChin              = initialize( 27,  9 );
+
             floatType previousMacroCohesion = -1.23;
 
             floatType previousMicroCohesion = -2.34;
@@ -2513,6 +2517,10 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives ){
                 set_dHigherOrderDrivingStressdF( dMicroGradientDrivingStressdF );
 
                 set_dHigherOrderDrivingStressdFn( dMicroGradientDrivingStressdFn );
+
+                set_dHigherOrderDrivingStressdChi( dMicroGradientDrivingStressdChi );
+
+                set_dHigherOrderDrivingStressdChin( dMicroGradientDrivingStressdChin );
 
             }
 
@@ -2973,10 +2981,6 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
     }
 
-    std::cout << "*R.get:\n"; tardigradeVectorTools::print( *R.get_d2MicroGradientFlowdDrivingStressdStress( ) );
-    std::cout << "out\n";
-    std::cout << "*R.get2:\n"; tardigradeVectorTools::print( *R.get_d2MicroGradientFlowdDrivingStressdFn( ) );
-    std::cout << "out\n";
     for ( unsigned int i = 0; i < 3; i++ ){
 
         for ( unsigned int j = 0; j < 27; j++ ){
@@ -2989,22 +2993,15 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
             for ( unsigned int k = 0; k < 9; k++ ){
 
-                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + configuration_unknown_count ] = ( *R.get_d2MicroGradientFlowdDrivingStressdFn( ) )[ i ][ 9 * j + k ];
+                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + configuration_unknown_count     ] = ( *R.get_d2MicroGradientFlowdDrivingStressdFn( ) )[ i ][ 9 * j + k ];
+
+                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + configuration_unknown_count + 9 ] = ( *R.get_d2MicroGradientFlowdDrivingStressdChin( ) )[ i ][ 9 * j + k ];
 
             }
 
         }
 
     }
-
-    std::cout << "assembled_d2MacroFlowdDrivingStressdX:\n"; tardigradeVectorTools::print( assembled_d2MacroFlowdDrivingStressdX );
-    std::cout << "d2MacroFlowdDrivingStressdX:\n"; tardigradeVectorTools::print( d2MacroFlowdDrivingStressdX );
-
-    std::cout << "assembled_d2MicroFlowdDrivingStressdX:\n"; tardigradeVectorTools::print( assembled_d2MicroFlowdDrivingStressdX );
-    std::cout << "d2MicroFlowdDrivingStressdX:\n"; tardigradeVectorTools::print( d2MicroFlowdDrivingStressdX );
-
-    std::cout << "assembled_d2MicroGradientFlowdDrivingStressdX:\n"; tardigradeVectorTools::print( assembled_d2MicroGradientFlowdDrivingStressdX );
-    std::cout << "d2MicroGradientFlowdDrivingStressdX:\n"; tardigradeVectorTools::print( d2MicroGradientFlowdDrivingStressdX );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( assembled_d2MacroFlowdDrivingStressdX, d2MacroFlowdDrivingStressdX ) );
 

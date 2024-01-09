@@ -1736,6 +1736,24 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setd2MicroGradientFlowdDrivingStressdChi( ){
+            /*!
+             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the micro deformation
+             */
+
+            setFlowPotentialGradientsJacobians( false );
+
+        }
+
+        void residual::setd2MicroGradientFlowdDrivingStressdChin( ){
+            /*!
+             * Set the Jacobian of the derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the sub micro deformation
+             */
+
+            setFlowPotentialGradientsJacobians( false );
+
+        }
+
         void residual::setPreviousd2MacroFlowdDrivingStressdStress( ){
             /*!
              * Set the Jacobian of the previous derivative of the macro flow potential w.r.t. the macro driving stress w.r.t. the macro stress
@@ -1817,14 +1835,30 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPreviousd2MicroGradientFlowdDrivingStressdChi( ){
+            /*!
+             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the micro deformation
+             */
+
+            setFlowPotentialGradientsJacobians( true );
+
+        }
+
+        void residual::setPreviousd2MicroGradientFlowdDrivingStressdChin( ){
+            /*!
+             * Set the Jacobian of the previous derivative of the micro gradient flow potential w.r.t. the micro-gradient driving stress w.r.t. the sub micro deformation
+             */
+
+            setFlowPotentialGradientsJacobians( true );
+
+        }
+
         void residual::setFlowPotentialGradientsJacobians( const bool isPrevious ){
             /*!
              * Set the Jacobians of the flow potential gradients
              *
              * \param isPrevious: A flag for whether to set the current (false) or previous (true) derivatives
              */
-
-            std::cout << "entering setFlowPotentialGradientsJacobians\n";
 
             const floatType   *macroCohesion;
 
@@ -1855,6 +1889,10 @@ namespace tardigradeHydra{
             const floatMatrix *dMicroGradientDrivingStressdF;
 
             const floatMatrix *dMicroGradientDrivingStressdFn;
+
+            const floatMatrix *dMicroGradientDrivingStressdChi;
+
+            const floatMatrix *dMicroGradientDrivingStressdChin;
 
             floatVector precedingDeformationGradient;
 
@@ -1898,11 +1936,15 @@ namespace tardigradeHydra{
 
                 dMicroGradientDrivingStressdF      = get_previousdHigherOrderDrivingStressdF( );
 
+                dMicroGradientDrivingStressdChi    = get_previousdHigherOrderDrivingStressdChi( );
+
                 dMacroDrivingStressdFn             = get_previousdMacroDrivingStressdFn( );
 
                 dMicroDrivingStressdFn             = get_previousdSymmetricMicroDrivingStressdFn( );
 
                 dMicroGradientDrivingStressdFn     = get_previousdHigherOrderDrivingStressdFn( );
+
+                dMicroGradientDrivingStressdChin   = get_previousdHigherOrderDrivingStressdChin( );
 
                 macroDrivingStress                 = get_previousMacroDrivingStress( );
 
@@ -1939,11 +1981,15 @@ namespace tardigradeHydra{
 
                 dMicroGradientDrivingStressdF      = get_dHigherOrderDrivingStressdF( );
 
+                dMicroGradientDrivingStressdChi    = get_dHigherOrderDrivingStressdChi( );
+
                 dMacroDrivingStressdFn             = get_dMacroDrivingStressdFn( );
 
                 dMicroDrivingStressdFn             = get_dSymmetricMicroDrivingStressdFn( );
 
                 dMicroGradientDrivingStressdFn     = get_dHigherOrderDrivingStressdFn( );
+
+                dMicroGradientDrivingStressdChin   = get_dHigherOrderDrivingStressdChin( );
 
                 macroDrivingStress                 = get_macroDrivingStress( );
 
@@ -2027,6 +2073,8 @@ namespace tardigradeHydra{
 
             floatMatrix d2MicroGradientFlowdDrivingStressdFn( dMicroGradientFlowdDrivingStress.size( ), floatVector( microGradientDrivingStress->size( ) * ( ( *hydra->getNumConfigurations( ) ) - 1 ) * precedingDeformationGradient.size( ), 0 ) );
 
+            floatMatrix d2MicroGradientFlowdDrivingStressdChin( dMicroGradientFlowdDrivingStress.size( ), floatVector( microGradientDrivingStress->size( ) * ( ( *hydra->getNumConfigurations( ) ) - 1 ) * precedingDeformationGradient.size( ), 0 ) );
+
             for ( unsigned int I = 0; I < d2MicroFlowdDrivingStress2.size( ); I++ ){
 
                 for ( unsigned int J = 0; J < macroDrivingStress->size( ); J++ ){
@@ -2079,6 +2127,9 @@ namespace tardigradeHydra{
                             d2MicroGradientFlowdDrivingStressdFn[ I ][ ( ( *hydra->getNumConfigurations( ) ) - 1 ) * precedingDeformationGradient.size( ) * J + L ]
                                 += d2MicroGradientFlowdDrivingStress2[ I ][ microGradientDrivingStress->size( ) * J + K ] * ( *dMicroGradientDrivingStressdFn ) [ K ][ L ];
 
+                            d2MicroGradientFlowdDrivingStressdChin[ I ][ ( ( *hydra->getNumConfigurations( ) ) - 1 ) * precedingDeformationGradient.size( ) * J + L ]
+                                += d2MicroGradientFlowdDrivingStress2[ I ][ microGradientDrivingStress->size( ) * J + K ] * ( *dMicroGradientDrivingStressdChin ) [ K ][ L ];
+
                         }
 
                     }
@@ -2124,6 +2175,8 @@ namespace tardigradeHydra{
 
                 set_previousd2MicroGradientFlowdDrivingStressdFn( d2MicroGradientFlowdDrivingStressdFn );
 
+                set_previousd2MicroGradientFlowdDrivingStressdChin( d2MicroGradientFlowdDrivingStressdChin );
+
             }
             else{
 
@@ -2151,9 +2204,9 @@ namespace tardigradeHydra{
 
                 set_d2MicroGradientFlowdDrivingStressdFn( d2MicroGradientFlowdDrivingStressdFn );
 
-            }
+                set_d2MicroGradientFlowdDrivingStressdChin( d2MicroGradientFlowdDrivingStressdChin );
 
-            std::cout << "exiting setFlowPotentialGradientsJacobians\n";
+            }
 
         }
 
