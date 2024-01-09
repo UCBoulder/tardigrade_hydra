@@ -2535,25 +2535,25 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setStrainLikeISVEvolutionRates( ){
+        void residual::setPlasticStrainLikeISVEvolutionRates( ){
             /*!
              * Set the evolution rates of the strain-like ISVs
              */
 
-            setStrainLikeISVEvolutionRates( false );
+            setPlasticStrainLikeISVEvolutionRates( false );
 
         }
 
-        void residual::setPreviousStrainLikeISVEvolutionRates( ){
+        void residual::setPreviousPlasticStrainLikeISVEvolutionRates( ){
             /*!
              * Set the previous evolution rates of the strain-like ISVs
              */
 
-            setStrainLikeISVEvolutionRates( true );
+            setPlasticStrainLikeISVEvolutionRates( true );
 
         }
 
-        void residual::setStrainLikeISVEvolutionRates( const bool isPrevious ){
+        void residual::setPlasticStrainLikeISVEvolutionRates( const bool isPrevious ){
             /*!
              * Set the evolution rates of the strain-like ISVs
              * 
@@ -2609,36 +2609,36 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousStrainLikeISVEvolutionRates( evolutionRates );
+                set_previousPlasticStrainLikeISVEvolutionRates( evolutionRates );
 
             }
             else{
 
-                set_strainLikeISVEvolutionRates( evolutionRates );
+                set_plasticStrainLikeISVEvolutionRates( evolutionRates );
 
             }
 
         }
 
-        void residual::setdStrainLikeISVEvolutionRatesdStateVariables( ){
+        void residual::setdPlasticStrainLikeISVEvolutionRatesdStateVariables( ){
             /*!
              * Set the Jacobian of the evolution rates of the strain-like ISVs w.r.t. the nonlinear state variables
              */
 
-            setStrainLikeISVEvolutionRatesJacobians( false );
+            setPlasticStrainLikeISVEvolutionRatesJacobians( false );
 
         }
 
-        void residual::setPreviousdStrainLikeISVEvolutionRatesdStateVariables( ){
+        void residual::setPreviousdPlasticStrainLikeISVEvolutionRatesdStateVariables( ){
             /*!
              * Set the Jacobian of the previous evolution rates of the strain-like ISVs w.r.t. the nonlinear state variables
              */
 
-            setStrainLikeISVEvolutionRatesJacobians( true );
+            setPlasticStrainLikeISVEvolutionRatesJacobians( true );
 
         }
 
-        void residual::setStrainLikeISVEvolutionRatesJacobians( const bool isPrevious ){
+        void residual::setPlasticStrainLikeISVEvolutionRatesJacobians( const bool isPrevious ){
             /*!
              * Set the evolution rates and Jacobians of the strain-like ISVs
              * 
@@ -2702,18 +2702,101 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousStrainLikeISVEvolutionRates( evolutionRates );
+                set_previousPlasticStrainLikeISVEvolutionRates( evolutionRates );
 
-                set_previousdStrainLikeISVEvolutionRatesdStateVariables( dEvolutionRatesdStateVariables );
+                set_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( dEvolutionRatesdStateVariables );
 
             }
             else{
 
-                set_strainLikeISVEvolutionRates( evolutionRates );
+                set_plasticStrainLikeISVEvolutionRates( evolutionRates );
 
-                set_dStrainLikeISVEvolutionRatesdStateVariables( dEvolutionRatesdStateVariables );
+                set_dPlasticStrainLikeISVEvolutionRatesdStateVariables( dEvolutionRatesdStateVariables );
 
             }
+
+        }
+
+        void residual::setUpdatedPlasticStrainLikeISVs( ){
+            /*!
+             * Set the updated strain like ISVs
+             */
+
+            const floatVector *previousPlasticStrainLikeISVs = get_previousPlasticStrainLikeISVs( );
+
+            const floatVector *evolutionRates                = get_plasticStrainLikeISVEvolutionRates( );
+
+            const floatVector *previousEvolutionRates        = get_previousPlasticStrainLikeISVEvolutionRates( );
+
+            floatVector dISVs, updatedISVs;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, updatedISVs, *getIntegrationParameter( ) ) );
+
+            set_updatedPlasticStrainLikeISVs( updatedISVs );
+
+        }
+
+        void residual::setdUpdatedPlasticStrainLikeISVsdStateVariables( ){
+            /*!
+             * Set the updated plastic strain-like ISVs jacobians
+             */
+
+            setUpdatedPlasticStrainLikeISVsJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticStrainLikeISVsdPreviousStateVariables( ){
+            /*!
+             * Set the previous updated plastic strain-like ISVs jacobians
+             */
+
+            setUpdatedPlasticStrainLikeISVsJacobians( true );
+
+        }
+
+        void residual::setUpdatedPlasticStrainLikeISVsJacobians( const bool addPrevious ){
+            /*!
+             * Set the updated plastic strain like ISVs Jacobians
+             * 
+             * \param addPrevious: Flag for whether to add the Jacobians w.r.t. the previous state variables (true) or not (false)
+             */
+
+            const floatVector *previousPlasticStrainLikeISVs = get_previousPlasticStrainLikeISVs( );
+
+            const floatVector *evolutionRates                = get_plasticStrainLikeISVEvolutionRates( );
+
+            const floatVector *previousEvolutionRates        = get_previousPlasticStrainLikeISVEvolutionRates( );
+
+            floatVector dISVs, updatedISVs;
+
+            floatMatrix dISVsdEvolutionRates;
+
+            if ( addPrevious ){
+
+                floatMatrix dISVsdPreviousEvolutionRates;
+
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, updatedISVs, dISVsdEvolutionRates, dISVsdPreviousEvolutionRates, *getIntegrationParameter( ) ) );
+
+                floatMatrix dISVsdStateVariables = tardigradeVectorTools::dot( dISVsdPreviousEvolutionRates, *get_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( ) );
+
+                for ( unsigned int i = 0; i < updatedISVs.size( ); i++ ){
+
+                    dISVsdStateVariables[ i ][ i + ( *getNumPlasticMultipliers( ) ) ] += 1;
+
+                }
+
+                set_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables( dISVsdStateVariables );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, updatedISVs, dISVsdEvolutionRates, *getIntegrationParameter( ) ) );
+
+            }
+
+            set_dUpdatedPlasticStrainLikeISVsdStateVariables( tardigradeVectorTools::dot( dISVsdEvolutionRates, *get_dPlasticStrainLikeISVEvolutionRatesdStateVariables( ) ) );
+
+            set_updatedPlasticStrainLikeISVs( updatedISVs );
 
         }
 
