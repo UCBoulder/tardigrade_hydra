@@ -22,6 +22,7 @@ Internal Changes
 - Added the decomposition of the parameter vector (:pull:`39`). By `Nathan Miller`_.
 - Added the extraction of the nonlinear state variables (:pull:`40`). By `Nathan Miller`_.
 - Added the calculation of the cohesion (:pull:`41`). By `Nathan Miller`_.
+- Added the calculation of the required quantities from the flow potential (:pull:`42`). By `Nathan Miller`_.
 
 ******************
 0.3.0 (01-03-2023)
