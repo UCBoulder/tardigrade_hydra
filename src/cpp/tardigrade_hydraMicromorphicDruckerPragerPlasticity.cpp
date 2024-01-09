@@ -2535,6 +2535,87 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setStrainLikeISVEvolutionRates( ){
+            /*!
+             * Set the evolution rates of the strain-like ISVs
+             */
+
+            setStrainLikeISVEvolutionRates( false );
+
+        }
+
+        void residual::setPreviousStrainLikeISVEvolutionRates( ){
+            /*!
+             * Set the previous evolution rates of the strain-like ISVs
+             */
+
+            setStrainLikeISVEvolutionRates( true );
+
+        }
+
+        void residual::setStrainLikeISVEvolutionRates( const bool isPrevious ){
+            /*!
+             * Set the evolution rates of the strain-like ISVs
+             * 
+             * \param isPrevious: A flag for if we should set the current (false) or previous (true) ISV evolution rates
+             */
+
+            const floatType   *dMacroFlowdc;
+
+            const floatType   *dMicroFlowdc;
+
+            const floatVector *dMicroGradientFlowdc;
+
+            const floatVector *plasticMultipliers;
+
+            if ( isPrevious ){
+
+                plasticMultipliers    = get_previousPlasticMultipliers( );
+
+                dMacroFlowdc          = get_previousdMacroFlowdc( );
+
+                dMicroFlowdc          = get_previousdMicroFlowdc( );
+
+                dMicroGradientFlowdc = get_previousdMicroGradientFlowdc( );
+
+            }
+            else{
+
+                plasticMultipliers    = get_plasticMultipliers( );
+
+                dMacroFlowdc          = get_dMacroFlowdc( );
+
+                dMicroFlowdc          = get_dMicroFlowdc( );
+
+                dMicroGradientFlowdc = get_dMicroGradientFlowdc( );
+
+            }
+
+            floatVector evolutionRates( plasticMultipliers->size( ), 0 );
+
+            evolutionRates[ 0 ] = ( *dMacroFlowdc ) * ( *plasticMultipliers )[ 0 ];
+
+            evolutionRates[ 1 ] = ( *dMicroFlowdc ) * ( *plasticMultipliers )[ 1 ];
+
+            for ( unsigned int i = 2; i < plasticMultipliers->size( ); i++ ){
+
+                evolutionRates[ i ] = ( *dMicroGradientFlowdc )[ i ] * ( *plasticMultipliers )[ i ];
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousStrainLikeISVEvolutionRates( evolutionRates );
+
+            }
+            else{
+
+                set_strainLikeISVEvolutionRates( evolutionRates );
+
+            }
+
+        }
+
     }
 
 }
