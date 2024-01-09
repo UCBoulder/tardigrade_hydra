@@ -1485,7 +1485,7 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
 BOOST_AUTO_TEST_CASE( test_setCohesion ){
     /*!
-     * Test of the extraction of the parameters
+     * Test setting the cohesion values
      */
 
     // Form a hydra class and residual class
@@ -1625,12 +1625,12 @@ BOOST_AUTO_TEST_CASE( test_setCohesion ){
             floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
                                               2, 0.37773052, 0.92739145,
                                               2, 0.53186824, 0.75454313,
-                                              3, 0.95338442, 0.74042148, 0.09916127,
-                                              3, 0.38093104, 0.49241325, 0.46187452,
-                                              5, 0.82121039, 0.90566759, 0.50466975, 0.04830311, 0.85951495,
-                                              3, 0.01166325, 0.05331896, 0.28081774,
-                                              3, 0.32982199, 0.60161431, 0.33157768,
-                                              5, 0.58881096, 0.11473813, 0.58001078, 0.83382529, 0.3260217 };
+                                              2, 0.95338442, 0.74042148, 
+                                              2, 0.38093104, 0.49241325, 
+                                              2, 0.82121039, 0.90566759,
+                                              2, 0.01166325, 0.05331896, 
+                                              2, 0.32982199, 0.60161431, 
+                                              2, 0.58881096, 0.11473813 };
 
         private:
 
@@ -1888,4 +1888,1791 @@ BOOST_AUTO_TEST_CASE( test_setCohesion ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientCohesiondXAssembled, previousdMicroGradientCohesiondX ) );
 
+}
+
+BOOST_AUTO_TEST_CASE( testComputeDruckerPragerInternalParameters ){
+    /*!
+     * Test the computation of the internal parameters for the Drucker-Prager plasticity.
+     *
+     */
+
+    parameterType frictionAngle = 0.25;
+    parameterType beta = .423;
+
+    parameterType Aanswer = 1.528893501990677;
+    parameterType Banswer = 0.39039060414065774;
+
+    parameterType Aresult, Bresult;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeDruckerPragerInternalParameters( frictionAngle, beta, Aresult, Bresult );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( Aresult, Aanswer ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( Bresult, Banswer ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( testComputeSecondOrderDruckerPragerYieldEquation ){
+    /*!
+     * Test the computation of the second order stress Drucker-Prager yield equation.
+     *
+     */
+
+    variableVector S = { 0.77189588, -0.84417528,  0.95929231,
+                        -0.50465708,  0.50576944,  0.05335127,
+                         0.81510751,  0.76814059, -0.82146208 };
+
+    variableVector precedingF = { 1.03482346, 0.01430697, 0.01134257,
+                                  0.02756574, 1.03597345, 0.02115532,
+                                  0.04903821, 0.03424149, 1.0240466 };
+
+    variableType cohesion = 0.51;
+    parameterType frictionAngle = 0.46;
+    parameterType beta = 0.34;
+
+    constantType answer = 1.5860256857059118;
+    variableType result;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, precedingF,
+                                                                                                        frictionAngle, beta, result );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( result, answer ) );
+
+    //Test the Jacobian
+    variableType resultJ, dFdCohesion;
+    variableVector dFdS, dFdPrecedingF;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, precedingF,
+                                                                                frictionAngle, beta, resultJ,
+                                                                                dFdS, dFdCohesion, dFdPrecedingF );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultJ, answer ) );
+
+    //Test the Jacobian
+    variableType resultJ2, dFdcohesionJ2;
+    variableVector dFdSJ2, dFdPrecedingFJ2;
+    variableMatrix d2FdStress2J2;
+    variableMatrix d2FdStressdElasticRCGJ2;
+    variableMatrix d2FdS2J2, d2FdSdPrecedingFJ2;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, precedingF,
+                                                                                frictionAngle, beta, resultJ2,
+                                                                                dFdSJ2, dFdcohesionJ2, dFdPrecedingFJ2, d2FdS2J2,
+                                                                                d2FdSdPrecedingFJ2);
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultJ2, answer ) );
+
+    //Test dFdStress
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < S.size(); i++ ){
+        constantVector delta( S.size(), 0 );
+        delta[i] = eps * fabs( S[i] ) + eps;
+
+        floatType rp, rm;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S + delta, cohesion, precedingF,
+                                                                                                            frictionAngle, beta, rp );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S - delta, cohesion, precedingF,
+                                                                                                            frictionAngle, beta, rm );
+
+        constantType gradCol = ( rp - rm ) / ( 2 * delta[i] );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol, dFdS[i] ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol, dFdSJ2[i] ) );
+
+    }
+
+    //Test dFdPrecedingF
+    for ( unsigned int i = 0; i < precedingF.size(); i++ ){
+        constantVector delta( precedingF.size(), 0 );
+        delta[i] = eps * fabs( precedingF[i] ) + eps;
+
+        floatType rp, rm;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, precedingF + delta,
+                                                                                    frictionAngle, beta, rp );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, precedingF - delta,
+                                                                                    frictionAngle, beta, rm );
+
+        constantType gradCol = ( rp - rm ) / ( 2 * delta[i] );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol, dFdPrecedingF[i] ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol, dFdPrecedingFJ2[i] ) );
+
+    }
+
+    //Test dFdcohesion
+    for ( unsigned int i = 0; i < 1; i++ ){
+        constantType delta = eps * fabs( cohesion ) + eps;
+
+        floatType rp, rm;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion + delta, precedingF,
+                                                                                                            frictionAngle, beta, rp );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion - delta, precedingF,
+                                                                                                                    frictionAngle, beta, rm );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( ( rp - rm ) / ( 2 * delta ), dFdCohesion ) );
+
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( ( rp - rm ) / ( 2 * delta ), dFdcohesionJ2 ) );
+
+    }
+
+    //Test d2FdStress2
+    for ( unsigned int i = 0; i < S.size(); i++ ){
+        constantVector delta( S.size(), 0 );
+        delta[i] = eps * fabs( S[i] ) + eps;
+
+        floatType rp, rm;
+
+        variableVector dFdSp, dFdSm, dFdPrecedingFp, dFdPrecedingFm;
+        variableType dFdcohesionp, dFdcohesionm;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S + delta, cohesion, precedingF,
+                                                                                    frictionAngle, beta, rp,
+                                                                                    dFdSp, dFdcohesionp, dFdPrecedingFp );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S - delta, cohesion, precedingF,
+                                                                                    frictionAngle, beta, rm,
+                                                                                    dFdSm, dFdcohesionm, dFdPrecedingFm );
+
+        constantVector gradCol = ( dFdSp - dFdSm ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], d2FdS2J2[j][i] ) );
+        }
+    }
+
+    //Test d2FdStressdPrecedingF
+    for ( unsigned int i = 0; i < precedingF.size(); i++ ){
+        constantVector delta( precedingF.size(), 0 );
+        delta[i] = eps * fabs( precedingF[i] ) + eps;
+
+        floatType rp, rm;
+        variableVector dFdSp, dFdSm, dFdPrecedingFp, dFdPrecedingFm;
+        variableType dFdcohesionp, dFdcohesionm;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, precedingF + delta,
+                                                                                    frictionAngle, beta, rp,
+                                                                                    dFdSp, dFdcohesionp, dFdPrecedingFp );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( S, cohesion, precedingF - delta,
+                                                                                    frictionAngle, beta, rm,
+                                                                                    dFdSm, dFdcohesionm, dFdPrecedingFm );
+
+        constantVector gradCol = ( dFdSp - dFdSm ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], d2FdSdPrecedingFJ2[j][i] ) );
+        }
+    }
+
+}
+
+BOOST_AUTO_TEST_CASE( testComputeHigherOrderDruckerPragerYieldEquation ){
+    /*!
+     * Test the computation of the higher order stress Drucker-Prager yield equation.
+     *
+     */
+
+    variableVector M = { 0.80732114,  0.79202055,  0.17990022,  0.97454675,  0.703207  ,
+                        -0.58236697,  0.53324571, -0.93438873, -0.40650796,  0.14071918,
+                         0.66933708, -0.67854069, -0.30317772, -0.93821882,  0.97270622,
+                         0.00295302, -0.12441126,  0.30539971, -0.0580227 ,  0.89696105,
+                         0.17567709, -0.9592962 ,  0.63535407,  0.95437804, -0.64531877,
+                         0.69978907,  0.81327586 };
+
+    variableVector precedingF = { 1.03482346, 0.01430697, 0.01134257,
+                                  0.02756574, 1.03597345, 0.02115532,
+                                  0.04903821, 0.03424149, 1.0240466 };
+
+    variableVector cohesion = { 0.51, 0.71, .14 };
+    parameterType frictionAngle = 0.46;
+    parameterType beta = 0.34;
+
+    constantVector answer = { 1.08862863, 1.39180044, 1.82194477 };
+    variableVector result;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF,
+                                                                                                        frictionAngle, beta, result );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( result, answer ) );
+
+    //Test the Jacobians
+
+    variableVector resultJ;
+    variableMatrix dFdStress, dFdc, dFdPrecedingF;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF,
+                                                                                                        frictionAngle, beta, resultJ,
+                                                                                                        dFdStress, dFdc, dFdPrecedingF );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultJ, answer ) );
+
+    variableVector resultJ2;
+    variableMatrix dFdStressJ2, dFdcJ2, dFdPrecedingFJ2;
+    variableMatrix d2FdStress2J2, d2FdStressdPrecedingFJ2;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF,
+                                                                                                        frictionAngle, beta, resultJ2,
+                                                                                                        dFdStressJ2, dFdcJ2, dFdPrecedingFJ2,
+                                                                                                        d2FdStress2J2, d2FdStressdPrecedingFJ2 );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultJ2, answer ) );
+
+    //Test derivatives w.r.t stress
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < M.size(); i++ ){
+        constantVector delta( M.size(), 0 );
+        delta[i] = eps * fabs( M[i] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M + delta, cohesion, precedingF,
+                                                                                                            frictionAngle, beta, resultP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M - delta, cohesion, precedingF,
+                                                                                                            frictionAngle, beta, resultM );
+
+        constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdStress[j][i] ) );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdStressJ2[j][i] ) );
+        }
+
+        variableMatrix dFdStressP, dFdcP, dFdPrecedingFP;
+        variableMatrix dFdStressM, dFdcM, dFdPrecedingFM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M + delta, cohesion, precedingF,
+                                                                                                            frictionAngle, beta, resultP,
+                                                                                                            dFdStressP, dFdcP, dFdPrecedingFP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M - delta, cohesion, precedingF,
+                                                                                                            frictionAngle, beta, resultM,
+                                                                                                            dFdStressM, dFdcM, dFdPrecedingFM );
+
+        constantMatrix gradMat = ( dFdStressP - dFdStressM ) / ( 2 * delta[i] );
+
+        unsigned int n, o, p;
+
+        for ( unsigned int j = 0; j < 3; j++ ){
+            for ( unsigned int k = 0; k < 3; k++ ){
+                for ( unsigned int l = 0; l < 3; l++ ){
+                    for ( unsigned int m = 0; m < 3; m++ ){
+                        n = ( int )( i / 9 );
+                        o = ( int )( (i - 9 * n ) / 3 );
+                        p = ( i - 9 * n - 3 * o ) % 3;
+                        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradMat[ j ][ 9 * k + 3 * l + m ],
+                                                        d2FdStress2J2[ j ][ 243 * k + 81 * l + 27 * m + 9 * n + 3 * o + p ] ) );
+                    }
+                }
+            }
+        }
+    }
+
+    //Test derivatives w.r.t. the cohesion
+    for ( unsigned int i = 0; i < cohesion.size(); i++ ){
+        constantVector delta( cohesion.size(), 0 );
+        delta[i] = eps * fabs( cohesion[i] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion + delta, precedingF,
+                                                                                                            frictionAngle, beta, resultP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion - delta, precedingF,
+                                                                                                            frictionAngle, beta, resultM );
+
+        constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdc[j][i] ) );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdcJ2[j][i] ) );
+        }
+    }
+
+    //Test derivatives w.r.t. the preceding deformation gradient
+    for ( unsigned int i = 0; i < precedingF.size(); i++ ){
+        constantVector delta( precedingF.size(), 0 );
+        delta[i] = eps * fabs( precedingF[i] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF + delta,
+                                                                                                            frictionAngle, beta, resultP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF - delta,
+                                                                                                            frictionAngle, beta, resultM );
+
+        constantVector gradCol = ( resultP - resultM ) / ( 2 * delta[i] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdPrecedingF[j][i] ) );
+        }
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[j], dFdPrecedingF[j][i] ) );
+        }
+
+        variableMatrix dFdStressP, dFdcP, dFdPrecedingFP;
+        variableMatrix dFdStressM, dFdcM, dFdPrecedingFM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF + delta,
+                                                                                                            frictionAngle, beta, resultP,
+                                                                                                            dFdStressP, dFdcP, dFdPrecedingFP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( M, cohesion, precedingF - delta,
+                                                                                                            frictionAngle, beta, resultM,
+                                                                                                            dFdStressM, dFdcM, dFdPrecedingFM );
+
+        constantMatrix gradMat = ( dFdStressP - dFdStressM ) / ( 2 * delta[i] );
+
+        unsigned int n, o;
+
+        for ( unsigned int j = 0; j < 3; j++ ){
+            for ( unsigned int k = 0; k < 3; k++ ){
+                for ( unsigned int l = 0; l < 3; l++ ){
+                    for ( unsigned int m = 0; m < 3; m++ ){
+                        n = ( int )( i / 3 );
+                        o = ( i % 3 );
+                        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradMat[ j ][ 9 * k + 3 * l + m ],
+                                                        d2FdStressdPrecedingFJ2[ j ][ 81 * k + 27 * l + 9 * m + 3 * n + o ] ) );
+                    }
+                }
+            }
+        }
+    }
+
+}
+
+BOOST_AUTO_TEST_CASE( test_setFlowDerivatives ){
+    /*!
+     * Test setting the cohesion values
+     */
+
+    // Form a hydra class and residual class
+    floatType time = 1.23;
+
+    floatType deltaTime = 2.34;
+
+    floatType temperature = 3.45;
+
+    floatType previousTemperature = 4.56;
+
+    variableVector deformationGradient = {  1.00157757,  0.00159138,  0.00672005,
+                                            0.01747159,  1.01122277,  0.00555118,
+                                            0.01112217, -0.00885205,  0.99308943 };
+
+    variableVector microDeformation = { 0.99460588, -0.0078411 ,  0.01145249,
+                                       -0.00307139,  0.97798389, -0.00509779,
+                                        0.01189977, -0.01587541,  0.98377259 };
+
+    variableVector gradientMicroDeformation = { -1.35868385e-02, -1.03142977e-02,  6.54880619e-03, -2.03947530e-02,
+                                                -3.31494137e-03, -3.45686183e-03, -3.15745117e-04, -3.70848549e-03,
+                                                -9.38693885e-03, -3.68243465e-03,  1.96694582e-02,  2.22080009e-02,
+                                                 9.18337942e-05,  6.19764759e-03, -1.92190802e-02, -9.13572591e-03,
+                                                -4.25868940e-03,  1.83154579e-02, -1.24772317e-02, -8.48286787e-04,
+                                                 2.42779893e-02,  9.74255963e-04,  5.64472629e-03, -1.89685667e-02,
+                                                 1.63170400e-02,  5.15300642e-03,  2.25340032e-03 };
+
+    floatVector previousDeformationGradient = { 9.94656270e-01,  4.82152400e-02,  3.31984800e-02,  2.81918700e-02,
+         1.02086536e+00, -1.77592100e-02, -2.24798000e-03, -1.28410000e-04,
+         9.77165250e-01 };
+
+    floatVector previousMicroDeformation = { 0.96917405, -0.01777599,  0.00870406, -0.02163002,  0.9998683 ,
+        -0.01669352,  0.03355217,  0.04427456,  1.01778466 };
+
+    floatVector previousGradientMicroDeformation = { 0.05043761,  0.02160516, -0.0565408 ,  0.01218304, -0.05851034,
+         0.00485749, -0.00962607, -0.03455912,  0.04490067,  0.01552915,
+        -0.02878364,  0.00595866,  0.04750406, -0.02377005, -0.05041534,
+        -0.02922214,  0.06280788,  0.02850865, -0.00226005,  0.0146049 ,
+         0.01560184,  0.03224767,  0.05822091, -0.05294424, -0.03518206,
+         0.01831308,  0.03774438 };
+
+    floatVector previousStateVariables = {-0.02495446, -0.00169657,  0.04855598,  0.00194851,  0.01128945,
+       -0.03793713,  0.03263408,  0.01030601,  0.0045068 , -0.01572362,
+       -0.01958792, -0.00829778,  0.01813008,  0.03754568,  0.00104223,
+        0.01693138,  0.00859366,  0.01249035,  0.01746891,  0.03423424,
+       -0.0416805 ,  0.02636828, -0.02563336, -0.0305777 ,  0.0072457 ,
+       -0.04042875,  0.03853268,  0.0127249 ,  0.02234164, -0.04838708,
+        0.00944319,  0.00567852, -0.03410404, -0.03469295,  0.01955295,
+       -0.01812336,  0.01919703,  0.00543832, -0.01110494,  0.04251325,
+        0.034167  , -0.01426024, -0.04564085, -0.01952319, -0.01018143,
+        0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 };
+
+    floatVector parameters = { 2, 0.53895133, 0.37172145,
+                               2, 0.37773052, 0.92739145,
+                               2, 0.53186824, 0.75454313,
+                               2, 0.95338442, 0.74042148,
+                               2, 0.38093104, 0.49241325,
+                               2, 0.82121039, 0.90566759,
+                               2, 0.01166325, 0.05331896,
+                               2, 0.32982199, 0.60161431,
+                               2, 0.58881096, 0.11473813 };
+
+    floatVector unknownVector = {  4.31202550e-01, -1.78960429e-01, -6.17986089e-01,  9.34988614e-01,
+                                   3.01500733e-01,  7.30919703e-01, -9.49515284e-01, -4.66188370e-01,
+                                   4.14220065e-03, -8.65102730e-01,  9.86066522e-01, -5.27075208e-01,
+                                  -2.51415635e-01, -5.71976170e-01, -7.89108268e-01, -5.35040429e-01,
+                                  -3.98779729e-01,  2.68884536e-01, -4.37530437e-01, -2.75446478e-01,
+                                  -9.88114313e-01, -2.68561748e-01,  6.77719634e-02, -6.75968326e-01,
+                                   1.94866217e-01, -4.13695063e-01,  2.64100990e-01, -9.47606789e-01,
+                                   7.75186921e-01, -9.67762739e-01, -7.46083938e-01,  5.54324923e-01,
+                                  -9.08209536e-01,  4.21997387e-01,  9.42092281e-01,  7.43365866e-01,
+                                   4.20323303e-01,  9.17019486e-01, -1.40373324e-01,  7.45757829e-01,
+                                  -2.88084664e-01,  8.59527306e-01, -7.02444688e-01,  8.80058030e-01,
+                                   6.65432395e-01,  1.01730274e+00, -1.88038495e-02,  4.82434492e-03,
+                                  -2.41803760e-02,  1.01105922e+00, -2.46131243e-02, -2.07588861e-02,
+                                  -1.37250795e-02,  1.01875623e+00,  9.93178816e-01,  1.99799676e-03,
+                                   3.40516069e-03, -1.37268320e-02,  1.00360734e+00,  8.04758975e-03,
+                                  -1.00877303e-02, -4.06865705e-03,  9.97654446e-01,  2.16175331e-02,
+                                   4.37468737e-03,  2.24126186e-02,  2.80173769e-03,  2.80710425e-05,
+                                  -2.48233895e-02, -9.55547806e-04,  2.13727499e-02, -1.50817155e-02,
+                                  -2.23954433e-02, -4.66105533e-03, -6.38017597e-03,  1.78576529e-02,
+                                  -2.36694442e-02,  2.10074615e-02,  9.04514995e-03,  2.02112997e-02,
+                                   5.37645354e-03,  1.55976656e-02, -8.22280632e-03, -7.52168860e-03,
+                                  -5.50628848e-03,  1.27398541e-02, -6.53544128e-03, -1.28890097e-02,
+                                   2.18834178e-02,  2.04005542e-02,
+                                   0.01, 0.02, 0.03, 0.04, 0.05,
+                                   0.06, 0.07, 0.08, 0.09, 0.10 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 10;
+
+    std::vector< unsigned int > stateVariableIndices = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    unsigned int dimension = 3;
+
+    unsigned int configuration_unknown_count = 45;
+
+    floatType tolr = 1e-2;
+
+    floatType tola = 1e-3;
+
+    unsigned int maxIterations = 24;
+
+    unsigned int maxLSIterations = 45;
+
+    floatType lsAlpha = 2.3;
+
+    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+
+        public:
+
+            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+
+    };
+
+    class residualMock : public tardigradeHydra::micromorphicDruckerPragerPlasticity::residual{
+
+        public:
+
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::residual;
+
+            floatType macroCohesion = 1.23;
+
+            floatType microCohesion = 2.34;
+
+            floatVector microGradientCohesion = { 3.4, 4.5, 5.6 };
+
+            floatVector macroDrivingStress = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
+
+            floatVector microDrivingStress = { 10, 11, 12, 13, 14, 15, 16, 17, 18 };
+
+            floatVector microGradientDrivingStress = { 19, 20, 21, 22, 23, 24, 25, 26, 27,
+                                                       28, 29, 30, 31, 32, 33, 34, 35, 36,
+                                                       37, 38, 39, 40, 41, 42, 43, 44, 45 };
+
+            floatMatrix dMacroDrivingStressdMacroStress = initialize( 9, 9 );
+
+            floatMatrix dMacroDrivingStressdF           = initialize( 9, 9 );
+
+            floatMatrix dMacroDrivingStressdFn          = initialize( 9, 9 );
+
+            floatMatrix dMicroDrivingStressdMicroStress = initialize( 9, 9 );
+
+            floatMatrix dMicroDrivingStressdF           = initialize( 9, 9 );
+
+            floatMatrix dMicroDrivingStressdFn          = initialize( 9, 9 );
+
+            floatMatrix dMicroGradientDrivingStressdHigherOrderStress = initialize( 27, 27 );
+
+            floatMatrix dMicroGradientDrivingStressdF                 = initialize( 27,  9 );
+
+            floatMatrix dMicroGradientDrivingStressdFn                = initialize( 27,  9 );
+
+            floatMatrix dMicroGradientDrivingStressdChi               = initialize( 27,  9 );
+
+            floatMatrix dMicroGradientDrivingStressdChin              = initialize( 27,  9 );
+
+            floatType previousMacroCohesion = -1.23;
+
+            floatType previousMicroCohesion = -2.34;
+
+            floatVector previousMicroGradientCohesion = { -3.4, -4.5, -5.6 };
+
+            floatVector previousMacroDrivingStress = {  -1,  -2,  -3,  -4,  -5,  -6,  -7,  -8,  -9 };
+
+            floatVector previousMicroDrivingStress = { -10, -11, -12, -13, -14, -15, -16, -17, -18 };
+
+            floatVector previousMicroGradientDrivingStress = { -19, -20, -21, -22, -23, -24, -25, -26, -27,
+                                                               -28, -29, -30, -31, -32, -33, -34, -35, -36,
+                                                               -37, -38, -39, -40, -41, -42, -43, -44, -45 };
+
+            floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
+                                              2, 0.37773052, 0.92739145,
+                                              2, 0.53186824, 0.75454313,
+                                              2, 0.95338442, 0.74042148,
+                                              2, 0.38093104, 0.49241325,
+                                              2, 0.82121039, 0.90566759,
+                                              2, 0.01166325, 0.05331896,
+                                              2, 0.32982199, 0.60161431,
+                                              2, 0.58881096, 0.11473813 };
+
+            floatMatrix initialize( unsigned int nrows, unsigned int ncols ){
+
+                floatMatrix value( nrows, floatVector( ncols, 0 ) );
+
+                return value;
+
+            }
+
+            virtual void setCohesions( const bool isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_previousMacroCohesion( previousMacroCohesion );
+
+                    set_previousMicroCohesion( previousMicroCohesion );
+
+                    set_previousMicroGradientCohesion( previousMicroGradientCohesion );
+
+                }
+                else{
+
+                    set_macroCohesion( macroCohesion );
+
+                    set_microCohesion( microCohesion );
+
+                    set_microGradientCohesion( microGradientCohesion );
+
+                }
+
+            }
+
+            virtual void setDrivingStresses( const bool isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_previousMacroDrivingStress( previousMacroDrivingStress );
+
+                    set_previousSymmetricMicroDrivingStress( previousMicroDrivingStress );
+
+                    set_previousHigherOrderDrivingStress( previousMicroGradientDrivingStress );
+
+                }
+                else{
+
+                    set_macroDrivingStress( macroDrivingStress );
+
+                    set_symmetricMicroDrivingStress( microDrivingStress );
+
+                    set_higherOrderDrivingStress( microGradientDrivingStress );
+
+                }
+
+            }
+
+            virtual void setDrivingStressesJacobians( const bool isPrevious ) override{
+
+                setDrivingStresses( isPrevious );
+
+                if ( isPrevious ){
+
+                    set_previousdMacroDrivingStressdMacroStress( dMacroDrivingStressdMacroStress );
+
+                    set_previousdMacroDrivingStressdF( dMacroDrivingStressdF );
+
+                    set_previousdMacroDrivingStressdFn( dMacroDrivingStressdFn );
+
+                    set_previousdSymmetricMicroDrivingStressdMicroStress( dMicroDrivingStressdMicroStress );
+
+                    set_previousdSymmetricMicroDrivingStressdF( dMicroDrivingStressdF );
+
+                    set_previousdSymmetricMicroDrivingStressdFn( dMicroDrivingStressdFn );
+
+                    set_previousdHigherOrderDrivingStressdHigherOrderStress( dMicroGradientDrivingStressdHigherOrderStress );
+
+                    set_previousdHigherOrderDrivingStressdF( dMicroGradientDrivingStressdF );
+
+                    set_previousdHigherOrderDrivingStressdFn( dMicroGradientDrivingStressdFn );
+
+                    set_previousdHigherOrderDrivingStressdChi( dMicroGradientDrivingStressdChi );
+
+                    set_previousdHigherOrderDrivingStressdChin( dMicroGradientDrivingStressdChin );
+
+                }
+                else{
+
+                    set_dMacroDrivingStressdMacroStress( dMacroDrivingStressdMacroStress );
+
+                    set_dMacroDrivingStressdF( dMacroDrivingStressdF );
+
+                    set_dMacroDrivingStressdFn( dMacroDrivingStressdFn );
+
+                    set_dSymmetricMicroDrivingStressdMicroStress( dMicroDrivingStressdMicroStress );
+
+                    set_dSymmetricMicroDrivingStressdF( dMicroDrivingStressdF );
+
+                    set_dSymmetricMicroDrivingStressdFn( dMicroDrivingStressdFn );
+
+                    set_dHigherOrderDrivingStressdHigherOrderStress( dMicroGradientDrivingStressdHigherOrderStress );
+
+                    set_dHigherOrderDrivingStressdF( dMicroGradientDrivingStressdF );
+
+                    set_dHigherOrderDrivingStressdFn( dMicroGradientDrivingStressdFn );
+
+                    set_dHigherOrderDrivingStressdChi( dMicroGradientDrivingStressdChi );
+
+                    set_dHigherOrderDrivingStressdChin( dMicroGradientDrivingStressdChin );
+                
+                }
+
+            }
+
+    };
+
+    class hydraBaseMicromorphicMock : public tardigradeHydra::hydraBaseMicromorphic{
+
+        public:
+
+            using tardigradeHydra::hydraBaseMicromorphic::hydraBaseMicromorphic;
+
+            stressMock elasticity;
+
+            residualMock plasticity;
+
+            std::vector< unsigned int > stateVariableIndices = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
+                                              2, 0.37773052, 0.92739145,
+                                              2, 0.53186824, 0.75454313,
+                                              2, 0.95338442, 0.74042148, 
+                                              2, 0.38093104, 0.49241325, 
+                                              2, 0.82121039, 0.90566759,
+                                              2, 0.01166325, 0.05331896, 
+                                              2, 0.32982199, 0.60161431, 
+                                              2, 0.58881096, 0.11473813 };
+
+        private:
+
+            using tardigradeHydra::hydraBaseMicromorphic::setResidualClasses;
+
+            virtual void setResidualClasses( ) override{
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                elasticity = stressMock( this, 45 );
+
+                plasticity = residualMock( this, 55, 1, stateVariableIndices, plasticParameters );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &plasticity;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                     microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables,
+                                     dimension, configuration_unknown_count,
+                                     tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
+    residualMock R( &hydra, 55, 1, stateVariableIndices, parameters );
+
+    residualMock RJ( &hydra, 55, 1, stateVariableIndices, parameters );
+
+    floatType tempYield, dMacroFlowdCohesion, dMicroFlowdCohesion;
+
+    floatVector tempVectorYield, dMacroFlowdDrivingStress, dMicroFlowdDrivingStress, dMacroFlowdPrecedingF, dMicroFlowdPrecedingF;
+
+    floatMatrix dMicroGradientFlowdDrivingStress, dMicroGradientFlowdCohesion, dMicroGradientFlowdPrecedingF;
+
+    floatType previousdMacroFlowdCohesion, previousdMicroFlowdCohesion;
+
+    floatVector previousdMacroFlowdDrivingStress, previousdMicroFlowdDrivingStress, previousdMacroFlowdPrecedingF, previousdMicroFlowdPrecedingF;
+
+    floatMatrix previousdMicroGradientFlowdDrivingStress, previousdMicroGradientFlowdCohesion, previousdMicroGradientFlowdPrecedingF;
+
+    floatVector Fp = floatVector( unknownVector.begin( ) + configuration_unknown_count,
+                                  unknownVector.begin( ) + configuration_unknown_count + 9 );
+
+    floatVector eye( 9 );
+    tardigradeVectorTools::eye( eye );
+
+    floatVector previousFp = floatVector( previousStateVariables.begin( ),
+                                          previousStateVariables.begin( ) + 9 ) + eye;
+
+    floatVector precedingDeformationGradient = tardigradeVectorTools::matrixMultiply( deformationGradient, tardigradeVectorTools::inverse( Fp, 3, 3 ), 3, 3, 3, 3 );
+
+    floatVector previousPrecedingDeformationGradient = tardigradeVectorTools::matrixMultiply( previousDeformationGradient, tardigradeVectorTools::inverse( previousFp, 3, 3 ), 3, 3, 3, 3 );
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( R.macroDrivingStress, R.macroCohesion, precedingDeformationGradient,
+                                                                                                        R.plasticParameters[ 10 ], R.plasticParameters[ 11 ],
+                                                                                                        tempYield, dMacroFlowdDrivingStress, dMacroFlowdCohesion, dMacroFlowdPrecedingF );
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( R.microDrivingStress, R.microCohesion, precedingDeformationGradient,
+                                                                                                        R.plasticParameters[ 13 ], R.plasticParameters[ 14 ],
+                                                                                                        tempYield, dMicroFlowdDrivingStress, dMicroFlowdCohesion, dMicroFlowdPrecedingF );
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( R.microGradientDrivingStress, R.microGradientCohesion, precedingDeformationGradient,
+                                                                                                        R.plasticParameters[ 16 ], R.plasticParameters[ 17 ],
+                                                                                                        tempVectorYield, dMicroGradientFlowdDrivingStress, dMicroGradientFlowdCohesion, dMicroGradientFlowdPrecedingF );
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( R.previousMacroDrivingStress, R.previousMacroCohesion, previousPrecedingDeformationGradient,
+                                                                                                        R.plasticParameters[ 10 ], R.plasticParameters[ 11 ],
+                                                                                                        tempYield, previousdMacroFlowdDrivingStress, previousdMacroFlowdCohesion, previousdMacroFlowdPrecedingF );
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation( R.previousMicroDrivingStress, R.previousMicroCohesion, previousPrecedingDeformationGradient,
+                                                                                                        R.plasticParameters[ 13 ], R.plasticParameters[ 14 ],
+                                                                                                        tempYield, previousdMicroFlowdDrivingStress, previousdMicroFlowdCohesion, previousdMicroFlowdPrecedingF );
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( R.previousMicroGradientDrivingStress, R.previousMicroGradientCohesion, previousPrecedingDeformationGradient,
+                                                                                                        R.plasticParameters[ 16 ], R.plasticParameters[ 17 ],
+                                                                                                        tempVectorYield, previousdMicroGradientFlowdDrivingStress, previousdMicroGradientFlowdCohesion, previousdMicroGradientFlowdPrecedingF );
+
+    RJ.get_d2MacroFlowdDrivingStressdStress( );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroFlowdCohesion,                      *R.get_dMacroFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroFlowdCohesion,                      *R.get_dMicroFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientFlowdCohesion,              *R.get_dMicroGradientFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroFlowdDrivingStress,                 *R.get_dMacroFlowdDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroFlowdDrivingStress,                 *R.get_dMicroFlowdDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientFlowdDrivingStress,         *R.get_dMicroGradientFlowdDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroFlowdCohesion,              *R.get_previousdMacroFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroFlowdCohesion,              *R.get_previousdMicroFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientFlowdCohesion,      *R.get_previousdMicroGradientFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroFlowdDrivingStress,         *R.get_previousdMacroFlowdDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroFlowdDrivingStress,         *R.get_previousdMicroFlowdDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientFlowdDrivingStress, *R.get_previousdMicroGradientFlowdDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroFlowdCohesion,                      *RJ.get_dMacroFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroFlowdCohesion,                      *RJ.get_dMicroFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientFlowdCohesion,              *RJ.get_dMicroGradientFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroFlowdDrivingStress,                 *RJ.get_dMacroFlowdDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroFlowdDrivingStress,                 *RJ.get_dMicroFlowdDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientFlowdDrivingStress,         *RJ.get_dMicroGradientFlowdDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroFlowdCohesion,              *RJ.get_previousdMacroFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroFlowdCohesion,              *RJ.get_previousdMicroFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientFlowdCohesion,      *RJ.get_previousdMicroGradientFlowdc( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroFlowdDrivingStress,         *RJ.get_previousdMacroFlowdDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroFlowdDrivingStress,         *RJ.get_previousdMicroFlowdDrivingStress( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientFlowdDrivingStress, *RJ.get_previousdMicroGradientFlowdDrivingStress( ) ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
+    /*!
+     * Test setting the cohesion values
+     */
+
+    // Form a hydra class and residual class
+    floatType time = 1.23;
+
+    floatType deltaTime = 2.34;
+
+    floatType temperature = 3.45;
+
+    floatType previousTemperature = 4.56;
+
+    variableVector deformationGradient = {  1.00157757,  0.00159138,  0.00672005,
+                                            0.01747159,  1.01122277,  0.00555118,
+                                            0.01112217, -0.00885205,  0.99308943 };
+
+    variableVector microDeformation = { 0.99460588, -0.0078411 ,  0.01145249,
+                                       -0.00307139,  0.97798389, -0.00509779,
+                                        0.01189977, -0.01587541,  0.98377259 };
+
+    variableVector gradientMicroDeformation = { -1.35868385e-02, -1.03142977e-02,  6.54880619e-03, -2.03947530e-02,
+                                                -3.31494137e-03, -3.45686183e-03, -3.15745117e-04, -3.70848549e-03,
+                                                -9.38693885e-03, -3.68243465e-03,  1.96694582e-02,  2.22080009e-02,
+                                                 9.18337942e-05,  6.19764759e-03, -1.92190802e-02, -9.13572591e-03,
+                                                -4.25868940e-03,  1.83154579e-02, -1.24772317e-02, -8.48286787e-04,
+                                                 2.42779893e-02,  9.74255963e-04,  5.64472629e-03, -1.89685667e-02,
+                                                 1.63170400e-02,  5.15300642e-03,  2.25340032e-03 };
+
+    floatVector previousDeformationGradient = { 9.94656270e-01,  4.82152400e-02,  3.31984800e-02,  2.81918700e-02,
+         1.02086536e+00, -1.77592100e-02, -2.24798000e-03, -1.28410000e-04,
+         9.77165250e-01 };
+
+    floatVector previousMicroDeformation = { 0.96917405, -0.01777599,  0.00870406, -0.02163002,  0.9998683 ,
+        -0.01669352,  0.03355217,  0.04427456,  1.01778466 };
+
+    floatVector previousGradientMicroDeformation = { 0.05043761,  0.02160516, -0.0565408 ,  0.01218304, -0.05851034,
+         0.00485749, -0.00962607, -0.03455912,  0.04490067,  0.01552915,
+        -0.02878364,  0.00595866,  0.04750406, -0.02377005, -0.05041534,
+        -0.02922214,  0.06280788,  0.02850865, -0.00226005,  0.0146049 ,
+         0.01560184,  0.03224767,  0.05822091, -0.05294424, -0.03518206,
+         0.01831308,  0.03774438 };
+
+    floatVector previousStateVariables = {-0.02495446, -0.00169657,  0.04855598,  0.00194851,  0.01128945,
+       -0.03793713,  0.03263408,  0.01030601,  0.0045068 , -0.01572362,
+       -0.01958792, -0.00829778,  0.01813008,  0.03754568,  0.00104223,
+        0.01693138,  0.00859366,  0.01249035,  0.01746891,  0.03423424,
+       -0.0416805 ,  0.02636828, -0.02563336, -0.0305777 ,  0.0072457 ,
+       -0.04042875,  0.03853268,  0.0127249 ,  0.02234164, -0.04838708,
+        0.00944319,  0.00567852, -0.03410404, -0.03469295,  0.01955295,
+       -0.01812336,  0.01919703,  0.00543832, -0.01110494,  0.04251325,
+        0.034167  , -0.01426024, -0.04564085, -0.01952319, -0.01018143,
+        0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0 };
+
+    floatVector parameters = { 2, 0.53895133, 0.37172145,
+                               2, 0.37773052, 0.92739145,
+                               2, 0.53186824, 0.75454313,
+                               2, 0.95338442, 0.74042148,
+                               2, 0.38093104, 0.49241325,
+                               2, 0.82121039, 0.90566759,
+                               2, 0.01166325, 0.05331896,
+                               2, 0.32982199, 0.60161431,
+                               2, 0.58881096, 0.11473813 };
+
+    floatVector unknownVector = {  4.31202550e-01, -1.78960429e-01, -6.17986089e-01,  9.34988614e-01,
+                                   3.01500733e-01,  7.30919703e-01, -9.49515284e-01, -4.66188370e-01,
+                                   4.14220065e-03, -8.65102730e-01,  9.86066522e-01, -5.27075208e-01,
+                                  -2.51415635e-01, -5.71976170e-01, -7.89108268e-01, -5.35040429e-01,
+                                  -3.98779729e-01,  2.68884536e-01, -4.37530437e-01, -2.75446478e-01,
+                                  -9.88114313e-01, -2.68561748e-01,  6.77719634e-02, -6.75968326e-01,
+                                   1.94866217e-01, -4.13695063e-01,  2.64100990e-01, -9.47606789e-01,
+                                   7.75186921e-01, -9.67762739e-01, -7.46083938e-01,  5.54324923e-01,
+                                  -9.08209536e-01,  4.21997387e-01,  9.42092281e-01,  7.43365866e-01,
+                                   4.20323303e-01,  9.17019486e-01, -1.40373324e-01,  7.45757829e-01,
+                                  -2.88084664e-01,  8.59527306e-01, -7.02444688e-01,  8.80058030e-01,
+                                   6.65432395e-01,  1.01730274e+00, -1.88038495e-02,  4.82434492e-03,
+                                  -2.41803760e-02,  1.01105922e+00, -2.46131243e-02, -2.07588861e-02,
+                                  -1.37250795e-02,  1.01875623e+00,  9.93178816e-01,  1.99799676e-03,
+                                   3.40516069e-03, -1.37268320e-02,  1.00360734e+00,  8.04758975e-03,
+                                  -1.00877303e-02, -4.06865705e-03,  9.97654446e-01,  2.16175331e-02,
+                                   4.37468737e-03,  2.24126186e-02,  2.80173769e-03,  2.80710425e-05,
+                                  -2.48233895e-02, -9.55547806e-04,  2.13727499e-02, -1.50817155e-02,
+                                  -2.23954433e-02, -4.66105533e-03, -6.38017597e-03,  1.78576529e-02,
+                                  -2.36694442e-02,  2.10074615e-02,  9.04514995e-03,  2.02112997e-02,
+                                   5.37645354e-03,  1.55976656e-02, -8.22280632e-03, -7.52168860e-03,
+                                  -5.50628848e-03,  1.27398541e-02, -6.53544128e-03, -1.28890097e-02,
+                                   2.18834178e-02,  2.04005542e-02,
+                                   0.01, 0.02, 0.03, 0.04, 0.05,
+                                   0.06, 0.07, 0.08, 0.09, 0.10 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 10;
+
+    std::vector< unsigned int > stateVariableIndices = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    unsigned int dimension = 3;
+
+    unsigned int configuration_unknown_count = 45;
+
+    floatType tolr = 1e-2;
+
+    floatType tola = 1e-3;
+
+    unsigned int maxIterations = 24;
+
+    unsigned int maxLSIterations = 45;
+
+    floatType lsAlpha = 2.3;
+
+    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+
+        public:
+
+            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+
+            floatVector previousPK2Stress = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
+
+            floatVector previousSIGMA     = { 10, 11, 12, 13, 14, 15, 16, 17, 18 };
+
+            floatVector previousM         = { 19, 20, 21, 22, 23, 24, 25, 26, 27,
+                                              28, 29, 30, 31, 32, 33, 34, 35, 36,
+                                              37, 38, 39, 40, 41, 42, 43, 44, 45 };
+
+        protected:
+
+            using tardigradeHydra::residualBase::setPreviousStress;
+
+            virtual void setPreviousStress( ) override{
+
+                setPreviousStress( tardigradeVectorTools::appendVectors( { previousPK2Stress, previousSIGMA, previousM } ) );
+
+            }
+
+    };
+
+    class residualMock : public tardigradeHydra::micromorphicDruckerPragerPlasticity::residual{
+
+        public:
+
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::residual;
+
+            floatMatrix initialize( unsigned int nrows, unsigned int ncols ){
+
+                floatMatrix value( nrows, floatVector( ncols, 0 ) );
+
+                return value;
+
+            }
+
+    };
+
+    class hydraBaseMicromorphicMock : public tardigradeHydra::hydraBaseMicromorphic{
+
+        public:
+
+            using tardigradeHydra::hydraBaseMicromorphic::hydraBaseMicromorphic;
+
+            stressMock elasticity;
+
+            residualMock plasticity;
+
+            std::vector< unsigned int > stateVariableIndices = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
+                                              2, 0.37773052, 0.92739145,
+                                              2, 0.53186824, 0.75454313,
+                                              2, 0.95338442, 0.74042148, 
+                                              2, 0.38093104, 0.49241325, 
+                                              2, 0.82121039, 0.90566759,
+                                              2, 0.01166325, 0.05331896, 
+                                              2, 0.32982199, 0.60161431, 
+                                              2, 0.58881096, 0.11473813 };
+
+            floatVector _local_deltaPK2   = initialize(  9 );
+
+            floatVector _local_deltaSIGMA = initialize(  9 );
+
+            floatVector _local_deltaM     = initialize( 27 );
+
+            floatVector initialize( unsigned int nrows ){
+
+                floatVector value( nrows, 0 );
+
+                return value;
+
+            }
+
+            floatMatrix initialize( unsigned int nrows, unsigned int ncols ){
+
+                floatMatrix value( nrows, floatVector( ncols, 0 ) );
+
+                return value;
+
+            }
+
+        private:
+
+            using tardigradeHydra::hydraBaseMicromorphic::setResidualClasses;
+
+            virtual void setResidualClasses( ) override{
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                elasticity = stressMock( this, 45 );
+
+                elasticity.previousPK2Stress += _local_deltaPK2;
+
+                elasticity.previousSIGMA     += _local_deltaSIGMA;
+
+                elasticity.previousM         += _local_deltaM;
+
+                plasticity = residualMock( this, 55, 1, stateVariableIndices, plasticParameters );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &plasticity;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                     microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables,
+                                     dimension, configuration_unknown_count,
+                                     tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
+    residualMock R( &hydra, 55, 1, stateVariableIndices, parameters );
+
+    // Jacobian tests
+
+    floatMatrix d2MacroFlowdDrivingStressdX( 9, floatVector( unknownVector.size( ), 0 ) );
+
+    floatMatrix d2MicroFlowdDrivingStressdX( 9, floatVector( unknownVector.size( ), 0 ) );
+
+    floatMatrix d2MicroGradientFlowdDrivingStressdX( 3 * 27, floatVector( unknownVector.size( ), 0 ) );
+
+    floatMatrix d2MacroFlowdDrivingStressdF( 9, floatVector( 9, 0 ) );
+
+    floatMatrix d2MicroFlowdDrivingStressdF( 9, floatVector( 9, 0 ) );
+
+    floatMatrix d2MicroGradientFlowdDrivingStressdF( 3 * 27, floatVector( 9, 0 ) );
+
+    floatMatrix d2MacroFlowdDrivingStressdChi( 9, floatVector( 9, 0 ) );
+
+    floatMatrix d2MicroFlowdDrivingStressdChi( 9, floatVector( 9, 0 ) );
+
+    floatMatrix d2MicroGradientFlowdDrivingStressdChi( 3 * 27, floatVector( 9, 0 ) );
+
+    floatMatrix previousd2MacroFlowdDrivingStressdMacroStress( 9, floatVector( 9, 0 ) );
+
+    floatMatrix previousd2MicroFlowdDrivingStressdMicroStress( 9, floatVector( 9, 0 ) );
+
+    floatMatrix previousd2MicroGradientFlowdDrivingStressdHigherOrderStress( 3 * 27, floatVector( 27, 0 ) );
+
+    floatMatrix previousd2MacroFlowdDrivingStressdX( 9, floatVector( previousStateVariables.size( ), 0 ) );
+
+    floatMatrix previousd2MicroFlowdDrivingStressdX( 9, floatVector( previousStateVariables.size( ), 0 ) );
+
+    floatMatrix previousd2MicroGradientFlowdDrivingStressdX( 3 * 27, floatVector( previousStateVariables.size( ), 0 ) );
+
+    floatMatrix previousd2MacroFlowdDrivingStressdF( 9, floatVector( 9, 0 ) );
+
+    floatMatrix previousd2MicroFlowdDrivingStressdF( 9, floatVector( 9, 0 ) );
+
+    floatMatrix previousd2MicroGradientFlowdDrivingStressdF( 3 * 27, floatVector( 9, 0 ) );
+
+    floatType eps = 1e-6;
+
+    // derivatives w.r.t. current stresses, Fn, Chin, gradchin, and ISVs
+    for ( unsigned int i = 0; i < unknownVector.size( ); i++ ){
+
+        floatVector delta( unknownVector.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector + delta );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
+
+        residualMock Rp( &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm( &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_dMacroFlowdDrivingStress( );
+
+        floatVector vm = *Rm.get_dMacroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            d2MacroFlowdDrivingStressdX[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = *Rp.get_dMicroFlowdDrivingStress( );
+
+        vm = *Rm.get_dMicroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            d2MicroFlowdDrivingStressdX[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = tardigradeVectorTools::appendVectors( *Rp.get_dMicroGradientFlowdDrivingStress( ) );
+
+        vm = tardigradeVectorTools::appendVectors( *Rm.get_dMicroGradientFlowdDrivingStress( ) );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            d2MicroGradientFlowdDrivingStressdX[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    floatMatrix assembled_d2MacroFlowdDrivingStressdX(              9, floatVector( unknownVector.size( ), 0 ) );
+
+    floatMatrix assembled_d2MicroFlowdDrivingStressdX(              9, floatVector( unknownVector.size( ), 0 ) );
+
+    floatMatrix assembled_d2MicroGradientFlowdDrivingStressdX( 3 * 27, floatVector( unknownVector.size( ), 0 ) );
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            assembled_d2MacroFlowdDrivingStressdX[ i ][ j ] = ( *R.get_d2MacroFlowdDrivingStressdStress( ) )[ i ][ j ];
+
+        }
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            assembled_d2MacroFlowdDrivingStressdX[ i ][ j + configuration_unknown_count ] = ( *R.get_d2MacroFlowdDrivingStressdFn( ) )[ i ][ j ];
+
+        }
+
+    }
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            assembled_d2MicroFlowdDrivingStressdX[ i ][ j + 9 ] = ( *R.get_d2MicroFlowdDrivingStressdStress( ) )[ i ][ j ];
+
+        }
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            assembled_d2MicroFlowdDrivingStressdX[ i ][ j + configuration_unknown_count ] = ( *R.get_d2MicroFlowdDrivingStressdFn( ) )[ i ][ j ];
+
+        }
+
+    }
+
+    for ( unsigned int i = 0; i < 3; i++ ){
+
+        for ( unsigned int j = 0; j < 27; j++ ){
+
+            for ( unsigned int k = 0; k < 27; k++ ){
+
+                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + 18 ] = ( *R.get_d2MicroGradientFlowdDrivingStressdStress( ) )[ i ][ 27 * j + k ];
+
+            }
+
+            for ( unsigned int k = 0; k < 9; k++ ){
+
+                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + configuration_unknown_count     ] = ( *R.get_d2MicroGradientFlowdDrivingStressdFn( ) )[ i ][ 9 * j + k ];
+
+                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + configuration_unknown_count + 9 ] = ( *R.get_d2MicroGradientFlowdDrivingStressdChin( ) )[ i ][ 9 * j + k ];
+
+            }
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( assembled_d2MacroFlowdDrivingStressdX, d2MacroFlowdDrivingStressdX ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( assembled_d2MicroFlowdDrivingStressdX, d2MicroFlowdDrivingStressdX ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( assembled_d2MicroGradientFlowdDrivingStressdX, d2MicroGradientFlowdDrivingStressdX ) );
+
+    // derivatives w.r.t. current F
+    for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
+
+        floatVector delta( deformationGradient.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm( &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_dMacroFlowdDrivingStress( );
+
+        floatVector vm = *Rm.get_dMacroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            d2MacroFlowdDrivingStressdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = *Rp.get_dMicroFlowdDrivingStress( );
+
+        vm = *Rm.get_dMicroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            d2MicroFlowdDrivingStressdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = tardigradeVectorTools::appendVectors( *Rp.get_dMicroGradientFlowdDrivingStress( ) );
+
+        vm = tardigradeVectorTools::appendVectors( *Rm.get_dMicroGradientFlowdDrivingStress( ) );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            d2MicroGradientFlowdDrivingStressdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    floatMatrix assembled_d2MicroGradientFlowdDrivingStressdF( 3 * 27, floatVector( 9, 0 ) );
+
+    for ( unsigned int i = 0; i < 3; i++ ){
+
+        for ( unsigned int j = 0; j < 27; j++ ){
+
+            for ( unsigned int k = 0; k < 9; k++ ){
+
+                assembled_d2MicroGradientFlowdDrivingStressdF[ 27 * i + j ][ k ] = ( *R.get_d2MicroGradientFlowdDrivingStressdF( ) )[ i ][ 9 * j + k ];
+
+            }
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2MacroFlowdDrivingStressdF, *R.get_d2MacroFlowdDrivingStressdF( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2MicroFlowdDrivingStressdF, *R.get_d2MicroFlowdDrivingStressdF( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2MicroGradientFlowdDrivingStressdF, assembled_d2MicroGradientFlowdDrivingStressdF ) );
+
+    // derivatives w.r.t. current chi
+    for ( unsigned int i = 0; i < microDeformation.size( ); i++ ){
+
+        floatVector delta( microDeformation.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( microDeformation[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation + delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation - delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm( &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_dMacroFlowdDrivingStress( );
+
+        floatVector vm = *Rm.get_dMacroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            d2MacroFlowdDrivingStressdChi[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = *Rp.get_dMicroFlowdDrivingStress( );
+
+        vm = *Rm.get_dMicroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            d2MicroFlowdDrivingStressdChi[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = tardigradeVectorTools::appendVectors( *Rp.get_dMicroGradientFlowdDrivingStress( ) );
+
+        vm = tardigradeVectorTools::appendVectors( *Rm.get_dMicroGradientFlowdDrivingStress( ) );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            d2MicroGradientFlowdDrivingStressdChi[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    floatMatrix assembled_d2MicroGradientFlowdDrivingStressdChi( 3 * 27, floatVector( 9, 0 ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2MacroFlowdDrivingStressdChi, floatMatrix( 9, floatVector( 9, 0 ) ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2MicroFlowdDrivingStressdChi, floatMatrix( 9, floatVector( 9, 0 ) ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2MicroGradientFlowdDrivingStressdChi, assembled_d2MicroGradientFlowdDrivingStressdChi ) );
+
+    // derivatives w.r.t. previous macro stress
+    for ( unsigned int i = 0; i < hydra.elasticity.previousPK2Stress.size( ); i++ ){
+
+        floatVector delta( hydra.elasticity.previousPK2Stress.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( hydra.elasticity.previousPK2Stress[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap._local_deltaPK2 =  delta;
+
+        hydram._local_deltaPK2 = -delta;
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm( &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_previousdMacroFlowdDrivingStress( );
+
+        floatVector vm = *Rm.get_previousdMacroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousd2MacroFlowdDrivingStressdMacroStress[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = *Rp.get_previousdMicroFlowdDrivingStress( );
+
+        vm = *Rm.get_previousdMicroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+        vp = tardigradeVectorTools::appendVectors( *Rp.get_previousdMicroGradientFlowdDrivingStress( ) );
+
+        vm = tardigradeVectorTools::appendVectors( *Rm.get_previousdMicroGradientFlowdDrivingStress( ) );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousd2MacroFlowdDrivingStressdMacroStress, *R.get_previousd2MacroFlowdDrivingStressdStress( ) ) );
+
+    // derivatives w.r.t. previous micro stress
+    for ( unsigned int i = 0; i < hydra.elasticity.previousSIGMA.size( ); i++ ){
+
+        floatVector delta( hydra.elasticity.previousSIGMA.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( hydra.elasticity.previousSIGMA[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap._local_deltaSIGMA =  delta;
+
+        hydram._local_deltaSIGMA = -delta;
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm( &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_previousdMacroFlowdDrivingStress( );
+
+        floatVector vm = *Rm.get_previousdMacroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+        vp = *Rp.get_previousdMicroFlowdDrivingStress( );
+
+        vm = *Rm.get_previousdMicroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousd2MicroFlowdDrivingStressdMicroStress[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = tardigradeVectorTools::appendVectors( *Rp.get_previousdMicroGradientFlowdDrivingStress( ) );
+
+        vm = tardigradeVectorTools::appendVectors( *Rm.get_previousdMicroGradientFlowdDrivingStress( ) );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousd2MicroFlowdDrivingStressdMicroStress, *R.get_previousd2MicroFlowdDrivingStressdStress( ) ) );
+
+    // derivatives w.r.t. previous micro gradient stress
+    for ( unsigned int i = 0; i < hydra.elasticity.previousM.size( ); i++ ){
+
+        floatVector delta( hydra.elasticity.previousM.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( hydra.elasticity.previousM[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap._local_deltaM =  delta;
+
+        hydram._local_deltaM = -delta;
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm( &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_previousdMacroFlowdDrivingStress( );
+
+        floatVector vm = *Rm.get_previousdMacroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+        vp = *Rp.get_previousdMicroFlowdDrivingStress( );
+
+        vm = *Rm.get_previousdMicroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+        vp = tardigradeVectorTools::appendVectors( *Rp.get_previousdMicroGradientFlowdDrivingStress( ) );
+
+        vm = tardigradeVectorTools::appendVectors( *Rm.get_previousdMicroGradientFlowdDrivingStress( ) );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousd2MicroGradientFlowdDrivingStressdHigherOrderStress[ j ][ i ] =  ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    floatMatrix assembled_previousd2MicroGradientFlowdDrivingStressdStress( 3 * 27, floatVector( 27, 0 ) );
+
+    for ( unsigned int i = 0; i < 3; i++ ){
+
+        for ( unsigned int j = 0; j < 27; j++ ){
+
+            for ( unsigned int k = 0; k < 27; k++ ){
+
+                assembled_previousd2MicroGradientFlowdDrivingStressdStress[ 27 * i + j ][ k ] += ( *R.get_previousd2MicroGradientFlowdDrivingStressdStress( ) )[ i ][ 27 * j + k ];
+
+            }
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousd2MicroGradientFlowdDrivingStressdHigherOrderStress, assembled_previousd2MicroGradientFlowdDrivingStressdStress ) );
+
+    // derivatives w.r.t. previous, Fn, Chin, gradchin, and ISVs
+    for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
+
+        floatVector delta( previousStateVariables.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( previousStateVariables[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables + delta, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables - delta, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm( &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_previousdMacroFlowdDrivingStress( );
+
+        floatVector vm = *Rm.get_previousdMacroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousd2MacroFlowdDrivingStressdX[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = *Rp.get_previousdMicroFlowdDrivingStress( );
+
+        vm = *Rm.get_previousdMicroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousd2MicroFlowdDrivingStressdX[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = tardigradeVectorTools::appendVectors( *Rp.get_previousdMicroGradientFlowdDrivingStress( ) );
+
+        vm = tardigradeVectorTools::appendVectors( *Rm.get_previousdMicroGradientFlowdDrivingStress( ) );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousd2MicroGradientFlowdDrivingStressdX[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    floatMatrix assembled_previousd2MacroFlowdDrivingStressdX(              9, floatVector( previousStateVariables.size( ), 0 ) );
+
+    floatMatrix assembled_previousd2MicroFlowdDrivingStressdX(              9, floatVector( previousStateVariables.size( ), 0 ) );
+
+    floatMatrix assembled_previousd2MicroGradientFlowdDrivingStressdX( 3 * 27, floatVector( previousStateVariables.size( ), 0 ) );
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            assembled_previousd2MacroFlowdDrivingStressdX[ i ][ j ] = ( *R.get_previousd2MacroFlowdDrivingStressdFn( ) )[ i ][ j ];
+
+        }
+
+    }
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            assembled_previousd2MicroFlowdDrivingStressdX[ i ][ j ] = ( *R.get_previousd2MicroFlowdDrivingStressdFn( ) )[ i ][ j ];
+
+        }
+
+    }
+
+    for ( unsigned int i = 0; i < 3; i++ ){
+
+        for ( unsigned int j = 0; j < 27; j++ ){
+
+            for ( unsigned int k = 0; k < 9; k++ ){
+
+                assembled_previousd2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k     ] = ( *R.get_previousd2MicroGradientFlowdDrivingStressdFn( ) )[ i ][ 9 * j + k ];
+
+                assembled_previousd2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + 9 ] = ( *R.get_previousd2MicroGradientFlowdDrivingStressdChin( ) )[ i ][ 9 * j + k ];
+
+            }
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( assembled_previousd2MacroFlowdDrivingStressdX, previousd2MacroFlowdDrivingStressdX ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( assembled_previousd2MicroFlowdDrivingStressdX, previousd2MicroFlowdDrivingStressdX ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( assembled_previousd2MicroGradientFlowdDrivingStressdX, previousd2MicroGradientFlowdDrivingStressdX ) );
+
+    // derivatives w.r.t. previous F
+    for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
+
+        floatVector delta( deformationGradient.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm( &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_previousdMacroFlowdDrivingStress( );
+
+        floatVector vm = *Rm.get_previousdMacroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousd2MacroFlowdDrivingStressdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = *Rp.get_previousdMicroFlowdDrivingStress( );
+
+        vm = *Rm.get_previousdMicroFlowdDrivingStress( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousd2MicroFlowdDrivingStressdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = tardigradeVectorTools::appendVectors( *Rp.get_previousdMicroGradientFlowdDrivingStress( ) );
+
+        vm = tardigradeVectorTools::appendVectors( *Rm.get_previousdMicroGradientFlowdDrivingStress( ) );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousd2MicroGradientFlowdDrivingStressdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    floatMatrix assembled_previousd2MicroGradientFlowdDrivingStressdF( 3 * 27, floatVector( 9, 0 ) );
+
+    for ( unsigned int i = 0; i < 3; i++ ){
+
+        for ( unsigned int j = 0; j < 27; j++ ){
+
+            for ( unsigned int k = 0; k < 9; k++ ){
+
+                assembled_previousd2MicroGradientFlowdDrivingStressdF[ 27 * i + j ][ k ] = ( *R.get_previousd2MicroGradientFlowdDrivingStressdF( ) )[ i ][ 9 * j + k ];
+
+            }
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousd2MacroFlowdDrivingStressdF, *R.get_previousd2MacroFlowdDrivingStressdF( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousd2MicroFlowdDrivingStressdF, *R.get_previousd2MicroFlowdDrivingStressdF( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousd2MicroGradientFlowdDrivingStressdF, assembled_previousd2MicroGradientFlowdDrivingStressdF ) );
 }
