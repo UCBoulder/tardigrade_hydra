@@ -2535,6 +2535,188 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setStrainLikeISVEvolutionRates( ){
+            /*!
+             * Set the evolution rates of the strain-like ISVs
+             */
+
+            setStrainLikeISVEvolutionRates( false );
+
+        }
+
+        void residual::setPreviousStrainLikeISVEvolutionRates( ){
+            /*!
+             * Set the previous evolution rates of the strain-like ISVs
+             */
+
+            setStrainLikeISVEvolutionRates( true );
+
+        }
+
+        void residual::setStrainLikeISVEvolutionRates( const bool isPrevious ){
+            /*!
+             * Set the evolution rates of the strain-like ISVs
+             * 
+             * \param isPrevious: A flag for if we should set the current (false) or previous (true) ISV evolution rates
+             */
+
+            const floatType   *dMacroFlowdc;
+
+            const floatType   *dMicroFlowdc;
+
+            const floatMatrix *dMicroGradientFlowdc;
+
+            const floatVector *plasticMultipliers;
+
+            if ( isPrevious ){
+
+                plasticMultipliers    = get_previousPlasticMultipliers( );
+
+                dMacroFlowdc          = get_previousdMacroFlowdc( );
+
+                dMicroFlowdc          = get_previousdMicroFlowdc( );
+
+                dMicroGradientFlowdc = get_previousdMicroGradientFlowdc( );
+
+            }
+            else{
+
+                plasticMultipliers    = get_plasticMultipliers( );
+
+                dMacroFlowdc          = get_dMacroFlowdc( );
+
+                dMicroFlowdc          = get_dMicroFlowdc( );
+
+                dMicroGradientFlowdc = get_dMicroGradientFlowdc( );
+
+            }
+
+            floatVector evolutionRates( plasticMultipliers->size( ), 0 );
+
+            evolutionRates[ 0 ] = -( *dMacroFlowdc ) * ( *plasticMultipliers )[ 0 ];
+
+            evolutionRates[ 1 ] = -( *dMicroFlowdc ) * ( *plasticMultipliers )[ 1 ];
+
+            for ( unsigned int i = 2; i < plasticMultipliers->size( ); i++ ){
+
+                for ( unsigned int j = 2; j < plasticMultipliers->size( ); j++ ){
+
+                    evolutionRates[ i ] -= ( *dMicroGradientFlowdc )[ i - 2 ][ j - 2 ] * ( *plasticMultipliers )[ j ];
+
+                }
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousStrainLikeISVEvolutionRates( evolutionRates );
+
+            }
+            else{
+
+                set_strainLikeISVEvolutionRates( evolutionRates );
+
+            }
+
+        }
+
+        void residual::setdStrainLikeISVEvolutionRatesdStateVariables( ){
+            /*!
+             * Set the Jacobian of the evolution rates of the strain-like ISVs w.r.t. the nonlinear state variables
+             */
+
+            setStrainLikeISVEvolutionRatesJacobians( false );
+
+        }
+
+        void residual::setPreviousdStrainLikeISVEvolutionRatesdStateVariables( ){
+            /*!
+             * Set the Jacobian of the previous evolution rates of the strain-like ISVs w.r.t. the nonlinear state variables
+             */
+
+            setStrainLikeISVEvolutionRatesJacobians( true );
+
+        }
+
+        void residual::setStrainLikeISVEvolutionRatesJacobians( const bool isPrevious ){
+            /*!
+             * Set the evolution rates and Jacobians of the strain-like ISVs
+             * 
+             * \param isPrevious: A flag for if we should set the current (false) or previous (true) ISV evolution rates
+             */
+
+            const floatType   *dMacroFlowdc;
+
+            const floatType   *dMicroFlowdc;
+
+            const floatMatrix *dMicroGradientFlowdc;
+
+            const floatVector *plasticMultipliers;
+
+            if ( isPrevious ){
+
+                plasticMultipliers    = get_previousPlasticMultipliers( );
+
+                dMacroFlowdc          = get_previousdMacroFlowdc( );
+
+                dMicroFlowdc          = get_previousdMicroFlowdc( );
+
+                dMicroGradientFlowdc = get_previousdMicroGradientFlowdc( );
+
+            }
+            else{
+
+                plasticMultipliers    = get_plasticMultipliers( );
+
+                dMacroFlowdc          = get_dMacroFlowdc( );
+
+                dMicroFlowdc          = get_dMicroFlowdc( );
+
+                dMicroGradientFlowdc = get_dMicroGradientFlowdc( );
+
+            }
+
+            floatVector evolutionRates( plasticMultipliers->size( ), 0 );
+
+            floatMatrix dEvolutionRatesdStateVariables( plasticMultipliers->size( ), floatVector( get_plasticStateVariables( )->size( ), 0 ) );
+
+            evolutionRates[ 0 ] = -( *dMacroFlowdc ) * ( *plasticMultipliers )[ 0 ];
+
+            evolutionRates[ 1 ] = -( *dMicroFlowdc ) * ( *plasticMultipliers )[ 1 ];
+
+            dEvolutionRatesdStateVariables[ 0 ][ 0 ] = -( *dMacroFlowdc );
+
+            dEvolutionRatesdStateVariables[ 1 ][ 1 ] = -( *dMicroFlowdc );
+
+            for ( unsigned int i = 2; i < plasticMultipliers->size( ); i++ ){
+
+                for ( unsigned int j = 2; j < plasticMultipliers->size( ); j++ ){
+
+                    evolutionRates[ i ] -= ( *dMicroGradientFlowdc )[ i - 2 ][ j - 2 ] * ( *plasticMultipliers )[ j ];
+
+                    dEvolutionRatesdStateVariables[ i ][ j ] = -( *dMicroGradientFlowdc )[ i - 2 ][ j - 2 ];
+
+                }
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousStrainLikeISVEvolutionRates( evolutionRates );
+
+                set_previousdStrainLikeISVEvolutionRatesdStateVariables( dEvolutionRatesdStateVariables );
+
+            }
+            else{
+
+                set_strainLikeISVEvolutionRates( evolutionRates );
+
+                set_dStrainLikeISVEvolutionRatesdStateVariables( dEvolutionRatesdStateVariables );
+
+            }
+
+        }
+
     }
 
 }

@@ -346,6 +346,18 @@ namespace tardigradeHydra{
 
                 virtual void setFlowPotentialGradientsJacobians( const bool isPrevious );
 
+                virtual void setStrainLikeISVEvolutionRates( );
+
+                virtual void setPreviousStrainLikeISVEvolutionRates( );
+
+                virtual void setStrainLikeISVEvolutionRates( const bool isPrevious );
+
+                virtual void setdStrainLikeISVEvolutionRatesdStateVariables( );
+
+                virtual void setPreviousdStrainLikeISVEvolutionRatesdStateVariables( );
+
+                virtual void setStrainLikeISVEvolutionRatesJacobians( const bool isPrevious );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -531,6 +543,14 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MicroGradientFlowdDrivingStressdChi,       floatMatrix, setPreviousd2MicroGradientFlowdDrivingStressdChi       )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousd2MicroGradientFlowdDrivingStressdChin,      floatMatrix, setPreviousd2MicroGradientFlowdDrivingStressdChin      )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, strainLikeISVEvolutionRates,                         floatVector, setStrainLikeISVEvolutionRates                         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dStrainLikeISVEvolutionRatesdStateVariables,         floatMatrix, setdStrainLikeISVEvolutionRatesdStateVariables         )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousStrainLikeISVEvolutionRates,                 floatVector, setPreviousStrainLikeISVEvolutionRates                 )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdStrainLikeISVEvolutionRatesdStateVariables, floatMatrix, setPreviousdStrainLikeISVEvolutionRatesdStateVariables )
 
         };
 
