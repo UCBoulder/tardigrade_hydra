@@ -2593,15 +2593,15 @@ namespace tardigradeHydra{
 
             floatVector evolutionRates( plasticMultipliers->size( ), 0 );
 
-            evolutionRates[ 0 ] = ( *dMacroFlowdc ) * ( *plasticMultipliers )[ 0 ];
+            evolutionRates[ 0 ] = -( *dMacroFlowdc ) * ( *plasticMultipliers )[ 0 ];
 
-            evolutionRates[ 1 ] = ( *dMicroFlowdc ) * ( *plasticMultipliers )[ 1 ];
+            evolutionRates[ 1 ] = -( *dMicroFlowdc ) * ( *plasticMultipliers )[ 1 ];
 
             for ( unsigned int i = 2; i < plasticMultipliers->size( ); i++ ){
 
                 for ( unsigned int j = 2; j < plasticMultipliers->size( ); j++ ){
 
-                    evolutionRates[ i ] += ( *dMicroGradientFlowdc )[ i ][ j ] * ( *plasticMultipliers )[ j ];
+                    evolutionRates[ i ] -= ( *dMicroGradientFlowdc )[ i - 2 ][ j - 2 ] * ( *plasticMultipliers )[ j ];
 
                 }
 
