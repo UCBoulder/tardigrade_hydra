@@ -2564,7 +2564,7 @@ namespace tardigradeHydra{
 
             const floatType   *dMicroFlowdc;
 
-            const floatVector *dMicroGradientFlowdc;
+            const floatMatrix *dMicroGradientFlowdc;
 
             const floatVector *plasticMultipliers;
 
@@ -2599,7 +2599,11 @@ namespace tardigradeHydra{
 
             for ( unsigned int i = 2; i < plasticMultipliers->size( ); i++ ){
 
-                evolutionRates[ i ] = ( *dMicroGradientFlowdc )[ i ] * ( *plasticMultipliers )[ i ];
+                for ( unsigned int j = 2; j < plasticMultipliers->size( ); j++ ){
+
+                    evolutionRates[ i ] += ( *dMicroGradientFlowdc )[ i ][ j ] * ( *plasticMultipliers )[ j ];
+
+                }
 
             }
 
