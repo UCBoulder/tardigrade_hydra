@@ -2955,6 +2955,602 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdMacroYielddStress( ){
+            /*!
+             * Set the Jacobian of the macro yield stress w.r.t. the macro stress measure
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMacroYielddStateVariables( ){
+            /*!
+             * Set the Jacobian of the macro yield stress w.r.t. the state variables
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMacroYielddF( ){
+            /*!
+             * Set the Jacobian of the macro yield stress w.r.t. the deformation gradient
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMacroYielddFn( ){
+            /*!
+             * Set the Jacobian of the macro yield stress w.r.t. the sub deformation gradients
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMicroYielddStress( ){
+            /*!
+             * Set the Jacobian of the micro yield stress w.r.t. the micro stress measure
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMicroYielddStateVariables( ){
+            /*!
+             * Set the Jacobian of the micro yield stress w.r.t. the state variables
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMicroYielddF( ){
+            /*!
+             * Set the Jacobian of the micro yield stress w.r.t. the deformation gradient
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMicroYielddFn( ){
+            /*!
+             * Set the Jacobian of the micro yield stress w.r.t. the sub deformation gradients
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMicroGradientYielddStress( ){
+            /*!
+             * Set the Jacobian of the micro gradient yield stress w.r.t. the micro gradient stress measure
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMicroGradientYielddStateVariables( ){
+            /*!
+             * Set the Jacobian of the micro gradient yield stress w.r.t. the state variables
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMicroGradientYielddF( ){
+            /*!
+             * Set the Jacobian of the micro gradient yield stress w.r.t. the deformation gradient
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMicroGradientYielddFn( ){
+            /*!
+             * Set the Jacobian of the micro gradient yield stress w.r.t. the sub deformation gradient
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMicroGradientYielddChi( ){
+            /*!
+             * Set the Jacobian of the micro gradient yield stress w.r.t. the micro deformation
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setdMicroGradientYielddChin( ){
+            /*!
+             * Set the Jacobian of the micro gradient yield stress w.r.t. the sub micro deformations
+             */
+
+            setYieldJacobians( false );
+
+        }
+
+        void residual::setPreviousdMacroYielddStress( ){
+            /*!
+             * Set the previous Jacobian of the macro yield stress w.r.t. the macro stress measure
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMacroYielddStateVariables( ){
+            /*!
+             * Set the previous Jacobian of the macro yield stress w.r.t. the state variables
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMacroYielddF( ){
+            /*!
+             * Set the previous Jacobian of the macro yield stress w.r.t. the deformation gradient
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMacroYielddFn( ){
+            /*!
+             * Set the previous Jacobian of the macro yield stress w.r.t. the sub deformation gradients
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMicroYielddStress( ){
+            /*!
+             * Set the previous Jacobian of the micro yield stress w.r.t. the micro stress measure
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMicroYielddStateVariables( ){
+            /*!
+             * Set the previous Jacobian of the micro yield stress w.r.t. the state variables
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMicroYielddF( ){
+            /*!
+             * Set the previous Jacobian of the micro yield stress w.r.t. the deformation gradient
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMicroYielddFn( ){
+            /*!
+             * Set the previous Jacobian of the micro yield stress w.r.t. the sub deformation gradients
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMicroGradientYielddStress( ){
+            /*!
+             * Set the previous Jacobian of the micro gradient yield stress w.r.t. the micro gradient stress measure
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMicroGradientYielddStateVariables( ){
+            /*!
+             * Set the previous Jacobian of the micro gradient yield stress w.r.t. the state variables
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMicroGradientYielddF( ){
+            /*!
+             * Set the previous Jacobian of the micro gradient yield stress w.r.t. the deformation gradient
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMicroGradientYielddFn( ){
+            /*!
+             * Set the previous Jacobian of the micro gradient yield stress w.r.t. the sub deformation gradient
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMicroGradientYielddChi( ){
+            /*!
+             * Set the previous Jacobian of the micro gradient yield stress w.r.t. the micro deformation
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setPreviousdMicroGradientYielddChin( ){
+            /*!
+             * Set the previous Jacobian of the micro gradient yield stress w.r.t. the sub micro deformations
+             */
+
+            setYieldJacobians( true );
+
+        }
+
+        void residual::setYieldJacobians( const bool isPrevious ){
+            /*!
+             * Set the value and jacobians of the yield functions
+             * 
+             * \param isPrevious: Flag for whether to get the jacobians of the current (false) or previous (true) yield functions
+             */
+
+            const floatVector *macroDrivingStress;
+
+            const floatVector *microDrivingStress;
+
+            const floatVector *microGradientDrivingStress;
+
+            const floatType   *macroCohesion;
+
+            const floatType   *microCohesion;
+
+            const floatVector *microGradientCohesion;
+
+            const floatVector *dMacroCohesiondStateVariables;
+
+            const floatMatrix *dMacroDrivingStressdStress;
+
+            const floatMatrix *dMacroDrivingStressdF;
+
+            const floatMatrix *dMacroDrivingStressdFn;
+
+            const floatVector *dMicroCohesiondStateVariables;
+
+            const floatMatrix *dMicroDrivingStressdStress;
+
+            const floatMatrix *dMicroDrivingStressdF;
+
+            const floatMatrix *dMicroDrivingStressdFn;
+
+            const floatMatrix *dMicroGradientCohesiondStateVariables;
+
+            const floatMatrix *dMicroGradientDrivingStressdStress;
+
+            const floatMatrix *dMicroGradientDrivingStressdF;
+
+            const floatMatrix *dMicroGradientDrivingStressdFn;
+
+            const floatMatrix *dMicroGradientDrivingStressdChi;
+
+            const floatMatrix *dMicroGradientDrivingStressdChin;
+
+            floatVector precedingDeformationGradient;
+
+            floatMatrix dPrecedingFdSubFs;
+
+            const floatMatrix *dF1dF;
+
+            const floatMatrix *dF1dFn;
+
+            const floatVector *macroYieldParameters = get_macroYieldParameters( );
+
+            const floatVector *microYieldParameters = get_microYieldParameters( );
+
+            const floatVector *microGradientYieldParameters = get_microGradientYieldParameters( );
+
+            if ( isPrevious ){
+
+                precedingDeformationGradient = hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) );
+
+                dPrecedingFdSubFs = hydra->getPreviousPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+
+                dF1dF = hydra->get_previousdF1dF( );
+
+                dF1dFn = hydra->get_previousdF1dFn( );
+
+                dMacroCohesiondStateVariables         = get_previousdMacroCohesiondStateVariables( );
+
+                dMicroCohesiondStateVariables         = get_previousdMicroCohesiondStateVariables( );
+
+                dMicroGradientCohesiondStateVariables = get_previousdMicroGradientCohesiondStateVariables( );
+
+                dMacroDrivingStressdStress            = get_previousdMacroDrivingStressdMacroStress( );
+
+                dMicroDrivingStressdStress            = get_previousdSymmetricMicroDrivingStressdMicroStress( );
+
+                dMicroGradientDrivingStressdStress    = get_previousdHigherOrderDrivingStressdHigherOrderStress( );
+
+                dMacroDrivingStressdF                 = get_previousdMacroDrivingStressdF( );
+
+                dMicroDrivingStressdF                 = get_previousdSymmetricMicroDrivingStressdF( );
+
+                dMicroGradientDrivingStressdF         = get_previousdHigherOrderDrivingStressdF( );
+
+                dMicroGradientDrivingStressdChi       = get_previousdHigherOrderDrivingStressdChi( );
+
+                dMacroDrivingStressdFn                = get_previousdMacroDrivingStressdFn( );
+
+                dMicroDrivingStressdFn                = get_previousdSymmetricMicroDrivingStressdFn( );
+
+                dMicroGradientDrivingStressdFn        = get_previousdHigherOrderDrivingStressdFn( );
+
+                dMicroGradientDrivingStressdChin      = get_previousdHigherOrderDrivingStressdChin( );
+
+                macroDrivingStress         = get_previousMacroDrivingStress( );
+
+                microDrivingStress         = get_previousSymmetricMicroDrivingStress( );
+
+                microGradientDrivingStress = get_previousHigherOrderDrivingStress( );
+
+                macroCohesion              = get_previousMacroCohesion( );
+
+                microCohesion              = get_previousMicroCohesion( );
+
+                microGradientCohesion      = get_previousMicroGradientCohesion( );
+
+            }
+            else{
+
+                precedingDeformationGradient = hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) );
+
+                dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+
+                dF1dF = hydra->get_dF1dF( );
+
+                dF1dFn = hydra->get_dF1dFn( );
+
+                dMacroCohesiondStateVariables         = get_dMacroCohesiondStateVariables( );
+
+                dMicroCohesiondStateVariables         = get_dMicroCohesiondStateVariables( );
+
+                dMicroGradientCohesiondStateVariables = get_dMicroGradientCohesiondStateVariables( );
+
+                dMacroDrivingStressdStress         = get_dMacroDrivingStressdMacroStress( );
+
+                dMicroDrivingStressdStress         = get_dSymmetricMicroDrivingStressdMicroStress( );
+
+                dMicroGradientDrivingStressdStress = get_dHigherOrderDrivingStressdHigherOrderStress( );
+
+                dMacroDrivingStressdF              = get_dMacroDrivingStressdF( );
+
+                dMicroDrivingStressdF              = get_dSymmetricMicroDrivingStressdF( );
+
+                dMicroGradientDrivingStressdF      = get_dHigherOrderDrivingStressdF( );
+
+                dMicroGradientDrivingStressdChi    = get_dHigherOrderDrivingStressdChi( );
+
+                dMacroDrivingStressdFn             = get_dMacroDrivingStressdFn( );
+
+                dMicroDrivingStressdFn             = get_dSymmetricMicroDrivingStressdFn( );
+
+                dMicroGradientDrivingStressdFn     = get_dHigherOrderDrivingStressdFn( );
+
+                dMicroGradientDrivingStressdChin   = get_dHigherOrderDrivingStressdChin( );
+
+                macroDrivingStress         = get_macroDrivingStress( );
+
+                microDrivingStress         = get_symmetricMicroDrivingStress( );
+
+                microGradientDrivingStress = get_higherOrderDrivingStress( );
+
+                macroCohesion              = get_macroCohesion( );
+
+                microCohesion              = get_microCohesion( );
+
+                microGradientCohesion      = get_microGradientCohesion( );
+
+            }
+
+            // Construct the derivatives of the preceding F
+
+            floatMatrix dPrecedingFdF( precedingDeformationGradient.size( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
+
+            floatMatrix dPrecedingFdFn( precedingDeformationGradient.size( ), floatVector( ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getDeformationGradient( )->size( ), 0 ) );
+
+            for ( unsigned int i = 0; i < hydra->getDeformationGradient( )->size( ); i++ ){
+
+                for ( unsigned int j = 0; j < hydra->getDeformationGradient( )->size( ); j++ ){
+
+                    for ( unsigned int k = 0; k < hydra->getDeformationGradient( )->size( ); k++ ){
+
+                        dPrecedingFdF[ i ][ j ] += dPrecedingFdSubFs[ i ][ k ] * ( *dF1dF )[ k ][ j ];
+
+                    }
+
+                }
+
+                for ( unsigned int j = 0; j < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getDeformationGradient( )->size( ); j++ ){
+
+                    dPrecedingFdFn[ i ][ j ] = dPrecedingFdSubFs[ i ][ hydra->getDeformationGradient( )->size( ) + j ];
+
+                    for ( unsigned int k = 0; k < hydra->getDeformationGradient( )->size( ); k++ ){
+
+                        dPrecedingFdFn[ i ][ j ] += dPrecedingFdSubFs[ i ][ k ] * ( *dF1dFn )[ k ][ j ];
+
+                    }
+
+                }
+
+            }
+
+            floatType   macroYield;
+
+            floatType   microYield;
+
+            floatVector microGradientYield;
+
+            floatVector dMacroYielddDrivingStress;
+
+            floatType   dMacroYielddCohesion;
+
+            floatVector dMacroYielddPrecedingF;
+
+            floatVector dMicroYielddDrivingStress;
+
+            floatType   dMicroYielddCohesion;
+
+            floatVector dMicroYielddPrecedingF;
+
+            floatMatrix dMicroGradientYielddDrivingStress;
+
+            floatMatrix dMicroGradientYielddCohesion;
+
+            floatMatrix dMicroGradientYielddPrecedingF;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *macroDrivingStress, *macroCohesion, precedingDeformationGradient,
+                                                                                        ( *macroYieldParameters )[ 0 ], ( *macroYieldParameters )[ 1 ],
+                                                                                        macroYield, dMacroYielddDrivingStress, dMacroYielddCohesion, dMacroYielddPrecedingF ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *microDrivingStress, *microCohesion, precedingDeformationGradient,
+                                                                                        ( *microYieldParameters )[ 0 ], ( *microYieldParameters )[ 1 ],
+                                                                                        microYield, dMicroYielddDrivingStress, dMicroYielddCohesion, dMicroYielddPrecedingF ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, precedingDeformationGradient,
+                                                                                        ( *microGradientYieldParameters )[ 0 ], ( *microGradientYieldParameters )[ 1 ],
+                                                                                        microGradientYield, dMicroGradientYielddDrivingStress, dMicroGradientYielddCohesion,
+                                                                                        dMicroGradientYielddPrecedingF ) );
+
+            floatVector dMacroYielddStress = tardigradeVectorTools::Tdot( *dMacroDrivingStressdStress, dMacroYielddDrivingStress );
+
+            floatVector dMacroYielddStateVariables = dMacroYielddCohesion * ( *dMacroCohesiondStateVariables );
+
+            floatVector dMacroYielddF = tardigradeVectorTools::Tdot( *dMacroDrivingStressdF, dMacroYielddDrivingStress )
+                                      + tardigradeVectorTools::Tdot( dPrecedingFdF, dMacroYielddPrecedingF );
+
+            floatVector dMacroYielddFn = tardigradeVectorTools::Tdot( *dMacroDrivingStressdFn, dMacroYielddDrivingStress )
+                                       + tardigradeVectorTools::Tdot( dPrecedingFdFn, dMacroYielddPrecedingF );
+
+            floatVector dMicroYielddStress = tardigradeVectorTools::Tdot( *dMicroDrivingStressdStress, dMicroYielddDrivingStress );
+
+            floatVector dMicroYielddStateVariables = dMicroYielddCohesion * ( *dMicroCohesiondStateVariables );
+
+            floatVector dMicroYielddF = tardigradeVectorTools::Tdot( *dMicroDrivingStressdF, dMicroYielddDrivingStress )
+                                      + tardigradeVectorTools::Tdot( dPrecedingFdF, dMicroYielddPrecedingF );
+
+            floatVector dMicroYielddFn = tardigradeVectorTools::Tdot( *dMicroDrivingStressdFn, dMicroYielddDrivingStress )
+                                       + tardigradeVectorTools::Tdot( dPrecedingFdFn, dMicroYielddPrecedingF );
+
+            floatMatrix dMicroGradientYielddStress = tardigradeVectorTools::dot( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdStress );
+
+            floatMatrix dMicroGradientYielddStateVariables = tardigradeVectorTools::dot( dMicroGradientYielddCohesion, *dMicroGradientCohesiondStateVariables );
+
+            floatMatrix dMicroGradientYielddF = tardigradeVectorTools::dot( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdF )
+                                              + tardigradeVectorTools::dot( dMicroGradientYielddPrecedingF, dPrecedingFdF );
+
+            floatMatrix dMicroGradientYielddFn = tardigradeVectorTools::dot( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdFn )
+                                               + tardigradeVectorTools::dot( dMicroGradientYielddPrecedingF, dPrecedingFdFn );
+
+            floatMatrix dMicroGradientYielddChi = tardigradeVectorTools::dot( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdChi );
+
+            floatMatrix dMicroGradientYielddChin = tardigradeVectorTools::dot( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdChin );
+
+            if ( isPrevious ){
+
+                set_previousMacroYield( macroYield );
+
+                set_previousMicroYield( microYield );
+
+                set_previousMicroGradientYield( microGradientYield );
+
+                set_previousdMacroYielddStress( dMacroYielddStress );
+
+                set_previousdMacroYielddStateVariables( dMacroYielddStateVariables );
+
+                set_previousdMacroYielddF( dMacroYielddF );
+
+                set_previousdMacroYielddFn( dMacroYielddFn );
+
+                set_previousdMicroYielddStress( dMicroYielddStress );
+
+                set_previousdMicroYielddStateVariables( dMicroYielddStateVariables );
+
+                set_previousdMicroYielddF( dMicroYielddF );
+
+                set_previousdMicroYielddFn( dMicroYielddFn );
+
+                set_previousdMicroGradientYielddStress( dMicroGradientYielddStress );
+
+                set_previousdMicroGradientYielddStateVariables( dMicroGradientYielddStateVariables );
+
+                set_previousdMicroGradientYielddF( dMicroGradientYielddF );
+
+                set_previousdMicroGradientYielddFn( dMicroGradientYielddFn );
+
+                set_previousdMicroGradientYielddChi( dMicroGradientYielddChi );
+
+                set_previousdMicroGradientYielddChin( dMicroGradientYielddChin );
+
+            }
+            else{
+
+                set_macroYield( macroYield );
+
+                set_microYield( microYield );
+
+                set_microGradientYield( microGradientYield );
+
+                set_dMacroYielddStress( dMacroYielddStress );
+
+                set_dMacroYielddStateVariables( dMacroYielddStateVariables );
+
+                set_dMacroYielddF( dMacroYielddF );
+
+                set_dMacroYielddFn( dMacroYielddFn );
+
+                set_dMicroYielddStress( dMicroYielddStress );
+
+                set_dMicroYielddStateVariables( dMicroYielddStateVariables );
+
+                set_dMicroYielddF( dMicroYielddF );
+
+                set_dMicroYielddFn( dMicroYielddFn );
+
+                set_dMicroGradientYielddStress( dMicroGradientYielddStress );
+
+                set_dMicroGradientYielddStateVariables( dMicroGradientYielddStateVariables );
+
+                set_dMicroGradientYielddF( dMicroGradientYielddF );
+
+                set_dMicroGradientYielddFn( dMicroGradientYielddFn );
+
+                set_dMicroGradientYielddChi( dMicroGradientYielddChi );
+
+                set_dMicroGradientYielddChin( dMicroGradientYielddChin );
+
+            }
+
+        }
+
     }
 
 }

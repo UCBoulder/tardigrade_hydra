@@ -5262,6 +5262,12 @@ BOOST_AUTO_TEST_CASE( test_setYield ){
                                                        28, 29, 30, 31, 32, 33, 34, 35, 36,
                                                        37, 38, 39, 40, 41, 42, 43, 44, 45 };
 
+            floatVector dMacroCohesiondStateVariables         = initialize( 10 );
+
+            floatVector dMicroCohesiondStateVariables         = initialize( 10 );
+
+            floatMatrix dMicroGradientCohesiondStateVariables = initialize( 3, 10 );
+
             floatMatrix dMacroDrivingStressdMacroStress = initialize( 9, 9 );
 
             floatMatrix dMacroDrivingStressdF           = initialize( 9, 9 );
@@ -5307,6 +5313,14 @@ BOOST_AUTO_TEST_CASE( test_setYield ){
                                               2, 0.01166325, 0.05331896,
                                               2, 0.32982199, 0.60161431,
                                               2, 0.58881096, 0.11473813 };
+
+            floatVector initialize( unsigned int nrows ){
+
+                floatVector value( nrows, 0 );
+
+                return value;
+
+            }
 
             floatMatrix initialize( unsigned int nrows, unsigned int ncols ){
 
@@ -5368,6 +5382,12 @@ BOOST_AUTO_TEST_CASE( test_setYield ){
 
                 if ( isPrevious ){
 
+                    set_previousdMacroCohesiondStateVariables( dMacroCohesiondStateVariables );
+
+                    set_previousdMicroCohesiondStateVariables( dMacroCohesiondStateVariables );
+
+                    set_previousdMicroGradientCohesiondStateVariables( dMicroGradientCohesiondStateVariables );
+
                     set_previousdMacroDrivingStressdMacroStress( dMacroDrivingStressdMacroStress );
 
                     set_previousdMacroDrivingStressdF( dMacroDrivingStressdF );
@@ -5392,6 +5412,12 @@ BOOST_AUTO_TEST_CASE( test_setYield ){
 
                 }
                 else{
+
+                    set_dMacroCohesiondStateVariables( dMacroCohesiondStateVariables );
+
+                    set_dMicroCohesiondStateVariables( dMacroCohesiondStateVariables );
+
+                    set_dMicroGradientCohesiondStateVariables( dMicroGradientCohesiondStateVariables );
 
                     set_dMacroDrivingStressdMacroStress( dMacroDrivingStressdMacroStress );
 
@@ -5517,7 +5543,7 @@ BOOST_AUTO_TEST_CASE( test_setYield ){
     tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation( R.previousMicroGradientDrivingStress, R.previousMicroGradientCohesion, previousPrecedingDeformationGradient,
                                                                                                         R.plasticParameters[ 25 ], R.plasticParameters[ 26 ], previousMicroGradientYield );
 
-    RJ.get_d2MacroFlowdDrivingStressdStress( );
+    RJ.get_dMacroYielddStress( );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( macroYield,                 *R.get_macroYield( ) ) );
 
@@ -5530,5 +5556,17 @@ BOOST_AUTO_TEST_CASE( test_setYield ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousMicroYield,         *R.get_previousMicroYield( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousMicroGradientYield, *R.get_previousMicroGradientYield( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( macroYield,                 *RJ.get_macroYield( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( microYield,                 *RJ.get_microYield( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( microGradientYield,         *RJ.get_microGradientYield( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousMacroYield,         *RJ.get_previousMacroYield( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousMicroYield,         *RJ.get_previousMicroYield( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousMicroGradientYield, *RJ.get_previousMicroGradientYield( ) ) );
 
 }
