@@ -25,6 +25,7 @@ Internal Changes
 - Added the calculation of the required quantities from the flow potential (:pull:`42`). By `Nathan Miller`_.
 - Added the calculation of the jacobians of the strain-like ISV evolution rates (:pull:`43`). By `Nathan Miller`_.
 - Added the calculation of the values and Jacobians of the strain-like ISVs (:pull:`44`). By `Nathan Miller`_.
+- Moved the calculation of the preceding deformation gradient to its own function (:pull:`46`). By `Nathan Miller`_.
 
 ******************
 0.3.0 (01-03-2023)
