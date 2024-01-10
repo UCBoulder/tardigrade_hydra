@@ -3634,6 +3634,164 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPrecedingMicroDeformation( ){
+            /*!
+             * Set the preceding micro deformation
+             */
+
+            setPrecedingMicroDeformation( false );
+
+        }
+
+        void residual::setPreviousPrecedingMicroDeformation( ){
+            /*!
+             * Set the previous preceding micro deformation
+             */
+
+            setPrecedingMicroDeformation( true );
+
+        }
+
+        void residual::setPrecedingMicroDeformation( const bool isPrevious ){
+            /*!
+             * Set the preceding micro deformation to the plastic configuration
+             * 
+             * \param isPrevious: Whether to set the current (false) or previous (true) preceding micro deformation
+             */
+
+            if ( isPrevious ){
+
+                set_previousPrecedingMicroDeformation( hydra->getPreviousPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
+
+            }
+            else{
+
+                set_precedingMicroDeformation( hydra->getPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
+
+            }
+
+        }
+
+        void residual::setdPrecedingMicroDeformationdChi( ){
+            /*!
+             * Set the jacobian of the preceding micro deformation w.r.t. the micro deformation
+             */
+
+            setPrecedingMicroDeformationJacobians( false );
+
+        }
+
+        void residual::setdPrecedingMicroDeformationdChin( ){
+            /*!
+             * Set the jacobian of the preceding micro deformation w.r.t. the sub micro deformation
+             */
+
+            setPrecedingMicroDeformationJacobians( false );
+
+        }
+
+        void residual::setPreviousdPrecedingMicroDeformationdChi( ){
+            /*!
+             * Set the previous jacobian of the preceding micro deformation w.r.t. the micro deformation
+             */
+
+            setPrecedingMicroDeformationJacobians( true );
+
+        }
+
+        void residual::setPreviousdPrecedingMicroDeformationdChin( ){
+            /*!
+             * Set the previous jacobian of the preceding micro deformation w.r.t. the sub-micro deformation
+             */
+
+            setPrecedingMicroDeformationJacobians( true );
+
+        }
+
+        void residual::setPrecedingMicroDeformationJacobians( const bool isPrevious ){
+            /*!
+             * Set the preceding micro deformation to the plastic configuration and its jacobians
+             * 
+             * \param isPrevious: Whether to set the current (false) or previous (true) preceding micro deformation
+             */
+
+            floatMatrix dPrecedingChidSubChis;
+
+            const floatMatrix *dChi1dChi;
+
+            const floatMatrix *dChi1dChin;
+
+            if ( isPrevious ){
+
+                set_previousPrecedingMicroDeformation( hydra->getPreviousPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
+
+                dPrecedingChidSubChis = hydra->getPreviousPrecedingMicroConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+
+                dChi1dChi  = hydra->get_previousdChi1dChi( );
+
+                dChi1dChin = hydra->get_previousdChi1dChin( );
+
+            }
+            else{
+
+                set_precedingMicroDeformation( hydra->getPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
+
+                dPrecedingChidSubChis = hydra->getPrecedingMicroConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+
+                dChi1dChi  = hydra->get_dChi1dChi( );
+
+                dChi1dChin = hydra->get_dChi1dChin( );
+
+            }
+
+            // Construct the derivatives of the preceding F
+
+            floatMatrix dPrecedingChidChi( get_precedingMicroDeformation( )->size( ), floatVector( hydra->getMicroDeformation( )->size( ), 0 ) );
+
+            floatMatrix dPrecedingChidChin( get_precedingMicroDeformation( )->size( ), floatVector( ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getMicroDeformation( )->size( ), 0 ) );
+
+            for ( unsigned int i = 0; i < hydra->getMicroDeformation( )->size( ); i++ ){
+
+                for ( unsigned int j = 0; j < hydra->getMicroDeformation( )->size( ); j++ ){
+
+                    for ( unsigned int k = 0; k < hydra->getMicroDeformation( )->size( ); k++ ){
+
+                        dPrecedingChidChi[ i ][ j ] += dPrecedingChidSubChis[ i ][ k ] * ( *dChi1dChi )[ k ][ j ];
+
+                    }
+
+                }
+
+                for ( unsigned int j = 0; j < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getMicroDeformation( )->size( ); j++ ){
+
+                    dPrecedingChidChin[ i ][ j ] = dPrecedingChidSubChis[ i ][ hydra->getMicroDeformation( )->size( ) + j ];
+
+                    for ( unsigned int k = 0; k < hydra->getMicroDeformation( )->size( ); k++ ){
+
+                        dPrecedingChidChin[ i ][ j ] += dPrecedingChidSubChis[ i ][ k ] * ( *dChi1dChin )[ k ][ j ];
+
+                    }
+
+                }
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousdPrecedingMicroDeformationdChi( dPrecedingChidChi );
+
+                set_previousdPrecedingMicroDeformationdChin( dPrecedingChidChin );
+
+            }
+            else{
+
+                set_dPrecedingMicroDeformationdChi( dPrecedingChidChi );
+
+                set_dPrecedingMicroDeformationdChin( dPrecedingChidChin );
+
+            }
+
+        }
     }
 
 }
