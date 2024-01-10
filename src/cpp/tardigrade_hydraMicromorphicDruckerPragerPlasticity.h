@@ -438,6 +438,22 @@ namespace tardigradeHydra{
 
                 virtual void setYieldJacobians( const bool isPrevious );
 
+                virtual void setPrecedingDeformationGradient( );
+
+                virtual void setPreviousPrecedingDeformationGradient( );
+
+                virtual void setPrecedingDeformationGradient( const bool isPrevious );
+
+                virtual void setdPrecedingDeformationGradientdF( );
+
+                virtual void setdPrecedingDeformationGradientdFn( );
+
+                virtual void setPreviousdPrecedingDeformationGradientdF( );
+
+                virtual void setPreviousdPrecedingDeformationGradientdFn( );
+
+                virtual void setPrecedingDeformationGradientJacobians( const bool isPrevious );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -705,6 +721,18 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroGradientYielddChi,                      floatMatrix, setPreviousdMicroGradientYielddChi                      )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroGradientYielddChin,                     floatMatrix, setPreviousdMicroGradientYielddChin                     )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, precedingDeformationGradient,                         floatVector, setPrecedingDeformationGradient                         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPrecedingDeformationGradientdF,                      floatMatrix, setdPrecedingDeformationGradientdF                      )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPrecedingDeformationGradientdFn,                     floatMatrix, setdPrecedingDeformationGradientdFn                     )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPrecedingDeformationGradient,                 floatVector, setPreviousPrecedingDeformationGradient                 )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdPrecedingDeformationGradientdF,              floatMatrix, setPreviousdPrecedingDeformationGradientdF              )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdPrecedingDeformationGradientdFn,             floatMatrix, setPreviousdPrecedingDeformationGradientdFn             )
 
         };
 
