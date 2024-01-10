@@ -366,6 +366,78 @@ namespace tardigradeHydra{
 
                 virtual void setUpdatedPlasticStrainLikeISVsJacobians( const bool addPrevious );
 
+                virtual void setMacroYield( );
+
+                virtual void setMicroYield( );
+
+                virtual void setMicroGradientYield( );
+
+                virtual void setPreviousMacroYield( );
+
+                virtual void setPreviousMicroYield( );
+
+                virtual void setPreviousMicroGradientYield( );
+
+                virtual void setYield( const bool isPrevious );
+
+                virtual void setdMacroYielddStress( );
+
+                virtual void setdMacroYielddStateVariables( );
+
+                virtual void setdMacroYielddF( );
+
+                virtual void setdMacroYielddFn( );
+
+                virtual void setdMicroYielddStress( );
+
+                virtual void setdMicroYielddStateVariables( );
+
+                virtual void setdMicroYielddF( );
+
+                virtual void setdMicroYielddFn( );
+
+                virtual void setdMicroGradientYielddStress( );
+
+                virtual void setdMicroGradientYielddStateVariables( );
+
+                virtual void setdMicroGradientYielddF( );
+
+                virtual void setdMicroGradientYielddFn( );
+
+                virtual void setdMicroGradientYielddChi( );
+
+                virtual void setdMicroGradientYielddChin( );
+
+                virtual void setPreviousdMacroYielddStress( );
+
+                virtual void setPreviousdMacroYielddStateVariables( );
+
+                virtual void setPreviousdMacroYielddF( );
+
+                virtual void setPreviousdMacroYielddFn( );
+
+                virtual void setPreviousdMicroYielddStress( );
+
+                virtual void setPreviousdMicroYielddStateVariables( );
+
+                virtual void setPreviousdMicroYielddF( );
+
+                virtual void setPreviousdMicroYielddFn( );
+
+                virtual void setPreviousdMicroGradientYielddStress( );
+
+                virtual void setPreviousdMicroGradientYielddStateVariables( );
+
+                virtual void setPreviousdMicroGradientYielddF( );
+
+                virtual void setPreviousdMicroGradientYielddFn( );
+
+                virtual void setPreviousdMicroGradientYielddChi( );
+
+                virtual void setPreviousdMicroGradientYielddChin( );
+
+                virtual void setYieldJacobians( const bool isPrevious );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -565,6 +637,74 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticStrainLikeISVsdStateVariables,         floatMatrix, setdUpdatedPlasticStrainLikeISVsdStateVariables         )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticStrainLikeISVsdPreviousStateVariables, floatMatrix, setdUpdatedPlasticStrainLikeISVsdPreviousStateVariables )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, macroYield,                                           floatType,   setMacroYield                                           )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroYielddStress,                                   floatVector, setdMacroYielddStress                                   )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroYielddStateVariables,                           floatVector, setdMacroYielddStateVariables                           )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroYielddF,                                        floatVector, setdMacroYielddF                                        )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroYielddFn,                                       floatVector, setdMacroYielddFn                                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microYield,                                           floatType,   setMicroYield                                           )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroYielddStress,                                   floatVector, setdMicroYielddStress                                   )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroYielddStateVariables,                           floatVector, setdMicroYielddStateVariables                           )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroYielddF,                                        floatVector, setdMicroYielddF                                        )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroYielddFn,                                       floatVector, setdMicroYielddFn                                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microGradientYield,                                   floatVector, setMicroGradientYield                                   )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroGradientYielddStress,                           floatMatrix, setdMicroGradientYielddStress                           )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroGradientYielddStateVariables,                   floatMatrix, setdMicroGradientYielddStateVariables                   )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroGradientYielddF,                                floatMatrix, setdMicroGradientYielddF                                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroGradientYielddFn,                               floatMatrix, setdMicroGradientYielddFn                               )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroGradientYielddChi,                              floatMatrix, setdMicroGradientYielddChi                              )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMicroGradientYielddChin,                             floatMatrix, setdMicroGradientYielddChin                             )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMacroYield,                                   floatType,   setPreviousMacroYield                                   )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMacroYielddStress,                           floatVector, setPreviousdMacroYielddStress                           )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMacroYielddStateVariables,                   floatVector, setPreviousdMacroYielddStateVariables                   )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMacroYielddF,                                floatVector, setPreviousdMacroYielddF                                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousdMacroYielddFn,                               floatVector, setPreviousdMacroYielddFn                               )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroYield,                                   floatType,   setPreviousMicroYield                                   )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroYielddStress,                           floatVector, setPreviousdMicroYielddStress                           )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroYielddStateVariables,                   floatVector, setPreviousdMicroYielddStateVariables                   )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroYielddF,                                floatVector, setPreviousdMicroYielddF                                )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroYielddFn,                               floatVector, setPreviousdMicroYielddFn                               )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroGradientYield,                           floatVector, setPreviousMicroGradientYield                           )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroGradientYielddStress,                   floatMatrix, setPreviousdMicroGradientYielddStress                   )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroGradientYielddStateVariables,           floatMatrix, setPreviousdMicroGradientYielddStateVariables           )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroGradientYielddF,                        floatMatrix, setPreviousdMicroGradientYielddF                        )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroGradientYielddFn,                       floatMatrix, setPreviousdMicroGradientYielddFn                       )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroGradientYielddChi,                      floatMatrix, setPreviousdMicroGradientYielddChi                      )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdMicroGradientYielddChin,                     floatMatrix, setPreviousdMicroGradientYielddChin                     )
 
         };
 
