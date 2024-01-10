@@ -1896,11 +1896,9 @@ namespace tardigradeHydra{
 
             const floatVector *precedingDeformationGradient;
 
-            floatMatrix dPrecedingFdSubFs;
+            const floatMatrix *dPrecedingFdF;
 
-            const floatMatrix *dF1dF;
-
-            const floatMatrix *dF1dFn;
+            const floatMatrix *dPrecedingFdFn;
 
             const floatVector *macroFlowParameters         = get_macroFlowParameters( );
 
@@ -1912,11 +1910,9 @@ namespace tardigradeHydra{
 
                 precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
 
-                dPrecedingFdSubFs = hydra->getPreviousPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dPrecedingFdF                      = get_previousdPrecedingDeformationGradientdF( );
 
-                dF1dF = hydra->get_previousdF1dF( );
-
-                dF1dFn = hydra->get_previousdF1dFn( );
+                dPrecedingFdFn                     = get_previousdPrecedingDeformationGradientdFn( );
 
                 macroCohesion                      = get_previousMacroCohesion( );
 
@@ -1957,11 +1953,9 @@ namespace tardigradeHydra{
 
                 precedingDeformationGradient = get_precedingDeformationGradient( );
 
-                dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dPrecedingFdF                      = get_dPrecedingDeformationGradientdF( );
 
-                dF1dF = hydra->get_dF1dF( );
-
-                dF1dFn = hydra->get_dF1dFn( );
+                dPrecedingFdFn                     = get_dPrecedingDeformationGradientdFn( );
 
                 macroCohesion                      = get_macroCohesion( );
 
@@ -1996,38 +1990,6 @@ namespace tardigradeHydra{
                 microDrivingStress                 = get_symmetricMicroDrivingStress( );
 
                 microGradientDrivingStress         = get_higherOrderDrivingStress( );
-
-            }
-
-            // Construct the derivatives of the preceding F
-
-            floatMatrix dPrecedingFdF( precedingDeformationGradient->size( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
-
-            floatMatrix dPrecedingFdFn( precedingDeformationGradient->size( ), floatVector( ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getDeformationGradient( )->size( ), 0 ) );
-
-            for ( unsigned int i = 0; i < hydra->getDeformationGradient( )->size( ); i++ ){
-
-                for ( unsigned int j = 0; j < hydra->getDeformationGradient( )->size( ); j++ ){
-
-                    for ( unsigned int k = 0; k < hydra->getDeformationGradient( )->size( ); k++ ){
-
-                        dPrecedingFdF[ i ][ j ] += dPrecedingFdSubFs[ i ][ k ] * ( *dF1dF )[ k ][ j ];
-
-                    }
-
-                }
-
-                for ( unsigned int j = 0; j < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getDeformationGradient( )->size( ); j++ ){
-
-                    dPrecedingFdFn[ i ][ j ] = dPrecedingFdSubFs[ i ][ hydra->getDeformationGradient( )->size( ) + j ];
-
-                    for ( unsigned int k = 0; k < hydra->getDeformationGradient( )->size( ); k++ ){
-
-                        dPrecedingFdFn[ i ][ j ] += dPrecedingFdSubFs[ i ][ k ] * ( *dF1dFn )[ k ][ j ];
-
-                    }
-
-                }
 
             }
 
@@ -2097,22 +2059,22 @@ namespace tardigradeHydra{
 
                         d2MacroFlowdDrivingStressdF[ I ][ J ]
                             += d2MacroFlowdDrivingStress2[ I ][ K ] * ( *dMacroDrivingStressdF )[ K ][ J ]
-                             + d2MacroFlowdDrivingStressdPrecedingF[ I ][ K ] * dPrecedingFdF[ K ][ J ];
+                             + d2MacroFlowdDrivingStressdPrecedingF[ I ][ K ] * ( *dPrecedingFdF )[ K ][ J ];
 
                         d2MicroFlowdDrivingStressdF[ I ][ J ]
                             += d2MicroFlowdDrivingStress2[ I ][ K ] * ( *dMicroDrivingStressdF )[ K ][ J ]
-                             + d2MicroFlowdDrivingStressdPrecedingF[ I ][ K ] * dPrecedingFdF[ K ][ J ];
+                             + d2MicroFlowdDrivingStressdPrecedingF[ I ][ K ] * ( *dPrecedingFdF )[ K ][ J ];
 
                     }
 
                     for ( unsigned int K = 0; K < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * precedingDeformationGradient->size( ); K++ ){
 
                         d2MacroFlowdDrivingStressdFn[ I ][ K ]
-                            += d2MacroFlowdDrivingStressdPrecedingF[ I ][ J ] * dPrecedingFdFn[ J ][ K ]
+                            += d2MacroFlowdDrivingStressdPrecedingF[ I ][ J ] * ( *dPrecedingFdFn )[ J ][ K ]
                              + d2MacroFlowdDrivingStress2[ I ][ J ] * ( *dMacroDrivingStressdFn )[ J ][ K ];
 
                         d2MicroFlowdDrivingStressdFn[ I ][ K ]
-                            += d2MicroFlowdDrivingStressdPrecedingF[ I ][ J ] * dPrecedingFdFn[ J ][ K ]
+                            += d2MicroFlowdDrivingStressdPrecedingF[ I ][ J ] * ( *dPrecedingFdFn )[ J ][ K ]
                              + d2MicroFlowdDrivingStress2[ I ][ J ] * ( *dMicroDrivingStressdFn ) [ J ][ K ];
 
                     }
@@ -2161,14 +2123,14 @@ namespace tardigradeHydra{
                         for ( unsigned int L = 0; L < precedingDeformationGradient->size( ); L++ ){
 
                             d2MicroGradientFlowdDrivingStressdF[ I ][ precedingDeformationGradient->size( ) * J + L ]
-                                += d2MicroGradientFlowdDrivingStressdPrecedingF[ I ][ precedingDeformationGradient->size( ) * J + K ] * dPrecedingFdF[ K ][ L ];
+                                += d2MicroGradientFlowdDrivingStressdPrecedingF[ I ][ precedingDeformationGradient->size( ) * J + K ] * ( *dPrecedingFdF )[ K ][ L ];
 
                         }
 
                         for ( unsigned int L = 0; L < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * precedingDeformationGradient->size( ); L++ ){
 
                             d2MicroGradientFlowdDrivingStressdFn[ I ][ ( ( *hydra->getNumConfigurations( ) ) - 1 ) * precedingDeformationGradient->size( ) * J + L ]
-                                += d2MicroGradientFlowdDrivingStressdPrecedingF[ I ][ precedingDeformationGradient->size( ) * J + K ] * dPrecedingFdFn[ K ][ L ];
+                                += d2MicroGradientFlowdDrivingStressdPrecedingF[ I ][ precedingDeformationGradient->size( ) * J + K ] * ( *dPrecedingFdFn )[ K ][ L ];
 
                         }
 
@@ -3256,11 +3218,9 @@ namespace tardigradeHydra{
 
             const floatVector *precedingDeformationGradient;
 
-            floatMatrix dPrecedingFdSubFs;
+            const floatMatrix *dPrecedingFdF;
 
-            const floatMatrix *dF1dF;
-
-            const floatMatrix *dF1dFn;
+            const floatMatrix *dPrecedingFdFn;
 
             const floatVector *macroYieldParameters = get_macroYieldParameters( );
 
@@ -3272,11 +3232,9 @@ namespace tardigradeHydra{
 
                 precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
 
-                dPrecedingFdSubFs = hydra->getPreviousPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dPrecedingFdF  = get_previousdPrecedingDeformationGradientdF( );
 
-                dF1dF = hydra->get_previousdF1dF( );
-
-                dF1dFn = hydra->get_previousdF1dFn( );
+                dPrecedingFdFn = get_previousdPrecedingDeformationGradientdFn( );
 
                 dMacroCohesiondStateVariables         = get_previousdMacroCohesiondStateVariables( );
 
@@ -3323,11 +3281,9 @@ namespace tardigradeHydra{
 
                 precedingDeformationGradient = get_precedingDeformationGradient( );
 
-                dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dPrecedingFdF  = get_dPrecedingDeformationGradientdF( );
 
-                dF1dF = hydra->get_dF1dF( );
-
-                dF1dFn = hydra->get_dF1dFn( );
+                dPrecedingFdFn = get_dPrecedingDeformationGradientdFn( );
 
                 dMacroCohesiondStateVariables         = get_dMacroCohesiondStateVariables( );
 
@@ -3368,38 +3324,6 @@ namespace tardigradeHydra{
                 microCohesion              = get_microCohesion( );
 
                 microGradientCohesion      = get_microGradientCohesion( );
-
-            }
-
-            // Construct the derivatives of the preceding F
-
-            floatMatrix dPrecedingFdF( precedingDeformationGradient->size( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
-
-            floatMatrix dPrecedingFdFn( precedingDeformationGradient->size( ), floatVector( ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getDeformationGradient( )->size( ), 0 ) );
-
-            for ( unsigned int i = 0; i < hydra->getDeformationGradient( )->size( ); i++ ){
-
-                for ( unsigned int j = 0; j < hydra->getDeformationGradient( )->size( ); j++ ){
-
-                    for ( unsigned int k = 0; k < hydra->getDeformationGradient( )->size( ); k++ ){
-
-                        dPrecedingFdF[ i ][ j ] += dPrecedingFdSubFs[ i ][ k ] * ( *dF1dF )[ k ][ j ];
-
-                    }
-
-                }
-
-                for ( unsigned int j = 0; j < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getDeformationGradient( )->size( ); j++ ){
-
-                    dPrecedingFdFn[ i ][ j ] = dPrecedingFdSubFs[ i ][ hydra->getDeformationGradient( )->size( ) + j ];
-
-                    for ( unsigned int k = 0; k < hydra->getDeformationGradient( )->size( ); k++ ){
-
-                        dPrecedingFdFn[ i ][ j ] += dPrecedingFdSubFs[ i ][ k ] * ( *dF1dFn )[ k ][ j ];
-
-                    }
-
-                }
 
             }
 
@@ -3445,30 +3369,30 @@ namespace tardigradeHydra{
             floatVector dMacroYielddStateVariables = dMacroYielddCohesion * ( *dMacroCohesiondStateVariables );
 
             floatVector dMacroYielddF = tardigradeVectorTools::Tdot( *dMacroDrivingStressdF, dMacroYielddDrivingStress )
-                                      + tardigradeVectorTools::Tdot( dPrecedingFdF, dMacroYielddPrecedingF );
+                                      + tardigradeVectorTools::Tdot( *dPrecedingFdF, dMacroYielddPrecedingF );
 
             floatVector dMacroYielddFn = tardigradeVectorTools::Tdot( *dMacroDrivingStressdFn, dMacroYielddDrivingStress )
-                                       + tardigradeVectorTools::Tdot( dPrecedingFdFn, dMacroYielddPrecedingF );
+                                       + tardigradeVectorTools::Tdot( *dPrecedingFdFn, dMacroYielddPrecedingF );
 
             floatVector dMicroYielddStress = tardigradeVectorTools::Tdot( *dMicroDrivingStressdStress, dMicroYielddDrivingStress );
 
             floatVector dMicroYielddStateVariables = dMicroYielddCohesion * ( *dMicroCohesiondStateVariables );
 
             floatVector dMicroYielddF = tardigradeVectorTools::Tdot( *dMicroDrivingStressdF, dMicroYielddDrivingStress )
-                                      + tardigradeVectorTools::Tdot( dPrecedingFdF, dMicroYielddPrecedingF );
+                                      + tardigradeVectorTools::Tdot( *dPrecedingFdF, dMicroYielddPrecedingF );
 
             floatVector dMicroYielddFn = tardigradeVectorTools::Tdot( *dMicroDrivingStressdFn, dMicroYielddDrivingStress )
-                                       + tardigradeVectorTools::Tdot( dPrecedingFdFn, dMicroYielddPrecedingF );
+                                       + tardigradeVectorTools::Tdot( *dPrecedingFdFn, dMicroYielddPrecedingF );
 
             floatMatrix dMicroGradientYielddStress = tardigradeVectorTools::dot( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdStress );
 
             floatMatrix dMicroGradientYielddStateVariables = tardigradeVectorTools::dot( dMicroGradientYielddCohesion, *dMicroGradientCohesiondStateVariables );
 
             floatMatrix dMicroGradientYielddF = tardigradeVectorTools::dot( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdF )
-                                              + tardigradeVectorTools::dot( dMicroGradientYielddPrecedingF, dPrecedingFdF );
+                                              + tardigradeVectorTools::dot( dMicroGradientYielddPrecedingF, *dPrecedingFdF );
 
             floatMatrix dMicroGradientYielddFn = tardigradeVectorTools::dot( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdFn )
-                                               + tardigradeVectorTools::dot( dMicroGradientYielddPrecedingF, dPrecedingFdFn );
+                                               + tardigradeVectorTools::dot( dMicroGradientYielddPrecedingF, *dPrecedingFdFn );
 
             floatMatrix dMicroGradientYielddChi = tardigradeVectorTools::dot( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdChi );
 
@@ -3584,6 +3508,127 @@ namespace tardigradeHydra{
             else{
 
                 set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+
+            }
+
+        }
+
+        void residual::setdPrecedingDeformationGradientdF( ){
+            /*!
+             * Set the jacobian of the preceding deformation gradient w.r.t. the deformation gradient
+             */
+
+            setPrecedingDeformationGradientJacobians( false );
+
+        }
+
+        void residual::setdPrecedingDeformationGradientdFn( ){
+            /*!
+             * Set the jacobian of the preceding deformation gradient w.r.t. the sub-deformation gradients
+             */
+
+            setPrecedingDeformationGradientJacobians( false );
+
+        }
+
+        void residual::setPreviousdPrecedingDeformationGradientdF( ){
+            /*!
+             * Set the previous jacobian of the preceding deformation gradient w.r.t. the deformation gradient
+             */
+
+            setPrecedingDeformationGradientJacobians( true );
+
+        }
+
+        void residual::setPreviousdPrecedingDeformationGradientdFn( ){
+            /*!
+             * Set the previous jacobian of the preceding deformation gradient w.r.t. the sub-deformation gradients
+             */
+
+            setPrecedingDeformationGradientJacobians( true );
+
+        }
+
+        void residual::setPrecedingDeformationGradientJacobians( const bool isPrevious ){
+            /*!
+             * Set the preceding deformation gradient to the plastic configuration and its jacobians
+             * 
+             * \param isPrevious: Whether to set the current (false) or previous (true) preceding deformation gradient
+             */
+
+            floatMatrix dPrecedingFdSubFs;
+
+            const floatMatrix *dF1dF;
+
+            const floatMatrix *dF1dFn;
+
+            if ( isPrevious ){
+
+                set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+
+                dPrecedingFdSubFs = hydra->getPreviousPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+
+                dF1dF = hydra->get_previousdF1dF( );
+
+                dF1dFn = hydra->get_previousdF1dFn( );
+
+            }
+            else{
+
+                set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+
+                dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+
+                dF1dF = hydra->get_dF1dF( );
+
+                dF1dFn = hydra->get_dF1dFn( );
+
+            }
+
+            // Construct the derivatives of the preceding F
+
+            floatMatrix dPrecedingFdF( get_precedingDeformationGradient( )->size( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
+
+            floatMatrix dPrecedingFdFn( get_precedingDeformationGradient( )->size( ), floatVector( ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getDeformationGradient( )->size( ), 0 ) );
+
+            for ( unsigned int i = 0; i < hydra->getDeformationGradient( )->size( ); i++ ){
+
+                for ( unsigned int j = 0; j < hydra->getDeformationGradient( )->size( ); j++ ){
+
+                    for ( unsigned int k = 0; k < hydra->getDeformationGradient( )->size( ); k++ ){
+
+                        dPrecedingFdF[ i ][ j ] += dPrecedingFdSubFs[ i ][ k ] * ( *dF1dF )[ k ][ j ];
+
+                    }
+
+                }
+
+                for ( unsigned int j = 0; j < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * hydra->getDeformationGradient( )->size( ); j++ ){
+
+                    dPrecedingFdFn[ i ][ j ] = dPrecedingFdSubFs[ i ][ hydra->getDeformationGradient( )->size( ) + j ];
+
+                    for ( unsigned int k = 0; k < hydra->getDeformationGradient( )->size( ); k++ ){
+
+                        dPrecedingFdFn[ i ][ j ] += dPrecedingFdSubFs[ i ][ k ] * ( *dF1dFn )[ k ][ j ];
+
+                    }
+
+                }
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousdPrecedingDeformationGradientdF( dPrecedingFdF );
+
+                set_previousdPrecedingDeformationGradientdFn( dPrecedingFdFn );
+
+            }
+            else{
+
+                set_dPrecedingDeformationGradientdF( dPrecedingFdF );
+
+                set_dPrecedingDeformationGradientdFn( dPrecedingFdFn );
 
             }
 
