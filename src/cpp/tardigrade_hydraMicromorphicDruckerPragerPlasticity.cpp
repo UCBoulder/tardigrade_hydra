@@ -1025,19 +1025,19 @@ namespace tardigradeHydra{
 
                                 dPlasticMicroLdMicroFlowDirection[ dim * Bb + Kb ][ dim * Ob + Pb ]
                                     += microGamma * inverseElasticPsi[ dim * Bb + Pb ]
-                                     * inverseElasticPsi[ dim * Ob + Lb ]
+                                     * inverseElasticPsi[ dim * Lb + Ob ]
                                      * elasticMicroRightCauchyGreen[ dim * Lb + Kb ];
 
                                 for ( unsigned int Eb = 0; Eb < dim; Eb++ ){
 
                                     dPlasticMicroLdElasticMicroRCG[ dim * Bb + Kb ][ dim * Ob + Pb ]
                                         += microGamma * inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Eb + Lb ]
-                                         * inverseElasticPsi[ dim * Eb + Ob ] * eye[ dim * Kb + Pb ];
+                                         * inverseElasticPsi[ dim * Ob + Eb ] * eye[ dim * Kb + Pb ];
                                     for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
 
                                         dPlasticMicroLdElasticPsi[ dim * Bb + Kb ][ dim * Ob + Pb ]
                                             -= microGamma * inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Eb + Lb ]
-                                             * inverseElasticPsi[ dim * Eb + Ob ] * inverseElasticPsi[ dim * Pb + Nb ]
+                                             * inverseElasticPsi[ dim * Nb + Ob ] * inverseElasticPsi[ dim * Pb + Eb ]
                                              * elasticMicroRightCauchyGreen[ dim * Nb + Kb ];
                                     }
 
