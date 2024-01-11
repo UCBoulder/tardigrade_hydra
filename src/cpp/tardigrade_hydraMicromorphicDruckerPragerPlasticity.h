@@ -474,6 +474,10 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousPlasticMacroVelocityGradient( );
 
+                virtual void setPlasticMicroVelocityGradient( );
+
+                virtual void setPreviousPlasticMicroVelocityGradient( );
+
                 virtual void setPlasticVelocityGradients( const bool isPrevious );
 
             private:
@@ -771,6 +775,10 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticMacroVelocityGradient,                         floatVector, setPlasticMacroVelocityGradient                         )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPlasticMacroVelocityGradient,                 floatVector, setPreviousPlasticMacroVelocityGradient                 )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticMicroVelocityGradient,                         floatVector, setPlasticMicroVelocityGradient                         )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPlasticMicroVelocityGradient,                 floatVector, setPreviousPlasticMicroVelocityGradient                 )
 
         };
 

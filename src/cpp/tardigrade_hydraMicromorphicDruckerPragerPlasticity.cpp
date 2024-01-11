@@ -3811,6 +3811,24 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPlasticMicroVelocityGradient( ){
+            /*!
+             * Set the plastic micro velocity gradient
+             */
+
+            setPlasticVelocityGradients( false );
+
+        }
+
+        void residual::setPreviousPlasticMicroVelocityGradient( ){
+            /*!
+             * Set the previous plastic macro velocity gradient
+             */
+
+            setPlasticVelocityGradients( true );
+
+        }
+
         void residual::setPlasticVelocityGradients( const bool isPrevious ){
             /*!
              * Set the plastic macro velocity gradient
@@ -3822,6 +3840,8 @@ namespace tardigradeHydra{
 
             const floatVector *precedingDeformationGradient;
 
+            const floatVector *precedingMicroDeformation;
+
             const floatVector *plasticMultipliers;
 
             const floatVector *dMacroFlowdDrivingStress;
@@ -3831,6 +3851,8 @@ namespace tardigradeHydra{
             if ( isPrevious ){
 
                 precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
+
+                precedingMicroDeformation = get_previousPrecedingMicroDeformation( );
 
                 plasticMultipliers = get_previousPlasticMultipliers( );
 
@@ -3843,6 +3865,8 @@ namespace tardigradeHydra{
 
                 precedingDeformationGradient = get_precedingDeformationGradient( );
 
+                precedingMicroDeformation = get_precedingMicroDeformation( );
+
                 plasticMultipliers = get_plasticMultipliers( );
 
                 dMacroFlowdDrivingStress = get_dMacroFlowdDrivingStress( );
@@ -3851,13 +3875,29 @@ namespace tardigradeHydra{
 
             }
 
+            // Form the preceding RCG and its inverse
             floatVector precedingRCG;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG ) );
 
-            floatVector inverseRCG = tardigradeVectorTools::inverse( precedingRCG, *dim, *dim );
+            floatVector inversePrecedingRCG = tardigradeVectorTools::inverse( precedingRCG, *dim, *dim );
+
+            // Form the precedingPsi and its inverse
+            floatVector precedingPsi;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( precedingPsi = tardigradeVectorTools::matrixMultiply( *precedingDeformationGradient, *precedingMicroDeformation, *dim, *dim, *dim, *dim, true, false ) );
+
+            floatVector inversePrecedingPsi = tardigradeVectorTools::inverse( precedingPsi, *dim, *dim );
+
+            // Form FinvChi
+            floatVector precedingFinvChi;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( precedingFinvChi = tardigradeVectorTools::matrixMultiply( tardigradeVectorTools::inverse( *precedingDeformationGradient, *dim, *dim ),
+                                                                                                    *precedingMicroDeformation, *dim, *dim, *dim, *dim ) );
 
             floatVector macroVelocityGradient( precedingDeformationGradient->size( ), 0 );
+
+            floatVector microVelocityGradient( precedingMicroDeformation->size( ), 0 );
 
             for ( unsigned int K = 0; K < *dim; K++ ){
 
@@ -3865,8 +3905,16 @@ namespace tardigradeHydra{
 
                     for ( unsigned int J = 0; J < *dim; J++ ){
 
-                        macroVelocityGradient[ ( *dim ) * K + I ] += inverseRCG[ ( *dim ) * K + J ] * ( ( *plasticMultipliers )[ 0 ] * ( *dMacroFlowdDrivingStress )[ ( *dim ) * I + J ]
-                                                                                                      + ( *plasticMultipliers )[ 1 ] * ( *dMicroFlowdDrivingStress )[ ( *dim ) * I + J ] );
+                        macroVelocityGradient[ ( *dim ) * K + I ]
+                            += inversePrecedingRCG[ ( *dim ) * K + J ] * ( ( *plasticMultipliers )[ 0 ] * ( *dMacroFlowdDrivingStress )[ ( *dim ) * I + J ]
+                                                                         + ( *plasticMultipliers )[ 1 ] * ( *dMicroFlowdDrivingStress )[ ( *dim ) * I + J ] );
+
+                        for ( unsigned int L = 0; L < *dim; L++ ){
+
+                            microVelocityGradient[ ( *dim ) * L + K ]
+                                += inversePrecedingPsi[ ( *dim ) * L + J ] * ( *plasticMultipliers )[ 1 ] * ( *dMicroFlowdDrivingStress )[ ( *dim ) * I + J ] * precedingFinvChi[ ( *dim ) * I + K ];
+
+                        }
 
                     }
 
@@ -3878,10 +3926,14 @@ namespace tardigradeHydra{
 
                 set_previousPlasticMacroVelocityGradient( macroVelocityGradient );
 
+                set_previousPlasticMicroVelocityGradient( microVelocityGradient );
+
             }
             else{
 
                 set_plasticMacroVelocityGradient( macroVelocityGradient );
+
+                set_plasticMicroVelocityGradient( microVelocityGradient );
 
             }
 

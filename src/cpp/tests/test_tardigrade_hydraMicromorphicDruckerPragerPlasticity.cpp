@@ -7430,6 +7430,10 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             floatVector previousPrecedingDeformationGradient = { 1, -0.2, -0.3, -0.4, 0.5, -0.6, -0.7, -0.8, 0.1 };
 
+            floatVector precedingMicroDeformation = { 0.8, -0.1, 0.2, 0.3, 1.1, 0.4, -0.2, 0.5, 1.2 };
+
+            floatVector previousPrecedingMicroDeformation = { 0.7, 0.11, -0.2, 0.2, 0.9, 0.2, 0.2, -0.1, 1.1 };
+
             floatVector plasticMultipliers = { 1.1, 1.2, 1.3, 1.4, 1.5 };
 
             floatVector previousPlasticMultipliers = { 1.01, 1.02, 1.03, 1.04, 1.05 };
@@ -7493,6 +7497,21 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
                 else{
 
                     set_precedingDeformationGradient( precedingDeformationGradient );
+
+                }
+
+            }
+
+            virtual void setPrecedingMicroDeformation( const bool isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_previousPrecedingMicroDeformation( previousPrecedingMicroDeformation );
+
+                }
+                else{
+
+                    set_precedingMicroDeformation( precedingMicroDeformation );
 
                 }
 
@@ -7584,8 +7603,20 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
                                          0.87698387, -0.67728052, -0.33595266,
                                          2.37263201,  0.60392039,  2.8536219 };
 
+    floatVector answerMicroL = { -6.21501491e-04,  7.93199942e-01,  4.83983583e-01,
+                                  1.35508754e-01, -3.65731890e-01, -1.70009412e-01,
+                                  1.53596752e-01,  2.97504168e-01,  2.66968338e-01 };
+
+    floatVector answerPreviousMicroL = { -0.92471373,  0.16655198, -0.51178446,
+                                          0.53976276,  0.79789782,  0.70459609,
+                                          0.12024267,  0.33339548,  0.51643547 };
+
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMacroL,         *R.get_plasticMacroVelocityGradient( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMacroL, *R.get_previousPlasticMacroVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMicroL,         *R.get_plasticMicroVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMicroL, *R.get_previousPlasticMicroVelocityGradient( ) ) );
 
 }
