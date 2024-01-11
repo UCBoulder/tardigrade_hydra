@@ -118,6 +118,51 @@ namespace tardigradeHydra{
                                                            variableMatrix &dFdPrecedingF, variableMatrix &d2FdStress2,
                                                            variableMatrix &d2FdStressdPrecedingF );
 
+        void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
+                                                  const variableVector &inverseElasticRightCauchyGreen,
+                                                  const variableVector &macroFlowDirection,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &plasticMacroVelocityGradient );
+
+        void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
+                                                  const variableVector &inverseElasticRightCauchyGreen,
+                                                  const variableVector &macroFlowDirection,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &plasticMacroVelocityGradient,
+                                                  variableVector &dPlasticMacroLdMacroGamma,
+                                                  variableVector &dPlasticMacroLdMicroGamma );
+
+        void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
+                                                  const variableVector &inverseElasticRightCauchyGreen,
+                                                  const variableVector &macroFlowDirection,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &plasticMacroVelocityGradient,
+                                                  variableVector &dPlasticMacroLdMacroGamma,
+                                                  variableVector &dPlasticMacroLdMicroGamma,
+                                                  variableMatrix &dPlasticMacroLdElasticRCG,
+                                                  variableMatrix &dPlasticMacroLdMacroFlowDirection,
+                                                  variableMatrix &dPlasticMacroLdMicroFlowDirection );
+
+        void computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
+                                                  const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &plasticMicroVelocityGradient );
+
+        void computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
+                                                  const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &plasticMicroVelocityGradient,
+                                                  variableVector &dPlasticMicroLdMicroGamma );
+
+        void computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
+                                                  const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
+                                                  const variableVector &microFlowDirection,
+                                                  variableVector &plasticMicroVelocityGradient,
+                                                  variableVector &dPlasticMicroLdMicroGamma,
+                                                  variableMatrix &dPlasticMicroLdElasticMicroRCG,
+                                                  variableMatrix &dPlasticMicroLdElasticPsi,
+                                                  variableMatrix &dPlasticMicroLdMicroFlowDirection );
+
         /*!
          * The residual for a micromorphic Drucker Prager plasticity model
          */
