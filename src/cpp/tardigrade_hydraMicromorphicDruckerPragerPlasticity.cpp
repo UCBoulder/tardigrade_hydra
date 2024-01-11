@@ -3842,6 +3842,8 @@ namespace tardigradeHydra{
 
             const floatVector *precedingMicroDeformation;
 
+            const floatVector *precedingGradientMicroDeformation;
+
             const floatVector *plasticMultipliers;
 
             const floatVector *dMacroFlowdDrivingStress;
@@ -3853,6 +3855,8 @@ namespace tardigradeHydra{
                 precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
 
                 precedingMicroDeformation = get_previousPrecedingMicroDeformation( );
+
+                precedingGradientMicroDeformation = get_previousPrecedingGradientMicroDeformation( );
 
                 plasticMultipliers = get_previousPlasticMultipliers( );
 
@@ -3866,6 +3870,8 @@ namespace tardigradeHydra{
                 precedingDeformationGradient = get_precedingDeformationGradient( );
 
                 precedingMicroDeformation = get_precedingMicroDeformation( );
+
+                precedingGradientMicroDeformation = get_precedingGradientMicroDeformation( );
 
                 plasticMultipliers = get_plasticMultipliers( );
 
@@ -3894,6 +3900,27 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( precedingFinvChi = tardigradeVectorTools::matrixMultiply( tardigradeVectorTools::inverse( *precedingDeformationGradient, *dim, *dim ),
                                                                                                     *precedingMicroDeformation, *dim, *dim, *dim, *dim ) );
+
+            // Form Gamma
+            floatVector precedingGamma( ( *dim ) * ( *dim ) * ( *dim ), 0 );
+            for ( unsigned int I = 0; I < *dim; I++ ){
+
+                for ( unsigned int J = 0; J < *dim; J++ ){
+
+                    for ( unsigned int K = 0; K < *dim; K++ ){
+
+                        for ( unsigned int i = 0; i < *dim; i++ ){
+
+                            precedingGamma[ ( *dim ) * ( *dim ) * I + ( *dim ) * J + K ]
+                                += ( *precedingDeformationGradient )[ ( *dim ) * i + I ] * ( *precedingGradientMicroDeformation )[ ( *dim ) * ( *dim ) * i + ( *dim ) * J + K ];
+
+                        }
+
+                    }
+
+                }
+
+            }
 
             floatVector macroVelocityGradient( precedingDeformationGradient->size( ), 0 );
 
