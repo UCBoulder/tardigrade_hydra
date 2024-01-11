@@ -525,6 +525,20 @@ namespace tardigradeHydra{
 
                 virtual void setPlasticVelocityGradients( const bool isPrevious );
 
+                virtual void setdPlasticMacroVelocityGradientdMacroStress( );
+
+                virtual void setPreviousdPlasticMacroVelocityGradientdMacroStress( );
+
+                virtual void setdPlasticMacroVelocityGradientdMicroStress( );
+
+                virtual void setPreviousdPlasticMacroVelocityGradientdMicroStress( );
+
+                virtual void setdPlasticMacroVelocityGradientdFn( );
+
+                virtual void setPreviousdPlasticMacroVelocityGradientdFn( );
+
+                virtual void setPlasticVelocityGradientsJacobians( const bool isPrevious );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -821,9 +835,21 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPlasticMacroVelocityGradient,                 floatVector, setPreviousPlasticMacroVelocityGradient                 )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticMacroVelocityGradientdMacroStress,            floatMatrix, setdPlasticMacroVelocityGradientdMacroStress            )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMacroVelocityGradientdMacroStress,    floatMatrix, setPreviousdPlasticMacroVelocityGradientdMacroStress    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticMacroVelocityGradientdMicroStress,            floatMatrix, setdPlasticMacroVelocityGradientdMicroStress            )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMacroVelocityGradientdMicroStress,    floatMatrix, setPreviousdPlasticMacroVelocityGradientdMicroStress    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticMacroVelocityGradientdFn,                     floatMatrix, setdPlasticMacroVelocityGradientdFn                     )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMacroVelocityGradientdFn,             floatMatrix, setPreviousdPlasticMacroVelocityGradientdFn             )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticMicroVelocityGradient,                         floatVector, setPlasticMicroVelocityGradient                         )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPlasticMicroVelocityGradient,                 floatVector, setPreviousPlasticMicroVelocityGradient                 )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousPlasticMicroVelocityGradient,                 floatVector, setPreviousPlasticMicroVelocityGradient                 )
 
         };
 
