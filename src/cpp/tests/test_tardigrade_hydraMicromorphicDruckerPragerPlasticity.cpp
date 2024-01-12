@@ -7301,6 +7301,183 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingMicroDeformation ){
 
 }
 
+BOOST_AUTO_TEST_CASE( testComputePlasticMacroVelocityGradient ){
+    /*!
+     * Test the computation of the plastic macro velocity gradient.
+     *
+     */
+
+    variableType macroGamma = 0.08166694603978908;
+    variableType microGamma = 0.8652174130049269;
+
+    variableVector Ce = { 15.81870565,  0.8392615 ,  2.09805203,
+                           0.8392615 ,  2.68322729, -6.62003948,
+                           2.09805203, -6.62003948, 24.82920808 };
+
+    variableVector inverseCe = tardigradeVectorTools::inverse( Ce, 3, 3 );
+
+    variableVector macroFlowDirection = { 0.78884638, 0.19639211, 0.15523073,
+                                          0.47307595, 0.28241451, 0.66404732,
+                                          0.1634089 , 0.92452471, 0.77390742 };
+
+    variableVector microFlowDirection = { 0.86300151, 0.95736394, 0.61329255,
+                                          0.27780339, 0.26054793, 0.33313753,
+                                          0.34289169, 0.57971261, 0.51536929 };
+
+    variableVector answerMacroLp = { -0.05489573, -0.01980382, -0.06060589,
+                                      1.1610081 ,  0.4002548 ,  0.86866858,
+                                      0.33607202,  0.12218348,  0.25723268 };
+
+    variableVector resultMacroLp;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseCe,
+                                                                                               macroFlowDirection, microFlowDirection,
+                                                                                               resultMacroLp );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMacroLp, resultMacroLp ) );
+
+    //Tests of the Jacobians
+    variableVector resultMacroLpJ;
+    variableVector dMacroLdMacroGammaJ, dMacroLdMicroGammaJ;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseCe,
+                                                                                               macroFlowDirection, microFlowDirection,
+                                                                                               resultMacroLpJ, dMacroLdMacroGammaJ,
+                                                                                               dMacroLdMicroGammaJ );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMacroLp, resultMacroLpJ ) );
+
+    variableVector resultMacroLpJ2;
+    variableVector dMacroLdMacroGammaJ2, dMacroLdMicroGammaJ2;
+    variableMatrix dMacroLdElasticRCG, dMacroLdMacroFlowDirection, dMacroLdMicroFlowDirection;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseCe,
+                                                                       macroFlowDirection, microFlowDirection,
+                                                                       resultMacroLpJ2, dMacroLdMacroGammaJ2,
+                                                                       dMacroLdMicroGammaJ2, dMacroLdElasticRCG,
+                                                                       dMacroLdMacroFlowDirection,
+                                                                       dMacroLdMicroFlowDirection );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMacroLp, resultMacroLpJ2 ) );
+
+    //Tests Jacobians w.r.t. macroGamma
+    constantType eps = 1e-6;
+    constantType scalarDelta = eps * fabs( macroGamma) + eps;
+
+    variableVector resultMacroLpP, resultMacroLpM;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma + scalarDelta, microGamma,
+                                                                       inverseCe, macroFlowDirection, microFlowDirection,
+                                                                       resultMacroLpP );
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma - scalarDelta, microGamma,
+                                                                       inverseCe, macroFlowDirection, microFlowDirection,
+                                                                       resultMacroLpM );
+
+    variableVector gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * scalarDelta );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol, dMacroLdMacroGammaJ ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol, dMacroLdMacroGammaJ2 ) );
+
+    //Test Jacobians w.r.t. microGamma
+    scalarDelta = eps * fabs( microGamma) + eps;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma + scalarDelta,
+                                                                       inverseCe, macroFlowDirection, microFlowDirection,
+                                                                       resultMacroLpP );
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma - scalarDelta,
+                                                                       inverseCe, macroFlowDirection, microFlowDirection,
+                                                                       resultMacroLpM );
+
+    gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * scalarDelta );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol, dMacroLdMicroGammaJ ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol, dMacroLdMicroGammaJ2 ) );
+
+    //Test Jacobians w.r.t. the right Cauchy-Green deformation tensor
+    for ( unsigned int i = 0; i < Ce.size(); i++ ){
+
+        constantVector delta( Ce.size(), 0 );
+
+        delta[i] = eps * fabs( Ce[i] ) + eps;
+
+        variableVector inverseCeTemp = tardigradeVectorTools::inverse( Ce + delta, 3, 3 );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                           inverseCeTemp, macroFlowDirection,
+                                                                           microFlowDirection, resultMacroLpP );
+
+        inverseCeTemp = tardigradeVectorTools::inverse( Ce - delta, 3, 3 );
+    
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                           inverseCeTemp, macroFlowDirection,
+                                                                           microFlowDirection, resultMacroLpM );
+    
+        gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dMacroLdElasticRCG[ j ][ i ] ) );
+
+        }
+
+    }
+
+    //Test Jacobians w.r.t. the macro flow direction
+    for ( unsigned int i = 0; i < macroFlowDirection.size(); i++ ){
+
+        constantVector delta( macroFlowDirection.size(), 0 );
+
+        delta[i] = eps * fabs( macroFlowDirection[i] ) + eps;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                           inverseCe, macroFlowDirection + delta,
+                                                                           microFlowDirection, resultMacroLpP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                           inverseCe, macroFlowDirection - delta,
+                                                                           microFlowDirection, resultMacroLpM );
+
+        gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dMacroLdMacroFlowDirection[ j ][ i ] ) );
+
+        }
+
+    }
+
+    //Test Jacobians w.r.t. the micro flow direction
+    for ( unsigned int i = 0; i < microFlowDirection.size(); i++ ){
+
+        constantVector delta( microFlowDirection.size(), 0 );
+
+        delta[i] = eps * fabs( microFlowDirection[i] ) + eps;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                           inverseCe, macroFlowDirection,
+                                                                           microFlowDirection + delta, resultMacroLpP );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMacroVelocityGradient( macroGamma, microGamma,
+                                                                           inverseCe, macroFlowDirection,
+                                                                           microFlowDirection - delta, resultMacroLpM );
+
+        gradCol = ( resultMacroLpP - resultMacroLpM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dMacroLdMicroFlowDirection[ j ][ i ] ) );
+
+        }
+
+    }
+
+}
+
 BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
     /*!
      * Test setting the cohesion values
