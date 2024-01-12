@@ -4644,6 +4644,174 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPrecedingGradientMicroDeformation( ){
+            /*!
+             * Set the preceding gradient of the micro-deformation
+             */
+
+            setPrecedingGradientMicroDeformation( false );
+
+        }
+
+        void residual::setPreviousPrecedingGradientMicroDeformation( ){
+            /*!
+             * Set the previous preceding gradient of the micro-deformation
+             */
+
+            setPrecedingGradientMicroDeformation( true );
+
+        }
+
+        void residual::setPrecedingGradientMicroDeformation( const bool isPrevious ){
+            /*!
+             * Set the preceding gradient w.r.t. the micro deformation
+             * 
+             * \param isPrevious: Flag for whether to set the current (flase) or previous (true) gradient of the micro deformation
+             */
+
+            if ( isPrevious ){
+
+                set_previousPrecedingGradientMicroDeformation( ( *hydra->get_previousGradientMicroConfigurations( ) )[ 0 ] ); // TODO: Generalize this expression
+
+            }
+            else{
+
+                set_precedingGradientMicroDeformation( ( *hydra->get_gradientMicroConfigurations( ) )[ 0 ] ); // TODO: Generalize this expression
+
+            }
+
+        }
+
+        void residual::setdPrecedingGradientMicroDeformationdFn( ){
+            /*!
+             * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the sub configurations
+             */
+
+            setPrecedingGradientMicroDeformationJacobians( false );
+
+        }
+
+        void residual::setdPrecedingGradientMicroDeformationdChi( ){
+            /*!
+             * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the micro deformation
+             */
+
+            setPrecedingGradientMicroDeformationJacobians( false );
+
+        }
+
+        void residual::setdPrecedingGradientMicroDeformationdChin( ){
+            /*!
+             * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the sub-micro deformations
+             */
+
+            setPrecedingGradientMicroDeformationJacobians( false );
+
+        }
+
+        void residual::setdPrecedingGradientMicroDeformationdGradChi( ){
+            /*!
+             * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial gradient of the micro deformation
+             */
+
+            setPrecedingGradientMicroDeformationJacobians( false );
+
+        }
+
+        void residual::setdPrecedingGradientMicroDeformationdGradChin( ){
+            /*!
+             * Set the Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial local gradient of the sub-micro deformations
+             */
+
+            setPrecedingGradientMicroDeformationJacobians( false );
+
+        }
+
+        void residual::setPreviousdPrecedingGradientMicroDeformationdFn( ){
+            /*!
+             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the sub configurations
+             */
+
+            setPrecedingGradientMicroDeformationJacobians( true );
+
+        }
+
+        void residual::setPreviousdPrecedingGradientMicroDeformationdChi( ){
+            /*!
+             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the micro deformation
+             */
+
+            setPrecedingGradientMicroDeformationJacobians( true );
+
+        }
+
+        void residual::setPreviousdPrecedingGradientMicroDeformationdChin( ){
+            /*!
+             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the sub-micro deformations
+             */
+
+            setPrecedingGradientMicroDeformationJacobians( true );
+
+        }
+
+        void residual::setPreviousdPrecedingGradientMicroDeformationdGradChi( ){
+            /*!
+             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial gradient of the micro deformation
+             */
+
+            setPrecedingGradientMicroDeformationJacobians( true );
+
+        }
+
+        void residual::setPreviousdPrecedingGradientMicroDeformationdGradChin( ){
+            /*!
+             * Set the previous Jacobian of the preceding gradient of the micro-deformation w.r.t. the spatial local gradient of the sub-micro deformations
+             */
+
+            setPrecedingGradientMicroDeformationJacobians( true );
+
+        }
+
+        void residual::setPrecedingGradientMicroDeformationJacobians( const bool isPrevious ){
+            /*!
+             * Set the preceding gradient w.r.t. the micro deformation
+             * 
+             * \param isPrevious: Flag for whether to set the current (flase) or previous (true) gradient of the micro deformation
+             */
+
+            if ( isPrevious ){
+
+                set_previousPrecedingGradientMicroDeformation( ( *hydra->get_previousGradientMicroConfigurations( ) )[ 0 ] ); // TODO: Generalize this expression
+
+                set_previousdPrecedingGradientMicroDeformationdFn( ( *hydra->get_previousdGradChi1dFn( ) ) );
+
+                set_previousdPrecedingGradientMicroDeformationdChi( ( *hydra->get_previousdGradChi1dChi( ) ) );
+
+                set_previousdPrecedingGradientMicroDeformationdChin( ( *hydra->get_previousdGradChi1dChin( ) ) );
+
+                set_previousdPrecedingGradientMicroDeformationdGradChi( ( *hydra->get_previousdGradChi1dGradChi( ) ) );
+
+                set_previousdPrecedingGradientMicroDeformationdGradChin( ( *hydra->get_previousdGradChi1dGradChin( ) ) );
+
+            }
+            else{
+
+                set_precedingGradientMicroDeformation( ( *hydra->get_gradientMicroConfigurations( ) )[ 0 ] ); // TODO: Generalize this expression
+
+                set_dPrecedingGradientMicroDeformationdFn( ( *hydra->get_dGradChi1dFn( ) ) );
+
+                set_dPrecedingGradientMicroDeformationdChi( ( *hydra->get_dGradChi1dChi( ) ) );
+
+                set_dPrecedingGradientMicroDeformationdChin( ( *hydra->get_dGradChi1dChin( ) ) );
+
+                set_dPrecedingGradientMicroDeformationdGradChi( ( *hydra->get_dGradChi1dGradChi( ) ) );
+
+                set_dPrecedingGradientMicroDeformationdGradChin( ( *hydra->get_dGradChi1dGradChin( ) ) );
+
+            }
+
+        }
+
         void residual::setPlasticMacroVelocityGradient( ){
             /*!
              * Set the plastic macro velocity gradient
