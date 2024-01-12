@@ -4495,6 +4495,60 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPlasticMicroVelocityGradientdMicroStress( ){
+            /*!
+             * Set the Jacobian of the plastic micro velocity gradient w.r.t. the micro stress
+             */
+
+            setPlasticVelocityGradientsJacobians( false );
+
+        }
+
+        void residual::setPreviousdPlasticMicroVelocityGradientdMicroStress( ){
+            /*!
+             * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the micro stress
+             */
+
+            setPlasticVelocityGradientsJacobians( true );
+
+        }
+
+        void residual::setdPlasticMicroVelocityGradientdFn( ){
+            /*!
+             * Set the Jacobian of the plastic micro velocity gradient w.r.t. the sub deformation gradients
+             */
+
+            setPlasticVelocityGradientsJacobians( false );
+
+        }
+
+        void residual::setPreviousdPlasticMicroVelocityGradientdFn( ){
+            /*!
+             * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the sub deformation gradients
+             */
+
+            setPlasticVelocityGradientsJacobians( true );
+
+        }
+
+        void residual::setdPlasticMicroVelocityGradientdChin( ){
+            /*!
+             * Set the Jacobian of the plastic micro velocity gradient w.r.t. the sub micro deformations
+             */
+
+            setPlasticVelocityGradientsJacobians( false );
+
+        }
+
+        void residual::setPreviousdPlasticMicroVelocityGradientdChin( ){
+            /*!
+             * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the sub micro deformations
+             */
+
+            setPlasticVelocityGradientsJacobians( true );
+
+        }
+
         void residual::setPlasticVelocityGradientsJacobians( const bool isPrevious ){
             /*!
              * Set the plastic macro velocity gradient and their Jacobians
@@ -4509,6 +4563,10 @@ namespace tardigradeHydra{
             const floatMatrix *dPrecedingFdF;
 
             const floatMatrix *dPrecedingFdFn;
+
+            const floatMatrix *dPrecedingChidChi;
+
+            const floatMatrix *dPrecedingChidChin;
 
             const floatVector *precedingMicroDeformation;
 
@@ -4537,6 +4595,10 @@ namespace tardigradeHydra{
                 dPrecedingFdF = get_previousdPrecedingDeformationGradientdF( );
 
                 dPrecedingFdFn = get_previousdPrecedingDeformationGradientdFn( );
+
+                dPrecedingChidChi = get_previousdPrecedingMicroDeformationdChi( );
+
+                dPrecedingChidChin = get_previousdPrecedingMicroDeformationdChin( );
 
                 precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
 
@@ -4568,6 +4630,10 @@ namespace tardigradeHydra{
                 dPrecedingFdF = get_dPrecedingDeformationGradientdF( );
 
                 dPrecedingFdFn = get_dPrecedingDeformationGradientdFn( );
+
+                dPrecedingChidChi = get_dPrecedingMicroDeformationdChi( );
+
+                dPrecedingChidChin = get_dPrecedingMicroDeformationdChin( );
 
                 precedingDeformationGradient = get_precedingDeformationGradient( );
 
@@ -4615,6 +4681,8 @@ namespace tardigradeHydra{
 
             floatMatrix dPsidPrecedingF( precedingPsi.size( ), floatVector( precedingDeformationGradient->size( ), 0 ) );
 
+            floatMatrix dPsidPrecedingChi( precedingPsi.size( ), floatVector( precedingDeformationGradient->size( ), 0 ) );
+
             floatVector eye( precedingDeformationGradient->size( ), 0 );
             tardigradeVectorTools::eye( eye );
 
@@ -4626,7 +4694,9 @@ namespace tardigradeHydra{
 
                         for ( unsigned int B = 0; B < *dim; B++ ){
 
-                            dPsidPrecedingF[ ( *dim ) * I + J ][ ( *dim ) * A + B ] += eye[ ( *dim ) * I + B ] * ( *precedingMicroDeformation )[ ( *dim ) * A + J ];
+                            dPsidPrecedingF[   ( *dim ) * I + J ][ ( *dim ) * A + B ] += eye[ ( *dim ) * I + B ] * ( *precedingMicroDeformation )[ ( *dim ) * A + J ];
+
+                            dPsidPrecedingChi[ ( *dim ) * I + J ][ ( *dim ) * A + B ] += ( *precedingDeformationGradient )[ ( *dim ) * A + I ] * eye[ ( *dim ) * J + B ];
 
                         }
 
@@ -4636,16 +4706,26 @@ namespace tardigradeHydra{
 
             }
 
-            floatMatrix dPsidF  = tardigradeVectorTools::dot( dPsidPrecedingF, *dPrecedingFdF  );
+            floatMatrix dPsidF    = tardigradeVectorTools::dot( dPsidPrecedingF,   *dPrecedingFdF  );
 
-            floatMatrix dPsidFn = tardigradeVectorTools::dot( dPsidPrecedingF, *dPrecedingFdFn );
+            floatMatrix dPsidFn   = tardigradeVectorTools::dot( dPsidPrecedingF,   *dPrecedingFdFn );
+
+            floatMatrix dPsidChi  = tardigradeVectorTools::dot( dPsidPrecedingChi, *dPrecedingChidChi  );
+
+            floatMatrix dPsidChin = tardigradeVectorTools::dot( dPsidPrecedingChi, *dPrecedingChidChin );
 
             floatVector inversePrecedingPsi = tardigradeVectorTools::inverse( precedingPsi, *dim, *dim );
 
             // Form the preceding micro RCG and its inverse
             floatVector precedingMicroRCG;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingMicroDeformation, precedingMicroRCG ) );
+            floatMatrix dMicroRCGdPrecedingChi;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingMicroDeformation, precedingMicroRCG, dMicroRCGdPrecedingChi ) );
+
+            floatMatrix dMicroRCGdChi  = tardigradeVectorTools::dot( dMicroRCGdPrecedingChi, *dPrecedingChidChi );
+
+            floatMatrix dMicroRCGdChin = tardigradeVectorTools::dot( dMicroRCGdPrecedingChi, *dPrecedingChidChin );
 
 //            // Form Gamma
 //            floatVector precedingGamma( ( *dim ) * ( *dim ) * ( *dim ), 0 );
@@ -4708,6 +4788,8 @@ namespace tardigradeHydra{
 
             floatMatrix dPlasticMacroLdMicroStress = tardigradeVectorTools::dot( dPlasticMacroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdStress );
 
+            floatMatrix dPlasticMicroLdMicroStress = tardigradeVectorTools::dot( dPlasticMicroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdStress );
+
             floatMatrix dPlasticMacroLdF           = tardigradeVectorTools::dot( dPlasticMacroLdMacroFlowDirection, *d2MacroFlowdDrivingStressdF )
                                                    + tardigradeVectorTools::dot( dPlasticMacroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdF )
                                                    + tardigradeVectorTools::dot( dPlasticMacroLdPrecedingRCG, dRCGdF );
@@ -4715,6 +4797,12 @@ namespace tardigradeHydra{
             floatMatrix dPlasticMacroLdFn          = tardigradeVectorTools::dot( dPlasticMacroLdMacroFlowDirection, *d2MacroFlowdDrivingStressdFn )
                                                    + tardigradeVectorTools::dot( dPlasticMacroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdFn )
                                                    + tardigradeVectorTools::dot( dPlasticMacroLdPrecedingRCG, dRCGdFn );
+
+            floatMatrix dPlasticMicroLdFn          = tardigradeVectorTools::dot( dPlasticMicroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdFn )
+                                                   + tardigradeVectorTools::dot( dPlasticMicroLdPrecedingPsi, dPsidFn );
+
+            floatMatrix dPlasticMicroLdChin        = tardigradeVectorTools::dot( dPlasticMicroLdPrecedingPsi, dPsidChin );
+                                                     tardigradeVectorTools::dot( dPlasticMicroLdPrecedingMicroRCG, dMicroRCGdChin );
 
             floatMatrix dPlasticMacroLdISVs( macroVelocityGradient.size( ), floatVector( get_plasticStateVariables( )->size( ), 0 ) );
 
@@ -4736,9 +4824,15 @@ namespace tardigradeHydra{
 
                 set_previousdPlasticMacroVelocityGradientdMicroStress( dPlasticMacroLdMicroStress );
 
+                set_previousdPlasticMicroVelocityGradientdMicroStress( dPlasticMicroLdMicroStress );
+
                 set_previousdPlasticMacroVelocityGradientdF( dPlasticMacroLdF );
 
                 set_previousdPlasticMacroVelocityGradientdFn( dPlasticMacroLdFn );
+
+                set_previousdPlasticMicroVelocityGradientdFn( dPlasticMicroLdFn );
+
+                set_previousdPlasticMicroVelocityGradientdChin( dPlasticMicroLdChin );
 
                 set_previousdPlasticMacroVelocityGradientdStateVariables( dPlasticMacroLdISVs );
 
@@ -4753,9 +4847,15 @@ namespace tardigradeHydra{
 
                 set_dPlasticMacroVelocityGradientdMicroStress( dPlasticMacroLdMicroStress );
 
+                set_dPlasticMicroVelocityGradientdMicroStress( dPlasticMicroLdMicroStress );
+
                 set_dPlasticMacroVelocityGradientdF( dPlasticMacroLdF );
 
                 set_dPlasticMacroVelocityGradientdFn( dPlasticMacroLdFn );
+
+                set_dPlasticMicroVelocityGradientdFn( dPlasticMicroLdFn );
+
+                set_dPlasticMicroVelocityGradientdChin( dPlasticMicroLdChin );
 
                 set_dPlasticMacroVelocityGradientdStateVariables( dPlasticMacroLdISVs );
 

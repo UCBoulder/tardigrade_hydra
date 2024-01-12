@@ -8104,7 +8104,13 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
             assembled_dMacroLdX[ i ][ j + 9 ] = ( *R.get_dPlasticMacroVelocityGradientdMicroStress( ) )[ i ][ j ];
 
+            assembled_dMicroLdX[ i ][ j + 9 ] = ( *R.get_dPlasticMicroVelocityGradientdMicroStress( ) )[ i ][ j ];
+
             assembled_dMacroLdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dPlasticMacroVelocityGradientdFn( ) )[ i ][ j ];
+
+            assembled_dMicroLdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dPlasticMicroVelocityGradientdFn( ) )[ i ][ j ];
+
+            assembled_dMicroLdX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dPlasticMicroVelocityGradientdChin( ) )[ i ][ j ];
 
         }
 
@@ -8117,9 +8123,8 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
     }
     }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
 
-    std::cout << "assembled_dMacroLdX:\n"; tardigradeVectorTools::print( assembled_dMacroLdX );
+    std::cout << "assembled_dMicroLdX:\n"; tardigradeVectorTools::print( assembled_dMicroLdX );
 
-    std::cout << "dMacroLdX:\n"; tardigradeVectorTools::print( dMacroLdX );
     std::cout << "dMicroLdX:\n"; tardigradeVectorTools::print( dMicroLdX );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroLdX, assembled_dMacroLdX ) );
@@ -8373,14 +8378,15 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
             assembled_previousdMacroLdStress[ i ][ j + 9 ] = ( *R.get_previousdPlasticMacroVelocityGradientdMicroStress( ) )[ i ][ j ];
 
+            assembled_previousdMicroLdStress[ i ][ j + 9 ] = ( *R.get_previousdPlasticMicroVelocityGradientdMicroStress( ) )[ i ][ j ];
+
         }
 
     }
     }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
 
-    std::cout << "assembled_dMacroLdStress:\n"; tardigradeVectorTools::print( assembled_previousdMacroLdStress );
+    std::cout << "assembled_dMicroLdStress:\n"; tardigradeVectorTools::print( assembled_previousdMicroLdStress );
 
-    std::cout << "dMacroLdStress:\n"; tardigradeVectorTools::print( previousdMacroLdStress );
     std::cout << "dMicroLdStress:\n"; tardigradeVectorTools::print( previousdMicroLdStress );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroLdStress, assembled_previousdMacroLdStress ) );
@@ -8453,6 +8459,10 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
             assembled_previousdMacroLdISVs[ i ][ j ]= ( *R.get_previousdPlasticMacroVelocityGradientdFn( ) )[ i ][ j ];
 
+            assembled_previousdMicroLdISVs[ i ][ j ]= ( *R.get_previousdPlasticMicroVelocityGradientdFn( ) )[ i ][ j ];
+
+            assembled_previousdMicroLdISVs[ i ][ j + 9 ]= ( *R.get_previousdPlasticMicroVelocityGradientdChin( ) )[ i ][ j ];
+
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
@@ -8464,9 +8474,8 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
     }
     }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
 
-    std::cout << "assembled_previousdMacroLdISVs:\n"; tardigradeVectorTools::print( assembled_previousdMacroLdISVs );
+    std::cout << "assembled_previousdMicroLdISVs:\n"; tardigradeVectorTools::print( assembled_previousdMicroLdISVs );
 
-    std::cout << "previousdMacroLdISVs:\n"; tardigradeVectorTools::print( previousdMacroLdISVs );
     std::cout << "previousdMicroLdISVs:\n"; tardigradeVectorTools::print( previousdMicroLdISVs );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroLdISVs, assembled_previousdMacroLdISVs ) );
