@@ -20,10 +20,10 @@ namespace tardigradeHydra{
             /*!
              * Compute the Drucker-Prager internal parameters
              *
-             * :param const parameterType &frictionAngle: The material friction angle ( 0 < frictionAngle < pi / 2 );
-             * :param const parameterType &beta: The beta parameter.
-             * :param parameterType &A: The A parameter.
-             * :param parameterType &B: The B parameter.
+             * \param &frictionAngle: The material friction angle ( 0 < frictionAngle < pi / 2 );
+             * \param &beta: The beta parameter.
+             * \param &A: The A parameter.
+             * \param &B: The B parameter.
              */
     
             //Make sure the parameters are within bounds
@@ -66,12 +66,12 @@ namespace tardigradeHydra{
              *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }
              * \f$
              *
-             * :param const variableVector &stressMeasure: The stress measure
-             * :param const variableType &cohesion: The cohesion measure.
-             * :param const variableVector &precedingDeformationGradient: The deformation gradients preceding the configuration of the stress measure
-             * :param const parameterType &frictionAngle: The friction angle
-             * :param const parameterType &beta: The beta parameter
-             * :param variableType &yieldValue: The yield value.
+             * \param &stressMeasure: The stress measure
+             * \param &cohesion: The cohesion measure.
+             * \param &precedingDeformationGradient: The deformation gradients preceding the configuration of the stress measure
+             * \param &frictionAngle: The friction angle
+             * \param &beta: The beta parameter
+             * \param &yieldValue: The yield value.
              */
 
             parameterType AAngle, BAngle;
@@ -120,16 +120,16 @@ namespace tardigradeHydra{
              *  B^{angle} = \beta^{angle} \sin( frictionAngle )
              *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }\f$
              *
-             * :param const variableVector &referenceStressMeasure: The stress measure in the reference configuration
-             * :param const variableType &cohesion: The cohesion measure.
-             * :param const variableVector &precedingDeformationGradient: The preceding deformation gradient.
-             * :param const parameterType &frictionAngle: The friction angle
-             * :param const parameterType &beta: The beta parameter
-             * :param variableType &yieldValue: The yield value.
-             * :param variableVector &dFdStress: The Jacobian of the yield surface w.r.t. the stress measure.
-             * :param variableType &dFdc: The Jacobian of the yield surface w.r.t. the cohesion.
-             * :param variableVector &dFdPrecedingF: The Jacobian of the yield surface w.r.t. the preceding deformation gradient from the stress-measure's configuration
-             * :param double tol: The tolerance used to prevent nans in the Jacobians
+             * \param &referenceStressMeasure: The stress measure in the reference configuration
+             * \param &cohesion: The cohesion measure.
+             * \param &precedingDeformationGradient: The preceding deformation gradient.
+             * \param &frictionAngle: The friction angle
+             * \param &beta: The beta parameter
+             * \param &yieldValue: The yield value.
+             * \param &dFdStress: The Jacobian of the yield surface w.r.t. the stress measure.
+             * \param &dFdc: The Jacobian of the yield surface w.r.t. the cohesion.
+             * \param &dFdPrecedingF: The Jacobian of the yield surface w.r.t. the preceding deformation gradient from the stress-measure's configuration
+             * \param tol: The tolerance used to prevent nans in the Jacobians
              */
     
             parameterType AAngle, BAngle;
@@ -201,20 +201,20 @@ namespace tardigradeHydra{
              *  \f$\frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial stressMeasure_{KL} } = \frac{ \partial^2 || dev( stressMeasure ) || }{ \partial dev( stressMeasure )_{AB} \partial dev( stressMeasure )_{CD} } \frac{ \partial dev( stressMeasure )_{AB} } { \partial stressMeasure_{IJ} } \frac{ \partial dev( stressMeasure )_{CD} } { \partial stressMeasure_{KL} } + \frac{ dev ( stressMeasure )_{AB} }{ || dev( stressMeasure ) || } \frac{ \partial^2 dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} \partial stressMeasure_{KL} }
              *  \frac{ \partial^2 F }{ \partial stressMeasure_{IJ} \partial RCG_{KL} } = \frac{ \partial^2 || dev( stressMeasure ) || }{ \partial dev( stressMeasure )_{AB} \partial dev( stressMeasure )_{CD} } \frac{ \partial dev( stressMeasure )_{AB} } { \partial stressMeasure_{IJ} } \frac{ \partial dev( stressMeasure )_{CD} } { \partial C_{KL} } + \frac{ dev ( stressMeasure )_{AB} }{ || dev( stressMeasure ) || } \frac{ \partial^2 dev( stressMeasure )_{AB} }{ \partial stressMeasure_{IJ} \partial C_{KL} } + B^{\phi} \frac{ \partial^2 \bar{p} }{ \partial stressMeasure_{IJ} \partial C_{KL} } \f$
              *  
-             * :param const variableVector &stressMeasure: The stress measure
-             * :param const variableType &cohesion: The cohesion measure.
-             * :param const variableVector &precedingDeformationGradient: The preceding deformation gradient
-             * :param const parameterType &frictionAngle: The friction angle
-             * :param const parameterType &beta: The beta parameter
-             * :param variableType &yieldValue: The yield value.
-             * :param variableVector &dFdStress: The Jacobian of the yield surface w.r.t. the stress measure.
-             * :param variableType &dFdc: The Jacobian of the yield surface w.r.t. the cohesion.
-             * :param variableVector &dFdElasticRCG: The Jacobian of the yield surface w.r.t. the elastic 
-             *     right Cauchy-Green deformation tensor.
-             * :param variableMatrix &d2FdStress2: The second derivative of the flow direction w.r.t. the stress. This 
+             * \param &stressMeasure: The stress measure
+             * \param &cohesion: The cohesion measure.
+             * \param &precedingDeformationGradient: The preceding deformation gradient
+             * \param &frictionAngle: The friction angle
+             * \param &beta: The beta parameter
+             * \param &yieldValue: The yield value.
+             * \param &dFdStress: The Jacobian of the yield surface w.r.t. the stress measure.
+             * \param &dFdc: The Jacobian of the yield surface w.r.t. the cohesion.
+             * \param &dFdPrecedingF: The Jacobian of the yield surface w.r.t. the preceding
+             *     deformation gradient.
+             * \param &d2FdStress2: The second derivative of the flow direction w.r.t. the stress. This 
              *     is useful if one is using this expression as the flow potential and wants the jacobian of the flow direction \f$\frac{ \partial G }{\partial Stress_{IJ} }\f$
-             * :param variableMatrix &d2FdStressdPrecedingF: The second derivative of the flow direction w.r.t. the stress and the preceding deformation gradient
-             * :param double tol: The tolerance used to prevent nans in the Jacobians
+             * \param &d2FdStressdPrecedingF: The second derivative of the flow direction w.r.t. the stress and the preceding deformation gradient
+             * \param tol: The tolerance used to prevent nans in the Jacobians
              */
             //Assume 3D
             unsigned int dim = 3;
@@ -330,12 +330,12 @@ namespace tardigradeHydra{
              *  B^{angle} = \beta^{angle} \sin( frictionAngle )
              *  \beta^{angle} = \frac{2 \sqrt{6} }{3 + \beta \sin( frictionAngle ) }\f$
              *
-             * :param const variableVector &stressMeasure: The stress measure
-             * :param const variableVector &cohesion: The cohesion measure.
-             * :param const variableVector &precedingDeformationGradient: The preceding deformation gradient
-             * :param const parameterType &frictionAngle: The friction angle
-             * :param const parameterType &beta: The beta parameter
-             * :param variableVector &yieldValue: The yield value.
+             * \param &stressMeasure: The stress measure
+             * \param &cohesion: The cohesion measure.
+             * \param &precedingDeformationGradient: The preceding deformation gradient
+             * \param &frictionAngle: The friction angle
+             * \param &beta: The beta parameter
+             * \param &yieldValue: The yield value.
              */
 
             parameterType AAngle, BAngle;
@@ -382,16 +382,16 @@ namespace tardigradeHydra{
              *
              *  Also computes the Jacobians
              *
-             * :param const variableVector &stressMeasure: The stress measure
-             * :param const variableVector &cohesion: The cohesion measure.
-             * :param const variableVector &precedingDeformationGradient: The preceding deformation gradient
-             * :param const parameterType &frictionAngle: The friction angle
-             * :param const parameterType &beta: The beta parameter
-             * :param variableVector &yieldValue: The yield value.
-             * :param variableMatrix &dFdStress: The Jacobian of the yield function w.r.t. the reference higher order stress.
-             * :param variableMatrix &dFdc: The Jacobian of the yield function w.r.t. the cohesion.
-             * :param variableMatrix &dFdElasticRCG: The Jacobian of the yield function w.r.t. the preceding deformation gradient
-             *     deformation tensor.
+             * \param &stressMeasure: The stress measure
+             * \param &cohesion: The cohesion measure.
+             * \param &precedingDeformationGradient: The preceding deformation gradient
+             * \param &frictionAngle: The friction angle
+             * \param &beta: The beta parameter
+             * \param &yieldValue: The yield value.
+             * \param &dFdStress: The Jacobian of the yield function w.r.t. the reference higher order stress.
+             * \param &dFdc: The Jacobian of the yield function w.r.t. the cohesion.
+             * \param &dFdPrecedingF: The Jacobian of the yield function w.r.t. the preceding deformation gradient
+             *     tensor.
              */
 
             parameterType AAngle, BAngle;
@@ -457,18 +457,18 @@ namespace tardigradeHydra{
              *
              *  Also computes the Jacobians
              *
-             * :param const variableVector &stressMeasure: The stress measure
-             * :param const variableVector &cohesion: The cohesion measure.
-             * :param const variableVector &precedingDeformationGradient: The preceding deformation gradient
-             * :param const parameterType &frictionAngle: The friction angle
-             * :param const parameterType &beta: The beta parameter
-             * :param variableVector &yieldValue: The yield value.
-             * :param variableMatrix &dFdStress: The Jacobian of the yield function w.r.t. the reference higher order stress.
-             * :param variableMatrix &dFdc: The Jacobian of the yield function w.r.t. the cohesion.
-             * :param variableMatrix &dFdPrecedingF: The Jacobian of the yield function w.r.t. the preceding deformation gradient
-             * :param variableMatrix &d2FdStress2: The second order Jacobian of the yield function w.r.t. the reference 
+             * \param &stressMeasure: The stress measure
+             * \param &cohesion: The cohesion measure.
+             * \param &precedingDeformationGradient: The preceding deformation gradient
+             * \param &frictionAngle: The friction angle
+             * \param &beta: The beta parameter
+             * \param &yieldValue: The yield value.
+             * \param &dFdStress: The Jacobian of the yield function w.r.t. the reference higher order stress.
+             * \param &dFdc: The Jacobian of the yield function w.r.t. the cohesion.
+             * \param &dFdPrecedingF: The Jacobian of the yield function w.r.t. the preceding deformation gradient
+             * \param &d2FdStress2: The second order Jacobian of the yield function w.r.t. the reference 
              *     higher order stress.
-             * :param variableMatrix &d2FdStressdPrecedingF: The second order Jacobian of the yield function w.r.t. the 
+             * \param &d2FdStressdPrecedingF: The second order Jacobian of the yield function w.r.t. the 
              *     reference higher order stress and the preceding deformation gradient
              */
 
@@ -734,21 +734,21 @@ namespace tardigradeHydra{
              *
              * \f$\bar{ L }_{ \bar{B} \bar{K} }^p = \bar{ C }_{ \bar{B} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } } \frac{ \partial \bar{G}^{\text{MACRO}} }{ \partial \bar{S}_{ \bar{K} \bar{L} } + \dot{ \bar{ \gamma } }^{\chi} \frac{ \partial \bar{G}^{\chi} }{ \partial \bar{ \Sigma }_{ \bar{K} \bar{L} } \right]\f$
              *
-             * :param const variableType &macroGamma: The macro plastic multiplier.
-             * :param const variableType &microGamma: The micro plastic multiplier.
-             * :param const variableVector &inverseElasticRightCauchyGreen: The inverse of the elastic right Cauchy-Green deformation tensor.
-             * :param const variableVector &macroFlowDirection: The flow direction of the macro plasticity.
-             * :param const variableVector &microFlowDirection: The flow direction of the micro plasticity.
-             * :param variableVector &plasticMacroVelocityGradient: The plastic velocity gradient for the macro plastic deformation.
-             * :param variableVector &dPlasticMacroLdMacroGamma: The Jacobian of the plastic macro velocity gradient w.r.t. the 
+             * \param &macroGamma: The macro plastic multiplier.
+             * \param &microGamma: The micro plastic multiplier.
+             * \param &inverseElasticRightCauchyGreen: The inverse of the elastic right Cauchy-Green deformation tensor.
+             * \param &macroFlowDirection: The flow direction of the macro plasticity.
+             * \param &microFlowDirection: The flow direction of the micro plasticity.
+             * \param &plasticMacroVelocityGradient: The plastic velocity gradient for the macro plastic deformation.
+             * \param &dPlasticMacroLdMacroGamma: The Jacobian of the plastic macro velocity gradient w.r.t. the 
              *     macro plastic multiplier.
-             * :param variableVector &dPlasticMacroLdMicroGamma: The Jacobian of the plastic macro velocity gradient w.r.t. the 
+             * \param &dPlasticMacroLdMicroGamma: The Jacobian of the plastic macro velocity gradient w.r.t. the 
              *     micro plastic multiplier.
-             * :param variableMatrix &dPlasticMacroLdElasticRCG: The Jacobian of the plastic macro velocity gradient w.r.t. the 
+             * \param &dPlasticMacroLdElasticRCG: The Jacobian of the plastic macro velocity gradient w.r.t. the 
              *     elastic right Cauchy-Green deformation tensor.
-             * :param variableMatrix &dPlasticMacroLdMacroFlowDirection: The Jacobian of the plastic macro velocity gradient w.r.t. the 
+             * \param &dPlasticMacroLdMacroFlowDirection: The Jacobian of the plastic macro velocity gradient w.r.t. the 
              *     macro flow direction tensor.
-             * :param variableMatrix &dPlasticMacroLdMicroFlowDirection: The Jacobian of the plastic macro velocity gradient w.r.t. the 
+             * \param &dPlasticMacroLdMicroFlowDirection: The Jacobian of the plastic macro velocity gradient w.r.t. the 
              *     micro flow direction tensor.
              */
 
@@ -808,12 +808,12 @@ namespace tardigradeHydra{
              *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must guarantee 
              *        that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked in code.
              *
-             * :param const variableType &microGamma: The micro plastic multiplier.
-             * :param const variableVector &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation tensor.
-             * :param const variableVector &elasticPsi: The elastic micro deformation measure Psi.
-             * :param const variableVector &inverseElasticPsi: The inverse of the elastic micro deformation measure Psi.
-             * :param const variableVector &microFlowDirection: The micro plastic flow direction.
-             * :param variableVector &plasticMicroVelocityGradient: The plastic micro velocity gradient.
+             * \param &microGamma: The micro plastic multiplier.
+             * \param &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation tensor.
+             * \param &elasticPsi: The elastic micro deformation measure Psi.
+             * \param &inverseElasticPsi: The inverse of the elastic micro deformation measure Psi.
+             * \param &microFlowDirection: The micro plastic flow direction.
+             * \param &plasticMicroVelocityGradient: The plastic micro velocity gradient.
              */
 
             //Assume 3D
@@ -889,13 +889,13 @@ namespace tardigradeHydra{
              *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must guarantee 
              *        that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked in code.
              *
-             * :param const variableType &microGamma: The micro plastic multiplier.
-             * :param const variableVector &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation tensor.
-             * :param const variableVector &elasticPsi: The elastic micro deformation measure Psi.
-             * :param const variableVector &inverseElasticPsi: The inverse of the elastic micro deformation measure Psi.
-             * :param const variableVector &microFlowDirection: The micro plastic flow direction.
-             * :param variableVector &plasticMicroVelocityGradient: The plastic micro velocity gradient.
-             * :param variableVector &dPlasticMicroLdMicroGamma: The Jacobian of the plastic micro velocity gradient
+             * \param &microGamma: The micro plastic multiplier.
+             * \param &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation tensor.
+             * \param &elasticPsi: The elastic micro deformation measure Psi.
+             * \param &inverseElasticPsi: The inverse of the elastic micro deformation measure Psi.
+             * \param &microFlowDirection: The micro plastic flow direction.
+             * \param &plasticMicroVelocityGradient: The plastic micro velocity gradient.
+             * \param &dPlasticMicroLdMicroGamma: The Jacobian of the plastic micro velocity gradient
              *     w.r.t. the micro plastic multiplier.
              */
 
@@ -975,19 +975,19 @@ namespace tardigradeHydra{
              *  Note: This function is used in conjunction with other functions. If it is used by itself, the user must guarantee 
              *        that elasticPsi and inverseElasticPsi are actually inverses of each-other. This is not checked in code.
              *
-             * :param const variableType &microGamma: The micro plastic multiplier.
-             * :param const variableVector &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation tensor.
-             * :param const variableVector &elasticPsi: The elastic micro deformation measure Psi.
-             * :param const variableVector &inverseElasticPsi: The inverse of the elastic micro deformation measure Psi.
-             * :param const variableVector &microFlowDirection: The micro plastic flow direction.
-             * :param variableVector &plasticMicroVelocityGradient: The plastic micro velocity gradient.
-             * :param variableVector &dPlasticMicroLdMicroGamma: The Jacobian of the plastic micro velocity gradient
+             * \param &microGamma: The micro plastic multiplier.
+             * \param &elasticMicroRightCauchyGreen: The elastic micro right Cauchy-Green deformation tensor.
+             * \param &elasticPsi: The elastic micro deformation measure Psi.
+             * \param &inverseElasticPsi: The inverse of the elastic micro deformation measure Psi.
+             * \param &microFlowDirection: The micro plastic flow direction.
+             * \param &plasticMicroVelocityGradient: The plastic micro velocity gradient.
+             * \param &dPlasticMicroLdMicroGamma: The Jacobian of the plastic micro velocity gradient
              *     w.r.t. the micro plastic multiplier.
-             * :param variableMatrix &dPlasticMicroLdElasticMicroRCG: The Jacobian of the plastic micro velocity gradient
+             * \param &dPlasticMicroLdElasticMicroRCG: The Jacobian of the plastic micro velocity gradient
              *     w.r.t. the micro right Cauchy-Green deformation tensor.
-             * :param variableMatrix &dPlasticMicroLdElasticPsi: The Jacobian of the plastic micro velocity gradient
+             * \param &dPlasticMicroLdElasticPsi: The Jacobian of the plastic micro velocity gradient
              *     w.r.t. the micro deformation measure Psi.
-             * :param variableMatrix &dPlasticMicroLdMicroFlowDirection: The Jacobian of the plastic micro velocity gradient
+             * \param &dPlasticMicroLdMicroFlowDirection: The Jacobian of the plastic micro velocity gradient
              *     w.r.t. the micro flow direction.
              */
 
@@ -995,9 +995,11 @@ namespace tardigradeHydra{
             unsigned int dim = 3;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
+
                 computePlasticMicroVelocityGradient( microGamma, elasticMicroRightCauchyGreen,
                                                      elasticPsi, inverseElasticPsi, microFlowDirection,
                                                      plasticMicroVelocityGradient, dPlasticMicroLdMicroGamma );
+
             )
 
             constantVector eye( dim * dim );
@@ -1039,6 +1041,403 @@ namespace tardigradeHydra{
                                             -= microGamma * inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Eb + Lb ]
                                              * inverseElasticPsi[ dim * Nb + Ob ] * inverseElasticPsi[ dim * Pb + Eb ]
                                              * elasticMicroRightCauchyGreen[ dim * Nb + Kb ];
+                                    }
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient ){
+            /*!
+             * Compute the plastic micro gradient velocity gradient.
+             *
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]\f$
+             *
+             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
+             * 
+             * \param &microGradientGamma: The micro gradient plastic multiplier.
+             * \param &elasticPsi: The elastic micro deformation measure Psi.
+             * \param &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
+             * \param &elasticGamma: The elastic higher order deformation measure Gamma.
+             * \param &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+             * \param &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
+             * \param &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
+             */
+
+            variableVector skewTerm;
+            return computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
+                                                                elasticGamma, microGradientFlowDirection,
+                                                                plasticMicroVelocityGradient, plasticMicroGradientVelocityGradient,
+                                                                skewTerm );
+
+        }
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableVector &skewTerm ){
+            /*!
+             * Compute the plastic micro gradient velocity gradient.
+             *
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]\f$
+             *
+             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
+             * 
+             * \param &microGradientGamma: The micro gradient plastic multiplier.
+             * \param &elasticPsi: The elastic micro deformation measure Psi.
+             * \param &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
+             * \param &elasticGamma: The elastic higher order deformation measure Gamma.
+             * \param &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+             * \param &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
+             * \param &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
+             * \param &skewTerm: The skew term ( times 2 ) from the higher order computation.
+             */
+
+            //Assume 3D
+            unsigned int dim = 3;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+
+                if ( microGradientGamma.size() != dim ){
+                    throw std::runtime_error( "The micro gradient plastic multiplier must have a length of 3" );
+                }
+
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+
+                if ( elasticPsi.size() != dim  * dim ){
+                    throw std::runtime_error( "The elastic micro deformation measure Psi must be 3D" );
+                }
+
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+
+                if ( inverseElasticPsi.size() != dim  * dim ){
+                    throw std::runtime_error( "The inverse elastic micro deformation measure Psi must be 3D" );
+                }
+
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+
+                if ( elasticGamma.size() != dim * dim * dim ){
+                    throw std::runtime_error( "The elastic higher order deformation measure Gamma must be 3D" );
+                }
+
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+
+                if ( microGradientFlowDirection.size() != dim * dim * dim * dim ){
+                    throw std::runtime_error( "The micro gradient flow direction must be 3D" );
+                }
+
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+
+                if ( plasticMicroVelocityGradient.size() != dim * dim ){
+                    throw std::runtime_error( "The plastic micro velocity gradient must be 3D" );
+                }
+
+            )
+
+            //Assemble the 'skew' term
+            skewTerm = variableVector( dim * dim * dim, 0 );
+
+            for ( unsigned int Db = 0; Db < dim; Db++ ){
+
+                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        for ( unsigned int Cb = 0; Cb < dim; Cb++ ){
+
+                            for ( unsigned int Fb = 0; Fb < dim; Fb++ ){
+
+                                skewTerm[ dim * dim * Db + dim * Mb + Kb ]
+                                    += plasticMicroVelocityGradient[ dim * Db + Cb ]
+                                     * inverseElasticPsi[ dim * Cb + Fb ]
+                                     * elasticGamma[ dim * dim * Fb + dim * Mb + Kb ]
+                                     - plasticMicroVelocityGradient[ dim * Cb + Mb ]
+                                     * inverseElasticPsi[ dim * Db + Fb ]
+                                     * elasticGamma[ dim * dim * Fb + dim * Cb + Kb ];
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            plasticMicroGradientVelocityGradient = variableVector( dim * dim * dim, 0 );
+
+            for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
+
+                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+
+                            for ( unsigned int Ib = 0; Ib < dim; Ib++ ){
+
+                                plasticMicroGradientVelocityGradient[ dim * dim * Nb + dim * Mb + Kb ]
+                                    += inverseElasticPsi[ dim * Nb + Lb ]
+                                     * ( microGradientGamma[ Ib ] * microGradientFlowDirection[ dim * dim * dim * Ib + dim * dim * Kb + dim * Lb + Mb ]
+                                     +   elasticPsi[ dim * Lb + Ib ] * skewTerm[ dim * dim * Ib + dim * Mb + Kb ] );
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdPlasticMicroL ){
+            /*!
+             * Compute the plastic micro gradient velocity gradient.
+             *
+             * \f$ \bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right] \f$
+             *
+             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
+             * 
+             * \param &microGradientGamma: The micro gradient plastic multiplier.
+             * \param &elasticPsi: The elastic micro deformation measure Psi.
+             * \param &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
+             * \param &elasticGamma: The elastic higher order deformation measure Gamma.
+             * \param &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+             * \param &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
+             * \param &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
+             * \param &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient 
+             *     velocity gradient w.r.t. the micro gradient gamma.
+             * \param &dPlasticMicroGradientLdPlasticMicroL: The Jacobian of the plastic micro gradient 
+             *     velocity gradient w.r.t. the platic micro velocity gradient.
+             */
+
+            variableVector skewTerm;
+            return computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi, elasticGamma,
+                                                                microGradientFlowDirection, plasticMicroVelocityGradient,
+                                                                plasticMicroGradientVelocityGradient, skewTerm,
+                                                                dPlasticMicroGradientLdMicroGradientGamma,
+                                                                dPlasticMicroGradientLdPlasticMicroL );
+        }
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableVector &skewTerm,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdPlasticMicroL ){
+            /*!
+             * Compute the plastic micro gradient velocity gradient.
+             *
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]\f$
+             *
+             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
+             * 
+             * \param &microGradientGamma: The micro gradient plastic multiplier.
+             * \param &elasticPsi: The elastic micro deformation measure Psi.
+             * \param &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
+             * \param &elasticGamma: The elastic higher order deformation measure Gamma.
+             * \param &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+             * \param &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
+             * \param &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
+             * \param &skewTerm: Two times the skew term.
+             * \param &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient 
+             *     velocity gradient w.r.t. the micro gradient gamma.
+             * \param &dPlasticMicroGradientLdPlasticMicroL: The Jacobian of the plastic micro gradient 
+             *     velocity gradient w.r.t. the platic micro velocity gradient.
+             */
+
+            //Assume 3D
+            unsigned int dim = 3;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+
+                computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
+                                                             elasticGamma, microGradientFlowDirection,
+                                                             plasticMicroVelocityGradient,
+                                                             plasticMicroGradientVelocityGradient, skewTerm )
+
+            )
+
+            constantVector eye( dim * dim );
+            tardigradeVectorTools::eye( eye );
+
+            dPlasticMicroGradientLdPlasticMicroL = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
+            dPlasticMicroGradientLdMicroGradientGamma = variableMatrix( dim * dim * dim, variableVector( dim, 0 ) );
+
+            for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+
+                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
+
+                            for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
+
+                                dPlasticMicroGradientLdMicroGradientGamma[ dim * dim * Lb + dim * Mb + Kb ][ Ob ]
+                                    += inverseElasticPsi[ dim * Lb + Pb ]
+                                     * microGradientFlowDirection[ dim * dim * dim * Ob + dim * dim * Kb + dim * Pb + Mb ];
+
+                                for ( unsigned int Qb = 0; Qb < dim; Qb++ ){
+
+                                    dPlasticMicroGradientLdPlasticMicroL[ dim * dim * Lb + dim * Mb + Kb ][ dim * Ob + Pb ]
+                                        += eye[ dim * Lb + Ob ] * inverseElasticPsi[ dim * Pb + Qb ]
+                                         * elasticGamma[ dim * dim * Qb + dim * Mb + Kb ]
+                                         - eye[ dim * Mb + Pb ] * inverseElasticPsi[ dim * Lb + Qb ]
+                                         * elasticGamma[ dim * dim * Qb + dim * Ob + Kb ];
+
+                                }
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdPlasticMicroL,
+                                                          variableMatrix &dPlasticMicroGradientLdElasticPsi,
+                                                          variableMatrix &dPlasticMicroGradientLdElasticGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientFlowDirection ){
+            /*!
+             * Compute the plastic micro gradient velocity gradient.
+             *
+             * \f$\bar{L}_{ \bar{N} \bar{M}, \bar{K} }^{\chi, p} = \bar{ \Psi }_{ \bar{N} \bar{L} }^{e, -1} \left[ \dot{ \bar{ \gamma } }_{\bar{I} } \frac{ \partial \bar{ G }_{ \bar{I} }^{ \nabla \chi } }{ \partial \bar{ M }_{ \bar{K} \bar{L} \bar{M} } } + 2 \bar{ \Psi }_{ \bar{L} \bar{D} }^{e} \text{ skw } \left[ \bar{L}_{ \bar{D} \bar{C} }^{ \chi, p } \bar{ \Psi }_{ \bar{C} \bar{F} }^{e, -1} \Gamma_{ \bar{F} \bar{M} \bar{K} }^{e} \right]\f$
+             *
+             * Note: The user must ensure that elasticPsi and inverseElasticPsi are inverses of each other. This is not checked in the code.
+             * 
+             * \param &microGradientGamma: The micro gradient plastic multiplier.
+             * \param &elasticPsi: The elastic micro deformation measure Psi.
+             * \param &inverseElasticPsi: The inverse elastic micro deformation measure Psi.
+             * \param &elasticGamma: The elastic higher order deformation measure Gamma.
+             * \param &microGradientFlowDirection: The flow direction for the micro gradient plasticity.
+             * \param &plasticMicroVelocityGradient: The velocity gradient for micro plasticity.
+             * \param &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
+             * \param &dPlasticMicroGradientLdMicroGradientGamma: The Jacobian of the plastic micro gradient 
+             *     velocity gradient w.r.t. the micro gradient gamma.
+             * \param &dPlasticMicroGradientLdPlasticMicroL: The Jacobian of the plastic micro gradient 
+             *     velocity gradient w.r.t. the platic micro velocity gradient.
+             * \param &dPlasticMicroGradientLdElasticPsi: The Jacobian of the plastic micro gradient
+             *     velocity gradient w.r.t. the elastic micro deformation tensor Psi.
+             * \param &dPlasticMicroGradientLdElasticGamma: The Jacobian of the plastic micro gradient
+             *     velocity gradient w.r.t. the elastic higher ordrer deformation tensor Gamma.
+             * \param &dPlasticMicroGradientLdMicroGradientFlowDirection: The Jacobian of the plastic micro gradient
+             *     velocity gradient w.r.t. the micro gradient flow direction.
+             */
+
+            //Assume 3D
+            unsigned int dim = 3;
+
+            variableVector skewTerm;
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+
+                computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
+                                                             elasticGamma, microGradientFlowDirection,
+                                                             plasticMicroVelocityGradient,
+                                                             plasticMicroGradientVelocityGradient, skewTerm,
+                                                             dPlasticMicroGradientLdMicroGradientGamma,
+                                                             dPlasticMicroGradientLdPlasticMicroL );
+
+            )
+
+            constantVector eye( dim * dim );
+
+            tardigradeVectorTools::eye( eye );
+
+            dPlasticMicroGradientLdElasticPsi = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
+
+            dPlasticMicroGradientLdElasticGamma = variableMatrix( dim * dim * dim, variableVector( dim * dim * dim, 0 ) );
+
+            dPlasticMicroGradientLdMicroGradientFlowDirection = variableMatrix( dim * dim * dim, variableVector( dim * dim * dim * dim, 0 ) );
+
+            for ( unsigned int Db = 0; Db < dim; Db++ ){
+
+                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
+
+                            for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
+
+                                dPlasticMicroGradientLdElasticPsi[ dim * dim * Db + dim * Mb + Kb ][ dim * Ob + Pb ]
+                                    += -inverseElasticPsi[ dim * Db + Ob ]
+                                     * plasticMicroGradientVelocityGradient[ dim * dim * Pb + dim * Mb + Kb ]
+                                     + inverseElasticPsi[ dim * Db + Ob ] * skewTerm[ dim * dim * Pb + dim * Mb + Kb ];
+
+                                for ( unsigned int Qb = 0; Qb < dim; Qb++ ){
+
+                                    dPlasticMicroGradientLdElasticGamma[ dim * dim * Db + dim * Mb + Kb ][ dim * dim * Ob + dim * Pb + Qb ]
+                                        -= plasticMicroVelocityGradient[ dim * Pb + Mb ]
+                                         * inverseElasticPsi[ dim * Db + Ob ] * eye[ dim * Kb + Qb ];
+
+                                    for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
+
+                                        dPlasticMicroGradientLdElasticPsi[ dim * dim * Db + dim * Mb + Kb ][ dim * Ob + Pb ]
+                                            -= plasticMicroVelocityGradient[ dim * Db + Qb ]
+                                             * inverseElasticPsi[ dim * Qb + Ob ] * inverseElasticPsi[ dim * Pb + Rb ]
+                                             * elasticGamma[ dim * dim * Rb + dim * Mb + Kb ]
+                                             - plasticMicroVelocityGradient[ dim * Qb + Mb ]
+                                             * inverseElasticPsi[ dim * Db + Ob ] * inverseElasticPsi[ dim * Pb + Rb ]
+                                             * elasticGamma[ dim * dim * Rb + dim * Qb + Kb ];
+
+                                        dPlasticMicroGradientLdElasticGamma[ dim * dim * Db + dim * Mb + Kb ][ dim * dim * Ob + dim * Pb + Qb ]
+                                            += plasticMicroVelocityGradient[ dim * Db + Rb ] * inverseElasticPsi[ dim * Rb + Ob ]
+                                             * eye[ dim * Mb + Pb ] * eye[ dim * Kb + Qb ];
+
+                                        dPlasticMicroGradientLdMicroGradientFlowDirection[ dim * dim * Db + dim * Mb + Kb ][ dim * dim * dim * Ob + dim * dim * Pb + dim * Qb + Rb ]
+                                            += inverseElasticPsi[ dim * Db + Qb ] * microGradientGamma[ Ob ]
+                                             * eye[ dim * Kb + Pb ] * eye[ dim * Mb + Rb ];
+
                                     }
 
                                 }
@@ -4513,6 +4912,24 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPlasticMicroVelocityGradientdF( ){
+            /*!
+             * Set the Jacobian of the plastic micro velocity gradient w.r.t. the deformation gradient
+             */
+
+            setPlasticVelocityGradientsJacobians( false );
+
+        }
+
+        void residual::setPreviousdPlasticMicroVelocityGradientdF( ){
+            /*!
+             * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the deformation gradient
+             */
+
+            setPlasticVelocityGradientsJacobians( true );
+
+        }
+
         void residual::setdPlasticMicroVelocityGradientdFn( ){
             /*!
              * Set the Jacobian of the plastic micro velocity gradient w.r.t. the sub deformation gradients
@@ -4531,6 +4948,24 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPlasticMicroVelocityGradientdChi( ){
+            /*!
+             * Set the Jacobian of the plastic micro velocity gradient w.r.t. the micro deformation
+             */
+
+            setPlasticVelocityGradientsJacobians( false );
+
+        }
+
+        void residual::setPreviousdPlasticMicroVelocityGradientdChi( ){
+            /*!
+             * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the micro deformation
+             */
+
+            setPlasticVelocityGradientsJacobians( true );
+
+        }
+
         void residual::setdPlasticMicroVelocityGradientdChin( ){
             /*!
              * Set the Jacobian of the plastic micro velocity gradient w.r.t. the sub micro deformations
@@ -4543,6 +4978,24 @@ namespace tardigradeHydra{
         void residual::setPreviousdPlasticMicroVelocityGradientdChin( ){
             /*!
              * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the sub micro deformations
+             */
+
+            setPlasticVelocityGradientsJacobians( true );
+
+        }
+
+        void residual::setdPlasticMicroVelocityGradientdStateVariables( ){
+            /*!
+             * Set the Jacobian of the plastic micro velocity gradient w.r.t. the state variables
+             */
+
+            setPlasticVelocityGradientsJacobians( false );
+
+        }
+
+        void residual::setPreviousdPlasticMicroVelocityGradientdStateVariables( ){
+            /*!
+             * Set the Jacobian of the previous plastic micro velocity gradient w.r.t. the state variables
              */
 
             setPlasticVelocityGradientsJacobians( true );
@@ -4798,19 +5251,29 @@ namespace tardigradeHydra{
                                                    + tardigradeVectorTools::dot( dPlasticMacroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdFn )
                                                    + tardigradeVectorTools::dot( dPlasticMacroLdPrecedingRCG, dRCGdFn );
 
+            floatMatrix dPlasticMicroLdF           = tardigradeVectorTools::dot( dPlasticMicroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdF )
+                                                   + tardigradeVectorTools::dot( dPlasticMicroLdPrecedingPsi, dPsidF );
+
             floatMatrix dPlasticMicroLdFn          = tardigradeVectorTools::dot( dPlasticMicroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdFn )
                                                    + tardigradeVectorTools::dot( dPlasticMicroLdPrecedingPsi, dPsidFn );
 
-            floatMatrix dPlasticMicroLdChin        = tardigradeVectorTools::dot( dPlasticMicroLdPrecedingPsi, dPsidChin );
-                                                     tardigradeVectorTools::dot( dPlasticMicroLdPrecedingMicroRCG, dMicroRCGdChin );
+            floatMatrix dPlasticMicroLdChi         = tardigradeVectorTools::dot( dPlasticMicroLdPrecedingPsi, dPsidChi )
+                                                   + tardigradeVectorTools::dot( dPlasticMicroLdPrecedingMicroRCG, dMicroRCGdChi );
+
+            floatMatrix dPlasticMicroLdChin        = tardigradeVectorTools::dot( dPlasticMicroLdPrecedingPsi, dPsidChin )
+                                                   + tardigradeVectorTools::dot( dPlasticMicroLdPrecedingMicroRCG, dMicroRCGdChin );
 
             floatMatrix dPlasticMacroLdISVs( macroVelocityGradient.size( ), floatVector( get_plasticStateVariables( )->size( ), 0 ) );
+
+            floatMatrix dPlasticMicroLdISVs( microVelocityGradient.size( ), floatVector( get_plasticStateVariables( )->size( ), 0 ) );
 
             for ( unsigned int i = 0; i < ( *dim ) * ( *dim ); i++ ){
 
                 dPlasticMacroLdISVs[ i ][ 0 ] = dPlasticMacroLdMacroGamma[ i ];
 
                 dPlasticMacroLdISVs[ i ][ 1 ] = dPlasticMacroLdMicroGamma[ i ];
+
+                dPlasticMicroLdISVs[ i ][ 1 ] = dPlasticMicroLdMicroGamma[ i ];
 
             }
 
@@ -4830,11 +5293,17 @@ namespace tardigradeHydra{
 
                 set_previousdPlasticMacroVelocityGradientdFn( dPlasticMacroLdFn );
 
+                set_previousdPlasticMicroVelocityGradientdF( dPlasticMicroLdF );
+
                 set_previousdPlasticMicroVelocityGradientdFn( dPlasticMicroLdFn );
+
+                set_previousdPlasticMicroVelocityGradientdChi( dPlasticMicroLdChi );
 
                 set_previousdPlasticMicroVelocityGradientdChin( dPlasticMicroLdChin );
 
                 set_previousdPlasticMacroVelocityGradientdStateVariables( dPlasticMacroLdISVs );
+
+                set_previousdPlasticMicroVelocityGradientdStateVariables( dPlasticMicroLdISVs );
 
             }
             else{
@@ -4853,11 +5322,17 @@ namespace tardigradeHydra{
 
                 set_dPlasticMacroVelocityGradientdFn( dPlasticMacroLdFn );
 
+                set_dPlasticMicroVelocityGradientdF( dPlasticMicroLdF );
+
                 set_dPlasticMicroVelocityGradientdFn( dPlasticMicroLdFn );
+
+                set_dPlasticMicroVelocityGradientdChi( dPlasticMicroLdChi );
 
                 set_dPlasticMicroVelocityGradientdChin( dPlasticMicroLdChin );
 
                 set_dPlasticMacroVelocityGradientdStateVariables( dPlasticMacroLdISVs );
+
+                set_dPlasticMicroVelocityGradientdStateVariables( dPlasticMicroLdISVs );
 
             }
 

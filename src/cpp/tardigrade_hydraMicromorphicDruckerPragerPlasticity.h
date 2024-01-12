@@ -163,6 +163,75 @@ namespace tardigradeHydra{
                                                   variableMatrix &dPlasticMicroLdElasticPsi,
                                                   variableMatrix &dPlasticMicroLdMicroFlowDirection );
 
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient );
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableVector &skewTerm );
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdPlasticMicroL );
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableVector &skewTerm,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdPlasticMicroL );
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdPlasticMicroL,
+                                                          variableMatrix &dPlasticMicroGradientLdElasticPsi,
+                                                          variableMatrix &dPlasticMicroGradientLdElasticGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientFlowDirection );
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdPlasticMicroL );
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableVector &skewTerm,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdPlasticMicroL );
+
+        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
+                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
+                                                          const variableVector &microGradientFlowDirection,
+                                                          const variableVector &plasticMicroVelocityGradient,
+                                                          variableVector &plasticMicroGradientVelocityGradient,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdPlasticMicroL,
+                                                          variableMatrix &dPlasticMicroGradientLdElasticPsi,
+                                                          variableMatrix &dPlasticMicroGradientLdElasticGamma,
+                                                          variableMatrix &dPlasticMicroGradientLdMicroGradientFlowDirection );
+
         /*!
          * The residual for a micromorphic Drucker Prager plasticity model
          */
@@ -549,13 +618,25 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousdPlasticMicroVelocityGradientdMicroStress( );
 
+                virtual void setdPlasticMicroVelocityGradientdF( );
+
+                virtual void setPreviousdPlasticMicroVelocityGradientdF( );
+
                 virtual void setdPlasticMicroVelocityGradientdFn( );
 
                 virtual void setPreviousdPlasticMicroVelocityGradientdFn( );
 
+                virtual void setdPlasticMicroVelocityGradientdChi( );
+
                 virtual void setdPlasticMicroVelocityGradientdChin( );
 
+                virtual void setPreviousdPlasticMicroVelocityGradientdChi( );
+
                 virtual void setPreviousdPlasticMicroVelocityGradientdChin( );
+
+                virtual void setdPlasticMicroVelocityGradientdStateVariables( );
+
+                virtual void setPreviousdPlasticMicroVelocityGradientdStateVariables( );
 
                 virtual void setPlasticVelocityGradientsJacobians( const bool isPrevious );
 
@@ -881,13 +962,25 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMicroVelocityGradientdMicroStress,    floatMatrix, setPreviousdPlasticMicroVelocityGradientdMicroStress    )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticMicroVelocityGradientdF,                      floatMatrix, setdPlasticMicroVelocityGradientdF                      )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMicroVelocityGradientdF,              floatMatrix, setPreviousdPlasticMicroVelocityGradientdF              )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticMicroVelocityGradientdFn,                     floatMatrix, setdPlasticMicroVelocityGradientdFn                     )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMicroVelocityGradientdFn,             floatMatrix, setPreviousdPlasticMicroVelocityGradientdFn             )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticMicroVelocityGradientdChi,                    floatMatrix, setdPlasticMicroVelocityGradientdChi                    )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMicroVelocityGradientdChi,            floatMatrix, setPreviousdPlasticMicroVelocityGradientdChi            )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticMicroVelocityGradientdChin,                   floatMatrix, setdPlasticMicroVelocityGradientdChin                   )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMicroVelocityGradientdChin,           floatMatrix, setPreviousdPlasticMicroVelocityGradientdChin           )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticMicroVelocityGradientdStateVariables,         floatMatrix, setdPlasticMicroVelocityGradientdStateVariables         )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMicroVelocityGradientdStateVariables, floatMatrix, setPreviousdPlasticMicroVelocityGradientdStateVariables )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousPlasticMicroVelocityGradient,                 floatVector, setPreviousPlasticMicroVelocityGradient                 )
 
