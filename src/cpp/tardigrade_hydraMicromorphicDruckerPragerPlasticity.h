@@ -533,9 +533,17 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousdPlasticMacroVelocityGradientdMicroStress( );
 
+                virtual void setdPlasticMacroVelocityGradientdF( );
+
+                virtual void setPreviousdPlasticMacroVelocityGradientdF( );
+
                 virtual void setdPlasticMacroVelocityGradientdFn( );
 
                 virtual void setPreviousdPlasticMacroVelocityGradientdFn( );
+
+                virtual void setdPlasticMacroVelocityGradientdStateVariables( );
+
+                virtual void setPreviousdPlasticMacroVelocityGradientdStateVariables( );
 
                 virtual void setPlasticVelocityGradientsJacobians( const bool isPrevious );
 
@@ -843,9 +851,17 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMacroVelocityGradientdMicroStress,    floatMatrix, setPreviousdPlasticMacroVelocityGradientdMicroStress    )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticMacroVelocityGradientdF,                      floatMatrix, setdPlasticMacroVelocityGradientdF                      )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMacroVelocityGradientdF,              floatMatrix, setPreviousdPlasticMacroVelocityGradientdF              )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticMacroVelocityGradientdFn,                     floatMatrix, setdPlasticMacroVelocityGradientdFn                     )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMacroVelocityGradientdFn,             floatMatrix, setPreviousdPlasticMacroVelocityGradientdFn             )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticMacroVelocityGradientdStateVariables,         floatMatrix, setdPlasticMacroVelocityGradientdStateVariables         )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticMacroVelocityGradientdStateVariables, floatMatrix, setPreviousdPlasticMacroVelocityGradientdStateVariables )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticMicroVelocityGradient,                         floatVector, setPlasticMicroVelocityGradient                         )
 

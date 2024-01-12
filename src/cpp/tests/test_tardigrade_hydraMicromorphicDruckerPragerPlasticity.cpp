@@ -7430,9 +7430,25 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             floatVector previousPrecedingDeformationGradient = { 1, -0.2, -0.3, -0.4, 0.5, -0.6, -0.7, -0.8, 0.1 };
 
+            floatMatrix dPrecedingDeformationGradientdF = initialize( 9, 9 );
+
+            floatMatrix dPrecedingDeformationGradientdFn = initialize( 9, 9 );
+
+            floatMatrix previousdPrecedingDeformationGradientdF = initialize( 9, 9 );
+
+            floatMatrix previousdPrecedingDeformationGradientdFn = initialize( 9, 9 );
+
             floatVector precedingMicroDeformation = { 0.8, -0.1, 0.2, 0.3, 1.1, 0.4, -0.2, 0.5, 1.2 };
 
             floatVector previousPrecedingMicroDeformation = { 0.7, 0.11, -0.2, 0.2, 0.9, 0.2, 0.2, -0.1, 1.1 };
+
+            floatMatrix dPrecedingMicroDeformationdChi = initialize( 9, 9 );
+
+            floatMatrix dPrecedingMicroDeformationdChin = initialize( 9, 9 );
+
+            floatMatrix previousdPrecedingMicroDeformationdChi = initialize( 9, 9 );
+
+            floatMatrix previousdPrecedingMicroDeformationdChin = initialize( 9, 9 );
 
             floatVector plasticMultipliers = { 1.1, 1.2, 1.3, 1.4, 1.5 };
 
@@ -7450,6 +7466,10 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             floatMatrix previousd2MacroFlowdDrivingStressdStress = initialize( 9, 9 );
 
+            floatMatrix d2MacroFlowdDrivingStressdF = initialize( 9, 9 );
+
+            floatMatrix previousd2MacroFlowdDrivingStressdF = initialize( 9, 9 );
+
             floatMatrix d2MacroFlowdDrivingStressdFn = initialize( 9, 9 );
 
             floatMatrix previousd2MacroFlowdDrivingStressdFn = initialize( 9, 9 );
@@ -7457,6 +7477,10 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
             floatMatrix d2MicroFlowdDrivingStressdStress = initialize( 9, 9 );
 
             floatMatrix previousd2MicroFlowdDrivingStressdStress = initialize( 9, 9 );
+
+            floatMatrix d2MicroFlowdDrivingStressdF = initialize( 9, 9 );
+
+            floatMatrix previousd2MicroFlowdDrivingStressdF = initialize( 9, 9 );
 
             floatMatrix d2MicroFlowdDrivingStressdFn = initialize( 9, 9 );
 
@@ -7518,6 +7542,27 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             }
 
+            virtual void setPrecedingDeformationGradientJacobians( const bool isPrevious ) override{
+
+                setPrecedingDeformationGradient( isPrevious );
+
+                if ( isPrevious ){
+
+                    set_previousdPrecedingDeformationGradientdF( previousdPrecedingDeformationGradientdF );
+
+                    set_previousdPrecedingDeformationGradientdFn( previousdPrecedingDeformationGradientdFn );
+
+                }
+                else{
+
+                    set_dPrecedingDeformationGradientdF( dPrecedingDeformationGradientdF );
+
+                    set_dPrecedingDeformationGradientdFn( dPrecedingDeformationGradientdFn );
+
+                }
+
+            }
+
             virtual void setPrecedingMicroDeformation( const bool isPrevious ) override{
 
                 if ( isPrevious ){
@@ -7528,6 +7573,27 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
                 else{
 
                     set_precedingMicroDeformation( precedingMicroDeformation );
+
+                }
+
+            }
+
+            virtual void setPrecedingMicroDeformationJacobians( const bool isPrevious ) override{
+
+                setPrecedingMicroDeformation( isPrevious );
+
+                if ( isPrevious ){
+
+                    set_previousdPrecedingMicroDeformationdChi( previousdPrecedingMicroDeformationdChi );
+
+                    set_previousdPrecedingMicroDeformationdChin( previousdPrecedingMicroDeformationdChin );
+
+                }
+                else{
+
+                    set_dPrecedingMicroDeformationdChi( dPrecedingMicroDeformationdChi );
+
+                    set_dPrecedingMicroDeformationdChin( dPrecedingMicroDeformationdChin );
 
                 }
 
@@ -7560,9 +7626,13 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
                     set_previousd2MacroFlowdDrivingStressdStress( previousd2MacroFlowdDrivingStressdStress );
 
+                    set_previousd2MacroFlowdDrivingStressdF( previousd2MacroFlowdDrivingStressdF );
+
                     set_previousd2MacroFlowdDrivingStressdFn( previousd2MacroFlowdDrivingStressdFn );
 
                     set_previousd2MicroFlowdDrivingStressdStress( previousd2MicroFlowdDrivingStressdStress );
+
+                    set_previousd2MicroFlowdDrivingStressdF( previousd2MicroFlowdDrivingStressdF );
 
                     set_previousd2MicroFlowdDrivingStressdFn( previousd2MicroFlowdDrivingStressdFn );
 
@@ -7571,9 +7641,13 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
                     set_d2MacroFlowdDrivingStressdStress( d2MacroFlowdDrivingStressdStress );
 
+                    set_d2MacroFlowdDrivingStressdF( d2MacroFlowdDrivingStressdF );
+
                     set_d2MacroFlowdDrivingStressdFn( d2MacroFlowdDrivingStressdFn );
 
                     set_d2MicroFlowdDrivingStressdStress( d2MicroFlowdDrivingStressdStress );
+
+                    set_d2MicroFlowdDrivingStressdF( d2MicroFlowdDrivingStressdF );
 
                     set_d2MicroFlowdDrivingStressdFn( d2MicroFlowdDrivingStressdFn );
 
@@ -7920,9 +7994,47 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
     // Test the Jacobians
 
-    floatMatrix dMacroLdX( 9, floatVector( unknownVector.size( ), 0 ) );
+    floatMatrix dMacroLdX(                9, floatVector( unknownVector.size( ), 0 ) );
 
-    floatMatrix dMicroLdX( 9, floatVector( unknownVector.size( ), 0 ) );
+    floatMatrix dMicroLdX(                9, floatVector( unknownVector.size( ), 0 ) );
+
+    floatMatrix dMicroGradientLdX(       27, floatVector( unknownVector.size( ), 0 ) );
+
+    floatMatrix dMacroLdF(                9, floatVector(  9, 0 ) );
+
+    floatMatrix dMicroLdF(                9, floatVector(  9, 0 ) );
+
+    floatMatrix dMicroGradientLdF(       27, floatVector(  9, 0 ) );
+
+    floatMatrix dMicroLdChi(              9, floatVector(  9, 0 ) );
+
+    floatMatrix dMicroGradientLdChi(     27, floatVector(  9, 0 ) );
+
+    floatMatrix dMicroGradientLdGradChi( 27, floatVector( 27, 0 ) );
+
+    floatMatrix previousdMacroLdStress(            9, floatVector( configuration_unknown_count, 0 ) );
+
+    floatMatrix previousdMicroLdStress(            9, floatVector( configuration_unknown_count, 0 ) );
+
+    floatMatrix previousdMicroGradientLdStress(   27, floatVector( configuration_unknown_count, 0 ) );
+
+    floatMatrix previousdMacroLdISVs(              9, floatVector( previousStateVariables.size( ), 0 ) );
+
+    floatMatrix previousdMicroLdISVs(              9, floatVector( previousStateVariables.size( ), 0 ) );
+
+    floatMatrix previousdMicroGradientLdISVs(     27, floatVector( previousStateVariables.size( ), 0 ) );
+
+    floatMatrix previousdMacroLdF(                 9, floatVector(  9, 0 ) );
+
+    floatMatrix previousdMicroLdF(                 9, floatVector(  9, 0 ) );
+
+    floatMatrix previousdMicroGradientLdF(        27, floatVector(  9, 0 ) );
+
+    floatMatrix previousdMicroLdChi(               9, floatVector(  9, 0 ) );
+
+    floatMatrix previousdMicroGradientLdChi(      27, floatVector(  9, 0 ) );
+
+    floatMatrix previousdMicroGradientLdGradChi(  27, floatVector( 27, 0 ) );
 
     floatType eps = 1e-6;
 
@@ -7980,6 +8092,10 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
     floatMatrix assembled_dMicroLdX( 9, floatVector( unknownVector.size( ), 0 ) );
 
+    floatMatrix assembled_dMicroGradientLdX( 27, floatVector( unknownVector.size( ), 0 ) );
+
+    std::cout << "assembling\n";
+    try{
     for ( unsigned int i = 0; i < 9; i++ ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
@@ -7988,9 +8104,18 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
             assembled_dMacroLdX[ i ][ j + 9 ] = ( *R.get_dPlasticMacroVelocityGradientdMicroStress( ) )[ i ][ j ];
 
+            assembled_dMacroLdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dPlasticMacroVelocityGradientdFn( ) )[ i ][ j ];
+
+        }
+
+        for ( unsigned int j = 0; j < 10; j++ ){
+
+            assembled_dMacroLdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dPlasticMacroVelocityGradientdStateVariables( ) )[ i ][ j ];
+
         }
 
     }
+    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
 
     std::cout << "assembled_dMacroLdX:\n"; tardigradeVectorTools::print( assembled_dMacroLdX );
 
@@ -7998,5 +8123,518 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
     std::cout << "dMicroLdX:\n"; tardigradeVectorTools::print( dMicroLdX );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroLdX, assembled_dMacroLdX ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroLdX, assembled_dMicroLdX ) );
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdX, assembled_dMicroGradientLdX ) );
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatVector delta( 9, 0 );
+
+        delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp(  &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm(  &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_plasticMacroVelocityGradient( );
+
+        floatVector vm = *Rm.get_plasticMacroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            dMacroLdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = *Rp.get_plasticMicroVelocityGradient( );
+
+        vm = *Rm.get_plasticMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            dMicroLdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroLdF, *R.get_dPlasticMacroVelocityGradientdF( ) ) );
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroLdF, *R.get_dPlasticMicroVelocityGradientdF( ) ) );
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdF, *R.get_dPlasticMicroGradientVelocityGradientdF( ) ) );
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatVector delta( 9, 0 );
+
+        delta[ i ] = eps * std::fabs( microDeformation[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation + delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation - delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp(  &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm(  &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_plasticMacroVelocityGradient( );
+
+        floatVector vm = *Rm.get_plasticMacroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+        vp = *Rp.get_plasticMicroVelocityGradient( );
+
+        vm = *Rm.get_plasticMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            dMicroLdChi[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroLdChi, *R.get_dPlasticMicroVelocityGradientdChi( ) ) );
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdChi, *R.get_dPlasticMicroGradientVelocityGradientdChi( ) ) );
+
+    for ( unsigned int i = 0; i < 27; i++ ){
+
+        floatVector delta( 27, 0 );
+
+        delta[ i ] = eps * std::fabs( gradientMicroDeformation[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation + delta, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation - delta, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp(  &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm(  &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_plasticMacroVelocityGradient( );
+
+        floatVector vm = *Rm.get_plasticMacroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+        vp = *Rp.get_plasticMicroVelocityGradient( );
+
+        vm = *Rm.get_plasticMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+    }
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdGradChi, *R.get_dPlasticMicroGradientVelocityGradientdGradChi( ) ) );
+
+    // Check previous Jacobians
+    for ( unsigned int i = 0; i < configuration_unknown_count; i++ ){
+
+        floatVector delta( configuration_unknown_count, 0 );
+
+        delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
+
+        floatVector dpk2(   delta.begin( ) +  0, delta.begin( ) +  9 );
+        floatVector dsigma( delta.begin( ) +  9, delta.begin( ) + 18 );
+        floatVector dm(     delta.begin( ) + 18, delta.end( )        );
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydrap._local_deltaPK2   = dpk2;
+
+        hydrap._local_deltaSIGMA = dsigma;
+
+        hydrap._local_deltaM     = dm;
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydram._local_deltaPK2   = -dpk2;
+
+        hydram._local_deltaSIGMA = -dsigma;
+
+        hydram._local_deltaM     = -dm;
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp(  &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm(  &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_previousPlasticMacroVelocityGradient( );
+
+        floatVector vm = *Rm.get_previousPlasticMacroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMacroLdStress[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = *Rp.get_previousPlasticMicroVelocityGradient( );
+
+        vm = *Rm.get_previousPlasticMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMicroLdStress[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    floatMatrix assembled_previousdMacroLdStress( 9, floatVector( configuration_unknown_count, 0 ) );
+
+    floatMatrix assembled_previousdMicroLdStress( 9, floatVector( configuration_unknown_count, 0 ) );
+
+    floatMatrix assembled_previousdMicroGradientLdStress( 27, floatVector( configuration_unknown_count, 0 ) );
+
+    std::cout << "assembling\n";
+    try{
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            assembled_previousdMacroLdStress[ i ][ j ]     = ( *R.get_previousdPlasticMacroVelocityGradientdMacroStress( ) )[ i ][ j ];
+
+            assembled_previousdMacroLdStress[ i ][ j + 9 ] = ( *R.get_previousdPlasticMacroVelocityGradientdMicroStress( ) )[ i ][ j ];
+
+        }
+
+    }
+    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
+
+    std::cout << "assembled_dMacroLdStress:\n"; tardigradeVectorTools::print( assembled_previousdMacroLdStress );
+
+    std::cout << "dMacroLdStress:\n"; tardigradeVectorTools::print( previousdMacroLdStress );
+    std::cout << "dMicroLdStress:\n"; tardigradeVectorTools::print( previousdMicroLdStress );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroLdStress, assembled_previousdMacroLdStress ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroLdStress, assembled_previousdMicroLdStress ) );
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdStress, assembled_previousdMicroGradientLdStress ) );
+
+    for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
+
+        floatVector delta( previousStateVariables.size( ), 0 );
+
+        delta[ i ] = eps * std::fabs( previousStateVariables[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables + delta, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables - delta, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp(  &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm(  &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_previousPlasticMacroVelocityGradient( );
+
+        floatVector vm = *Rm.get_previousPlasticMacroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMacroLdISVs[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = *Rp.get_previousPlasticMicroVelocityGradient( );
+
+        vm = *Rm.get_previousPlasticMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMicroLdISVs[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    floatMatrix assembled_previousdMacroLdISVs( 9, floatVector( previousStateVariables.size( ), 0 ) );
+
+    floatMatrix assembled_previousdMicroLdISVs( 9, floatVector( previousStateVariables.size( ), 0 ) );
+
+    floatMatrix assembled_previousdMicroGradientLdISVs( 27, floatVector( previousStateVariables.size( ), 0 ) );
+
+    std::cout << "assembling\n";
+    try{
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            assembled_previousdMacroLdISVs[ i ][ j ]= ( *R.get_previousdPlasticMacroVelocityGradientdFn( ) )[ i ][ j ];
+
+        }
+
+        for ( unsigned int j = 0; j < 10; j++ ){
+
+            assembled_previousdMacroLdISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdPlasticMacroVelocityGradientdStateVariables( ) )[ i ][ j ];
+
+        }
+
+    }
+    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
+
+    std::cout << "assembled_previousdMacroLdISVs:\n"; tardigradeVectorTools::print( assembled_previousdMacroLdISVs );
+
+    std::cout << "previousdMacroLdISVs:\n"; tardigradeVectorTools::print( previousdMacroLdISVs );
+    std::cout << "previousdMicroLdISVs:\n"; tardigradeVectorTools::print( previousdMicroLdISVs );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroLdISVs, assembled_previousdMacroLdISVs ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroLdISVs, assembled_previousdMicroLdISVs ) );
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdX, assembled_dMicroGradientLdX ) );
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatVector delta( 9, 0 );
+
+        delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp(  &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm(  &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_previousPlasticMacroVelocityGradient( );
+
+        floatVector vm = *Rm.get_previousPlasticMacroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMacroLdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+        vp = *Rp.get_previousPlasticMicroVelocityGradient( );
+
+        vm = *Rm.get_previousPlasticMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMicroLdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroLdF, *R.get_previousdPlasticMacroVelocityGradientdF( ) ) );
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroLdF, *R.get_previousdPlasticMicroVelocityGradientdF( ) ) );
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdF, *R.get_previousdPlasticMicroGradientVelocityGradientdF( ) ) );
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatVector delta( 9, 0 );
+
+        delta[ i ] = eps * std::fabs( microDeformation[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation + delta, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation - delta, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp(  &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm(  &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_previousPlasticMacroVelocityGradient( );
+
+        floatVector vm = *Rm.get_previousPlasticMacroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+        vp = *Rp.get_previousPlasticMicroVelocityGradient( );
+
+        vm = *Rm.get_previousPlasticMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMicroLdChi[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroLdChi, *R.get_previousdPlasticMicroVelocityGradientdChi( ) ) );
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdChi, *R.get_previousdPlasticMicroGradientVelocityGradientdChi( ) ) );
+
+    for ( unsigned int i = 0; i < 27; i++ ){
+
+        floatVector delta( 27, 0 );
+
+        delta[ i ] = eps * std::fabs( gradientMicroDeformation[ i ] ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation + delta,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation - delta,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp(  &hydrap, 55, 1, stateVariableIndices, parameters );
+
+        residualMock Rm(  &hydram, 55, 1, stateVariableIndices, parameters );
+
+        floatVector vp = *Rp.get_previousPlasticMacroVelocityGradient( );
+
+        floatVector vm = *Rm.get_previousPlasticMacroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+        vp = *Rp.get_previousPlasticMicroVelocityGradient( );
+
+        vm = *Rm.get_previousPlasticMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+
+        }
+
+    }
+
+//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdGradChi, *R.get_previousdPlasticMicroGradientVelocityGradientdGradChi( ) ) );
 
 }
