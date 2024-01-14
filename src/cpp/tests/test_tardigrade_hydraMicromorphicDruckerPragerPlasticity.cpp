@@ -8722,6 +8722,26 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             floatMatrix previousdPrecedingMicroDeformationdChin = initialize( 9, 9 );
 
+            floatMatrix dPrecedingGradientMicroDeformationdFn = initialize( 27, 9 );
+
+            floatMatrix dPrecedingGradientMicroDeformationdChi = initialize( 27, 9 );
+
+            floatMatrix dPrecedingGradientMicroDeformationdChin = initialize( 27, 9 );
+
+            floatMatrix dPrecedingGradientMicroDeformationdGradChi = initialize( 27, 27 );
+
+            floatMatrix dPrecedingGradientMicroDeformationdGradChin = initialize( 27, 27 );
+
+            floatMatrix previousdPrecedingGradientMicroDeformationdFn = initialize( 27, 9 );
+
+            floatMatrix previousdPrecedingGradientMicroDeformationdChi = initialize( 27, 9 );
+
+            floatMatrix previousdPrecedingGradientMicroDeformationdChin = initialize( 27, 9 );
+
+            floatMatrix previousdPrecedingGradientMicroDeformationdGradChi = initialize( 27, 27 );
+
+            floatMatrix previousdPrecedingGradientMicroDeformationdGradChin = initialize( 27, 27 );
+
             floatVector plasticMultipliers = { 1.1, 1.2, 1.3, 1.4, 1.5 };
 
             floatVector previousPlasticMultipliers = { 1.01, 1.02, 1.03, 1.04, 1.05 };
@@ -8776,10 +8796,6 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             floatMatrix d2MicroGradientFlowdDrivingStressdChin     = initialize( 3, 27 *  9 );
 
-            floatMatrix d2MicroGradientFlowdDrivingStressdGradChi  = initialize( 3, 27 * 27 );
-
-            floatMatrix d2MicroGradientFlowdDrivingStressdGradChin = initialize( 3, 27 * 27 );
-
             floatMatrix previousd2MicroGradientFlowdDrivingStressdStress   = initialize( 3, 27 * 27 );
 
             floatMatrix previousd2MicroGradientFlowdDrivingStressdF        = initialize( 3, 27 *  9 );
@@ -8789,10 +8805,6 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
             floatMatrix previousd2MicroGradientFlowdDrivingStressdChi      = initialize( 3, 27 *  9 );
 
             floatMatrix previousd2MicroGradientFlowdDrivingStressdChin     = initialize( 3, 27 *  9 );
-
-            floatMatrix previousd2MicroGradientFlowdDrivingStressdGradChi  = initialize( 3, 27 * 27 );
-
-            floatMatrix previousd2MicroGradientFlowdDrivingStressdGradChin = initialize( 3, 27 * 27 );
 
             floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
                                               2, 0.37773052, 0.92739145,
@@ -8922,6 +8934,39 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             }
 
+            virtual void setPrecedingGradientMicroDeformationJacobians( const bool isPrevious ) override{
+
+                setPrecedingGradientMicroDeformation( isPrevious );
+
+                if ( isPrevious ){
+
+                    set_previousdPrecedingGradientMicroDeformationdFn(       previousdPrecedingGradientMicroDeformationdFn );
+
+                    set_previousdPrecedingGradientMicroDeformationdChi(      previousdPrecedingGradientMicroDeformationdChi );
+
+                    set_previousdPrecedingGradientMicroDeformationdChin(     previousdPrecedingGradientMicroDeformationdChin );
+
+                    set_previousdPrecedingGradientMicroDeformationdGradChi(  previousdPrecedingGradientMicroDeformationdGradChi );
+
+                    set_previousdPrecedingGradientMicroDeformationdGradChin( previousdPrecedingGradientMicroDeformationdGradChin );
+
+                }
+                else{
+
+                    set_dPrecedingGradientMicroDeformationdFn(       dPrecedingGradientMicroDeformationdFn );
+
+                    set_dPrecedingGradientMicroDeformationdChi(      dPrecedingGradientMicroDeformationdChi );
+
+                    set_dPrecedingGradientMicroDeformationdChin(     dPrecedingGradientMicroDeformationdChin );
+
+                    set_dPrecedingGradientMicroDeformationdGradChi(  dPrecedingGradientMicroDeformationdGradChi );
+
+                    set_dPrecedingGradientMicroDeformationdGradChin( dPrecedingGradientMicroDeformationdGradChin );
+
+                }
+
+            }
+
             virtual void setFlowPotentialGradients( const bool isPrevious ) override{
 
                 if ( isPrevious ){
@@ -8973,10 +9018,6 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
                     set_previousd2MicroGradientFlowdDrivingStressdChin(     previousd2MicroGradientFlowdDrivingStressdChin );
 
-//                    set_previousd2MicroGradientFlowdDrivingStressdGradChi(  previousd2MicroGradientFlowdDrivingStressdGradChi );
-//
-//                    set_previousd2MicroGradientFlowdDrivingStressdGradChin( previousd2MicroGradientFlowdDrivingStressdGradChin );
-
                 }
                 else{
 
@@ -9001,10 +9042,6 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
                     set_d2MicroGradientFlowdDrivingStressdChi(      d2MicroGradientFlowdDrivingStressdChi );
 
                     set_d2MicroGradientFlowdDrivingStressdChin(     d2MicroGradientFlowdDrivingStressdChin );
-
-//                    set_d2MicroGradientFlowdDrivingStressdGradChi(  d2MicroGradientFlowdDrivingStressdGradChi );
-//
-//                    set_d2MicroGradientFlowdDrivingStressdGradChin( d2MicroGradientFlowdDrivingStressdGradChin );
 
                 }
 
@@ -9484,8 +9521,6 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
     floatMatrix assembled_dMicroGradientLdX( 27, floatVector( unknownVector.size( ), 0 ) );
 
-    std::cout << "assembling\n";
-    try{
     for ( unsigned int i = 0; i < 9; i++ ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
@@ -9520,20 +9555,27 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
             assembled_dMicroGradientLdX[ i ][ j + 9 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdMicroStress( ) )[ i ][ j ];
 
+            assembled_dMicroGradientLdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dPlasticGradientMicroVelocityGradientdFn( ) )[ i ][ j ];
+
+            assembled_dMicroGradientLdX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdChin( ) )[ i ][ j ];
+
         }
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
             assembled_dMicroGradientLdX[ i ][ j + 18 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdHigherOrderStress( ) )[ i ][ j ];
 
+            assembled_dMicroGradientLdX[ i ][ j + configuration_unknown_count + 18 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdGradChin( ) )[ i ][ j ];
+
+        }
+
+        for ( unsigned int j = 0; j < 10; j++ ){
+
+            assembled_dMicroGradientLdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dPlasticGradientMicroVelocityGradientdStateVariables( ) )[ i ][ j ];
+
         }
 
     }
-    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
-
-    std::cout << "assembled_dMicroGradientLdX:\n"; tardigradeVectorTools::print( assembled_dMicroGradientLdX );
-
-    std::cout << "dMicroGradientLdX:\n"; tardigradeVectorTools::print( dMicroGradientLdX );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroLdX, assembled_dMacroLdX ) );
 
@@ -9589,13 +9631,23 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         }
 
+        vp = *Rp.get_plasticGradientMicroVelocityGradient( );
+
+        vm = *Rm.get_plasticGradientMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            dMicroGradientLdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroLdF, *R.get_dPlasticMacroVelocityGradientdF( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroLdF, *R.get_dPlasticMicroVelocityGradientdF( ) ) );
 
-//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdF, *R.get_dPlasticMicroGradientVelocityGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdF, *R.get_dPlasticGradientMicroVelocityGradientdF( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -9645,11 +9697,21 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         }
 
+        vp = *Rp.get_plasticGradientMicroVelocityGradient( );
+
+        vm = *Rm.get_plasticGradientMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            dMicroGradientLdChi[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroLdChi, *R.get_dPlasticMicroVelocityGradientdChi( ) ) );
 
-//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdChi, *R.get_dPlasticMicroGradientVelocityGradientdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdChi, *R.get_dPlasticGradientMicroVelocityGradientdChi( ) ) );
 
     for ( unsigned int i = 0; i < 27; i++ ){
 
@@ -9699,9 +9761,19 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         }
 
+        vp = *Rp.get_plasticGradientMicroVelocityGradient( );
+
+        vm = *Rm.get_plasticGradientMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            dMicroGradientLdGradChi[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
     }
 
-//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdGradChi, *R.get_dPlasticMicroGradientVelocityGradientdGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdGradChi, *R.get_dPlasticGradientMicroVelocityGradientdGradChi( ) ) );
 
     // Check previous Jacobians
     for ( unsigned int i = 0; i < configuration_unknown_count; i++ ){
@@ -9870,6 +9942,16 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         }
 
+        vp = *Rp.get_previousPlasticGradientMicroVelocityGradient( );
+
+        vm = *Rm.get_previousPlasticGradientMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMicroGradientLdISVs[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
     }
 
     floatMatrix assembled_previousdMacroLdISVs( 9, floatVector( previousStateVariables.size( ), 0 ) );
@@ -9878,17 +9960,15 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
     floatMatrix assembled_previousdMicroGradientLdISVs( 27, floatVector( previousStateVariables.size( ), 0 ) );
 
-    std::cout << "assembling\n";
-    try{
     for ( unsigned int i = 0; i < 9; i++ ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_previousdMacroLdISVs[ i ][ j ]= ( *R.get_previousdPlasticMacroVelocityGradientdFn( ) )[ i ][ j ];
+            assembled_previousdMacroLdISVs[ i ][ j ] = ( *R.get_previousdPlasticMacroVelocityGradientdFn( ) )[ i ][ j ];
 
-            assembled_previousdMicroLdISVs[ i ][ j ]= ( *R.get_previousdPlasticMicroVelocityGradientdFn( ) )[ i ][ j ];
+            assembled_previousdMicroLdISVs[ i ][ j ] = ( *R.get_previousdPlasticMicroVelocityGradientdFn( ) )[ i ][ j ];
 
-            assembled_previousdMicroLdISVs[ i ][ j + 9 ]= ( *R.get_previousdPlasticMicroVelocityGradientdChin( ) )[ i ][ j ];
+            assembled_previousdMicroLdISVs[ i ][ j + 9 ] = ( *R.get_previousdPlasticMicroVelocityGradientdChin( ) )[ i ][ j ];
 
         }
 
@@ -9901,17 +9981,36 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
         }
 
     }
-    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
 
-    std::cout << "assembled_previousdMicroLdISVs:\n"; tardigradeVectorTools::print( assembled_previousdMicroLdISVs );
+    for ( unsigned int i = 0; i < 27; i++ ){
 
-    std::cout << "previousdMicroLdISVs:\n"; tardigradeVectorTools::print( previousdMicroLdISVs );
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            assembled_previousdMicroGradientLdISVs[ i ][ j ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdFn( ) )[ i ][ j ];
+
+            assembled_previousdMicroGradientLdISVs[ i ][ j + 9 ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdChin( ) )[ i ][ j ];
+
+        }
+
+        for ( unsigned int j = 0; j < 27; j++ ){
+
+            assembled_previousdMicroGradientLdISVs[ i ][ j + 18 ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdGradChin( ) )[ i ][ j ];
+
+        }
+
+        for ( unsigned int j = 0; j < 10; j++ ){
+
+            assembled_previousdMicroGradientLdISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdStateVariables( ) )[ i ][ j ];
+
+        }
+
+    }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroLdISVs, assembled_previousdMacroLdISVs ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroLdISVs, assembled_previousdMicroLdISVs ) );
 
-//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdX, assembled_dMicroGradientLdX ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdX, assembled_dMicroGradientLdX ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -9961,13 +10060,23 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         }
 
+        vp = *Rp.get_previousPlasticGradientMicroVelocityGradient( );
+
+        vm = *Rm.get_previousPlasticGradientMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMicroGradientLdF[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroLdF, *R.get_previousdPlasticMacroVelocityGradientdF( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroLdF, *R.get_previousdPlasticMicroVelocityGradientdF( ) ) );
 
-//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdF, *R.get_previousdPlasticMicroGradientVelocityGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdF, *R.get_previousdPlasticGradientMicroVelocityGradientdF( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -10017,11 +10126,21 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         }
 
+        vp = *Rp.get_previousPlasticGradientMicroVelocityGradient( );
+
+        vm = *Rm.get_previousPlasticGradientMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMicroGradientLdChi[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroLdChi, *R.get_previousdPlasticMicroVelocityGradientdChi( ) ) );
 
-//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdChi, *R.get_previousdPlasticMicroGradientVelocityGradientdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdChi, *R.get_previousdPlasticGradientMicroVelocityGradientdChi( ) ) );
 
     for ( unsigned int i = 0; i < 27; i++ ){
 
@@ -10071,8 +10190,18 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         }
 
+        vp = *Rp.get_previousPlasticGradientMicroVelocityGradient( );
+
+        vm = *Rm.get_previousPlasticGradientMicroVelocityGradient( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            previousdMicroGradientLdGradChi[ j ][ i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
     }
 
-//    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdGradChi, *R.get_previousdPlasticMicroGradientVelocityGradientdGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdGradChi, *R.get_previousdPlasticGradientMicroVelocityGradientdGradChi( ) ) );
 
 }
