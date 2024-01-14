@@ -8710,6 +8710,10 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             floatVector previousPrecedingMicroDeformation = { 0.7, 0.11, -0.2, 0.2, 0.9, 0.2, 0.2, -0.1, 1.1 };
 
+            floatVector precedingGradientMicroDeformation = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7 };
+
+            floatVector previousPrecedingGradientMicroDeformation = { 0.2, 0.2, 0.7, 0.4, 1.5, 0.6, 0.7, 0.2, 0.9, 1.4, 1.1, 1.2, 1.8, 1.4, 1.5, 1.6, 1.7, 1.8, 5.9, 2.0, 2.1, 2.2, 2.3, 1.4, 2.5, 2.6, 2.7 };
+
             floatMatrix dPrecedingMicroDeformationdChi = initialize( 9, 9 );
 
             floatMatrix dPrecedingMicroDeformationdChin = initialize( 9, 9 );
@@ -8726,9 +8730,17 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             floatVector dMicroFlowdDrivingStress = { 0.21, 0.32, 0.43, 0.54, 0.15, 0.26, 0.37, 0.18, 0.29 };
 
+            floatMatrix dMicroGradientFlowdDrivingStress = { {  .1,  .2,  .6,  .4,  .5,  .6,  .7,  .8,  .9, 1.0, 1.1, 1.2, 2.3, 1.4, 1.5, 1.6, 1.2, 1.8, 1.9, 2.0, 2.1, 1.2, 2.3, 2.4, 2.5, 2.6, 1.7 },
+                                                             { 2.8, 5.9, 2.0, 1.1, 3.2, 4.3, 3.4, 3.6, 2.6, 3.1, 3.6, 3.9, 4.0, 1.1, 4.2, 4.3, 4.4, 5.5, 4.6, 4.7, 8.8, 4.4, 5.0, 2.1, 5.6, 5.3, 5.4 },
+                                                             { 1.5, 5.9, 5.7, 5.8, 2.9, 6.0, 3.1, 6.2, 1.3, 5.4, 6.5, 3.6, 6.7, 6.8, 8.9, 7.0, 7.1, 7.2, 1.3, 7.4, 7.5, 7.6, 3.7, 7.8, 7.9, 3.2, 8.1 } };
+
             floatVector previousdMacroFlowdDrivingStress = { 0.11, -0.22, 0.33, 0.44, -0.55, 0.66, 0.77, -0.88, 0.99 };
 
             floatVector previousdMicroFlowdDrivingStress = { 0.21, 0.32, 0.43, 0.54, -0.15, -0.26, 0.37, -0.18, 0.29 };
+
+            floatMatrix previousdMicroGradientFlowdDrivingStress = { {  .1,  .2,  .3,  .4,  .5,  .6,  .7,  .8,  .9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7 },
+                                                                     { 2.8, 2.9, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4 },
+                                                                     { 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 8.0, 8.1 } };
 
             floatMatrix d2MacroFlowdDrivingStressdStress = initialize( 9, 9 );
 
@@ -8753,6 +8765,34 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
             floatMatrix d2MicroFlowdDrivingStressdFn = initialize( 9, 9 );
 
             floatMatrix previousd2MicroFlowdDrivingStressdFn = initialize( 9, 9 );
+
+            floatMatrix d2MicroGradientFlowdDrivingStressdStress   = initialize( 3, 27 * 27 );
+
+            floatMatrix d2MicroGradientFlowdDrivingStressdF        = initialize( 3, 27 *  9 );
+
+            floatMatrix d2MicroGradientFlowdDrivingStressdFn       = initialize( 3, 27 *  9 );
+
+            floatMatrix d2MicroGradientFlowdDrivingStressdChi      = initialize( 3, 27 *  9 );
+
+            floatMatrix d2MicroGradientFlowdDrivingStressdChin     = initialize( 3, 27 *  9 );
+
+            floatMatrix d2MicroGradientFlowdDrivingStressdGradChi  = initialize( 3, 27 * 27 );
+
+            floatMatrix d2MicroGradientFlowdDrivingStressdGradChin = initialize( 3, 27 * 27 );
+
+            floatMatrix previousd2MicroGradientFlowdDrivingStressdStress   = initialize( 3, 27 * 27 );
+
+            floatMatrix previousd2MicroGradientFlowdDrivingStressdF        = initialize( 3, 27 *  9 );
+
+            floatMatrix previousd2MicroGradientFlowdDrivingStressdFn       = initialize( 3, 27 *  9 );
+
+            floatMatrix previousd2MicroGradientFlowdDrivingStressdChi      = initialize( 3, 27 *  9 );
+
+            floatMatrix previousd2MicroGradientFlowdDrivingStressdChin     = initialize( 3, 27 *  9 );
+
+            floatMatrix previousd2MicroGradientFlowdDrivingStressdGradChi  = initialize( 3, 27 * 27 );
+
+            floatMatrix previousd2MicroGradientFlowdDrivingStressdGradChin = initialize( 3, 27 * 27 );
 
             floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
                                               2, 0.37773052, 0.92739145,
@@ -8867,6 +8907,21 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             }
 
+            virtual void setPrecedingGradientMicroDeformation( const bool isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_previousPrecedingGradientMicroDeformation( previousPrecedingGradientMicroDeformation );
+
+                }
+                else{
+
+                    set_precedingGradientMicroDeformation( precedingGradientMicroDeformation );
+
+                }
+
+            }
+
             virtual void setFlowPotentialGradients( const bool isPrevious ) override{
 
                 if ( isPrevious ){
@@ -8875,12 +8930,16 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
                     set_previousdMicroFlowdDrivingStress( previousdMicroFlowdDrivingStress );
 
+                    set_previousdMicroGradientFlowdDrivingStress( previousdMicroGradientFlowdDrivingStress );
+
                 }
                 else{
 
                     set_dMacroFlowdDrivingStress( dMacroFlowdDrivingStress );
 
                     set_dMicroFlowdDrivingStress( dMicroFlowdDrivingStress );
+
+                    set_dMicroGradientFlowdDrivingStress( dMicroGradientFlowdDrivingStress );
 
                 }
 
@@ -8904,6 +8963,20 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
                     set_previousd2MicroFlowdDrivingStressdFn( previousd2MicroFlowdDrivingStressdFn );
 
+                    set_previousd2MicroGradientFlowdDrivingStressdStress(   previousd2MicroGradientFlowdDrivingStressdStress );
+
+                    set_previousd2MicroGradientFlowdDrivingStressdF(        previousd2MicroGradientFlowdDrivingStressdF );
+
+                    set_previousd2MicroGradientFlowdDrivingStressdFn(       previousd2MicroGradientFlowdDrivingStressdFn );
+
+                    set_previousd2MicroGradientFlowdDrivingStressdChi(      previousd2MicroGradientFlowdDrivingStressdChi );
+
+                    set_previousd2MicroGradientFlowdDrivingStressdChin(     previousd2MicroGradientFlowdDrivingStressdChin );
+
+//                    set_previousd2MicroGradientFlowdDrivingStressdGradChi(  previousd2MicroGradientFlowdDrivingStressdGradChi );
+//
+//                    set_previousd2MicroGradientFlowdDrivingStressdGradChin( previousd2MicroGradientFlowdDrivingStressdGradChin );
+
                 }
                 else{
 
@@ -8918,6 +8991,20 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
                     set_d2MicroFlowdDrivingStressdF( d2MicroFlowdDrivingStressdF );
 
                     set_d2MicroFlowdDrivingStressdFn( d2MicroFlowdDrivingStressdFn );
+
+                    set_d2MicroGradientFlowdDrivingStressdStress(   d2MicroGradientFlowdDrivingStressdStress );
+
+                    set_d2MicroGradientFlowdDrivingStressdF(        d2MicroGradientFlowdDrivingStressdF );
+
+                    set_d2MicroGradientFlowdDrivingStressdFn(       d2MicroGradientFlowdDrivingStressdFn );
+
+                    set_d2MicroGradientFlowdDrivingStressdChi(      d2MicroGradientFlowdDrivingStressdChi );
+
+                    set_d2MicroGradientFlowdDrivingStressdChin(     d2MicroGradientFlowdDrivingStressdChin );
+
+//                    set_d2MicroGradientFlowdDrivingStressdGradChi(  d2MicroGradientFlowdDrivingStressdGradChi );
+//
+//                    set_d2MicroGradientFlowdDrivingStressdGradChin( d2MicroGradientFlowdDrivingStressdGradChin );
 
                 }
 
@@ -8998,25 +9085,48 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
                                           0.53976276,  0.79789782,  0.70459609,
                                           0.12024267,  0.33339548,  0.51643547 };
 
+    floatVector answerGradientMicroL = {  3.8507487 ,  9.28081242,  4.46027602, 16.50809086, 13.53689506,
+                                         18.95857114, 11.62882252,  7.02811906, 24.30162626,  4.99834674,
+                                          7.21236049,  7.80149465, -4.85671956, -0.43475823,  0.63767785,
+                                          8.87730438,  9.98386271, -2.38221783,  3.06628593,  6.65983251,
+                                          9.29346899, 10.46800609,  9.98772098,  7.34645701, -1.88625885,
+                                          6.42755711, 12.98624717 };
+
+    floatVector answerPreviousGradientMicroL = { -21.46773019, -25.17130606, -29.16693711, -21.86601317,
+                                                 -28.93581213, -31.13912857, -22.02294257, -27.50418022,
+                                                 -32.17041273,  -6.1639954 , -10.27462586, -12.96246109,
+                                                  -8.64986898, -10.8323775 , -14.64827127,  -8.87965286,
+                                                 -10.86375779, -13.52206104,  -8.80618738, -17.72393425,
+                                                 -21.79970553, -17.01989502, -20.89282785, -25.07806712,
+                                                 -14.26432742, -20.14073019, -24.09169252 };
+
     RJ.get_dPlasticMacroVelocityGradientdMacroStress( );
 
     RJ.get_previousdPlasticMacroVelocityGradientdMacroStress( );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMacroL,         *R.get_plasticMacroVelocityGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMacroL,                 *R.get_plasticMacroVelocityGradient( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMacroL, *R.get_previousPlasticMacroVelocityGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMacroL,         *R.get_previousPlasticMacroVelocityGradient( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMicroL,         *R.get_plasticMicroVelocityGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMicroL,                 *R.get_plasticMicroVelocityGradient( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMicroL, *R.get_previousPlasticMicroVelocityGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMicroL,         *R.get_previousPlasticMicroVelocityGradient( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMacroL,         *RJ.get_plasticMacroVelocityGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerGradientMicroL,         *R.get_plasticGradientMicroVelocityGradient( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMacroL, *RJ.get_previousPlasticMacroVelocityGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousGradientMicroL, *R.get_previousPlasticGradientMicroVelocityGradient( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMicroL,         *RJ.get_plasticMicroVelocityGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMacroL,                 *RJ.get_plasticMacroVelocityGradient( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMicroL, *RJ.get_previousPlasticMicroVelocityGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMacroL,         *RJ.get_previousPlasticMacroVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerMicroL,                 *RJ.get_plasticMicroVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousMicroL,         *RJ.get_previousPlasticMicroVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerGradientMicroL,         *RJ.get_plasticGradientMicroVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerPreviousGradientMicroL, *RJ.get_previousPlasticGradientMicroVelocityGradient( ) ) );
 
 }
 
@@ -9024,6 +9134,8 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
     /*!
      * Test setting the cohesion values
      */
+
+    std::cout << "starting gradient check\n";
 
     // Form a hydra class and residual class
     floatType time = 1.23;
