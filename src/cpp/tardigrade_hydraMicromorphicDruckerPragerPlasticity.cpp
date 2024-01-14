@@ -5207,6 +5207,42 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdPlasticGradientMicroVelocityGradientdMicroStress( ){
+            /*!
+             * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the micro stress
+             */
+
+            setPlasticVelocityGradientsJacobians( false );
+
+        }
+
+        void residual::setPreviousdPlasticGradientMicroVelocityGradientdMicroStress( ){
+            /*!
+             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the micro stress
+             */
+
+            setPlasticVelocityGradientsJacobians( true );
+
+        }
+
+        void residual::setdPlasticGradientMicroVelocityGradientdHigherOrderStress( ){
+            /*!
+             * Set the Jacobian of the plastic gradient micro velocity gradient w.r.t. the higher order stress
+             */
+
+            setPlasticVelocityGradientsJacobians( false );
+
+        }
+
+        void residual::setPreviousdPlasticGradientMicroVelocityGradientdHigherOrderStress( ){
+            /*!
+             * Set the Jacobian of the previous plastic gradient micro velocity gradient w.r.t. the higher order stress
+             */
+
+            setPlasticVelocityGradientsJacobians( true );
+
+        }
+
         void residual::setPlasticVelocityGradientsJacobians( const bool isPrevious ){
             /*!
              * Set the plastic macro velocity gradient and their Jacobians
@@ -5250,6 +5286,8 @@ namespace tardigradeHydra{
 
             const floatMatrix *d2MicroFlowdDrivingStressdStress;
 
+            const floatMatrix *d2MicroGradientFlowdDrivingStressdStress;
+
             if ( isPrevious ){
 
                 dPrecedingFdF = get_previousdPrecedingDeformationGradientdF( );
@@ -5285,6 +5323,8 @@ namespace tardigradeHydra{
                 dMicroFlowdDrivingStress         = get_previousdMicroFlowdDrivingStress( );
 
                 dMicroGradientFlowdDrivingStress = get_previousdMicroGradientFlowdDrivingStress( );
+
+                d2MicroGradientFlowdDrivingStressdStress = get_previousd2MicroGradientFlowdDrivingStressdStress( );
 
             }
             else{
@@ -5322,6 +5362,8 @@ namespace tardigradeHydra{
                 dMicroFlowdDrivingStress         = get_dMicroFlowdDrivingStress( );
 
                 dMicroGradientFlowdDrivingStress = get_dMicroGradientFlowdDrivingStress( );
+
+                d2MicroGradientFlowdDrivingStressdStress = get_d2MicroGradientFlowdDrivingStressdStress( );
 
             }
 
@@ -5436,6 +5478,17 @@ namespace tardigradeHydra{
 
             floatMatrix dPlasticMicroLdMicroFlowDirection;
 
+            floatMatrix dPlasticGradientMicroLdMicroGradientGamma;
+
+            floatMatrix dPlasticGradientMicroLdPlasticMicroL;
+
+            floatMatrix dPlasticGradientMicroLdPrecedingPsi;
+
+            floatMatrix dPlasticGradientMicroLdPrecedingGamma;
+
+            floatMatrix dPlasticGradientMicroLdMicroGradientFlowDirection;
+
+
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 computePlasticMacroVelocityGradient( ( *plasticMultipliers )[ 0 ], ( *plasticMultipliers )[ 1 ],
                                                      inversePrecedingRCG, *dMacroFlowdDrivingStress, *dMicroFlowdDrivingStress,
@@ -5453,7 +5506,12 @@ namespace tardigradeHydra{
                 computePlasticMicroGradientVelocityGradient( floatVector( plasticMultipliers->begin( ) + 2, plasticMultipliers->end( ) ),
                                                              precedingPsi, inversePrecedingPsi, precedingGamma,
                                                              tardigradeVectorTools::appendVectors( *dMicroGradientFlowdDrivingStress ),
-                                                             microVelocityGradient, gradientMicroVelocityGradient );
+                                                             microVelocityGradient, gradientMicroVelocityGradient,
+                                                             dPlasticGradientMicroLdMicroGradientGamma,
+                                                             dPlasticGradientMicroLdPlasticMicroL,
+                                                             dPlasticGradientMicroLdPrecedingPsi,
+                                                             dPlasticGradientMicroLdPrecedingGamma,
+                                                             dPlasticGradientMicroLdMicroGradientFlowDirection );
             )
 
             // Assemble the Jacobians
@@ -5462,6 +5520,29 @@ namespace tardigradeHydra{
             floatMatrix dPlasticMacroLdMicroStress = tardigradeVectorTools::dot( dPlasticMacroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdStress );
 
             floatMatrix dPlasticMicroLdMicroStress = tardigradeVectorTools::dot( dPlasticMicroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdStress );
+
+            floatMatrix dPlasticGradientMicroLdMicroStress       = tardigradeVectorTools::dot( dPlasticGradientMicroLdPlasticMicroL, dPlasticMicroLdMicroStress );
+
+            std::cout << "dPlasticGradientMicroLdMicroGradientFlowDirection:\n"; tardigradeVectorTools::print( dPlasticGradientMicroLdMicroGradientFlowDirection );
+
+            floatMatrix reshaped_d2MicroGradientFlowdDrivingStressdStress( ( *dim ) * ( *dim ) * ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( *dim ), 0 ) );
+
+            for ( unsigned int i = 0; i < *dim; i++ ){
+
+                for ( unsigned int j = 0; j < ( *dim ) * ( *dim ) * ( *dim ); j++ ){
+
+                    for ( unsigned int k = 0; k < ( *dim ) * ( *dim ) * ( *dim ); k++ ){
+
+                        reshaped_d2MicroGradientFlowdDrivingStressdStress[ ( *dim ) * ( *dim ) * ( *dim ) * i + j ][ k ]
+                            = ( *d2MicroGradientFlowdDrivingStressdStress )[ i ][ ( *dim ) *  ( *dim ) * ( *dim ) * j + k ];
+
+                    }
+
+                }
+
+            }
+
+            floatMatrix dPlasticGradientMicroLdHigherOrderStress = tardigradeVectorTools::dot( dPlasticGradientMicroLdMicroGradientFlowDirection, reshaped_d2MicroGradientFlowdDrivingStressdStress );
 
             floatMatrix dPlasticMacroLdF           = tardigradeVectorTools::dot( dPlasticMacroLdMacroFlowDirection, *d2MacroFlowdDrivingStressdF )
                                                    + tardigradeVectorTools::dot( dPlasticMacroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdF )
@@ -5527,6 +5608,10 @@ namespace tardigradeHydra{
 
                 set_previousdPlasticMicroVelocityGradientdStateVariables( dPlasticMicroLdISVs );
 
+                set_previousdPlasticGradientMicroVelocityGradientdMicroStress( dPlasticGradientMicroLdMicroStress );
+
+                set_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress( dPlasticGradientMicroLdHigherOrderStress );
+
             }
             else{
 
@@ -5557,6 +5642,10 @@ namespace tardigradeHydra{
                 set_dPlasticMacroVelocityGradientdStateVariables( dPlasticMacroLdISVs );
 
                 set_dPlasticMicroVelocityGradientdStateVariables( dPlasticMicroLdISVs );
+
+                set_dPlasticGradientMicroVelocityGradientdMicroStress( dPlasticGradientMicroLdMicroStress );
+
+                set_dPlasticGradientMicroVelocityGradientdHigherOrderStress( dPlasticGradientMicroLdHigherOrderStress );
 
             }
 

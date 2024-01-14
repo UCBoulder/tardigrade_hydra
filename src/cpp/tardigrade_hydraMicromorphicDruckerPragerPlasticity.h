@@ -642,6 +642,14 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousdPlasticMicroVelocityGradientdStateVariables( );
 
+                virtual void setdPlasticGradientMicroVelocityGradientdMicroStress( );
+
+                virtual void setPreviousdPlasticGradientMicroVelocityGradientdMicroStress( );
+
+                virtual void setdPlasticGradientMicroVelocityGradientdHigherOrderStress( );
+
+                virtual void setPreviousdPlasticGradientMicroVelocityGradientdHigherOrderStress( );
+
                 virtual void setPlasticVelocityGradientsJacobians( const bool isPrevious );
 
                 virtual void setPrecedingGradientMicroDeformation( );
@@ -1043,6 +1051,14 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticGradientMicroVelocityGradient,                 floatVector, setPlasticGradientMicroVelocityGradient                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPlasticGradientMicroVelocityGradient,         floatVector, setPreviousPlasticGradientMicroVelocityGradient         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticGradientMicroVelocityGradientdMicroStress,         floatMatrix, setdPlasticGradientMicroVelocityGradientdMicroStress         )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticGradientMicroVelocityGradientdMicroStress, floatMatrix, setPreviousdPlasticGradientMicroVelocityGradientdMicroStress )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticGradientMicroVelocityGradientdHigherOrderStress,         floatMatrix, setdPlasticGradientMicroVelocityGradientdHigherOrderStress         )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticGradientMicroVelocityGradientdHigherOrderStress, floatMatrix, setPreviousdPlasticGradientMicroVelocityGradientdHigherOrderStress )
 
         };
 
