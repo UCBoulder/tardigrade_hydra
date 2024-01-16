@@ -276,6 +276,28 @@ namespace tardigradeHydra{
                                         variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
                                         const parameterType alpha = 0.5 );
 
+        void evolvePlasticMicroGradChi( const variableType &Dt,
+                                        const variableVector &currentPlasticMicroDeformation,
+                                        const variableVector &currentPlasticMacroVelocityGradient,
+                                        const variableVector &currentPlasticMicroVelocityGradient,
+                                        const variableVector &currentPlasticMicroGradientVelocityGradient,
+                                        const variableVector &previousPlasticMicroDeformation,
+                                        const variableVector &previousPlasticMicroGradient,
+                                        const variableVector &previousPlasticMacroVelocityGradient,
+                                        const variableVector &previousPlasticMicroVelocityGradient,
+                                        const variableVector &previousPlasticMicroGradientVelocityGradient,
+                                        variableVector &currentPlasticMicroGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient,
+                                        const parameterType alpha = 0.5 );
+
 //        void evolvePlasticDeformation( const variableType &Dt,
 //                                       const variableVector &currentPlasticMacroVelocityGradient,
 //                                       const variableVector &currentPlasticMicroVelocityGradient,

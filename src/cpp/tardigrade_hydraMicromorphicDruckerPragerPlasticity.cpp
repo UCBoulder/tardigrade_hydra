@@ -1487,7 +1487,7 @@ namespace tardigradeHydra{
              *     velocity gradient from the last converged increment.
              * :param variableVector &currentPlasticMicroGradient: The current plastic micro gradient 
              *    deformation in the intermediate configuration.
-             * :param parameterType alpha: The integration parameter.
+             * :param parameterType alpha: The integration parameter (0 is explicit, 1 is implicit).
              */
 
             variableMatrix LHS;
@@ -1535,7 +1535,7 @@ namespace tardigradeHydra{
              * :param variableVector &currentPlasticMicroGradient: The current plastic micro gradient 
              *    deformation in the intermediate configuration.
              * :param variableMatrix &LHS: The left-hand-side matrix.
-             * :param parameterType alpha: The integration parameter.
+             * :param parameterType alpha: The integration parameter (0 is explicit, 1 is implicit).
              */
 
             //Assume 3D
@@ -1609,10 +1609,10 @@ namespace tardigradeHydra{
                     for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
                         for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
                             DtAtilde[ dim * dim * Db + dim * B + Kb ] += Dt
-                                * ( alpha * previousPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Lb + Kb ]
+                                * ( ( 1 - alpha ) * previousPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Lb + Kb ]
                                           *  previousPlasticMicroDeformation[ dim * Lb + B ]
-                                + ( 1. - alpha ) * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Lb + Kb ]
-                                                 * currentPlasticMicroDeformation[ dim * Lb + B ] );
+                                + alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Lb + Kb ]
+                                        * currentPlasticMicroDeformation[ dim * Lb + B ] );
 
                             previousFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Lb ]
                                 = ( previousPlasticMicroVelocityGradient[ dim * Db + B ] * eye[ dim * Kb + Lb ]
@@ -1636,11 +1636,11 @@ namespace tardigradeHydra{
                         for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
                            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
                               RHS[ dim * dim * Db + dim * B + Kb ]
-                                 += ( eye[ dim * Db + Bb ] * eye[ dim * Kb + Lb ] + Dt * alpha * previousFourthA[ dim * dim * dim * Db + dim * dim * Bb + dim * Kb + Lb ] )
+                                 += ( eye[ dim * Db + Bb ] * eye[ dim * Kb + Lb ] + Dt * ( 1. - alpha ) * previousFourthA[ dim * dim * dim * Db + dim * dim * Bb + dim * Kb + Lb ] )
                                   * previousPlasticMicroGradient[ dim * dim * Bb + dim * B + Lb ];
                               for ( unsigned int Sb = 0; Sb < dim; Sb++ ){
                                   LHS[ dim * dim * Db + dim * B + Kb ][ dim * dim * Lb + dim * Bb + Sb ]
-                                      = ( eye[ dim * Db + Lb ] * eye[ dim * Kb + Sb ] - Dt * ( 1. - alpha ) * currentFourthA[ dim * dim * dim * Db + dim * dim * Lb + dim * Kb + Sb ] ) * eye[ dim * B + Bb ];
+                                      = ( eye[ dim * Db + Lb ] * eye[ dim * Kb + Sb ] - Dt * alpha * currentFourthA[ dim * dim * dim * Db + dim * dim * Lb + dim * Kb + Sb ] ) * eye[ dim * B + Bb ];
                               }
                            }
                         }
@@ -1705,7 +1705,7 @@ namespace tardigradeHydra{
              *     micro deformation w.r.t. the plastic micro velocity gradient.
              * :param variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient: The jacobian of the plastic 
              *     micro deformation w.r.t. the plastic micro gradient velocity gradient.
-             * :param parameterType alpha: The integration parameter.
+             * :param parameterType alpha: The integration parameter (0 is explicit, 1 is implicit).
              */
 
             //Assume 3D
@@ -1743,7 +1743,7 @@ namespace tardigradeHydra{
                         for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
                             for ( unsigned int S = 0; S < dim; S++ ){
                                 dCurrentDTAtildedPlasticMicroDeformation[ dim * dim * Db + dim * B + Kb ][ dim * Rb + S ]
-                                    += Dt * ( 1. - alpha ) * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ]
+                                    += Dt * alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ]
                                      * eye[ dim * B + S ];
 
                                 for ( unsigned int Tb = 0; Tb < dim; Tb++ ){
@@ -1751,7 +1751,7 @@ namespace tardigradeHydra{
                                         += eye[ dim * Db + Rb ] * eye[ dim * B + S ] * eye[ dim * Kb + Tb ];
 
                                     dCurrentDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * B + Kb ][ dim * dim * Rb + dim * S + Tb ]
-                                        += Dt * ( 1. - alpha ) * eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ] * currentPlasticMicroDeformation[ dim * S + B ];
+                                        += Dt * alpha * eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ] * currentPlasticMicroDeformation[ dim * S + B ];
 
                                     dCurrentFourthAdMacroVelocityGradient[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Rb ][ dim * S + Tb ]
                                         -= eye[ dim * Rb + S ] * eye[ dim * Kb + Tb ] * eye[ dim * Db + B ];
@@ -1761,7 +1761,7 @@ namespace tardigradeHydra{
 
                                     for ( unsigned int Ub = 0; Ub < dim; Ub++ ){
                                         negdRdCurrentFourthA[ dim * dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * dim * B + dim * dim * dim * dim * Kb + dim * dim * dim * Rb + dim * dim * S + dim * Tb + Ub ]
-                                            += Dt * ( 1. - alpha ) * eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ]
+                                            += Dt * alpha * eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ]
                                              * currentPlasticMicroGradient[ dim * dim * S + dim * B + Ub ];
 
                                     }
@@ -1805,6 +1805,218 @@ namespace tardigradeHydra{
 
             dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = tardigradeVectorTools::dot( dCurrentPlasticMicroGradientdCurrentDTAtilde,
                                                                                      dCurrentDTAtildedPlasticMicroGradientVelocityGradient );
+
+        }
+
+        void evolvePlasticMicroGradChi( const variableType &Dt,
+                                        const variableVector &currentPlasticMicroDeformation,
+                                        const variableVector &currentPlasticMacroVelocityGradient,
+                                        const variableVector &currentPlasticMicroVelocityGradient,
+                                        const variableVector &currentPlasticMicroGradientVelocityGradient,
+                                        const variableVector &previousPlasticMicroDeformation,
+                                        const variableVector &previousPlasticMicroGradient,
+                                        const variableVector &previousPlasticMacroVelocityGradient,
+                                        const variableVector &previousPlasticMicroVelocityGradient,
+                                        const variableVector &previousPlasticMicroGradientVelocityGradient,
+                                        variableVector &currentPlasticMicroGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient,
+                                        variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient,
+                                        const parameterType alpha ){
+            /*!
+             * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
+             *
+             * :param const variableType &Dt: The change in time.
+             * :param const variableVector &currentPlasticMicroDeformation: The inverse of the current micro deformation.
+             * :param const variableVector &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
+             * :param const variableVector &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
+             * :param const variableVector &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
+             *     velocity gradient.
+             * :param const variableVector &previousPlasticMicroDeformation: The the plastic micro deformation 
+             *     from the last converged increment.
+             * :param const variableVector &previousPlasticMicroGradient: The micro gradient deformation in the 
+             *     intermediate configuation from the last converged increment.
+             * :param const variableVector &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient
+             *     from the last converged increment.
+             * :param const variableVector &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient
+             *     from the last converged increment.
+             * :param const variableVector &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient 
+             *     velocity gradient from the last converged increment.
+             * :param variableVector &currentPlasticMicroGradient: The current plastic micro gradient 
+             *    deformation in the intermediate configuration.
+             * :param variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroDeformation: The jacobian of the plastic 
+             *     micro deformation w.r.t. the plastic micro deformation.
+             * :param variableMatrix &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient: The jacobian of the plastic 
+             *     micro deformation w.r.t. the plastic macro velocity gradient.
+             * :param variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient: The jacobian of the plastic 
+             *     micro deformation w.r.t. the plastic micro velocity gradient.
+             * :param variableMatrix &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient: The jacobian of the plastic 
+             *     micro deformation w.r.t. the plastic micro gradient velocity gradient.
+             * :param variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation: The jacobian of the plastic 
+             *     micro deformation w.r.t. the previous plastic micro deformation.
+             * :param variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient: The jacobian of the plastic 
+             *     micro deformation w.r.t. the intermediate configuration spatial gradient of the plastic micro deformation from the last
+             *     converged increment
+             * :param variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient: The jacobian of the plastic 
+             *     micro deformation w.r.t. the previous plastic macro velocity gradient.
+             * :param variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient: The jacobian of the plastic 
+             *     micro deformation w.r.t. the previous plastic micro velocity gradient.
+             * :param variableMatrix &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient: The jacobian of the plastic 
+             *     micro deformation w.r.t. the previous plastic micro gradient velocity gradient.
+             * :param parameterType alpha: The integration parameter (0 is explicit, 1 is implicit).
+             */
+
+            //Assume 3D
+            unsigned int dim = 3;
+
+            //Compute the required identity terms
+            constantVector eye( dim * dim );
+            tardigradeVectorTools::eye( eye );
+
+            //Compute the new currentPlasticMicroGradient
+            variableMatrix LHS;
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
+                                           currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
+                                           previousPlasticMicroDeformation, previousPlasticMicroGradient,
+                                           previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
+                                           previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
+                                           LHS, alpha );
+            )
+
+            //Compute the negative partial derivatives w.r.t. currentFourthA and the current part of DtAtilde
+            //We do this in vector form so that we can interface with Eigen easier
+            variableVector negdRdCurrentDtAtilde( dim * dim * dim * dim * dim * dim, 0 );
+            variableVector negdRdCurrentFourthA( dim * dim * dim * dim * dim * dim * dim, 0 );
+
+            //Also assemble jacobians of the A terms
+            variableMatrix dCurrentDTAtildedPlasticMicroDeformation( dim * dim * dim, variableVector( dim * dim, 0 ) );
+            variableMatrix dCurrentDTAtildedPlasticMicroGradientVelocityGradient( dim * dim * dim, variableVector( dim * dim * dim, 0 ) );
+            variableMatrix dCurrentFourthAdMacroVelocityGradient( dim * dim * dim * dim, variableVector( dim * dim, 0 ) );
+            variableMatrix dCurrentFourthAdMicroVelocityGradient( dim * dim * dim * dim, variableVector( dim * dim, 0 ) );
+
+            variableMatrix dPreviousDTAtildedPlasticMicroDeformation( dim * dim * dim, variableVector( dim * dim, 0 ) );
+            variableMatrix dPreviousDTAtildedPlasticMicroGradientVelocityGradient( dim * dim * dim, variableVector( dim * dim * dim, 0 ) );
+
+            variableVector vecdRHSdPreviousPlasticMicroGradient( dim * dim * dim * dim * dim * dim, 0 );
+            variableVector vecdRHSdPreviousPlasticMacroVelocityGradient( dim * dim * dim * dim * dim, 0 );
+            variableVector vecdRHSdPreviousPlasticMicroVelocityGradient( dim * dim * dim * dim * dim, 0 );
+
+            for ( unsigned int Db = 0; Db < dim; Db++ ){
+                for ( unsigned int B = 0; B < dim; B++ ){
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                        for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
+                            for ( unsigned int S = 0; S < dim; S++ ){
+                                dCurrentDTAtildedPlasticMicroDeformation[ dim * dim * Db + dim * B + Kb ][ dim * Rb + S ]
+                                    += Dt * alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ]
+                                     * eye[ dim * B + S ];
+
+                                dPreviousDTAtildedPlasticMicroDeformation[ dim * dim * Db + dim * B + Kb ][ dim * Rb + S ]
+                                    += Dt * ( 1. - alpha ) * previousPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ]
+                                     * eye[ dim * B + S ];
+
+                                vecdRHSdPreviousPlasticMacroVelocityGradient[ dim * dim * dim * dim * Db + dim * dim * dim * B + dim * dim * Kb + dim * Rb + S ]
+                                    -= Dt * ( 1. - alpha ) * eye[ dim * Kb +  S ] * previousPlasticMicroGradient[ dim * dim * Db + dim * B + Rb ];
+
+                                vecdRHSdPreviousPlasticMicroVelocityGradient[ dim * dim * dim * dim * Db + dim * dim * dim * B + dim * dim * Kb + dim * Rb + S ]
+                                    += Dt * ( 1. - alpha ) * eye[ dim * Db + Rb ] * previousPlasticMicroGradient[ dim * dim * S + dim * B + Kb ];
+
+                                for ( unsigned int Tb = 0; Tb < dim; Tb++ ){
+                                    negdRdCurrentDtAtilde[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Rb + dim * S + Tb ]
+                                        += eye[ dim * Db + Rb ] * eye[ dim * B + S ] * eye[ dim * Kb + Tb ];
+
+                                    dCurrentDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * B + Kb ][ dim * dim * Rb + dim * S + Tb ]
+                                        += Dt * alpha * eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ] * currentPlasticMicroDeformation[ dim * S + B ];
+
+                                    dPreviousDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * B + Kb ][ dim * dim * Rb + dim * S + Tb ]
+                                        += Dt * ( 1. - alpha ) * eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ] * previousPlasticMicroDeformation[ dim * S + B ];
+
+                                    dCurrentFourthAdMacroVelocityGradient[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Rb ][ dim * S + Tb ]
+                                        -= eye[ dim * Rb + S ] * eye[ dim * Kb + Tb ] * eye[ dim * Db + B ];
+
+                                    dCurrentFourthAdMicroVelocityGradient[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Rb ][ dim * S + Tb ]
+                                        += eye[ dim * Db + S ] * eye[ dim * B + Tb ] * eye[ dim * Kb + Rb ];
+
+                                    vecdRHSdPreviousPlasticMicroGradient[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Rb + dim * S + Tb ]
+                                        += ( eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ] + Dt * ( 1 - alpha ) * ( previousPlasticMicroVelocityGradient[ dim * Db + Rb ] * eye[ dim * Kb + Tb ]
+                                                                                                              -   previousPlasticMacroVelocityGradient[ dim * Tb + Kb ] * eye[ dim * Db + Rb ] ) ) * eye[ dim * B + S ];
+
+                                    for ( unsigned int Ub = 0; Ub < dim; Ub++ ){
+                                        negdRdCurrentFourthA[ dim * dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * dim * B + dim * dim * dim * dim * Kb + dim * dim * dim * Rb + dim * dim * S + dim * Tb + Ub ]
+                                            += Dt * alpha * eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ]
+                                             * currentPlasticMicroGradient[ dim * dim * S + dim * B + Ub ];
+
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            //Solve for the Jacobians
+            variableVector vecdCurrentPlasticMicroGradientdCurrentDTAtilde( dim * dim * dim * dim * dim * dim );
+            variableVector vecdCurrentPlasticMicroGradientdCurrentFourthA( dim * dim * dim * dim * dim * dim * dim );
+            variableVector vecdCurrentPlasticMicroGradientdPreviousMicroGradient( dim * dim * dim * dim * dim * dim );
+            variableVector vecdCurrentPlasticMicroGradientdPreviousMacroVelocityGradient( dim * dim * dim * dim * dim );
+            variableVector vecdCurrentPlasticMicroGradientdPreviousMicroVelocityGradient( dim * dim * dim * dim * dim );
+
+            variableVector floatLHS = tardigradeVectorTools::appendVectors( LHS );
+
+            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > LHSMat( floatLHS.data(), LHS.size(), LHS.size() );
+            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > nDRDCDA( negdRdCurrentDtAtilde.data(), LHS.size(), dim * dim * dim );
+            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > nDRDCFA( negdRdCurrentFourthA.data(), LHS.size(), dim * dim * dim * dim );
+            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DRDPPMG( vecdRHSdPreviousPlasticMicroGradient.data(), LHS.size(), dim * dim * dim );
+            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DRDPPMaVG( vecdRHSdPreviousPlasticMacroVelocityGradient.data(), LHS.size(), dim * dim );
+            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DRDPPMiVG( vecdRHSdPreviousPlasticMicroVelocityGradient.data(), LHS.size(), dim * dim );
+
+            Eigen::ColPivHouseholderQR< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > qrSolver( LHSMat );
+
+            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > X1( vecdCurrentPlasticMicroGradientdCurrentDTAtilde.data(), LHS.size(), dim * dim * dim );
+            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > X2( vecdCurrentPlasticMicroGradientdCurrentFourthA.data(), LHS.size(), dim * dim * dim * dim );
+            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DCPMGDPMG( vecdCurrentPlasticMicroGradientdPreviousMicroGradient.data(), LHS.size(), dim * dim * dim );
+            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DCPMGDPMaVG( vecdCurrentPlasticMicroGradientdPreviousMacroVelocityGradient.data(), LHS.size(), dim * dim );
+            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DCPMGDPMiVG( vecdCurrentPlasticMicroGradientdPreviousMicroVelocityGradient.data(), LHS.size(), dim * dim );
+
+            X1          = qrSolver.solve( nDRDCDA );
+            X2          = qrSolver.solve( nDRDCFA );
+            DCPMGDPMG   = qrSolver.solve( DRDPPMG );
+            DCPMGDPMaVG = qrSolver.solve( DRDPPMaVG );
+            DCPMGDPMiVG = qrSolver.solve( DRDPPMiVG );
+
+            variableMatrix dCurrentPlasticMicroGradientdCurrentDTAtilde = tardigradeVectorTools::inflate( vecdCurrentPlasticMicroGradientdCurrentDTAtilde, dim * dim * dim, dim * dim * dim );
+            variableMatrix dCurrentPlasticMicroGradientdCurrentFourthA = tardigradeVectorTools::inflate( vecdCurrentPlasticMicroGradientdCurrentFourthA, dim * dim * dim, dim * dim * dim * dim );
+
+            //Assemble the final terms of the deformation
+            dCurrentPlasticMicroGradientdPlasticMicroDeformation = tardigradeVectorTools::dot( dCurrentPlasticMicroGradientdCurrentDTAtilde,
+                                                                                     dCurrentDTAtildedPlasticMicroDeformation );
+
+            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient = tardigradeVectorTools::dot( dCurrentPlasticMicroGradientdCurrentFourthA,
+                                                                                          dCurrentFourthAdMacroVelocityGradient );
+
+            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = tardigradeVectorTools::dot( dCurrentPlasticMicroGradientdCurrentFourthA,
+                                                                                          dCurrentFourthAdMicroVelocityGradient );
+
+            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = tardigradeVectorTools::dot( dCurrentPlasticMicroGradientdCurrentDTAtilde,
+                                                                                     dCurrentDTAtildedPlasticMicroGradientVelocityGradient );
+
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation = tardigradeVectorTools::dot( dCurrentPlasticMicroGradientdCurrentDTAtilde,
+                                                                                     dPreviousDTAtildedPlasticMicroDeformation );
+
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient = tardigradeVectorTools::inflate( vecdCurrentPlasticMicroGradientdPreviousMicroGradient, dim * dim * dim, dim * dim * dim );
+
+            dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient = tardigradeVectorTools::inflate( vecdCurrentPlasticMicroGradientdPreviousMacroVelocityGradient, dim * dim * dim, dim * dim );
+
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient = tardigradeVectorTools::inflate( vecdCurrentPlasticMicroGradientdPreviousMicroVelocityGradient, dim * dim * dim, dim * dim );
+
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient = tardigradeVectorTools::dot( dCurrentPlasticMicroGradientdCurrentDTAtilde,
+                                                                                     dPreviousDTAtildedPlasticMicroGradientVelocityGradient );
 
         }
 
