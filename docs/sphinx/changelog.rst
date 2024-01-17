@@ -28,6 +28,7 @@ Internal Changes
 - Moved the calculation of the preceding deformation gradient to its own function (:pull:`46`). By `Nathan Miller`_.
 - Added a function to calculate the preceding micro deformation (:pull:`47`). By `Nathan Miller`_.
 - Added the plastic velocity gradients for Drucker-Prager plasticity (:pull:`48`). By `Nathan Miller`_.
+- Added functions to calculation the updated plastic deformations (:pull:`49`). By `Nathan Miller`_.
 
 ******************
 0.3.0 (01-03-2023)
