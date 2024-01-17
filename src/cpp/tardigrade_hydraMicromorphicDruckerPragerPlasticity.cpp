@@ -6874,6 +6874,400 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdUpdatedPlasticDeformationGradientdMacroStress( ){
+            /*!
+             * Set the jacobian of the updated plastic deformation gradient w.r.t. the macro stress
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticDeformationGradientdPreviousMacroStress( ){
+            /*!
+             * Set the jacobian of the updated plastic deformation gradient w.r.t. the previous macro stress
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticDeformationGradientdMicroStress( ){
+            /*!
+             * Set the jacobian of the updated plastic deformation gradient w.r.t. the micro stress
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticDeformationGradientdPreviousMicroStress( ){
+            /*!
+             * Set the jacobian of the updated plastic deformation gradient w.r.t. the previous micro stress
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticDeformationGradientdFn( ){
+            /*!
+             * Set the jacobian of the updated plastic deformation gradient w.r.t. the sub deformation gradients
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticDeformationGradientdPreviousFn( ){
+            /*!
+             * Set the jacobian of the updated plastic deformation gradient w.r.t. the previous sub deformation gradients
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticDeformationGradientdStateVariables( ){
+            /*!
+             * Set the jacobian of the updated plastic deformation gradient w.r.t. the state variables
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticDeformationGradientdPreviousStateVariables( ){
+            /*!
+             * Set the jacobian of the updated plastic deformation gradient w.r.t. the previous state variables
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticMicroDeformationdMicroStress( ){
+            /*!
+             * Set the jacobian of the updated plastic micro deformation w.r.t. the micro stress
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticMicroDeformationdPreviousMicroStress( ){
+            /*!
+             * Set the jacobian of the updated plastic micro deformation w.r.t. the previous micro stress
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticMicroDeformationdFn( ){
+            /*!
+             * Set the jacobian of the updated plastic micro deformation w.r.t. the sub deformation gradients
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticMicroDeformationdPreviousFn( ){
+            /*!
+             * Set the jacobian of the updated plastic micro deformation w.r.t. the previous sub deformation gradients
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticMicroDeformationdChin( ){
+            /*!
+             * Set the jacobian of the updated plastic micro deformation w.r.t. the sub micro deformations
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticMicroDeformationdPreviousChin( ){
+            /*!
+             * Set the jacobian of the updated plastic micro deformation w.r.t. the previous sub micro deformations
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticMicroDeformationdStateVariables( ){
+            /*!
+             * Set the jacobian of the updated plastic micro deformation w.r.t. the state variables
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticMicroDeformationdPreviousStateVariables( ){
+            /*!
+             * Set the jacobian of the updated plastic micro deformation w.r.t. the previous state variables
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdMacroStress( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the macro stress
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousMacroStress( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous macro stress
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdMicroStress( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the micro stress
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousMicroStress( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous micro stress
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdHigherOrderStress( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the higher order stress
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous higher order stress
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdFn( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the sub deformation gradients
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousFn( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous sub deformation gradients
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdChin( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the sub micro deformations
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousChin( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous sub micro deformations
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdGradChin( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the local spatial gradient of the sub micro deformations
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousGradChin( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous local spatial gradient of the sub micro deformations
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdStateVariables( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the state variables
+             */
+
+            setPlasticDeformationJacobians( false );
+
+        }
+
+        void residual::setdUpdatedPlasticGradientMicroDeformationdPreviousStateVariables( ){
+            /*!
+             * Set the jacobian of the updated plastic gradient micro deformation w.r.t. the previous state variables
+             */
+
+            setPlasticDeformationJacobians( true );
+
+        }
+
+        void residual::setPlasticDeformationJacobians( const bool addPreviousGradients  ){
+            /*!
+             * Set all of the plastic deformations
+             *
+              * \param addPreviousGradients: Flag for whether to compute the previous gradients
+             */
+
+            floatVector updatedPlasticDeformationGradient;
+
+            floatVector updatedPlasticMicroDeformation;
+
+            floatVector updatedPlasticGradientMicroDeformation;
+
+            const floatVector previousPlasticDeformationGradient      = ( *hydra->get_previousConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+
+            const floatVector previousPlasticMicroDeformation         = ( *hydra->get_previousMicroConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+
+            const floatVector previousPlasticGradientMicroDeformation = ( *hydra->get_previousGradientMicroConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+
+            floatMatrix dPlasticFdPlasticMacroL;
+
+            floatMatrix dPlasticMicroDeformationdPlasticMicroL;
+
+            floatMatrix dPlasticGradientMicroDeformationdPlasticMacroL;
+
+            floatMatrix dPlasticGradientMicroDeformationdPlasticMicroL;
+
+            floatMatrix dPlasticGradientMicroDeformationdPlasticGradientMicroL;
+
+            if ( addPreviousGradients ){
+                TARDIGRADE_ERROR_TOOLS_CATCH(
+                    evolvePlasticDeformation( *hydra->getDeltaTime( ),
+                                              *get_plasticMacroVelocityGradient( ),
+                                              *get_plasticMicroVelocityGradient( ),
+                                              *get_plasticGradientMicroVelocityGradient( ),
+                                              previousPlasticDeformationGradient,
+                                              previousPlasticMicroDeformation,
+                                              previousPlasticGradientMicroDeformation,
+                                              *get_previousPlasticMacroVelocityGradient( ),
+                                              *get_previousPlasticMicroVelocityGradient( ),
+                                              *get_previousPlasticGradientMicroVelocityGradient( ),
+                                              updatedPlasticDeformationGradient,
+                                              updatedPlasticMicroDeformation,
+                                              updatedPlasticGradientMicroDeformation,
+                                              dPlasticFdPlasticMacroL,
+                                              dPlasticMicroDeformationdPlasticMicroL,
+                                              dPlasticGradientMicroDeformationdPlasticMacroL,
+                                              dPlasticGradientMicroDeformationdPlasticMicroL,
+                                              dPlasticGradientMicroDeformationdPlasticGradientMicroL,
+                                              *getIntegrationParameter( ),
+                                              *getIntegrationParameter( ),
+                                              *getIntegrationParameter( ) );
+                )
+            }
+            else{
+                TARDIGRADE_ERROR_TOOLS_CATCH(
+                    evolvePlasticDeformation( *hydra->getDeltaTime( ),
+                                              *get_plasticMacroVelocityGradient( ),
+                                              *get_plasticMicroVelocityGradient( ),
+                                              *get_plasticGradientMicroVelocityGradient( ),
+                                              previousPlasticDeformationGradient,
+                                              previousPlasticMicroDeformation,
+                                              previousPlasticGradientMicroDeformation,
+                                              *get_previousPlasticMacroVelocityGradient( ),
+                                              *get_previousPlasticMicroVelocityGradient( ),
+                                              *get_previousPlasticGradientMicroVelocityGradient( ),
+                                              updatedPlasticDeformationGradient,
+                                              updatedPlasticMicroDeformation,
+                                              updatedPlasticGradientMicroDeformation,
+                                              dPlasticFdPlasticMacroL,
+                                              dPlasticMicroDeformationdPlasticMicroL,
+                                              dPlasticGradientMicroDeformationdPlasticMacroL,
+                                              dPlasticGradientMicroDeformationdPlasticMicroL,
+                                              dPlasticGradientMicroDeformationdPlasticGradientMicroL,
+                                              *getIntegrationParameter( ),
+                                              *getIntegrationParameter( ),
+                                              *getIntegrationParameter( ) );
+                )
+            }
+
+            set_updatedPlasticDeformationGradient( updatedPlasticDeformationGradient );
+
+            set_updatedPlasticMicroDeformation( updatedPlasticMicroDeformation );
+
+            set_updatedPlasticGradientMicroDeformation( updatedPlasticGradientMicroDeformation );
+
+            set_dUpdatedPlasticDeformationGradientdMacroStress( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL, *get_dPlasticMacroVelocityGradientdMacroStress( ) ) );
+
+            set_dUpdatedPlasticDeformationGradientdMicroStress( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL, *get_dPlasticMacroVelocityGradientdMicroStress( ) ) );
+
+            set_dUpdatedPlasticDeformationGradientdFn( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL, *get_dPlasticMacroVelocityGradientdFn( ) ) );
+
+            set_dUpdatedPlasticDeformationGradientdStateVariables( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL, *get_dPlasticMacroVelocityGradientdStateVariables( ) ) );
+
+            set_dUpdatedPlasticMicroDeformationdMicroStress( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL, *get_dPlasticMicroVelocityGradientdMicroStress( ) ) );
+
+            set_dUpdatedPlasticMicroDeformationdFn( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL, *get_dPlasticMicroVelocityGradientdFn( ) ) );
+
+            set_dUpdatedPlasticMicroDeformationdChin( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL, *get_dPlasticMicroVelocityGradientdChin( ) ) );
+
+            set_dUpdatedPlasticMicroDeformationdStateVariables( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL, *get_dPlasticMicroVelocityGradientdStateVariables( ) ) );
+
+            set_dUpdatedPlasticGradientMicroDeformationdMacroStress(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL, *get_dPlasticMacroVelocityGradientdMacroStress( ) ) );
+
+            set_dUpdatedPlasticGradientMicroDeformationdMicroStress(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,         *get_dPlasticMacroVelocityGradientdMicroStress( ) )
+                                                                     + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,         *get_dPlasticMicroVelocityGradientdMicroStress( ) )
+                                                                     + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdMicroStress( ) ) );
+
+            set_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdHigherOrderStress( ) ) );
+
+            set_dUpdatedPlasticGradientMicroDeformationdFn(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,         *get_dPlasticMacroVelocityGradientdFn( ) )
+                                                            + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,         *get_dPlasticMicroVelocityGradientdFn( ) )
+                                                            + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdFn( ) ) );
+
+            set_dUpdatedPlasticGradientMicroDeformationdChin(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,         *get_dPlasticMicroVelocityGradientdChin( ) )
+                                                              + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdChin( ) ) );
+
+            set_dUpdatedPlasticGradientMicroDeformationdGradChin( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdGradChin( ) ) );
+
+            set_dUpdatedPlasticGradientMicroDeformationdStateVariables(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,         *get_dPlasticMacroVelocityGradientdStateVariables( ) )
+                                                                        + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,         *get_dPlasticMicroVelocityGradientdStateVariables( ) )
+                                                                        + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdStateVariables( ) ) );
+
+        }
     }
 
 }
