@@ -2020,6 +2020,290 @@ namespace tardigradeHydra{
 
         }
 
+        void evolvePlasticDeformation( const variableType &Dt,
+                                       const variableVector &currentPlasticMacroVelocityGradient,
+                                       const variableVector &currentPlasticMicroVelocityGradient,
+                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
+                                       const variableVector &previousPlasticDeformationGradient,
+                                       const variableVector &previousPlasticMicroDeformation,
+                                       const variableVector &previousPlasticMicroGradient,
+                                       const variableVector &previousPlasticMacroVelocityGradient,
+                                       const variableVector &previousPlasticMicroVelocityGradient,
+                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
+                                       variableVector &currentPlasticDeformationGradient,
+                                       variableVector &currentPlasticMicroDeformation,
+                                       variableVector &currentPlasticMicroGradient,
+                                       const parameterType alphaMacro,
+                                       const parameterType alphaMicro,
+                                       const parameterType alphaMicroGradient ){
+            /*!
+             * Evolve the plastic deformation
+             *
+             * :param const variableType &Dt: The timestep
+             * :param const variableVector &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
+             * :param const variableVector &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
+             * :param const variableVector &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient 
+             *     velocity gradient.
+             * :param const variableVector &previousPlasticDeformationGradient: The plastic deformation gradient at the end of the last 
+             *     converged timestep.
+             * :param const variableVector &previousPlasticMicroDeformation: The plastic micro deformation at the end of the last converged 
+             *     timestep.
+             * :param const variableVector &previousPlasticMicroGradient: The plastic micro gradient at the end of the last converged 
+             *     timestep.
+             * :param const variableVector &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient at the end of the 
+             *     last converged timestep.
+             * :param const variableVector &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient at the end of the 
+             *     last converged timestep.
+             * :param const variableVector &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient 
+             *     at the end of the last converged timestep.
+             * :param variableVector &currentPlasticDeformationGradient: The current value of the plastic deformation gradient.
+             * :param variableVector &currentPlasticMicroDeformation: The current value of the plastic micro deformation.
+             * :param variableVector &currentPlasticMicroGradient: The current value of the plastic micro gradient.
+             * :param parameterType alphaMacro: The integration parameter for the macro plasticity. 0 explicit, 1 implicit. Defaults to 0.5.
+             * :param parameterType alphaMicro: The integration parameter for the micro plasticity. 0 explicit, 1 implicit. Defaults to 0.5.
+             * :param parameterType alphaMicroGradient: The integration parameter for the micro gradient plasticity. Defaults to 0.5.
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::evolveF( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+                                            currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
+                                            1. - alphaMacro, 1 );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::evolveF( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+                                            currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
+                                            1. - alphaMicro, 1 );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
+                                           currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
+                                           previousPlasticMicroDeformation, previousPlasticMicroGradient,
+                                           previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
+                                           previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
+                                           alphaMicroGradient );
+            )
+
+        }
+
+        void evolvePlasticDeformation( const variableType &Dt,
+                                       const variableVector &currentPlasticMacroVelocityGradient,
+                                       const variableVector &currentPlasticMicroVelocityGradient,
+                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
+                                       const variableVector &previousPlasticDeformationGradient,
+                                       const variableVector &previousPlasticMicroDeformation,
+                                       const variableVector &previousPlasticMicroGradient,
+                                       const variableVector &previousPlasticMacroVelocityGradient,
+                                       const variableVector &previousPlasticMicroVelocityGradient,
+                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
+                                       variableVector &currentPlasticDeformationGradient,
+                                       variableVector &currentPlasticMicroDeformation,
+                                       variableVector &currentPlasticMicroGradient,
+                                       variableMatrix &dPlasticFdPlasticMacroL,
+                                       variableMatrix &dPlasticMicroDeformationdPlasticMicroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMacroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMicroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMicroGradientL,
+                                       const parameterType alphaMacro,
+                                       const parameterType alphaMicro,
+                                       const parameterType alphaMicroGradient ){
+            /*!
+             * Evolve the plastic deformation
+             *
+             * :param const variableType &Dt: The timestep
+             * :param const variableVector &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
+             * :param const variableVector &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
+             * :param const variableVector &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient 
+             *     velocity gradient.
+             * :param const variableVector &previousPlasticDeformationGradient: The plastic deformation gradient at the end of the last 
+             *     converged timestep.
+             * :param const variableVector &previousPlasticMicroDeformation: The plastic micro deformation at the end of the last converged 
+             *     timestep.
+             * :param const variableVector &previousPlasticMicroGradient: The plastic micro gradient at the end of the last converged 
+             *     timestep.
+             * :param const variableVector &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient at the end of the 
+             *     last converged timestep.
+             * :param const variableVector &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient at the end of the 
+             *     last converged timestep.
+             * :param const variableVector &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient 
+             *     at the end of the last converged timestep.
+             * :param variableVector &currentPlasticDeformationGradient: The current value of the plastic deformation gradient.
+             * :param variableVector &currentPlasticMicroDeformation: The current value of the plastic micro deformation.
+             * :param variableVector &currentPlasticMicroGradient: The current value of the plastic micro gradient.
+             * :param variableMatrix &dPlasticFdPlasticMacroL: The Jacobian of the plastic deformation gradient w.r.t. the plastic 
+             *     macro velocity gradient.
+             * :param variableMatrix &dPlasticMicroDeformationdPlasticMicroL: The Jacobian of the plastic micro-deformation w.r.t. 
+             *     the plastic micro velocity gradient.
+             * :param variableMatrix &dPlasticMicroGradientdPlasticMacroL: The Jacobian of the plastic micro gradient deformation 
+             *     w.r.t. the plastic macro velocity gradient.
+             * :param variableMatrix &dPlasticMicroGradientdPlasticMicroL: The Jacobian of the plastic micro gradient deformation
+             *     w.r.t. the plastic micro velocity gradient.
+             * :param variableMatrix &dPlasticMicroGradientdPlasticMicroGradientL: The Jacobian of the plastic micro gradient deformation
+             *     w.r.t. the plastic micro gradient velocity gradient.
+             * :param parameterType alphaMacro: The integration parameter for the macro plasticity. Defaults to 0.5.
+             * :param parameterType alphaMicro: The integration parameter for the micro plasticity. Defaults to 0.5.
+             * :param parameterType alphaMicroGradient: The integration parameter for the micro gradient plasticity. Defaults to 0.5.
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::evolveF( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+                                            currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
+                                            dPlasticFdPlasticMacroL, 1. - alphaMacro, 1 );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::evolveF( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+                                            currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
+                                            dPlasticMicroDeformationdPlasticMicroL, 1. - alphaMicro, 1 );
+            )
+
+            variableMatrix dPlasticMicroGradientdPlasticMicroDeformation;
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
+                                           currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
+                                           previousPlasticMicroDeformation, previousPlasticMicroGradient,
+                                           previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
+                                           previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
+                                           dPlasticMicroGradientdPlasticMicroDeformation,
+                                           dPlasticMicroGradientdPlasticMacroL, dPlasticMicroGradientdPlasticMicroL,
+                                           dPlasticMicroGradientdPlasticMicroGradientL, alphaMicroGradient );
+            )
+
+            dPlasticMicroGradientdPlasticMicroL += tardigradeVectorTools::dot( dPlasticMicroGradientdPlasticMicroDeformation,
+                                                                     dPlasticMicroDeformationdPlasticMicroL );
+
+        }
+
+        void evolvePlasticDeformation( const variableType &Dt,
+                                       const variableVector &currentPlasticMacroVelocityGradient,
+                                       const variableVector &currentPlasticMicroVelocityGradient,
+                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
+                                       const variableVector &previousPlasticDeformationGradient,
+                                       const variableVector &previousPlasticMicroDeformation,
+                                       const variableVector &previousPlasticMicroGradient,
+                                       const variableVector &previousPlasticMacroVelocityGradient,
+                                       const variableVector &previousPlasticMicroVelocityGradient,
+                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
+                                       variableVector &currentPlasticDeformationGradient,
+                                       variableVector &currentPlasticMicroDeformation,
+                                       variableVector &currentPlasticMicroGradient,
+                                       variableMatrix &dPlasticFdPlasticMacroL,
+                                       variableMatrix &dPlasticMicroDeformationdPlasticMicroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMacroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMicroL,
+                                       variableMatrix &dPlasticMicroGradientdPlasticMicroGradientL,
+                                       variableMatrix &dPlasticFdPreviousPlasticF,
+                                       variableMatrix &dPlasticFdPreviousPlasticMacroL,
+                                       variableMatrix &dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
+                                       variableMatrix &dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                       variableMatrix &dPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                                       variableMatrix &dPlasticMicroGradientdPreviousPlasticMicroGradient,
+                                       variableMatrix &dPlasticMicroGradientdPreviousPlasticMacroL,
+                                       variableMatrix &dPlasticMicroGradientdPreviousPlasticMicroL,
+                                       variableMatrix &dPlasticMicroGradientdPreviousPlasticMicroGradientL,
+                                       const parameterType alphaMacro,
+                                       const parameterType alphaMicro,
+                                       const parameterType alphaMicroGradient ){
+            /*!
+             * Evolve the plastic deformation
+             *
+             * :param const variableType &Dt: The timestep
+             * :param const variableVector &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
+             * :param const variableVector &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
+             * :param const variableVector &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient 
+             *     velocity gradient.
+             * :param const variableVector &previousPlasticDeformationGradient: The plastic deformation gradient at the end of the last 
+             *     converged timestep.
+             * :param const variableVector &previousPlasticMicroDeformation: The plastic micro deformation at the end of the last converged 
+             *     timestep.
+             * :param const variableVector &previousPlasticMicroGradient: The plastic micro gradient at the end of the last converged 
+             *     timestep.
+             * :param const variableVector &previousPlasticMacroVelocityGradient: The plastic macro velocity gradient at the end of the 
+             *     last converged timestep.
+             * :param const variableVector &previousPlasticMicroVelocityGradient: The plastic micro velocity gradient at the end of the 
+             *     last converged timestep.
+             * :param const variableVector &previousPlasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient 
+             *     at the end of the last converged timestep.
+             * :param variableVector &currentPlasticDeformationGradient: The current value of the plastic deformation gradient.
+             * :param variableVector &currentPlasticMicroDeformation: The current value of the plastic micro deformation.
+             * :param variableVector &currentPlasticMicroGradient: The current value of the plastic micro gradient.
+             * :param variableMatrix &dPlasticFdPlasticMacroL: The Jacobian of the plastic deformation gradient w.r.t. the plastic 
+             *     macro velocity gradient.
+             * :param variableMatrix &dPlasticMicroDeformationdPlasticMicroL: The Jacobian of the plastic micro-deformation w.r.t. 
+             *     the plastic micro velocity gradient.
+             * :param variableMatrix &dPlasticMicroGradientdPlasticMacroL: The Jacobian of the plastic micro gradient deformation 
+             *     w.r.t. the plastic macro velocity gradient.
+             * :param variableMatrix &dPlasticMicroGradientdPlasticMicroL: The Jacobian of the plastic micro gradient deformation
+             *     w.r.t. the plastic micro velocity gradient.
+             * :param variableMatrix &dPlasticMicroGradientdPlasticMicroGradientL: The Jacobian of the plastic micro gradient deformation
+             *     w.r.t. the plastic micro gradient velocity gradient.
+             * :param variableMatrix &dPlasticFdPreviousPlasticF: The Jacobian of the plastic deformation gradient w.r.t. the previous
+             *     plastic deformation gradient.
+             * :param variableMatrix &dPlasticFdPreviousPlasticMacroL: The Jacobian of the plastic deformation gradient w.r.t. the previous plastic 
+             *     macro velocity gradient.
+             * :param variableMatrix &dPlasticMicroDeformationdPreviousPlasticMicroDeformation: The Jacobian of the plastic micro deformation w.r.t. the previous
+             *     plastic micro deformation
+             * :param variableMatrix &dPlasticMicroDeformationdPreviousPlasticMicroL: The Jacobian of the plastic micro-deformation w.r.t. 
+             *     the previous plastic micro velocity gradient.
+             * :param variableMatrix &dPlasticMicroGradientdPreviousPlasticMicroDeformation: The Jacobian of the plastic micro gradient deformation 
+             *     w.r.t. the previous plastic micro deformation.
+             * :param variableMatrix &dPlasticMicroGradientdPreviousPlasticMicroGradient: The Jacobian of the plastic micro gradient deformation 
+             *     w.r.t. the previous spatial gradient in the intermediate configuration of the plastic macro deformation.
+             * :param variableMatrix &dPlasticMicroGradientdPreviousPlasticMacroL: The Jacobian of the plastic micro gradient deformation 
+             *     w.r.t. the previous plastic macro velocity gradient.
+             * :param variableMatrix &dPlasticMicroGradientdPreviousPlasticMicroL: The Jacobian of the plastic micro gradient deformation
+             *     w.r.t. the previous plastic micro velocity gradient.
+             * :param variableMatrix &dPlasticMicroGradientdPreviousPlasticMicroGradientL: The Jacobian of the plastic micro gradient deformation
+             *     w.r.t. the previous plastic micro gradient velocity gradient.
+             * :param parameterType alphaMacro: The integration parameter for the macro plasticity. Defaults to 0.5.
+             * :param parameterType alphaMicro: The integration parameter for the micro plasticity. Defaults to 0.5.
+             * :param parameterType alphaMicroGradient: The integration parameter for the micro gradient plasticity. Defaults to 0.5.
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::evolveF( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+                                            currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
+                                            dPlasticFdPlasticMacroL, dPlasticFdPreviousPlasticF, dPlasticFdPreviousPlasticMacroL, 1. - alphaMacro, 1 );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeConstitutiveTools::evolveF( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+                                            currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
+                                            dPlasticMicroDeformationdPlasticMicroL, dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
+                                            dPlasticMicroDeformationdPreviousPlasticMicroL, 1. - alphaMicro, 1 );
+            )
+
+            variableMatrix dPlasticMicroGradientdPlasticMicroDeformation;
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
+                                           currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
+                                           previousPlasticMicroDeformation, previousPlasticMicroGradient,
+                                           previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
+                                           previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
+                                           dPlasticMicroGradientdPlasticMicroDeformation,
+                                           dPlasticMicroGradientdPlasticMacroL, dPlasticMicroGradientdPlasticMicroL,
+                                           dPlasticMicroGradientdPlasticMicroGradientL,
+                                           dPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                                           dPlasticMicroGradientdPreviousPlasticMicroGradient,
+                                           dPlasticMicroGradientdPreviousPlasticMacroL,
+                                           dPlasticMicroGradientdPreviousPlasticMicroL,
+                                           dPlasticMicroGradientdPreviousPlasticMicroGradientL,
+                                           alphaMicroGradient );
+            )
+
+            dPlasticMicroGradientdPlasticMicroL += tardigradeVectorTools::dot( dPlasticMicroGradientdPlasticMicroDeformation,
+                                                                               dPlasticMicroDeformationdPlasticMicroL );
+
+            dPlasticMicroGradientdPreviousPlasticMicroDeformation += tardigradeVectorTools::dot( dPlasticMicroGradientdPlasticMicroDeformation,
+                                                                                                 dPlasticMicroDeformationdPreviousPlasticMicroDeformation );
+
+            dPlasticMicroGradientdPreviousPlasticMicroL += tardigradeVectorTools::dot( dPlasticMicroGradientdPlasticMicroDeformation,
+                                                                                       dPlasticMicroDeformationdPreviousPlasticMicroL );
+
+
+        }
+
         void residual::setMacroDrivingStress( ){
             /*!
              * Set the macro (i.e. the stress associated with the Cauchy stress) driving stress (stress in current configuration of plastic configuration)
