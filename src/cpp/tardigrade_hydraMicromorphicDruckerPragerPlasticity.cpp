@@ -6803,6 +6803,77 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setUpdatedPlasticDeformationGradient( ){
+            /*!
+             * Set the updated plastic deformation gradient
+             */
+
+            setPlasticDeformation( );
+
+        }
+
+        void residual::setUpdatedPlasticMicroDeformation( ){
+            /*!
+             * Set the updated plastic micro deformation
+             */
+
+            setPlasticDeformation( );
+
+        }
+
+        void residual::setUpdatedPlasticGradientMicroDeformation( ){
+            /*!
+             * Set the updated plastic gradient of the micro deformation
+             */
+
+            setPlasticDeformation( );
+
+        }
+
+        void residual::setPlasticDeformation( ){
+            /*!
+             * Set all of the plastic deformations
+             */
+
+            floatVector updatedPlasticDeformationGradient;
+
+            floatVector updatedPlasticMicroDeformation;
+
+            floatVector updatedPlasticGradientMicroDeformation;
+
+            const floatVector previousPlasticDeformationGradient      = ( *hydra->get_previousConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+
+            const floatVector previousPlasticMicroDeformation         = ( *hydra->get_previousMicroConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+
+            const floatVector previousPlasticGradientMicroDeformation = ( *hydra->get_previousGradientMicroConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                evolvePlasticDeformation( *hydra->getDeltaTime( ),
+                                          *get_plasticMacroVelocityGradient( ),
+                                          *get_plasticMicroVelocityGradient( ),
+                                          *get_plasticGradientMicroVelocityGradient( ),
+                                          previousPlasticDeformationGradient,
+                                          previousPlasticMicroDeformation,
+                                          previousPlasticGradientMicroDeformation,
+                                          *get_previousPlasticMacroVelocityGradient( ),
+                                          *get_previousPlasticMicroVelocityGradient( ),
+                                          *get_previousPlasticGradientMicroVelocityGradient( ),
+                                          updatedPlasticDeformationGradient,
+                                          updatedPlasticMicroDeformation,
+                                          updatedPlasticGradientMicroDeformation,
+                                          *getIntegrationParameter( ),
+                                          *getIntegrationParameter( ),
+                                          *getIntegrationParameter( ) );
+            )
+
+            set_updatedPlasticDeformationGradient( updatedPlasticDeformationGradient );
+
+            set_updatedPlasticMicroDeformation( updatedPlasticMicroDeformation );
+
+            set_updatedPlasticGradientMicroDeformation( updatedPlasticGradientMicroDeformation );
+
+        }
+
     }
 
 }
