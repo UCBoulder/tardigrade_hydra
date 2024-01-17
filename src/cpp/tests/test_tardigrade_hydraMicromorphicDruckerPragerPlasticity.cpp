@@ -9172,8 +9172,6 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
      * Test setting the cohesion values
      */
 
-    std::cout << "starting gradient check\n";
-
     // Form a hydra class and residual class
     floatType time = 1.23;
 
@@ -10203,5 +10201,1137 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdGradChi, *R.get_previousdPlasticGradientMicroVelocityGradientdGradChi( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi ){
+    /*!
+     * Test the evolution of the plastic micro gradient deformation.
+     *
+     */
+
+    variableType Dt = 7.888463751831797;
+
+    variableVector currentPlasticMicroDeformation = { -0.49993961, -0.36238477, -0.24525394,
+                                                      -0.00566907,  0.66797545,  0.43135092,
+                                                      -0.20196189,  0.04922572, -0.32425703 };
+
+    variableVector currentPlasticMacroVelocityGradient = { -0.05489573, -0.01980382, -0.06060589,
+                                                            1.1610081 ,  0.4002548 ,  0.86866858,
+                                                            0.33607202,  0.12218348,  0.25723268 };
+
+    variableVector currentPlasticMicroVelocityGradient = { -21.41995847,  -4.22959956,  31.83295868,
+                                                             0.16258786,   0.03647972,  -0.17997075,
+                                                            -9.01448709,  -1.96510413,  13.0843427 };
+
+    variableVector currentPlasticMicroGradientVelocityGradient = { -70.66715632,   28.05094192,  -12.32029375,    9.17810714,
+                                                                   -19.71784064,  -49.77471891,   40.06703071,  -18.75257585,
+                                                                   -87.64798388,  216.34003077,   11.38331058,   52.06095799,
+                                                                    44.55771056,    2.81701824,   11.53413479, -317.46326014,
+                                                                   -16.12786945,  -75.01963462,  -38.71407841,   26.25281724,
+                                                                   -31.89136164,    2.12480823,   -4.79956514,  -26.12979314,
+                                                                    27.25829277,  -30.0572412 ,    1.8995271 };
+
+    variableVector previousPlasticMicroDeformation = { -0.62976501, -0.65543815,  0.07568244,
+                                                        0.25069488,  0.04845195,  0.85682533,
+                                                       -0.69408256,  0.68092037,  0.06724845 };
+
+    variableVector previousPlasticMicroGradient = { 0.02280625, 0.22512007, 0.85575746, 0.1825644 , 0.97734329,
+                                                    0.15265694, 0.0984977 , 0.73878709, 0.14943404, 0.50190449,
+                                                    0.1394924 , 0.49979228, 0.69297073, 0.03931335, 0.61839353,
+                                                    0.32686324, 0.67661231, 0.54568142, 0.60788606, 0.46255347,
+                                                    0.94481369, 0.6944252 , 0.29844176, 0.55288832, 0.33853861,
+                                                    0.03626558, 0.56699219 };
+
+    variableVector previousPlasticMacroVelocityGradient = { 0.63999789, 0.35571483, 0.63708287,
+                                                            1.82175239, 1.47320642, 2.26307223,
+                                                            0.9862676 , 1.15883656, 1.36908512 };
+
+    variableVector previousPlasticMicroVelocityGradient = { -0.10429558, -0.17299031, -0.13991628,
+                                                            -0.1431904 ,  0.18911688,  0.20668886,
+                                                             0.01882534,  0.20244689,  0.16117068 };
+
+    variableVector previousPlasticMicroGradientVelocityGradient = { -1.28938531, -0.78106843, -0.16682568, -0.98659316, -0.33046864,
+                                                                     1.00840067, -0.86124472,  0.16817579,  0.26768819,  2.42835457,
+                                                                     2.54123143,  0.66070946,  2.88282966,  3.30378025,  0.12668134,
+                                                                     3.52709363,  3.17568822,  0.4061731 ,  2.3619489 ,  1.92411292,
+                                                                     0.39428284,  0.84845341,  0.29862915,  2.21825071,  1.58372838,
+                                                                     0.01050663,  2.0526354 };
+
+    parameterType alpha = 1. - 0.19639211333133877;
+
+    variableVector answerCurrentPlasticMicroGradient = {  201.71721607,   -8.0663384 ,   63.93960976,  299.19611487,
+                                                          -15.75827887,   98.74480552, -319.49770439,   13.5458325 ,
+                                                         -102.33587287, -195.29766492,   -5.08537627,  -39.70978333,
+                                                         -291.02098952,   -3.24570068,  -64.71587095,  314.13870087,
+                                                            5.09285553,   66.08381791,  109.96443867,   -5.79910293,
+                                                           37.22865464,  163.04783477,  -10.35151403,   59.19030845,
+                                                         -175.10575052,   10.13754922,  -60.7404024 };
+
+    variableMatrix answerLHS = {
+        {1.3643808e+02, 7.3598994e+00, 2.1304384e+00, 0., 0., 0., 0., 0., 0., 2.6812412e+01, 0., 0., 0., 0., 0., 0., 0., 0., -2.0179650e+02, 0., 0., 0., 0., 0., 0., 0., 0.},
+        {-1.2554098e-01, 1.3932339e+02, 7.7454940e-01, 0., 0., 0., 0., 0., 0., 0., 2.6812412e+01, 0., 0., 0., 0., 0., 0., 0., 0., -2.0179650e+02, 0., 0., 0., 0., 0., 0., 0.},
+        {-3.8419476e-01, 5.5066914e+00, 1.3841674e+02, 0., 0., 0., 0., 0., 0., 0., 0., 2.6812412e+01, 0., 0., 0., 0., 0., 0., 0., 0., -2.0179650e+02, 0., 0., 0., 0., 0., 0.},
+        {0., 0., 0., 1.3643808e+02, 7.3598994e+00, 2.1304384e+00, 0., 0., 0., 0., 0., 0., 2.6812412e+01, 0., 0., 0., 0., 0., 0., 0., 0., -2.0179650e+02, 0., 0., 0., 0., 0.},
+        {0., 0., 0., -1.2554098e-01, 1.3932339e+02, 7.7454940e-01, 0., 0., 0., 0., 0., 0., 0., 2.6812412e+01, 0., 0., 0., 0., 0., 0., 0., 0., -2.0179650e+02, 0., 0., 0., 0.},
+        {0., 0., 0., -3.8419476e-01, 5.5066914e+00, 1.3841674e+02, 0., 0., 0., 0., 0., 0., 0., 0., 2.6812412e+01, 0., 0., 0., 0., 0., 0., 0., 0., -2.0179650e+02, 0., 0., 0.},
+        {0., 0., 0., 0., 0., 0., 1.3643808e+02, 7.3598994e+00, 2.1304384e+00, 0., 0., 0., 0., 0., 0., 2.6812412e+01, 0., 0., 0., 0., 0., 0., 0., 0., -2.0179650e+02, 0., 0.},
+        {0., 0., 0., 0., 0., 0., -1.2554098e-01, 1.3932339e+02, 7.7454940e-01, 0., 0., 0., 0., 0., 0., 0., 2.6812412e+01, 0., 0., 0., 0., 0., 0., 0., 0., -2.0179650e+02, 0.},
+        {0., 0., 0., 0., 0., 0., -3.8419476e-01, 5.5066914e+00, 1.3841674e+02, 0., 0., 0., 0., 0., 0., 0., 0., 2.6812412e+01, 0., 0., 0., 0., 0., 0., 0., 0., -2.0179650e+02},
+        {-1.0306821e+00, 0., 0., 0., 0., 0., 0., 0., 0., 4.2074983e-01, 7.3598994e+00, 2.1304384e+00, 0., 0., 0., 0., 0., 0., 1.1408763e+00, 0., 0., 0., 0., 0., 0., 0., 0.},
+        {0., -1.0306821e+00, 0., 0., 0., 0., 0., 0., 0., -1.2554098e-01, 3.3060545e+00, 7.7454940e-01, 0., 0., 0., 0., 0., 0., 0., 1.1408763e+00, 0., 0., 0., 0., 0., 0., 0.},
+        {0., 0., -1.0306821e+00, 0., 0., 0., 0., 0., 0., -3.8419476e-01, 5.5066914e+00, 2.3994041e+00, 0., 0., 0., 0., 0., 0., 0., 0., 1.1408763e+00, 0., 0., 0., 0., 0., 0.},
+        {0., 0., 0., -1.0306821e+00, 0., 0., 0., 0., 0., 0., 0., 0., 4.2074983e-01, 7.3598994e+00, 2.1304384e+00, 0., 0., 0., 0., 0., 0., 1.1408763e+00, 0., 0., 0., 0., 0.},
+        {0., 0., 0., 0., -1.0306821e+00, 0., 0., 0., 0., 0., 0., 0., -1.2554098e-01, 3.3060545e+00, 7.7454940e-01, 0., 0., 0., 0., 0., 0., 0., 1.1408763e+00, 0., 0., 0., 0.},
+        {0., 0., 0., 0., 0., -1.0306821e+00, 0., 0., 0., 0., 0., 0., -3.8419476e-01, 5.5066914e+00, 2.3994041e+00, 0., 0., 0., 0., 0., 0., 0., 0., 1.1408763e+00, 0., 0., 0.},
+        {0., 0., 0., 0., 0., 0., -1.0306821e+00, 0., 0., 0., 0., 0., 0., 0., 0., 4.2074983e-01, 7.3598994e+00, 2.1304384e+00, 0., 0., 0., 0., 0., 0., 1.1408763e+00, 0., 0.},
+        {0., 0., 0., 0., 0., 0., 0., -1.0306821e+00, 0., 0., 0., 0., 0., 0., 0., -1.2554098e-01, 3.3060545e+00, 7.7454940e-01, 0., 0., 0., 0., 0., 0., 0., 1.1408763e+00, 0.},
+        {0., 0., 0., 0., 0., 0., 0., 0., -1.0306821e+00, 0., 0., 0., 0., 0., 0., -3.8419476e-01, 5.5066914e+00, 2.3994041e+00, 0., 0., 0., 0., 0., 0., 0., 0., 1.1408763e+00},
+        {5.7144922e+01, 0., 0., 0., 0., 0., 0., 0., 0., 1.2457250e+01, 0., 0., 0., 0., 0., 0., 0., 0., -8.2292677e+01, 7.3598994e+00, 2.1304384e+00, 0., 0., 0., 0., 0., 0.},
+        {0., 5.7144922e+01, 0., 0., 0., 0., 0., 0., 0., 0., 1.2457250e+01, 0., 0., 0., 0., 0., 0., 0., -1.2554098e-01, -7.9407372e+01, 7.7454940e-01, 0., 0., 0., 0., 0., 0.},
+        {0., 0., 5.7144922e+01, 0., 0., 0., 0., 0., 0., 0., 0., 1.2457250e+01, 0., 0., 0., 0., 0., 0., -3.8419476e-01, 5.5066914e+00, -8.0314022e+01, 0., 0., 0., 0., 0., 0.},
+        {0., 0., 0., 5.7144922e+01, 0., 0., 0., 0., 0., 0., 0., 0., 1.2457250e+01, 0., 0., 0., 0., 0., 0., 0., 0., -8.2292677e+01, 7.3598994e+00, 2.1304384e+00, 0., 0., 0.},
+        {0., 0., 0., 0., 5.7144922e+01, 0., 0., 0., 0., 0., 0., 0., 0., 1.2457250e+01, 0., 0., 0., 0., 0., 0., 0., -1.2554098e-01, -7.9407372e+01, 7.7454940e-01, 0., 0., 0.},
+        {0., 0., 0., 0., 0., 5.7144922e+01, 0., 0., 0., 0., 0., 0., 0., 0., 1.2457250e+01, 0., 0., 0., 0., 0., 0., -3.8419476e-01, 5.5066914e+00, -8.0314022e+01, 0., 0., 0.},
+        {0., 0., 0., 0., 0., 0., 5.7144922e+01, 0., 0., 0., 0., 0., 0., 0., 0., 1.2457250e+01, 0., 0., 0., 0., 0., 0., 0., 0., -8.2292677e+01, 7.3598994e+00, 2.1304384e+00},
+        {0., 0., 0., 0., 0., 0., 0., 5.7144922e+01, 0., 0., 0., 0., 0., 0., 0., 0., 1.2457250e+01, 0., 0., 0., 0., 0., 0., 0., -1.2554098e-01, -7.9407372e+01, 7.7454940e-01},
+        {0., 0., 0., 0., 0., 0., 0., 0., 5.7144922e+01, 0., 0., 0., 0., 0., 0., 0., 0., 1.2457250e+01, 0., 0., 0., 0., 0., 0., -3.8419476e-01, 5.5066914e+00, -8.0314022e+01}
+    };
+
+    variableVector resultCurrentPlasticMicroGradient;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                     currentPlasticMacroVelocityGradient,
+                                                                                     currentPlasticMicroVelocityGradient,
+                                                                                     currentPlasticMicroGradientVelocityGradient,
+                                                                                     previousPlasticMicroDeformation,
+                                                                                     previousPlasticMicroGradient,
+                                                                                     previousPlasticMacroVelocityGradient,
+                                                                                     previousPlasticMicroVelocityGradient,
+                                                                                     previousPlasticMicroGradientVelocityGradient,
+                                                                                     resultCurrentPlasticMicroGradient, alpha );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradient ) );
+
+    variableVector resultCurrentPlasticMicroGradient2;
+    variableMatrix LHS2;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                     currentPlasticMacroVelocityGradient,
+                                                                                     currentPlasticMicroVelocityGradient,
+                                                                                     currentPlasticMicroGradientVelocityGradient,
+                                                                                     previousPlasticMicroDeformation,
+                                                                                     previousPlasticMicroGradient,
+                                                                                     previousPlasticMacroVelocityGradient,
+                                                                                     previousPlasticMicroVelocityGradient,
+                                                                                     previousPlasticMicroGradientVelocityGradient,
+                                                                                     resultCurrentPlasticMicroGradient2, LHS2, alpha );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradient2 ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerLHS, LHS2 ) );
+
+    //Test the Jacobians
+    variableVector resultCurrentPlasticMicroGradientJ;
+
+    variableMatrix dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+                   dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+                   dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+                   dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                     currentPlasticMacroVelocityGradient,
+                                                                                     currentPlasticMicroVelocityGradient,
+                                                                                     currentPlasticMicroGradientVelocityGradient,
+                                                                                     previousPlasticMicroDeformation,
+                                                                                     previousPlasticMicroGradient,
+                                                                                     previousPlasticMacroVelocityGradient,
+                                                                                     previousPlasticMicroVelocityGradient,
+                                                                                     previousPlasticMicroGradientVelocityGradient,
+                                                                                     resultCurrentPlasticMicroGradientJ,
+                                                                                     dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+                                                                                     dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+                                                                                     dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+                                                                                     dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
+                                                                                     alpha );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradientJ ) );
+
+    variableVector resultCurrentPlasticMicroGradientJ2;
+
+    variableMatrix dCurrentPlasticMicroGradientdPlasticMicroDeformationJ2,
+                   dCurrentPlasticMicroGradientdPlasticMacroVelocityGradientJ2,
+                   dCurrentPlasticMicroGradientdPlasticMicroVelocityGradientJ2,
+                   dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradientJ2;
+
+    variableMatrix dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                   dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient,
+                   dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient,
+                   dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient,
+                   dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                     currentPlasticMacroVelocityGradient,
+                                                                                     currentPlasticMicroVelocityGradient,
+                                                                                     currentPlasticMicroGradientVelocityGradient,
+                                                                                     previousPlasticMicroDeformation,
+                                                                                     previousPlasticMicroGradient,
+                                                                                     previousPlasticMacroVelocityGradient,
+                                                                                     previousPlasticMicroVelocityGradient,
+                                                                                     previousPlasticMicroGradientVelocityGradient,
+                                                                                     resultCurrentPlasticMicroGradientJ2,
+                                                                                     dCurrentPlasticMicroGradientdPlasticMicroDeformationJ2,
+                                                                                     dCurrentPlasticMicroGradientdPlasticMacroVelocityGradientJ2,
+                                                                                     dCurrentPlasticMicroGradientdPlasticMicroVelocityGradientJ2,
+                                                                                     dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradientJ2,
+                                                                                     dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                                                                                     dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient,
+                                                                                     dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient,
+                                                                                     dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient,
+                                                                                     dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient,
+                                                                                     alpha );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradientJ2 ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCurrentPlasticMicroGradientdPlasticMicroDeformation, dCurrentPlasticMicroGradientdPlasticMicroDeformationJ2 ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient, dCurrentPlasticMicroGradientdPlasticMacroVelocityGradientJ2 ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient, dCurrentPlasticMicroGradientdPlasticMicroVelocityGradientJ2 ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient, dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradientJ2 ) );
+
+    //Test the jacobian w.r.t. the current plastic macro deformation
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
+        constantVector delta( currentPlasticMicroDeformation.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMicroDeformation[ i ] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation + delta,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultP, alpha );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation - delta,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultM, alpha );
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroDeformation[ j ][ i ] ) );
+        }
+    }
+
+    //Test the jacobian w.r.t. the current plastic macro velocity gradient
+    for ( unsigned int i = 0; i < currentPlasticMacroVelocityGradient.size(); i++ ){
+        constantVector delta( currentPlasticMacroVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMacroVelocityGradient[ i ] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient + delta,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultP, alpha );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient - delta,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultM, alpha );
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient[ j ][ i ] ) );
+        }
+    }
+
+    //Test the jacobian w.r.t. the current plastic micro velocity gradient
+    for ( unsigned int i = 0; i < currentPlasticMicroVelocityGradient.size(); i++ ){
+        constantVector delta( currentPlasticMicroVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMicroVelocityGradient[ i ] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient + delta,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultP, alpha );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient - delta,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultM, alpha );
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient[ j ][ i ] ) );
+        }
+    }
+
+    //Test the jacobian w.r.t. the current plastic micro gradient velocity gradient
+    for ( unsigned int i = 0; i < currentPlasticMicroGradientVelocityGradient.size(); i++ ){
+        constantVector delta( currentPlasticMicroGradientVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMicroGradientVelocityGradient[ i ] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient + delta,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultP, alpha );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient - delta,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultM, alpha );
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient[ j ][ i ] ) );
+        }
+    }
+
+    //Test the jacobian w.r.t. the previous plastic macro deformation
+    for ( unsigned int i = 0; i < currentPlasticMicroDeformation.size(); i++ ){
+        constantVector delta( currentPlasticMicroDeformation.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMicroDeformation[ i ] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation + delta,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultP, alpha );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation - delta,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultM, alpha );
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation[ j ][ i ] ) );
+        }
+    }
+
+    //Test the jacobian w.r.t. the previous plastic macro gradient
+    for ( unsigned int i = 0; i < previousPlasticMicroGradient.size(); i++ ){
+        constantVector delta( previousPlasticMicroGradient.size(), 0 );
+        delta[i] = eps * fabs( previousPlasticMicroGradient[ i ] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient + delta,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultP, alpha );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient - delta,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultM, alpha );
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient[ j ][ i ] ) );
+        }
+    }
+
+    //Test the jacobian w.r.t. the previous plastic macro velocity gradient
+    for ( unsigned int i = 0; i < currentPlasticMacroVelocityGradient.size(); i++ ){
+        constantVector delta( currentPlasticMacroVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMacroVelocityGradient[ i ] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient + delta,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultP, alpha );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient - delta,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultM, alpha );
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient[ j ][ i ] ) );
+        }
+    }
+
+    //Test the jacobian w.r.t. the previous plastic micro velocity gradient
+    for ( unsigned int i = 0; i < currentPlasticMicroVelocityGradient.size(); i++ ){
+        constantVector delta( currentPlasticMicroVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMicroVelocityGradient[ i ] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient + delta,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultP, alpha );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient - delta,
+                                                                                         previousPlasticMicroGradientVelocityGradient,
+                                                                                         resultM, alpha );
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient[ j ][ i ] ) );
+        }
+    }
+
+    //Test the jacobian w.r.t. the previous plastic micro gradient velocity gradient
+    for ( unsigned int i = 0; i < currentPlasticMicroGradientVelocityGradient.size(); i++ ){
+        constantVector delta( currentPlasticMicroGradientVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMicroGradientVelocityGradient[ i ] ) + eps;
+
+        variableVector resultP, resultM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient + delta,
+                                                                                         resultP, alpha );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation,
+                                                                                         currentPlasticMacroVelocityGradient,
+                                                                                         currentPlasticMicroVelocityGradient,
+                                                                                         currentPlasticMicroGradientVelocityGradient,
+                                                                                         previousPlasticMicroDeformation,
+                                                                                         previousPlasticMicroGradient,
+                                                                                         previousPlasticMacroVelocityGradient,
+                                                                                         previousPlasticMicroVelocityGradient,
+                                                                                         previousPlasticMicroGradientVelocityGradient - delta,
+                                                                                         resultM, alpha );
+
+        variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient[ j ][ i ] ) );
+        }
+    }
+}
+
+BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation ){
+    /*!
+     * Evolve the plastic deformation.
+     *
+     */
+
+    variableType Dt = 8.009359239014827;
+    variableType alphaMacro = 1 - 0.48581069403548804;
+    variableType alphaMicro = 1 - 0.827106668527372;
+    variableType alphaMicroGrad = 1 - 0.608865458065455;
+
+    variableVector currentPlasticMacroVelocityGradient = { -0.27014632, -0.35189361,  0.13880036,
+                                                           -0.35584915, -0.48046671,  0.0912627 ,
+                                                            0.47263309, -0.31133122, -0.2948745 };
+
+    variableVector currentPlasticMicroVelocityGradient = { -0.01186714,  0.06090556,  0.40756696,
+                                                            0.32909297,  0.28343008,  0.32993809,
+                                                           -0.1899835 ,  0.41541764, -0.04761333 };
+
+    variableVector currentPlasticMicroGradientVelocityGradient = { -0.44741758,  0.19632574,  0.20883732, -0.18740653,  0.30768804,
+                                                                    0.46878663,  0.17691702, -0.07494477, -0.29871104, -0.46454855,
+                                                                   -0.34339229, -0.24065171, -0.0737629 ,  0.48339896,  0.25954592,
+                                                                    0.06579716, -0.43873995,  0.46482816,  0.20699556, -0.2417395 ,
+                                                                   -0.46792573,  0.39616741, -0.22954849, -0.097399  ,  0.20759377,
+                                                                   -0.35477122,  0.21945037 };
+
+    variableVector previousPlasticDeformationGradient = { -0.45932572, -0.49691079, -0.13107169,
+                                                           0.22431024, -0.61998429, -0.62903476,
+                                                          -0.90544313,  0.41193656, -0.14749891 };
+
+    variableVector previousPlasticMicroDeformation = { 0.28821738,  0.34407584,  0.06697721,
+                                                       0.31626116, -0.62278299,  0.83699009,
+                                                       0.16315786, -0.9434692 , -0.09991987 };
+
+    variableVector previousPlasticMicroGradient = { -0.4908299 , -0.09107442,  0.11438472, -0.468681  , -0.09518528,
+                                                     0.39306299,  0.30090607, -0.47472135, -0.39873768,  0.2071941 ,
+                                                     0.3967767 , -0.40333359, -0.10263381, -0.39238343, -0.21260101,
+                                                    -0.36133084, -0.32771357,  0.49025487,  0.01729508, -0.10338882,
+                                                     0.15828675,  0.31044611, -0.30362281, -0.03972172, -0.377879  ,
+                                                     0.11046526, -0.46997605 };
+
+    variableVector previousPlasticMacroVelocityGradient = { -0.4362157 , -0.37728779,  0.40148895,
+                                                            -0.15976616, -0.15839888,  0.26580961,
+                                                             0.23215055, -0.02231055,  0.35815526 };
+
+    variableVector previousPlasticMicroVelocityGradient = { 0.07222414, -0.40261712,  0.48556998,
+                                                            0.45642476, -0.09409791, -0.49992287,
+                                                            0.48252843,  0.48267731, -0.06878613 };
+
+    variableVector previousPlasticMicroGradientVelocityGradient = { -0.15695492,  0.45802473, -0.38830808, -0.29241496, -0.34225716,
+                                                                    -0.26127347, -0.41201504, -0.36558117, -0.24714561,  0.09340483,
+                                                                     0.40887886, -0.1481247 ,  0.15128499, -0.04882876, -0.30445054,
+                                                                     0.11557493, -0.20789811, -0.33913681,  0.3142761 ,  0.09871806,
+                                                                     0.11316847, -0.45596559,  0.19030294, -0.33056333, -0.49391146,
+                                                                     0.40129161, -0.06836289 };
+
+    variableVector answerMacro = { -1.56924249,  1.75893631,  0.91035498,
+                                    0.24241493, -0.43775652, -0.44317337,
+                                   -2.6946146 ,  2.06645595,  0.86856673 };
+
+    variableVector answerMicro = { 3.30247398,  2.51469186,  1.61673915,
+                                   6.78559987, 11.60984671,  7.25516648,
+                                   4.74326427,  4.32671877,  6.17698967 };
+
+    variableVector answerMicroGrad = {  0.18184066,   0.06902067,  -4.65044761,  -4.6051252 ,
+                                       -0.67925892,  -5.62411017,  -5.22449727,   0.2149805 ,
+                                       -8.35852814, -14.60027145,  11.46879229,   1.1063327 ,
+                                      -30.40158864,  24.16079446,  -3.60050806, -20.35119344,
+                                       18.13574972,  -5.22922306,   4.00630219,  -2.39707255,
+                                       -7.34817085,   3.12285942,  -6.24320576, -15.1020395 ,
+                                       -5.11190824,   3.50558822,  -4.01621741 };
+
+    variableVector resultMacro, resultMicro, resultMicroGrad;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                    currentPlasticMicroVelocityGradient,
+                                                                                    currentPlasticMicroGradientVelocityGradient,
+                                                                                    previousPlasticDeformationGradient,
+                                                                                    previousPlasticMicroDeformation,
+                                                                                    previousPlasticMicroGradient,
+                                                                                    previousPlasticMacroVelocityGradient,
+                                                                                    previousPlasticMicroVelocityGradient,
+                                                                                    previousPlasticMicroGradientVelocityGradient,
+                                                                                    resultMacro, resultMicro, resultMicroGrad,
+                                                                                    alphaMacro, alphaMicro, alphaMicroGrad );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMacro, answerMacro ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicro, answerMicro ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicroGrad, answerMicroGrad ) );
+
+    //Test the computation of the Jacobians
+    variableVector resultMacroJ, resultMicroJ, resultMicroGradJ;
+    variableMatrix dFdMacroL, dChidMicroL, dGradChidMacroL, dGradChidMicroL, dGradChidMicroGradL;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                    currentPlasticMicroVelocityGradient,
+                                                                                    currentPlasticMicroGradientVelocityGradient,
+                                                                                    previousPlasticDeformationGradient,
+                                                                                    previousPlasticMicroDeformation,
+                                                                                    previousPlasticMicroGradient,
+                                                                                    previousPlasticMacroVelocityGradient,
+                                                                                    previousPlasticMicroVelocityGradient,
+                                                                                    previousPlasticMicroGradientVelocityGradient,
+                                                                                    resultMacroJ, resultMicroJ, resultMicroGradJ,
+                                                                                    dFdMacroL, dChidMicroL, dGradChidMacroL,
+                                                                                    dGradChidMicroL, dGradChidMicroGradL,
+                                                                                    alphaMacro, alphaMicro, alphaMicroGrad );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMacroJ, answerMacro ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicroJ, answerMicro ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicroGradJ, answerMicroGrad ) );
+
+    variableVector resultMacroJ2, resultMicroJ2, resultMicroGradJ2;
+    variableMatrix dFdMacroLJ2, dChidMicroLJ2, dGradChidMacroLJ2, dGradChidMicroLJ2, dGradChidMicroGradLJ2,
+                   dFdPreviousF, dFdPreviousMacroL, dChidPreviousChi, dChidPreviousMicroL, dGradChidPreviousMacroL,
+                   dGradChidPreviousMicroL, dGradChidPreviousMicroGradL, dGradChidPreviousChi, dGradChidPreviousGradChi;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                    currentPlasticMicroVelocityGradient,
+                                                                                    currentPlasticMicroGradientVelocityGradient,
+                                                                                    previousPlasticDeformationGradient,
+                                                                                    previousPlasticMicroDeformation,
+                                                                                    previousPlasticMicroGradient,
+                                                                                    previousPlasticMacroVelocityGradient,
+                                                                                    previousPlasticMicroVelocityGradient,
+                                                                                    previousPlasticMicroGradientVelocityGradient,
+                                                                                    resultMacroJ2, resultMicroJ2, resultMicroGradJ2,
+                                                                                    dFdMacroLJ2, dChidMicroLJ2, dGradChidMacroLJ2,
+                                                                                    dGradChidMicroLJ2, dGradChidMicroGradLJ2,
+                                                                                    dFdPreviousF, dFdPreviousMacroL,
+                                                                                    dChidPreviousChi, dChidPreviousMicroL,
+                                                                                    dGradChidPreviousChi, dGradChidPreviousGradChi,
+                                                                                    dGradChidPreviousMacroL, dGradChidPreviousMicroL, dGradChidPreviousMicroGradL,
+                                                                                    alphaMacro, alphaMicro, alphaMicroGrad );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMacroJ2, answerMacro ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicroJ2, answerMicro ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicroGradJ2, answerMicroGrad ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dFdMacroLJ2, dFdMacroL ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dChidMicroLJ2, dChidMicroL ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChidMacroLJ2, dGradChidMacroL ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChidMicroLJ2, dGradChidMicroL ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChidMicroGradLJ2, dGradChidMicroGradL ) );
+
+    //Test jacobians w.r.t. the current plastic macro velocity gradient
+    constantType eps = 1e-6;
+    for ( unsigned int i = 0; i < currentPlasticMacroVelocityGradient.size(); i++ ){
+        constantVector delta( currentPlasticMacroVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMacroVelocityGradient[ i ] ) + eps;
+
+        variableVector resultMacroP, resultMicroP, resultMicroGradP;
+        variableVector resultMacroM, resultMicroM, resultMicroGradM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient + delta,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroP, resultMicroP, resultMicroGradP,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient - delta,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroM, resultMicroM, resultMicroGradM,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dFdMacroL[ j ][ i ] ) );
+        }
+
+        gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidMacroL[ j ][ i ] ) );
+        }
+    }
+
+    for ( unsigned int i = 0; i < currentPlasticMicroVelocityGradient.size(); i++ ){
+        constantVector delta( currentPlasticMicroVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMicroVelocityGradient[ i ] ) + eps;
+
+        variableVector resultMacroP, resultMicroP, resultMicroGradP;
+        variableVector resultMacroM, resultMicroM, resultMicroGradM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient + delta,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroP, resultMicroP, resultMicroGradP,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient - delta,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroM, resultMicroM, resultMicroGradM,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dChidMicroL[ j ][ i ] ) );
+        }
+
+        gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidMicroL[ j ][ i ] ) );
+        }
+    }
+
+    for ( unsigned int i = 0; i < currentPlasticMicroGradientVelocityGradient.size(); i++ ){
+        constantVector delta( currentPlasticMicroGradientVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( currentPlasticMicroGradientVelocityGradient[ i ] ) + eps;
+
+        variableVector resultMacroP, resultMicroP, resultMicroGradP;
+        variableVector resultMacroM, resultMicroM, resultMicroGradM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient + delta,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroP, resultMicroP, resultMicroGradP,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient - delta,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroM, resultMicroM, resultMicroGradM,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidMicroGradL[ j ][ i ] ) );
+        }
+    }
+
+    for ( unsigned int i = 0; i < previousPlasticDeformationGradient.size(); i++ ){
+        constantVector delta( previousPlasticDeformationGradient.size(), 0 );
+        delta[i] = eps * fabs( previousPlasticDeformationGradient[ i ] ) + eps;
+
+        variableVector resultMacroP, resultMicroP, resultMicroGradP;
+        variableVector resultMacroM, resultMicroM, resultMicroGradM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient + delta,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroP, resultMicroP, resultMicroGradP,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient - delta,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroM, resultMicroM, resultMicroGradM,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dFdPreviousF[ j ][ i ] ) );
+        }
+
+        gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+    }
+
+    for ( unsigned int i = 0; i < previousPlasticMicroDeformation.size(); i++ ){
+        constantVector delta( previousPlasticMicroDeformation.size(), 0 );
+        delta[i] = eps * fabs( previousPlasticMicroDeformation[ i ] ) + eps;
+
+        variableVector resultMacroP, resultMicroP, resultMicroGradP;
+        variableVector resultMacroM, resultMicroM, resultMicroGradM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation + delta,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroP, resultMicroP, resultMicroGradP,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation - delta,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroM, resultMicroM, resultMicroGradM,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dChidPreviousChi[ j ][ i ] ) );
+        }
+
+        gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidPreviousChi[ j ][ i ] ) );
+        }
+    }
+
+    for ( unsigned int i = 0; i < previousPlasticMicroGradient.size(); i++ ){
+        constantVector delta( previousPlasticMicroGradient.size(), 0 );
+        delta[i] = eps * fabs( previousPlasticMicroGradient[ i ] ) + eps;
+
+        variableVector resultMacroP, resultMicroP, resultMicroGradP;
+        variableVector resultMacroM, resultMicroM, resultMicroGradM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient + delta,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroP, resultMicroP, resultMicroGradP,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient - delta,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroM, resultMicroM, resultMicroGradM,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidPreviousGradChi[ j ][ i ] ) );
+        }
+    }
+
+    for ( unsigned int i = 0; i < previousPlasticMacroVelocityGradient.size(); i++ ){
+        constantVector delta( previousPlasticMacroVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( previousPlasticMacroVelocityGradient[ i ] ) + eps;
+
+        variableVector resultMacroP, resultMicroP, resultMicroGradP;
+        variableVector resultMacroM, resultMicroM, resultMicroGradM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient + delta,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroP, resultMicroP, resultMicroGradP,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient - delta,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroM, resultMicroM, resultMicroGradM,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dFdPreviousMacroL[ j ][ i ] ) );
+        }
+
+        gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidPreviousMacroL[ j ][ i ] ) );
+        }
+    }
+
+    for ( unsigned int i = 0; i < previousPlasticMicroVelocityGradient.size(); i++ ){
+        constantVector delta( previousPlasticMicroVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( previousPlasticMicroVelocityGradient[ i ] ) + eps;
+
+        variableVector resultMacroP, resultMicroP, resultMicroGradP;
+        variableVector resultMacroM, resultMicroM, resultMicroGradM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient + delta,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroP, resultMicroP, resultMicroGradP,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient - delta,
+                                                                                        previousPlasticMicroGradientVelocityGradient,
+                                                                                        resultMacroM, resultMicroM, resultMicroGradM,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dChidPreviousMicroL[ j ][ i ] ) );
+        }
+
+        gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidPreviousMicroL[ j ][ i ] ) );
+        }
+    }
+
+    for ( unsigned int i = 0; i < previousPlasticMicroGradientVelocityGradient.size(); i++ ){
+        constantVector delta( previousPlasticMicroGradientVelocityGradient.size(), 0 );
+        delta[i] = eps * fabs( previousPlasticMicroGradientVelocityGradient[ i ] ) + eps;
+
+        variableVector resultMacroP, resultMicroP, resultMicroGradP;
+        variableVector resultMacroM, resultMicroM, resultMicroGradM;
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient + delta,
+                                                                                        resultMacroP, resultMicroP, resultMicroGradP,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
+                                                                                        currentPlasticMicroVelocityGradient,
+                                                                                        currentPlasticMicroGradientVelocityGradient,
+                                                                                        previousPlasticDeformationGradient,
+                                                                                        previousPlasticMicroDeformation,
+                                                                                        previousPlasticMicroGradient,
+                                                                                        previousPlasticMacroVelocityGradient,
+                                                                                        previousPlasticMicroVelocityGradient,
+                                                                                        previousPlasticMicroGradientVelocityGradient - delta,
+                                                                                        resultMacroM, resultMicroM, resultMicroGradM,
+                                                                                        alphaMacro, alphaMicro, alphaMicroGrad );
+
+        variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+        }
+
+        gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
+
+        for ( unsigned int j = 0; j < gradCol.size(); j++ ){
+            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidPreviousMicroGradL[ j ][ i ] ) );
+        }
+    }
 
 }
