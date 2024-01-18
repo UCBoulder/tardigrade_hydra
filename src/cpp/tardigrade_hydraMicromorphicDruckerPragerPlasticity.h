@@ -938,6 +938,8 @@ namespace tardigradeHydra{
 
                 virtual void setPlasticDeformationJacobians( const bool addPreviousGradients );
 
+                virtual void setStateVariableResiduals( );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -1435,6 +1437,8 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdStateVariables,            floatMatrix, setdUpdatedPlasticGradientMicroDeformationdStateVariables            )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables,    floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousStateVariables    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, stateVariableResiduals,                                            floatVector, setStateVariableResiduals                                            )
 
         };
 
