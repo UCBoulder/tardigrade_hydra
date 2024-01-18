@@ -7330,13 +7330,17 @@ namespace tardigradeHydra{
                                               *getIntegrationParameter( ) );
                 )
 
-                set_dUpdatedPlasticDeformationGradientdPreviousMacroStress( tardigradeVectorTools::dot( dPlasticFdPreviousPlasticMacroL, *get_previousdPlasticMacroVelocityGradientdMacroStress( ) ) );
+                set_dUpdatedPlasticDeformationGradientdPreviousMacroStress( tardigradeVectorTools::dot( dPlasticFdPreviousPlasticMacroL,
+                                                                                                        *get_previousdPlasticMacroVelocityGradientdMacroStress( ) ) );
 
-                set_dUpdatedPlasticDeformationGradientdPreviousMicroStress( tardigradeVectorTools::dot( dPlasticFdPreviousPlasticMacroL, *get_previousdPlasticMacroVelocityGradientdMicroStress( ) ) );
+                set_dUpdatedPlasticDeformationGradientdPreviousMicroStress( tardigradeVectorTools::dot( dPlasticFdPreviousPlasticMacroL,
+                                                                                                        *get_previousdPlasticMacroVelocityGradientdMicroStress( ) ) );
 
-                set_dUpdatedPlasticDeformationGradientdPreviousF( tardigradeVectorTools::dot( dPlasticFdPreviousPlasticMacroL, *get_previousdPlasticMacroVelocityGradientdF( ) ) );
+                set_dUpdatedPlasticDeformationGradientdPreviousF( tardigradeVectorTools::dot( dPlasticFdPreviousPlasticMacroL,
+                                                                                              *get_previousdPlasticMacroVelocityGradientdF( ) ) );
 
-                floatMatrix dUpdatedPlasticFdPreviousFn = tardigradeVectorTools::dot( dPlasticFdPreviousPlasticMacroL, *get_previousdPlasticMacroVelocityGradientdFn( ) );
+                floatMatrix dUpdatedPlasticFdPreviousFn = tardigradeVectorTools::dot( dPlasticFdPreviousPlasticMacroL,
+                                                                                      *get_previousdPlasticMacroVelocityGradientdFn( ) );
 
                 unsigned int dim1 = updatedPlasticDeformationGradient.size( );
 
@@ -7356,17 +7360,23 @@ namespace tardigradeHydra{
 
                 set_dUpdatedPlasticDeformationGradientdPreviousFn( dUpdatedPlasticFdPreviousFn );
 
-                set_dUpdatedPlasticDeformationGradientdPreviousStateVariables( tardigradeVectorTools::dot( dPlasticFdPreviousPlasticMacroL, *get_previousdPlasticMacroVelocityGradientdStateVariables( ) ) );
+                set_dUpdatedPlasticDeformationGradientdPreviousStateVariables( tardigradeVectorTools::dot( dPlasticFdPreviousPlasticMacroL,
+                                                                                                           *get_previousdPlasticMacroVelocityGradientdStateVariables( ) ) );
 
-                set_dUpdatedPlasticMicroDeformationdPreviousMicroStress( tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL, *get_previousdPlasticMicroVelocityGradientdMicroStress( ) ) );
+                set_dUpdatedPlasticMicroDeformationdPreviousMicroStress( tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                                                                                     *get_previousdPlasticMicroVelocityGradientdMicroStress( ) ) );
 
-                set_dUpdatedPlasticMicroDeformationdPreviousF( tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL, *get_previousdPlasticMicroVelocityGradientdF( ) ) );
+                set_dUpdatedPlasticMicroDeformationdPreviousF( tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                                                                           *get_previousdPlasticMicroVelocityGradientdF( ) ) );
 
-                set_dUpdatedPlasticMicroDeformationdPreviousFn( tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL, *get_previousdPlasticMicroVelocityGradientdFn( ) ) );
+                set_dUpdatedPlasticMicroDeformationdPreviousFn( tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                                                                            *get_previousdPlasticMicroVelocityGradientdFn( ) ) );
 
-                set_dUpdatedPlasticMicroDeformationdPreviousChi( tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL, *get_previousdPlasticMicroVelocityGradientdChi( ) ) );
+                set_dUpdatedPlasticMicroDeformationdPreviousChi( tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                                                                             *get_previousdPlasticMicroVelocityGradientdChi( ) ) );
 
-                floatMatrix dUpdatedPlasticMicroDeformationdPreviousChin = tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL, *get_previousdPlasticMicroVelocityGradientdChin( ) );
+                floatMatrix dUpdatedPlasticMicroDeformationdPreviousChin = tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                                                                                       *get_previousdPlasticMicroVelocityGradientdChin( ) );
 
                 dim1 = updatedPlasticMicroDeformation.size( );
 
@@ -7386,37 +7396,94 @@ namespace tardigradeHydra{
 
                 set_dUpdatedPlasticMicroDeformationdPreviousChin( dUpdatedPlasticMicroDeformationdPreviousChin );
 
-                set_dUpdatedPlasticMicroDeformationdPreviousStateVariables( tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL, *get_previousdPlasticMicroVelocityGradientdStateVariables( ) ) );
+                set_dUpdatedPlasticMicroDeformationdPreviousStateVariables( tardigradeVectorTools::dot( dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                                                                                        *get_previousdPlasticMicroVelocityGradientdStateVariables( ) ) );
 
-                set_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMacroL, *get_previousdPlasticMacroVelocityGradientdMacroStress( ) ) );
+                set_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMacroL,
+                                                                                                               *get_previousdPlasticMacroVelocityGradientdMacroStress( ) ) );
 
-                set_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMacroL,         *get_previousdPlasticMacroVelocityGradientdMicroStress( ) )
-                                                                                 + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,         *get_previousdPlasticMicroVelocityGradientdMicroStress( ) )
-                                                                                 + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL, *get_previousdPlasticGradientMicroVelocityGradientdMicroStress( ) ) );
+                set_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMacroL,
+                                                                                                               *get_previousdPlasticMacroVelocityGradientdMicroStress( ) )
+                                                                                 + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,
+                                                                                                               *get_previousdPlasticMicroVelocityGradientdMicroStress( ) )
+                                                                                 + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
+                                                                                                               *get_previousdPlasticGradientMicroVelocityGradientdMicroStress( ) ) );
 
-                set_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL, *get_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress( ) ) );
+                set_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
+                                                                                                                   *get_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress( ) ) );
 
-                set_dUpdatedPlasticGradientMicroDeformationdPreviousF(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMacroL,         *get_previousdPlasticMacroVelocityGradientdF( ) )
-                                                                       + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,         *get_previousdPlasticMicroVelocityGradientdF( ) )
-                                                                       + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL, *get_previousdPlasticGradientMicroVelocityGradientdF( ) ) );
+                set_dUpdatedPlasticGradientMicroDeformationdPreviousF(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMacroL,
+                                                                                                     *get_previousdPlasticMacroVelocityGradientdF( ) )
+                                                                       + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,
+                                                                                                     *get_previousdPlasticMicroVelocityGradientdF( ) )
+                                                                       + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
+                                                                                                     *get_previousdPlasticGradientMicroVelocityGradientdF( ) ) );
 
-                set_dUpdatedPlasticGradientMicroDeformationdPreviousFn(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMacroL,         *get_previousdPlasticMacroVelocityGradientdFn( ) )
-                                                                        + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,         *get_previousdPlasticMicroVelocityGradientdFn( ) )
-                                                                        + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL, *get_previousdPlasticGradientMicroVelocityGradientdFn( ) ) );
+                set_dUpdatedPlasticGradientMicroDeformationdPreviousFn(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMacroL,
+                                                                                                      *get_previousdPlasticMacroVelocityGradientdFn( ) )
+                                                                        + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,
+                                                                                                      *get_previousdPlasticMicroVelocityGradientdFn( ) )
+                                                                        + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
+                                                                                                      *get_previousdPlasticGradientMicroVelocityGradientdFn( ) ) );
 
-                set_dUpdatedPlasticGradientMicroDeformationdPreviousChi(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,         *get_previousdPlasticMicroVelocityGradientdChi( ) )
-                                                                         + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL, *get_previousdPlasticGradientMicroVelocityGradientdChi( ) ) );
+                set_dUpdatedPlasticGradientMicroDeformationdPreviousChi(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,
+                                                                                                       *get_previousdPlasticMicroVelocityGradientdChi( ) )
+                                                                         + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
+                                                                                                       *get_previousdPlasticGradientMicroVelocityGradientdChi( ) ) );
 
-                set_dUpdatedPlasticGradientMicroDeformationdPreviousChin(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,         *get_previousdPlasticMicroVelocityGradientdChin( ) )
-                                                                          + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL, *get_previousdPlasticGradientMicroVelocityGradientdChin( ) ) );
+                floatMatrix dUpdatedPlasticGradientMicroDeformationdPreviousChin =  tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,
+                                                                                                                *get_previousdPlasticMicroVelocityGradientdChin( ) )
+                                                                                  + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
+                                                                                                                *get_previousdPlasticGradientMicroVelocityGradientdChin( ) );
 
-                set_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL, *get_previousdPlasticGradientMicroVelocityGradientdGradChi( ) ) );
+                dim1 = updatedPlasticGradientMicroDeformation.size( );
 
-                set_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL, *get_previousdPlasticGradientMicroVelocityGradientdGradChin( ) ) );
+                dim2 = previousPlasticMicroDeformation.size( );
 
-                set_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMacroL,         *get_previousdPlasticMacroVelocityGradientdStateVariables( ) )
-                                                                                    + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,         *get_previousdPlasticMicroVelocityGradientdStateVariables( ) )
-                                                                                    + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL, *get_previousdPlasticGradientMicroVelocityGradientdStateVariables( ) ) );
+                offset = ( ( *getPlasticConfigurationIndex( ) ) - 1 ) * dim2;
+
+                for ( unsigned int i = 0; i < dim1; i++ ){
+
+                    for ( unsigned int j = 0; j < dim2; j++ ){
+
+                        dUpdatedPlasticGradientMicroDeformationdPreviousChin[ i ][ j + offset ] += dPlasticGradientMicroDeformationdPreviousPlasticMicroDeformation[ i ][ j ];
+
+                    }
+
+                }
+
+                set_dUpdatedPlasticGradientMicroDeformationdPreviousChin( dUpdatedPlasticGradientMicroDeformationdPreviousChin );
+
+                set_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
+                                                                                                         *get_previousdPlasticGradientMicroVelocityGradientdGradChi( ) ) );
+
+                floatMatrix dUpdatedPlasticGradientMicroDeformationdPreviousGradChin = tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
+                                                                                                                   *get_previousdPlasticGradientMicroVelocityGradientdGradChin( ) );
+
+                dim1 = updatedPlasticGradientMicroDeformation.size( );
+
+                dim2 = previousPlasticGradientMicroDeformation.size( );
+
+                offset = ( ( *getPlasticConfigurationIndex( ) ) - 1 ) * dim2;
+
+                for ( unsigned int i = 0; i < dim1; i++ ){
+
+                    for ( unsigned int j = 0; j < dim2; j++ ){
+
+                        dUpdatedPlasticGradientMicroDeformationdPreviousGradChin[ i ][ j + offset ] += dPlasticGradientMicroDeformationdPreviousPlasticMicroGradient[ i ][ j ];
+
+                    }
+
+                }
+
+                set_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin( dUpdatedPlasticGradientMicroDeformationdPreviousGradChin );
+
+                set_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMacroL,
+                                                                                                                  *get_previousdPlasticMacroVelocityGradientdStateVariables( ) )
+                                                                                    + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,
+                                                                                                                  *get_previousdPlasticMicroVelocityGradientdStateVariables( ) )
+                                                                                    + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
+                                                                                                                  *get_previousdPlasticGradientMicroVelocityGradientdStateVariables( ) ) );
 
             }
             else{
@@ -7451,57 +7518,88 @@ namespace tardigradeHydra{
 
             set_updatedPlasticGradientMicroDeformation( updatedPlasticGradientMicroDeformation );
 
-            set_dUpdatedPlasticDeformationGradientdMacroStress( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL, *get_dPlasticMacroVelocityGradientdMacroStress( ) ) );
+            set_dUpdatedPlasticDeformationGradientdMacroStress( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL,
+                                                                                            *get_dPlasticMacroVelocityGradientdMacroStress( ) ) );
 
-            set_dUpdatedPlasticDeformationGradientdMicroStress( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL, *get_dPlasticMacroVelocityGradientdMicroStress( ) ) );
+            set_dUpdatedPlasticDeformationGradientdMicroStress( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL,
+                                                                                            *get_dPlasticMacroVelocityGradientdMicroStress( ) ) );
 
-            set_dUpdatedPlasticDeformationGradientdF( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL, *get_dPlasticMacroVelocityGradientdF( ) ) );
+            set_dUpdatedPlasticDeformationGradientdF( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL,
+                                                                                  *get_dPlasticMacroVelocityGradientdF( ) ) );
 
-            set_dUpdatedPlasticDeformationGradientdFn( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL, *get_dPlasticMacroVelocityGradientdFn( ) ) );
+            set_dUpdatedPlasticDeformationGradientdFn( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL,
+                                                                                   *get_dPlasticMacroVelocityGradientdFn( ) ) );
 
-            set_dUpdatedPlasticDeformationGradientdStateVariables( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL, *get_dPlasticMacroVelocityGradientdStateVariables( ) ) );
+            set_dUpdatedPlasticDeformationGradientdStateVariables( tardigradeVectorTools::dot( dPlasticFdPlasticMacroL,
+                                                                                               *get_dPlasticMacroVelocityGradientdStateVariables( ) ) );
 
-            set_dUpdatedPlasticMicroDeformationdMicroStress( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL, *get_dPlasticMicroVelocityGradientdMicroStress( ) ) );
+            set_dUpdatedPlasticMicroDeformationdMicroStress( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL,
+                                                                                         *get_dPlasticMicroVelocityGradientdMicroStress( ) ) );
 
-            set_dUpdatedPlasticMicroDeformationdF( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL, *get_dPlasticMicroVelocityGradientdF( ) ) );
+            set_dUpdatedPlasticMicroDeformationdF( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL,
+                                                                               *get_dPlasticMicroVelocityGradientdF( ) ) );
 
-            set_dUpdatedPlasticMicroDeformationdFn( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL, *get_dPlasticMicroVelocityGradientdFn( ) ) );
+            set_dUpdatedPlasticMicroDeformationdFn( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL,
+                                                                                *get_dPlasticMicroVelocityGradientdFn( ) ) );
 
-            set_dUpdatedPlasticMicroDeformationdChi( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL, *get_dPlasticMicroVelocityGradientdChi( ) ) );
+            set_dUpdatedPlasticMicroDeformationdChi( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL,
+                                                                                 *get_dPlasticMicroVelocityGradientdChi( ) ) );
 
-            set_dUpdatedPlasticMicroDeformationdChin( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL, *get_dPlasticMicroVelocityGradientdChin( ) ) );
+            set_dUpdatedPlasticMicroDeformationdChin( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL,
+                                                                                  *get_dPlasticMicroVelocityGradientdChin( ) ) );
 
-            set_dUpdatedPlasticMicroDeformationdStateVariables( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL, *get_dPlasticMicroVelocityGradientdStateVariables( ) ) );
+            set_dUpdatedPlasticMicroDeformationdStateVariables( tardigradeVectorTools::dot( dPlasticMicroDeformationdPlasticMicroL,
+                                                                                            *get_dPlasticMicroVelocityGradientdStateVariables( ) ) );
 
-            set_dUpdatedPlasticGradientMicroDeformationdMacroStress(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL, *get_dPlasticMacroVelocityGradientdMacroStress( ) ) );
+            set_dUpdatedPlasticGradientMicroDeformationdMacroStress(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,
+                                                                                                   *get_dPlasticMacroVelocityGradientdMacroStress( ) ) );
 
-            set_dUpdatedPlasticGradientMicroDeformationdMicroStress(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,         *get_dPlasticMacroVelocityGradientdMicroStress( ) )
-                                                                     + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,         *get_dPlasticMicroVelocityGradientdMicroStress( ) )
-                                                                     + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdMicroStress( ) ) );
+            set_dUpdatedPlasticGradientMicroDeformationdMicroStress(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,
+                                                                                                   *get_dPlasticMacroVelocityGradientdMicroStress( ) )
+                                                                     + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,
+                                                                                                   *get_dPlasticMicroVelocityGradientdMicroStress( ) )
+                                                                     + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL,
+                                                                                                   *get_dPlasticGradientMicroVelocityGradientdMicroStress( ) ) );
 
-            set_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdHigherOrderStress( ) ) );
+            set_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL,
+                                                                                                       *get_dPlasticGradientMicroVelocityGradientdHigherOrderStress( ) ) );
 
-            set_dUpdatedPlasticGradientMicroDeformationdF(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,         *get_dPlasticMacroVelocityGradientdF( ) )
-                                                           + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,         *get_dPlasticMicroVelocityGradientdF( ) )
-                                                           + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdF( ) ) );
+            set_dUpdatedPlasticGradientMicroDeformationdF(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,
+                                                                                         *get_dPlasticMacroVelocityGradientdF( ) )
+                                                           + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,
+                                                                                         *get_dPlasticMicroVelocityGradientdF( ) )
+                                                           + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL,
+                                                                                         *get_dPlasticGradientMicroVelocityGradientdF( ) ) );
 
-            set_dUpdatedPlasticGradientMicroDeformationdFn(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,         *get_dPlasticMacroVelocityGradientdFn( ) )
-                                                            + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,         *get_dPlasticMicroVelocityGradientdFn( ) )
-                                                            + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdFn( ) ) );
+            set_dUpdatedPlasticGradientMicroDeformationdFn(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,
+                                                                                          *get_dPlasticMacroVelocityGradientdFn( ) )
+                                                            + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,
+                                                                                          *get_dPlasticMicroVelocityGradientdFn( ) )
+                                                            + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL,
+                                                                                          *get_dPlasticGradientMicroVelocityGradientdFn( ) ) );
 
-            set_dUpdatedPlasticGradientMicroDeformationdChi(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,         *get_dPlasticMicroVelocityGradientdChi( ) )
-                                                             + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdChi( ) ) );
+            set_dUpdatedPlasticGradientMicroDeformationdChi(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,
+                                                                                           *get_dPlasticMicroVelocityGradientdChi( ) )
+                                                             + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL,
+                                                                                           *get_dPlasticGradientMicroVelocityGradientdChi( ) ) );
 
-            set_dUpdatedPlasticGradientMicroDeformationdChin(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,         *get_dPlasticMicroVelocityGradientdChin( ) )
-                                                              + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdChin( ) ) );
+            set_dUpdatedPlasticGradientMicroDeformationdChin(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,
+                                                                                            *get_dPlasticMicroVelocityGradientdChin( ) )
+                                                              + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL,
+                                                                                            *get_dPlasticGradientMicroVelocityGradientdChin( ) ) );
 
-            set_dUpdatedPlasticGradientMicroDeformationdGradChi( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdGradChi( ) ) );
+            set_dUpdatedPlasticGradientMicroDeformationdGradChi( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL,
+                                                                                             *get_dPlasticGradientMicroVelocityGradientdGradChi( ) ) );
 
-            set_dUpdatedPlasticGradientMicroDeformationdGradChin( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdGradChin( ) ) );
+            set_dUpdatedPlasticGradientMicroDeformationdGradChin( tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL,
+                                                                                              *get_dPlasticGradientMicroVelocityGradientdGradChin( ) ) );
 
-            set_dUpdatedPlasticGradientMicroDeformationdStateVariables(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,         *get_dPlasticMacroVelocityGradientdStateVariables( ) )
-                                                                        + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,         *get_dPlasticMicroVelocityGradientdStateVariables( ) )
-                                                                        + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL, *get_dPlasticGradientMicroVelocityGradientdStateVariables( ) ) );
+            set_dUpdatedPlasticGradientMicroDeformationdStateVariables(   tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMacroL,
+                                                                                                      *get_dPlasticMacroVelocityGradientdStateVariables( ) )
+                                                                        + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticMicroL,
+                                                                                                      *get_dPlasticMicroVelocityGradientdStateVariables( ) )
+                                                                        + tardigradeVectorTools::dot( dPlasticGradientMicroDeformationdPlasticGradientMicroL,
+                                                                                                      *get_dPlasticGradientMicroVelocityGradientdStateVariables( ) ) );
 
         }
     }
