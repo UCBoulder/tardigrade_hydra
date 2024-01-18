@@ -7694,8 +7694,6 @@ namespace tardigradeHydra{
 
             const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
 
-            const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
-
             const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
@@ -7729,26 +7727,6 @@ namespace tardigradeHydra{
             const floatVector *microGradientYield = get_microGradientYield( );
 
             floatMatrix jacobian( get_plasticStateVariables( )->size( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
-
-            // Set the terms associated with the yield surface
-            floatVector residual( 10, 0 );
-            residual[ 0 ] = tardigradeConstitutiveTools::mac( *macroYield ) - ( *plasticMultipliers )[ 0 ] * tardigradeConstitutiveTools::mac( -( *macroYield ) );
-
-            residual[ 1 ] = tardigradeConstitutiveTools::mac( *microYield ) - ( *plasticMultipliers )[ 1 ] * tardigradeConstitutiveTools::mac( -( *microYield ) );
-
-            for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
-
-                residual[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ]
-                    = tardigradeConstitutiveTools::mac( *y ) - ( *plasticMultipliers )[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ] * tardigradeConstitutiveTools::mac( -( *y ) );
-
-            }
-
-            // Set the terms associated with the strain-like ISV evolution
-            for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
-
-                residual[ numPlasticMultipliers + i ] = ( *updatedPlasticStrainLikeISVs )[ i ] - ( *plasticStrainLikeISVs )[ i ];
-
-            }
 
             // Stress Jacobians
             floatType dMacroMacdx, dMicroMacdx;
@@ -7866,9 +7844,9 @@ namespace tardigradeHydra{
 
                 jacobian[ i + row0 ][ i + offset + numPlasticMultipliers ] -= 1;
 
-                for ( unsigned int j = 0; j < ( numPlasticStrainLikeISVs + numPlasticMultipliers ); j++ ){
+                for ( auto j = getStateVariableIndices( )->begin( ); j != getStateVariableIndices( )->end( ); j++ ){
 
-                    jacobian[ i + row0 ][ j + offset ] += ( *dUpdatedPlasticStrainLikeISVsdStateVariables )[ i ][ j ];
+                    jacobian[ i + row0 ][ ( *j ) + offset ] += ( *dUpdatedPlasticStrainLikeISVsdStateVariables )[ i ][ ( unsigned int )( j - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
@@ -7897,15 +7875,23 @@ namespace tardigradeHydra{
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
+            unsigned int dim = *hydra->getDimension( );
+
+            unsigned int numSecondOrderTensor = dim * dim;
+
+            unsigned int numThirdOrderTensor = dim * dim * dim;
+
             const floatVector *plasticMultipliers = get_plasticMultipliers( );
-
-            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
-
-            const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
 
             const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
 
-            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+            const floatVector *dMacroYielddF                      = get_dMacroYielddF( );
+
+            const floatVector *dMicroYielddF                      = get_dMicroYielddF( );
+
+            const floatMatrix *dMicroGradientYielddF              = get_dMicroGradientYielddF( );
+
+            const floatMatrix *dMicroGradientYielddChi            = get_dMicroGradientYielddChi( );
 
             const floatType *macroYield = get_macroYield( );
 
@@ -7913,29 +7899,125 @@ namespace tardigradeHydra{
 
             const floatVector *microGradientYield = get_microGradientYield( );
 
-            floatVector residual( get_plasticStateVariables( )->size( ), 0 );
+            floatMatrix dRdD( get_plasticStateVariables( )->size( ), floatVector( 2 * numSecondOrderTensor + numThirdOrderTensor, 0 ) );
 
-            // Set the terms associated with the yield surface
-            residual[ 0 ] = tardigradeConstitutiveTools::mac( *macroYield ) - ( *plasticMultipliers )[ 0 ] * tardigradeConstitutiveTools::mac( -( *macroYield ) );
+            // Deformation gradient jacobians
+            floatType dMacroMacdx, dMicroMacdx;
+            floatType ndMacroMacdx, ndMicroMacdx;
 
-            residual[ 1 ] = tardigradeConstitutiveTools::mac( *microYield ) - ( *plasticMultipliers )[ 1 ] * tardigradeConstitutiveTools::mac( -( *microYield ) );
+            floatVector dMicroGradientMacdx( numPlasticMultipliers - 2 );
 
-            for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
+            floatVector ndMicroGradientMacdx( numPlasticMultipliers - 2 );
 
-                residual[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ]
-                    = tardigradeConstitutiveTools::mac( *y ) - ( *plasticMultipliers )[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ] * tardigradeConstitutiveTools::mac( -( *y ) );
+            tardigradeConstitutiveTools::mac( *macroYield, dMacroMacdx );
+
+            tardigradeConstitutiveTools::mac( *microYield, dMicroMacdx );
+
+            tardigradeConstitutiveTools::mac( -( *macroYield ), ndMacroMacdx );
+
+            tardigradeConstitutiveTools::mac( -( *microYield ), ndMicroMacdx );
+
+            for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
+
+                tardigradeConstitutiveTools::mac(  ( *microGradientYield )[ i ],  dMicroGradientMacdx[ i ] );
+
+                tardigradeConstitutiveTools::mac( -( *microGradientYield )[ i ], ndMicroGradientMacdx[ i ] );
 
             }
 
-            // Set the terms associated with the strain-like ISV evolution
-            for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
+            unsigned int offset = 0;
+            for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
 
-                residual[ numPlasticMultipliers + i ] = ( *updatedPlasticStrainLikeISVs )[ i ] - ( *plasticStrainLikeISVs )[ i ];
+                dRdD[ 0 ][ j + offset ] = ( dMacroMacdx + ( *plasticMultipliers )[ 0 ] * ndMacroMacdx ) * ( *dMacroYielddF )[ j ];
+
+                dRdD[ 1 ][ j + offset ] = ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] * ndMicroMacdx ) * ( *dMicroYielddF )[ j ];
+
+            } 
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
+
+                    dRdD[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddF )[ i ][ j ];
+
+                }
 
             }
 
-            set_stateVariableResiduals( residual );
+            // Micro deformation jacobians
+            offset = numSecondOrderTensor;
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
+
+                    dRdD[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddChi )[ i ][ j ];
+
+                }
+
+            }
+
+
+            set_dStateVariableResidualsdD( dRdD );
 
         }
+
+        void residual::setdStateVariableResidualsdPreviousISVs( ){
+            /*!
+             * Set the derivatives of the state variable residuals with respect to the previous ISV vector
+             *
+             * We define these residuals as
+             *
+             * \f$R = \left\langle f \right\rangle - \dot{\gamma} \left\langle -f \right\rangle\f$
+             *
+             * and
+             *
+             * \f$R = Z^{t+1} - Z^{t+1,\text{trial}}\f$
+             *
+             * Because we have five plastic multipliers (\f$\gamma\f$), five strain-like state variables (\f$Z\f$)
+             * and five yield surfaces (\f$f\f$) we can define ten different equations.
+             *
+             * The residual which includes the yield surfaces is somewhat complex as it contains two separate functions.
+             * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
+             */
+
+            unsigned int dim = *hydra->getDimension( );
+
+            unsigned int numSecondOrderTensor = dim * dim;
+
+            unsigned int numThirdOrderTensor = dim * dim * dim;
+
+            unsigned int numConfigurations = *hydra->getNumConfigurations( );
+
+            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+
+            const floatMatrix *dUpdatedPlasticStrainLikeISVsdStateVariables = get_dUpdatedPlasticStrainLikeISVsdStateVariables( );
+
+            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+
+            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+
+            floatMatrix dRdPreviousISVs( get_plasticStateVariables( )->size( ), floatVector( hydra->getPreviousStateVariables( )->size( ), 0 ) );
+
+            // Stress Jacobians
+            unsigned int row0 = numPlasticMultipliers;
+            unsigned int offset = ( numConfigurations - 1 ) * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
+            std::vector< unsigned int > stateVariableIndices = *getStateVariableIndices( );
+            for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
+
+                dRdPreviousISVs[ i + row0 ][ stateVariableIndices[ i ] + offset + numPlasticMultipliers ] += 1;
+
+                for ( auto j = stateVariableIndices.begin( ); j != stateVariableIndices.end( ); j++ ){
+
+                    dRdPreviousISVs[ i + row0 ][ ( *j ) + offset ] += ( *dUpdatedPlasticStrainLikeISVsdStateVariables )[ i ][ ( unsigned int )( j - stateVariableIndices.begin( ) ) ];
+
+                }
+
+            }
+
+            set_dStateVariableResidualsdPreviousISVs( dRdPreviousISVs );
+
+        }
+
     }
+
 }
