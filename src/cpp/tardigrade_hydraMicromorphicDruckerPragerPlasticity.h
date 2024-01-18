@@ -860,6 +860,10 @@ namespace tardigradeHydra{
 
                 virtual void setdUpdatedPlasticDeformationGradientdPreviousMicroStress( );
 
+                virtual void setdUpdatedPlasticDeformationGradientdF( );
+
+                virtual void setdUpdatedPlasticDeformationGradientdPreviousF( );
+
                 virtual void setdUpdatedPlasticDeformationGradientdFn( );
 
                 virtual void setdUpdatedPlasticDeformationGradientdPreviousFn( );
@@ -872,9 +876,17 @@ namespace tardigradeHydra{
 
                 virtual void setdUpdatedPlasticMicroDeformationdPreviousMicroStress( );
 
+                virtual void setdUpdatedPlasticMicroDeformationdF( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdPreviousF( );
+
                 virtual void setdUpdatedPlasticMicroDeformationdFn( );
 
                 virtual void setdUpdatedPlasticMicroDeformationdPreviousFn( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdChi( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdPreviousChi( );
 
                 virtual void setdUpdatedPlasticMicroDeformationdChin( );
 
@@ -896,13 +908,25 @@ namespace tardigradeHydra{
 
                 virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( );
 
+                virtual void setdUpdatedPlasticGradientMicroDeformationdF( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousF( );
+
                 virtual void setdUpdatedPlasticGradientMicroDeformationdFn( );
 
                 virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousFn( );
 
+                virtual void setdUpdatedPlasticGradientMicroDeformationdChi( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousChi( );
+
                 virtual void setdUpdatedPlasticGradientMicroDeformationdChin( );
 
                 virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousChin( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdGradChi( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousGradChi( );
 
                 virtual void setdUpdatedPlasticGradientMicroDeformationdGradChin( );
 
@@ -1336,6 +1360,10 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdPreviousMicroStress,    floatMatrix, setdUpdatedPlasticDeformationGradientdPreviousMicroStress    )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdF,                      floatMatrix, setdUpdatedPlasticDeformationGradientdF                      )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdPreviousF,              floatMatrix, setdUpdatedPlasticDeformationGradientdPreviousF              )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdFn,                     floatMatrix, setdUpdatedPlasticDeformationGradientdFn                     )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdPreviousFn,             floatMatrix, setdUpdatedPlasticDeformationGradientdPreviousFn             )
@@ -1348,9 +1376,17 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdPreviousMicroStress,       floatMatrix, setdUpdatedPlasticMicroDeformationdPreviousMicroStress       )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdF,                         floatMatrix, setdUpdatedPlasticMicroDeformationdF                         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdPreviousF,                 floatMatrix, setdUpdatedPlasticMicroDeformationdPreviousF                 )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdFn,                        floatMatrix, setdUpdatedPlasticMicroDeformationdFn                        )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdPreviousFn,                floatMatrix, setdUpdatedPlasticMicroDeformationdPreviousFn                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdChi,                       floatMatrix, setdUpdatedPlasticMicroDeformationdChi                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdPreviousChi,               floatMatrix, setdUpdatedPlasticMicroDeformationdPreviousChi               )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdChin,                      floatMatrix, setdUpdatedPlasticMicroDeformationdChin                      )
 
@@ -1372,13 +1408,25 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress, floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdF,                         floatMatrix, setdUpdatedPlasticGradientMicroDeformationdF                         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousF,                 floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousF                 )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdFn,                        floatMatrix, setdUpdatedPlasticGradientMicroDeformationdFn                        )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousFn,                floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousFn                )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdChi,                       floatMatrix, setdUpdatedPlasticGradientMicroDeformationdChi                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousChi,               floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousChi               )
+
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdChin,                      floatMatrix, setdUpdatedPlasticGradientMicroDeformationdChin                      )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousChin,              floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousChin              )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdGradChi,                   floatMatrix, setdUpdatedPlasticGradientMicroDeformationdGradChi                  )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousGradChi,           floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousGradChi           )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdGradChin,                  floatMatrix, setdUpdatedPlasticGradientMicroDeformationdGradChin                  )
 
