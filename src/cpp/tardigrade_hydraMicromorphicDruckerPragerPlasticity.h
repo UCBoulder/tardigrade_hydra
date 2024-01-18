@@ -942,7 +942,7 @@ namespace tardigradeHydra{
 
                 virtual void setStateVariableJacobians( );
 
-                virtual void setdStateVariableJacobiansdD( );
+                virtual void setdStateVariableResidualsdD( );
 
             private:
 

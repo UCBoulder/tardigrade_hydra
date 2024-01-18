@@ -7663,6 +7663,279 @@ namespace tardigradeHydra{
 
         }
 
-    }
+        void residual::setStateVariableJacobians( ){
+            /*!
+             * Set the state variable residual jacobians
+             *
+             * We define these residuals as
+             *
+             * \f$R = \left\langle f \right\rangle - \dot{\gamma} \left\langle -f \right\rangle\f$
+             *
+             * and
+             *
+             * \f$R = Z^{t+1} - Z^{t+1,\text{trial}}\f$
+             *
+             * Because we have five plastic multipliers (\f$\gamma\f$), five strain-like state variables (\f$Z\f$)
+             * and five yield surfaces (\f$f\f$) we can define ten different equations.
+             *
+             * The residual which includes the yield surfaces is somewhat complex as it contains two separate functions.
+             * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
+             */
 
+            unsigned int dim = *hydra->getDimension( );
+
+            unsigned int numSecondOrderTensor = dim * dim;
+
+            unsigned int numThirdOrderTensor = dim * dim * dim;
+
+            unsigned int numConfigurations = *hydra->getNumConfigurations( );
+
+            const floatVector *plasticMultipliers = get_plasticMultipliers( );
+
+            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+
+            const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
+
+            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+
+            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+
+            const floatVector *dMacroYielddStress                 = get_dMacroYielddStress( );
+
+            const floatVector *dMacroYielddFn                     = get_dMacroYielddFn( );
+
+            const floatVector *dMacroYielddStateVariables         = get_dMacroYielddStateVariables( );
+
+            const floatVector *dMicroYielddStress                 = get_dMicroYielddStress( );
+
+            const floatVector *dMicroYielddFn                     = get_dMicroYielddFn( );
+
+            const floatVector *dMicroYielddStateVariables         = get_dMicroYielddStateVariables( );
+
+            const floatMatrix *dMicroGradientYielddStress         = get_dMicroGradientYielddStress( );
+
+            const floatMatrix *dMicroGradientYielddFn             = get_dMicroGradientYielddFn( );
+
+            const floatMatrix *dMicroGradientYielddChin           = get_dMicroGradientYielddChin( );
+
+            const floatMatrix *dMicroGradientYielddStateVariables = get_dMicroGradientYielddStateVariables( );
+
+            const floatMatrix *dUpdatedPlasticStrainLikeISVsdStateVariables = get_dUpdatedPlasticStrainLikeISVsdStateVariables( );
+
+            const floatType *macroYield = get_macroYield( );
+
+            const floatType *microYield = get_microYield( );
+
+            const floatVector *microGradientYield = get_microGradientYield( );
+
+            floatMatrix jacobian( get_plasticStateVariables( )->size( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+
+            // Set the terms associated with the yield surface
+            floatVector residual( 10, 0 );
+            residual[ 0 ] = tardigradeConstitutiveTools::mac( *macroYield ) - ( *plasticMultipliers )[ 0 ] * tardigradeConstitutiveTools::mac( -( *macroYield ) );
+
+            residual[ 1 ] = tardigradeConstitutiveTools::mac( *microYield ) - ( *plasticMultipliers )[ 1 ] * tardigradeConstitutiveTools::mac( -( *microYield ) );
+
+            for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
+
+                residual[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ]
+                    = tardigradeConstitutiveTools::mac( *y ) - ( *plasticMultipliers )[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ] * tardigradeConstitutiveTools::mac( -( *y ) );
+
+            }
+
+            // Set the terms associated with the strain-like ISV evolution
+            for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
+
+                residual[ numPlasticMultipliers + i ] = ( *updatedPlasticStrainLikeISVs )[ i ] - ( *plasticStrainLikeISVs )[ i ];
+
+            }
+
+            // Stress Jacobians
+            floatType dMacroMacdx, dMicroMacdx;
+            floatType nMacroMac, ndMacroMacdx, nMicroMac, ndMicroMacdx;
+
+            floatVector microGradientMac( numPlasticMultipliers - 2 );
+            floatVector dMicroGradientMacdx( numPlasticMultipliers - 2 );
+
+            floatVector nMicroGradientMac( numPlasticMultipliers - 2 );
+            floatVector ndMicroGradientMacdx( numPlasticMultipliers - 2 );
+
+            tardigradeConstitutiveTools::mac( *macroYield, dMacroMacdx );
+
+            tardigradeConstitutiveTools::mac( *microYield, dMicroMacdx );
+
+            nMacroMac = tardigradeConstitutiveTools::mac( -( *macroYield ), ndMacroMacdx );
+
+            nMicroMac = tardigradeConstitutiveTools::mac( -( *microYield ), ndMicroMacdx );
+
+            for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
+
+                microGradientMac[ i ]  = tardigradeConstitutiveTools::mac(  ( *microGradientYield )[ i ],  dMicroGradientMacdx[ i ] );
+
+                nMicroGradientMac[ i ] = tardigradeConstitutiveTools::mac( -( *microGradientYield )[ i ], ndMicroGradientMacdx[ i ] );
+
+            }
+
+            unsigned int offset = numSecondOrderTensor;
+            for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
+
+                jacobian[ 0 ][ j ] = ( dMacroMacdx  + ( *plasticMultipliers )[ 0 ] * ndMacroMacdx ) * ( *dMacroYielddStress )[ j ];
+
+                jacobian[ 1 ][ j + offset ] = ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] * ndMicroMacdx ) * ( *dMicroYielddStress )[ j ];
+
+            }
+
+            offset = 2 * numSecondOrderTensor;
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                for ( unsigned int j = 0; j < numThirdOrderTensor; j++ ){
+
+                    jacobian[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddStress )[ i ][ j ];
+
+                }
+
+            }
+
+            // Sub-Deformation gradient jacobians
+            offset = 2 * numSecondOrderTensor + numThirdOrderTensor;
+            for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
+
+                jacobian[ 0 ][ j + offset ] = ( dMacroMacdx + ( *plasticMultipliers )[ 0 ] * ndMacroMacdx ) * ( *dMacroYielddFn )[ j ];
+
+                jacobian[ 1 ][ j + offset ] = ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] * ndMicroMacdx ) * ( *dMicroYielddFn )[ j ];
+
+            } 
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
+
+                    jacobian[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddFn )[ i ][ j ];
+
+                }
+
+            }
+
+            // Sub-Micro deformation jacobians
+            offset = 2 * numSecondOrderTensor + numThirdOrderTensor + ( numConfigurations - 1 ) * numSecondOrderTensor;
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
+
+                    jacobian[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddChin )[ i ][ j ];
+
+                }
+
+            }
+
+
+            // State Variable Jacobians
+            offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
+
+            jacobian[ 0 ][ offset + 0 ] -= nMacroMac;
+
+            jacobian[ 1 ][ offset + 1 ] -= nMicroMac;
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                jacobian[ i + 2 ][ offset + i + 2 ] -= nMicroGradientMac[ i ];
+
+            }
+
+            for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
+
+                jacobian[ 0 ][ j + offset ] += ( dMacroMacdx + ( *plasticMultipliers )[ 0 ] * ndMacroMacdx ) * ( *dMacroYielddStateVariables )[ j ];
+
+                jacobian[ 1 ][ j + offset ] += ( dMicroMacdx + ( *plasticMultipliers )[ 0 ] * ndMicroMacdx ) * ( *dMicroYielddStateVariables )[ j ];
+
+            }
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
+
+                    jacobian[ i + 2 ][ j + offset ] += ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddStateVariables )[ i ][ j ];
+
+                }
+
+            }
+            
+            unsigned int row0 = numPlasticMultipliers;
+            offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
+            for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
+
+                jacobian[ i + row0 ][ i + offset + numPlasticMultipliers ] -= 1;
+
+                for ( unsigned int j = 0; j < ( numPlasticStrainLikeISVs + numPlasticMultipliers ); j++ ){
+
+                    jacobian[ i + row0 ][ j + offset ] += ( *dUpdatedPlasticStrainLikeISVsdStateVariables )[ i ][ j ];
+
+                }
+
+            }
+
+            set_stateVariableJacobians( jacobian );
+
+        }
+
+        void residual::setdStateVariableResidualsdD( ){
+            /*!
+             * Set the state variable residuals derivatives w.r.t. the deformation measures
+             *
+             * We define these residuals as
+             *
+             * \f$R = \left\langle f \right\rangle - \dot{\gamma} \left\langle -f \right\rangle\f$
+             *
+             * and
+             *
+             * \f$R = Z^{t+1} - Z^{t+1,\text{trial}}\f$
+             *
+             * Because we have five plastic multipliers (\f$\gamma\f$), five strain-like state variables (\f$Z\f$)
+             * and five yield surfaces (\f$f\f$) we can define ten different equations.
+             *
+             * The residual which includes the yield surfaces is somewhat complex as it contains two separate functions.
+             * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
+             */
+
+            const floatVector *plasticMultipliers = get_plasticMultipliers( );
+
+            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+
+            const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
+
+            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+
+            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+
+            const floatType *macroYield = get_macroYield( );
+
+            const floatType *microYield = get_microYield( );
+
+            const floatVector *microGradientYield = get_microGradientYield( );
+
+            floatVector residual( get_plasticStateVariables( )->size( ), 0 );
+
+            // Set the terms associated with the yield surface
+            residual[ 0 ] = tardigradeConstitutiveTools::mac( *macroYield ) - ( *plasticMultipliers )[ 0 ] * tardigradeConstitutiveTools::mac( -( *macroYield ) );
+
+            residual[ 1 ] = tardigradeConstitutiveTools::mac( *microYield ) - ( *plasticMultipliers )[ 1 ] * tardigradeConstitutiveTools::mac( -( *microYield ) );
+
+            for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
+
+                residual[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ]
+                    = tardigradeConstitutiveTools::mac( *y ) - ( *plasticMultipliers )[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ] * tardigradeConstitutiveTools::mac( -( *y ) );
+
+            }
+
+            // Set the terms associated with the strain-like ISV evolution
+            for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
+
+                residual[ numPlasticMultipliers + i ] = ( *updatedPlasticStrainLikeISVs )[ i ] - ( *plasticStrainLikeISVs )[ i ];
+
+            }
+
+            set_stateVariableResiduals( residual );
+
+        }
+    }
 }
