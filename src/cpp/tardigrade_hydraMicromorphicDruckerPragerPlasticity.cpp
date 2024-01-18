@@ -7602,6 +7602,67 @@ namespace tardigradeHydra{
                                                                                                       *get_dPlasticGradientMicroVelocityGradientdStateVariables( ) ) );
 
         }
+
+        void residual::setStateVariableResiduals( ){
+            /*!
+             * Set the state variable residuals
+             *
+             * We define these residuals as
+             *
+             * \f$R = \left\langle f \right\rangle - \dot{\gamma} \left\langle -f \right\rangle\f$
+             *
+             * and
+             *
+             * \f$R = Z^{t+1} - Z^{t+1,\text{trial}}\f$
+             *
+             * Because we have five plastic multipliers (\f$\gamma\f$), five strain-like state variables (\f$Z\f$)
+             * and five yield surfaces (\f$f\f$) we can define ten different equations.
+             *
+             * The residual which includes the yield surfaces is somewhat complex as it contains two separate functions.
+             * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
+             */
+
+            const floatVector *plasticMultipliers = get_plasticMultipliers( );
+
+            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+
+            const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
+
+            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+
+            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+
+            const floatType *macroYield = get_macroYield( );
+
+            const floatType *microYield = get_microYield( );
+
+            const floatVector *microGradientYield = get_microGradientYield( );
+
+            floatVector residual( get_plasticStateVariables( )->size( ), 0 );
+
+            // Set the terms associated with the yield surface
+            residual[ 0 ] = tardigradeConstitutiveTools::mac( *macroYield ) - ( *plasticMultipliers )[ 0 ] * tardigradeConstitutiveTools::mac( -( *macroYield ) );
+
+            residual[ 1 ] = tardigradeConstitutiveTools::mac( *microYield ) - ( *plasticMultipliers )[ 1 ] * tardigradeConstitutiveTools::mac( -( *microYield ) );
+
+            for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
+
+                residual[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ]
+                    = tardigradeConstitutiveTools::mac( *y ) - ( *plasticMultipliers )[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ] * tardigradeConstitutiveTools::mac( -( *y ) );
+
+            }
+
+            // Set the terms associated with the strain-like ISV evolution
+            for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
+
+                residual[ numPlasticMultipliers + i ] = ( *updatedPlasticStrainLikeISVs )[ i ] - ( *plasticStrainLikeISVs )[ i ];
+
+            }
+
+            set_stateVariableResiduals( residual );
+
+        }
+
     }
 
 }
