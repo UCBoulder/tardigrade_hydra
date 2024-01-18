@@ -844,6 +844,100 @@ namespace tardigradeHydra{
 
                 virtual void setPrecedingGradientMicroDeformationJacobians( const bool isPrevious );
 
+                virtual void setUpdatedPlasticDeformationGradient( );
+
+                virtual void setUpdatedPlasticMicroDeformation( );
+
+                virtual void setUpdatedPlasticGradientMicroDeformation( );
+
+                virtual void setPlasticDeformation( );
+
+                virtual void setdUpdatedPlasticDeformationGradientdMacroStress( );
+
+                virtual void setdUpdatedPlasticDeformationGradientdPreviousMacroStress( );
+
+                virtual void setdUpdatedPlasticDeformationGradientdMicroStress( );
+
+                virtual void setdUpdatedPlasticDeformationGradientdPreviousMicroStress( );
+
+                virtual void setdUpdatedPlasticDeformationGradientdF( );
+
+                virtual void setdUpdatedPlasticDeformationGradientdPreviousF( );
+
+                virtual void setdUpdatedPlasticDeformationGradientdFn( );
+
+                virtual void setdUpdatedPlasticDeformationGradientdPreviousFn( );
+
+                virtual void setdUpdatedPlasticDeformationGradientdStateVariables( );
+
+                virtual void setdUpdatedPlasticDeformationGradientdPreviousStateVariables( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdMicroStress( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdPreviousMicroStress( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdF( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdPreviousF( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdFn( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdPreviousFn( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdChi( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdPreviousChi( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdChin( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdPreviousChin( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdStateVariables( );
+
+                virtual void setdUpdatedPlasticMicroDeformationdPreviousStateVariables( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdMacroStress( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousMacroStress( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdMicroStress( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousMicroStress( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdHigherOrderStress( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdF( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousF( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdFn( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousFn( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdChi( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousChi( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdChin( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousChin( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdGradChi( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousGradChi( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdGradChin( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousGradChin( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdStateVariables( );
+
+                virtual void setdUpdatedPlasticGradientMicroDeformationdPreviousStateVariables( );
+
+                virtual void setPlasticDeformationJacobians( const bool addPreviousGradients );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -1251,6 +1345,96 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticGradientMicroVelocityGradientdStateVariables,           floatMatrix, setdPlasticGradientMicroVelocityGradientdStateVariables         )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPlasticGradientMicroVelocityGradientdStateVariables,   floatMatrix, setPreviousdPlasticGradientMicroVelocityGradientdStateVariables )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, updatedPlasticDeformationGradient,                         floatVector, setUpdatedPlasticDeformationGradient                         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, updatedPlasticMicroDeformation,                            floatVector, setUpdatedPlasticMicroDeformation                            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, updatedPlasticGradientMicroDeformation,                    floatVector, setUpdatedPlasticGradientMicroDeformation                    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdMacroStress,            floatMatrix, setdUpdatedPlasticDeformationGradientdMacroStress            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdPreviousMacroStress,    floatMatrix, setdUpdatedPlasticDeformationGradientdPreviousMacroStress    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdMicroStress,            floatMatrix, setdUpdatedPlasticDeformationGradientdMicroStress            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdPreviousMicroStress,    floatMatrix, setdUpdatedPlasticDeformationGradientdPreviousMicroStress    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdF,                      floatMatrix, setdUpdatedPlasticDeformationGradientdF                      )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdPreviousF,              floatMatrix, setdUpdatedPlasticDeformationGradientdPreviousF              )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdFn,                     floatMatrix, setdUpdatedPlasticDeformationGradientdFn                     )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdPreviousFn,             floatMatrix, setdUpdatedPlasticDeformationGradientdPreviousFn             )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdStateVariables,         floatMatrix, setdUpdatedPlasticDeformationGradientdStateVariables         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticDeformationGradientdPreviousStateVariables, floatMatrix, setdUpdatedPlasticDeformationGradientdPreviousStateVariables )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdMicroStress,               floatMatrix, setdUpdatedPlasticMicroDeformationdMicroStress               )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdPreviousMicroStress,       floatMatrix, setdUpdatedPlasticMicroDeformationdPreviousMicroStress       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdF,                         floatMatrix, setdUpdatedPlasticMicroDeformationdF                         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdPreviousF,                 floatMatrix, setdUpdatedPlasticMicroDeformationdPreviousF                 )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdFn,                        floatMatrix, setdUpdatedPlasticMicroDeformationdFn                        )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdPreviousFn,                floatMatrix, setdUpdatedPlasticMicroDeformationdPreviousFn                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdChi,                       floatMatrix, setdUpdatedPlasticMicroDeformationdChi                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdPreviousChi,               floatMatrix, setdUpdatedPlasticMicroDeformationdPreviousChi               )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdChin,                      floatMatrix, setdUpdatedPlasticMicroDeformationdChin                      )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdPreviousChin,              floatMatrix, setdUpdatedPlasticMicroDeformationdPreviousChin              )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdStateVariables,            floatMatrix, setdUpdatedPlasticMicroDeformationdStateVariables            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticMicroDeformationdPreviousStateVariables,    floatMatrix, setdUpdatedPlasticMicroDeformationdPreviousStateVariables    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdMacroStress,         floatMatrix, setdUpdatedPlasticGradientMicroDeformationdMacroStress         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress, floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousMacroStress )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdMicroStress,         floatMatrix, setdUpdatedPlasticGradientMicroDeformationdMicroStress         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress, floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousMicroStress )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdHigherOrderStress,         floatMatrix, setdUpdatedPlasticGradientMicroDeformationdHigherOrderStress         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress, floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdF,                         floatMatrix, setdUpdatedPlasticGradientMicroDeformationdF                         )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousF,                 floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousF                 )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdFn,                        floatMatrix, setdUpdatedPlasticGradientMicroDeformationdFn                        )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousFn,                floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousFn                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdChi,                       floatMatrix, setdUpdatedPlasticGradientMicroDeformationdChi                       )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousChi,               floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousChi               )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdChin,                      floatMatrix, setdUpdatedPlasticGradientMicroDeformationdChin                      )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousChin,              floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousChin              )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdGradChi,                   floatMatrix, setdUpdatedPlasticGradientMicroDeformationdGradChi                  )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousGradChi,           floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousGradChi           )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdGradChin,                  floatMatrix, setdUpdatedPlasticGradientMicroDeformationdGradChin                  )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousGradChin,          floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousGradChin          )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdStateVariables,            floatMatrix, setdUpdatedPlasticGradientMicroDeformationdStateVariables            )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables,    floatMatrix, setdUpdatedPlasticGradientMicroDeformationdPreviousStateVariables    )
 
         };
 
