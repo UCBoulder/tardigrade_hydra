@@ -30,6 +30,7 @@ Internal Changes
 - Added the plastic velocity gradients for Drucker-Prager plasticity (:pull:`48`). By `Nathan Miller`_.
 - Added functions to calculation the updated plastic deformations (:pull:`49`). By `Nathan Miller`_.
 - Added updating the plastic deformation measures and their jacobians to the residual object (:pull:`50`). By `Nathan Miller`_.
+- Added the residuals and jacobians of the state variables (:pull:`51`). By `Nathan Miller`_.
 
 ******************
 0.3.0 (01-03-2023)
