@@ -8018,6 +8018,66 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setResidual( ){
+            /*!
+             * Set the residual equation
+             */
+
+            const floatVector *updatedPlasticDeformationGradient;
+
+            const floatVector *updatedPlasticMicroDeformation;
+
+            const floatVector *updatedPlasticGradientMicroDeformation;
+
+            const floatVector *stateVariableResiduals;
+
+            // Get the trial plastic deformation measures
+            unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+
+            const floatVector plasticDeformationGradient      = ( *hydra->get_configurations( ) )[ plasticConfigurationIndex ];
+
+            const floatVector plasticMicroDeformation         = ( *hydra->get_microConfigurations( ) )[ plasticConfigurationIndex ];
+
+            const floatVector plasticGradientMicroDeformation = ( *hydra->get_gradientMicroConfigurations( ) )[ plasticConfigurationIndex ];
+
+            // Get the updated plastic deformation measures
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                updatedPlasticDeformationGradient = get_updatedPlasticDeformationGradient( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                updatedPlasticMicroDeformation = get_updatedPlasticMicroDeformation( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                updatedPlasticGradientMicroDeformation = get_updatedPlasticGradientMicroDeformation( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                stateVariableResiduals = get_stateVariableResiduals( );
+            )
+
+            floatVector residual = tardigradeVectorTools::appendVectors( { *updatedPlasticDeformationGradient      - plasticDeformationGradient,
+                                                                           *updatedPlasticMicroDeformation         - plasticMicroDeformation,
+                                                                           *updatedPlasticGradientMicroDeformation - plasticGradientMicroDeformation,
+                                                                           *stateVariableResiduals } );
+
+            setResidual( residual );
+
+        }
+
+        void residual::setJacobian( ){
+            /*!
+             * Set the Jacobian
+             */
+        }
+
+        void residual::setdRdD( ){
+            /*!
+             * Set the derivative of the residual w.r.t. the deformation
+             */
+        }
+
     }
 
 }
