@@ -8070,6 +8070,169 @@ namespace tardigradeHydra{
             /*!
              * Set the Jacobian
              */
+
+            const unsigned int numEquations = *getNumEquations( );
+
+            const unsigned int numUnknowns  = hydra->getUnknownVector( )->size( );
+
+            const unsigned int numConfigurations = *hydra->getNumConfigurations( );
+
+            const unsigned int dim = *hydra->getDimension( );
+
+            const unsigned int numSecondOrderTensor = dim * dim;
+
+            const unsigned int numThirdOrderTensor = dim * dim * dim;
+
+            const std::vector< unsigned int > stateVariableIndices = *getStateVariableIndices( );
+
+            const floatMatrix *dUpdatedPlasticDeformationGradientdMacroStress;
+
+            const floatMatrix *dUpdatedPlasticDeformationGradientdMicroStress;
+
+            const floatMatrix *dUpdatedPlasticDeformationGradientdFn;
+
+            const floatMatrix *dUpdatedPlasticDeformationGradientdStateVariables;
+
+            const floatMatrix *dUpdatedPlasticMicroDeformationdMicroStress;
+
+            const floatMatrix *dUpdatedPlasticMicroDeformationdFn;
+
+            const floatMatrix *dUpdatedPlasticMicroDeformationdStateVariables;
+
+            const floatMatrix *dUpdatedPlasticGradientMicroDeformationdMacroStress;
+
+            const floatMatrix *dUpdatedPlasticGradientMicroDeformationdMicroStress;
+
+            const floatMatrix *dUpdatedPlasticGradientMicroDeformationdHigherOrderStress;
+
+            const floatMatrix *dUpdatedPlasticGradientMicroDeformationdFn;
+
+            const floatMatrix *dUpdatedPlasticGradientMicroDeformationdChin;
+
+            const floatMatrix *dUpdatedPlasticGradientMicroDeformationdGradChin;
+
+            const floatMatrix *dUpdatedPlasticGradientMicroDeformationdStateVariables;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticDeformationGradientdMacroStress = get_dUpdatedPlasticDeformationGradientdMacroStress( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticDeformationGradientdMicroStress = get_dUpdatedPlasticDeformationGradientdMicroStress( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticDeformationGradientdFn = get_dUpdatedPlasticDeformationGradientdFn( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticDeformationGradientdStateVariables = get_dUpdatedPlasticDeformationGradientdStateVariables( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticMicroDeformationdMicroStress = get_dUpdatedPlasticMicroDeformationdMicroStress( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticMicroDeformationdFn = get_dUpdatedPlasticMicroDeformationdFn( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticMicroDeformationdStateVariables = get_dUpdatedPlasticMicroDeformationdStateVariables( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticGradientMicroDeformationdMacroStress = get_dUpdatedPlasticGradientMicroDeformationdMacroStress( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticGradientMicroDeformationdMicroStress = get_dUpdatedPlasticGradientMicroDeformationdMicroStress( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticGradientMicroDeformationdHigherOrderStress = get_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticGradientMicroDeformationdFn = get_dUpdatedPlasticGradientMicroDeformationdFn( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticGradientMicroDeformationdChin = get_dUpdatedPlasticGradientMicroDeformationdChin( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticGradientMicroDeformationdGradChin = get_dUpdatedPlasticGradientMicroDeformationdGradChin( );
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                dUpdatedPlasticGradientMicroDeformationdStateVariables = get_dUpdatedPlasticGradientMicroDeformationdStateVariables( );
+            )
+
+            floatMatrix jacobian( numEquations, floatVector( numUnknowns, 0 ) );
+
+            // Set the Jacobians of the second order plastic deformation measures
+            for ( unsigned int i = 0; i < numSecondOrderTensor; i++ ){
+
+                // Jacobians with respect to the trial stresses
+                for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
+
+                    jacobian[ i                        ][ j                        ] += ( *dUpdatedPlasticDeformationGradientdMacroStress )[ i ][ j ];
+
+                    jacobian[ i                        ][ j + numSecondOrderTensor ] += ( *dUpdatedPlasticDeformationGradientdMicroStress )[ i ][ j ];
+
+                    jacobian[ i + numSecondOrderTensor ][ j + numSecondOrderTensor ] += ( *dUpdatedPlasticMicroDeformationdMicroStress )[ i ][ j ];
+
+                }
+
+                // Jacobians with respect to the trial sub-deformation gradients
+                jacobian[ i                        ][ i + 2 * numSecondOrderTensor + numThirdOrderTensor                        ] -= 1;
+
+                jacobian[ i + numSecondOrderTensor ][ i + 2 * numSecondOrderTensor + numThirdOrderTensor + numSecondOrderTensor ] -= 1;
+
+                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
+
+                    jacobian[ i                        ][ j + 2 * numSecondOrderTensor + numThirdOrderTensor ] += ( *dUpdatedPlasticDeformationGradientdFn )[ i ][ j ];
+
+                    jacobian[ i + numSecondOrderTensor ][ j + 2 * numSecondOrderTensor + numThirdOrderTensor ] += ( *dUpdatedPlasticMicroDeformationdFn )[ i ][ j ];
+
+                }
+
+                // Jacobians with respect to the state variables
+                for ( auto j = stateVariableIndices.begin( ); j != stateVariableIndices.end( ); j++ ){
+
+                    jacobian[ i                        ][ *j + numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor ) ] += ( *dUpdatedPlasticDeformationGradientdStateVariables )[ i ][ ( unsigned int )( j - stateVariableIndices.begin( ) ) ];
+
+                    jacobian[ i + numSecondOrderTensor ][ *j + numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor ) ] += ( *dUpdatedPlasticMicroDeformationdStateVariables )[ i ][ ( unsigned int )( j - stateVariableIndices.begin( ) ) ];
+
+                }
+
+            }
+
+            // Set the Jacobians of the third order plastic deformation measures
+            for ( unsigned int i = 0; i < numThirdOrderTensor; i++ ){
+
+                jacobian[ i + 2 * numSecondOrderTensor + numThirdOrderTensor + 2 * numSecondOrderTensor ][ i + 2 * numSecondOrderTensor + numThirdOrderTensor + 2 * numSecondOrderTensor ] -= 1;
+
+                // Set the Jacobians with respect to the trial stresses
+                for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
+
+                    jacobian[ i + 2 * numSecondOrderTensor + numThirdOrderTensor ][ j                        ] = ( *dUpdatedPlasticGradientMicroDeformationdMacroStress )[ i ][ j ];
+
+                    jacobian[ i + 2 * numSecondOrderTensor + numThirdOrderTensor ][ j + numSecondOrderTensor ] = ( *dUpdatedPlasticGradientMicroDeformationdMicroStress )[ i ][ j ];
+
+                }
+
+                for ( unsigned int j = 0; j < numThirdOrderTensor; j++ ){
+
+                    jacobian[ i + 2 * numSecondOrderTensor + numThirdOrderTensor ][ j + 2 * numSecondOrderTensor ] = ( *dUpdatedPlasticGradientMicroDeformationdHigherOrderStress )[ i ][ j ];
+
+                }
+
+            }
+
+            setJacobian( jacobian );
+
         }
 
         void residual::setdRdD( ){
