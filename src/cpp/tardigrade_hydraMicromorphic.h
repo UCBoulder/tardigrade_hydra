@@ -75,6 +75,10 @@ namespace tardigradeHydra{
         protected:
 
             //Utility functions
+            virtual void decomposeUnknownVector( ) override;
+
+            virtual void decomposeUnknownVectorMicroConfigurations( );
+
             virtual void decomposeStateVariableVector( ) override;
 
             virtual void decomposeStateVariableVectorMicroConfigurations( );
@@ -153,9 +157,12 @@ namespace tardigradeHydra{
 
     };
 
+    //! The base class for micromorphic residuals
     class residualBaseMicromorphic : public residualBase{
 
         public:
+
+            using tardigradeHydra::residualBase::residualBase;
 
             /*!
              * Base class for micromorphic residuals
@@ -166,6 +173,48 @@ namespace tardigradeHydra{
             residualBaseMicromorphic( hydraBaseMicromorphic *_hydra, unsigned int _numEquations ) : residualBase( _hydra, _numEquations ), hydra( _hydra ){ }
 
             hydraBaseMicromorphic *hydra; //!< A pointer to the containing hydra object
+
+            virtual void setdRdD( ){
+                /*!
+                 * Set the derivative of the residual w.r.t. the deformation.
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The derivative of the residual w.r.t. the deformation is not implemented" ) );
+
+            }
+
+            virtual void setdRdF( ) override {
+                /*!
+                 * Rename setdRdF to setdRdD because we will use it for all of the deformations
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( setdRdD( ) );
+
+            }
+
+            void setdRdD( const floatMatrix &dRdD ){
+                /*!
+                 * Set the derivative of the residual w.r.t. the deformation.
+                 *
+                 * Pass-through to setdRdF just changing the naming convention
+                 * 
+                 * \param &dRdD: The derivative of the resdual with respect to the deformation (F, chi, gradChi )
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( residualBase::setdRdF( dRdD ) );
+
+            }
+
+            const floatMatrix *getdRdD( ){
+                /*!
+                 * Get the derivative of the residual w.r.t. the deformation.
+                 *
+                 * Pass-through to setdRdF just changing the naming convention
+                 */
+
+                return residualBase::getdRdF( );
+
+            }
 
     };
 

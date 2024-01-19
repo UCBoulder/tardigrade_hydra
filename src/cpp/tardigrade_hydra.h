@@ -61,7 +61,7 @@
      *                                                                        \
      * \param &varname: The value of varname                                  \
      */                                                                       \
-        setfun( varname, _##varname );                                        \
+        TARDIGRADE_ERROR_TOOLS_CATCH( setfun( varname, _##varname ) )         \
     }
 
 /*!

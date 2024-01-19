@@ -6,8 +6,40 @@ Changelog
 #########
 
 ******************
-0.3.1 (unreleased)
+0.3.2 (unreleased)
 ******************
+
+******************
+0.3.1 (01-19-2023)
+******************
+
+Release
+=======
+- Released version (:pull:`53`). By `Nathan Miller`_.
+
+New Features
+============
+- Added the micromorphic linear elasticity residual (:pull:`36`). By `Nathan Miller`_.
+- Added the micromorphic Drucker Prager plasticity residual (:pull:`52`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Added the ability to update the micromorphic hydra object with a new unknown vector (:pull:`34`). By `Nathan Miller`_.
+- Added the calculation of the current stress measures in micromorphic linear elasticity (:pull:`35`). By `Nathan Miller`_.
+- Initial commit of the micromorphic Drucker-Prager plasticity residual (:pull:`37`). By `Nathan Miller`_.
+- Added the calculation of the driving stress for the micromorphic Drucker-Prager plasticity residual (:pull:`38`). By `Nathan Miller`_.
+- Added the decomposition of the parameter vector (:pull:`39`). By `Nathan Miller`_.
+- Added the extraction of the nonlinear state variables (:pull:`40`). By `Nathan Miller`_.
+- Added the calculation of the cohesion (:pull:`41`). By `Nathan Miller`_.
+- Added the calculation of the required quantities from the flow potential (:pull:`42`). By `Nathan Miller`_.
+- Added the calculation of the jacobians of the strain-like ISV evolution rates (:pull:`43`). By `Nathan Miller`_.
+- Added the calculation of the values and Jacobians of the strain-like ISVs (:pull:`44`). By `Nathan Miller`_.
+- Moved the calculation of the preceding deformation gradient to its own function (:pull:`46`). By `Nathan Miller`_.
+- Added a function to calculate the preceding micro deformation (:pull:`47`). By `Nathan Miller`_.
+- Added the plastic velocity gradients for Drucker-Prager plasticity (:pull:`48`). By `Nathan Miller`_.
+- Added functions to calculation the updated plastic deformations (:pull:`49`). By `Nathan Miller`_.
+- Added updating the plastic deformation measures and their jacobians to the residual object (:pull:`50`). By `Nathan Miller`_.
+- Added the residuals and jacobians of the state variables (:pull:`51`). By `Nathan Miller`_.
 
 ******************
 0.3.0 (01-03-2023)
