@@ -377,6 +377,14 @@ namespace tardigradeHydra{
 
                 using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
 
+                using tardigradeHydra::residualBaseMicromorphic::setResidual;
+
+                using tardigradeHydra::residualBaseMicromorphic::setJacobian;
+
+                using tardigradeHydra::residualBaseMicromorphic::setdRdD;
+
+                using tardigradeHydra::residualBaseMicromorphic::setdRdT;
+
                 residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const unsigned int &plasticConfigurationIndex,
                           const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5 )
                         : tardigradeHydra::residualBaseMicromorphic( _hydra, _numEquations ){
@@ -945,6 +953,12 @@ namespace tardigradeHydra{
                 virtual void setdStateVariableResidualsdD( );
 
                 virtual void setdStateVariableResidualsdPreviousISVs( );
+
+                virtual void setResidual( ) override;
+
+                virtual void setJacobian( ) override;
+
+                virtual void setdRdD( ) override;
 
             private:
 

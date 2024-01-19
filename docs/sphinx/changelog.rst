@@ -6,12 +6,21 @@ Changelog
 #########
 
 ******************
-0.3.1 (unreleased)
+0.3.2 (unreleased)
 ******************
+
+******************
+0.3.1 (01-19-2023)
+******************
+
+Release
+=======
+- Released version (:pull:`53`). By `Nathan Miller`_.
 
 New Features
 ============
 - Added the micromorphic linear elasticity residual (:pull:`36`). By `Nathan Miller`_.
+- Added the micromorphic Drucker Prager plasticity residual (:pull:`52`). By `Nathan Miller`_.
 
 Internal Changes
 ================
