@@ -9,6 +9,10 @@ Changelog
 0.3.2 (unreleased)
 ******************
 
+New Features
+============
+- Added setting the stresses and previous stresses for micromorphic elasticity (:pull:`54`). By `Nathan Miller`_.
+
 ******************
 0.3.1 (01-19-2023)
 ******************
