@@ -11,7 +11,8 @@ Changelog
 
 New Features
 ============
-- Added setting the stresses and previous stresses for micromorphic elasticity (:pull:`54`). By `Nathan Miller`_.
+- Added setting the stresses and previous stresses for micromorphic linear elasticity (:pull:`54`). By `Nathan Miller`_.
+- Added setting dRdT for micromorphic linear elasticity (:pull:`55`). By `Nathan Miller`_.
 
 ******************
 0.3.1 (01-19-2023)

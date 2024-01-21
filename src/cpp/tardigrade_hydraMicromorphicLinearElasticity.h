@@ -522,6 +522,8 @@ namespace tardigradeHydra{
 
                 virtual void setdRdD( ) override;
 
+                virtual void setdRdT( ) override;
+
                 virtual void setStress( ) override;
 
                 virtual void setPreviousStress( ) override;
