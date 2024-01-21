@@ -863,7 +863,7 @@ namespace tardigradeHydra{
 
                 }
 
-                if ( ( *localdRdF )[ row ].size( ) != ( *dim ) * ( *dim ) ){
+                if ( ( *localdRdF )[ row ].size( ) != *getConfigurationUnknownCount( ) ){
 
                     std::string message = "Row " + std::to_string( row ) + " of dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
                     message            += "  expected: " + std::to_string( ( *dim ) * ( *dim ) ) + "\n";
