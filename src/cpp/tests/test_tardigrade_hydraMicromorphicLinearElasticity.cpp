@@ -5899,6 +5899,8 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
     floatMatrix dRdD( 45, floatVector( 45, 0 ) );
 
+    floatVector dRdT( 45, 0 );
+
     for ( unsigned int i = 0; i < unknownVector.size( ); i++ ){
 
         floatVector delta( unknownVector.size( ), 0 );
@@ -5996,6 +5998,48 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdD, *R.getdRdD( ) ) );
+
+    for ( unsigned int i = 0; i < 1; i++ ){
+
+        floatVector delta( 1, 0 );
+
+        delta[ i ] = eps * std::fabs( temperature ) + eps;
+
+        hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature + delta[ i ], previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        hydraBaseMicromorphicMock hydram( time, deltaTime, temperature - delta[ i ], previousTemperature, deformationGradient, previousDeformationGradient,
+                                          microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          previousStateVariables, parameters,
+                                          numConfigurations, numNonLinearSolveStateVariables,
+                                          dimension, configuration_unknown_count,
+                                          tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 45, parameters );
+
+        residualMock Rm( &hydram, 45, parameters );
+
+        floatVector vp = *Rp.getResidual( );
+
+        floatVector vm = *Rm.getResidual( );
+
+        for ( unsigned int j = 0; j < vp.size( ); j++ ){
+
+            dRdT[ j ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] );
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdT, *R.getdRdT( ) ) );
 
 }
 

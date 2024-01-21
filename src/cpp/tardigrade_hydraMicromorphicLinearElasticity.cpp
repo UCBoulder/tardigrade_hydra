@@ -4024,6 +4024,15 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdRdT( ){
+            /*!
+             * Set the derivative of the residual w.r.t. the temperature
+             */
+
+            setdRdT( floatVector( *getNumEquations( ), 0 ) );
+
+        }
+
     }
 
 }
