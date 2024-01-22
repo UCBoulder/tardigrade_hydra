@@ -1327,6 +1327,76 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::computeTangents( ){
+        /*!
+         * Compute the values of the consistent tangents
+         */
+
+        //Form the solver based on the current value of the jacobian
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Amat( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+
+        tardigradeVectorTools::solverType< floatType > solver( Amat );
+
+        unsigned int rank = solver.rank( );
+
+        TARDIGRADE_ERROR_TOOLS_CATCH(
+            if ( rank != getResidual( )->size( ) ){
+                throw std::runtime_error( "The Jacobian is not full rank" );
+            }
+        )
+
+        // Solve for dXdF
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdFmat( getFlatdRdF( )->data( ), getResidual( )->size( ), *getConfigurationUnknownCount( ) );
+
+        _flatdXdF.second = floatVector( getUnknownVector( )->size( ) * ( *getConfigurationUnknownCount( ) ) );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdFmat( _flatdXdF.second.data( ), getUnknownVector( )->size( ), ( *getConfigurationUnknownCount( ) ) );
+
+        dXdFmat = -solver.solve( dRdFmat );
+
+        _flatdXdF.first = true;
+
+        // Solve for dXdT
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdTmat( getdRdT( )->data( ), getResidual( )->size( ), 1 );
+
+        _flatdXdT.second = floatVector( getUnknownVector( )->size( ) );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getUnknownVector( )->size( ), 1 );
+
+        dXdTmat = -solver.solve( dRdTmat );
+
+        _flatdXdT.first = true;
+
+    }
+
+    const floatVector *hydraBase::getFlatdXdF( ){
+        /*!
+         * Get the total derivative of X w.r.t. the deformation in row-major format
+         */
+
+        if ( !_flatdXdF.first ){
+
+            computeTangents( );
+
+        }
+
+        return &_flatdXdF.second;
+
+    }
+
+    const floatVector *hydraBase::getFlatdXdT( ){
+        /*!
+         * Get the total derivative of X w.r.t. the temperature in row-major format
+         */
+
+        if ( !_flatdXdT.first ){
+
+            computeTangents( );
+
+        }
+
+        return &_flatdXdT.second;
+
+    }
+
     errorOut dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,
                                  floatType &SCD,                  floatType &RPL,             floatVector &ddsddt,       floatVector &drplde,       floatType &DRPLDT,
                                  const floatVector &strain,       const floatVector &dstrain, const floatVector &time,   const floatType &DTIME,    const floatType &TEMP,

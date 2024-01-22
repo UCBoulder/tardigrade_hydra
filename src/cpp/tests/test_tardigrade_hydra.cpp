@@ -233,6 +233,28 @@ namespace tardigradeHydra{
                     hydra.addIterationData( &hydra._jacobian );
                 }
 
+                static void set_flatdRdF( hydraBase &hydra, const floatVector &value ){
+
+                    hydra._dRdF.second = value;
+                    hydra._dRdF.first = true;
+
+                    hydra.addIterationData( &hydra._dRdF );
+                }
+
+                static void set_flatdRdT( hydraBase &hydra, const floatVector &value ){
+
+                    hydra._dRdT.second = value;
+                    hydra._dRdT.first = true;
+
+                    hydra.addIterationData( &hydra._dRdT );
+                }
+
+                static void set_configuration_unknown_count( hydraBase &hydra, const unsigned int &value ){
+
+                    hydra._configuration_unknown_count = value;
+
+                }
+
                 static unsigned int get_iteration( hydraBase &hydra ){
 
                     return hydra._iteration;
@@ -3604,5 +3626,114 @@ BOOST_AUTO_TEST_CASE( test_getConfiguration ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getConfiguration( 1 ), ( *hydra.get_configurations( ) )[ 1 ] ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousConfiguration( 3 ), ( *hydra.get_previousConfigurations( ) )[ 3 ] ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_computeTangents ){
+    /*!
+     * Boost test of the get-configuration command
+     */
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+                                           0.54506801, 0.34276383, 0.30412079 }; 
+
+    floatVector parameters = { 1, 2, 3, 4, 5 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            floatVector residual = { 1, 2, 3, 4, 5, 6, 7, 8 };
+
+            floatVector jacobian = {  1.020e+00, -2.100e-02, -2.700e-02,  5.000e-03,  2.200e-02,
+                                     -8.000e-03,  4.800e-02,  1.800e-02, -2.000e-03,  9.890e-01,
+                                     -1.600e-02,  2.300e-02, -6.000e-03, -4.400e-02, -1.000e-02,
+                                      2.400e-02, -3.200e-02, -3.200e-02,  1.003e+00,  3.000e-03,
+                                      1.300e-02,  3.500e-02,  2.200e-02,  1.100e-02,  2.200e-02,
+                                     -1.800e-02, -1.400e-02,  9.730e-01, -2.100e-02,  1.300e-02,
+                                     -4.100e-02, -7.000e-03, -7.000e-03, -1.000e-03, -7.000e-03,
+                                     -1.900e-02,  9.930e-01,  3.900e-02,  4.400e-02,  0.000e+00,
+                                      1.200e-02, -3.800e-02, -1.800e-02, -9.000e-03,  3.700e-02,
+                                      9.750e-01, -2.000e-03,  4.900e-02,  2.000e-03,  1.100e-02,
+                                     -3.800e-02,  3.300e-02,  1.000e-02,  5.000e-03,  9.840e-01,
+                                     -2.000e-02, -8.000e-03,  1.800e-02,  3.800e-02,  1.000e-03,
+                                      1.700e-02,  9.000e-03,  1.200e-02,  1.017e+00 };
+
+            floatVector dRdF = { 0.842, 0.083, 0.764, 0.244, 0.194, 0.572, 0.096, 0.885, 0.627,
+                                 0.723, 0.016, 0.594, 0.557, 0.159, 0.153, 0.696, 0.319, 0.692,
+                                 0.554, 0.389, 0.925, 0.842, 0.357, 0.044, 0.305, 0.398, 0.705,
+                                 0.995, 0.356, 0.763, 0.593, 0.692 };
+
+            floatVector dRdT = { 0.151, 0.399, 0.241, 0.343, 0.513, 0.667, 0.106, 0.131 };
+
+            virtual void formNonLinearProblem( ) override{
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, residual );
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_configuration_unknown_count( *this, 4 );
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatdRdF( *this, dRdF );
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatdRdT( *this, dRdT );
+
+            }
+
+
+    };
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    floatVector dXdF = { -0.82465846, -0.07170032, -0.6980051 , -0.20331326, -0.23335885,
+                         -0.61372185, -0.10491576, -0.88596209, -0.61044411, -0.68740006,
+                         -0.00136119, -0.58912653, -0.57592882, -0.20858956, -0.18456305,
+                         -0.78968331, -0.29210434, -0.65513278, -0.52247678, -0.36671689,
+                         -0.93810693, -0.84253114, -0.31654198, -0.05205265, -0.30854419,
+                         -0.42011514, -0.71233187, -1.00584317, -0.31220525, -0.69069361,
+                         -0.56654897, -0.62510316 };
+
+    floatVector dXdT = { -0.14962987, -0.4307929 , -0.22433599, -0.36650931, -0.49577669,
+                         -0.68301613, -0.09246248, -0.09819724 };
+
+    const floatVector *flatdXdF = hydra.getFlatdXdF( );
+
+    const floatVector *flatdXdT = hydra.getFlatdXdT( );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dXdF, *flatdXdF ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dXdT, *flatdXdT ) );
 
 }
