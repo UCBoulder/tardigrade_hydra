@@ -7,8 +7,8 @@
   ******************************************************************************
   */
 
-#ifndef TARDIGRADE_HYDRA_MICROMORPHIC_LINEAR_ELASTICITY_H
-#define TARDIGRADE_HYDRA_MICROMORPHIC_LINEAR_ELASTICITY_H
+#ifndef TARDIGRADE_HYDRA_MICROMORPHIC_DRUCKER_PRAGER_PLASTICITY_H
+#define TARDIGRADE_HYDRA_MICROMORPHIC_DRUCKER_PRAGER_PLASTICITY_H
 
 #define USE_EIGEN
 #include<tardigrade_vector_tools.h>

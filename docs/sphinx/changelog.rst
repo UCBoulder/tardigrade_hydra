@@ -22,6 +22,7 @@ Internal Changes
 Bug Fixes
 =========
 - Found problem with lack of generality when computing dRdF (:pull:`58`). By `Nathan Miller`_.
+- Found issue with include guards for micromorphic Drucker-Prager plasticity (:pull:`59`). By `Nathan Miller`_.
 
 ******************
 0.3.1 (01-19-2023)
