@@ -725,15 +725,13 @@ namespace tardigradeHydra{
          * Form the residual, jacobian, and gradient matrices
          */
 
-        const unsigned int *dim = getDimension( );
-
         unsigned int residualSize = ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( );
 
         _residual.second = floatVector( residualSize, 0 );
 
         _jacobian.second = floatVector( residualSize * residualSize, 0 );
 
-        _dRdF.second = floatVector( residualSize * ( *dim ) * ( *dim ), 0 );
+        _dRdF.second = floatVector( residualSize * ( *getConfigurationUnknownCount( ) ), 0 );
 
         _dRdT.second = floatVector( residualSize, 0 );
 
@@ -866,16 +864,16 @@ namespace tardigradeHydra{
                 if ( ( *localdRdF )[ row ].size( ) != *getConfigurationUnknownCount( ) ){
 
                     std::string message = "Row " + std::to_string( row ) + " of dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
-                    message            += "  expected: " + std::to_string( ( *dim ) * ( *dim ) ) + "\n";
+                    message            += "  expected: " + std::to_string( ( *getConfigurationUnknownCount( ) ) ) + "\n";
                     message            += "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n";
 
                     TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
                 }
 
-                for ( unsigned int col = 0; col < ( *dim ) * ( *dim ); col++ ){
+                for ( unsigned int col = 0; col < ( *getConfigurationUnknownCount( ) ); col++ ){
 
-                    _dRdF.second[ ( *dim ) * ( *dim ) * ( row + offset ) + col ] = ( *localdRdF )[ row ][ col ];
+                    _dRdF.second[ ( *getConfigurationUnknownCount( ) ) * ( row + offset ) + col ] = ( *localdRdF )[ row ][ col ];
 
                 }
 
@@ -1374,7 +1372,7 @@ namespace tardigradeHydra{
 
         if ( !_flatdXdF.first ){
 
-            computeTangents( );
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeTangents( ) )
 
         }
 
@@ -1389,7 +1387,7 @@ namespace tardigradeHydra{
 
         if ( !_flatdXdT.first ){
 
-            computeTangents( );
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeTangents( ) )
 
         }
 
