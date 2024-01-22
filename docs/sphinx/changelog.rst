@@ -13,7 +13,7 @@ New Features
 ============
 - Added setting the stresses and previous stresses for micromorphic linear elasticity (:pull:`54`). By `Nathan Miller`_.
 - Added setting dRdT for micromorphic linear elasticity (:pull:`55`). By `Nathan Miller`_.
-- Added calculations of the total derivative of the unknown vector (:pull:`55`). by `Nathan Miller`_.
+- Added calculations of the total derivative of the unknown vector (:pull:`57`). by `Nathan Miller`_.
 
 Internal Changes
 ================
@@ -21,7 +21,7 @@ Internal Changes
 
 Bug Fixes
 =========
-- Found problem with lack of generality when computing dRdF (:pull:`57`). By `Nathan Miller`_.
+- Found problem with lack of generality when computing dRdF (:pull:`58`). By `Nathan Miller`_.
 
 ******************
 0.3.1 (01-19-2023)
