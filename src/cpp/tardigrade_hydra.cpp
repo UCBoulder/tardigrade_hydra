@@ -1108,9 +1108,7 @@ namespace tardigradeHydra{
 
         Xmat[ Xmat.size( ) - 1 ] = *nonLinearSolveStateVariables;
 
-        _X.second = tardigradeVectorTools::appendVectors( Xmat );
-
-        _X.first = true;
+        setX( tardigradeVectorTools::appendVectors( Xmat ) );
 
     }
 
@@ -1244,9 +1242,7 @@ namespace tardigradeHydra{
         resetIterationData( );
 
         // Set the unknown vector
-        _X.second = newUnknownVector;
-
-        _X.first = true;
+        setX( newUnknownVector );
 
         // Decompose the unknown vector and update the state
         TARDIGRADE_ERROR_TOOLS_CATCH( decomposeUnknownVector( ) );
@@ -1310,9 +1306,6 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "Failure to converge main loop" ) );
 
         }
-
-        // Set the tolerance
-        TARDIGRADE_ERROR_TOOLS_CATCH( setTolerance( ) );
 
     }
 

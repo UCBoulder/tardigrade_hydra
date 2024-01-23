@@ -57,6 +57,62 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBaseMicromorphic::initializeUnknownVector( ){
+        /*!
+         * Initialize the unknown vector for the non-linear solve.
+         * 
+         * \f$X = \left\{ \bf{\sigma}, \bf{F}^2, \bf{F}^3, ..., \bf{F}n, \bf{\chi}^2, \bf{\chi}^3, ..., \frac{\partial}{\partial \bm{X}^2} \bf{\chi}^2, \frac{\partial}{\partial \bm{X}^3} \bf{\chi}^3, ..., \xi^1, \xi^2, ..., \xi^m \right\} \f$
+         * 
+         * It is assumed that the first residual calculation also has a method `void getStress( )`
+         * which returns a pointer to the current value of the stress.
+         */
+
+        const floatVector *stress;
+        TARDIGRADE_ERROR_TOOLS_CATCH( stress = getStress( ) );
+
+        const floatMatrix *configurations = get_configurations( );
+
+        const floatMatrix *microConfigurations = get_microConfigurations( );
+
+        const floatMatrix *gradientMicroConfigurations = get_gradientMicroConfigurations( );
+
+        const floatVector *nonLinearSolveStateVariables = get_nonLinearSolveStateVariables( );
+
+        floatMatrix Xmat( 5 );
+
+        Xmat[ 0 ] = *stress;
+
+        // Add the initial values of the macro configurations
+        floatMatrix tmp( ( *getNumConfigurations( ) ) - 1 );
+        for ( unsigned int i = 1; i < *getNumConfigurations( ); i++ ){
+
+            tmp[ i - 1 ] = ( *configurations )[ i ];
+
+        }
+        Xmat[ 1 ] = tardigradeVectorTools::appendVectors( tmp );
+
+        // Add the initial values of the micro configurations
+        for ( unsigned int i = 1; i < *getNumConfigurations( ); i++ ){
+
+            tmp[ i - 1 ] = ( *microConfigurations )[ i ];
+
+        }
+        Xmat[ 2 ] = tardigradeVectorTools::appendVectors( tmp );
+
+        // Add the initial values of the micro-gradient configurations
+        for ( unsigned int i = 1; i < *getNumConfigurations( ); i++ ){
+
+            tmp[ i - 1 ] = ( *gradientMicroConfigurations )[ i ];
+
+        }
+        Xmat[ 3 ] = tardigradeVectorTools::appendVectors( tmp );
+
+        Xmat[ Xmat.size( ) - 1 ] = *nonLinearSolveStateVariables;
+
+        setX( tardigradeVectorTools::appendVectors( Xmat ) );
+
+    }
+
     void hydraBaseMicromorphic::decomposeStateVariableVector( ){
         /*!
          * Decompose the incoming state variable vector setting the different configurations along the way

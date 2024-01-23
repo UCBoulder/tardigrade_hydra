@@ -774,6 +774,19 @@ namespace tardigradeHydra{
             //!A pass through function that does nothing
             void passThrough( ){ }
 
+            void setX( const floatVector &X ){
+                /*!
+                 * Set the value of the unknown vector
+                 * 
+                 * \param &X: The unknown vector
+                 */
+
+                _X.second = X;
+
+                _X.first = true;
+
+            }
+
         private:
 
             // Friend classes
