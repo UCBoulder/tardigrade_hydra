@@ -19,6 +19,7 @@ Internal Changes
 ================
 - Generalized the size of dRdF (:pull:`56`). by `Nathan Miller`_.
 - Added the initialization of the unknown vector (:pull:`60`). By `Nathan Miller`_.
+- Added dRdT to micromorphic Drucker Prager plasticity (:pull:`61`). By `Nathan Miller`_.
 
 Bug Fixes
 =========

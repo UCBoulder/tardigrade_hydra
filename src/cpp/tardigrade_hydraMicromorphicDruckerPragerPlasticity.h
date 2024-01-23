@@ -960,6 +960,8 @@ namespace tardigradeHydra{
 
                 virtual void setdRdD( ) override;
 
+                virtual void setdRdT( ) override;
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
