@@ -15,6 +15,7 @@ New Features
 - Added setting dRdT for micromorphic linear elasticity (:pull:`55`). By `Nathan Miller`_.
 - Added calculations of the total derivative of the unknown vector (:pull:`57`). By `Nathan Miller`_.
 - Added weakened Macaulay brackets (:pull:`62`). By `Nathan Miller`_.
+- Added weakened state variable residuals (:pull:`63`). By `Nathan Miller`_.
 
 Internal Changes
 ================
@@ -26,6 +27,7 @@ Bug Fixes
 =========
 - Found problem with lack of generality when computing dRdF (:pull:`58`). By `Nathan Miller`_.
 - Found issue with include guards for micromorphic Drucker-Prager plasticity (:pull:`59`). By `Nathan Miller`_.
+- Found bug in the state variable residual Jacobians (:pull:`63`). By `Nathan Miller`_.
 
 ******************
 0.3.1 (01-19-2023)
