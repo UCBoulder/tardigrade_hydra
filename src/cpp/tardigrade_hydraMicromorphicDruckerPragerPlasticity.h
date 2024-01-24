@@ -368,6 +368,10 @@ namespace tardigradeHydra{
                                        const parameterType alphaMicro = 0.5,
                                        const parameterType alphaMicroGradient = 0.5 );
 
+        variableType weakMac( const variableType &x, const variableType &a );
+
+        variableType weakMac( const variableType &x, const variableType &a, variableType &dmacdx );
+
         /*!
          * The residual for a micromorphic Drucker Prager plasticity model
          */
