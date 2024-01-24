@@ -550,11 +550,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getUnknownVector ){
 
             virtual void setStress( ) override{
 
-                std::cout << "in setStress\n";
-
                 setStress( tardigradeVectorTools::appendVectors( { PK2, SIGMA, M } ) );
-
-                std::cout << "exiting setStress\n";
 
             }
 
