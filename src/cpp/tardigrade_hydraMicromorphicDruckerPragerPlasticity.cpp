@@ -7667,15 +7667,54 @@ namespace tardigradeHydra{
 
             floatVector residual( get_plasticStateVariables( )->size( ), 0 );
 
-            // Set the terms associated with the yield surface
-            residual[ 0 ] = tardigradeConstitutiveTools::mac( *macroYield ) - ( *plasticMultipliers )[ 0 ] * tardigradeConstitutiveTools::mac( -( *macroYield ) );
+            floatType macroMac  = tardigradeConstitutiveTools::mac( *macroYield );
+            floatType nMacroMac = tardigradeConstitutiveTools::mac( -( *macroYield ) );
 
-            residual[ 1 ] = tardigradeConstitutiveTools::mac( *microYield ) - ( *plasticMultipliers )[ 1 ] * tardigradeConstitutiveTools::mac( -( *microYield ) );
+            floatType microMac  = tardigradeConstitutiveTools::mac( *microYield );
+            floatType nMicroMac = tardigradeConstitutiveTools::mac( -( *microYield ) );
+
+            floatVector microGradientMac( microGradientYield->size( ), 0 );
+            floatVector nMicroGradientMac( microGradientYield->size( ), 0 );
+
+            if ( *useWeakenedMacaulay( ) ){
+
+                macroMac  = weakMac( *macroYield, *getWeakenedMacaulayParameter( ) );
+                nMacroMac = weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ) );
+
+                microMac  = weakMac( *microYield, *getWeakenedMacaulayParameter( ) );
+                nMicroMac = weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ) );
+
+                for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
+                    microGradientMac[ ( unsigned int )( y - microGradientYield->begin( ) ) ]  = weakMac( *y, *getWeakenedMacaulayParameter( ) );
+                    nMicroGradientMac[ ( unsigned int )( y - microGradientYield->begin( ) ) ] = weakMac( -( *y ), *getWeakenedMacaulayParameter( ) );
+                }
+            }
+            else{
+
+                macroMac  = tardigradeConstitutiveTools::mac( *macroYield );
+                nMacroMac = tardigradeConstitutiveTools::mac( -( *macroYield ) );
+
+                microMac  = tardigradeConstitutiveTools::mac( *microYield );
+                nMicroMac = tardigradeConstitutiveTools::mac( -( *microYield ) );
+
+                for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
+                    microGradientMac[ ( unsigned int )( y - microGradientYield->begin( ) ) ] = tardigradeConstitutiveTools::mac( *y );
+                    nMicroGradientMac[ ( unsigned int )( y - microGradientYield->begin( ) ) ] = tardigradeConstitutiveTools::mac( -( *y ) );
+                }
+
+            }
+
+            // Set the terms associated with the yield surface
+            residual[ 0 ] = macroMac - ( *plasticMultipliers )[ 0 ] * nMacroMac;
+
+            residual[ 1 ] = microMac - ( *plasticMultipliers )[ 1 ] * nMicroMac;
 
             for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
 
-                residual[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ]
-                    = tardigradeConstitutiveTools::mac( *y ) - ( *plasticMultipliers )[ ( unsigned int )( y - microGradientYield->begin( ) ) + 2 ] * tardigradeConstitutiveTools::mac( -( *y ) );
+                unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
+
+                residual[ index + 2 ]
+                    = microGradientMac[ index ] - ( *plasticMultipliers )[ index + 2 ] * nMicroGradientMac[ index ];
 
             }
 
@@ -7765,19 +7804,42 @@ namespace tardigradeHydra{
             floatVector nMicroGradientMac( numPlasticMultipliers - 2 );
             floatVector ndMicroGradientMacdx( numPlasticMultipliers - 2 );
 
-            tardigradeConstitutiveTools::mac( *macroYield, dMacroMacdx );
+            if ( *useWeakenedMacaulay( ) ){
 
-            tardigradeConstitutiveTools::mac( *microYield, dMicroMacdx );
+                weakMac( *macroYield, *getWeakenedMacaulayParameter( ), dMacroMacdx );
 
-            nMacroMac = tardigradeConstitutiveTools::mac( -( *macroYield ), ndMacroMacdx );
+                weakMac( *microYield, *getWeakenedMacaulayParameter( ), dMicroMacdx );
 
-            nMicroMac = tardigradeConstitutiveTools::mac( -( *microYield ), ndMicroMacdx );
+                nMacroMac = weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ), ndMacroMacdx );
 
-            for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
+                nMicroMac = weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ), ndMicroMacdx );
 
-                microGradientMac[ i ]  = tardigradeConstitutiveTools::mac(  ( *microGradientYield )[ i ],  dMicroGradientMacdx[ i ] );
+                for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
 
-                nMicroGradientMac[ i ] = tardigradeConstitutiveTools::mac( -( *microGradientYield )[ i ], ndMicroGradientMacdx[ i ] );
+                    microGradientMac[ i ]  = weakMac(  ( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ), dMicroGradientMacdx[ i ] );
+
+                    nMicroGradientMac[ i ] = weakMac( -( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ),ndMicroGradientMacdx[ i ] );
+
+                }
+
+            }
+            else{
+
+                tardigradeConstitutiveTools::mac( *macroYield, dMacroMacdx );
+
+                tardigradeConstitutiveTools::mac( *microYield, dMicroMacdx );
+
+                nMacroMac = tardigradeConstitutiveTools::mac( -( *macroYield ), ndMacroMacdx );
+
+                nMicroMac = tardigradeConstitutiveTools::mac( -( *microYield ), ndMicroMacdx );
+
+                for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
+
+                    microGradientMac[ i ]  = tardigradeConstitutiveTools::mac(  ( *microGradientYield )[ i ],  dMicroGradientMacdx[ i ] );
+
+                    nMicroGradientMac[ i ] = tardigradeConstitutiveTools::mac( -( *microGradientYield )[ i ], ndMicroGradientMacdx[ i ] );
+
+                }
 
             }
 
@@ -7936,19 +7998,42 @@ namespace tardigradeHydra{
 
             floatVector ndMicroGradientMacdx( numPlasticMultipliers - 2 );
 
-            tardigradeConstitutiveTools::mac( *macroYield, dMacroMacdx );
+            if ( *useWeakenedMacaulay( ) ){
 
-            tardigradeConstitutiveTools::mac( *microYield, dMicroMacdx );
+                weakMac( *macroYield, *getWeakenedMacaulayParameter( ), dMacroMacdx );
 
-            tardigradeConstitutiveTools::mac( -( *macroYield ), ndMacroMacdx );
+                weakMac( *microYield, *getWeakenedMacaulayParameter( ), dMicroMacdx );
 
-            tardigradeConstitutiveTools::mac( -( *microYield ), ndMicroMacdx );
+                weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ), ndMacroMacdx );
 
-            for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
+                weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ), ndMicroMacdx );
 
-                tardigradeConstitutiveTools::mac(  ( *microGradientYield )[ i ],  dMicroGradientMacdx[ i ] );
+                for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
 
-                tardigradeConstitutiveTools::mac( -( *microGradientYield )[ i ], ndMicroGradientMacdx[ i ] );
+                    weakMac(  ( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ), dMicroGradientMacdx[ i ] );
+
+                    weakMac( -( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ),ndMicroGradientMacdx[ i ] );
+
+                }
+
+            }
+            else{
+
+                tardigradeConstitutiveTools::mac( *macroYield, dMacroMacdx );
+
+                tardigradeConstitutiveTools::mac( *microYield, dMicroMacdx );
+
+                tardigradeConstitutiveTools::mac( -( *macroYield ), ndMacroMacdx );
+
+                tardigradeConstitutiveTools::mac( -( *microYield ), ndMicroMacdx );
+
+                for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
+
+                    tardigradeConstitutiveTools::mac(  ( *microGradientYield )[ i ],  dMicroGradientMacdx[ i ] );
+
+                    tardigradeConstitutiveTools::mac( -( *microGradientYield )[ i ], ndMicroGradientMacdx[ i ] );
+
+                }
 
             }
 
@@ -7982,7 +8067,6 @@ namespace tardigradeHydra{
                 }
 
             }
-
 
             set_dStateVariableResidualsdD( dRdD );
 
