@@ -15,6 +15,33 @@ namespace tardigradeHydra{
 
     namespace micromorphicDruckerPragerPlasticity{
 
+        variableType weakMac( const variableType &x, const variableType &a ){
+            /*!
+             * Compute a weakened Macaulay bracket based on the sigmoid function
+             * 
+             * \param &x: The value to compute the weakened sigmoid function of
+             * \param &a: The a parameter that determines how weak the bracket is
+             */
+
+            return std::log( std::exp( a * x ) + 1 ) / a;
+
+        }
+
+        variableType weakMac( const variableType &x, const variableType &a, variableType &dmacdx ){
+            /*!
+             * Compute a weakened Macaulay bracket based on the sigmoid function
+             * 
+             * \param &x: The value to compute the weakened sigmoid function of
+             * \param &a: The a parameter that determines how weak the bracket is
+             * \param &dmacdx: The derivative of the bracket w.r.t. x
+             */
+
+            dmacdx = 1. / ( 1. + std::exp( -a * x ) );
+
+            return std::log( std::exp( a * x ) + 1 ) / a;
+
+        }
+
         void computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parameterType &beta,
                                                      parameterType &A, parameterType &B ){
             /*!

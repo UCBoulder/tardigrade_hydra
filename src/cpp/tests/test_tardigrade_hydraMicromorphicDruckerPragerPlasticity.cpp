@@ -98,6 +98,29 @@ BOOST_AUTO_TEST_CASE( testSayHello ){
 
 }
 
+BOOST_AUTO_TEST_CASE( test_weakMac ){
+    /*!
+     * Test of the weakened Macaulay bracket
+     */
+
+    floatType answer = 2.6902334101408023;
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( 2.5, 0.75 ), answer ) );
+
+    floatType dmacdx;
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( 2.5, 0.75, dmacdx ), answer ) );
+
+    floatType eps = 1e-6;
+
+    floatType delta = eps * 2.5 + eps;
+
+    floatType jac = ( tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( 2.5 + delta, 0.75 ) - tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( 2.5 - delta, 0.75 ) ) / ( 2 * delta );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jac, dmacdx ) );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_extractParameters ){
     /*!
      * Test of the extraction of the parameters
