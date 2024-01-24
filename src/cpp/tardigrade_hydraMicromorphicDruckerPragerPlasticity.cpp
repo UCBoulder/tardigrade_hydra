@@ -7913,7 +7913,7 @@ namespace tardigradeHydra{
 
                 jacobian[ 0 ][ j + offset ] += ( dMacroMacdx + ( *plasticMultipliers )[ 0 ] * ndMacroMacdx ) * ( *dMacroYielddStateVariables )[ j ];
 
-                jacobian[ 1 ][ j + offset ] += ( dMicroMacdx + ( *plasticMultipliers )[ 0 ] * ndMicroMacdx ) * ( *dMicroYielddStateVariables )[ j ];
+                jacobian[ 1 ][ j + offset ] += ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] * ndMicroMacdx ) * ( *dMicroYielddStateVariables )[ j ];
 
             }
 
