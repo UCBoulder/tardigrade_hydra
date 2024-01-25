@@ -7668,10 +7668,10 @@ namespace tardigradeHydra{
             floatVector residual( get_plasticStateVariables( )->size( ), 0 );
 
             floatType macroMac  = tardigradeConstitutiveTools::mac( *macroYield );
-            floatType nMacroMac = tardigradeConstitutiveTools::mac( -( *macroYield ) );
+            tardigradeConstitutiveTools::mac( -( *macroYield ) );
 
             floatType microMac  = tardigradeConstitutiveTools::mac( *microYield );
-            floatType nMicroMac = tardigradeConstitutiveTools::mac( -( *microYield ) );
+            tardigradeConstitutiveTools::mac( -( *microYield ) );
 
             floatVector microGradientMac( microGradientYield->size( ), 0 );
             floatVector nMicroGradientMac( microGradientYield->size( ), 0 );
@@ -7684,10 +7684,10 @@ namespace tardigradeHydra{
             if ( *useWeakenedMacaulay( ) ){
 
                 macroMac  = weakMac( *macroYield, *getWeakenedMacaulayParameter( ) );
-                nMacroMac = weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ) );
+                weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ) );
 
                 microMac  = weakMac( *microYield, *getWeakenedMacaulayParameter( ) );
-                nMicroMac = weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ) );
+                weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ) );
 
                 macNegMacroGamma = weakMac( -( *plasticMultipliers )[ 0 ] , *getWeakenedMacaulayParameter( ) );
                 macNegMicroGamma = weakMac( -( *plasticMultipliers )[ 1 ] , *getWeakenedMacaulayParameter( ) );
@@ -7702,10 +7702,10 @@ namespace tardigradeHydra{
             else{
 
                 macroMac  = tardigradeConstitutiveTools::mac( *macroYield );
-                nMacroMac = tardigradeConstitutiveTools::mac( -( *macroYield ) );
+                tardigradeConstitutiveTools::mac( -( *macroYield ) );
 
                 microMac  = tardigradeConstitutiveTools::mac( *microYield );
-                nMicroMac = tardigradeConstitutiveTools::mac( -( *microYield ) );
+                tardigradeConstitutiveTools::mac( -( *microYield ) );
 
                 macNegMacroGamma = tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ 0 ] );
                 macNegMicroGamma = tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ 1 ] );
@@ -7811,7 +7811,7 @@ namespace tardigradeHydra{
 
             // Stress Jacobians
             floatType dMacroMacdx, dMicroMacdx;
-            floatType nMacroMac, ndMacroMacdx, nMicroMac, ndMicroMacdx;
+            floatType ndMacroMacdx, ndMicroMacdx;
 
             floatVector microGradientMac( numPlasticMultipliers - 2 );
             floatVector dMicroGradientMacdx( numPlasticMultipliers - 2 );
@@ -7830,9 +7830,9 @@ namespace tardigradeHydra{
 
                 weakMac( *microYield, *getWeakenedMacaulayParameter( ), dMicroMacdx );
 
-                nMacroMac = weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ), ndMacroMacdx );
+                weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ), ndMacroMacdx );
 
-                nMicroMac = weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ), ndMicroMacdx );
+                weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ), ndMicroMacdx );
 
                 weakMac( -( *plasticMultipliers )[ 0 ], *getWeakenedMacaulayParameter( ), dMacNegMacroGammadGamma );
 
@@ -7855,9 +7855,9 @@ namespace tardigradeHydra{
 
                 tardigradeConstitutiveTools::mac( *microYield, dMicroMacdx );
 
-                nMacroMac = tardigradeConstitutiveTools::mac( -( *macroYield ), ndMacroMacdx );
+                tardigradeConstitutiveTools::mac( -( *macroYield ), ndMacroMacdx );
 
-                nMicroMac = tardigradeConstitutiveTools::mac( -( *microYield ), ndMicroMacdx );
+                tardigradeConstitutiveTools::mac( -( *microYield ), ndMicroMacdx );
 
                 tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ 0 ], dMacNegMacroGammadGamma );
 
