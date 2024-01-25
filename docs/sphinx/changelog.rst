@@ -22,12 +22,14 @@ Internal Changes
 - Generalized the size of dRdF (:pull:`56`). by `Nathan Miller`_.
 - Added the initialization of the unknown vector (:pull:`60`). By `Nathan Miller`_.
 - Added dRdT to micromorphic Drucker Prager plasticity (:pull:`61`). By `Nathan Miller`_.
+- Simplified the plastic multiplier residuals (:pull:`64`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
 - Found problem with lack of generality when computing dRdF (:pull:`58`). By `Nathan Miller`_.
 - Found issue with include guards for micromorphic Drucker-Prager plasticity (:pull:`59`). By `Nathan Miller`_.
 - Found bug in the state variable residual Jacobians (:pull:`63`). By `Nathan Miller`_.
+- Changed the plastic-multiplier residual so that it will attempt to force the plastic multipliers to be positive (:pull:`64`). By `Nathan Miller`_.
 
 ******************
 0.3.1 (01-19-2023)
