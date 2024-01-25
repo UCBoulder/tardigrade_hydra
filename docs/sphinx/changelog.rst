@@ -6,11 +6,23 @@ Changelog
 #########
 
 ******************
-0.4.1 (unreleased)
+0.4.2 (unreleased)
 ******************
 
 ******************
-0.4.0 (01-24-2023)
+0.4.1 (01-24-2024)
+******************
+
+Release
+=======
+- Released version (:pull:`68`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Removed unused variables (:pull:`67`). By `Nathan Miller`_.
+
+******************
+0.4.0 (01-24-2024)
 ******************
 
 Release
@@ -41,7 +53,7 @@ Bug Fixes
 - Changed the plastic-multiplier residual so that it will attempt to force the plastic multipliers to be positive (:pull:`64`). By `Nathan Miller`_.
 
 ******************
-0.3.1 (01-19-2023)
+0.3.1 (01-19-2024)
 ******************
 
 Release
@@ -73,7 +85,7 @@ Internal Changes
 - Added the residuals and jacobians of the state variables (:pull:`51`). By `Nathan Miller`_.
 
 ******************
-0.3.0 (01-03-2023)
+0.3.0 (01-03-2024)
 ******************
 
 Release
