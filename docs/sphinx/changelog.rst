@@ -6,8 +6,16 @@ Changelog
 #########
 
 ******************
-0.3.2 (unreleased)
+0.4.1 (unreleased)
 ******************
+
+******************
+0.4.0 (01-24-2023)
+******************
+
+Release
+=======
+- Released version (:pull:`66`). By `Nathan Miller`_.
 
 New Features
 ============
@@ -23,6 +31,7 @@ Internal Changes
 - Added the initialization of the unknown vector (:pull:`60`). By `Nathan Miller`_.
 - Added dRdT to micromorphic Drucker Prager plasticity (:pull:`61`). By `Nathan Miller`_.
 - Simplified the plastic multiplier residuals (:pull:`64`). By `Nathan Miller`_.
+- Updated changelog for release (:pull:`65`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
