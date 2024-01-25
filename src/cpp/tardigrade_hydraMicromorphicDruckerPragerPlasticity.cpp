@@ -7676,6 +7676,11 @@ namespace tardigradeHydra{
             floatVector microGradientMac( microGradientYield->size( ), 0 );
             floatVector nMicroGradientMac( microGradientYield->size( ), 0 );
 
+            floatType macNegMacroGamma;
+            floatType macNegMicroGamma;
+
+            floatVector macNegMicroGradientGamma( 3, 0 );
+
             if ( *useWeakenedMacaulay( ) ){
 
                 macroMac  = weakMac( *macroYield, *getWeakenedMacaulayParameter( ) );
@@ -7684,9 +7689,14 @@ namespace tardigradeHydra{
                 microMac  = weakMac( *microYield, *getWeakenedMacaulayParameter( ) );
                 nMicroMac = weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ) );
 
+                macNegMacroGamma = weakMac( -( *plasticMultipliers )[ 0 ] , *getWeakenedMacaulayParameter( ) );
+                macNegMicroGamma = weakMac( -( *plasticMultipliers )[ 1 ] , *getWeakenedMacaulayParameter( ) );
+
                 for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
-                    microGradientMac[ ( unsigned int )( y - microGradientYield->begin( ) ) ]  = weakMac( *y, *getWeakenedMacaulayParameter( ) );
-                    nMicroGradientMac[ ( unsigned int )( y - microGradientYield->begin( ) ) ] = weakMac( -( *y ), *getWeakenedMacaulayParameter( ) );
+                    unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
+                    microGradientMac[ index ]  = weakMac( *y, *getWeakenedMacaulayParameter( ) );
+                    nMicroGradientMac[ index ] = weakMac( -( *y ), *getWeakenedMacaulayParameter( ) );
+                    macNegMicroGradientGamma[ index ] = weakMac( -( *plasticMultipliers )[ index + 2 ], *getWeakenedMacaulayParameter( ) );
                 }
             }
             else{
@@ -7697,24 +7707,29 @@ namespace tardigradeHydra{
                 microMac  = tardigradeConstitutiveTools::mac( *microYield );
                 nMicroMac = tardigradeConstitutiveTools::mac( -( *microYield ) );
 
+                macNegMacroGamma = tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ 0 ] );
+                macNegMicroGamma = tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ 1 ] );
+
                 for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
-                    microGradientMac[ ( unsigned int )( y - microGradientYield->begin( ) ) ] = tardigradeConstitutiveTools::mac( *y );
-                    nMicroGradientMac[ ( unsigned int )( y - microGradientYield->begin( ) ) ] = tardigradeConstitutiveTools::mac( -( *y ) );
+                    unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
+                    microGradientMac[ index ] = tardigradeConstitutiveTools::mac( *y );
+                    nMicroGradientMac[ index ] = tardigradeConstitutiveTools::mac( -( *y ) );
+                    macNegMicroGradientGamma[ index ] = tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ index + 2 ] );
                 }
 
             }
 
             // Set the terms associated with the yield surface
-            residual[ 0 ] = macroMac - ( *plasticMultipliers )[ 0 ] * nMacroMac;
+            residual[ 0 ] = macroMac + ( *plasticMultipliers )[ 0 ] * ( *macroYield ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMacroGamma;
 
-            residual[ 1 ] = microMac - ( *plasticMultipliers )[ 1 ] * nMicroMac;
+            residual[ 1 ] = microMac + ( *plasticMultipliers )[ 1 ] * ( *microYield ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGamma;
 
             for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
 
                 unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
 
                 residual[ index + 2 ]
-                    = microGradientMac[ index ] - ( *plasticMultipliers )[ index + 2 ] * nMicroGradientMac[ index ];
+                    = microGradientMac[ index ] + ( *plasticMultipliers )[ index + 2 ] * ( *y ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGradientGamma[ index ];
 
             }
 
@@ -7804,6 +7819,11 @@ namespace tardigradeHydra{
             floatVector nMicroGradientMac( numPlasticMultipliers - 2 );
             floatVector ndMicroGradientMacdx( numPlasticMultipliers - 2 );
 
+            floatType dMacNegMacroGammadGamma;
+            floatType dMacNegMicroGammadGamma;
+
+            floatVector dMacNegMicroGradientGammadGamma( 3, 0 );
+
             if ( *useWeakenedMacaulay( ) ){
 
                 weakMac( *macroYield, *getWeakenedMacaulayParameter( ), dMacroMacdx );
@@ -7814,11 +7834,17 @@ namespace tardigradeHydra{
 
                 nMicroMac = weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ), ndMicroMacdx );
 
+                weakMac( -( *plasticMultipliers )[ 0 ], *getWeakenedMacaulayParameter( ), dMacNegMacroGammadGamma );
+
+                weakMac( -( *plasticMultipliers )[ 1 ], *getWeakenedMacaulayParameter( ), dMacNegMicroGammadGamma );
+
                 for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
 
                     microGradientMac[ i ]  = weakMac(  ( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ), dMicroGradientMacdx[ i ] );
 
-                    nMicroGradientMac[ i ] = weakMac( -( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ),ndMicroGradientMacdx[ i ] );
+                    nMicroGradientMac[ i ] = weakMac( -( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ), ndMicroGradientMacdx[ i ] );
+
+                    weakMac( -( *plasticMultipliers )[ i + 2 ], *getWeakenedMacaulayParameter( ), dMacNegMicroGradientGammadGamma[ i ] );
 
                 }
 
@@ -7833,11 +7859,17 @@ namespace tardigradeHydra{
 
                 nMicroMac = tardigradeConstitutiveTools::mac( -( *microYield ), ndMicroMacdx );
 
+                tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ 0 ], dMacNegMacroGammadGamma );
+
+                tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ 1 ], dMacNegMicroGammadGamma );
+
                 for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
 
                     microGradientMac[ i ]  = tardigradeConstitutiveTools::mac(  ( *microGradientYield )[ i ],  dMicroGradientMacdx[ i ] );
 
                     nMicroGradientMac[ i ] = tardigradeConstitutiveTools::mac( -( *microGradientYield )[ i ], ndMicroGradientMacdx[ i ] );
+
+                    tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ i + 2 ], dMacNegMicroGradientGammadGamma[ i ] );
 
                 }
 
@@ -7846,9 +7878,9 @@ namespace tardigradeHydra{
             unsigned int offset = numSecondOrderTensor;
             for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
 
-                jacobian[ 0 ][ j ] = ( dMacroMacdx  + ( *plasticMultipliers )[ 0 ] * ndMacroMacdx ) * ( *dMacroYielddStress )[ j ];
+                jacobian[ 0 ][ j ] = ( dMacroMacdx  + ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddStress )[ j ];
 
-                jacobian[ 1 ][ j + offset ] = ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] * ndMicroMacdx ) * ( *dMicroYielddStress )[ j ];
+                jacobian[ 1 ][ j + offset ] = ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddStress )[ j ];
 
             }
 
@@ -7857,7 +7889,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < numThirdOrderTensor; j++ ){
 
-                    jacobian[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddStress )[ i ][ j ];
+                    jacobian[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddStress )[ i ][ j ];
 
                 }
 
@@ -7867,9 +7899,9 @@ namespace tardigradeHydra{
             offset = 2 * numSecondOrderTensor + numThirdOrderTensor;
             for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
 
-                jacobian[ 0 ][ j + offset ] = ( dMacroMacdx + ( *plasticMultipliers )[ 0 ] * ndMacroMacdx ) * ( *dMacroYielddFn )[ j ];
+                jacobian[ 0 ][ j + offset ] = ( dMacroMacdx + ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddFn )[ j ];
 
-                jacobian[ 1 ][ j + offset ] = ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] * ndMicroMacdx ) * ( *dMicroYielddFn )[ j ];
+                jacobian[ 1 ][ j + offset ] = ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddFn )[ j ];
 
             } 
 
@@ -7877,7 +7909,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
 
-                    jacobian[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddFn )[ i ][ j ];
+                    jacobian[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddFn )[ i ][ j ];
 
                 }
 
@@ -7889,7 +7921,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
 
-                    jacobian[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddChin )[ i ][ j ];
+                    jacobian[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddChin )[ i ][ j ];
 
                 }
 
@@ -7899,21 +7931,21 @@ namespace tardigradeHydra{
             // State Variable Jacobians
             offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
 
-            jacobian[ 0 ][ offset + 0 ] -= nMacroMac;
+            jacobian[ 0 ][ offset + 0 ] += *macroYield - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMacroGammadGamma;
 
-            jacobian[ 1 ][ offset + 1 ] -= nMicroMac;
+            jacobian[ 1 ][ offset + 1 ] += *microYield - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMicroGammadGamma;
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
-                jacobian[ i + 2 ][ offset + i + 2 ] -= nMicroGradientMac[ i ];
+                jacobian[ i + 2 ][ offset + i + 2 ] += ( *microGradientYield )[ i ] - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMicroGradientGammadGamma[ i ];
 
             }
 
             for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
 
-                jacobian[ 0 ][ j + offset ] += ( dMacroMacdx + ( *plasticMultipliers )[ 0 ] * ndMacroMacdx ) * ( *dMacroYielddStateVariables )[ j ];
+                jacobian[ 0 ][ j + offset ] += ( dMacroMacdx + ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddStateVariables )[ j ];
 
-                jacobian[ 1 ][ j + offset ] += ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] * ndMicroMacdx ) * ( *dMicroYielddStateVariables )[ j ];
+                jacobian[ 1 ][ j + offset ] += ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddStateVariables )[ j ];
 
             }
 
@@ -7921,7 +7953,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
 
-                    jacobian[ i + 2 ][ j + offset ] += ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddStateVariables )[ i ][ j ];
+                    jacobian[ i + 2 ][ j + offset ] += ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddStateVariables )[ i ][ j ];
 
                 }
 
@@ -8040,9 +8072,9 @@ namespace tardigradeHydra{
             unsigned int offset = 0;
             for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
 
-                dRdD[ 0 ][ j + offset ] = ( dMacroMacdx + ( *plasticMultipliers )[ 0 ] * ndMacroMacdx ) * ( *dMacroYielddF )[ j ];
+                dRdD[ 0 ][ j + offset ] = ( dMacroMacdx + ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddF )[ j ];
 
-                dRdD[ 1 ][ j + offset ] = ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] * ndMicroMacdx ) * ( *dMicroYielddF )[ j ];
+                dRdD[ 1 ][ j + offset ] = ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddF )[ j ];
 
             } 
 
@@ -8050,7 +8082,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
 
-                    dRdD[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddF )[ i ][ j ];
+                    dRdD[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddF )[ i ][ j ];
 
                 }
 
@@ -8062,7 +8094,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
 
-                    dRdD[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] * ndMicroGradientMacdx[ i ] ) * ( *dMicroGradientYielddChi )[ i ][ j ];
+                    dRdD[ i + 2 ][ j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddChi )[ i ][ j ];
 
                 }
 

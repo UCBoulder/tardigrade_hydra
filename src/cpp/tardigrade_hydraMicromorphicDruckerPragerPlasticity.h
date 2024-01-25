@@ -391,7 +391,7 @@ namespace tardigradeHydra{
 
                 residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const unsigned int &plasticConfigurationIndex,
                           const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5,
-                          const bool useWeakenedMacaulay = false, const floatType weakenedMacaulayParameter=10 )
+                          const bool useWeakenedMacaulay = false, const floatType weakenedMacaulayParameter=10, const floatType plasticMultiplierBarrierModulus=1000. )
                         : tardigradeHydra::residualBaseMicromorphic( _hydra, _numEquations ){
                     /*!
                      * The main initialization constructor for the Drucker Prager plasticity residual
@@ -403,7 +403,8 @@ namespace tardigradeHydra{
                      * \param &parameters: The parameter vector
                      * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
                      * \param &useWeakenedMacaulay: A flag for whether to use a weakened Macaulay bracket or not (defaults to false)
-                     * \param &weakenedMacaulayParameter: The value of the parameter for the weakened Macaulay bracket
+                     * \param &weakenedMacaulayParameter: The value of the parameter for the weakened Macaulay bracket (defaults to 10)
+                     * \param &plasticMultiplierBarrierModulus: The barrier modulus to make sure that the plastic multipliers never go negative (defaults to 1000)
                      */
 
                     _plasticConfigurationIndex = plasticConfigurationIndex;
@@ -417,6 +418,8 @@ namespace tardigradeHydra{
                     _useWeakenedMacaulay = useWeakenedMacaulay;
 
                     _weakenedMacaulayParameter = weakenedMacaulayParameter;
+
+                    _plasticMultiplierBarrierModulus = plasticMultiplierBarrierModulus;
 
                     TARDIGRADE_ERROR_TOOLS_CATCH( extractMaterialParameters( parameters ) );
 
@@ -435,11 +438,15 @@ namespace tardigradeHydra{
 
                 const floatType *getWeakenedMacaulayParameter( ){ return &_weakenedMacaulayParameter; }
 
+                const floatType *getPlasticMultiplierBarrierModulus( ){ return &_plasticMultiplierBarrierModulus; }
+
             protected:
 
-                bool _useWeakenedMacaulay;
+                bool _useWeakenedMacaulay; //!< Flag for whether to use the weak Macaulay brackets or not
 
-                floatType _weakenedMacaulayParameter;
+                floatType _weakenedMacaulayParameter; //!< The weakening parameter for the weak Macaulay brackets
+
+                floatType _plasticMultiplierBarrierModulus; //!< The modulus applied to the plastic multipliers to make sure they are never negative
 
                 unsigned int _numPlasticMultipliers; //!< The number of plastic multipliers. Hard coded to 5 but setting as a variable just in case
 
