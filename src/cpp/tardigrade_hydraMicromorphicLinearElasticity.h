@@ -254,6 +254,22 @@ namespace tardigradeHydra{
 
             protected:
 
+                using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+
+                using tardigradeHydra::residualBaseMicromorphic::setResidual;
+
+                using tardigradeHydra::residualBaseMicromorphic::setJacobian;
+
+                using tardigradeHydra::residualBaseMicromorphic::setdRdD;
+
+                using tardigradeHydra::residualBaseMicromorphic::setdRdT;
+
+                using tardigradeHydra::residualBaseMicromorphic::setAdditionalDerivatives;
+
+                using tardigradeHydra::residualBaseMicromorphic::setStress;
+
+                using tardigradeHydra::residualBaseMicromorphic::setPreviousStress;
+
                 //! Set the current values of the deformation
                 virtual void setDeformation( ){ setDeformation( false ); }
 
@@ -506,25 +522,15 @@ namespace tardigradeHydra{
 
                 virtual void setdRdD( ) override;
 
+                virtual void setdRdT( ) override;
+
+                virtual void setStress( ) override;
+
+                virtual void setPreviousStress( ) override;
+
             private:
                 // Friend classes
                 friend class tardigradeHydra::micromorphicLinearElasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
-
-                using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
-
-                using tardigradeHydra::residualBaseMicromorphic::setResidual;
-
-                using tardigradeHydra::residualBaseMicromorphic::setJacobian;
-
-                using tardigradeHydra::residualBaseMicromorphic::setdRdD;
-
-                using tardigradeHydra::residualBaseMicromorphic::setdRdT;
-
-                using tardigradeHydra::residualBaseMicromorphic::setAdditionalDerivatives;
-
-                using tardigradeHydra::residualBaseMicromorphic::setStress;
-
-                using tardigradeHydra::residualBaseMicromorphic::setPreviousStress;
 
                 parameterVector _Amatrix; //!< The A stiffness matrix
 

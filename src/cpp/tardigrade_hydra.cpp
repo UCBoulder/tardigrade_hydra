@@ -725,15 +725,13 @@ namespace tardigradeHydra{
          * Form the residual, jacobian, and gradient matrices
          */
 
-        const unsigned int *dim = getDimension( );
-
         unsigned int residualSize = ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( );
 
         _residual.second = floatVector( residualSize, 0 );
 
         _jacobian.second = floatVector( residualSize * residualSize, 0 );
 
-        _dRdF.second = floatVector( residualSize * ( *dim ) * ( *dim ), 0 );
+        _dRdF.second = floatVector( residualSize * ( *getConfigurationUnknownCount( ) ), 0 );
 
         _dRdT.second = floatVector( residualSize, 0 );
 
@@ -863,19 +861,19 @@ namespace tardigradeHydra{
 
                 }
 
-                if ( ( *localdRdF )[ row ].size( ) != ( *dim ) * ( *dim ) ){
+                if ( ( *localdRdF )[ row ].size( ) != *getConfigurationUnknownCount( ) ){
 
                     std::string message = "Row " + std::to_string( row ) + " of dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
-                    message            += "  expected: " + std::to_string( ( *dim ) * ( *dim ) ) + "\n";
+                    message            += "  expected: " + std::to_string( ( *getConfigurationUnknownCount( ) ) ) + "\n";
                     message            += "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n";
 
                     TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
                 }
 
-                for ( unsigned int col = 0; col < ( *dim ) * ( *dim ); col++ ){
+                for ( unsigned int col = 0; col < ( *getConfigurationUnknownCount( ) ); col++ ){
 
-                    _dRdF.second[ ( *dim ) * ( *dim ) * ( row + offset ) + col ] = ( *localdRdF )[ row ][ col ];
+                    _dRdF.second[ ( *getConfigurationUnknownCount( ) ) * ( row + offset ) + col ] = ( *localdRdF )[ row ][ col ];
 
                 }
 
@@ -1110,9 +1108,7 @@ namespace tardigradeHydra{
 
         Xmat[ Xmat.size( ) - 1 ] = *nonLinearSolveStateVariables;
 
-        _X.second = tardigradeVectorTools::appendVectors( Xmat );
-
-        _X.first = true;
+        setX( tardigradeVectorTools::appendVectors( Xmat ) );
 
     }
 
@@ -1246,9 +1242,7 @@ namespace tardigradeHydra{
         resetIterationData( );
 
         // Set the unknown vector
-        _X.second = newUnknownVector;
-
-        _X.first = true;
+        setX( newUnknownVector );
 
         // Decompose the unknown vector and update the state
         TARDIGRADE_ERROR_TOOLS_CATCH( decomposeUnknownVector( ) );
@@ -1313,9 +1307,6 @@ namespace tardigradeHydra{
 
         }
 
-        // Set the tolerance
-        TARDIGRADE_ERROR_TOOLS_CATCH( setTolerance( ) );
-
     }
 
     void hydraBase::evaluate( ){
@@ -1324,6 +1315,76 @@ namespace tardigradeHydra{
          */
 
         TARDIGRADE_ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
+
+    }
+
+    void hydraBase::computeTangents( ){
+        /*!
+         * Compute the values of the consistent tangents
+         */
+
+        //Form the solver based on the current value of the jacobian
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Amat( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+
+        tardigradeVectorTools::solverType< floatType > solver( Amat );
+
+        unsigned int rank = solver.rank( );
+
+        TARDIGRADE_ERROR_TOOLS_CATCH(
+            if ( rank != getResidual( )->size( ) ){
+                throw std::runtime_error( "The Jacobian is not full rank" );
+            }
+        )
+
+        // Solve for dXdF
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdFmat( getFlatdRdF( )->data( ), getResidual( )->size( ), *getConfigurationUnknownCount( ) );
+
+        _flatdXdF.second = floatVector( getUnknownVector( )->size( ) * ( *getConfigurationUnknownCount( ) ) );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdFmat( _flatdXdF.second.data( ), getUnknownVector( )->size( ), ( *getConfigurationUnknownCount( ) ) );
+
+        dXdFmat = -solver.solve( dRdFmat );
+
+        _flatdXdF.first = true;
+
+        // Solve for dXdT
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdTmat( getdRdT( )->data( ), getResidual( )->size( ), 1 );
+
+        _flatdXdT.second = floatVector( getUnknownVector( )->size( ) );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getUnknownVector( )->size( ), 1 );
+
+        dXdTmat = -solver.solve( dRdTmat );
+
+        _flatdXdT.first = true;
+
+    }
+
+    const floatVector *hydraBase::getFlatdXdF( ){
+        /*!
+         * Get the total derivative of X w.r.t. the deformation in row-major format
+         */
+
+        if ( !_flatdXdF.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeTangents( ) )
+
+        }
+
+        return &_flatdXdF.second;
+
+    }
+
+    const floatVector *hydraBase::getFlatdXdT( ){
+        /*!
+         * Get the total derivative of X w.r.t. the temperature in row-major format
+         */
+
+        if ( !_flatdXdT.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeTangents( ) )
+
+        }
+
+        return &_flatdXdT.second;
 
     }
 

@@ -6,8 +6,39 @@ Changelog
 #########
 
 ******************
-0.3.2 (unreleased)
+0.4.1 (unreleased)
 ******************
+
+******************
+0.4.0 (01-24-2023)
+******************
+
+Release
+=======
+- Released version (:pull:`66`). By `Nathan Miller`_.
+
+New Features
+============
+- Added setting the stresses and previous stresses for micromorphic linear elasticity (:pull:`54`). By `Nathan Miller`_.
+- Added setting dRdT for micromorphic linear elasticity (:pull:`55`). By `Nathan Miller`_.
+- Added calculations of the total derivative of the unknown vector (:pull:`57`). By `Nathan Miller`_.
+- Added weakened Macaulay brackets (:pull:`62`). By `Nathan Miller`_.
+- Added weakened state variable residuals (:pull:`63`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Generalized the size of dRdF (:pull:`56`). by `Nathan Miller`_.
+- Added the initialization of the unknown vector (:pull:`60`). By `Nathan Miller`_.
+- Added dRdT to micromorphic Drucker Prager plasticity (:pull:`61`). By `Nathan Miller`_.
+- Simplified the plastic multiplier residuals (:pull:`64`). By `Nathan Miller`_.
+- Updated changelog for release (:pull:`65`). By `Nathan Miller`_.
+
+Bug Fixes
+=========
+- Found problem with lack of generality when computing dRdF (:pull:`58`). By `Nathan Miller`_.
+- Found issue with include guards for micromorphic Drucker-Prager plasticity (:pull:`59`). By `Nathan Miller`_.
+- Found bug in the state variable residual Jacobians (:pull:`63`). By `Nathan Miller`_.
+- Changed the plastic-multiplier residual so that it will attempt to force the plastic multipliers to be positive (:pull:`64`). By `Nathan Miller`_.
 
 ******************
 0.3.1 (01-19-2023)

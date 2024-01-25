@@ -72,9 +72,21 @@ namespace tardigradeHydra{
 
             floatMatrix getPreviousFollowingMicroConfigurationJacobian( const unsigned int &index );
 
+            const floatVector *getFlatdXdD( ){
+                /*!
+                 * Get the total derivative of the unknown vector w.r.t. the deformation.
+                 *
+                 * Pass-through to getFlatdXdF just changing the naming convention
+                 */
+
+                return hydraBase::getFlatdXdF( );
+
+            }
         protected:
 
             //Utility functions
+            virtual void initializeUnknownVector( ) override;
+
             virtual void decomposeUnknownVector( ) override;
 
             virtual void decomposeUnknownVectorMicroConfigurations( );
@@ -209,7 +221,7 @@ namespace tardigradeHydra{
                 /*!
                  * Get the derivative of the residual w.r.t. the deformation.
                  *
-                 * Pass-through to setdRdF just changing the naming convention
+                 * Pass-through to getdRdF just changing the naming convention
                  */
 
                 return residualBase::getdRdF( );

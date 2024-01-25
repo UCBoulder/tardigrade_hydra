@@ -9,7 +9,7 @@
 #include<sstream>
 #include<fstream>
 
-#define BOOST_TEST_MODULE test_tardigrade_hydra
+#define BOOST_TEST_MODULE test_tardigrade_hydraMicromorphic
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -437,6 +437,221 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreceedingMicroCo
                            0.72297358, -0.4912966 ,  0.28183864 };
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, hydra.getPrecedingMicroConfiguration( 2 ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getUnknownVector ){
+
+    floatType time = 1.23;
+
+    floatType deltaTime = 2.34;
+
+    floatType temperature = 3.45;
+
+    floatType previousTemperature = 4.56;
+
+    floatVector deformationGradient = { 1.19646919, -0.21386067, -0.27314855,
+                                        0.05131477,  1.21946897, -0.07689354,
+                                        0.4807642 ,  0.18482974,  0.9809319  };
+
+    floatVector previousDeformationGradient = { 0.89211752, -0.15682198,  0.22904971,
+                                               -0.06142776,  0.5596779 , -0.10195574,
+                                                0.23799541, -0.31750827,  0.67545176 };
+
+    floatVector microDeformation = { 1.03155137,  0.03182759,  0.13440096,
+                                     0.34943179,  1.22445532,  0.11102351,
+                                     0.22244338, -0.17704109,  0.86178866 };
+
+    floatVector previousMicroDeformation = { 0.72826323, -0.20628595,  0.13097612,
+                                            -0.40789506,  0.93370117, -0.06913724,
+                                            -0.0063149 , -0.07416971,  0.81226122 };
+
+    floatVector gradientMicroDeformation = {-0.07364869,  0.39338916,  0.44416002,  0.00183668,  0.12395295,
+                                            -0.3843816 , -0.18271452, -0.08517379,  0.36630916, -0.24954463,
+                                            -0.01696574,  0.48555979,  0.01948512,  0.11289453, -0.37937133,
+                                             0.3263408 ,  0.10306013,  0.04506801, -0.15723617, -0.19587921,
+                                            -0.08297779,  0.18130077,  0.37545684,  0.01042234,  0.16931378,
+                                             0.08593655,  0.1249035 };
+
+    floatVector previousGradientMicroDeformation = { 0.17468905,  0.34234244, -0.41680501,  0.26368284, -0.25633363,
+                                                    -0.30577704,  0.07245696, -0.40428748,  0.38532683,  0.12724897,
+                                                     0.22341636, -0.48387079,  0.09443188,  0.05678519, -0.34104036,
+                                                    -0.34692948,  0.19552953, -0.18123357,  0.1919703 ,  0.05438325,
+                                                    -0.11104943,  0.42513249,  0.34167   , -0.14260243, -0.45640854,
+                                                    -0.19523193, -0.10181432};
+
+    floatVector previousStateVariables = { 0.20495883,  0.49535848, -0.14408513,  0.26254781,  0.09317692,
+                                           0.1917018 , -0.34887255, -0.10112371, -0.2591441 , -0.15654399,
+                                           0.01312815,  0.16662455, -0.39409151, -0.36910505, -0.17801939,
+                                           0.16156434,  0.34650623,  0.05325734,  0.35445249, -0.11516219,
+                                          -0.1832121 , -0.14573532, -0.32891817,  0.32911263, -0.16132915,
+                                           0.05237008,  0.07855147,  0.02153306, -0.49731194,  0.48834542,
+                                           0.40534158, -0.29236414, -0.20751059,  0.02001015,  0.40191137,
+                                           0.48363088, -0.24245794,  0.06435904,  0.30696868, -0.10562995,
+                                           0.23107304, -0.33893099,  0.10069857,  0.36586446,  0.48352161,
+                                          -0.42063421, -0.07165273, -0.29545714, -0.04936351,  0.04776357,
+                                          -0.40667329, -0.20313922,  0.42758424,  0.06900373, -0.042588  ,
+                                           0.25352599,  0.24186215, -0.45142097,  0.2086974 ,  0.33924335,
+                                          -0.33406212,  0.28099794, -0.21346338, -0.19353025,  0.16526147,
+                                          -0.38860783,  0.16487245,  0.38785679,  0.19631127, -0.05967212,
+                                          -0.06178562,  0.2650961 ,  0.065642  , -0.41509584,  0.08267109,
+                                           0.3148437 , -0.16293362,  0.42757658,  0.250717  ,  0.07406383,
+                                           0.25164399, -0.42085104,  0.35938908,  0.32150411,  0.40987166,
+                                          -0.3713688 , -0.41821991, -0.36158443, -0.10062129, -0.07569314,
+                                           0.06221838, -0.37775645, -0.2986005 ,  0.31164435, -0.03201243,
+                                           0.30793821, -0.49257362,  0.05159273,  0.43193215,  0.08217546,
+                                          -0.29390427,  0.21775756, -0.12101415,  0.16838395, -0.47068028,
+                                           0.13590036, -0.46780207,  0.24478066, -0.027087  , -0.37824564,
+                                           0.04263593, -0.43322556,  0.15336487,  0.49608633,  0.26939734,
+                                           0.07377411, -0.39736474,  0.19983407,  0.16116787, -0.45090287,
+                                           0.2922993 ,  0.01871659, -0.07413231,  0.28818717, -0.08843078,
+                                          -0.01897372, -0.31837116, -0.1786811 ,  0.345533  , -0.31309625,
+                                          -0.08270894,  0.48903451, -0.26340019,  0.41683233,  0.41839747,
+                                          -0.40870366, -0.03634728,  0.00221634, -0.18633105, -0.45266046,
+                                           0.24168564,  0.09552964,  0.23824991 };
+
+    floatVector parameters = { 0.1, 0.2, 0.3, 0.4 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    unsigned int configuration_unknown_count = 45;
+
+    floatType tolr = 1e-2;
+
+    floatType tola = 1e-3;
+
+    unsigned int maxIterations = 24;
+
+    unsigned int maxLSIterations = 45;
+
+    floatType lsAlpha = 2.3;
+
+    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+
+        public:
+
+            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+
+            floatVector PK2   = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector SIGMA = { 10, 11, 12, 13, 14, 15, 16, 17, 18 };
+
+            floatVector M     = { 19, 20, 21, 22, 23, 24, 25, 26, 27,
+                                  28, 29, 30, 31, 32, 33, 34, 35, 36,
+                                  37, 38, 39, 40, 41, 42, 43, 44, 45 };
+
+        protected:
+
+            using tardigradeHydra::residualBaseMicromorphic::setStress;
+
+            virtual void setStress( ) override{
+
+                setStress( tardigradeVectorTools::appendVectors( { PK2, SIGMA, M } ) );
+
+            }
+
+    };
+
+    class residualMock : public tardigradeHydra::residualBaseMicromorphic{
+
+        public:
+
+            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+
+            floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
+                                              2, 0.37773052, 0.92739145,
+                                              2, 0.53186824, 0.75454313,
+                                              2, 0.95338442, 0.74042148,
+                                              2, 0.38093104, 0.49241325,
+                                              2, 0.82121039, 0.90566759,
+                                              2, 0.01166325, 0.05331896,
+                                              2, 0.32982199, 0.60161431,
+                                              2, 0.58881096, 0.11473813 };
+
+            floatVector initialize( unsigned int nrows ){
+
+                floatVector value( nrows, 0 );
+
+                return value;
+
+            }
+
+            floatMatrix initialize( unsigned int nrows, unsigned int ncols ){
+
+                floatMatrix value( nrows, floatVector( ncols, 0 ) );
+
+                return value;
+
+            }
+
+    };
+
+    class hydraBaseMicromorphicMock : public tardigradeHydra::hydraBaseMicromorphic{
+
+        public:
+
+            stressMock elasticity;
+
+            residualMock additionalResiduals;
+
+            unsigned int ndecomp = 0;
+    
+            unsigned int nsrc = 0;
+
+            using tardigradeHydra::hydraBaseMicromorphic::hydraBaseMicromorphic;
+
+        private:
+
+            using tardigradeHydra::hydraBaseMicromorphic::setResidualClasses;
+
+            virtual void setResidualClasses( ) override{
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                elasticity = stressMock( this, 45 );
+
+                additionalResiduals = residualMock( this, 140 );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &additionalResiduals;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                     microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables,
+                                     dimension, configuration_unknown_count,
+                                     tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    floatVector nonLinearPreviousStateVariables( previousStateVariables.begin( ),
+                                                 previousStateVariables.begin( ) + ( numConfigurations - 1 ) * configuration_unknown_count + numNonLinearSolveStateVariables );
+
+    floatVector answer = tardigradeVectorTools::appendVectors( { hydra.elasticity.PK2, hydra.elasticity.SIGMA, hydra.elasticity.M,
+                                                                 nonLinearPreviousStateVariables } );
+
+    for ( unsigned int i = 1; i < numConfigurations; i++ ){
+
+        for ( unsigned int j = 0; j < 3; j++ ){
+
+            answer[ configuration_unknown_count + 9 * ( i - 1 ) + 3 * j + j ] += 1;
+
+            answer[ configuration_unknown_count + ( numConfigurations - 1 ) * 9 + 9 * ( i - 1 ) + 3 * j + j ] += 1;
+
+        }
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *hydra.getUnknownVector( ) ) );
 
 }
 

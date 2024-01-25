@@ -4006,6 +4006,33 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setStress( ){
+            /*!
+             * Set the stresses
+             */
+
+            setStress( tardigradeVectorTools::appendVectors( { *get_PK2Stress( ), *get_referenceSymmetricMicroStress( ), *get_referenceHigherOrderStress( ) } ) );
+
+        }
+
+        void residual::setPreviousStress( ){
+            /*!
+             * Set the previous stresses
+             */
+
+            setPreviousStress( tardigradeVectorTools::appendVectors( { *get_previousPK2Stress( ), *get_previousReferenceSymmetricMicroStress( ), *get_previousReferenceHigherOrderStress( ) } ) );
+
+        }
+
+        void residual::setdRdT( ){
+            /*!
+             * Set the derivative of the residual w.r.t. the temperature
+             */
+
+            setdRdT( floatVector( *getNumEquations( ), 0 ) );
+
+        }
+
     }
 
 }

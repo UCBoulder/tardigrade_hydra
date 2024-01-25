@@ -675,6 +675,12 @@ namespace tardigradeHydra{
 
             virtual void evaluate( );
 
+            virtual void computeTangents( );
+
+            const floatVector *getFlatdXdF( );
+
+            const floatVector *getFlatdXdT( );
+
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
 
@@ -768,6 +774,19 @@ namespace tardigradeHydra{
             //!A pass through function that does nothing
             void passThrough( ){ }
 
+            void setX( const floatVector &X ){
+                /*!
+                 * Set the value of the unknown vector
+                 * 
+                 * \param &X: The unknown vector
+                 */
+
+                _X.second = X;
+
+                _X.first = true;
+
+            }
+
         private:
 
             // Friend classes
@@ -775,7 +794,7 @@ namespace tardigradeHydra{
 
             unsigned int _dimension; //!< The spatial dimension of the problem
 
-            const unsigned int _configuration_unknown_count; //!< The number of unknowns required for a configuration. Used to ensure that the unknown and state variable vectors are the right size. Must be set by all inheriting classes. For 3D classical continuum this will be 9, for higher order theories this will change.
+            unsigned int _configuration_unknown_count; //!< The number of unknowns required for a configuration. Used to ensure that the unknown and state variable vectors are the right size. Must be set by all inheriting classes. For 3D classical continuum this will be 9, for higher order theories this will change.
 
             floatType _time; //!< The current time
 
@@ -830,6 +849,10 @@ namespace tardigradeHydra{
             dataStorage< floatVector > _stress; //!< The stress in the current configuration as determined from the current state
 
             dataStorage< floatVector > _previousStress; //!< The previous value of the stress in the current configuration as determined from the previous state
+
+            dataStorage< floatVector > _flatdXdF; //!< The total derivative of the unknown vector w.r.t. the deformation in row-major form
+
+            dataStorage< floatVector > _flatdXdT; //!< The total derivative of the unknown vector w.r.t. the temperature
 
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
