@@ -1290,7 +1290,7 @@ namespace tardigradeHydra{
 
             if ( !checkLSConvergence( ) ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "Failure in line search" ) );
+                throw convergence_error( "Failure in line search" );
 
             }
 
@@ -1303,7 +1303,7 @@ namespace tardigradeHydra{
 
         if ( !checkConvergence( ) ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "Failure to converge main loop" ) );
+            throw convergence_error( "Failure to converge main loop" );
 
         }
 
@@ -1314,7 +1314,21 @@ namespace tardigradeHydra{
          * Solve the non-linear problem and update the variables
          */
 
-        TARDIGRADE_ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
+        try{
+
+            solveNonLinearProblem( );
+
+        }
+        catch( const convergence_error &e ){
+
+            throw;
+
+        }
+        catch( std::exception &e ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+
+        }
 
     }
 
