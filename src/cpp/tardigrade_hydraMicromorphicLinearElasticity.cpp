@@ -2342,7 +2342,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( false );
 
-        };
+        }
 
         void residual::setdSIGMAdF( ){
             /*!
@@ -2396,7 +2396,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( false );
 
-        };
+        }
 
         void residual::setdMdF( ){
             /*!
@@ -2450,7 +2450,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( false );
 
-        };
+        }
 
         void residual::setPreviousdPK2dF( ){
             /*!
@@ -2504,7 +2504,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( true );
 
-        };
+        }
 
         void residual::setPreviousdSIGMAdF( ){
             /*!
@@ -2558,7 +2558,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( true );
 
-        };
+        }
 
         void residual::setPreviousdMdF( ){
             /*!
@@ -2612,7 +2612,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( true );
 
-        };
+        }
 
         void residual::setReferenceStressJacobians( const bool isPrevious ){
             /*!

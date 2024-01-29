@@ -9,6 +9,10 @@ Changelog
 0.4.2 (unreleased)
 ******************
 
+Internal Changes
+================
+- Removed extraneous semicolons (:pull:`69`). By `Nathan Miller`_.
+
 ******************
 0.4.1 (01-24-2024)
 ******************
