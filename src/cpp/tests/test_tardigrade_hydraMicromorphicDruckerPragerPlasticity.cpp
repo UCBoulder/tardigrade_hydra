@@ -4610,13 +4610,15 @@ BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs ){
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    residualMock R( &hydra, 55, 1, stateVariableIndices, parameters );
+    floatType alpha = 0.67;
 
-    residualMock RJ( &hydra, 55, 1, stateVariableIndices, parameters );
+    residualMock R( &hydra, 55, 1, stateVariableIndices, parameters, alpha );
+
+    residualMock RJ( &hydra, 55, 1, stateVariableIndices, parameters, alpha );
 
     RJ.get_dUpdatedPlasticStrainLikeISVsdStateVariables( );
 
-    floatVector updatedPlasticISVs = 0.5 * ( *R.get_plasticStrainLikeISVEvolutionRates( ) + *R.get_previousPlasticStrainLikeISVEvolutionRates( ) ) * deltaTime
+    floatVector updatedPlasticISVs = ( alpha * ( *R.get_plasticStrainLikeISVEvolutionRates( ) ) + ( 1 - alpha ) * ( *R.get_previousPlasticStrainLikeISVEvolutionRates( ) ) ) * deltaTime
                                    + floatVector( previousStateVariables.end( ) - 5, previousStateVariables.end( ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( updatedPlasticISVs, *R.get_updatedPlasticStrainLikeISVs( ) ) );
