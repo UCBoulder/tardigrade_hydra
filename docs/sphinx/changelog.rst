@@ -17,6 +17,10 @@ Internal Changes
 ================
 - Removed extraneous semicolons (:pull:`69`). By `Nathan Miller`_.
 
+Bug Fixes
+=========
+- Corrected bug where the plastic state variable integration parameter was one minus the expected value (:pull:`71`). By `Nathan Miller`_.
+
 ******************
 0.4.1 (01-24-2024)
 ******************
