@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setFe ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jac, *R.get_dFedF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jac ), *R.get_dFedF( ) ) );
 
     jac = floatMatrix( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
@@ -283,7 +283,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setFe ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jac, *R.get_previousdFedF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jac ), *R.get_previousdFedF( ) ) );
 
     jac = floatMatrix( deformationGradient.size( ), floatVector( previousStateVariables.size( ), 0 ) );
     for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
@@ -314,7 +314,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setFe ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jac, *R.get_dFedFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jac ), *R.get_dFedFn( ) ) );
 
     jac = floatMatrix( deformationGradient.size( ), floatVector( previousStateVariables.size( ), 0 ) );
     for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
@@ -345,7 +345,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setFe ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jac, *R.get_previousdFedFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jac ), *R.get_previousdFedFn( ) ) );
 
 }
 
@@ -493,9 +493,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setdEedFe ){
 
     tardigradeHydra::linearElasticity::residual R( &hydra, 9, parameters );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dEedFeAnswer, *R.get_dEedFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dEedFeAnswer ), *R.get_dEedFe( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdEedFeAnswer, *R.get_previousdEedFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdEedFeAnswer ), *R.get_previousdEedFe( ) ) );
 
 }
 
@@ -717,7 +717,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdEe ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_dPK2StressdEe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dPK2StressdEe( ) ) );
 
     gradient = floatMatrix( R.previousEe.size( ), floatVector( R.previousEe.size( ), 0 ) );
 
@@ -743,7 +743,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdEe ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_previousdPK2StressdEe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_previousdPK2StressdEe( ) ) );
 
 }
 
@@ -847,7 +847,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdFe ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_dPK2StressdFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dPK2StressdFe( ) ) );
 
     gradient = floatMatrix( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
 
@@ -876,7 +876,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdFe ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_previousdPK2StressdFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_previousdPK2StressdFe( ) ) );
 
 }
 
@@ -1201,7 +1201,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdPK2Stress ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_dCauchyStressdPK2Stress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dCauchyStressdPK2Stress( ) ) );
 
 }
 
@@ -1292,7 +1292,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdF ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_dCauchyStressdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dCauchyStressdF( ) ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -1318,7 +1318,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdF ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_dCauchyStressdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dCauchyStressdPreviousF( ) ) );
 
 }
 
@@ -1383,13 +1383,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn ){
 
     floatMatrix gradient( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
 
-    BOOST_CHECK( R.get_dCauchyStressdFn( )->size( ) == 9 );
-
-    for ( unsigned int i = 0; i < 9; i++ ){
-
-        BOOST_CHECK( ( *R.get_dCauchyStressdFn( ) )[ i ].size( ) == 0 );
-
-    }
+    BOOST_CHECK( R.get_dCauchyStressdFn( )->size( ) == 0 );
 
 }
 
@@ -1481,7 +1475,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_dCauchyStressdFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dCauchyStressdFn( ) ) );
 
 }
 
@@ -1581,7 +1575,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn3 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.get_dCauchyStressdPreviousFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dCauchyStressdPreviousFn( ) ) );
 
 }
 
