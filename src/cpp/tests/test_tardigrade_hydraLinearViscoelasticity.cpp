@@ -1284,11 +1284,6 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStress ){
 
     residualMock R( &hydra, 9, parameters, ISVlb, ISVub, 0.5 );
 
-    try{
-    *R.get_PK2IsochoricStress( );
-    }
-    catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e); throw;}
-
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( PK2IsochoricStressAnswer, *R.get_PK2IsochoricStress( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( updatedISVsAnswer, *R.get_isochoricViscoelasticStateVariables( ) ) );
