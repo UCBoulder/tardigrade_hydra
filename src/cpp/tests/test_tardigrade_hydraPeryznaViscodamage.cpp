@@ -973,9 +973,29 @@ BOOST_AUTO_TEST_CASE( test_setDamage ){
 
             floatVector stateVariables = { 3, 4 };
 
-            floatVector tmpMat = { 1, 2, 3, 4 };
+            floatVector dIsvsdCauchy = initializeVector( 2*9, 1 );
 
-            floatVector tmpVec = { 5, 6 };
+            floatVector dIsvsdF = initializeVector( 2*9, 1.2 );
+
+            floatVector dIsvsdSubF = initializeVector( 2*2*9, 0.5 );
+
+            floatVector dIsvsdT = initializeVector( 2, 5 );
+
+            floatVector dIsvsdIsvs = initializeVector( 2*2, 0.3 );
+
+            floatVector initializeVector( int nvals, floatType val_0 ){
+
+                floatVector value( nvals, 0 );
+
+                for ( int i = 0; i < nvals; i++ ){
+
+                    value[ i ] = i + val_0;
+
+                }
+
+                return value;
+
+            }
 
         protected:
 
@@ -1005,31 +1025,31 @@ BOOST_AUTO_TEST_CASE( test_setDamage ){
 
             virtual void setdPlasticStateVariablesdPreviousCauchyStress( ) override{
 
-                set_dPlasticStateVariablesdPreviousCauchyStress( tmpMat );
+                set_dPlasticStateVariablesdPreviousCauchyStress( dIsvsdCauchy );
 
             }
 
             virtual void setdPlasticStateVariablesdPreviousF( ) override{
 
-                set_dPlasticStateVariablesdPreviousF( tmpMat );
+                set_dPlasticStateVariablesdPreviousF( dIsvsdF );
 
             }
 
             virtual void setdPlasticStateVariablesdPreviousSubFs( ) override{
 
-                set_dPlasticStateVariablesdPreviousSubFs( tmpMat );
+                set_dPlasticStateVariablesdPreviousSubFs( dIsvsdSubF );
 
             }
 
             virtual void setdPlasticStateVariablesdPreviousT( ) override{
 
-                set_dPlasticStateVariablesdPreviousT( tmpVec );
+                set_dPlasticStateVariablesdPreviousT( dIsvsdT );
 
             }
 
             virtual void setdPlasticStateVariablesdPreviousStateVariables( ) override{
 
-                set_dPlasticStateVariablesdPreviousStateVariables( tmpMat );
+                set_dPlasticStateVariablesdPreviousStateVariables( dIsvsdIsvs );
 
             }
 

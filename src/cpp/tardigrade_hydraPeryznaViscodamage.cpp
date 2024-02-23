@@ -309,14 +309,6 @@ namespace tardigradeHydra{
              * \param &isPrevious: Whether to compute the previous values or not
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
-
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
-
-            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
-
             floatVector evolutionRates;
 
             floatVector tempJac;
@@ -330,20 +322,17 @@ namespace tardigradeHydra{
                 set_previousStateVariableEvolutionRates( evolutionRates );
 
                 // Set the derivatives w.r.t. the previous Cauchy stress
-                tempJac = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::getRow( *get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ), num_isvs, sot_dim, 0 ),
-                                                                  *get_dPreviousPlasticMultiplierdPreviousCauchyStress( ) } );
+                tempJac = tardigradeVectorTools::appendVectors( { *get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ), *get_dPreviousPlasticMultiplierdPreviousCauchyStress( ) } );
 
                 set_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( tempJac );
 
                 // Set the derivatives w.r.t. the previous deformation gradient
-                tempJac = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::getRow( *get_dPreviousStateVariableEvolutionRatesdPreviousF( ), num_isvs, sot_dim, 0 ),
-                                                                  *get_dPreviousPlasticMultiplierdPreviousF( ) } );
+                tempJac = tardigradeVectorTools::appendVectors( { *get_dPreviousStateVariableEvolutionRatesdPreviousF( ), *get_dPreviousPlasticMultiplierdPreviousF( ) } );
 
                 set_dPreviousStateVariableEvolutionRatesdPreviousF( tempJac );
 
                 // Set the derivatives w.r.t. the previous sub-deformation gradients
-                tempJac = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::getRow( *get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( ), num_isvs, ( num_configs - 1 ) * sot_dim, 0 ),
-                                                                  *get_dPreviousPlasticMultiplierdPreviousSubFs( ) } );
+                tempJac = tardigradeVectorTools::appendVectors( { *get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( ), *get_dPreviousPlasticMultiplierdPreviousSubFs( ) } );
 
                 set_dPreviousStateVariableEvolutionRatesdPreviousSubFs( tempJac );
 
@@ -367,20 +356,17 @@ namespace tardigradeHydra{
                 set_stateVariableEvolutionRates( evolutionRates );
 
                 // Set the derivatives w.r.t. the previous Cauchy stress
-                tempJac = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::getRow( *get_dStateVariableEvolutionRatesdCauchyStress( ), num_isvs, sot_dim, 0 ),
-                                                                  *get_dPlasticMultiplierdCauchyStress( ) } );
+                tempJac = tardigradeVectorTools::appendVectors( { *get_dStateVariableEvolutionRatesdCauchyStress( ), *get_dPlasticMultiplierdCauchyStress( ) } );
 
                 set_dStateVariableEvolutionRatesdCauchyStress( tempJac );
 
                 // Set the derivatives w.r.t. the previous deformation gradient
-                tempJac = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::getRow( *get_dStateVariableEvolutionRatesdF( ), num_isvs, sot_dim, 0 ),
-                                                                  *get_dPlasticMultiplierdF( ) } );
+                tempJac = tardigradeVectorTools::appendVectors( { *get_dStateVariableEvolutionRatesdF( ), *get_dPlasticMultiplierdF( ) } );
 
                 set_dStateVariableEvolutionRatesdF( tempJac );
 
                 // Set the derivatives w.r.t. the previous sub-deformation gradients
-                tempJac = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::getRow( *get_dStateVariableEvolutionRatesdSubFs( ), num_isvs, ( num_configs - 1 ) * sot_dim, 0 ),
-                                                                                                 *get_dPlasticMultiplierdSubFs( ) } );
+                tempJac = tardigradeVectorTools::appendVectors( { *get_dStateVariableEvolutionRatesdSubFs( ), *get_dPlasticMultiplierdSubFs( ) } );
 
                 set_dStateVariableEvolutionRatesdSubFs( tempJac );
 
@@ -541,7 +527,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
-            floatMatrix dRdF( *getNumEquations( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
+            floatMatrix dRdF( *getNumEquations( ), floatVector( sot_dim, 0 ) );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
@@ -549,7 +535,7 @@ namespace tardigradeHydra{
 
             }
 
-            for ( unsigned int i = 0; i < get_dPlasticStateVariablesdF( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < num_isvs; i++ ){
 
                 dRdF[ sot_dim + i ] = -tardigradeVectorTools::getRow( *get_dPlasticStateVariablesdF( ), num_isvs, sot_dim, i );
 
