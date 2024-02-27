@@ -611,7 +611,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDrivingStressdCauchyStress, *Rjac.get_dDrivingStressdCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dDrivingStressdCauchyStress ), *Rjac.get_dDrivingStressdCauchyStress( ) ) );
 
     // Jacobians w.r.t. the deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -646,7 +646,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDrivingStressdF, *Rjac.get_dDrivingStressdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dDrivingStressdF ), *Rjac.get_dDrivingStressdF( ) ) );
 
     // Jacobians w.r.t. the sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -681,7 +681,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDrivingStressdSubFs, *Rjac.get_dDrivingStressdSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dDrivingStressdSubFs ), *Rjac.get_dDrivingStressdSubFs( ) ) );
 
     // Jacobians w.r.t. the Previous Cauchy stress
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -720,7 +720,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDrivingStressdPreviousCauchyStress, *Rjac.get_dPreviousDrivingStressdPreviousCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousDrivingStressdPreviousCauchyStress ), *Rjac.get_dPreviousDrivingStressdPreviousCauchyStress( ) ) );
 
     // Jacobians w.r.t. the previous deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -755,7 +755,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDrivingStressdPreviousF, *Rjac.get_dPreviousDrivingStressdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousDrivingStressdPreviousF ), *Rjac.get_dPreviousDrivingStressdPreviousF( ) ) );
 
     // Jacobians w.r.t. the previous sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -790,7 +790,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDrivingStressdPreviousSubFs, *Rjac.get_dPreviousDrivingStressdPreviousSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousDrivingStressdPreviousSubFs ), *Rjac.get_dPreviousDrivingStressdPreviousSubFs( ) ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection ){
@@ -1140,7 +1140,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dFlowDirectiondCauchyStress, *R.get_dFlowDirectiondCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dFlowDirectiondCauchyStress ), *R.get_dFlowDirectiondCauchyStress( ) ) );
 
     // Jacobians w.r.t. the deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -1175,7 +1175,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dFlowDirectiondF, *R.get_dFlowDirectiondF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dFlowDirectiondF ), *R.get_dFlowDirectiondF( ) ) );
 
     // Jacobians w.r.t. the sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -1210,7 +1210,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dFlowDirectiondSubFs, *R.get_dFlowDirectiondSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dFlowDirectiondSubFs ), *R.get_dFlowDirectiondSubFs( ) ) );
 
     // Jacobians w.r.t. the Previous Cauchy stress
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -1249,7 +1249,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousFlowDirectiondPreviousCauchyStress, *R.get_dPreviousFlowDirectiondPreviousCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousFlowDirectiondPreviousCauchyStress ), *R.get_dPreviousFlowDirectiondPreviousCauchyStress( ) ) );
 
     // Jacobians w.r.t. the previous deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -1284,7 +1284,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousFlowDirectiondPreviousF, *R.get_dPreviousFlowDirectiondPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousFlowDirectiondPreviousF ), *R.get_dPreviousFlowDirectiondPreviousF( ) ) );
 
     // Jacobians w.r.t. the previous sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -1319,7 +1319,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousFlowDirectiondPreviousSubFs, *R.get_dPreviousFlowDirectiondPreviousSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousFlowDirectiondPreviousSubFs ), *R.get_dPreviousFlowDirectiondPreviousSubFs( ) ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction ){
@@ -3837,11 +3837,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient ){
 
             floatVector nhat = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            floatMatrix dNhatdCauchy = initializeMatrix( 9, 9, 0.1 );
+            floatVector dNhatdCauchy = initializeVector( 81, 0.1 );
 
-            floatMatrix dNhatdF = initializeMatrix( 9, 9, 0.3 );
+            floatVector dNhatdF = initializeVector( 81, 0.3 );
 
-            floatMatrix dNhatdSubFs = initializeMatrix( 9, 18, -0.54 );
+            floatVector dNhatdSubFs = initializeVector( 162, -0.54 );
 
             floatType previousGamma = 5.6;
 
@@ -3857,11 +3857,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient ){
 
             floatVector previousNhat = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
 
-            floatMatrix dPreviousNhatdPreviousCauchy = initializeMatrix( 9, 9, -0.37 );
+            floatVector dPreviousNhatdPreviousCauchy = initializeVector( 81, -0.37 );
 
-            floatMatrix dPreviousNhatdPreviousF = initializeMatrix( 9, 9, 0.373 );
+            floatVector dPreviousNhatdPreviousF = initializeVector( 81, 0.373 );
 
-            floatMatrix dPreviousNhatdPreviousSubFs = initializeMatrix( 9, 18, -0.82 );
+            floatVector dPreviousNhatdPreviousSubFs = initializeVector( 162, -0.82 );
 
         private:
 
@@ -4368,7 +4368,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVelocityGradientdCauchyStress, *R.get_dVelocityGradientdCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dVelocityGradientdCauchyStress ), *R.get_dVelocityGradientdCauchyStress( ) ) );
 
     // Jacobians w.r.t. the deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -4403,7 +4403,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVelocityGradientdF, *R.get_dVelocityGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dVelocityGradientdF ), *R.get_dVelocityGradientdF( ) ) );
 
     // Jacobians w.r.t. the sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -4438,7 +4438,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVelocityGradientdSubFs, *R.get_dVelocityGradientdSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dVelocityGradientdSubFs ), *R.get_dVelocityGradientdSubFs( ) ) );
 
     // Jacobians w.r.t. the temperature
     for ( unsigned int i = 0; i < 1; i++ ){
@@ -4506,7 +4506,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVelocityGradientdStateVariables, *R.get_dVelocityGradientdStateVariables( ), 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dVelocityGradientdStateVariables ), *R.get_dVelocityGradientdStateVariables( ), 1e-5, 1e-5 ) );
 
     // Jacobians w.r.t. the Previous Cauchy stress
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -4545,7 +4545,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousVelocityGradientdPreviousCauchyStress, *R.get_dPreviousVelocityGradientdPreviousCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousVelocityGradientdPreviousCauchyStress ), *R.get_dPreviousVelocityGradientdPreviousCauchyStress( ) ) );
 
     // Jacobians w.r.t. the previous deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -4580,7 +4580,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousVelocityGradientdPreviousF, *R.get_dPreviousVelocityGradientdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousVelocityGradientdPreviousF ), *R.get_dPreviousVelocityGradientdPreviousF( ) ) );
 
     // Jacobians w.r.t. the previous sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -4615,7 +4615,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousVelocityGradientdPreviousSubFs, *R.get_dPreviousVelocityGradientdPreviousSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousVelocityGradientdPreviousSubFs ), *R.get_dPreviousVelocityGradientdPreviousSubFs( ) ) );
 
     // Jacobians w.r.t. the temperature
     for ( unsigned int i = 0; i < 1; i++ ){
@@ -4683,7 +4683,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousVelocityGradientdPreviousStateVariables, *R.get_dPreviousVelocityGradientdPreviousStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousVelocityGradientdPreviousStateVariables ), *R.get_dPreviousVelocityGradientdPreviousStateVariables( ) ) );
 
 }
 
@@ -5207,7 +5207,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariableEvolutionRatesdCauchyStress, *R.get_dStateVariableEvolutionRatesdCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dStateVariableEvolutionRatesdCauchyStress ), *R.get_dStateVariableEvolutionRatesdCauchyStress( ) ) );
 
     // Jacobians w.r.t. the deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -5242,7 +5242,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariableEvolutionRatesdF, *R.get_dStateVariableEvolutionRatesdF( ), 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dStateVariableEvolutionRatesdF ), *R.get_dStateVariableEvolutionRatesdF( ), 1e-5, 1e-5 ) );
 
     // Jacobians w.r.t. the sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -5277,7 +5277,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariableEvolutionRatesdSubFs, *R.get_dStateVariableEvolutionRatesdSubFs( ), 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dStateVariableEvolutionRatesdSubFs ), *R.get_dStateVariableEvolutionRatesdSubFs( ), 1e-5, 1e-5 ) );
 
     // Jacobians w.r.t. the temperature
     for ( unsigned int i = 0; i < 1; i++ ){
@@ -5345,7 +5345,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariableEvolutionRatesdStateVariables, *R.get_dStateVariableEvolutionRatesdStateVariables( ), 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dStateVariableEvolutionRatesdStateVariables ), *R.get_dStateVariableEvolutionRatesdStateVariables( ), 1e-5, 1e-5 ) );
 
     // Jacobians w.r.t. the Previous Cauchy stress
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -5384,7 +5384,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousStateVariableEvolutionRatesdPreviousCauchyStress, *R.get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousStateVariableEvolutionRatesdPreviousCauchyStress ), *R.get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ) ) );
 
     // Jacobians w.r.t. the previous deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -5419,7 +5419,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousStateVariableEvolutionRatesdPreviousF, *R.get_dPreviousStateVariableEvolutionRatesdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousStateVariableEvolutionRatesdPreviousF ), *R.get_dPreviousStateVariableEvolutionRatesdPreviousF( ) ) );
 
     // Jacobians w.r.t. the previous sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -5454,7 +5454,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousStateVariableEvolutionRatesdPreviousSubFs, *R.get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousStateVariableEvolutionRatesdPreviousSubFs ), *R.get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( ) ) );
 
     // Jacobians w.r.t. the temperature
     for ( unsigned int i = 0; i < 1; i++ ){
@@ -5522,7 +5522,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousStateVariableEvolutionRatesdPreviousStateVariables, *R.get_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousStateVariableEvolutionRatesdPreviousStateVariables ), *R.get_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) ) );
 
 }
 
@@ -5541,25 +5541,25 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient ){
 
             floatVector previousVelocityGradient = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
 
-            floatMatrix dLdCauchy = initializeMatrix( 9, 9, 0.1 );
+            floatVector dLdCauchy = initializeVector( 81, 0.1 );
 
-            floatMatrix dLdF      = initializeMatrix( 9, 9, -0.34 );
+            floatVector dLdF      = initializeVector( 81, -0.34 );
 
-            floatMatrix dLdSubFs  = initializeMatrix( 9, 18, 0.23 );
+            floatVector dLdSubFs  = initializeVector( 162, 0.23 );
 
             floatVector dLdT      = initializeVector( 9, 5.67 );
 
-            floatMatrix dLdXi     = initializeMatrix( 9, 1, -0.26 );
+            floatVector dLdXi     = initializeVector( 9, -0.26 );
 
-            floatMatrix dPreviousLdPreviousCauchy = initializeMatrix( 9, 9, 0.27 );
+            floatVector dPreviousLdPreviousCauchy = initializeVector( 81, 0.27 );
 
-            floatMatrix dPreviousLdPreviousF      = initializeMatrix( 9, 9, -0.44 );
+            floatVector dPreviousLdPreviousF      = initializeVector( 81, -0.44 );
 
-            floatMatrix dPreviousLdPreviousSubFs  = initializeMatrix( 9, 18, 0.29 );
+            floatVector dPreviousLdPreviousSubFs  = initializeVector( 162, 0.29 );
 
             floatVector dPreviousLdPreviousT      = initializeVector( 9, 2.11 );
 
-            floatMatrix dPreviousLdPreviousXi     = initializeMatrix( 9, 1, -0.19 );
+            floatVector dPreviousLdPreviousXi     = initializeVector( 9, -0.19 );
 
         private:
 
@@ -5728,7 +5728,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient ){
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
-                viscoPlasticity = residualMock( this, 9, 1, stateVariableIndices, viscoPlasticParameters );
+                viscoPlasticity = residualMock( this, 10, 1, stateVariableIndices, viscoPlasticParameters );
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
@@ -5788,11 +5788,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient ){
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
+    residualMock R( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
 
-    residualMock Rjac1( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
+    residualMock Rjac1( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
 
-    residualMock Rjac2( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
+    residualMock Rjac2( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
 
     floatVector answer = { 0.41617760, -0.32005614, -0.05658586,
                           -0.33457515,  0.67081398, -0.19950498,
@@ -6007,7 +6007,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticDeformationGradientdCauchyStress, *R.get_dPlasticDeformationGradientdCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticDeformationGradientdCauchyStress ), *R.get_dPlasticDeformationGradientdCauchyStress( ) ) );
 
     // Jacobians w.r.t. the deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -6042,7 +6042,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticDeformationGradientdF, *R.get_dPlasticDeformationGradientdF( ), 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticDeformationGradientdF ), *R.get_dPlasticDeformationGradientdF( ), 1e-5, 1e-5 ) );
 
     // Jacobians w.r.t. the sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -6077,7 +6077,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticDeformationGradientdSubFs, *R.get_dPlasticDeformationGradientdSubFs( ), 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticDeformationGradientdSubFs ), *R.get_dPlasticDeformationGradientdSubFs( ), 1e-5, 1e-5 ) );
 
     // Jacobians w.r.t. the temperature
     for ( unsigned int i = 0; i < 1; i++ ){
@@ -6145,7 +6145,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticDeformationGradientdStateVariables, *R.get_dPlasticDeformationGradientdStateVariables( ), 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticDeformationGradientdStateVariables ), *R.get_dPlasticDeformationGradientdStateVariables( ), 1e-5, 1e-5 ) );
 
     // Jacobians w.r.t. the Previous Cauchy stress
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -6184,7 +6184,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticDeformationGradientdPreviousCauchyStress, *R.get_dPlasticDeformationGradientdPreviousCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticDeformationGradientdPreviousCauchyStress ), *R.get_dPlasticDeformationGradientdPreviousCauchyStress( ) ) );
 
     // Jacobians w.r.t. the previous deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -6219,7 +6219,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticDeformationGradientdPreviousF, *R.get_dPlasticDeformationGradientdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticDeformationGradientdPreviousF ), *R.get_dPlasticDeformationGradientdPreviousF( ) ) );
 
     // Jacobians w.r.t. the previous sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -6254,7 +6254,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticDeformationGradientdPreviousSubFs, *R.get_dPlasticDeformationGradientdPreviousSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticDeformationGradientdPreviousSubFs ), *R.get_dPlasticDeformationGradientdPreviousSubFs( ) ) );
 
     // Jacobians w.r.t. the temperature
     for ( unsigned int i = 0; i < 1; i++ ){
@@ -6322,7 +6322,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticDeformationGradientdPreviousStateVariables, *R.get_dPlasticDeformationGradientdPreviousStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticDeformationGradientdPreviousStateVariables ), *R.get_dPlasticDeformationGradientdPreviousStateVariables( ) ) );
 
 }
 
@@ -6343,25 +6343,25 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables ){
 
             floatVector previousStateVariables = { 0.3, -0.4 };
 
-            floatMatrix dXidotdC = initializeMatrix( 2, 9, 0.1 );
+            floatVector dXidotdC = initializeVector( 18, 0.1 );
 
-            floatMatrix dXidotdF = initializeMatrix( 2, 9, 0.2 );
+            floatVector dXidotdF = initializeVector( 18, 0.2 );
 
-            floatMatrix dXidotdSubFs = initializeMatrix( 2, 18, 0.3 );
+            floatVector dXidotdSubFs = initializeVector( 36, 0.3 );
 
             floatVector dXidotdT = initializeVector( 2, 0.4 );
 
-            floatMatrix dXidotdXi = initializeMatrix( 2, 2, 0.5 );
+            floatVector dXidotdXi = initializeVector( 4, 0.5 );
 
-            floatMatrix dPreviousXidotdPreviousC = initializeMatrix( 2, 9, 0.6 );
+            floatVector dPreviousXidotdPreviousC = initializeVector( 18, 0.6 );
 
-            floatMatrix dPreviousXidotdPreviousF = initializeMatrix( 2, 9, 0.7 );
+            floatVector dPreviousXidotdPreviousF = initializeVector( 18, 0.7 );
 
-            floatMatrix dPreviousXidotdPreviousSubFs = initializeMatrix( 2, 18, 0.8 );
+            floatVector dPreviousXidotdPreviousSubFs = initializeVector( 36, 0.8 );
 
             floatVector dPreviousXidotdPreviousT = initializeVector( 2, 0.9 );
 
-            floatMatrix dPreviousXidotdPreviousXi = initializeMatrix( 2, 2, 1.0 );
+            floatVector dPreviousXidotdPreviousXi = initializeVector( 4, 1.0 );
 
         private:
 
@@ -6536,7 +6536,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables ){
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
-                viscoPlasticity = residualMock( this, 9, 1, stateVariableIndices, viscoPlasticParameters );
+                viscoPlasticity = residualMock( this, 10, 1, stateVariableIndices, viscoPlasticParameters );
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
@@ -6596,11 +6596,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables ){
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
+    residualMock R( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
 
-    residualMock R1( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
+    residualMock R1( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
 
-    residualMock R2( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
+    residualMock R2( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
 
     floatVector answer = { 7.472, 2.2136 };
 
@@ -6813,7 +6813,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticStateVariablesdCauchyStress, *R.get_dPlasticStateVariablesdCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticStateVariablesdCauchyStress ), *R.get_dPlasticStateVariablesdCauchyStress( ) ) );
 
     // Jacobians w.r.t. the deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -6848,7 +6848,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticStateVariablesdF, *R.get_dPlasticStateVariablesdF( ), 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticStateVariablesdF ), *R.get_dPlasticStateVariablesdF( ), 1e-5, 1e-5 ) );
 
     // Jacobians w.r.t. the sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -6883,7 +6883,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticStateVariablesdSubFs, *R.get_dPlasticStateVariablesdSubFs( ), 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticStateVariablesdSubFs ), *R.get_dPlasticStateVariablesdSubFs( ), 1e-5, 1e-5 ) );
 
     // Jacobians w.r.t. the temperature
     for ( unsigned int i = 0; i < 1; i++ ){
@@ -6951,7 +6951,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticStateVariablesdStateVariables, *R.get_dPlasticStateVariablesdStateVariables( ), 1e-5, 1e-5 ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticStateVariablesdStateVariables ), *R.get_dPlasticStateVariablesdStateVariables( ), 1e-5, 1e-5 ) );
 
     // Jacobians w.r.t. the Previous Cauchy stress
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -6990,7 +6990,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticStateVariablesdPreviousCauchyStress, *R.get_dPlasticStateVariablesdPreviousCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticStateVariablesdPreviousCauchyStress ), *R.get_dPlasticStateVariablesdPreviousCauchyStress( ) ) );
 
     // Jacobians w.r.t. the previous deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
@@ -7025,7 +7025,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticStateVariablesdPreviousF, *R.get_dPlasticStateVariablesdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticStateVariablesdPreviousF ), *R.get_dPlasticStateVariablesdPreviousF( ) ) );
 
     // Jacobians w.r.t. the previous sub-deformation gradients
     for ( unsigned int i = 0; i < 18; i++ ){
@@ -7060,7 +7060,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticStateVariablesdPreviousSubFs, *R.get_dPlasticStateVariablesdPreviousSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticStateVariablesdPreviousSubFs ), *R.get_dPlasticStateVariablesdPreviousSubFs( ) ) );
 
     // Jacobians w.r.t. the temperature
     for ( unsigned int i = 0; i < 1; i++ ){
@@ -7128,7 +7128,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPlasticStateVariablesdPreviousStateVariables, *R.get_dPlasticStateVariablesdPreviousStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPlasticStateVariablesdPreviousStateVariables ), *R.get_dPlasticStateVariablesdPreviousStateVariables( ) ) );
 
 }
 

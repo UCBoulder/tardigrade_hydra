@@ -1084,11 +1084,9 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         unsigned int col = 0;
 
-        for ( auto v  = ( *R.get_dMacroDrivingStressdMacroStress( ) )[ i ].begin( );
-                   v != ( *R.get_dMacroDrivingStressdMacroStress( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < dimension * dimension; v++ ){
 
-            result_dMacrodX[ i ][ col ] = *v;
+            result_dMacrodX[ i ][ col ] = ( *R.get_dMacroDrivingStressdMacroStress( ) )[ dimension * dimension * i + v ];
 
             col++;
 
@@ -1096,11 +1094,9 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         col = configuration_unknown_count;
 
-        for ( auto v  = ( *R.get_dMacroDrivingStressdFn( ) )[ i ].begin( );
-                   v != ( *R.get_dMacroDrivingStressdFn( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < ( numConfigurations - 1 ) * dimension * dimension; v++ ){
 
-            result_dMacrodX[ i ][ col ] = *v;
+            result_dMacrodX[ i ][ col ] = ( *R.get_dMacroDrivingStressdFn( ) )[ ( numConfigurations - 1 ) * dimension * dimension * i + v ];
 
             col++;
 
@@ -1112,11 +1108,9 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         unsigned int col = dimension * dimension;
 
-        for ( auto v  = ( *R.get_dSymmetricMicroDrivingStressdMicroStress( ) )[ i ].begin( );
-                   v != ( *R.get_dSymmetricMicroDrivingStressdMicroStress( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < dimension * dimension; v++ ){
 
-            result_dMicrodX[ i ][ col ] = *v;
+            result_dMicrodX[ i ][ col ] = ( *R.get_dSymmetricMicroDrivingStressdMicroStress( ) )[ dimension * dimension * i + v ];
 
             col++;
 
@@ -1124,11 +1118,9 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         col = configuration_unknown_count;
 
-        for ( auto v  = ( *R.get_dSymmetricMicroDrivingStressdFn( ) )[ i ].begin( );
-                   v != ( *R.get_dSymmetricMicroDrivingStressdFn( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < ( numConfigurations - 1 ) * dimension * dimension; v++ ){
 
-            result_dMicrodX[ i ][ col ] = *v;
+            result_dMicrodX[ i ][ col ] = ( *R.get_dSymmetricMicroDrivingStressdFn( ) )[ ( numConfigurations - 1 ) * dimension * dimension * i + v ];
 
             col++;
 
@@ -1140,11 +1132,9 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         unsigned int col = 2 * dimension * dimension;
 
-        for ( auto v  = ( *R.get_dHigherOrderDrivingStressdHigherOrderStress( ) )[ i ].begin( );
-                   v != ( *R.get_dHigherOrderDrivingStressdHigherOrderStress( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < dimension * dimension * dimension; v++ ){
 
-            result_dHigherdX[ i ][ col ] = *v;
+            result_dHigherdX[ i ][ col ] = ( *R.get_dHigherOrderDrivingStressdHigherOrderStress( ) )[ dimension * dimension * dimension * i + v ];
 
             col++;
 
@@ -1152,21 +1142,17 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         col = configuration_unknown_count;
 
-        for ( auto v  = ( *R.get_dHigherOrderDrivingStressdFn( ) )[ i ].begin( );
-                   v != ( *R.get_dHigherOrderDrivingStressdFn( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < ( numConfigurations - 1 ) * dimension * dimension; v++ ){
 
-            result_dHigherdX[ i ][ col ] = *v;
+            result_dHigherdX[ i ][ col ] = ( *R.get_dHigherOrderDrivingStressdFn( ) )[ ( numConfigurations - 1 ) * dimension * dimension * i + v ];
 
             col++;
 
         }
 
-        for ( auto v  = ( *R.get_dHigherOrderDrivingStressdChin( ) )[ i ].begin( );
-                   v != ( *R.get_dHigherOrderDrivingStressdChin( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < ( numConfigurations - 1 ) * dimension * dimension; v++ ){
 
-            result_dHigherdX[ i ][ col ] = *v;
+            result_dHigherdX[ i ][ col ] = ( *R.get_dHigherOrderDrivingStressdChin( ) )[ ( numConfigurations - 1 ) * dimension * dimension * i + v ];
 
             col++;
 
@@ -1408,11 +1394,9 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         unsigned int col = 0;
 
-        for ( auto v  = ( *R.get_previousdMacroDrivingStressdMacroStress( ) )[ i ].begin( );
-                   v != ( *R.get_previousdMacroDrivingStressdMacroStress( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < dimension * dimension; v++ ){
 
-            result_previousdMacrodX[ i ][ col ] = *v;
+            result_previousdMacrodX[ i ][ col ] = ( *R.get_previousdMacroDrivingStressdMacroStress( ) )[ dimension * dimension * i + v ];
 
             col++;
 
@@ -1420,11 +1404,9 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         col = configuration_unknown_count;
 
-        for ( auto v  = ( *R.get_previousdMacroDrivingStressdFn( ) )[ i ].begin( );
-                   v != ( *R.get_previousdMacroDrivingStressdFn( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < ( numConfigurations - 1 ) * dimension * dimension; v++ ){
 
-            result_previousdMacrodX[ i ][ col ] = *v;
+            result_previousdMacrodX[ i ][ col ] = ( *R.get_previousdMacroDrivingStressdFn( ) )[ ( numConfigurations - 1 ) * dimension * dimension * i + v ];
 
             col++;
 
@@ -1436,11 +1418,9 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         unsigned int col = dimension * dimension;
 
-        for ( auto v  = ( *R.get_previousdSymmetricMicroDrivingStressdMicroStress( ) )[ i ].begin( );
-                   v != ( *R.get_previousdSymmetricMicroDrivingStressdMicroStress( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < dimension * dimension; v++ ){
 
-            result_previousdMicrodX[ i ][ col ] = *v;
+            result_previousdMicrodX[ i ][ col ] = ( *R.get_previousdSymmetricMicroDrivingStressdMicroStress( ) )[ dimension * dimension * i + v ];
 
             col++;
 
@@ -1448,11 +1428,9 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         col = configuration_unknown_count;
 
-        for ( auto v  = ( *R.get_previousdSymmetricMicroDrivingStressdFn( ) )[ i ].begin( );
-                   v != ( *R.get_previousdSymmetricMicroDrivingStressdFn( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < ( numConfigurations - 1 ) * dimension * dimension; v++ ){
 
-            result_previousdMicrodX[ i ][ col ] = *v;
+            result_previousdMicrodX[ i ][ col ] = ( *R.get_previousdSymmetricMicroDrivingStressdFn( ) )[ ( numConfigurations - 1 ) * dimension * dimension * i + v ];
 
             col++;
 
@@ -1464,11 +1442,9 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         unsigned int col = 2 * dimension * dimension;
 
-        for ( auto v  = ( *R.get_previousdHigherOrderDrivingStressdHigherOrderStress( ) )[ i ].begin( );
-                   v != ( *R.get_previousdHigherOrderDrivingStressdHigherOrderStress( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < dimension * dimension * dimension; v++ ){
 
-            result_previousdHigherdX[ i ][ col ] = *v;
+            result_previousdHigherdX[ i ][ col ] = ( *R.get_previousdHigherOrderDrivingStressdHigherOrderStress( ) )[ dimension * dimension * dimension * i + v ];
 
             col++;
 
@@ -1476,21 +1452,17 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
         col = configuration_unknown_count;
 
-        for ( auto v  = ( *R.get_previousdHigherOrderDrivingStressdFn( ) )[ i ].begin( );
-                   v != ( *R.get_previousdHigherOrderDrivingStressdFn( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < ( numConfigurations - 1 ) * dimension * dimension; v++ ){
 
-            result_previousdHigherdX[ i ][ col ] = *v;
+            result_previousdHigherdX[ i ][ col ] = ( *R.get_previousdHigherOrderDrivingStressdFn( ) )[ ( numConfigurations - 1 ) * dimension * dimension * i + v ];
 
             col++;
 
         }
 
-        for ( auto v  = ( *R.get_previousdHigherOrderDrivingStressdChin( ) )[ i ].begin( );
-                   v != ( *R.get_previousdHigherOrderDrivingStressdChin( ) )[ i ].end( );
-                   v++ ){
+        for ( unsigned int v = 0; v < ( numConfigurations - 1 ) * dimension * dimension; v++ ){
 
-            result_previousdHigherdX[ i ][ col ] = *v;
+            result_previousdHigherdX[ i ][ col ] = ( *R.get_previousdHigherOrderDrivingStressdChin( ) )[ ( numConfigurations - 1 ) * dimension * dimension * i + v ];
 
             col++;
 
@@ -1805,11 +1777,11 @@ BOOST_AUTO_TEST_CASE( test_setCohesion ){
 
     }
 
-    for ( unsigned int i = 0; i < R.get_dMicroGradientCohesiondStateVariables( )->size( ); i++ ){
+    for ( unsigned int i = 0; i < 3; i++ ){
 
-        for ( unsigned int j = 0; j < ( *R.get_dMicroGradientCohesiondStateVariables( ) )[ i ].size( ); j++ ){
+        for ( unsigned int j = 0; j < numNonLinearSolveStateVariables; j++ ){
 
-            dMicroGradientCohesiondXAssembled[ i ][ j + numConfigurations * configuration_unknown_count ] = ( *R.get_dMicroGradientCohesiondStateVariables( ) )[ i ][ j ];
+            dMicroGradientCohesiondXAssembled[ i ][ j + numConfigurations * configuration_unknown_count ] = ( *R.get_dMicroGradientCohesiondStateVariables( ) )[ numNonLinearSolveStateVariables * i + j ];
 
         }
 
@@ -1887,7 +1859,7 @@ BOOST_AUTO_TEST_CASE( test_setCohesion ){
 
     floatMatrix previousdMicroGradientCohesiondXAssembled( 3, floatVector( previousStateVariables.size( ), 0 ) );
 
-    for ( unsigned int i = 0; i < R.get_dMacroCohesiondStateVariables( )->size( ); i++ ){
+    for ( unsigned int i = 0; i < numNonLinearSolveStateVariables; i++ ){
 
         previousdMacroCohesiondXAssembled[ i + ( numConfigurations - 1 ) * configuration_unknown_count ] = ( *R.get_dMacroCohesiondStateVariables( ) )[ i ];
 
@@ -1895,11 +1867,11 @@ BOOST_AUTO_TEST_CASE( test_setCohesion ){
 
     }
 
-    for ( unsigned int i = 0; i < R.get_dMicroGradientCohesiondStateVariables( )->size( ); i++ ){
+    for ( unsigned int i = 0; i < 3; i++ ){
 
-        for ( unsigned int j = 0; j < ( *R.get_dMicroGradientCohesiondStateVariables( ) )[ i ].size( ); j++ ){
+        for ( unsigned int j = 0; j < numNonLinearSolveStateVariables; j++ ){
 
-            previousdMicroGradientCohesiondXAssembled[ i ][ j + ( numConfigurations - 1 ) * configuration_unknown_count ] = ( *R.get_dMicroGradientCohesiondStateVariables( ) )[ i ][ j ];
+            previousdMicroGradientCohesiondXAssembled[ i ][ j + ( numConfigurations - 1 ) * configuration_unknown_count ] = ( *R.get_dMicroGradientCohesiondStateVariables( ) )[ numNonLinearSolveStateVariables * i + j ];
 
         }
 
@@ -2419,27 +2391,27 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives ){
                                                        28, 29, 30, 31, 32, 33, 34, 35, 36,
                                                        37, 38, 39, 40, 41, 42, 43, 44, 45 };
 
-            floatMatrix dMacroDrivingStressdMacroStress = initialize( 9, 9 );
+            floatVector dMacroDrivingStressdMacroStress               = initialize(  9 * 9 );
 
-            floatMatrix dMacroDrivingStressdF           = initialize( 9, 9 );
+            floatVector dMacroDrivingStressdF                         = initialize(  9 * 9 );
 
-            floatMatrix dMacroDrivingStressdFn          = initialize( 9, 9 );
+            floatVector dMacroDrivingStressdFn                        = initialize(  9 * 9 );
 
-            floatMatrix dMicroDrivingStressdMicroStress = initialize( 9, 9 );
+            floatVector dMicroDrivingStressdMicroStress               = initialize(  9 * 9 );
 
-            floatMatrix dMicroDrivingStressdF           = initialize( 9, 9 );
+            floatVector dMicroDrivingStressdF                         = initialize(  9 * 9 );
 
-            floatMatrix dMicroDrivingStressdFn          = initialize( 9, 9 );
+            floatVector dMicroDrivingStressdFn                        = initialize(  9 * 9 );
 
-            floatMatrix dMicroGradientDrivingStressdHigherOrderStress = initialize( 27, 27 );
+            floatVector dMicroGradientDrivingStressdHigherOrderStress = initialize( 27 * 27 );
 
-            floatMatrix dMicroGradientDrivingStressdF                 = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdF                 = initialize( 27 *  9 );
 
-            floatMatrix dMicroGradientDrivingStressdFn                = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdFn                = initialize( 27 *  9 );
 
-            floatMatrix dMicroGradientDrivingStressdChi               = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdChi               = initialize( 27 *  9 );
 
-            floatMatrix dMicroGradientDrivingStressdChin              = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdChin              = initialize( 27 *  9 );
 
             floatType previousMacroCohesion = -1.23;
 
@@ -2464,6 +2436,14 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives ){
                                               2, 0.01166325, 0.05331896,
                                               2, 0.32982199, 0.60161431,
                                               2, 0.58881096, 0.11473813 };
+
+            floatVector initialize( unsigned int nrows ){
+
+                floatVector value( nrows, 0 );
+
+                return value;
+
+            }
 
             floatMatrix initialize( unsigned int nrows, unsigned int ncols ){
 
@@ -2691,49 +2671,49 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroFlowdCohesion,                      *R.get_dMicroFlowdc( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientFlowdCohesion,              *R.get_dMicroGradientFlowdc( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientFlowdCohesion ),              *R.get_dMicroGradientFlowdc( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroFlowdDrivingStress,                 *R.get_dMacroFlowdDrivingStress( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroFlowdDrivingStress,                 *R.get_dMicroFlowdDrivingStress( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientFlowdDrivingStress,         *R.get_dMicroGradientFlowdDrivingStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientFlowdDrivingStress ),         *R.get_dMicroGradientFlowdDrivingStress( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroFlowdCohesion,              *R.get_previousdMacroFlowdc( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroFlowdCohesion,              *R.get_previousdMicroFlowdc( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientFlowdCohesion,      *R.get_previousdMicroGradientFlowdc( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientFlowdCohesion ),      *R.get_previousdMicroGradientFlowdc( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroFlowdDrivingStress,         *R.get_previousdMacroFlowdDrivingStress( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroFlowdDrivingStress,         *R.get_previousdMicroFlowdDrivingStress( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientFlowdDrivingStress, *R.get_previousdMicroGradientFlowdDrivingStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientFlowdDrivingStress ), *R.get_previousdMicroGradientFlowdDrivingStress( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroFlowdCohesion,                      *RJ.get_dMacroFlowdc( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroFlowdCohesion,                      *RJ.get_dMicroFlowdc( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientFlowdCohesion,              *RJ.get_dMicroGradientFlowdc( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientFlowdCohesion ),              *RJ.get_dMicroGradientFlowdc( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroFlowdDrivingStress,                 *RJ.get_dMacroFlowdDrivingStress( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroFlowdDrivingStress,                 *RJ.get_dMicroFlowdDrivingStress( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientFlowdDrivingStress,         *RJ.get_dMicroGradientFlowdDrivingStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientFlowdDrivingStress ),         *RJ.get_dMicroGradientFlowdDrivingStress( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroFlowdCohesion,              *RJ.get_previousdMacroFlowdc( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroFlowdCohesion,              *RJ.get_previousdMicroFlowdc( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientFlowdCohesion,      *RJ.get_previousdMicroGradientFlowdc( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientFlowdCohesion ),      *RJ.get_previousdMicroGradientFlowdc( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroFlowdDrivingStress,         *RJ.get_previousdMacroFlowdDrivingStress( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroFlowdDrivingStress,         *RJ.get_previousdMicroFlowdDrivingStress( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientFlowdDrivingStress, *RJ.get_previousdMicroGradientFlowdDrivingStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientFlowdDrivingStress ), *RJ.get_previousdMicroGradientFlowdDrivingStress( ) ) );
 
 }
 
@@ -3062,9 +3042,9 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         }
 
-        vp = tardigradeVectorTools::appendVectors( *Rp.get_dMicroGradientFlowdDrivingStress( ) );
+        vp = *Rp.get_dMicroGradientFlowdDrivingStress( );
 
-        vm = tardigradeVectorTools::appendVectors( *Rm.get_dMicroGradientFlowdDrivingStress( ) );
+        vm = *Rm.get_dMicroGradientFlowdDrivingStress( );
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
@@ -3084,13 +3064,13 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_d2MacroFlowdDrivingStressdX[ i ][ j ] = ( *R.get_d2MacroFlowdDrivingStressdStress( ) )[ i ][ j ];
+            assembled_d2MacroFlowdDrivingStressdX[ i ][ j ] = ( *R.get_d2MacroFlowdDrivingStressdStress( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_d2MacroFlowdDrivingStressdX[ i ][ j + configuration_unknown_count ] = ( *R.get_d2MacroFlowdDrivingStressdFn( ) )[ i ][ j ];
+            assembled_d2MacroFlowdDrivingStressdX[ i ][ j + configuration_unknown_count ] = ( *R.get_d2MacroFlowdDrivingStressdFn( ) )[ 9 * i + j ];
 
         }
 
@@ -3100,13 +3080,13 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_d2MicroFlowdDrivingStressdX[ i ][ j + 9 ] = ( *R.get_d2MicroFlowdDrivingStressdStress( ) )[ i ][ j ];
+            assembled_d2MicroFlowdDrivingStressdX[ i ][ j + 9 ] = ( *R.get_d2MicroFlowdDrivingStressdStress( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_d2MicroFlowdDrivingStressdX[ i ][ j + configuration_unknown_count ] = ( *R.get_d2MicroFlowdDrivingStressdFn( ) )[ i ][ j ];
+            assembled_d2MicroFlowdDrivingStressdX[ i ][ j + configuration_unknown_count ] = ( *R.get_d2MicroFlowdDrivingStressdFn( ) )[ 9 * i + j ];
 
         }
 
@@ -3118,15 +3098,15 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
             for ( unsigned int k = 0; k < 27; k++ ){
 
-                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + 18 ] = ( *R.get_d2MicroGradientFlowdDrivingStressdStress( ) )[ i ][ 27 * j + k ];
+                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + 18 ] = ( *R.get_d2MicroGradientFlowdDrivingStressdStress( ) )[ 27 * 27 * i + 27 * j + k ];
 
             }
 
             for ( unsigned int k = 0; k < 9; k++ ){
 
-                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + configuration_unknown_count     ] = ( *R.get_d2MicroGradientFlowdDrivingStressdFn( ) )[ i ][ 9 * j + k ];
+                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + configuration_unknown_count     ] = ( *R.get_d2MicroGradientFlowdDrivingStressdFn( ) )[ 27 * 9 * i + 9 * j + k ];
 
-                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + configuration_unknown_count + 9 ] = ( *R.get_d2MicroGradientFlowdDrivingStressdChin( ) )[ i ][ 9 * j + k ];
+                assembled_d2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + configuration_unknown_count + 9 ] = ( *R.get_d2MicroGradientFlowdDrivingStressdChin( ) )[ 27 * 9 * i + 9 * j + k ];
 
             }
 
@@ -3189,9 +3169,9 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         }
 
-        vp = tardigradeVectorTools::appendVectors( *Rp.get_dMicroGradientFlowdDrivingStress( ) );
+        vp = *Rp.get_dMicroGradientFlowdDrivingStress( );
 
-        vm = tardigradeVectorTools::appendVectors( *Rm.get_dMicroGradientFlowdDrivingStress( ) );
+        vm = *Rm.get_dMicroGradientFlowdDrivingStress( );
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
@@ -3209,7 +3189,7 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
             for ( unsigned int k = 0; k < 9; k++ ){
 
-                assembled_d2MicroGradientFlowdDrivingStressdF[ 27 * i + j ][ k ] = ( *R.get_d2MicroGradientFlowdDrivingStressdF( ) )[ i ][ 9 * j + k ];
+                assembled_d2MicroGradientFlowdDrivingStressdF[ 27 * i + j ][ k ] = ( *R.get_d2MicroGradientFlowdDrivingStressdF( ) )[ 27 * 9 * i + 9 * j + k ];
 
             }
 
@@ -3217,9 +3197,9 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2MacroFlowdDrivingStressdF, *R.get_d2MacroFlowdDrivingStressdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( d2MacroFlowdDrivingStressdF ), *R.get_d2MacroFlowdDrivingStressdF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2MicroFlowdDrivingStressdF, *R.get_d2MicroFlowdDrivingStressdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( d2MicroFlowdDrivingStressdF ), *R.get_d2MicroFlowdDrivingStressdF( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( d2MicroGradientFlowdDrivingStressdF, assembled_d2MicroGradientFlowdDrivingStressdF ) );
 
@@ -3272,9 +3252,9 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         }
 
-        vp = tardigradeVectorTools::appendVectors( *Rp.get_dMicroGradientFlowdDrivingStress( ) );
+        vp = *Rp.get_dMicroGradientFlowdDrivingStress( );
 
-        vm = tardigradeVectorTools::appendVectors( *Rm.get_dMicroGradientFlowdDrivingStress( ) );
+        vm = *Rm.get_dMicroGradientFlowdDrivingStress( );
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
@@ -3345,9 +3325,9 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         }
 
-        vp = tardigradeVectorTools::appendVectors( *Rp.get_previousdMicroGradientFlowdDrivingStress( ) );
+        vp = *Rp.get_previousdMicroGradientFlowdDrivingStress( );
 
-        vm = tardigradeVectorTools::appendVectors( *Rm.get_previousdMicroGradientFlowdDrivingStress( ) );
+        vm = *Rm.get_previousdMicroGradientFlowdDrivingStress( );
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
@@ -3357,7 +3337,7 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousd2MacroFlowdDrivingStressdMacroStress, *R.get_previousd2MacroFlowdDrivingStressdStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousd2MacroFlowdDrivingStressdMacroStress ), *R.get_previousd2MacroFlowdDrivingStressdStress( ) ) );
 
     // derivatives w.r.t. previous micro stress
     for ( unsigned int i = 0; i < hydra.elasticity.previousSIGMA.size( ); i++ ){
@@ -3412,9 +3392,9 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         }
 
-        vp = tardigradeVectorTools::appendVectors( *Rp.get_previousdMicroGradientFlowdDrivingStress( ) );
+        vp = *Rp.get_previousdMicroGradientFlowdDrivingStress( );
 
-        vm = tardigradeVectorTools::appendVectors( *Rm.get_previousdMicroGradientFlowdDrivingStress( ) );
+        vm = *Rm.get_previousdMicroGradientFlowdDrivingStress( );
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
@@ -3424,7 +3404,7 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousd2MicroFlowdDrivingStressdMicroStress, *R.get_previousd2MicroFlowdDrivingStressdStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousd2MicroFlowdDrivingStressdMicroStress ), *R.get_previousd2MicroFlowdDrivingStressdStress( ) ) );
 
     // derivatives w.r.t. previous micro gradient stress
     for ( unsigned int i = 0; i < hydra.elasticity.previousM.size( ); i++ ){
@@ -3479,9 +3459,9 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         }
 
-        vp = tardigradeVectorTools::appendVectors( *Rp.get_previousdMicroGradientFlowdDrivingStress( ) );
+        vp = *Rp.get_previousdMicroGradientFlowdDrivingStress( );
 
-        vm = tardigradeVectorTools::appendVectors( *Rm.get_previousdMicroGradientFlowdDrivingStress( ) );
+        vm = *Rm.get_previousdMicroGradientFlowdDrivingStress( );
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
@@ -3499,7 +3479,7 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
             for ( unsigned int k = 0; k < 27; k++ ){
 
-                assembled_previousd2MicroGradientFlowdDrivingStressdStress[ 27 * i + j ][ k ] += ( *R.get_previousd2MicroGradientFlowdDrivingStressdStress( ) )[ i ][ 27 * j + k ];
+                assembled_previousd2MicroGradientFlowdDrivingStressdStress[ 27 * i + j ][ k ] += ( *R.get_previousd2MicroGradientFlowdDrivingStressdStress( ) )[ 27 * 27 * i + 27 * j + k ];
 
             }
 
@@ -3558,9 +3538,9 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         }
 
-        vp = tardigradeVectorTools::appendVectors( *Rp.get_previousdMicroGradientFlowdDrivingStress( ) );
+        vp = *Rp.get_previousdMicroGradientFlowdDrivingStress( );
 
-        vm = tardigradeVectorTools::appendVectors( *Rm.get_previousdMicroGradientFlowdDrivingStress( ) );
+        vm = *Rm.get_previousdMicroGradientFlowdDrivingStress( );
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
@@ -3580,7 +3560,7 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_previousd2MacroFlowdDrivingStressdX[ i ][ j ] = ( *R.get_previousd2MacroFlowdDrivingStressdFn( ) )[ i ][ j ];
+            assembled_previousd2MacroFlowdDrivingStressdX[ i ][ j ] = ( *R.get_previousd2MacroFlowdDrivingStressdFn( ) )[ 9 * i + j ];
 
         }
 
@@ -3590,7 +3570,7 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_previousd2MicroFlowdDrivingStressdX[ i ][ j ] = ( *R.get_previousd2MicroFlowdDrivingStressdFn( ) )[ i ][ j ];
+            assembled_previousd2MicroFlowdDrivingStressdX[ i ][ j ] = ( *R.get_previousd2MicroFlowdDrivingStressdFn( ) )[ 9 * i + j ];
 
         }
 
@@ -3602,9 +3582,9 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
             for ( unsigned int k = 0; k < 9; k++ ){
 
-                assembled_previousd2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k     ] = ( *R.get_previousd2MicroGradientFlowdDrivingStressdFn( ) )[ i ][ 9 * j + k ];
+                assembled_previousd2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k     ] = ( *R.get_previousd2MicroGradientFlowdDrivingStressdFn( ) )[ 27 * 9 * i + 9 * j + k ];
 
-                assembled_previousd2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + 9 ] = ( *R.get_previousd2MicroGradientFlowdDrivingStressdChin( ) )[ i ][ 9 * j + k ];
+                assembled_previousd2MicroGradientFlowdDrivingStressdX[ 27 * i + j ][ k + 9 ] = ( *R.get_previousd2MicroGradientFlowdDrivingStressdChin( ) )[ 27 * 9 * i + 9 * j + k ];
 
             }
 
@@ -3667,9 +3647,9 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
         }
 
-        vp = tardigradeVectorTools::appendVectors( *Rp.get_previousdMicroGradientFlowdDrivingStress( ) );
+        vp = *Rp.get_previousdMicroGradientFlowdDrivingStress( );
 
-        vm = tardigradeVectorTools::appendVectors( *Rm.get_previousdMicroGradientFlowdDrivingStress( ) );
+        vm = *Rm.get_previousdMicroGradientFlowdDrivingStress( );
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
@@ -3687,7 +3667,7 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
             for ( unsigned int k = 0; k < 9; k++ ){
 
-                assembled_previousd2MicroGradientFlowdDrivingStressdF[ 27 * i + j ][ k ] = ( *R.get_previousd2MicroGradientFlowdDrivingStressdF( ) )[ i ][ 9 * j + k ];
+                assembled_previousd2MicroGradientFlowdDrivingStressdF[ 27 * i + j ][ k ] = ( *R.get_previousd2MicroGradientFlowdDrivingStressdF( ) )[ 27 * 9 * i + 9 * j + k ];
 
             }
 
@@ -3695,9 +3675,9 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousd2MacroFlowdDrivingStressdF, *R.get_previousd2MacroFlowdDrivingStressdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousd2MacroFlowdDrivingStressdF ), *R.get_previousd2MacroFlowdDrivingStressdF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousd2MicroFlowdDrivingStressdF, *R.get_previousd2MicroFlowdDrivingStressdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousd2MicroFlowdDrivingStressdF ), *R.get_previousd2MicroFlowdDrivingStressdF( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousd2MicroGradientFlowdDrivingStressdF, assembled_previousd2MicroGradientFlowdDrivingStressdF ) );
 
@@ -3832,17 +3812,17 @@ BOOST_AUTO_TEST_CASE( test_setPlasticStrainLikeISVEvolutionRates ){
 
             floatType dMicroFlowdc = 2.34;
 
-            floatMatrix dMicroGradientFlowdc = { { 0.34, 0.45, 0.56 },
-                                                 { 0.67, 0.78, 0.89 },
-                                                 { 0.91, 1.01, 1.12 } };
+            floatVector dMicroGradientFlowdc = { 0.34, 0.45, 0.56,
+                                                 0.67, 0.78, 0.89,
+                                                 0.91, 1.01, 1.12 };
 
             floatType previousdMacroFlowdc = -1.03;
 
             floatType previousdMicroFlowdc = -2.04;
 
-            floatMatrix previousdMicroGradientFlowdc = { { -3.4,  -4.5,  -5.6 },
-                                                         { -6.7,  -7.8,  -8.9 },
-                                                         { -9.1, -10.1, -11.2 } };
+            floatVector previousdMicroGradientFlowdc = { -3.4,  -4.5,  -5.6,
+                                                         -6.7,  -7.8,  -8.9,
+                                                         -9.1, -10.1, -11.2 };
 
             floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
                                               2, 0.37773052, 0.92739145,
@@ -4298,7 +4278,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticStrainLikeISVEvolutionRates2 ){
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dEvolutionRatesdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dPlasticStrainLikeISVEvolutionRatesdStateVariables( ) )[ i ][ j ];
+            assembled_dEvolutionRatesdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dPlasticStrainLikeISVEvolutionRatesdStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -4352,7 +4332,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticStrainLikeISVEvolutionRates2 ){
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_previousdEvolutionRatesdX[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( ) )[ i ][ j ];
+            assembled_previousdEvolutionRatesdX[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -4491,9 +4471,9 @@ BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs ){
 
             floatVector previousEvolutionRates = { 0.1, 0.2, 0.3, 0.4, 0.5 };
 
-            floatMatrix dPlasticStrainLikeISVEvolutionRatesdStateVariables = initialize( 5, 10 );
+            floatVector dPlasticStrainLikeISVEvolutionRatesdStateVariables         = initialize( 5 * 10 );
 
-            floatMatrix previousdPlasticStrainLikeISVEvolutionRatesdStateVariables = initialize( 5, 10 );
+            floatVector previousdPlasticStrainLikeISVEvolutionRatesdStateVariables = initialize( 5 * 10 );
 
             floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
                                               2, 0.37773052, 0.92739145,
@@ -4784,27 +4764,27 @@ BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs2 ){
                                                        28, 29, 30, 31, 32, 33, 34, 35, 36,
                                                        37, 38, 39, 40, 41, 42, 43, 44, 45 };
 
-            floatMatrix dMacroDrivingStressdMacroStress = initialize( 9, 9 );
+            floatVector dMacroDrivingStressdMacroStress               = initialize(  9 * 9 );
 
-            floatMatrix dMacroDrivingStressdF           = initialize( 9, 9 );
+            floatVector dMacroDrivingStressdF                         = initialize(  9 * 9 );
 
-            floatMatrix dMacroDrivingStressdFn          = initialize( 9, 9 );
+            floatVector dMacroDrivingStressdFn                        = initialize(  9 * 9 );
 
-            floatMatrix dMicroDrivingStressdMicroStress = initialize( 9, 9 );
+            floatVector dMicroDrivingStressdMicroStress               = initialize(  9 * 9 );
 
-            floatMatrix dMicroDrivingStressdF           = initialize( 9, 9 );
+            floatVector dMicroDrivingStressdF                         = initialize(  9 * 9 );
 
-            floatMatrix dMicroDrivingStressdFn          = initialize( 9, 9 );
+            floatVector dMicroDrivingStressdFn                        = initialize(  9 * 9 );
 
-            floatMatrix dMicroGradientDrivingStressdHigherOrderStress = initialize( 27, 27 );
+            floatVector dMicroGradientDrivingStressdHigherOrderStress = initialize( 27 * 27 );
 
-            floatMatrix dMicroGradientDrivingStressdF                 = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdF                 = initialize( 27 *  9 );
 
-            floatMatrix dMicroGradientDrivingStressdFn                = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdFn                = initialize( 27 *  9 );
 
-            floatMatrix dMicroGradientDrivingStressdChi               = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdChi               = initialize( 27 *  9 );
 
-            floatMatrix dMicroGradientDrivingStressdChin              = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdChin              = initialize( 27 *  9 );
 
             floatType previousMacroCohesion = -1.23;
 
@@ -5088,7 +5068,7 @@ BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs2 ){
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dUpdatedPlasticStrainLikeISVsdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticStrainLikeISVsdStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticStrainLikeISVsdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticStrainLikeISVsdStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -5142,7 +5122,7 @@ BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs2 ){
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dUpdatedPlasticStrainLikeISVsdPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticStrainLikeISVsdPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -5291,33 +5271,33 @@ BOOST_AUTO_TEST_CASE( test_setYield ){
                                                        28, 29, 30, 31, 32, 33, 34, 35, 36,
                                                        37, 38, 39, 40, 41, 42, 43, 44, 45 };
 
-            floatVector dMacroCohesiondStateVariables         = initialize( 10 );
+            floatVector dMacroCohesiondStateVariables                 = initialize( 10 );
 
-            floatVector dMicroCohesiondStateVariables         = initialize( 10 );
+            floatVector dMicroCohesiondStateVariables                 = initialize( 10 );
 
-            floatMatrix dMicroGradientCohesiondStateVariables = initialize( 3, 10 );
+            floatVector dMicroGradientCohesiondStateVariables         = initialize(  3 * 10 );
 
-            floatMatrix dMacroDrivingStressdMacroStress = initialize( 9, 9 );
+            floatVector dMacroDrivingStressdMacroStress               = initialize(  9 * 9 );
 
-            floatMatrix dMacroDrivingStressdF           = initialize( 9, 9 );
+            floatVector dMacroDrivingStressdF                         = initialize(  9 * 9 );
 
-            floatMatrix dMacroDrivingStressdFn          = initialize( 9, 9 );
+            floatVector dMacroDrivingStressdFn                        = initialize(  9 * 9 );
 
-            floatMatrix dMicroDrivingStressdMicroStress = initialize( 9, 9 );
+            floatVector dMicroDrivingStressdMicroStress               = initialize(  9 * 9 );
 
-            floatMatrix dMicroDrivingStressdF           = initialize( 9, 9 );
+            floatVector dMicroDrivingStressdF                         = initialize(  9 * 9 );
 
-            floatMatrix dMicroDrivingStressdFn          = initialize( 9, 9 );
+            floatVector dMicroDrivingStressdFn                        = initialize(  9 * 9 );
 
-            floatMatrix dMicroGradientDrivingStressdHigherOrderStress = initialize( 27, 27 );
+            floatVector dMicroGradientDrivingStressdHigherOrderStress = initialize( 27 * 27 );
 
-            floatMatrix dMicroGradientDrivingStressdF                 = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdF                 = initialize( 27 *  9 );
 
-            floatMatrix dMicroGradientDrivingStressdFn                = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdFn                = initialize( 27 *  9 );
 
-            floatMatrix dMicroGradientDrivingStressdChi               = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdChi               = initialize( 27 *  9 );
 
-            floatMatrix dMicroGradientDrivingStressdChin              = initialize( 27,  9 );
+            floatVector dMicroGradientDrivingStressdChin              = initialize( 27 *  9 );
 
             floatType previousMacroCohesion = -1.23;
 
@@ -5968,7 +5948,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
-            assemble_dMicroGradientYielddX[ i ][ j + 18 ] = ( *R.get_dMicroGradientYielddStress( ) )[ i ][ j ];
+            assemble_dMicroGradientYielddX[ i ][ j + 18 ] = ( *R.get_dMicroGradientYielddStress( ) )[ 27 * i + j ];
 
         }
 
@@ -5991,7 +5971,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assemble_dMicroGradientYielddX[ i ][ j + configuration_unknown_count ] = ( *R.get_dMicroGradientYielddFn( ) )[ i ][ j ];
+            assemble_dMicroGradientYielddX[ i ][ j + configuration_unknown_count ] = ( *R.get_dMicroGradientYielddFn( ) )[ 9 * i + j ];
 
         }
 
@@ -6002,7 +5982,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assemble_dMicroGradientYielddX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dMicroGradientYielddChin( ) )[ i ][ j ];
+            assemble_dMicroGradientYielddX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dMicroGradientYielddChin( ) )[ 9 * i + j ];
 
         }
 
@@ -6025,7 +6005,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assemble_dMicroGradientYielddX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dMicroGradientYielddStateVariables( ) )[ i ][ j ];
+            assemble_dMicroGradientYielddX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dMicroGradientYielddStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -6094,7 +6074,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroYielddF, *R.get_dMicroYielddF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientYielddF, *R.get_dMicroGradientYielddF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientYielddF ), *R.get_dMicroGradientYielddF( ) ) );
 
     // Jacobians w.r.t. Chi
     for ( unsigned int i = 0; i < microDeformation.size( ); i++ ){
@@ -6149,7 +6129,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientYielddChi, *R.get_dMicroGradientYielddChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientYielddChi ), *R.get_dMicroGradientYielddChi( ) ) );
 
     // Jacobians w.r.t. the stress
     floatVector stress = tardigradeVectorTools::appendVectors( { hydra.elasticity.previousPK2, hydra.elasticity.previousSIGMA, hydra.elasticity.previousM } );
@@ -6246,7 +6226,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
-            assemble_previousdMicroGradientYielddStress[ i ][ j + 18 ] = ( *R.get_previousdMicroGradientYielddStress( ) )[ i ][ j ];
+            assemble_previousdMicroGradientYielddStress[ i ][ j + 18 ] = ( *R.get_previousdMicroGradientYielddStress( ) )[ 27 * i + j ];
 
         }
 
@@ -6334,7 +6314,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assemble_previousdMicroGradientYielddStateVariables[ i ][ j ] = ( *R.get_previousdMicroGradientYielddFn( ) )[ i ][ j ];
+            assemble_previousdMicroGradientYielddStateVariables[ i ][ j ] = ( *R.get_previousdMicroGradientYielddFn( ) )[ 9 * i + j ];
 
         }
 
@@ -6345,7 +6325,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assemble_previousdMicroGradientYielddStateVariables[ i ][ j + 9 ] = ( *R.get_previousdMicroGradientYielddChin( ) )[ i ][ j ];
+            assemble_previousdMicroGradientYielddStateVariables[ i ][ j + 9 ] = ( *R.get_previousdMicroGradientYielddChin( ) )[ 9 * i + j ];
 
         }
 
@@ -6368,7 +6348,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assemble_previousdMicroGradientYielddStateVariables[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdMicroGradientYielddStateVariables( ) )[ i ][ j ];
+            assemble_previousdMicroGradientYielddStateVariables[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdMicroGradientYielddStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -6437,7 +6417,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroYielddF, *R.get_previousdMicroYielddF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientYielddF, *R.get_previousdMicroGradientYielddF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientYielddF ), *R.get_previousdMicroGradientYielddF( ) ) );
 
     // Jacobians w.r.t. Chi
     for ( unsigned int i = 0; i < microDeformation.size( ); i++ ){
@@ -6492,7 +6472,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientYielddChi, *R.get_previousdMicroGradientYielddChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientYielddChi ), *R.get_previousdMicroGradientYielddChi( ) ) );
 
 }
 
@@ -6781,7 +6761,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingDeformationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPrecedingFdF, *R.get_dPrecedingDeformationGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPrecedingFdF ), *R.get_dPrecedingDeformationGradientdF( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -6823,7 +6803,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingDeformationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPrecedingFdFn, *R.get_dPrecedingDeformationGradientdFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPrecedingFdFn ), *R.get_dPrecedingDeformationGradientdFn( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -6865,7 +6845,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingDeformationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPrecedingFdF, *R.get_previousdPrecedingDeformationGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdPrecedingFdF ), *R.get_previousdPrecedingDeformationGradientdF( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -6907,7 +6887,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingDeformationGradient ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPrecedingFdFn, *R.get_previousdPrecedingDeformationGradientdFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdPrecedingFdFn ), *R.get_previousdPrecedingDeformationGradientdFn( ) ) );
 
 }
 
@@ -7196,7 +7176,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPrecedingChidChi, *R.get_dPrecedingMicroDeformationdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPrecedingChidChi ), *R.get_dPrecedingMicroDeformationdChi( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -7238,7 +7218,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPrecedingChidChin, *R.get_dPrecedingMicroDeformationdChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPrecedingChidChin ), *R.get_dPrecedingMicroDeformationdChin( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -7280,7 +7260,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPrecedingChidChi, *R.get_previousdPrecedingMicroDeformationdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdPrecedingChidChi ), *R.get_previousdPrecedingMicroDeformationdChi( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -7322,7 +7302,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPrecedingChidChin, *R.get_previousdPrecedingMicroDeformationdChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdPrecedingChidChin ), *R.get_previousdPrecedingMicroDeformationdChin( ) ) );
 
 }
 
@@ -7615,7 +7595,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPrecedingGradChidFn, *R.get_dPrecedingGradientMicroDeformationdFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPrecedingGradChidFn ), *R.get_dPrecedingGradientMicroDeformationdFn( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -7657,7 +7637,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPrecedingGradChidChi, *R.get_dPrecedingGradientMicroDeformationdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPrecedingGradChidChi ), *R.get_dPrecedingGradientMicroDeformationdChi( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -7699,7 +7679,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPrecedingGradChidChin, *R.get_dPrecedingGradientMicroDeformationdChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPrecedingGradChidChin ), *R.get_dPrecedingGradientMicroDeformationdChin( ) ) );
 
     for ( unsigned int i = 0; i < 27; i++ ){
 
@@ -7741,7 +7721,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPrecedingGradChidGradChi, *R.get_dPrecedingGradientMicroDeformationdGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPrecedingGradChidGradChi ), *R.get_dPrecedingGradientMicroDeformationdGradChi( ) ) );
 
     for ( unsigned int i = 0; i < 27; i++ ){
 
@@ -7783,7 +7763,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPrecedingGradChidGradChin, *R.get_dPrecedingGradientMicroDeformationdGradChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPrecedingGradChidGradChin ), *R.get_dPrecedingGradientMicroDeformationdGradChin( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -7825,7 +7805,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPrecedingGradChidFn, *R.get_previousdPrecedingGradientMicroDeformationdFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdPrecedingGradChidFn ), *R.get_previousdPrecedingGradientMicroDeformationdFn( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -7867,7 +7847,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPrecedingGradChidChi, *R.get_previousdPrecedingGradientMicroDeformationdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdPrecedingGradChidChi ), *R.get_previousdPrecedingGradientMicroDeformationdChi( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -7909,7 +7889,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPrecedingGradChidChin, *R.get_previousdPrecedingGradientMicroDeformationdChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdPrecedingGradChidChin ), *R.get_previousdPrecedingGradientMicroDeformationdChin( ) ) );
 
     for ( unsigned int i = 0; i < 27; i++ ){
 
@@ -7951,7 +7931,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPrecedingGradChidGradChi, *R.get_previousdPrecedingGradientMicroDeformationdGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdPrecedingGradChidGradChi ), *R.get_previousdPrecedingGradientMicroDeformationdGradChi( ) ) );
 
     for ( unsigned int i = 0; i < 27; i++ ){
 
@@ -7993,7 +7973,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPrecedingGradChidGradChin, *R.get_previousdPrecedingGradientMicroDeformationdGradChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdPrecedingGradChidGradChin ), *R.get_previousdPrecedingGradientMicroDeformationdGradChin( ) ) );
 
 }
 
@@ -8723,13 +8703,13 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             floatVector previousPrecedingDeformationGradient = { 1, -0.2, -0.3, -0.4, 0.5, -0.6, -0.7, -0.8, 0.1 };
 
-            floatMatrix dPrecedingDeformationGradientdF = initialize( 9, 9 );
+            floatVector dPrecedingDeformationGradientdF          = initialize( 9 * 9 );
 
-            floatMatrix dPrecedingDeformationGradientdFn = initialize( 9, 9 );
+            floatVector dPrecedingDeformationGradientdFn         = initialize( 9 * 9 );
 
-            floatMatrix previousdPrecedingDeformationGradientdF = initialize( 9, 9 );
+            floatVector previousdPrecedingDeformationGradientdF  = initialize( 9 * 9 );
 
-            floatMatrix previousdPrecedingDeformationGradientdFn = initialize( 9, 9 );
+            floatVector previousdPrecedingDeformationGradientdFn = initialize( 9 * 9 );
 
             floatVector precedingMicroDeformation = { 0.8, -0.1, 0.2, 0.3, 1.1, 0.4, -0.2, 0.5, 1.2 };
 
@@ -8739,33 +8719,33 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             floatVector previousPrecedingGradientMicroDeformation = { 0.2, 0.2, 0.7, 0.4, 1.5, 0.6, 0.7, 0.2, 0.9, 1.4, 1.1, 1.2, 1.8, 1.4, 1.5, 1.6, 1.7, 1.8, 5.9, 2.0, 2.1, 2.2, 2.3, 1.4, 2.5, 2.6, 2.7 };
 
-            floatMatrix dPrecedingMicroDeformationdChi = initialize( 9, 9 );
+            floatVector dPrecedingMicroDeformationdChi                      = initialize(  9 * 9 );
 
-            floatMatrix dPrecedingMicroDeformationdChin = initialize( 9, 9 );
+            floatVector dPrecedingMicroDeformationdChin                     = initialize(  9 * 9 );
 
-            floatMatrix previousdPrecedingMicroDeformationdChi = initialize( 9, 9 );
+            floatVector previousdPrecedingMicroDeformationdChi              = initialize(  9 * 9 );
 
-            floatMatrix previousdPrecedingMicroDeformationdChin = initialize( 9, 9 );
+            floatVector previousdPrecedingMicroDeformationdChin             = initialize(  9 * 9 );
 
-            floatMatrix dPrecedingGradientMicroDeformationdFn = initialize( 27, 9 );
+            floatVector dPrecedingGradientMicroDeformationdFn               = initialize( 27 * 9 );
 
-            floatMatrix dPrecedingGradientMicroDeformationdChi = initialize( 27, 9 );
+            floatVector dPrecedingGradientMicroDeformationdChi              = initialize( 27 * 9 );
 
-            floatMatrix dPrecedingGradientMicroDeformationdChin = initialize( 27, 9 );
+            floatVector dPrecedingGradientMicroDeformationdChin             = initialize( 27 * 9 );
 
-            floatMatrix dPrecedingGradientMicroDeformationdGradChi = initialize( 27, 27 );
+            floatVector dPrecedingGradientMicroDeformationdGradChi          = initialize( 27 * 27 );
 
-            floatMatrix dPrecedingGradientMicroDeformationdGradChin = initialize( 27, 27 );
+            floatVector dPrecedingGradientMicroDeformationdGradChin         = initialize( 27 * 27 );
 
-            floatMatrix previousdPrecedingGradientMicroDeformationdFn = initialize( 27, 9 );
+            floatVector previousdPrecedingGradientMicroDeformationdFn       = initialize( 27 * 9 );
 
-            floatMatrix previousdPrecedingGradientMicroDeformationdChi = initialize( 27, 9 );
+            floatVector previousdPrecedingGradientMicroDeformationdChi      = initialize( 27 * 9 );
 
-            floatMatrix previousdPrecedingGradientMicroDeformationdChin = initialize( 27, 9 );
+            floatVector previousdPrecedingGradientMicroDeformationdChin     = initialize( 27 * 9 );
 
-            floatMatrix previousdPrecedingGradientMicroDeformationdGradChi = initialize( 27, 27 );
+            floatVector previousdPrecedingGradientMicroDeformationdGradChi  = initialize( 27 * 27 );
 
-            floatMatrix previousdPrecedingGradientMicroDeformationdGradChin = initialize( 27, 27 );
+            floatVector previousdPrecedingGradientMicroDeformationdGradChin = initialize( 27 * 27 );
 
             floatVector plasticMultipliers = { 1.1, 1.2, 1.3, 1.4, 1.5 };
 
@@ -8775,61 +8755,61 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
             floatVector dMicroFlowdDrivingStress = { 0.21, 0.32, 0.43, 0.54, 0.15, 0.26, 0.37, 0.18, 0.29 };
 
-            floatMatrix dMicroGradientFlowdDrivingStress = { {  .1,  .2,  .6,  .4,  .5,  .6,  .7,  .8,  .9, 1.0, 1.1, 1.2, 2.3, 1.4, 1.5, 1.6, 1.2, 1.8, 1.9, 2.0, 2.1, 1.2, 2.3, 2.4, 2.5, 2.6, 1.7 },
-                                                             { 2.8, 5.9, 2.0, 1.1, 3.2, 4.3, 3.4, 3.6, 2.6, 3.1, 3.6, 3.9, 4.0, 1.1, 4.2, 4.3, 4.4, 5.5, 4.6, 4.7, 8.8, 4.4, 5.0, 2.1, 5.6, 5.3, 5.4 },
-                                                             { 1.5, 5.9, 5.7, 5.8, 2.9, 6.0, 3.1, 6.2, 1.3, 5.4, 6.5, 3.6, 6.7, 6.8, 8.9, 7.0, 7.1, 7.2, 1.3, 7.4, 7.5, 7.6, 3.7, 7.8, 7.9, 3.2, 8.1 } };
+            floatVector dMicroGradientFlowdDrivingStress = {  .1,  .2,  .6,  .4,  .5,  .6,  .7,  .8,  .9, 1.0, 1.1, 1.2, 2.3, 1.4, 1.5, 1.6, 1.2, 1.8, 1.9, 2.0, 2.1, 1.2, 2.3, 2.4, 2.5, 2.6, 1.7,
+                                                             2.8, 5.9, 2.0, 1.1, 3.2, 4.3, 3.4, 3.6, 2.6, 3.1, 3.6, 3.9, 4.0, 1.1, 4.2, 4.3, 4.4, 5.5, 4.6, 4.7, 8.8, 4.4, 5.0, 2.1, 5.6, 5.3, 5.4,
+                                                             1.5, 5.9, 5.7, 5.8, 2.9, 6.0, 3.1, 6.2, 1.3, 5.4, 6.5, 3.6, 6.7, 6.8, 8.9, 7.0, 7.1, 7.2, 1.3, 7.4, 7.5, 7.6, 3.7, 7.8, 7.9, 3.2, 8.1 };
 
             floatVector previousdMacroFlowdDrivingStress = { 0.11, -0.22, 0.33, 0.44, -0.55, 0.66, 0.77, -0.88, 0.99 };
 
             floatVector previousdMicroFlowdDrivingStress = { 0.21, 0.32, 0.43, 0.54, -0.15, -0.26, 0.37, -0.18, 0.29 };
 
-            floatMatrix previousdMicroGradientFlowdDrivingStress = { {  .1,  .2,  .3,  .4,  .5,  .6,  .7,  .8,  .9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7 },
-                                                                     { 2.8, 2.9, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4 },
-                                                                     { 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 8.0, 8.1 } };
+            floatVector previousdMicroGradientFlowdDrivingStress = {  .1,  .2,  .3,  .4,  .5,  .6,  .7,  .8,  .9, 1.0, 1.1, 1.2, 1.3, 1.4, 1.5, 1.6, 1.7, 1.8, 1.9, 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7,
+                                                                     2.8, 2.9, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4,
+                                                                     5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 8.0, 8.1 };
 
-            floatMatrix d2MacroFlowdDrivingStressdStress = initialize( 9, 9 );
+            floatVector d2MacroFlowdDrivingStressdStress                   = initialize( 9 * 9 );
 
-            floatMatrix previousd2MacroFlowdDrivingStressdStress = initialize( 9, 9 );
+            floatVector previousd2MacroFlowdDrivingStressdStress           = initialize( 9 * 9 );
 
-            floatMatrix d2MacroFlowdDrivingStressdF = initialize( 9, 9 );
+            floatVector d2MacroFlowdDrivingStressdF                        = initialize( 9 * 9 );
 
-            floatMatrix previousd2MacroFlowdDrivingStressdF = initialize( 9, 9 );
+            floatVector previousd2MacroFlowdDrivingStressdF                = initialize( 9 * 9 );
 
-            floatMatrix d2MacroFlowdDrivingStressdFn = initialize( 9, 9 );
+            floatVector d2MacroFlowdDrivingStressdFn                       = initialize( 9 * 9 );
 
-            floatMatrix previousd2MacroFlowdDrivingStressdFn = initialize( 9, 9 );
+            floatVector previousd2MacroFlowdDrivingStressdFn               = initialize( 9 * 9 );
 
-            floatMatrix d2MicroFlowdDrivingStressdStress = initialize( 9, 9 );
+            floatVector d2MicroFlowdDrivingStressdStress                   = initialize( 9 * 9 );
 
-            floatMatrix previousd2MicroFlowdDrivingStressdStress = initialize( 9, 9 );
+            floatVector previousd2MicroFlowdDrivingStressdStress           = initialize( 9 * 9 );
 
-            floatMatrix d2MicroFlowdDrivingStressdF = initialize( 9, 9 );
+            floatVector d2MicroFlowdDrivingStressdF                        = initialize( 9 * 9 );
 
-            floatMatrix previousd2MicroFlowdDrivingStressdF = initialize( 9, 9 );
+            floatVector previousd2MicroFlowdDrivingStressdF                = initialize( 9 * 9 );
 
-            floatMatrix d2MicroFlowdDrivingStressdFn = initialize( 9, 9 );
+            floatVector d2MicroFlowdDrivingStressdFn                       = initialize( 9 * 9 );
 
-            floatMatrix previousd2MicroFlowdDrivingStressdFn = initialize( 9, 9 );
+            floatVector previousd2MicroFlowdDrivingStressdFn               = initialize( 9 * 9 );
 
-            floatMatrix d2MicroGradientFlowdDrivingStressdStress   = initialize( 3, 27 * 27 );
+            floatVector d2MicroGradientFlowdDrivingStressdStress           = initialize( 3 * 27 * 27 );
 
-            floatMatrix d2MicroGradientFlowdDrivingStressdF        = initialize( 3, 27 *  9 );
+            floatVector d2MicroGradientFlowdDrivingStressdF                = initialize( 3 * 27 *  9 );
 
-            floatMatrix d2MicroGradientFlowdDrivingStressdFn       = initialize( 3, 27 *  9 );
+            floatVector d2MicroGradientFlowdDrivingStressdFn               = initialize( 3 * 27 *  9 );
 
-            floatMatrix d2MicroGradientFlowdDrivingStressdChi      = initialize( 3, 27 *  9 );
+            floatVector d2MicroGradientFlowdDrivingStressdChi              = initialize( 3 * 27 *  9 );
 
-            floatMatrix d2MicroGradientFlowdDrivingStressdChin     = initialize( 3, 27 *  9 );
+            floatVector d2MicroGradientFlowdDrivingStressdChin             = initialize( 3 * 27 *  9 );
 
-            floatMatrix previousd2MicroGradientFlowdDrivingStressdStress   = initialize( 3, 27 * 27 );
+            floatVector previousd2MicroGradientFlowdDrivingStressdStress   = initialize( 3 * 27 * 27 );
 
-            floatMatrix previousd2MicroGradientFlowdDrivingStressdF        = initialize( 3, 27 *  9 );
+            floatVector previousd2MicroGradientFlowdDrivingStressdF        = initialize( 3 * 27 *  9 );
 
-            floatMatrix previousd2MicroGradientFlowdDrivingStressdFn       = initialize( 3, 27 *  9 );
+            floatVector previousd2MicroGradientFlowdDrivingStressdFn       = initialize( 3 * 27 *  9 );
 
-            floatMatrix previousd2MicroGradientFlowdDrivingStressdChi      = initialize( 3, 27 *  9 );
+            floatVector previousd2MicroGradientFlowdDrivingStressdChi      = initialize( 3 * 27 *  9 );
 
-            floatMatrix previousd2MicroGradientFlowdDrivingStressdChin     = initialize( 3, 27 *  9 );
+            floatVector previousd2MicroGradientFlowdDrivingStressdChin     = initialize( 3 * 27 *  9 );
 
             floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
                                               2, 0.37773052, 0.92739145,
@@ -9548,25 +9528,25 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dMacroLdX[ i ][ j ]     = ( *R.get_dPlasticMacroVelocityGradientdMacroStress( ) )[ i ][ j ];
+            assembled_dMacroLdX[ i ][ j ]     = ( *R.get_dPlasticMacroVelocityGradientdMacroStress( ) )[ 9 * i + j ];
 
-            assembled_dMacroLdX[ i ][ j + 9 ] = ( *R.get_dPlasticMacroVelocityGradientdMicroStress( ) )[ i ][ j ];
+            assembled_dMacroLdX[ i ][ j + 9 ] = ( *R.get_dPlasticMacroVelocityGradientdMicroStress( ) )[ 9 * i + j ];
 
-            assembled_dMicroLdX[ i ][ j + 9 ] = ( *R.get_dPlasticMicroVelocityGradientdMicroStress( ) )[ i ][ j ];
+            assembled_dMicroLdX[ i ][ j + 9 ] = ( *R.get_dPlasticMicroVelocityGradientdMicroStress( ) )[ 9 * i + j ];
 
-            assembled_dMacroLdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dPlasticMacroVelocityGradientdFn( ) )[ i ][ j ];
+            assembled_dMacroLdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dPlasticMacroVelocityGradientdFn( ) )[ 9 * i + j ];
 
-            assembled_dMicroLdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dPlasticMicroVelocityGradientdFn( ) )[ i ][ j ];
+            assembled_dMicroLdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dPlasticMicroVelocityGradientdFn( ) )[ 9 * i + j ];
 
-            assembled_dMicroLdX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dPlasticMicroVelocityGradientdChin( ) )[ i ][ j ];
+            assembled_dMicroLdX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dPlasticMicroVelocityGradientdChin( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dMacroLdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dPlasticMacroVelocityGradientdStateVariables( ) )[ i ][ j ];
+            assembled_dMacroLdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dPlasticMacroVelocityGradientdStateVariables( ) )[ 10 * i + j ];
 
-            assembled_dMicroLdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dPlasticMicroVelocityGradientdStateVariables( ) )[ i ][ j ];
+            assembled_dMicroLdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dPlasticMicroVelocityGradientdStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -9576,25 +9556,25 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dMicroGradientLdX[ i ][ j + 9 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdMicroStress( ) )[ i ][ j ];
+            assembled_dMicroGradientLdX[ i ][ j + 9 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdMicroStress( ) )[ 9 * i + j ];
 
-            assembled_dMicroGradientLdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dPlasticGradientMicroVelocityGradientdFn( ) )[ i ][ j ];
+            assembled_dMicroGradientLdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dPlasticGradientMicroVelocityGradientdFn( ) )[ 9 * i + j ];
 
-            assembled_dMicroGradientLdX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdChin( ) )[ i ][ j ];
+            assembled_dMicroGradientLdX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdChin( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
-            assembled_dMicroGradientLdX[ i ][ j + 18 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdHigherOrderStress( ) )[ i ][ j ];
+            assembled_dMicroGradientLdX[ i ][ j + 18 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdHigherOrderStress( ) )[ 27 * i + j ];
 
-            assembled_dMicroGradientLdX[ i ][ j + configuration_unknown_count + 18 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdGradChin( ) )[ i ][ j ];
+            assembled_dMicroGradientLdX[ i ][ j + configuration_unknown_count + 18 ] = ( *R.get_dPlasticGradientMicroVelocityGradientdGradChin( ) )[ 27 * i +  j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dMicroGradientLdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dPlasticGradientMicroVelocityGradientdStateVariables( ) )[ i ][ j ];
+            assembled_dMicroGradientLdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dPlasticGradientMicroVelocityGradientdStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -9666,11 +9646,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroLdF, *R.get_dPlasticMacroVelocityGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMacroLdF ), *R.get_dPlasticMacroVelocityGradientdF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroLdF, *R.get_dPlasticMicroVelocityGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroLdF ), *R.get_dPlasticMicroVelocityGradientdF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdF, *R.get_dPlasticGradientMicroVelocityGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientLdF ), *R.get_dPlasticGradientMicroVelocityGradientdF( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -9732,9 +9712,9 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroLdChi, *R.get_dPlasticMicroVelocityGradientdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroLdChi ), *R.get_dPlasticMicroVelocityGradientdChi( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdChi, *R.get_dPlasticGradientMicroVelocityGradientdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientLdChi ), *R.get_dPlasticGradientMicroVelocityGradientdChi( ) ) );
 
     for ( unsigned int i = 0; i < 27; i++ ){
 
@@ -9796,7 +9776,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdGradChi, *R.get_dPlasticGradientMicroVelocityGradientdGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientLdGradChi ), *R.get_dPlasticGradientMicroVelocityGradientdGradChi( ) ) );
 
     // Check previous Jacobians
     for ( unsigned int i = 0; i < configuration_unknown_count; i++ ){
@@ -9885,11 +9865,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_previousdMacroLdStress[ i ][ j ]     = ( *R.get_previousdPlasticMacroVelocityGradientdMacroStress( ) )[ i ][ j ];
+            assembled_previousdMacroLdStress[ i ][ j ]     = ( *R.get_previousdPlasticMacroVelocityGradientdMacroStress( ) )[ 9 * i + j ];
 
-            assembled_previousdMacroLdStress[ i ][ j + 9 ] = ( *R.get_previousdPlasticMacroVelocityGradientdMicroStress( ) )[ i ][ j ];
+            assembled_previousdMacroLdStress[ i ][ j + 9 ] = ( *R.get_previousdPlasticMacroVelocityGradientdMicroStress( ) )[ 9 * i + j ];
 
-            assembled_previousdMicroLdStress[ i ][ j + 9 ] = ( *R.get_previousdPlasticMicroVelocityGradientdMicroStress( ) )[ i ][ j ];
+            assembled_previousdMicroLdStress[ i ][ j + 9 ] = ( *R.get_previousdPlasticMicroVelocityGradientdMicroStress( ) )[ 9 * i + j ];
 
         }
 
@@ -9899,13 +9879,13 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_previousdMicroGradientLdStress[ i ][ j + 9 ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdMicroStress( ) )[ i ][ j ];
+            assembled_previousdMicroGradientLdStress[ i ][ j + 9 ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdMicroStress( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
-            assembled_previousdMicroGradientLdStress[ i ][ j + 18 ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress( ) )[ i ][ j ];
+            assembled_previousdMicroGradientLdStress[ i ][ j + 18 ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress( ) )[ 27 * i + j ];
 
         }
 
@@ -9987,19 +9967,19 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_previousdMacroLdISVs[ i ][ j ] = ( *R.get_previousdPlasticMacroVelocityGradientdFn( ) )[ i ][ j ];
+            assembled_previousdMacroLdISVs[ i ][ j ] = ( *R.get_previousdPlasticMacroVelocityGradientdFn( ) )[ 9 * i +  j ];
 
-            assembled_previousdMicroLdISVs[ i ][ j ] = ( *R.get_previousdPlasticMicroVelocityGradientdFn( ) )[ i ][ j ];
+            assembled_previousdMicroLdISVs[ i ][ j ] = ( *R.get_previousdPlasticMicroVelocityGradientdFn( ) )[ 9 * i + j ];
 
-            assembled_previousdMicroLdISVs[ i ][ j + 9 ] = ( *R.get_previousdPlasticMicroVelocityGradientdChin( ) )[ i ][ j ];
+            assembled_previousdMicroLdISVs[ i ][ j + 9 ] = ( *R.get_previousdPlasticMicroVelocityGradientdChin( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_previousdMacroLdISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdPlasticMacroVelocityGradientdStateVariables( ) )[ i ][ j ];
+            assembled_previousdMacroLdISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdPlasticMacroVelocityGradientdStateVariables( ) )[ 10 * i + j ];
 
-            assembled_previousdMicroLdISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdPlasticMicroVelocityGradientdStateVariables( ) )[ i ][ j ];
+            assembled_previousdMicroLdISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdPlasticMicroVelocityGradientdStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -10009,21 +9989,21 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_previousdMicroGradientLdISVs[ i ][ j ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdFn( ) )[ i ][ j ];
+            assembled_previousdMicroGradientLdISVs[ i ][ j ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdFn( ) )[ 9 * i + j ];
 
-            assembled_previousdMicroGradientLdISVs[ i ][ j + 9 ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdChin( ) )[ i ][ j ];
+            assembled_previousdMicroGradientLdISVs[ i ][ j + 9 ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdChin( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
-            assembled_previousdMicroGradientLdISVs[ i ][ j + 18 ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdGradChin( ) )[ i ][ j ];
+            assembled_previousdMicroGradientLdISVs[ i ][ j + 18 ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdGradChin( ) )[ 27 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_previousdMicroGradientLdISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdStateVariables( ) )[ i ][ j ];
+            assembled_previousdMicroGradientLdISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_previousdPlasticGradientMicroVelocityGradientdStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -10095,11 +10075,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroLdF, *R.get_previousdPlasticMacroVelocityGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMacroLdF ), *R.get_previousdPlasticMacroVelocityGradientdF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroLdF, *R.get_previousdPlasticMicroVelocityGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroLdF ), *R.get_previousdPlasticMicroVelocityGradientdF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdF, *R.get_previousdPlasticGradientMicroVelocityGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientLdF ), *R.get_previousdPlasticGradientMicroVelocityGradientdF( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -10161,9 +10141,9 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroLdChi, *R.get_previousdPlasticMicroVelocityGradientdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroLdChi ), *R.get_previousdPlasticMicroVelocityGradientdChi( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdChi, *R.get_previousdPlasticGradientMicroVelocityGradientdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientLdChi ), *R.get_previousdPlasticGradientMicroVelocityGradientdChi( ) ) );
 
     for ( unsigned int i = 0; i < 27; i++ ){
 
@@ -10225,7 +10205,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdGradChi, *R.get_previousdPlasticGradientMicroVelocityGradientdGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientLdGradChi ), *R.get_previousdPlasticGradientMicroVelocityGradientdGradChi( ) ) );
 
 }
 
@@ -11502,85 +11482,85 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation ){
                                                    0.20, 0.21, 0.22, 0.23, 0.24, 0.25, 0.26, 0.27, 0.28,
                                                    0.29, 0.30, 0.31, 0.32, 0.33, 0.34, 0.35, 0.36, 0.37 };
 
-            floatMatrix dMacroLdMacroStress                   = initialize(  9,  9 );
+            floatVector dMacroLdMacroStress                   = initialize(  9 *  9 );
 
-            floatMatrix previousdMacroLdMacroStress           = initialize(  9,  9 );
+            floatVector previousdMacroLdMacroStress           = initialize(  9 *  9 );
 
-            floatMatrix dMacroLdMicroStress                   = initialize(  9,  9 );
+            floatVector dMacroLdMicroStress                   = initialize(  9 *  9 );
 
-            floatMatrix previousdMacroLdMicroStress           = initialize(  9,  9 );
+            floatVector previousdMacroLdMicroStress           = initialize(  9 *  9 );
 
-            floatMatrix dMicroLdMicroStress                   = initialize(  9,  9 );
+            floatVector dMicroLdMicroStress                   = initialize(  9 *  9 );
 
-            floatMatrix previousdMicroLdMicroStress           = initialize(  9,  9 );
+            floatVector previousdMicroLdMicroStress           = initialize(  9 *  9 );
 
-            floatMatrix dGradMicroLdMicroStress               = initialize( 27,  9 );
+            floatVector dGradMicroLdMicroStress               = initialize( 27 *  9 );
 
-            floatMatrix previousdGradMicroLdMicroStress       = initialize( 27,  9 );
+            floatVector previousdGradMicroLdMicroStress       = initialize( 27 *  9 );
 
-            floatMatrix dGradMicroLdHigherOrderStress         = initialize( 27, 27 );
+            floatVector dGradMicroLdHigherOrderStress         = initialize( 27 * 27 );
 
-            floatMatrix previousdGradMicroLdHigherOrderStress = initialize( 27, 27 );
+            floatVector previousdGradMicroLdHigherOrderStress = initialize( 27 * 27 );
 
-            floatMatrix dMacroLdF                             = initialize(  9,  9 );
+            floatVector dMacroLdF                             = initialize(  9 *  9 );
 
-            floatMatrix previousdMacroLdF                     = initialize(  9,  9 );
+            floatVector previousdMacroLdF                     = initialize(  9 *  9 );
 
-            floatMatrix dMicroLdF                             = initialize(  9,  9 );
+            floatVector dMicroLdF                             = initialize(  9 *  9 );
 
-            floatMatrix previousdMicroLdF                     = initialize(  9,  9 );
+            floatVector previousdMicroLdF                     = initialize(  9 *  9 );
 
-            floatMatrix dMicroGradientLdF                     = initialize( 27,  9 );
+            floatVector dMicroGradientLdF                     = initialize( 27 *  9 );
 
-            floatMatrix previousdMicroGradientLdF             = initialize( 27,  9 );
+            floatVector previousdMicroGradientLdF             = initialize( 27 *  9 );
 
-            floatMatrix dMacroLdFn                            = initialize(  9,  9 );
+            floatVector dMacroLdFn                            = initialize(  9 *  9 );
 
-            floatMatrix previousdMacroLdFn                    = initialize(  9,  9 );
+            floatVector previousdMacroLdFn                    = initialize(  9 *  9 );
 
-            floatMatrix dMicroLdFn                            = initialize(  9,  9 );
+            floatVector dMicroLdFn                            = initialize(  9 *  9 );
 
-            floatMatrix previousdMicroLdFn                    = initialize(  9,  9 );
+            floatVector previousdMicroLdFn                    = initialize(  9 *  9 );
 
-            floatMatrix dMicroGradientLdFn                    = initialize( 27,  9 );
+            floatVector dMicroGradientLdFn                    = initialize( 27 *  9 );
 
-            floatMatrix previousdMicroGradientLdFn            = initialize( 27,  9 );
+            floatVector previousdMicroGradientLdFn            = initialize( 27 *  9 );
 
-            floatMatrix dMicroLdChi                           = initialize(  9,  9 );
+            floatVector dMicroLdChi                           = initialize(  9 *  9 );
 
-            floatMatrix previousdMicroLdChi                   = initialize(  9,  9 );
+            floatVector previousdMicroLdChi                   = initialize(  9 *  9 );
 
-            floatMatrix dMicroGradientLdChi                   = initialize( 27,  9 );
+            floatVector dMicroGradientLdChi                   = initialize( 27 *  9 );
 
-            floatMatrix previousdMicroGradientLdChi           = initialize( 27,  9 );
+            floatVector previousdMicroGradientLdChi           = initialize( 27 *  9 );
 
-            floatMatrix dMicroLdChin                          = initialize(  9,  9 );
+            floatVector dMicroLdChin                          = initialize(  9 *  9 );
 
-            floatMatrix previousdMicroLdChin                  = initialize(  9,  9 );
+            floatVector previousdMicroLdChin                  = initialize(  9 *  9 );
 
-            floatMatrix dMicroGradientLdChin                  = initialize( 27,  9 );
+            floatVector dMicroGradientLdChin                  = initialize( 27 *  9 );
 
-            floatMatrix previousdMicroGradientLdChin          = initialize( 27,  9 );
+            floatVector previousdMicroGradientLdChin          = initialize( 27 *  9 );
 
-            floatMatrix dMicroGradientLdGradChi               = initialize( 27, 27 );
+            floatVector dMicroGradientLdGradChi               = initialize( 27 * 27 );
 
-            floatMatrix previousdMicroGradientLdGradChi       = initialize( 27, 27 );
+            floatVector previousdMicroGradientLdGradChi       = initialize( 27 * 27 );
 
-            floatMatrix dMicroGradientLdGradChin              = initialize( 27, 27 );
+            floatVector dMicroGradientLdGradChin              = initialize( 27 * 27 );
 
-            floatMatrix previousdMicroGradientLdGradChin      = initialize( 27, 27 );
+            floatVector previousdMicroGradientLdGradChin      = initialize( 27 * 27 );
 
-            floatMatrix dMacroLdXi                            = initialize(  9, 10 );
+            floatVector dMacroLdXi                            = initialize(  9 * 10 );
 
-            floatMatrix previousdMacroLdXi                    = initialize(  9, 10 );
+            floatVector previousdMacroLdXi                    = initialize(  9 * 10 );
 
-            floatMatrix dMicroLdXi                            = initialize(  9, 10 );
+            floatVector dMicroLdXi                            = initialize(  9 * 10 );
 
-            floatMatrix previousdMicroLdXi                    = initialize(  9, 10 );
+            floatVector previousdMicroLdXi                    = initialize(  9 * 10 );
 
-            floatMatrix dMicroGradientLdXi                    = initialize( 27, 10 );
+            floatVector dMicroGradientLdXi                    = initialize( 27 * 10 );
 
-            floatMatrix previousdMicroGradientLdXi            = initialize( 27, 10 );
+            floatVector previousdMicroGradientLdXi            = initialize( 27 * 10 );
 
             floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
                                               2, 0.37773052, 0.92739145,
@@ -12195,25 +12175,25 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticFdX[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdMacroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdX[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdMacroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticFdX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticDeformationGradientdMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticDeformationGradientdMicroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticChidX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdMicroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticFdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdFn( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticChidX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdFn( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticChidX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdChin( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dUpdatedPlasticFdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdStateVariables( ) )[ 10 * i + j ];
 
-            assembled_dUpdatedPlasticChidX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -12223,27 +12203,27 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + 0 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdMacroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + 0 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdMacroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdMicroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdFn( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdChin( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( ) )[ 27 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdGradChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdGradChin( ) )[ 27 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -12315,11 +12295,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdF,       *R.get_dUpdatedPlasticDeformationGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdF ),       *R.get_dUpdatedPlasticDeformationGradientdF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidF,     *R.get_dUpdatedPlasticMicroDeformationdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF ),     *R.get_dUpdatedPlasticMicroDeformationdF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidF, *R.get_dUpdatedPlasticGradientMicroDeformationdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ), *R.get_dUpdatedPlasticGradientMicroDeformationdF( ) ) );
 
     for ( unsigned int i = 0; i < microDeformation.size( ); i++ ){
 
@@ -12383,9 +12363,9 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdChi,       floatMatrix( 9, floatVector( 9, 0 ) ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidChi,     *R.get_dUpdatedPlasticMicroDeformationdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidChi ),     *R.get_dUpdatedPlasticMicroDeformationdChi( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidChi, *R.get_dUpdatedPlasticGradientMicroDeformationdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdChi( ) ) );
 
     for ( unsigned int i = 0; i < gradientMicroDeformation.size( ); i++ ){
 
@@ -12451,7 +12431,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidGradChi,     floatMatrix( 9, floatVector( 27, 0 ) ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidGradChi, *R.get_dUpdatedPlasticGradientMicroDeformationdGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdGradChi( ) ) );
 
     floatVector previousStress = tardigradeVectorTools::appendVectors( { hydra.elasticity.previousPK2, hydra.elasticity.previousSIGMA, hydra.elasticity.previousM } );
 
@@ -12543,11 +12523,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticFdPreviousStress[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousMacroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdPreviousStress[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousMacroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticFdPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousMicroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticChidPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousMicroStress( ) )[ 9 * i + j ];
 
         }
 
@@ -12557,15 +12537,15 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 0 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 0 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
-            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( ) )[ 27 * i + j ];
 
         }
 
@@ -12647,19 +12627,19 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticFdPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousFn( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousFn( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousChin( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dUpdatedPlasticFdPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousStateVariables( ) )[ 10 * i + j ];
 
-            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousStateVariables( ) )[ 10 * i +  j ];
 
         }
 
@@ -12669,21 +12649,21 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousFn( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChin( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
-            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin( ) )[ 27 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables( ) )[ 10 * i +  j ];
 
         }
 
@@ -12755,11 +12735,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousF, *R.get_dUpdatedPlasticDeformationGradientdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousF ), *R.get_dUpdatedPlasticDeformationGradientdPreviousF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousF, *R.get_dUpdatedPlasticMicroDeformationdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousF ), *R.get_dUpdatedPlasticMicroDeformationdPreviousF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidPreviousF, *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousF ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousF( ) ) );
 
     for ( unsigned int i = 0; i < previousMicroDeformation.size( ); i++ ){
 
@@ -12823,9 +12803,9 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousChi, floatMatrix( 9, floatVector( 9, 0 ) ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousChi, *R.get_dUpdatedPlasticMicroDeformationdPreviousChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousChi ), *R.get_dUpdatedPlasticMicroDeformationdPreviousChi( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidPreviousChi, *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChi( ) ) );
 
     for ( unsigned int i = 0; i < previousGradientMicroDeformation.size( ); i++ ){
 
@@ -12891,7 +12871,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousGradChi, floatMatrix( 9, floatVector( 27, 0 ) ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidPreviousGradChi, *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ) ) );
 
 }
 
@@ -13265,25 +13245,25 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticFdX[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdMacroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdX[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdMacroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticFdX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticDeformationGradientdMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticDeformationGradientdMicroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticChidX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdMicroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticFdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdFn( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticChidX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdFn( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticChidX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdChin( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dUpdatedPlasticFdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdStateVariables( ) )[ 10 * i + j ];
 
-            assembled_dUpdatedPlasticChidX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -13293,27 +13273,27 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + 0 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdMacroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + 0 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdMacroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdMicroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdFn( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdChin( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( ) )[ 27 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdGradChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + configuration_unknown_count + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdGradChin( ) )[ 27 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dUpdatedPlasticGradChidX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidX[ i ][ j + 2 * configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -13385,11 +13365,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdF,       *R.get_dUpdatedPlasticDeformationGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdF ),       *R.get_dUpdatedPlasticDeformationGradientdF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidF,     *R.get_dUpdatedPlasticMicroDeformationdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF ),     *R.get_dUpdatedPlasticMicroDeformationdF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidF, *R.get_dUpdatedPlasticGradientMicroDeformationdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ), *R.get_dUpdatedPlasticGradientMicroDeformationdF( ) ) );
 
     for ( unsigned int i = 0; i < microDeformation.size( ); i++ ){
 
@@ -13453,9 +13433,9 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdChi,       floatMatrix( 9, floatVector( 9, 0 ) ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidChi,     *R.get_dUpdatedPlasticMicroDeformationdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidChi ),     *R.get_dUpdatedPlasticMicroDeformationdChi( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidChi, *R.get_dUpdatedPlasticGradientMicroDeformationdChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdChi( ) ) );
 
     for ( unsigned int i = 0; i < gradientMicroDeformation.size( ); i++ ){
 
@@ -13521,7 +13501,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidGradChi,     floatMatrix( 9, floatVector( 27, 0 ) ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidGradChi, *R.get_dUpdatedPlasticGradientMicroDeformationdGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdGradChi( ) ) );
 
     floatVector previousStress = tardigradeVectorTools::appendVectors( { hydra.elasticity.previousPK2, hydra.elasticity.previousSIGMA, hydra.elasticity.previousM } );
 
@@ -13613,11 +13593,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticFdPreviousStress[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousMacroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdPreviousStress[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousMacroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticFdPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousMicroStress( ) )[ 9 * i  + j ];
 
-            assembled_dUpdatedPlasticChidPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousMicroStress( ) )[ 9 * i + j ];
 
         }
 
@@ -13627,15 +13607,15 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 0 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 0 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress( ) )[ 9 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress( ) )[ 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
-            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousStress[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( ) )[ 27 * i + j ];
 
         }
 
@@ -13717,19 +13697,19 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticFdPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousFn( ) )[ ( numConfigurations - 1 ) * 9 * i + j ];
 
-            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousFn( ) )[ ( numConfigurations - 1 ) * 9 * i + j ];
 
-            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousChin( ) )[ ( numConfigurations - 1 ) * 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dUpdatedPlasticFdPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticFdPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticDeformationGradientdPreviousStateVariables( ) )[ 10 * i + j ];
 
-            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticChidPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticMicroDeformationdPreviousStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -13739,21 +13719,21 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
-            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousFn( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousFn( ) )[ ( numConfigurations - 1 ) * 9 * i + j ];
 
-            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + 9 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChin( ) )[ ( numConfigurations - 1 ) * 9 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 27; j++ ){
 
-            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + 18 ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin( ) )[ ( numConfigurations - 1 ) * 27 * i + j ];
 
         }
 
         for ( unsigned int j = 0; j < 10; j++ ){
 
-            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables( ) )[ i ][ j ];
+            assembled_dUpdatedPlasticGradChidPreviousISVs[ i ][ j + configuration_unknown_count ] = ( *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables( ) )[ 10 * i + j ];
 
         }
 
@@ -13825,11 +13805,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousF, *R.get_dUpdatedPlasticDeformationGradientdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousF ), *R.get_dUpdatedPlasticDeformationGradientdPreviousF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousF, *R.get_dUpdatedPlasticMicroDeformationdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousF ), *R.get_dUpdatedPlasticMicroDeformationdPreviousF( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidPreviousF, *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousF ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousF( ) ) );
 
     for ( unsigned int i = 0; i < previousMicroDeformation.size( ); i++ ){
 
@@ -13893,9 +13873,9 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousChi, floatMatrix( 9, floatVector( 9, 0 ) ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousChi, *R.get_dUpdatedPlasticMicroDeformationdPreviousChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousChi ), *R.get_dUpdatedPlasticMicroDeformationdPreviousChi( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidPreviousChi, *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChi( ) ) );
 
     for ( unsigned int i = 0; i < previousGradientMicroDeformation.size( ); i++ ){
 
@@ -13961,7 +13941,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousGradChi, floatMatrix( 9, floatVector( 27, 0 ) ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidPreviousGradChi, *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ) ) );
 
 }
 
@@ -14529,7 +14509,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, *R.get_stateVariableJacobians( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ) ) );
 
 }
 
@@ -14817,7 +14797,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, *R.get_stateVariableJacobians( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ) ) );
 
 }
 
@@ -15113,7 +15093,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdD, *R.get_dStateVariableResidualsdD( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdD ), *R.get_dStateVariableResidualsdD( ) ) );
 
 }
 
@@ -15401,7 +15381,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdPreviousISVs ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdPreviousISVs, *R.get_dStateVariableResidualsdPreviousISVs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdPreviousISVs ), *R.get_dStateVariableResidualsdPreviousISVs( ) ) );
 
 }
 
@@ -15995,7 +15975,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians_weak ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, *R.get_stateVariableJacobians( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ) ) );
 
 }
 
@@ -16287,7 +16267,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians_weak2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, *R.get_stateVariableJacobians( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ) ) );
 
 }
 
@@ -16585,7 +16565,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD_weak ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdD, *R.get_dStateVariableResidualsdD( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdD ), *R.get_dStateVariableResidualsdD( ) ) );
 
 }
 
@@ -16875,7 +16855,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdPreviousISVs_weak ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdPreviousISVs, *R.get_dStateVariableResidualsdPreviousISVs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdPreviousISVs ), *R.get_dStateVariableResidualsdPreviousISVs( ) ) );
 
 }
 BOOST_AUTO_TEST_CASE( test_setResidual ){

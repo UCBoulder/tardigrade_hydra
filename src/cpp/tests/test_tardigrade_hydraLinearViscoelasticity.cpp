@@ -445,7 +445,7 @@ BOOST_AUTO_TEST_CASE( test_residual_gradientsOfDecomposedElasticDeformationGradi
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradientJe, *R.get_dJedFe( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradientFehat, *R.get_dFehatdFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradientFehat ), *R.get_dFehatdFe( ) ) );
 
     floatVector gradientPreviousJe( deformationGradient.size( ), 0 );
 
@@ -483,7 +483,7 @@ BOOST_AUTO_TEST_CASE( test_residual_gradientsOfDecomposedElasticDeformationGradi
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradientPreviousJe, *R.get_previousdJedFe( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradientPreviousFehat, *R.get_previousdFehatdFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradientPreviousFehat ), *R.get_previousdFehatdFe( ) ) );
 
 }
 
@@ -1186,15 +1186,15 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStressDerivatives ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2MeanStressdPreviousISVs, *R.get_dPK2MeanStressdPreviousISVs( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVolumetricISVsdFe,            *R.get_dVolumetricISVsdFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dVolumetricISVsdFe ),            *R.get_dVolumetricISVsdFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVolumetricISVsdT,             *R.get_dVolumetricISVsdT( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVolumetricISVsdPreviousFe,    *R.get_dVolumetricISVsdPreviousFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dVolumetricISVsdPreviousFe ),    *R.get_dVolumetricISVsdPreviousFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVolumetricISVsdPreviousT,     *R.get_dVolumetricISVsdPreviousT( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dVolumetricISVsdPreviousISVs,  *R.get_dVolumetricISVsdPreviousISVs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dVolumetricISVsdPreviousISVs ),  *R.get_dVolumetricISVsdPreviousISVs( ) ) );
 
 }
 
@@ -1434,11 +1434,11 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2IsochoricStressdFe, *R.get_dPK2IsochoricStressdFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPK2IsochoricStressdFe ), *R.get_dPK2IsochoricStressdFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2IsochoricStressdT, *R.get_dPK2IsochoricStressdT( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dIsochoricISVsdFe, *R.get_dIsochoricISVsdFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dIsochoricISVsdFe ), *R.get_dIsochoricISVsdFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dIsochoricISVsdT, *R.get_dIsochoricISVsdT( ) ) );
 
@@ -1510,15 +1510,15 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2IsochoricStressdPreviousFe, *R.get_dPK2IsochoricStressdPreviousFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPK2IsochoricStressdPreviousFe ), *R.get_dPK2IsochoricStressdPreviousFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2IsochoricStressdPreviousT, *R.get_dPK2IsochoricStressdPreviousT( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dIsochoricISVsdPreviousFe, *R.get_dIsochoricISVsdPreviousFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dIsochoricISVsdPreviousFe ), *R.get_dIsochoricISVsdPreviousFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dIsochoricISVsdPreviousT, *R.get_dIsochoricISVsdPreviousT( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2IsochoricStressdFe, *R.get_previousdPK2IsochoricStressdFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdPK2IsochoricStressdFe ), *R.get_previousdPK2IsochoricStressdFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2IsochoricStressdT, *R.get_previousdPK2IsochoricStressdT( ) ) );
 
@@ -1552,9 +1552,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStressDerivatives ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2IsochoricStressdPreviousISVs, *R.get_dPK2IsochoricStressdPreviousISVs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPK2IsochoricStressdPreviousISVs ), *R.get_dPK2IsochoricStressdPreviousISVs( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dIsochoricISVsdPreviousISVs, *R.get_dIsochoricISVsdPreviousISVs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dIsochoricISVsdPreviousISVs ), *R.get_dIsochoricISVsdPreviousISVs( ) ) );
 
 }
 
@@ -1813,7 +1813,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2StressDerivatives ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2StressdFe, *R.get_dPK2StressdFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPK2StressdFe ), *R.get_dPK2StressdFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2StressdT, *R.get_dPK2StressdT( ) ) );
 
@@ -1901,15 +1901,15 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2StressDerivatives ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2StressdFe, *R.get_previousdPK2StressdFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdPK2StressdFe ), *R.get_previousdPK2StressdFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdPK2StressdT, *R.get_previousdPK2StressdT( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2StressdPreviousFe, *R.get_dPK2StressdPreviousFe( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPK2StressdPreviousFe ), *R.get_dPK2StressdPreviousFe( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2StressdPreviousT, *R.get_dPK2StressdPreviousT( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPK2StressdPreviousISVs, *R.get_dPK2StressdPreviousISVs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPK2StressdPreviousISVs ), *R.get_dPK2StressdPreviousISVs( ) ) );
 
 }
 
@@ -2037,7 +2037,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdT ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCauchyStressdF, *R.get_dCauchyStressdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dCauchyStressdF ), *R.get_dCauchyStressdF( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCauchyStressdT, *R.get_dCauchyStressdT( ) ) );
 
@@ -2123,15 +2123,15 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdT ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdCauchyStressdF, *R.get_previousdCauchyStressdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdCauchyStressdF ), *R.get_previousdCauchyStressdF( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdCauchyStressdT, *R.get_previousdCauchyStressdT( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCauchyStressdPreviousF, *R.get_dCauchyStressdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dCauchyStressdPreviousF ), *R.get_dCauchyStressdPreviousF( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCauchyStressdPreviousT, *R.get_dCauchyStressdPreviousT( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCauchyStressdPreviousISVs, *R.get_dCauchyStressdPreviousISVs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dCauchyStressdPreviousISVs ), *R.get_dCauchyStressdPreviousISVs( ) ) );
 
 }
 

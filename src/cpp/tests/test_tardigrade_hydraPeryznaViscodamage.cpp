@@ -123,27 +123,27 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates ){
 
             floatType previousPlasticMultiplier = 3.4;
 
-            floatMatrix previousdXidotdSigma = { { 1, 2, 3, 4, 5, 6, 7, 8, 9 } };
+            floatVector previousdXidotdSigma = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            floatMatrix previousdXidotdF     = { { 10, 11, 12, 13, 14, 15, 16, 17, 18 } };
+            floatVector previousdXidotdF     = { 10, 11, 12, 13, 14, 15, 16, 17, 18 };
 
-            floatMatrix previousdXidotdSubFs = { { 19, 20, 21, 22, 23, 24, 25, 26, 27 },
-                                                 { 28, 29, 30, 31, 32, 33, 34, 35, 36 } };
+            floatVector previousdXidotdSubFs = { 19, 20, 21, 22, 23, 24, 25, 26, 27,
+                                                 28, 29, 30, 31, 32, 33, 34, 35, 36 };
 
             floatVector previousdXidotdT = { 37 };
 
-            floatMatrix previousdXidotdXi = { { 38 } };
+            floatVector previousdXidotdXi = { 38 };
 
-            floatMatrix dXidotdSigma = { { 39, 40, 41, 42, 43, 44, 45, 46, 47 } };
+            floatVector dXidotdSigma = { 39, 40, 41, 42, 43, 44, 45, 46, 47 };
 
-            floatMatrix dXidotdF     = { { 48, 49, 50, 51, 52, 53, 54, 55, 56 } };
+            floatVector dXidotdF     = { 48, 49, 50, 51, 52, 53, 54, 55, 56 };
 
-            floatMatrix dXidotdSubFs = { { 57, 58, 59, 60, 61, 62, 63, 64, 65 },
-                                         { 66, 67, 68, 69, 70, 71, 72, 73, 74 } };
+            floatVector dXidotdSubFs = { 57, 58, 59, 60, 61, 62, 63, 64, 65,
+                                         66, 67, 68, 69, 70, 71, 72, 73, 74 };
 
             floatVector dXidotdT = { 75 };
 
-            floatMatrix dXidotdXi = { { 76 } };
+            floatVector dXidotdXi = { 76 };
 
             floatVector previousdGammadSigma = { -1, -2, -3, -4, -5, -6, -7, -8, -9 };
 
@@ -613,7 +613,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariableEvolutionRatesdCauchyStress, *R.get_dStateVariableEvolutionRatesdCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dStateVariableEvolutionRatesdCauchyStress ), *R.get_dStateVariableEvolutionRatesdCauchyStress( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -647,7 +647,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariableEvolutionRatesdF, *R.get_dStateVariableEvolutionRatesdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dStateVariableEvolutionRatesdF ), *R.get_dStateVariableEvolutionRatesdF( ) ) );
 
     for ( unsigned int i = 0; i < 18; i++ ){
 
@@ -683,7 +683,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariableEvolutionRatesdSubFs, *R.get_dStateVariableEvolutionRatesdSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dStateVariableEvolutionRatesdSubFs ), *R.get_dStateVariableEvolutionRatesdSubFs( ) ) );
 
     for ( unsigned int i = 0; i < 1; i++ ){
 
@@ -753,7 +753,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStateVariableEvolutionRatesdStateVariables, *R.get_dStateVariableEvolutionRatesdStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dStateVariableEvolutionRatesdStateVariables ), *R.get_dStateVariableEvolutionRatesdStateVariables( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -791,7 +791,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousStateVariableEvolutionRatesdPreviousCauchyStress, *R.get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousStateVariableEvolutionRatesdPreviousCauchyStress ), *R.get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -825,7 +825,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousStateVariableEvolutionRatesdPreviousF, *R.get_dPreviousStateVariableEvolutionRatesdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousStateVariableEvolutionRatesdPreviousF ), *R.get_dPreviousStateVariableEvolutionRatesdPreviousF( ) ) );
 
     for ( unsigned int i = 0; i < 18; i++ ){
 
@@ -861,7 +861,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousStateVariableEvolutionRatesdPreviousSubFs, *R.get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousStateVariableEvolutionRatesdPreviousSubFs ), *R.get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( ) ) );
 
     for ( unsigned int i = 0; i < 1; i++ ){
 
@@ -931,7 +931,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousStateVariableEvolutionRatesdPreviousStateVariables, *R.get_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dPreviousStateVariableEvolutionRatesdPreviousStateVariables ), *R.get_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) ) );
 
 }
 
@@ -973,9 +973,29 @@ BOOST_AUTO_TEST_CASE( test_setDamage ){
 
             floatVector stateVariables = { 3, 4 };
 
-            floatMatrix tmpMat = { { 1, 2 }, { 3, 4 } };
+            floatVector dIsvsdCauchy = initializeVector( 2*9, 1 );
 
-            floatVector tmpVec = { 5, 6 };
+            floatVector dIsvsdF = initializeVector( 2*9, 1.2 );
+
+            floatVector dIsvsdSubF = initializeVector( 2*2*9, 0.5 );
+
+            floatVector dIsvsdT = initializeVector( 2, 5 );
+
+            floatVector dIsvsdIsvs = initializeVector( 2*2, 0.3 );
+
+            floatVector initializeVector( int nvals, floatType val_0 ){
+
+                floatVector value( nvals, 0 );
+
+                for ( int i = 0; i < nvals; i++ ){
+
+                    value[ i ] = i + val_0;
+
+                }
+
+                return value;
+
+            }
 
         protected:
 
@@ -1005,31 +1025,31 @@ BOOST_AUTO_TEST_CASE( test_setDamage ){
 
             virtual void setdPlasticStateVariablesdPreviousCauchyStress( ) override{
 
-                set_dPlasticStateVariablesdPreviousCauchyStress( tmpMat );
+                set_dPlasticStateVariablesdPreviousCauchyStress( dIsvsdCauchy );
 
             }
 
             virtual void setdPlasticStateVariablesdPreviousF( ) override{
 
-                set_dPlasticStateVariablesdPreviousF( tmpMat );
+                set_dPlasticStateVariablesdPreviousF( dIsvsdF );
 
             }
 
             virtual void setdPlasticStateVariablesdPreviousSubFs( ) override{
 
-                set_dPlasticStateVariablesdPreviousSubFs( tmpMat );
+                set_dPlasticStateVariablesdPreviousSubFs( dIsvsdSubF );
 
             }
 
             virtual void setdPlasticStateVariablesdPreviousT( ) override{
 
-                set_dPlasticStateVariablesdPreviousT( tmpVec );
+                set_dPlasticStateVariablesdPreviousT( dIsvsdT );
 
             }
 
             virtual void setdPlasticStateVariablesdPreviousStateVariables( ) override{
 
-                set_dPlasticStateVariablesdPreviousStateVariables( tmpMat );
+                set_dPlasticStateVariablesdPreviousStateVariables( dIsvsdIsvs );
 
             }
 
@@ -1979,7 +1999,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDamageDeformationGradientdCauchyStress, *R.get_dDamageDeformationGradientdCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdCauchyStress ), *R.get_dDamageDeformationGradientdCauchyStress( ) ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -2013,7 +2033,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDamageDeformationGradientdF, *R.get_dDamageDeformationGradientdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdF ), *R.get_dDamageDeformationGradientdF( ) ) );
 
     for ( unsigned int i = 0; i < 2*deformationGradient.size( ); i++ ){
 
@@ -2047,7 +2067,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDamageDeformationGradientdSubFs, *R.get_dDamageDeformationGradientdSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdSubFs ), *R.get_dDamageDeformationGradientdSubFs( ) ) );
 
     for ( unsigned int i = 0; i < 1; i++ ){
 
@@ -2115,7 +2135,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDamageDeformationGradientdStateVariables, *R.get_dDamageDeformationGradientdStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdStateVariables ), *R.get_dDamageDeformationGradientdStateVariables( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -2153,7 +2173,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDamageDeformationGradientdPreviousCauchyStress, *R.get_dDamageDeformationGradientdPreviousCauchyStress( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousCauchyStress ), *R.get_dDamageDeformationGradientdPreviousCauchyStress( ) ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -2187,7 +2207,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDamageDeformationGradientdPreviousF, *R.get_dDamageDeformationGradientdPreviousF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousF ), *R.get_dDamageDeformationGradientdPreviousF( ) ) );
 
     for ( unsigned int i = 0; i < 18; i++ ){
 
@@ -2221,7 +2241,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDamageDeformationGradientdPreviousSubFs, *R.get_dDamageDeformationGradientdPreviousSubFs( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousSubFs ), *R.get_dDamageDeformationGradientdPreviousSubFs( ) ) );
 
     for ( unsigned int i = 0; i < 1; i++ ){
 
@@ -2289,7 +2309,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDamageDeformationGradientdPreviousStateVariables, *R.get_dDamageDeformationGradientdPreviousStateVariables( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousStateVariables ), *R.get_dDamageDeformationGradientdPreviousStateVariables( ) ) );
 
 }
 
