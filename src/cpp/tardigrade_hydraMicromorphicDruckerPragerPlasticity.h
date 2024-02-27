@@ -107,16 +107,16 @@ namespace tardigradeHydra{
                                                            const variableVector &cohesion,
                                                            const variableVector &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableVector &yieldValue, variableMatrix &dFdStress, variableMatrix &dFdc,
-                                                           variableMatrix &dFdPrecedingF );
+                                                           variableVector &yieldValue, variableVector &dFdStress, variableVector &dFdc,
+                                                           variableVector &dFdPrecedingF );
     
         void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
                                                            const variableVector &cohesion,
                                                            const variableVector &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableVector &yieldValue, variableMatrix &dFdStress, variableMatrix &dFdc,
-                                                           variableMatrix &dFdPrecedingF, variableMatrix &d2FdStress2,
-                                                           variableMatrix &d2FdStressdPrecedingF );
+                                                           variableVector &yieldValue, variableVector &dFdStress, variableVector &dFdc,
+                                                           variableVector &dFdPrecedingF, variableVector &d2FdStress2,
+                                                           variableVector &d2FdStressdPrecedingF );
 
         void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
                                                   const variableVector &inverseElasticRightCauchyGreen,
