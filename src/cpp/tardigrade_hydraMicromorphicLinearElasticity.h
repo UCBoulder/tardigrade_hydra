@@ -86,10 +86,10 @@ namespace tardigradeHydra{
                                    const parameterVector &D,
                                    variableVector &cauchyStress, variableVector &microStress,
                                    variableVector &higherOrderStress,
-                                   variableMatrix &dCauchyStressdF, variableMatrix &dCauchyStressdChi, variableMatrix &dCauchyStressdGradChi,
-                                   variableMatrix &dMicroStressdF, variableMatrix &dMicroStressdChi, variableMatrix &dMicroStressdGradChi,
-                                   variableMatrix &dHigherOrderStressdF, variableMatrix &dHigherOrderStressdChi,
-                                   variableMatrix &dHigherOrderStressdGradChi );
+                                   variableVector &dCauchyStressdF, variableVector &dCauchyStressdChi, variableVector &dCauchyStressdGradChi,
+                                   variableVector &dMicroStressdF, variableVector &dMicroStressdChi, variableVector &dMicroStressdGradChi,
+                                   variableVector &dHigherOrderStressdF, variableVector &dHigherOrderStressdChi,
+                                   variableVector &dHigherOrderStressdGradChi );
 
         errorOut linearElasticityReference( const variableVector &deformationGradient, const variableVector &microDeformation,
                                             const variableVector &gradientMicroDeformation,
@@ -104,9 +104,9 @@ namespace tardigradeHydra{
                                             const parameterVector &D,
                                             variableVector &PK2Stress, variableVector &referenceMicroStress,
                                             variableVector &referenceHigherOrderStress,
-                                            variableMatrix &dPK2StressdF, variableMatrix &dPK2StressdChi, variableMatrix &dPK2StressdGradChi,
-                                            variableMatrix &dReferenceMicroStressdF, variableMatrix &dReferenceMicroStressdChi,
-                                            variableMatrix &dReferenceMicroStressdGradChi, variableMatrix &dMdF, variableMatrix &dMdGradChi );
+                                            variableVector &dPK2StressdF, variableVector &dPK2StressdChi, variableVector &dPK2StressdGradChi,
+                                            variableVector &dReferenceMicroStressdF, variableVector &dReferenceMicroStressdChi,
+                                            variableVector &dReferenceMicroStressdGradChi, variableVector &dMdF, variableVector &dMdGradChi );
 
         errorOut linearElasticityReferenceDerivedMeasures( const variableVector &rightCauchyGreenDeformation, const variableVector &Psi,
                                                            const variableVector &Gamma,
@@ -121,12 +121,12 @@ namespace tardigradeHydra{
                                                            const parameterVector &D,
                                                            variableVector &PK2Stress, variableVector &referenceMicroStress,
                                                            variableVector &referenceHigherOrderStress,
-                                                           variableMatrix &dPK2StressdRCG, variableMatrix &dPK2StressdPsi,
-                                                           variableMatrix &dPK2StressdGamma,
-                                                           variableMatrix &dReferenceMicroStressdRCG,
-                                                           variableMatrix &dReferenceMicroStressdPsi,
-                                                           variableMatrix &dReferenceMicroStressdGamma,
-                                                           variableMatrix &dMdGamma );
+                                                           variableVector &dPK2StressdRCG, variableVector &dPK2StressdPsi,
+                                                           variableVector &dPK2StressdGamma,
+                                                           variableVector &dReferenceMicroStressdRCG,
+                                                           variableVector &dReferenceMicroStressdPsi,
+                                                           variableVector &dReferenceMicroStressdGamma,
+                                                           variableVector &dMdGamma );
 
         errorOut mapStressMeasuresToCurrent( const variableVector &deformationGradient, const variableVector &microDeformation,
                                              const variableVector &PK2Stress, const variableVector &referenceMicroStress,
@@ -139,10 +139,10 @@ namespace tardigradeHydra{
                                              const variableVector &referenceHigherOrderStress,
                                              variableVector &cauchyStress, variableVector &microStress,
                                              variableVector &higherOrderStress,
-                                             variableMatrix &dCauchyStressdF, variableMatrix &dCauchyStressdPK2Stress,
-                                             variableMatrix &dMicroStressdF, variableMatrix &dMicroStressdReferenceMicroStress,
-                                             variableMatrix &dHigherOrderStressdF, variableMatrix &dHigherOrderStressdChi,
-                                             variableMatrix &dHigherOrderStressdReferenceHigherOrderStress );
+                                             variableVector &dCauchyStressdF, variableVector &dCauchyStressdPK2Stress,
+                                             variableVector &dMicroStressdF, variableVector &dMicroStressdReferenceMicroStress,
+                                             variableVector &dHigherOrderStressdF, variableVector &dHigherOrderStressdChi,
+                                             variableVector &dHigherOrderStressdReferenceHigherOrderStress );
 
         errorOut computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
                                              const variableVector &gradientMicroDeformation,
@@ -151,15 +151,15 @@ namespace tardigradeHydra{
         errorOut computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
                                              const variableVector &gradientMicroDeformation,
                                              variableVector &rightCauchyGreen, variableVector &Psi, variableVector &Gamma,
-                                             variableMatrix &dCdF, variableMatrix &dPsidF, variableMatrix &dPsidChi,
-                                             variableMatrix &dGammadF, variableMatrix &dGammadGradChi );
+                                             variableVector &dCdF, variableVector &dPsidF, variableVector &dPsidChi,
+                                             variableVector &dGammadF, variableVector &dGammadGradChi );
 
         errorOut computeLinearElasticTerm1( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
                                             const parameterVector &A, const parameterVector &D, variableVector &term1 );
     
         errorOut computeLinearElasticTerm1( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
                                             const parameterVector &A, const parameterVector &D, variableVector &term1,
-                                            variableMatrix &dTerm1dGreenLagrangeStrain, variableMatrix &dTerm1dMicroStrain );
+                                            variableVector &dTerm1dGreenLagrangeStrain, variableVector &dTerm1dMicroStrain );
     
         errorOut computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
                                             const variableVector &incCPsi, const parameterVector &B, const parameterVector &D,
@@ -167,32 +167,32 @@ namespace tardigradeHydra{
     
         errorOut computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
                                             const variableVector &invCPsi, const parameterVector &B, const parameterVector &D,
-                                            variableVector &term2, variableMatrix &dTerm2dGreenLagrangeStrain,
-                                            variableMatrix &dTerm2dMicroStrain, variableMatrix &dTerm2dInvCPsi );
+                                            variableVector &term2, variableVector &dTerm2dGreenLagrangeStrain,
+                                            variableVector &dTerm2dMicroStrain, variableVector &dTerm2dInvCPsi );
 
         errorOut computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
                                                     variableVector &referenceHigherOrderStress );
     
         errorOut computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
                                                     variableVector &referenceHigherOrderStress,
-                                                    variableMatrix &dHigherOrderStressdGamma );
+                                                    variableVector &dHigherOrderStressdGamma );
 
         errorOut computeLinearElasticTerm3( const variableVector &invCGamma,
                                             const variableVector &referenceHigherOrderStress, variableVector &term3 );
     
         errorOut computeLinearElasticTerm3( const variableVector &invCGamma,
                                             const variableVector &referenceHigherOrderStress, variableVector &term3,
-                                            variableMatrix &dTerm3dInvCGamma, variableMatrix &dTerm3dReferenceHigherOrderStress );
+                                            variableVector &dTerm3dInvCGamma, variableVector &dTerm3dReferenceHigherOrderStress );
 
         errorOut computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi );
     
         errorOut computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi,
-                                   variableMatrix &dInvRCGPsidRGG, variableMatrix &dInvRCGPsidPsi );
+                                   variableVector &dInvRCGPsidRGG, variableVector &dInvRCGPsidPsi );
     
         errorOut computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma );
     
         errorOut computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma,
-                                     variableMatrix &dInvRCGGammadRCG, variableMatrix &dInvRCGGammadGamma );
+                                     variableVector &dInvRCGGammadRCG, variableVector &dInvRCGGammadGamma );
 
         errorOut formIsotropicA( const parameterType &lambda, const parameterType &mu, parameterVector &A );
     
@@ -212,8 +212,8 @@ namespace tardigradeHydra{
                                                          const double ( &grad_phi )[ 9 ][ 3 ],
                                                          variableVector &deformationGradient, variableVector &microDeformation,
                                                          variableVector &gradientMicroDeformation,
-                                                         variableMatrix &dFdGradU, variableMatrix &dChidPhi,
-                                                         variableMatrix &dGradChidGradPhi );
+                                                         variableVector &dFdGradU, variableVector &dChidPhi,
+                                                         variableVector &dGradChidGradPhi );
 
         errorOut extractMaterialParameters( const std::vector< double > &fparams,
                                             parameterVector &Amatrix, parameterVector &Bmatrix,
