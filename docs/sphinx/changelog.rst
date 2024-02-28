@@ -16,6 +16,7 @@ New Features
 Breaking Changes
 ================
 - Changed the micromorphic tools to use the vector Jacobian formulations and changed the micromorphic linear elasticity calculation to use vector Jacobian formulations (:pull:`72`). By `Nathan Miller`_.
+- Changed Drucker Prager plasticity to use the vector Jacobian formulations (:pull:`72`). By `Nathan Miller`_.
 
 Internal Changes
 ================
