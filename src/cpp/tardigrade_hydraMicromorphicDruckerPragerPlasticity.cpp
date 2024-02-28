@@ -440,30 +440,20 @@ namespace tardigradeHydra{
             variableVector pressure;
             variableVector deviatoricReferenceStress;
 
-            variableMatrix _dDevStressdStress, _dDevStressdRCG;
-            variableMatrix _dPressuredStress, _dPressuredRCG;
-
             variableVector dDevStressdStress, dDevStressdRCG;
             variableVector dPressuredStress, dPressuredRCG;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
-                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, _dDevStressdStress,
-                                                       _dDevStressdRCG, _dPressuredStress, _dPressuredRCG ) );
-
-            dDevStressdStress = tardigradeVectorTools::appendVectors( _dDevStressdStress );
-            dDevStressdRCG    = tardigradeVectorTools::appendVectors( _dDevStressdRCG );
-            dPressuredStress  = tardigradeVectorTools::appendVectors( _dPressuredStress );
-            dPressuredRCG     = tardigradeVectorTools::appendVectors( _dPressuredRCG );
+                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
+                                                       dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
 
             floatVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, tot_dim, sot_dim, sot_dim, sot_dim );
             floatVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG,  dRCGdPrecedingF, dim, sot_dim, sot_dim, sot_dim );
 
             //Compute the l2norm of the deviatoric stress
             variableVector normDevStress;
-            variableMatrix _dNormDevStressdDevStress;
             variableVector dNormDevStressdDevStress;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress, _dNormDevStressdDevStress ) );
-            dNormDevStressdDevStress = tardigradeVectorTools::appendVectors( _dNormDevStressdDevStress );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress, dNormDevStressdDevStress ) );
 
             //Evaluate the yield equation
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
@@ -538,26 +528,14 @@ namespace tardigradeHydra{
             variableVector pressure;
             variableVector deviatoricReferenceStress;
 
-            variableMatrix _dDevStressdStress, _dDevStressdRCG;
-            variableMatrix _dPressuredStress, _dPressuredRCG;
-
-            variableMatrix _d2DevStressdStressdRCG, _d2PressuredStressdRCG;
-
             variableVector dDevStressdStress, dDevStressdRCG;
             variableVector dPressuredStress, dPressuredRCG;
 
             variableVector d2DevStressdStressdRCG, d2PressuredStressdRCG;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
-                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, _dDevStressdStress,
-                                                       _dDevStressdRCG, _dPressuredStress, _dPressuredRCG, _d2DevStressdStressdRCG, _d2PressuredStressdRCG ) )
-
-            dDevStressdStress      = tardigradeVectorTools::appendVectors( _dDevStressdStress      );
-            dDevStressdRCG         = tardigradeVectorTools::appendVectors( _dDevStressdRCG         );
-            dPressuredStress       = tardigradeVectorTools::appendVectors( _dPressuredStress       );
-            dPressuredRCG          = tardigradeVectorTools::appendVectors( _dPressuredRCG          );
-            d2DevStressdStressdRCG = tardigradeVectorTools::appendVectors( _d2DevStressdStressdRCG );
-            d2PressuredStressdRCG  = tardigradeVectorTools::appendVectors( _d2PressuredStressdRCG  );
+                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
+                                                       dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
 
             floatVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, tot_dim, sot_dim, sot_dim, sot_dim );
             floatVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG,  dRCGdPrecedingF, dim, sot_dim, sot_dim, sot_dim );
@@ -568,16 +546,11 @@ namespace tardigradeHydra{
 
             //Compute the l2norm of the deviatoric stress
             variableVector normDevStress;
-            variableMatrix _dNormDevStressdDevStress;
-            variableMatrix _d2NormDevStressdDevStress2;
             variableVector dNormDevStressdDevStress;
             variableVector d2NormDevStressdDevStress2;
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress,
-                                                                                                                  _dNormDevStressdDevStress,
-                                                                                                                  _d2NormDevStressdDevStress2 ) )
-
-            dNormDevStressdDevStress = tardigradeVectorTools::appendVectors( _dNormDevStressdDevStress );
-            d2NormDevStressdDevStress2 = tardigradeVectorTools::appendVectors( _d2NormDevStressdDevStress2 );
+                                                                                                                  dNormDevStressdDevStress,
+                                                                                                                  d2NormDevStressdDevStress2 ) )
 
             //Evaluate the yield equation
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
@@ -2800,20 +2773,6 @@ namespace tardigradeHydra{
 
             floatVector higherOrderDrivingStress;
 
-            floatMatrix _dMacrodFp;
-
-            floatMatrix _dMacrodPK2;
-
-            floatMatrix _dMicrodFp;
-
-            floatMatrix _dMicrodSigma;
-
-            floatMatrix _dHigherdFp;
-
-            floatMatrix _dHigherdChip;
-
-            floatMatrix _dHigherdM;
-
             floatVector dMacrodFp;
 
             floatVector dMacrodPK2;
@@ -2829,27 +2788,13 @@ namespace tardigradeHydra{
             floatVector dHigherdM;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, Fp, macroDrivingStress,
-                                                                                                          _dMacrodPK2, _dMacrodFp ) );
+                                                                                                          dMacrodPK2, dMacrodFp ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, Fp, symmetricMicroDrivingStress,
-                                                                                                                     _dMicrodSigma, _dMicrodFp ) );
+                                                                                                                     dMicrodSigma, dMicrodFp ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, higherOrderDrivingStress,
-                                                                                                                  _dHigherdM, _dHigherdFp, _dHigherdChip ) );
-
-            dMacrodFp    = tardigradeVectorTools::appendVectors( _dMacrodFp    );
-
-            dMacrodPK2   = tardigradeVectorTools::appendVectors( _dMacrodPK2   );
-
-            dMicrodFp    = tardigradeVectorTools::appendVectors( _dMicrodFp    );
-
-            dMicrodSigma = tardigradeVectorTools::appendVectors( _dMicrodSigma );
-
-            dHigherdFp   = tardigradeVectorTools::appendVectors( _dHigherdFp   );
-
-            dHigherdChip = tardigradeVectorTools::appendVectors( _dHigherdChip );
-
-            dHigherdM    = tardigradeVectorTools::appendVectors( _dHigherdM    );
+                                                                                                                  dHigherdM, dHigherdFp, dHigherdChip ) );
 
             if ( isPrevious ){
 

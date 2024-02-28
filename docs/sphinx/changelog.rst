@@ -6,12 +6,16 @@ Changelog
 #########
 
 ******************
-0.4.2 (unreleased)
+0.5.0 (unreleased)
 ******************
 
 New Features
 ============
 - Throw a custom convergence error class rather than a nested exception if a failure happens because of the line-search or the Newton loop iterations (:pull:`70`). By `Nathan Miller`_.
+
+Breaking Changes
+================
+- Changed the micromorphic tools to use the vector Jacobian formulations and changed the micromorphic linear elasticity calculation to use vector Jacobian formulations (:pull:`72`). By `Nathan Miller`_.
 
 Internal Changes
 ================
