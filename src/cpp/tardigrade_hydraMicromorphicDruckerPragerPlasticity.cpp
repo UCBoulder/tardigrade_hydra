@@ -392,8 +392,8 @@ namespace tardigradeHydra{
                                                                const variableVector &cohesion,
                                                                const variableVector &precedingDeformationGradient,
                                                                const parameterType &frictionAngle, const parameterType &beta,
-                                                               variableVector &yieldValue, variableMatrix &dFdStress, variableMatrix &dFdc,
-                                                               variableMatrix &dFdPrecedingF ){
+                                                               variableVector &yieldValue, variableVector &dFdStress, variableVector &dFdc,
+                                                               variableVector &dFdPrecedingF ){
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
@@ -421,43 +421,62 @@ namespace tardigradeHydra{
              *     tensor.
              */
 
+            unsigned int dim = 3;
+            unsigned int sot_dim = dim * dim;
+            unsigned int tot_dim = sot_dim * dim;
+
             parameterType AAngle, BAngle;
             TARDIGRADE_ERROR_TOOLS_CATCH( computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
 
             //Compute the right Cauchy-Green deformation tensor
             floatVector rightCauchyGreen;
-            floatMatrix dRCGdPrecedingF;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
+            floatMatrix _dRCGdPrecedingF;
+            floatVector dRCGdPrecedingF;
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, _dRCGdPrecedingF ) );
+
+            dRCGdPrecedingF = tardigradeVectorTools::appendVectors( _dRCGdPrecedingF );
 
             //Compute the decomposition of the stress
             variableVector pressure;
             variableVector deviatoricReferenceStress;
 
-            variableMatrix dDevStressdStress, dDevStressdRCG;
-            variableMatrix dPressuredStress, dPressuredRCG;
+            variableMatrix _dDevStressdStress, _dDevStressdRCG;
+            variableMatrix _dPressuredStress, _dPressuredRCG;
+
+            variableVector dDevStressdStress, dDevStressdRCG;
+            variableVector dPressuredStress, dPressuredRCG;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
-                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
-                                                       dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
+                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, _dDevStressdStress,
+                                                       _dDevStressdRCG, _dPressuredStress, _dPressuredRCG ) );
 
-            floatMatrix dDevStressdPrecedingF = tardigradeVectorTools::dot( dDevStressdRCG, dRCGdPrecedingF );
-            floatMatrix dPressuredPrecedingF  = tardigradeVectorTools::dot( dPressuredRCG,  dRCGdPrecedingF );
+            dDevStressdStress = tardigradeVectorTools::appendVectors( _dDevStressdStress );
+            dDevStressdRCG    = tardigradeVectorTools::appendVectors( _dDevStressdRCG );
+            dPressuredStress  = tardigradeVectorTools::appendVectors( _dPressuredStress );
+            dPressuredRCG     = tardigradeVectorTools::appendVectors( _dPressuredRCG );
+
+            floatVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, tot_dim, sot_dim, sot_dim, sot_dim );
+            floatVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG,  dRCGdPrecedingF, dim, sot_dim, sot_dim, sot_dim );
 
             //Compute the l2norm of the deviatoric stress
             variableVector normDevStress;
-            variableMatrix dNormDevStressdDevStress;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress, dNormDevStressdDevStress ) );
+            variableMatrix _dNormDevStressdDevStress;
+            variableVector dNormDevStressdDevStress;
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress, _dNormDevStressdDevStress ) );
+            dNormDevStressdDevStress = tardigradeVectorTools::appendVectors( _dNormDevStressdDevStress );
 
             //Evaluate the yield equation
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
             //Construct the Jacobians
-            dFdStress = tardigradeVectorTools::dot( dNormDevStressdDevStress, dDevStressdStress )
+            dFdStress = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdStress, dim, tot_dim, tot_dim, tot_dim )
                       + BAngle * dPressuredStress;
 
-            dFdc = -AAngle * tardigradeVectorTools::eye< constantType >( cohesion.size() );
+            dFdc = variableVector( cohesion.size( ) * cohesion.size( ), 0 );
+            tardigradeVectorTools::eye( dFdc );
+            dFdc *= -AAngle;
 
-            dFdPrecedingF = tardigradeVectorTools::dot( dNormDevStressdDevStress, dDevStressdPrecedingF )
+            dFdPrecedingF = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdPrecedingF, dim, tot_dim, tot_dim, sot_dim )
                           + BAngle * dPressuredPrecedingF;
 
         }
@@ -466,9 +485,9 @@ namespace tardigradeHydra{
                                                            const variableVector &cohesion,
                                                            const variableVector &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableVector &yieldValue, variableMatrix &dFdStress, variableMatrix &dFdc,
-                                                           variableMatrix &dFdPrecedingF, variableMatrix &d2FdStress2,
-                                                           variableMatrix &d2FdStressdPrecedingF ){
+                                                           variableVector &yieldValue, variableVector &dFdStress, variableVector &dFdc,
+                                                           variableVector &dFdPrecedingF, variableVector &d2FdStress2,
+                                                           variableVector &d2FdStressdPrecedingF ){
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
@@ -501,99 +520,85 @@ namespace tardigradeHydra{
 
             //Assume 3D
             unsigned int dim = 3;
+            unsigned int sot_dim = dim * dim;
+            unsigned int tot_dim = sot_dim * dim;
 
             parameterType AAngle, BAngle;
             TARDIGRADE_ERROR_TOOLS_CATCH( computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
 
             //Compute the right Cauchy-Green deformation tensor
             floatVector rightCauchyGreen;
-            floatMatrix dRCGdPrecedingF;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
+            floatMatrix _dRCGdPrecedingF;
+            floatVector dRCGdPrecedingF;
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, _dRCGdPrecedingF ) );
+
+            dRCGdPrecedingF = tardigradeVectorTools::appendVectors( _dRCGdPrecedingF );
 
             //Compute the decomposition of the stress
             variableVector pressure;
             variableVector deviatoricReferenceStress;
 
-            variableMatrix dDevStressdStress, dDevStressdRCG;
-            variableMatrix dPressuredStress, dPressuredRCG;
+            variableMatrix _dDevStressdStress, _dDevStressdRCG;
+            variableMatrix _dPressuredStress, _dPressuredRCG;
 
-            variableMatrix d2DevStressdStressdRCG, d2PressuredStressdRCG;
+            variableMatrix _d2DevStressdStressdRCG, _d2PressuredStressdRCG;
+
+            variableVector dDevStressdStress, dDevStressdRCG;
+            variableVector dPressuredStress, dPressuredRCG;
+
+            variableVector d2DevStressdStressdRCG, d2PressuredStressdRCG;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
-                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
-                                                       dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
+                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, _dDevStressdStress,
+                                                       _dDevStressdRCG, _dPressuredStress, _dPressuredRCG, _d2DevStressdStressdRCG, _d2PressuredStressdRCG ) )
 
-            floatMatrix dDevStressdPrecedingF = tardigradeVectorTools::dot( dDevStressdRCG, dRCGdPrecedingF );
-            floatMatrix dPressuredPrecedingF  = tardigradeVectorTools::dot( dPressuredRCG,  dRCGdPrecedingF );
+            dDevStressdStress      = tardigradeVectorTools::appendVectors( _dDevStressdStress      );
+            dDevStressdRCG         = tardigradeVectorTools::appendVectors( _dDevStressdRCG         );
+            dPressuredStress       = tardigradeVectorTools::appendVectors( _dPressuredStress       );
+            dPressuredRCG          = tardigradeVectorTools::appendVectors( _dPressuredRCG          );
+            d2DevStressdStressdRCG = tardigradeVectorTools::appendVectors( _d2DevStressdStressdRCG );
+            d2PressuredStressdRCG  = tardigradeVectorTools::appendVectors( _d2PressuredStressdRCG  );
 
-            variableMatrix d2DevStressdStressdPrecedingF( deviatoricReferenceStress.size( ), floatVector( deviatoricReferenceStress.size( ) * precedingDeformationGradient.size( ), 0 ) );
+            floatVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, tot_dim, sot_dim, sot_dim, sot_dim );
+            floatVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG,  dRCGdPrecedingF, dim, sot_dim, sot_dim, sot_dim );
 
-            variableMatrix d2PressuredStressdPrecedingF( pressure.size( ), floatVector( deviatoricReferenceStress.size( ) * precedingDeformationGradient.size( ), 0 ) );
+            variableVector d2DevStressdStressdPrecedingF = tardigradeVectorTools::matrixMultiply( d2DevStressdStressdRCG, dRCGdPrecedingF, tot_dim * tot_dim, sot_dim, sot_dim, sot_dim );
 
-            for ( unsigned int I = 0; I < deviatoricReferenceStress.size( ); I++ ){
-
-                for ( unsigned int J = 0; J < stressMeasure.size( ); J++ ){
-
-                    for ( unsigned int K = 0; K < precedingDeformationGradient.size( ); K++ ){
-
-                        for ( unsigned int L = 0; L < rightCauchyGreen.size( ); L++ ){
-
-                            d2DevStressdStressdPrecedingF[ I ][ precedingDeformationGradient.size( ) * J + K ]
-                                += d2DevStressdStressdRCG[ I ][ rightCauchyGreen.size( ) * J + L ] * dRCGdPrecedingF[ L ][ K ];
-
-                        }
-
-                    }
-
-                }
-
-            }
-
-            for ( unsigned int I = 0; I < pressure.size( ); I++ ){
-
-                for ( unsigned int J = 0; J < stressMeasure.size( ); J++ ){
-
-                    for ( unsigned int K = 0; K < precedingDeformationGradient.size( ); K++ ){
-
-                        for ( unsigned int L = 0; L < rightCauchyGreen.size( ); L++ ){
-
-                            d2PressuredStressdPrecedingF[ I ][ precedingDeformationGradient.size( ) * J + K ]
-                                += d2PressuredStressdRCG[ I ][ rightCauchyGreen.size( ) * J + L ] * dRCGdPrecedingF[ L ][ K ];
-
-                        }
-
-                    }
-
-                }
-
-            }
+            variableVector d2PressuredStressdPrecedingF = tardigradeVectorTools::matrixMultiply( d2PressuredStressdRCG, dRCGdPrecedingF, dim * tot_dim, sot_dim, sot_dim, sot_dim );
 
             //Compute the l2norm of the deviatoric stress
             variableVector normDevStress;
-            variableMatrix dNormDevStressdDevStress;
-            variableMatrix d2NormDevStressdDevStress2;
+            variableMatrix _dNormDevStressdDevStress;
+            variableMatrix _d2NormDevStressdDevStress2;
+            variableVector dNormDevStressdDevStress;
+            variableVector d2NormDevStressdDevStress2;
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress,
-                                                                                                                  dNormDevStressdDevStress,
-                                                                                                                  d2NormDevStressdDevStress2 ) )
+                                                                                                                  _dNormDevStressdDevStress,
+                                                                                                                  _d2NormDevStressdDevStress2 ) )
+
+            dNormDevStressdDevStress = tardigradeVectorTools::appendVectors( _dNormDevStressdDevStress );
+            d2NormDevStressdDevStress2 = tardigradeVectorTools::appendVectors( _d2NormDevStressdDevStress2 );
 
             //Evaluate the yield equation
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
     
             //Construct the Jacobians
-            dFdStress = tardigradeVectorTools::dot( dNormDevStressdDevStress, dDevStressdStress )
+            dFdStress = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdStress, dim, tot_dim, tot_dim, tot_dim )
                       + BAngle * dPressuredStress;
     
-            dFdc = -AAngle * tardigradeVectorTools::eye< constantType >( cohesion.size() );
+            dFdc = variableVector( cohesion.size( ) * cohesion.size( ), 0 );
+            tardigradeVectorTools::eye( dFdc );
+            dFdc *= -AAngle;
     
-            dFdPrecedingF = tardigradeVectorTools::dot( dNormDevStressdDevStress, dDevStressdPrecedingF )
+            dFdPrecedingF = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdPrecedingF, dim, tot_dim, tot_dim, sot_dim )
                           + BAngle * dPressuredPrecedingF;
     
             //Construct the second-order jacobians
-            d2FdStress2 = variableMatrix( dim, variableVector( dim * dim * dim * dim * dim * dim, 0 ) );
-            d2FdStressdPrecedingF = tardigradeVectorTools::dot( dNormDevStressdDevStress, d2DevStressdStressdPrecedingF )
+            d2FdStress2 = variableVector( dim * tot_dim * tot_dim, 0 );
+            d2FdStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, d2DevStressdStressdPrecedingF, dim, tot_dim, tot_dim, tot_dim * sot_dim )
                                   + BAngle * d2PressuredStressdPrecedingF;
 
-            for ( unsigned int K = 0; K < 3; K++ ){
+            for ( unsigned int K = 0; K < 3; K++ ){ //TODO: This should be able to be reduced into a matrix multiplication
                 for ( unsigned int L = 0; L < 3; L++ ){
                     for ( unsigned int M = 0; M < 3; M++ ){
                         for ( unsigned int N = 0; N < 3; N++ ){
@@ -605,15 +610,15 @@ namespace tardigradeHydra{
                                                 for ( unsigned int C = 0; C < 3; C++ ){
                                                     for ( unsigned int D = 0; D < 3; D++ ){
                                                         for ( unsigned int E = 0; E < 3; E++ ){
-                                                            d2FdStressdPrecedingF[ K ][ dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * O + P ]
-                                                                += d2NormDevStressdDevStress2[ K ][ dim * dim * dim * dim * dim * Q + dim * dim * dim * dim * A + dim * dim * dim * B + dim * dim * C + dim * D + E ]
-                                                                 * dDevStressdStress[ dim * dim * Q + dim * A + B ][ dim * dim * L + dim * M + N ]
-                                                                 * dDevStressdPrecedingF[ dim * dim * C + dim * D + E ][ dim * O + P ];
+                                                            d2FdStressdPrecedingF[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * O + P ]
+                                                                += d2NormDevStressdDevStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * Q + dim * dim * dim * dim * A + dim * dim * dim * B + dim * dim * C + dim * D + E ]
+                                                                 * dDevStressdStress[ dim * dim * dim * dim * dim * Q + dim * dim * dim * dim * A + dim * dim * dim * B + dim * dim * L + dim * M + N ]
+                                                                 * dDevStressdPrecedingF[ dim * dim * dim * dim * C + dim * dim * dim * D + dim * dim * E + dim * O + P ];
                                                             for ( unsigned int F = 0; F < 3; F++ ){
-                                                                d2FdStress2[ K ][ dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * O + dim * P + Q ]
-                                                                    += d2NormDevStressdDevStress2[ K ][ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * D + dim * E + F ]
-                                                                     * dDevStressdStress[ dim * dim * A + dim * B + C ][ dim * dim * L + dim * M + N ]
-                                                                     * dDevStressdStress[ dim * dim * D + dim * E + F ][ dim * dim * O + dim * P + Q ];
+                                                                d2FdStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * O + dim * P + Q ]
+                                                                    += d2NormDevStressdDevStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * D + dim * E + F ]
+                                                                     * dDevStressdStress[ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * L + dim * M + N ]
+                                                                     * dDevStressdStress[ dim * dim * dim * dim * dim * D + dim * dim * dim * dim * E + dim * dim * dim * F + dim * dim * O + dim * P + Q ];
                                                             }
                                                         }
                                                     }
@@ -3370,8 +3375,6 @@ namespace tardigradeHydra{
             floatVector dMacroFlowdDrivingStress, dMicroFlowdDrivingStress,
                         dMacroFlowdPrecedingF,    dMicroFlowdPrecedingF;
 
-            floatMatrix _dMicroGradientFlowdDrivingStress, _dMicroGradientFlowdCohesion, _dMicroGradientFlowdPrecedingF;
-
             floatVector dMicroGradientFlowdDrivingStress, dMicroGradientFlowdCohesion, dMicroGradientFlowdPrecedingF;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *macroDrivingStress, *macroCohesion, *precedingDeformationGradient,
@@ -3384,13 +3387,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
                                                                                        ( *microGradientFlowParameters )[ 0 ], ( *microGradientFlowParameters )[ 1 ],
-                                                                                       tempVectorYield, _dMicroGradientFlowdDrivingStress, _dMicroGradientFlowdCohesion, _dMicroGradientFlowdPrecedingF ) );
-
-            dMicroGradientFlowdDrivingStress = tardigradeVectorTools::appendVectors( _dMicroGradientFlowdDrivingStress );
-
-            dMicroGradientFlowdCohesion      = tardigradeVectorTools::appendVectors( _dMicroGradientFlowdCohesion      );
-
-            dMicroGradientFlowdPrecedingF    = tardigradeVectorTools::appendVectors( _dMicroGradientFlowdPrecedingF    );
+                                                                                       tempVectorYield, dMicroGradientFlowdDrivingStress, dMicroGradientFlowdCohesion, dMicroGradientFlowdPrecedingF ) );
 
             if ( isPrevious ){
 
@@ -3780,11 +3777,8 @@ namespace tardigradeHydra{
             floatVector dMacroFlowdDrivingStress, dMicroFlowdDrivingStress,
                         dMacroFlowdPrecedingF,    dMicroFlowdPrecedingF;
 
-            floatMatrix _dMicroGradientFlowdDrivingStress, _dMicroGradientFlowdCohesion, _dMicroGradientFlowdPrecedingF;
-
             floatMatrix _d2MacroFlowdDrivingStress2,         _d2MacroFlowdDrivingStressdPrecedingF,
-                        _d2MicroFlowdDrivingStress2,         _d2MicroFlowdDrivingStressdPrecedingF,
-                        _d2MicroGradientFlowdDrivingStress2, _d2MicroGradientFlowdDrivingStressdPrecedingF;
+                        _d2MicroFlowdDrivingStress2,         _d2MicroFlowdDrivingStressdPrecedingF;
 
             floatVector dMicroGradientFlowdDrivingStress, dMicroGradientFlowdCohesion, dMicroGradientFlowdPrecedingF;
 
@@ -3804,14 +3798,8 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
                                                                                        ( *microGradientFlowParameters )[ 0 ], ( *microGradientFlowParameters )[ 1 ],
-                                                                                       tempVectorYield, _dMicroGradientFlowdDrivingStress, _dMicroGradientFlowdCohesion, _dMicroGradientFlowdPrecedingF,
-                                                                                       _d2MicroGradientFlowdDrivingStress2, _d2MicroGradientFlowdDrivingStressdPrecedingF ) );
-
-            dMicroGradientFlowdDrivingStress             = tardigradeVectorTools::appendVectors( _dMicroGradientFlowdDrivingStress             );
-
-            dMicroGradientFlowdCohesion                  = tardigradeVectorTools::appendVectors( _dMicroGradientFlowdCohesion                  );
-
-            dMicroGradientFlowdPrecedingF                = tardigradeVectorTools::appendVectors( _dMicroGradientFlowdPrecedingF                );
+                                                                                       tempVectorYield, dMicroGradientFlowdDrivingStress, dMicroGradientFlowdCohesion, dMicroGradientFlowdPrecedingF,
+                                                                                       d2MicroGradientFlowdDrivingStress2, d2MicroGradientFlowdDrivingStressdPrecedingF ) );
 
             d2MacroFlowdDrivingStress2                   = tardigradeVectorTools::appendVectors( _d2MacroFlowdDrivingStress2                   );
 
@@ -3820,10 +3808,6 @@ namespace tardigradeHydra{
             d2MicroFlowdDrivingStress2                   = tardigradeVectorTools::appendVectors( _d2MicroFlowdDrivingStress2                   );
 
             d2MicroFlowdDrivingStressdPrecedingF         = tardigradeVectorTools::appendVectors( _d2MicroFlowdDrivingStressdPrecedingF         );
-
-            d2MicroGradientFlowdDrivingStress2           = tardigradeVectorTools::appendVectors( _d2MicroGradientFlowdDrivingStress2           );
-
-            d2MicroGradientFlowdDrivingStressdPrecedingF = tardigradeVectorTools::appendVectors( _d2MicroGradientFlowdDrivingStressdPrecedingF );
 
             floatVector d2MacroFlowdDrivingStressdMacroStress( sot_dim * sot_dim, 0 );
 
@@ -5192,12 +5176,6 @@ namespace tardigradeHydra{
 
             floatVector dMicroYielddPrecedingF;
 
-            floatMatrix _dMicroGradientYielddDrivingStress;
-
-            floatMatrix _dMicroGradientYielddCohesion;
-
-            floatMatrix _dMicroGradientYielddPrecedingF;
-
             floatVector dMicroGradientYielddDrivingStress;
 
             floatVector dMicroGradientYielddCohesion;
@@ -5214,14 +5192,8 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
                                                                                         ( *microGradientYieldParameters )[ 0 ], ( *microGradientYieldParameters )[ 1 ],
-                                                                                        microGradientYield, _dMicroGradientYielddDrivingStress, _dMicroGradientYielddCohesion,
-                                                                                        _dMicroGradientYielddPrecedingF ) );
-
-            dMicroGradientYielddDrivingStress = tardigradeVectorTools::appendVectors( _dMicroGradientYielddDrivingStress );
-
-            dMicroGradientYielddCohesion      = tardigradeVectorTools::appendVectors( _dMicroGradientYielddCohesion      );
-
-            dMicroGradientYielddPrecedingF    = tardigradeVectorTools::appendVectors( _dMicroGradientYielddPrecedingF    );
+                                                                                        microGradientYield, dMicroGradientYielddDrivingStress, dMicroGradientYielddCohesion,
+                                                                                        dMicroGradientYielddPrecedingF ) );
 
             floatVector dMacroYielddStress = tardigradeVectorTools::matrixMultiply( dMacroYielddDrivingStress, *dMacroDrivingStressdStress, 1, sot_dim, sot_dim, sot_dim );
 
