@@ -235,7 +235,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dDrivingStressdSubFs[ ( num_configs - 1 ) * sot_dim * i + j ] += dDrivingStressdFn[ num_configs * sot_dim * i + k ] * ( *dF1dSubFs )[ num_configs * sot_dim * k + j ];
+                        dDrivingStressdSubFs[ ( num_configs - 1 ) * sot_dim * i + j ] += dDrivingStressdFn[  num_configs * sot_dim * i + k ] * ( *dF1dSubFs )[ ( num_configs - 1 ) * sot_dim * k + j ];
 
                     }
 
