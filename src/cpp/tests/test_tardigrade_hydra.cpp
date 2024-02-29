@@ -705,13 +705,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector ){
 
     tardigradeHydra::unit_test::hydraBaseTester::decomposeStateVariableVector( hydra );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( configurationsAnswer, *hydra.get_configurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( configurationsAnswer ), *hydra.get_configurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousConfigurationsAnswer, *hydra.get_previousConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousConfigurationsAnswer ), *hydra.get_previousConfigurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( inverseConfigurationsAnswer, *hydra.get_inverseConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( inverseConfigurationsAnswer ), *hydra.get_inverseConfigurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousInverseConfigurationsAnswer, *hydra.get_previousInverseConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousInverseConfigurationsAnswer ), *hydra.get_previousInverseConfigurations( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( nonLinearSolveStateVariablesAnswer, *hydra.get_nonLinearSolveStateVariables( ) ) );
 
@@ -1085,9 +1085,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian ){
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    floatMatrix configurations = *hydra.get_configurations( );
+    floatVector configurations = *hydra.get_configurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( configurations );
+    floatVector x = configurations;
 
     floatType eps = 1e-6;
 
@@ -1099,13 +1099,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian ){
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1117,26 +1113,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian ){
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationJacobian( configurations, lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getSubConfigurationJacobian( configurations, lower, upper ) ) );
 
     lower = 1;
     upper = 3;
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1148,13 +1140,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian ){
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationJacobian( configurations, lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getSubConfigurationJacobian( configurations, lower, upper ) ) );
 
 }
 
@@ -1196,9 +1188,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian2 ){
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    floatMatrix configurations = *hydra.get_configurations( );
+    floatVector configurations = *hydra.get_configurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( configurations );
+    floatVector x = configurations;
 
     floatType eps = 1e-6;
 
@@ -1210,13 +1202,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian2 ){
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1228,26 +1216,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian2 ){
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationJacobian( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getSubConfigurationJacobian( lower, upper ) ) );
 
     lower = 1;
     upper = 3;
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1259,13 +1243,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getSubConfigurationJacobian2 ){
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubConfigurationJacobian( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getSubConfigurationJacobian( lower, upper ) ) );
 
 }
 
@@ -1307,9 +1291,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationJacobian ){
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    floatMatrix configurations = *hydra.get_configurations( );
+    floatVector configurations = *hydra.get_configurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( configurations );
+    floatVector x = configurations;
 
     floatType eps = 1e-6;
 
@@ -1321,13 +1305,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationJacobian ){
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1339,26 +1319,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationJacobian ){
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPrecedingConfigurationJacobian( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPrecedingConfigurationJacobian( upper ) ) );
 
     lower = 0;
     upper = 3;
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1370,13 +1346,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPrecedingConfigurationJacobian ){
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPrecedingConfigurationJacobian( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPrecedingConfigurationJacobian( upper ) ) );
 
 }
 
@@ -1418,9 +1394,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationJacobian ){
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    floatMatrix configurations = *hydra.get_configurations( );
+    floatVector configurations = *hydra.get_configurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( configurations );
+    floatVector x = configurations;
 
     floatType eps = 1e-6;
 
@@ -1432,13 +1408,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationJacobian ){
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1450,26 +1422,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationJacobian ){
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getFollowingConfigurationJacobian( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getFollowingConfigurationJacobian( lower ) ) );
 
     lower = 2;
     upper = 4;
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1481,13 +1449,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getFollowingConfigurationJacobian ){
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getFollowingConfigurationJacobian( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getFollowingConfigurationJacobian( lower ) ) );
 
 }
 
@@ -1529,9 +1497,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationJacobian ){
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    floatMatrix configurations = *hydra.get_previousConfigurations( );
+    floatVector configurations = *hydra.get_previousConfigurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( configurations );
+    floatVector x = configurations;
 
     floatType eps = 1e-6;
 
@@ -1543,13 +1511,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationJacobian ){
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1561,26 +1525,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationJacobian ){
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousSubConfigurationJacobian( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousSubConfigurationJacobian( lower, upper ) ) );
 
     lower = 1;
     upper = 3;
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1592,13 +1552,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousSubConfigurationJacobian ){
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousSubConfigurationJacobian( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousSubConfigurationJacobian( lower, upper ) ) );
 
 }
 
@@ -1640,9 +1600,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationJacobian )
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    floatMatrix configurations = *hydra.get_previousConfigurations( );
+    floatVector configurations = *hydra.get_previousConfigurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( configurations );
+    floatVector x = configurations;
 
     floatType eps = 1e-6;
 
@@ -1654,13 +1614,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationJacobian )
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1672,26 +1628,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationJacobian )
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingConfigurationJacobian( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousPrecedingConfigurationJacobian( upper ) ) );
 
     lower = 0;
     upper = 3;
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension, 0 );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1703,13 +1655,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousPrecedingConfigurationJacobian )
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingConfigurationJacobian( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousPrecedingConfigurationJacobian( upper ) ) );
 
 }
 
@@ -1751,9 +1703,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationJacobian )
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    floatMatrix configurations = *hydra.get_previousConfigurations( );
+    floatVector configurations = *hydra.get_previousConfigurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( configurations );
+    floatVector x = configurations;
 
     floatType eps = 1e-6;
 
@@ -1765,13 +1717,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationJacobian )
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1783,26 +1731,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationJacobian )
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingConfigurationJacobian( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousFollowingConfigurationJacobian( lower ) ) );
 
     lower = 2;
     upper = 4;
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * configurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * configurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1814,13 +1758,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousFollowingConfigurationJacobian )
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingConfigurationJacobian( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousFollowingConfigurationJacobian( lower ) ) );
 
 }
 
@@ -1882,9 +1826,11 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients ){
 
         floatVector F1_p, F1_m;
 
-        F1_p = ( *hydra_p.get_configurations( ) )[ 0 ];
+        F1_p = floatVector( hydra_p.get_configurations( )->begin( ),
+                            hydra_p.get_configurations( )->begin( ) + 9 );
 
-        F1_m = ( *hydra_m.get_configurations( ) )[ 0 ];
+        F1_m = floatVector( hydra_m.get_configurations( )->begin( ),
+                            hydra_m.get_configurations( )->begin( ) + 9 );
 
         for ( unsigned int j = 0; j < F1_p.size( ); j++ ){
 
@@ -1894,7 +1840,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dF1dF_answer, *hydra.get_dF1dF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dF1dF_answer ), *hydra.get_dF1dF( ) ) );
 
     tardigradeHydra::unit_test::hydraBaseTester::checkdF1dF( hydra );
 
@@ -1912,9 +1858,11 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients ){
 
         floatVector F1_p, F1_m;
 
-        F1_p = ( *hydra_p.get_configurations( ) )[ 0 ];
+        F1_p = floatVector( hydra_p.get_configurations( )->begin( ),
+                            hydra_p.get_configurations( )->begin( ) + 9 );
 
-        F1_m = ( *hydra_m.get_configurations( ) )[ 0 ];
+        F1_m = floatVector( hydra_m.get_configurations( )->begin( ),
+                            hydra_m.get_configurations( )->begin( ) + 9 );
 
         for ( unsigned int j = 0; j < F1_p.size( ); j++ ){
 
@@ -1924,7 +1872,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setFirstConfigurationGradients ){
         
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dF1dFn_answer, *hydra.get_dF1dFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dF1dFn_answer ), *hydra.get_dF1dFn( ) ) );
 
     tardigradeHydra::unit_test::hydraBaseTester::checkdF1dFn( hydra );
 
@@ -1988,9 +1936,11 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients ){
 
         floatVector F1_p, F1_m;
 
-        F1_p = ( *hydra_p.get_previousConfigurations( ) )[ 0 ];
+        F1_p = floatVector( hydra_p.get_previousConfigurations( )->begin( ),
+                            hydra_p.get_previousConfigurations( )->begin( ) + 9 );
 
-        F1_m = ( *hydra_m.get_previousConfigurations( ) )[ 0 ];
+        F1_m = floatVector( hydra_m.get_previousConfigurations( )->begin( ),
+                            hydra_m.get_previousConfigurations( )->begin( ) + 9 );
 
         for ( unsigned int j = 0; j < F1_p.size( ); j++ ){
 
@@ -2000,7 +1950,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdF1dF_answer, *hydra.get_previousdF1dF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdF1dF_answer ), *hydra.get_previousdF1dF( ) ) );
 
     for ( unsigned int i = 0; i < ( numConfigurations - 1 ) * deformationGradient.size( ); i++ ){
 
@@ -2016,9 +1966,11 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients ){
 
         floatVector F1_p, F1_m;
 
-        F1_p = ( *hydra_p.get_previousConfigurations( ) )[ 0 ];
+        F1_p = floatVector( hydra_p.get_previousConfigurations( )->begin( ),
+                            hydra_p.get_previousConfigurations( )->begin( ) + 9 );
 
-        F1_m = ( *hydra_m.get_previousConfigurations( ) )[ 0 ];
+        F1_m = floatVector( hydra_m.get_previousConfigurations( )->begin( ),
+                            hydra_m.get_previousConfigurations( )->begin( ) + 9 );
 
         for ( unsigned int j = 0; j < F1_p.size( ); j++ ){
 
@@ -2028,7 +1980,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients ){
         
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdF1dFn_answer, *hydra.get_previousdF1dFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdF1dFn_answer ), *hydra.get_previousdF1dFn( ) ) );
 
 }
 
@@ -3287,7 +3239,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.getStress( ), cauchyStressAnswer ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.get_configurations( ), configurationsAnswer ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.get_configurations( ), tardigradeVectorTools::appendVectors( configurationsAnswer ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *hydra.get_nonLinearSolveStateVariables( ), isvAnswer ) );
 
@@ -3623,9 +3575,11 @@ BOOST_AUTO_TEST_CASE( test_getConfiguration ){
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getConfiguration( 1 ), ( *hydra.get_configurations( ) )[ 1 ] ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getConfiguration( 1 ), floatVector( hydra.get_configurations( )->begin( ) + 1 * 9,
+                                                                                               hydra.get_configurations( )->begin( ) + 2 * 9 ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousConfiguration( 3 ), ( *hydra.get_previousConfigurations( ) )[ 3 ] ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( hydra.getPreviousConfiguration( 3 ), floatVector( hydra.get_previousConfigurations( )->begin( ) + 3 * 9,
+                                                                                                       hydra.get_previousConfigurations( )->begin( ) + 4 * 9 ) ) );
 
 }
 

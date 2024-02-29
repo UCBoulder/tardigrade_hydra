@@ -182,21 +182,21 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousGradientMicroDeformation, *hydra.getPreviousGradientMicroDeformation( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( configurationsAnswer, *hydra.get_configurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( configurationsAnswer ), *hydra.get_configurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousConfigurationsAnswer, *hydra.get_previousConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousConfigurationsAnswer ), *hydra.get_previousConfigurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( inverseConfigurationsAnswer, *hydra.get_inverseConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( inverseConfigurationsAnswer ), *hydra.get_inverseConfigurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousInverseConfigurationsAnswer, *hydra.get_previousInverseConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousInverseConfigurationsAnswer ), *hydra.get_previousInverseConfigurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( microConfigurationsAnswer, *hydra.get_microConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( microConfigurationsAnswer ), *hydra.get_microConfigurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousMicroConfigurationsAnswer, *hydra.get_previousMicroConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousMicroConfigurationsAnswer ), *hydra.get_previousMicroConfigurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( inverseMicroConfigurationsAnswer, *hydra.get_inverseMicroConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( inverseMicroConfigurationsAnswer ), *hydra.get_inverseMicroConfigurations( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousInverseMicroConfigurationsAnswer, *hydra.get_previousInverseMicroConfigurations( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousInverseMicroConfigurationsAnswer ), *hydra.get_previousInverseMicroConfigurations( ) ) );
 
 }
 
@@ -1484,9 +1484,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigura
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-    floatMatrix microConfigurations = *hydra.get_microConfigurations( );
+    floatVector microConfigurations = *hydra.get_microConfigurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( microConfigurations );
+    floatVector x = microConfigurations;
 
     floatType eps = 1e-6;
 
@@ -1498,13 +1498,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigura
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1516,14 +1512,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigura
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubMicroConfigurationJacobian( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getSubMicroConfigurationJacobian( lower, upper ) ) );
 
     lower = 1;
 
@@ -1531,13 +1527,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigura
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1549,14 +1541,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigura
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getSubMicroConfigurationJacobian( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getSubMicroConfigurationJacobian( lower, upper ) ) );
 
 }
 
@@ -1669,9 +1661,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroCon
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-    floatMatrix microConfigurations = *hydra.get_microConfigurations( );
+    floatVector microConfigurations = *hydra.get_microConfigurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( microConfigurations );
+    floatVector x = microConfigurations;
 
     floatType eps = 1e-6;
 
@@ -1683,13 +1675,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroCon
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1701,14 +1689,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroCon
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPrecedingMicroConfigurationJacobian( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPrecedingMicroConfigurationJacobian( upper ) ) );
 
     lower = 0;
 
@@ -1716,13 +1704,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroCon
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1734,14 +1718,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroCon
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPrecedingMicroConfigurationJacobian( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPrecedingMicroConfigurationJacobian( upper ) ) );
 
 }
 
@@ -1854,9 +1838,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroCon
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-    floatMatrix microConfigurations = *hydra.get_microConfigurations( );
+    floatVector microConfigurations = *hydra.get_microConfigurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( microConfigurations );
+    floatVector x = microConfigurations;
 
     floatType eps = 1e-6;
 
@@ -1868,13 +1852,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroCon
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1886,14 +1866,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroCon
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getFollowingMicroConfigurationJacobian( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getFollowingMicroConfigurationJacobian( lower ) ) );
 
     lower = 2;
 
@@ -1901,13 +1881,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroCon
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -1919,14 +1895,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroCon
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getFollowingMicroConfigurationJacobian( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getFollowingMicroConfigurationJacobian( lower ) ) );
 
 }
 
@@ -2039,9 +2015,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroC
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-    floatMatrix microConfigurations = *hydra.get_previousMicroConfigurations( );
+    floatVector microConfigurations = *hydra.get_previousMicroConfigurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( microConfigurations );
+    floatVector x = microConfigurations;
 
     floatType eps = 1e-6;
 
@@ -2053,13 +2029,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroC
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -2071,14 +2043,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroC
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousSubMicroConfigurationJacobian( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousSubMicroConfigurationJacobian( lower, upper ) ) );
 
     lower = 1;
 
@@ -2086,13 +2058,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroC
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -2104,14 +2072,13 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroC
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
-
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousSubMicroConfigurationJacobian( lower, upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousSubMicroConfigurationJacobian( lower, upper ) ) );
 
 }
 
@@ -2224,9 +2191,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPreceding
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-    floatMatrix microConfigurations = *hydra.get_previousMicroConfigurations( );
+    floatVector microConfigurations = *hydra.get_previousMicroConfigurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( microConfigurations );
+    floatVector x = microConfigurations;
 
     floatType eps = 1e-6;
 
@@ -2238,13 +2205,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPreceding
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -2256,14 +2219,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPreceding
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingMicroConfigurationJacobian( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousPrecedingMicroConfigurationJacobian( upper ) ) );
 
     lower = 0;
 
@@ -2271,13 +2234,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPreceding
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -2289,14 +2248,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPreceding
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousPrecedingMicroConfigurationJacobian( upper ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousPrecedingMicroConfigurationJacobian( upper ) ) );
 
 }
 
@@ -2409,9 +2368,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowing
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-    floatMatrix microConfigurations = *hydra.get_previousMicroConfigurations( );
+    floatVector microConfigurations = *hydra.get_previousMicroConfigurations( );
 
-    floatVector x = tardigradeVectorTools::appendVectors( microConfigurations );
+    floatVector x = microConfigurations;
 
     floatType eps = 1e-6;
 
@@ -2423,13 +2382,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowing
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -2441,14 +2396,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowing
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingMicroConfigurationJacobian( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousFollowingMicroConfigurationJacobian( lower ) ) );
 
     lower = 2;
 
@@ -2456,13 +2411,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowing
 
     for ( unsigned int i = 0; i < x.size( ); i++ ){
 
-        floatMatrix delta( numConfigurations, floatVector( dimension * dimension, 0 ) );
+        floatVector delta( numConfigurations * dimension * dimension );
 
-        unsigned int config = i / 9;
-
-        unsigned int index = i % 9;
-
-        delta[ config ][ index ] = std::fabs( eps * microConfigurations[ config ][ index ] ) + eps;
+        delta[ i ] = std::fabs( eps * microConfigurations[ i ] ) + eps;
 
         floatVector Fscp;
 
@@ -2474,14 +2425,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowing
 
         for ( unsigned int j = 0; j < ( dimension * dimension ); j++ ){
 
-            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ config ][ index ] );
+            gradient[ j ][ i ] = ( Fscp[ j ] - Fscm[ j ] ) / ( 2 * delta[ i ] );
 
         }
 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, hydra.getPreviousFollowingMicroConfigurationJacobian( lower ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), hydra.getPreviousFollowingMicroConfigurationJacobian( lower ) ) );
 
 }
 
@@ -2635,7 +2586,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChi ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *hydra.get_dChi1dChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *hydra.get_dChi1dChi( ) ) );
 
 }
 
@@ -2789,7 +2740,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousdChi1dChi
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *hydra.get_previousdChi1dChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *hydra.get_previousdChi1dChi( ) ) );
 
 }
 
@@ -2943,7 +2894,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChin ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *hydra.get_dChi1dChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *hydra.get_dChi1dChin( ) ) );
 
 }
 
@@ -3097,7 +3048,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousdChi1dCh
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *hydra.get_previousdChi1dChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *hydra.get_previousdChi1dChin( ) ) );
 
 }
 
@@ -3215,11 +3166,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                             0.30696868, -0.10562995,  0.23107304, -0.33893099,  0.10069857,
                             0.36586446,  0.48352161 };
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer1, ( *hydra.get_gradientMicroConfigurations( ) )[ 0 ] ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer1, floatVector( hydra.get_gradientMicroConfigurations( )->begin( ) + 0 * 27,
+                                                                           hydra.get_gradientMicroConfigurations( )->begin( ) + 1 * 27 ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, ( *hydra.get_gradientMicroConfigurations( ) )[ 1 ] ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, floatVector( hydra.get_gradientMicroConfigurations( )->begin( ) + 1 * 27,
+                                                                           hydra.get_gradientMicroConfigurations( )->begin( ) + 2 * 27 ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer3, ( *hydra.get_gradientMicroConfigurations( ) )[ 2 ] ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer3, floatVector( hydra.get_gradientMicroConfigurations( )->begin( ) + 2 * 27,
+                                                                           hydra.get_gradientMicroConfigurations( )->begin( ) + 3 * 27 ) ) );
 
 }
 
@@ -3352,9 +3306,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_gradientMicroConfigurations( )->begin( ),
+                                        hydram.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3386,9 +3342,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_gradientMicroConfigurations( )->begin( ),
+                                        hydram.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3398,7 +3356,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChi1dFn, *hydra.get_dGradChi1dFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dGradChi1dFn ), *hydra.get_dGradChi1dFn( ) ) );
 
     for ( unsigned int i = 0; i < microDeformation.size( ); i++ ){
 
@@ -3420,9 +3378,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_gradientMicroConfigurations( )->begin( ),
+                                        hydram.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3432,7 +3392,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChi1dChi, *hydra.get_dGradChi1dChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dGradChi1dChi ), *hydra.get_dGradChi1dChi( ) ) );
 
     for ( unsigned int i = 0; i < ( numConfigurations - 1 ) * microDeformation.size( ); i++ ){
 
@@ -3454,9 +3414,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_gradientMicroConfigurations( )->begin( ),
+                                        hydram.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3466,7 +3428,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChi1dChin, *hydra.get_dGradChi1dChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dGradChi1dChin ), *hydra.get_dGradChi1dChin( ) ) );
 
     for ( unsigned int i = 0; i < gradientMicroDeformation.size( ); i++ ){
 
@@ -3488,9 +3450,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_gradientMicroConfigurations( )->begin( ),
+                                        hydram.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3500,7 +3464,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChi1dGradChi, *hydra.get_dGradChi1dGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dGradChi1dGradChi ), *hydra.get_dGradChi1dGradChi( ) ) );
 
     for ( unsigned int i = 0; i < ( numConfigurations - 1 ) * gradientMicroDeformation.size( ); i++ ){
 
@@ -3523,9 +3487,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_gradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_gradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_gradientMicroConfigurations( )->begin( ),
+                                        hydram.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3535,7 +3501,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChi1dGradChin, *hydra.get_dGradChi1dGradChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dGradChi1dGradChin ), *hydra.get_dGradChi1dGradChin( ) ) );
 
 }
 
@@ -3653,11 +3619,14 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                             0.30696868, -0.10562995,  0.23107304, -0.33893099,  0.10069857,
                             0.36586446,  0.48352161 };
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer1, ( *hydra.get_previousGradientMicroConfigurations( ) )[ 0 ] ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer1, floatVector( hydra.get_previousGradientMicroConfigurations( )->begin( ) + 0 * 27,
+                                                                           hydra.get_previousGradientMicroConfigurations( )->begin( ) + 1 * 27 ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, ( *hydra.get_previousGradientMicroConfigurations( ) )[ 1 ] ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, floatVector( hydra.get_previousGradientMicroConfigurations( )->begin( ) + 1 * 27,
+                                                                           hydra.get_previousGradientMicroConfigurations( )->begin( ) + 2 * 27 ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer3, ( *hydra.get_previousGradientMicroConfigurations( ) )[ 2 ] ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer3, floatVector( hydra.get_previousGradientMicroConfigurations( )->begin( ) + 2 * 27,
+                                                                           hydra.get_previousGradientMicroConfigurations( )->begin( ) + 3 * 27 ) ) );
 
 }
 
@@ -3790,9 +3759,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydram.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3824,9 +3795,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydram.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3836,7 +3809,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChi1dFn, *hydra.get_previousdGradChi1dFn( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dGradChi1dFn ), *hydra.get_previousdGradChi1dFn( ) ) );
 
     for ( unsigned int i = 0; i < microDeformation.size( ); i++ ){
 
@@ -3858,9 +3831,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydram.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3870,7 +3845,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChi1dChi, *hydra.get_previousdGradChi1dChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dGradChi1dChi ), *hydra.get_previousdGradChi1dChi( ) ) );
 
     for ( unsigned int i = 0; i < ( numConfigurations - 1 ) * microDeformation.size( ); i++ ){
 
@@ -3892,9 +3867,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydram.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3904,7 +3881,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChi1dChin, *hydra.get_previousdGradChi1dChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dGradChi1dChin ), *hydra.get_previousdGradChi1dChin( ) ) );
 
     for ( unsigned int i = 0; i < gradientMicroDeformation.size( ); i++ ){
 
@@ -3926,9 +3903,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydram.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3938,7 +3917,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChi1dGradChi, *hydra.get_previousdGradChi1dGradChi( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dGradChi1dGradChi ), *hydra.get_previousdGradChi1dGradChi( ) ) );
 
     for ( unsigned int i = 0; i < ( numConfigurations - 1 ) * gradientMicroDeformation.size( ); i++ ){
 
@@ -3961,9 +3940,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
                                           dimension, configuration_unknown_count,
                                           tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-        floatVector valp = ( *hydrap.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valp = floatVector( hydrap.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydrap.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
-        floatVector valm = ( *hydram.get_previousGradientMicroConfigurations( ) )[ 0 ];
+        floatVector valm = floatVector( hydram.get_previousGradientMicroConfigurations( )->begin( ),
+                                        hydram.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
         for ( unsigned int j = 0; j < nterms; j++ ){
 
@@ -3973,7 +3954,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChi1dGradChin, *hydra.get_previousdGradChi1dGradChin( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dGradChi1dGradChin ), *hydra.get_previousdGradChi1dGradChin( ) ) );
 
 }
 
@@ -4248,23 +4229,29 @@ BOOST_AUTO_TEST_CASE( test_updateUnknownVector ){
 
         BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( FiAnswer, hydra.getConfiguration( i + 1 ) ) );
 
-        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( FiAnswer, ( *hydra.get_configurations( ) )[ i + 1 ] ) );
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( FiAnswer, floatVector( hydra.get_configurations( )->begin( ) + 9 * ( i + 1 ),
+                                                                                hydra.get_configurations( )->begin( ) + 9 * ( i + 2 ) ) ) );
 
         BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( ChiiAnswer, hydra.getMicroConfiguration( i + 1 ) ) );
 
-        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( ChiiAnswer, ( *hydra.get_microConfigurations( ) )[ i + 1 ] ) );
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( ChiiAnswer, floatVector( hydra.get_microConfigurations( )->begin( ) + 9 * ( i + 1 ),
+                                                                                  hydra.get_microConfigurations( )->begin( ) + 9 * ( i + 2 ) ) ) );
 
-        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( GradChiiAnswer, ( *hydra.get_gradientMicroConfigurations( ) )[ i + 1 ] ) );
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( GradChiiAnswer, floatVector( hydra.get_gradientMicroConfigurations( )->begin( ) + 27 * ( i + 1 ),
+                                                                                      hydra.get_gradientMicroConfigurations( )->begin( ) + 27 * ( i + 2 ) ) ) );
 
         BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousFiAnswer, hydra.getPreviousConfiguration( i + 1 ) ) );
 
-        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousFiAnswer, ( *hydra.get_previousConfigurations( ) )[ i + 1 ] ) );
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousFiAnswer, floatVector( hydra.get_previousConfigurations( )->begin( ) + 9 * ( i + 1 ),
+                                                                                        hydra.get_previousConfigurations( )->begin( ) + 9 * ( i + 2 ) ) ) );
 
-        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousChiiAnswer, hydra.getPreviousMicroConfiguration( i + 1 ) ) );
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousChiiAnswer,     hydra.getPreviousMicroConfiguration( i + 1 ) ) );
 
-        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousChiiAnswer, ( *hydra.get_previousMicroConfigurations( ) )[ i + 1 ] ) );
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousChiiAnswer,     floatVector( hydra.get_previousMicroConfigurations( )->begin( ) + 9 * ( i + 1 ),
+                                                                                              hydra.get_previousMicroConfigurations( )->begin( ) + 9 * ( i + 2 ) ) ) );
 
-        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousGradChiiAnswer, ( *hydra.get_previousGradientMicroConfigurations( ) )[ i + 1 ] ) );
+        BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousGradChiiAnswer, floatVector( hydra.get_previousGradientMicroConfigurations( )->begin( ) + 27 * ( i + 1 ),
+                                                                                              hydra.get_previousGradientMicroConfigurations( )->begin( ) + 27 * ( i + 2 ) ) ) );
 
     }
 
