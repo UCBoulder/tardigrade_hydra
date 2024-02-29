@@ -165,15 +165,15 @@ namespace tardigradeHydra{
 
             floatVector precedingConfigurationJacobian;
 
-            const floatMatrix *dF1dF;
+            const floatVector *dF1dF;
 
-            const floatMatrix *dF1dSubFs;
+            const floatVector *dF1dSubFs;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfigurationJacobian = tardigradeVectorTools::appendVectors( hydra->getPreviousPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfigurationJacobian = hydra->getPreviousPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getPreviousStress( ) );
 
@@ -186,7 +186,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfigurationJacobian = tardigradeVectorTools::appendVectors( hydra->getPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfigurationJacobian = hydra->getPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getStress( ) );
 
@@ -223,7 +223,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                        dDrivingStressdF[ sot_dim * i + j ] += dDrivingStressdFn[ num_configs * sot_dim * i + k ] * ( *dF1dF )[ k ][ j ];
+                        dDrivingStressdF[ sot_dim * i + j ] += dDrivingStressdFn[ num_configs * sot_dim * i + k ] * ( *dF1dF )[ sot_dim * k + j ];
 
                     }
 
@@ -235,7 +235,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dDrivingStressdSubFs[ ( num_configs - 1 ) * sot_dim * i + j ] += dDrivingStressdFn[ num_configs * sot_dim * i + k ] * ( *dF1dSubFs )[ k ][ j ];
+                        dDrivingStressdSubFs[ ( num_configs - 1 ) * sot_dim * i + j ] += dDrivingStressdFn[ num_configs * sot_dim * i + k ] * ( *dF1dSubFs )[ num_configs * sot_dim * k + j ];
 
                     }
 
