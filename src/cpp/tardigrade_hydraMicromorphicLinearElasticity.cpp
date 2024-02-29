@@ -1899,6 +1899,10 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
              */
 
+            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = dim * dim;
+            const unsigned int tot_dim = sot_dim * dim;
+
             floatVector deformationGradient1;
 
             floatVector microDeformation1;
@@ -1907,20 +1911,26 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                deformationGradient1 = ( *hydra->get_previousConfigurations( ) )[ 0 ];
+                deformationGradient1 = floatVector( hydra->get_previousConfigurations( )->begin( ),
+                                                    hydra->get_previousConfigurations( )->begin( ) + sot_dim );
 
-                microDeformation1 = ( *hydra->get_previousMicroConfigurations( ) )[ 0 ];
+                microDeformation1 = floatVector( hydra->get_previousMicroConfigurations( )->begin( ),
+                                                 hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim );
 
-                gradientMicroDeformation1 = ( *hydra->get_previousGradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = floatVector( hydra->get_previousGradientMicroConfigurations( )->begin( ),
+                                                         hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim );
 
             }
             else{
 
-                deformationGradient1 = ( *hydra->get_configurations( ) )[ 0 ];
+                deformationGradient1 = floatVector( hydra->get_configurations( )->begin( ),
+                                                    hydra->get_configurations( )->begin( ) + sot_dim );
 
-                microDeformation1 = ( *hydra->get_microConfigurations( ) )[ 0 ];
+                microDeformation1 = floatVector( hydra->get_microConfigurations( )->begin( ),
+                                                 hydra->get_microConfigurations( )->begin( ) + sot_dim );
 
-                gradientMicroDeformation1 = ( *hydra->get_gradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = floatVector( hydra->get_gradientMicroConfigurations( )->begin( ),
+                                                         hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim );
 
             }
 
@@ -2722,9 +2732,9 @@ namespace tardigradeHydra{
 
                 Gamma           = get_previousGamma( );
 
-                dFFollowdFs     = tardigradeVectorTools::appendVectors( hydra->getPreviousFollowingConfigurationJacobian( 0 ) );
+                dFFollowdFs     = hydra->getPreviousFollowingConfigurationJacobian( 0 );
 
-                dChiFollowdChis = tardigradeVectorTools::appendVectors( hydra->getPreviousFollowingMicroConfigurationJacobian( 0 ) );
+                dChiFollowdChis = hydra->getPreviousFollowingMicroConfigurationJacobian( 0 );
 
                 followingConfiguration = hydra->getPreviousFollowingConfiguration( 0 );
 
@@ -2763,9 +2773,9 @@ namespace tardigradeHydra{
 
                 Gamma           = get_gamma( );
 
-                dFFollowdFs     = tardigradeVectorTools::appendVectors( hydra->getFollowingConfigurationJacobian( 0 ) );
+                dFFollowdFs     = hydra->getFollowingConfigurationJacobian( 0 );
 
-                dChiFollowdChis = tardigradeVectorTools::appendVectors( hydra->getFollowingMicroConfigurationJacobian( 0 ) );
+                dChiFollowdChis = hydra->getFollowingMicroConfigurationJacobian( 0 );
 
                 followingConfiguration = hydra->getFollowingConfiguration( 0 );
     
@@ -3743,76 +3753,82 @@ namespace tardigradeHydra{
 
             floatVector gradientMicroDeformation1;
 
-            floatVector dF1dF;
+            const floatVector *dF1dF;
 
-            floatVector dF1dFn;
+            const floatVector *dF1dFn;
 
-            floatVector dChi1dChi;
+            const floatVector *dChi1dChi;
 
-            floatVector dChi1dChin;
+            const floatVector *dChi1dChin;
 
-            floatVector dGradChi1dFn;
+            const floatVector *dGradChi1dFn;
 
-            floatVector dGradChi1dChi;
+            const floatVector *dGradChi1dChi;
 
-            floatVector dGradChi1dChin;
+            const floatVector *dGradChi1dChin;
 
-            floatVector dGradChi1dGradChi;
+            const floatVector *dGradChi1dGradChi;
 
-            floatVector dGradChi1dGradChin;
+            const floatVector *dGradChi1dGradChin;
 
             if ( isPrevious ){
 
-                deformationGradient1 = ( *hydra->get_previousConfigurations( ) )[ 0 ];
+                deformationGradient1 = floatVector( hydra->get_previousConfigurations( )->begin( ),
+                                                    hydra->get_previousConfigurations( )->begin( ) + sot_dim );
 
-                microDeformation1 = ( *hydra->get_previousMicroConfigurations( ) )[ 0 ];
+                microDeformation1 = floatVector( hydra->get_previousMicroConfigurations( )->begin( ),
+                                                 hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim );
 
-                gradientMicroDeformation1 = ( *hydra->get_previousGradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = floatVector( hydra->get_previousGradientMicroConfigurations( )->begin( ),
+                                                         hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim );
 
-                dF1dF              = tardigradeVectorTools::appendVectors( *hydra->get_previousdF1dF( ) );
+                dF1dF              = hydra->get_previousdF1dF( );
 
-                dF1dFn             = tardigradeVectorTools::appendVectors( *hydra->get_previousdF1dFn( ) );
+                dF1dFn             = hydra->get_previousdF1dFn( );
 
-                dChi1dChi          = tardigradeVectorTools::appendVectors( *hydra->get_previousdChi1dChi( ) );
+                dChi1dChi          = hydra->get_previousdChi1dChi( );
 
-                dChi1dChin         = tardigradeVectorTools::appendVectors( *hydra->get_previousdChi1dChin( ) );
+                dChi1dChin         = hydra->get_previousdChi1dChin( );
 
-                dGradChi1dFn       = tardigradeVectorTools::appendVectors( *hydra->get_previousdGradChi1dFn( ) );
+                dGradChi1dFn       = hydra->get_previousdGradChi1dFn( );
 
-                dGradChi1dChi      = tardigradeVectorTools::appendVectors( *hydra->get_previousdGradChi1dChi( ) );
+                dGradChi1dChi      = hydra->get_previousdGradChi1dChi( );
 
-                dGradChi1dChin     = tardigradeVectorTools::appendVectors( *hydra->get_previousdGradChi1dChin( ) );
+                dGradChi1dChin     = hydra->get_previousdGradChi1dChin( );
 
-                dGradChi1dGradChi  = tardigradeVectorTools::appendVectors( *hydra->get_previousdGradChi1dGradChi( ) );
+                dGradChi1dGradChi  = hydra->get_previousdGradChi1dGradChi( );
 
-                dGradChi1dGradChin = tardigradeVectorTools::appendVectors( *hydra->get_previousdGradChi1dGradChin( ) );
+                dGradChi1dGradChin = hydra->get_previousdGradChi1dGradChin( );
 
             }
             else{
 
-                deformationGradient1 = ( *hydra->get_configurations( ) )[ 0 ];
+                deformationGradient1 = floatVector( hydra->get_configurations( )->begin( ),
+                                                    hydra->get_configurations( )->begin( ) + sot_dim );
 
-                microDeformation1 = ( *hydra->get_microConfigurations( ) )[ 0 ];
+                microDeformation1 = floatVector( hydra->get_microConfigurations( )->begin( ),
+                                                 hydra->get_microConfigurations( )->begin( ) + sot_dim );
 
-                gradientMicroDeformation1 = ( *hydra->get_gradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = floatVector( hydra->get_gradientMicroConfigurations( )->begin( ),
+                                                         hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim );
 
-                dF1dF              = tardigradeVectorTools::appendVectors( *hydra->get_dF1dF( ) );
+                dF1dF              = hydra->get_dF1dF( );
 
-                dF1dFn             = tardigradeVectorTools::appendVectors( *hydra->get_dF1dFn( ) );
+                dF1dFn             = hydra->get_dF1dFn( );
 
-                dChi1dChi          = tardigradeVectorTools::appendVectors( *hydra->get_dChi1dChi( ) );
+                dChi1dChi          = hydra->get_dChi1dChi( );
 
-                dChi1dChin         = tardigradeVectorTools::appendVectors( *hydra->get_dChi1dChin( ) );
+                dChi1dChin         = hydra->get_dChi1dChin( );
 
-                dGradChi1dFn       = tardigradeVectorTools::appendVectors( *hydra->get_dGradChi1dFn( ) );
+                dGradChi1dFn       = hydra->get_dGradChi1dFn( );
 
-                dGradChi1dChi      = tardigradeVectorTools::appendVectors( *hydra->get_dGradChi1dChi( ) );
+                dGradChi1dChi      = hydra->get_dGradChi1dChi( );
 
-                dGradChi1dChin     = tardigradeVectorTools::appendVectors( *hydra->get_dGradChi1dChin( ) );
+                dGradChi1dChin     = hydra->get_dGradChi1dChin( );
 
-                dGradChi1dGradChi  = tardigradeVectorTools::appendVectors( *hydra->get_dGradChi1dGradChi( ) );
+                dGradChi1dGradChi  = hydra->get_dGradChi1dGradChi( );
 
-                dGradChi1dGradChin = tardigradeVectorTools::appendVectors( *hydra->get_dGradChi1dGradChin( ) );
+                dGradChi1dGradChin = hydra->get_dGradChi1dGradChin( );
 
             }
 
@@ -3844,30 +3860,30 @@ namespace tardigradeHydra{
 
                 set_previousGamma( Gamma );
 
-                set_previousdRightCauchyGreendF( tardigradeVectorTools::matrixMultiply( dCdF1, dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                set_previousdRightCauchyGreendF( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_previousdRightCauchyGreendFn( tardigradeVectorTools::matrixMultiply( dCdF1, dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_previousdRightCauchyGreendFn( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_previousdPsidF( tardigradeVectorTools::matrixMultiply( dPsidF1, dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                set_previousdPsidF( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_previousdPsidFn( tardigradeVectorTools::matrixMultiply( dPsidF1, dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_previousdPsidFn( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_previousdPsidChi( tardigradeVectorTools::matrixMultiply( dPsidChi1, dChi1dChi, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                set_previousdPsidChi( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChi, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_previousdPsidChin( tardigradeVectorTools::matrixMultiply( dPsidChi1, dChi1dChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_previousdPsidChin( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_previousdGammadF( tardigradeVectorTools::matrixMultiply( dGammadF1, dF1dF, tot_dim, sot_dim, sot_dim, sot_dim ) );
+                set_previousdGammadF( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dF, tot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_previousdGammadFn( tardigradeVectorTools::matrixMultiply( dGammadF1, dF1dFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                     + tardigradeVectorTools::matrixMultiply( dGammadGradChi1, dGradChi1dFn, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_previousdGammadFn( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                     + tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dFn, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_previousdGammadChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, dGradChi1dChi, tot_dim, tot_dim, tot_dim, sot_dim ) );
+                set_previousdGammadChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChi, tot_dim, tot_dim, tot_dim, sot_dim ) );
 
-                set_previousdGammadChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, dGradChi1dChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim  ) );
+                set_previousdGammadChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim  ) );
 
-                set_previousdGammadGradChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, dGradChi1dGradChi, tot_dim, tot_dim, tot_dim, tot_dim ) );
+                set_previousdGammadGradChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChi, tot_dim, tot_dim, tot_dim, tot_dim ) );
 
-                set_previousdGammadGradChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, dGradChi1dGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ) );
+                set_previousdGammadGradChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ) );
 
             }
             else{
@@ -3878,30 +3894,30 @@ namespace tardigradeHydra{
 
                 set_gamma( Gamma );
 
-                set_dRightCauchyGreendF( tardigradeVectorTools::matrixMultiply( dCdF1, dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                set_dRightCauchyGreendF( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_dRightCauchyGreendFn( tardigradeVectorTools::matrixMultiply( dCdF1, dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_dRightCauchyGreendFn( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_dPsidF( tardigradeVectorTools::matrixMultiply( dPsidF1, dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                set_dPsidF( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_dPsidFn( tardigradeVectorTools::matrixMultiply( dPsidF1, dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_dPsidFn( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_dPsidChi( tardigradeVectorTools::matrixMultiply( dPsidChi1, dChi1dChi, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                set_dPsidChi( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChi, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_dPsidChin( tardigradeVectorTools::matrixMultiply( dPsidChi1, dChi1dChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_dPsidChin( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_dGammadF( tardigradeVectorTools::matrixMultiply( dGammadF1, dF1dF, tot_dim, sot_dim, sot_dim, sot_dim ) );
+                set_dGammadF( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dF, tot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_dGammadFn( tardigradeVectorTools::matrixMultiply( dGammadF1, dF1dFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                             + tardigradeVectorTools::matrixMultiply( dGammadGradChi1, dGradChi1dFn, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_dGammadFn( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                             + tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dFn, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_dGammadChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, dGradChi1dChi, tot_dim, tot_dim, tot_dim, sot_dim ) );
+                set_dGammadChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChi, tot_dim, tot_dim, tot_dim, sot_dim ) );
 
-                set_dGammadChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, dGradChi1dChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim  ) );
+                set_dGammadChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim  ) );
 
-                set_dGammadGradChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, dGradChi1dGradChi, tot_dim, tot_dim, tot_dim, tot_dim ) );
+                set_dGammadGradChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChi, tot_dim, tot_dim, tot_dim, tot_dim ) );
 
-                set_dGammadGradChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, dGradChi1dGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ) );
+                set_dGammadGradChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ) );
 
             }
 
