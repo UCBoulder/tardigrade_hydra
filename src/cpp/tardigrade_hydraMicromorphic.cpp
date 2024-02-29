@@ -67,14 +67,19 @@ namespace tardigradeHydra{
          * which returns a pointer to the current value of the stress.
          */
 
+        const unsigned int dim = *getDimension( );
+        const unsigned int sot_dim = dim * dim;
+        const unsigned int tot_dim = sot_dim * dim;
+        const unsigned int num_configs = *getNumConfigurations( );
+
         const floatVector *stress;
         TARDIGRADE_ERROR_TOOLS_CATCH( stress = getStress( ) );
 
-        const floatMatrix *configurations = get_configurations( );
+        const floatVector *configurations = get_configurations( );
 
-        const floatMatrix *microConfigurations = get_microConfigurations( );
+        const floatVector *microConfigurations = get_microConfigurations( );
 
-        const floatMatrix *gradientMicroConfigurations = get_gradientMicroConfigurations( );
+        const floatVector *gradientMicroConfigurations = get_gradientMicroConfigurations( );
 
         const floatVector *nonLinearSolveStateVariables = get_nonLinearSolveStateVariables( );
 
@@ -83,26 +88,29 @@ namespace tardigradeHydra{
         Xmat[ 0 ] = *stress;
 
         // Add the initial values of the macro configurations
-        floatMatrix tmp( ( *getNumConfigurations( ) ) - 1 );
-        for ( unsigned int i = 1; i < *getNumConfigurations( ); i++ ){
+        floatMatrix tmp( num_configs - 1 );
+        for ( unsigned int i = 1; i < num_configs; i++ ){
 
-            tmp[ i - 1 ] = ( *configurations )[ i ];
+            tmp[ i - 1 ] = floatVector( configurations->begin( ) + sot_dim * i,
+                                        configurations->begin( ) + sot_dim * ( i + 1 ) );
 
         }
         Xmat[ 1 ] = tardigradeVectorTools::appendVectors( tmp );
 
         // Add the initial values of the micro configurations
-        for ( unsigned int i = 1; i < *getNumConfigurations( ); i++ ){
+        for ( unsigned int i = 1; i < num_configs; i++ ){
 
-            tmp[ i - 1 ] = ( *microConfigurations )[ i ];
+            tmp[ i - 1 ] = floatVector( microConfigurations->begin( ) + sot_dim * i,
+                                        microConfigurations->begin( ) + sot_dim * ( i + 1 ) );
 
         }
         Xmat[ 2 ] = tardigradeVectorTools::appendVectors( tmp );
 
         // Add the initial values of the micro-gradient configurations
-        for ( unsigned int i = 1; i < *getNumConfigurations( ); i++ ){
+        for ( unsigned int i = 1; i < num_configs; i++ ){
 
-            tmp[ i - 1 ] = ( *gradientMicroConfigurations )[ i ];
+            tmp[ i - 1 ] = floatVector( gradientMicroConfigurations->begin( ) + tot_dim * i,
+                                        gradientMicroConfigurations->begin( ) + tot_dim * ( i + 1 ) );
 
         }
         Xmat[ 3 ] = tardigradeVectorTools::appendVectors( tmp );
@@ -179,8 +187,8 @@ namespace tardigradeHydra{
     }
 
     void hydraBaseMicromorphic::computeGradientMicroConfigurations( const floatVector *data_vector, unsigned int start_index,
-                                                                    const floatMatrix &configurations, const floatMatrix &microConfigurations,
-                                                                    const floatVector &gradientMicroConfiguration, floatMatrix &gradientMicroConfigurations ){
+                                                                    const floatVector &configurations,             const floatVector &microConfigurations,
+                                                                    const floatVector &gradientMicroConfiguration, floatVector &gradientMicroConfigurations ){
         /*!
          * Compute the gradient of the micro-configurations in their reference configurations
          * 
@@ -192,16 +200,14 @@ namespace tardigradeHydra{
          * \param &gradientMicroConfigurations: The resulting gradients of the micro configurations
          */
 
-        const unsigned int *dim = getDimension( );
+        const unsigned int dim = *getDimension( );
+        const unsigned int sot_dim = dim * dim;
+        const unsigned int tot_dim = sot_dim * dim;
+        const unsigned int num_configs = *getNumConfigurations( );
 
-        gradientMicroConfigurations = floatMatrix( *getNumConfigurations( ), floatVector( ( *dim ) * ( *dim ) * ( *dim ), 0 ) );
-
-        for ( unsigned int i = 1; i < *getNumConfigurations( ); i++ ){
-
-            gradientMicroConfigurations[ i ] = floatVector( data_vector->begin( ) + ( i - 1 ) * ( *dim ) * ( *dim ) * ( *dim ) + start_index,
-                                                            data_vector->begin( ) + i * ( *dim ) * ( *dim ) * ( *dim ) + start_index );
-
-        }
+        gradientMicroConfigurations = tardigradeVectorTools::appendVectors( { floatVector( tot_dim, 0 ),
+                                                                              floatVector( data_vector->begin( ) + start_index,
+                                                                              data_vector->begin( ) + start_index + ( num_configs - 1 ) * tot_dim ) } );
 
         calculateFirstConfigurationGradChi( configurations, microConfigurations, gradientMicroConfiguration, gradientMicroConfigurations );
 
@@ -212,19 +218,23 @@ namespace tardigradeHydra{
          * Decompose the micro-deformation parts of the unknown vector
          */
 
-        unsigned int start_index = getStress( )->size( ) + ( ( *getNumConfigurations( ) ) - 1 ) * ( *getDimension( ) ) * ( *getDimension( ) );
+        const unsigned int dim = *getDimension( );
+        const unsigned int sot_dim = dim * dim;
+        const unsigned int num_configs = *getNumConfigurations( );
 
-        floatMatrix microConfigurations;
+        unsigned int start_index = getStress( )->size( ) + ( num_configs - 1 ) * sot_dim;
 
-        floatMatrix inverseMicroConfigurations;
+        floatVector microConfigurations;
 
-        floatMatrix gradientMicroConfigurations;
+        floatVector inverseMicroConfigurations;
+
+        floatVector gradientMicroConfigurations;
 
         // Compute the micro-configurations
 
         computeConfigurations( getUnknownVector( ), start_index, *getMicroDeformation( ), microConfigurations, inverseMicroConfigurations );
 
-        start_index += ( ( *getNumConfigurations( ) ) - 1 ) * ( *getDimension( ) ) * ( *getDimension( ) );
+        start_index += ( num_configs - 1 ) * sot_dim;
 
         computeGradientMicroConfigurations( getUnknownVector( ), start_index, *get_configurations( ), microConfigurations,
                                             *getGradientMicroDeformation( ), gradientMicroConfigurations );
@@ -244,19 +254,23 @@ namespace tardigradeHydra{
          * Decompose the micro-deformation parts of the state variable vector
          */
 
-        unsigned int start_index = ( ( *getNumConfigurations( ) ) - 1 ) * ( *getDimension( ) ) * ( *getDimension( ) );
+        const unsigned int dim = *getDimension( );
+        const unsigned int sot_dim = dim * dim;
+        const unsigned int num_configs = *getNumConfigurations( );
 
-        floatMatrix microConfigurations;
+        unsigned int start_index = ( num_configs - 1 ) * sot_dim;
 
-        floatMatrix inverseMicroConfigurations;
+        floatVector microConfigurations;
 
-        floatMatrix gradientMicroConfigurations;
+        floatVector inverseMicroConfigurations;
 
-        floatMatrix previousMicroConfigurations;
+        floatVector gradientMicroConfigurations;
 
-        floatMatrix previousInverseMicroConfigurations;
+        floatVector previousMicroConfigurations;
 
-        floatMatrix previousGradientMicroConfigurations;
+        floatVector previousInverseMicroConfigurations;
+
+        floatVector previousGradientMicroConfigurations;
 
         // Compute the micro-configurations
 
@@ -264,7 +278,7 @@ namespace tardigradeHydra{
 
         computeConfigurations( getPreviousStateVariables( ), start_index, *getPreviousMicroDeformation( ), previousMicroConfigurations, previousInverseMicroConfigurations, true );
 
-        start_index += ( ( *getNumConfigurations( ) ) - 1 ) * ( *getDimension( ) ) * ( *getDimension( ) );
+        start_index += ( num_configs - 1 ) * sot_dim;
 
         computeGradientMicroConfigurations( getPreviousStateVariables( ), start_index, *get_configurations( ), microConfigurations,
                                             *getGradientMicroDeformation( ), gradientMicroConfigurations );
@@ -382,7 +396,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBaseMicromorphic::getSubMicroConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+    floatVector hydraBaseMicromorphic::getSubMicroConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
          * Get the jacobian of a sub-micro configuration \f$\bf{\chi}^{sc}\f$ defined as
          *
@@ -399,7 +413,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBaseMicromorphic::getPrecedingMicroConfigurationJacobian( const unsigned int &index ){
+    floatVector hydraBaseMicromorphic::getPrecedingMicroConfigurationJacobian( const unsigned int &index ){
         /*!
          * Get the jacobian of the sub-micro configuration preceding but not including the index with respect to the current configurations.
          * 
@@ -410,7 +424,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBaseMicromorphic::getFollowingMicroConfigurationJacobian( const unsigned int &index ){
+    floatVector hydraBaseMicromorphic::getFollowingMicroConfigurationJacobian( const unsigned int &index ){
         /*!
          * Get the jacobian of the sub-micro configuration following but not including the index with respect to the current configurations.
          * 
@@ -421,7 +435,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBaseMicromorphic::getPreviousSubMicroConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+    floatVector hydraBaseMicromorphic::getPreviousSubMicroConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
          * Get the jacobian of a previous sub-micro configuration \f$\bf{\chi}^{sc}\f$ defined as
          *
@@ -438,7 +452,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBaseMicromorphic::getPreviousPrecedingMicroConfigurationJacobian( const unsigned int &index ){
+    floatVector hydraBaseMicromorphic::getPreviousPrecedingMicroConfigurationJacobian( const unsigned int &index ){
         /*!
          * Get the jacobian of the previous sub-micro configuration preceding but not including the index with respect to the current configurations.
          * 
@@ -449,7 +463,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBaseMicromorphic::getPreviousFollowingMicroConfigurationJacobian( const unsigned int &index ){
+    floatVector hydraBaseMicromorphic::getPreviousFollowingMicroConfigurationJacobian( const unsigned int &index ){
         /*!
          * Get the jacobian of the previous sub-micro configuration following but not including the index with respect to the current configurations.
          * 
@@ -465,9 +479,9 @@ namespace tardigradeHydra{
          * Set the Jacobians of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        floatMatrix dChi1dChi;
+        floatVector dChi1dChi;
 
-        floatMatrix dChi1dChin;
+        floatVector dChi1dChin;
 
         calculateFirstConfigurationJacobians( *get_microConfigurations( ), dChi1dChi, dChi1dChin );
 
@@ -482,9 +496,9 @@ namespace tardigradeHydra{
          * Set the Jacobians of the previous first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        floatMatrix previousdChi1dChi;
+        floatVector previousdChi1dChi;
 
-        floatMatrix previousdChi1dChin;
+        floatVector previousdChi1dChin;
 
         calculateFirstConfigurationJacobians( *get_previousMicroConfigurations( ), previousdChi1dChi, previousdChi1dChin );
 
@@ -499,15 +513,15 @@ namespace tardigradeHydra{
          * Set the Jacobians of the gradient of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        floatMatrix dGradChi1dCn;
+        floatVector dGradChi1dCn;
 
-        floatMatrix dGradChi1dChi;
+        floatVector dGradChi1dChi;
 
-        floatMatrix dGradChi1dChin;
+        floatVector dGradChi1dChin;
 
-        floatMatrix dGradChi1dGradChi;
+        floatVector dGradChi1dGradChi;
 
-        floatMatrix dGradChi1dGradChin;
+        floatVector dGradChi1dGradChin;
 
         calculateFirstConfigurationGradChiJacobian( *get_configurations( ), *get_microConfigurations( ),
                                                     *getGradientMicroDeformation( ), *get_gradientMicroConfigurations( ),
@@ -531,15 +545,15 @@ namespace tardigradeHydra{
          * Set the Jacobians of the previous gradient of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        floatMatrix previousdGradChi1dCn;
+        floatVector previousdGradChi1dCn;
 
-        floatMatrix previousdGradChi1dChi;
+        floatVector previousdGradChi1dChi;
 
-        floatMatrix previousdGradChi1dChin;
+        floatVector previousdGradChi1dChin;
 
-        floatMatrix previousdGradChi1dGradChi;
+        floatVector previousdGradChi1dGradChi;
 
-        floatMatrix previousdGradChi1dGradChin;
+        floatVector previousdGradChi1dGradChin;
 
         calculateFirstConfigurationGradChiJacobian( *get_previousConfigurations( ), *get_previousMicroConfigurations( ),
                                                     *getPreviousGradientMicroDeformation( ), *get_previousGradientMicroConfigurations( ),
@@ -558,7 +572,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBaseMicromorphic::calculateFirstConfigurationGradChi( const floatMatrix &configurations, const floatMatrix &microConfigurations, const floatVector &gradientMicroConfiguration, floatMatrix &gradientMicroConfigurations ){
+    void hydraBaseMicromorphic::calculateFirstConfigurationGradChi( const floatVector &configurations, const floatVector &microConfigurations, const floatVector &gradientMicroConfiguration, floatVector &gradientMicroConfigurations ){
         /*!
          * Calculate the value of the gradient of the first micro-configuration given all of the configurations, the micro-configurations,
          * the spatial gradient of the micro deformation in the reference configuration, and the gradients of the micro-configurations
@@ -570,12 +584,15 @@ namespace tardigradeHydra{
          * \param &gradientMicroConfigurations: The matrix of gradients of the micro-configurations in their reference configurations
          */
 
-        const unsigned int *dim = getDimension( );
+        const unsigned int dim = *getDimension( );
+        const unsigned int sot_dim = dim * dim;
+        const unsigned int tot_dim = sot_dim * dim;
+        const unsigned int num_configs = *getNumConfigurations( );
 
         // Compute the gradient in the reference configuration
         floatVector gradientChi1Reference = gradientMicroConfiguration; // Initialize to the total gradient in the reference configuration
 
-        for ( unsigned int index = 1; index < *getNumConfigurations( ); index++ ){
+        for ( unsigned int index = 1; index < num_configs; index++ ){
 
             floatVector FFollow = getSubConfiguration( configurations, index + 1, *getNumConfigurations( ) );
 
@@ -584,21 +601,21 @@ namespace tardigradeHydra{
             floatVector chiFollow  = getSubConfiguration( microConfigurations, index + 1, *getNumConfigurations( ) );
 
             // Add the contribution of the term
-            for ( unsigned int i = 0; i < *dim; i++ ){
+            for ( unsigned int i = 0; i < dim; i++ ){
 
-                for ( unsigned int I = 0; I < *dim; I++ ){
+                for ( unsigned int I = 0; I < dim; I++ ){
 
-                    for ( unsigned int J = 0; J < *dim; J++ ){
+                    for ( unsigned int J = 0; J < dim; J++ ){
 
-                        for ( unsigned int j = 0; j < *dim; j++ ){
+                        for ( unsigned int j = 0; j < dim; j++ ){
 
-                            for ( unsigned int k = 0; k < *dim; k++ ){
+                            for ( unsigned int k = 0; k < dim; k++ ){
 
-                                for ( unsigned int l = 0; l < *dim; l++ ){
+                                for ( unsigned int l = 0; l < dim; l++ ){
 
-                                    gradientChi1Reference[ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ]
-                                        -= chiPrecede[ ( *dim ) * i + j ] * chiFollow[ ( *dim ) * k + I ] * FFollow[ ( *dim ) * l + J ]
-                                         * gradientMicroConfigurations[ index ][ ( *dim ) * ( *dim ) * j + ( *dim ) * k + l ];
+                                    gradientChi1Reference[ dim * dim * i + dim * I + J ]
+                                        -= chiPrecede[ dim * i + j ] * chiFollow[ dim * k + I ] * FFollow[ dim * l + J ]
+                                         * gradientMicroConfigurations[ tot_dim * index + dim * dim * j + dim * k + l ];
 
                                 }
 
@@ -615,23 +632,25 @@ namespace tardigradeHydra{
         }
 
         // Map the gradient of the micro-configuration to the reference of the first configuration
-        floatVector invChiFollow = tardigradeVectorTools::inverse( getSubConfiguration( microConfigurations, 1, *getNumConfigurations( ) ), *dim, *dim );
+        floatVector invChiFollow = tardigradeVectorTools::inverse( getSubConfiguration( microConfigurations, 1, num_configs ), dim, dim );
 
-        floatVector invFFollow = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, *getNumConfigurations( ) ), *dim, *dim );
+        floatVector invFFollow = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, num_configs ), dim, dim );
 
-        gradientMicroConfigurations[ 0 ] = floatVector( ( *dim ) * ( *dim ) * ( *dim ), 0 );
+        for ( unsigned int i = 0; i < tot_dim; i++ ){
+            gradientMicroConfigurations[ i ] = 0;
+        }
 
-        for ( unsigned int i = 0; i < *dim; i++ ){
+        for ( unsigned int i = 0; i < dim; i++ ){
 
-            for ( unsigned int I = 0; I < *dim; I++ ){
+            for ( unsigned int I = 0; I < dim; I++ ){
 
-                for ( unsigned int J = 0; J < *dim; J++ ){
+                for ( unsigned int J = 0; J < dim; J++ ){
 
-                    for ( unsigned int a = 0; a < *dim; a++ ){
+                    for ( unsigned int a = 0; a < dim; a++ ){
 
-                        for ( unsigned int b = 0; b < *dim; b++ ){
+                        for ( unsigned int b = 0; b < dim; b++ ){
 
-                            gradientMicroConfigurations[ 0 ][ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ] += gradientChi1Reference[ ( *dim ) * ( *dim ) * i + ( *dim ) * a + b ] * invChiFollow[ ( *dim ) * a + I ] * invFFollow[ ( *dim ) * b + J ];
+                            gradientMicroConfigurations[ dim * dim * i + dim * I + J ] += gradientChi1Reference[ dim * dim * i + dim * a + b ] * invChiFollow[ dim * a + I ] * invFFollow[ dim * b + J ];
    
 
                         }
@@ -646,12 +665,12 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBaseMicromorphic::calculateFirstConfigurationGradChiJacobian( const floatMatrix &configurations, const floatMatrix &microConfigurations,
-                                                                            const floatVector &gradientMicroConfiguration, const floatMatrix &gradientMicroConfigurations,
-                                                                            const floatMatrix &dChi1dChi, const floatMatrix &dChi1dChin,
-                                                                            floatMatrix &dGradChi1dCn,
-                                                                            floatMatrix &dGradChi1dChi, floatMatrix &dGradChi1dChin,
-                                                                            floatMatrix &dGradChi1dGradChi, floatMatrix &dGradChi1dGradChin ){
+    void hydraBaseMicromorphic::calculateFirstConfigurationGradChiJacobian( const floatVector &configurations,             const floatVector &microConfigurations,
+                                                                            const floatVector &gradientMicroConfiguration, const floatVector &gradientMicroConfigurations,
+                                                                            const floatVector &dChi1dChi,                  const floatVector &dChi1dChin,
+                                                                            floatVector &dGradChi1dCn,
+                                                                            floatVector &dGradChi1dChi,     floatVector &dGradChi1dChin,
+                                                                            floatVector &dGradChi1dGradChi, floatVector &dGradChi1dGradChin ){
         /*!
          * Calculate the value of the jacobian of the gradient of the first micro-configuration given all of the configurations, the micro-configurations,
          * the spatial gradient of the micro deformation in the reference configuration, and the gradients of the micro-configurations
@@ -670,57 +689,60 @@ namespace tardigradeHydra{
          * \param &dGradChi1dGradChin: The Jacobian of the gradient of the first micro-configuration w.r.t. the gradient of the remaining sub micro-configurations
          */
 
-        const unsigned int *dim = getDimension( );
+        const unsigned int dim = *getDimension( );
+        const unsigned int sot_dim = dim * dim;
+        const unsigned int tot_dim = sot_dim * dim;
+        const unsigned int num_configs = *getNumConfigurations( );
 
-        floatVector eye( ( *dim ) * ( *dim ), 0 );
+        floatVector eye( sot_dim, 0 );
         tardigradeVectorTools::eye( eye );
 
         // Compute the gradient in the reference configuration
         floatVector gradientChi1Reference = gradientMicroConfiguration; // Initialize to the total gradient in the reference configuration
 
-        floatMatrix dGradientChi1ReferencedCn( gradientMicroConfiguration.size( ), floatVector( ( ( *getNumConfigurations( ) ) - 1 ) * configurations[ 0 ].size( ), 0 ) );
+        floatVector dGradientChi1ReferencedCn( tot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-        floatMatrix dGradientChi1ReferencedChi( gradientMicroConfiguration.size( ), floatVector( microConfigurations[ 0 ].size( ), 0 ) );
+        floatVector dGradientChi1ReferencedChi( tot_dim * sot_dim, 0 );
 
-        floatMatrix dGradientChi1ReferencedChin( gradientMicroConfiguration.size( ), floatVector( ( ( *getNumConfigurations( ) ) - 1 ) * microConfigurations[ 0 ].size( ), 0 ) );
+        floatVector dGradientChi1ReferencedChin( tot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-        floatMatrix dGradientChi1ReferencedGradChin( gradientMicroConfiguration.size( ), floatVector( ( ( *getNumConfigurations( ) ) - 1 ) * gradientMicroConfigurations[ 0 ].size( ), 0 ) );
+        floatVector dGradientChi1ReferencedGradChin( tot_dim * ( num_configs - 1 ) * tot_dim, 0 );
 
-        for ( unsigned int index = 1; index < *getNumConfigurations( ); index++ ){
+        for ( unsigned int index = 1; index < num_configs; index++ ){
 
-            floatVector FFollow = getSubConfiguration( configurations, index + 1, *getNumConfigurations( ) );
+            floatVector FFollow = getSubConfiguration( configurations, index + 1, num_configs );
 
             floatVector chiPrecede = getSubConfiguration( microConfigurations, 0, index );
 
-            floatVector chiFollow  = getSubConfiguration( microConfigurations, index + 1, *getNumConfigurations( ) );
+            floatVector chiFollow  = getSubConfiguration( microConfigurations, index + 1, num_configs );
 
             // Set the Jacobians of the mapping terms
-            floatMatrix dFFollowdCs = getSubConfigurationJacobian( configurations, index + 1, *getNumConfigurations( ) );
+            floatVector dFFollowdCs = getSubConfigurationJacobian( configurations, index + 1, num_configs );
 
-            floatMatrix dChiPrecededChis = getSubConfigurationJacobian( microConfigurations, 0, index );
+            floatVector dChiPrecededChis = getSubConfigurationJacobian( microConfigurations, 0, index );
 
-            floatMatrix dChiPrecededChi( microConfigurations[ 0 ].size( ), floatVector( microConfigurations[ 0 ].size( ), 0 ) );
+            floatVector dChiPrecededChi( sot_dim * sot_dim, 0 );
 
-            floatMatrix dChiPrecededChin( microConfigurations[ 0 ].size( ), floatVector( ( ( *getNumConfigurations( ) ) - 1 ) * microConfigurations[ 0 ].size( ), 0 ) );
+            floatVector dChiPrecededChin( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-            for ( unsigned int i = 0; i < ( *dim ) * ( *dim ); i++ ){
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                for ( unsigned int j = 0; j < ( *dim ) * ( *dim ); j++ ){
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                    for ( unsigned int k = 0; k < ( *dim ) * ( *dim ); k++ ){
+                    for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dChiPrecededChi[ i ][ j ] += dChiPrecededChis[ i ][ k ] * dChi1dChi[ k ][ j ];
+                        dChiPrecededChi[ sot_dim * i + j ] += dChiPrecededChis[ num_configs * sot_dim * i + k ] * dChi1dChi[ sot_dim * k + j ];
 
                     }
 
                 }
-                for ( unsigned int j = 0; j < ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ); j++ ){
+                for ( unsigned int j = 0; j < sot_dim * ( num_configs - 1 ); j++ ){
 
-                    dChiPrecededChin[ i ][ j ] += dChiPrecededChis[ i ][ j + ( *dim ) * ( *dim ) ];
+                    dChiPrecededChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dChiPrecededChis[ num_configs * sot_dim * i + j + sot_dim ];
 
-                    for ( unsigned int k = 0; k < ( *dim ) * ( *dim ); k++ ){
+                    for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dChiPrecededChin[ i ][ j ] += dChiPrecededChis[ i ][ k ] * dChi1dChin[ k ][ j ];
+                        dChiPrecededChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dChiPrecededChis[ num_configs * sot_dim * i + k ] * dChi1dChin[ ( num_configs - 1 ) * sot_dim * k + j ];
 
                     }
 
@@ -728,51 +750,51 @@ namespace tardigradeHydra{
 
             }
 
-            floatMatrix dChiFollowdChis = getSubConfigurationJacobian( microConfigurations, index + 1, *getNumConfigurations( ) );
+            floatVector dChiFollowdChis = getSubConfigurationJacobian( microConfigurations, index + 1, num_configs );
 
             // Add the contribution of the term
-            for ( unsigned int i = 0; i < *dim; i++ ){
+            for ( unsigned int i = 0; i < dim; i++ ){
 
-                for ( unsigned int I = 0; I < *dim; I++ ){
+                for ( unsigned int I = 0; I < dim; I++ ){
 
-                    for ( unsigned int J = 0; J < *dim; J++ ){
+                    for ( unsigned int J = 0; J < dim; J++ ){
 
-                        for ( unsigned int j = 0; j < *dim; j++ ){
+                        for ( unsigned int j = 0; j < dim; j++ ){
 
-                            for ( unsigned int k = 0; k < *dim; k++ ){
+                            for ( unsigned int k = 0; k < dim; k++ ){
 
-                                for ( unsigned int l = 0; l < *dim; l++ ){
+                                for ( unsigned int l = 0; l < dim; l++ ){
 
-                                    gradientChi1Reference[ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ]
-                                        -= chiPrecede[ ( *dim ) * i + j ] * chiFollow[ ( *dim ) * k + I ] * FFollow[ ( *dim ) * l + J ]
-                                         * gradientMicroConfigurations[ index ][ ( *dim ) * ( *dim ) * j + ( *dim ) * k + l ];
+                                    gradientChi1Reference[ dim * dim * i + dim * I + J ]
+                                        -= chiPrecede[ dim * i + j ] * chiFollow[ dim * k + I ] * FFollow[ dim * l + J ]
+                                         * gradientMicroConfigurations[ tot_dim * index + dim * dim * j + dim * k + l ];
 
-                                    dGradientChi1ReferencedGradChin[ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ][ gradientMicroConfiguration.size( ) * ( index - 1 ) + ( *dim ) * ( *dim ) * j + ( *dim ) * k + l ]
-                                        -= chiPrecede[ ( *dim ) * i + j ] * chiFollow[ ( *dim ) * k + I ] * FFollow[ ( *dim ) * l + J ];
+                                    dGradientChi1ReferencedGradChin[ dim * dim * ( num_configs - 1 ) * tot_dim * i + dim * ( num_configs - 1 ) * tot_dim * I + ( num_configs - 1 ) * tot_dim * J + tot_dim * ( index - 1 ) + dim * dim * j + dim * k + l ]
+                                        -= chiPrecede[ dim * i + j ] * chiFollow[ dim * k + I ] * FFollow[ dim * l + J ];
 
-                                    for ( unsigned int A = 0; A < dFFollowdCs[ 0 ].size( ) - FFollow.size( ); A++ ){
+                                    for ( unsigned int A = 0; A < ( num_configs - 1 ) * sot_dim; A++ ){
 
-                                        dGradientChi1ReferencedCn[ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ][ A ]
-                                             -= chiPrecede[ ( *dim ) * i + j ] * chiFollow[ ( *dim ) * k + I ] * dFFollowdCs[ ( *dim ) * l + J ][ FFollow.size( ) + A ]
-                                             * gradientMicroConfigurations[ index ][ ( *dim ) * ( *dim ) * j + ( *dim ) * k + l ];
-
-                                    }
-
-                                    for ( unsigned int A = 0; A < dChiPrecededChi[ 0 ].size( ); A++ ){
-
-                                        dGradientChi1ReferencedChi[ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ][ A ]
-                                            -= dChiPrecededChi[ ( *dim ) * i + j ][ A ] * chiFollow[ ( *dim ) * k + I ] * FFollow[ ( *dim ) * l + J ]
-                                             * gradientMicroConfigurations[ index ][ ( *dim ) * ( *dim ) * j + ( *dim ) * k + l ];
+                                        dGradientChi1ReferencedCn[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * I + ( num_configs - 1 ) * sot_dim * J + A ]
+                                             -= chiPrecede[ dim * i + j ] * chiFollow[ dim * k + I ] * dFFollowdCs[ dim * num_configs * sot_dim * l + num_configs * sot_dim * J + sot_dim + A ]
+                                             * gradientMicroConfigurations[ tot_dim * index + dim * dim * j + dim * k + l ];
 
                                     }
 
-                                    for ( unsigned int A = 0; A < ( ( *getNumConfigurations( ) ) - 1 ) * ( *dim ) * ( *dim ); A++ ){
+                                    for ( unsigned int A = 0; A < sot_dim; A++ ){
 
-                                        dGradientChi1ReferencedChin[ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ][ A ]
-                                            -= dChiPrecededChin[ ( *dim ) * i + j ][ A ] * chiFollow[ ( *dim ) * k + I ] * FFollow[ ( *dim ) * l + J ]
-                                             * gradientMicroConfigurations[ index ][ ( *dim ) * ( *dim ) * j + ( *dim ) * k + l ]
-                                             + chiPrecede[ ( *dim ) * i + j ] * dChiFollowdChis[ ( *dim ) * k + I ][ A + ( *dim ) * ( *dim ) ] * FFollow[ ( *dim ) * l + J ]
-                                             * gradientMicroConfigurations[ index ][ ( *dim ) * ( *dim ) * j + ( *dim ) * k + l ];
+                                        dGradientChi1ReferencedChi[ dim * dim * sot_dim * i + dim * sot_dim * I + sot_dim * J + A ]
+                                            -= dChiPrecededChi[ dim * sot_dim * i + sot_dim * j + A ] * chiFollow[ dim * k + I ] * FFollow[ dim * l + J ]
+                                             * gradientMicroConfigurations[ tot_dim * index + dim * dim * j + dim * k + l ];
+
+                                    }
+
+                                    for ( unsigned int A = 0; A < ( num_configs - 1 ) * sot_dim; A++ ){
+
+                                        dGradientChi1ReferencedChin[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * I + ( num_configs - 1 ) * sot_dim * J + A ]
+                                            -= dChiPrecededChin[ dim * ( num_configs - 1 ) * sot_dim * i + ( num_configs - 1 ) * sot_dim * j + A ] * chiFollow[ dim * k + I ] * FFollow[ dim * l + J ]
+                                             * gradientMicroConfigurations[ tot_dim * index + dim * dim * j + dim * k + l ]
+                                             + chiPrecede[ dim * i + j ] * dChiFollowdChis[ dim * num_configs * sot_dim * k + num_configs * sot_dim * I + A + sot_dim ] * FFollow[ dim * l + J ]
+                                             * gradientMicroConfigurations[ tot_dim * index + dim * dim * j + dim * k + l ];
 
                                     }
 
@@ -791,55 +813,35 @@ namespace tardigradeHydra{
         }
 
         // Map the gradient of the micro-configuration to the reference of the first configuration
-        floatVector ChiFollow = getSubConfiguration( microConfigurations, 1, *getNumConfigurations( ) );
+        floatVector ChiFollow = getSubConfiguration( microConfigurations, 1, num_configs );
 
-        floatVector FFollow = getSubConfiguration( configurations, 1, *getNumConfigurations( ) );
+        floatVector FFollow = getSubConfiguration( configurations, 1, num_configs );
 
-        floatVector invChiFollow = tardigradeVectorTools::inverse( ChiFollow, *dim, *dim );
+        floatVector invChiFollow = tardigradeVectorTools::inverse( ChiFollow, dim, dim );
 
-        floatVector invFFollow = tardigradeVectorTools::inverse( FFollow, *dim, *dim );
+        floatVector invFFollow = tardigradeVectorTools::inverse( FFollow, dim, dim );
 
-        floatMatrix dChiFollowdChis = getSubConfigurationJacobian( microConfigurations, 1, *getNumConfigurations( ) );
+        floatVector dChiFollowdChis = getSubConfigurationJacobian( microConfigurations, 1, num_configs );
 
-        floatMatrix dFFollowdFs = getSubConfigurationJacobian( configurations, 1, *getNumConfigurations( ) );
+        floatVector dFFollowdFs = getSubConfigurationJacobian( configurations, 1, num_configs );
 
-        floatMatrix dInvChiFollowdChiFollow( invChiFollow.size( ), floatVector( ChiFollow.size( ), 0 ) );
+        floatVector dInvChiFollowdChiFollow = tardigradeVectorTools::computeFlatDInvADA( invChiFollow, dim, dim );
 
-        floatMatrix dInvFFollowdFFollow( invFFollow.size( ), floatVector( FFollow.size( ), 0 ) );
+        floatVector dInvFFollowdFFollow = tardigradeVectorTools::computeFlatDInvADA( invFFollow, dim, dim );
 
-        for ( unsigned int I = 0; I < ( *dim ); I++ ){
+        floatVector dInvChiFollowdChin( sot_dim * sot_dim * ( num_configs - 1 ), 0 );
 
-            for ( unsigned int i = 0; i < ( *dim ); i++ ){
+        floatVector dInvFFollowdFn( sot_dim * sot_dim * ( num_configs - 1 ), 0 );
 
-                for ( unsigned int j = 0; j < ( *dim ); j++ ){
+        for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                    for ( unsigned int J = 0; J < ( *dim ); J++ ){
+            for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
-                        dInvChiFollowdChiFollow[ ( *dim ) * I + j ][ ( *dim ) * i + J ] -= invChiFollow[ ( *dim ) * I + i ] * invChiFollow[ ( *dim ) * J + j ];
+                for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dInvFFollowdFFollow[ ( *dim ) * I + j ][ ( *dim ) * i + J ] -= invFFollow[ ( *dim ) * I + i ] * invFFollow[ ( *dim ) * J + j ];
+                    dInvChiFollowdChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dInvChiFollowdChiFollow[ sot_dim * i + k ] * dChiFollowdChis[ num_configs * sot_dim * k + j + sot_dim ];
 
-                    }
-
-                }
-
-            }
-
-        }
-
-        floatMatrix dInvChiFollowdChin( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
-
-        floatMatrix dInvFFollowdFn( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
-
-        for ( unsigned int i = 0; i < ( *dim ) * ( *dim ); i++ ){
-
-            for ( unsigned int j = 0; j < ( ( *getNumConfigurations( ) ) - 1 ) * ( *dim ) * ( *dim ); j++ ){
-
-                for ( unsigned int k = 0; k < ( *dim ) * ( *dim ); k++ ){
-
-                    dInvChiFollowdChin[ i ][ j ] += dInvChiFollowdChiFollow[ i ][ k ] * dChiFollowdChis[ k ][ j + ( *dim ) * ( *dim ) ];
-
-                    dInvFFollowdFn[ i ][ j ] += dInvFFollowdFFollow[ i ][ k ] * dFFollowdFs[ k ][ j + ( *dim ) * ( *dim ) ];
+                    dInvFFollowdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dInvFFollowdFFollow[ sot_dim * i + k ] * dFFollowdFs[ num_configs * sot_dim * k + j + sot_dim ];
 
                 }
 
@@ -847,42 +849,42 @@ namespace tardigradeHydra{
 
         }
 
-        dGradChi1dChi = floatMatrix( ( *dim ) * ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
+        dGradChi1dChi      = floatVector( tot_dim * sot_dim, 0 );
 
-        dGradChi1dChin = floatMatrix( ( *dim ) * ( *dim ) * ( *dim ), floatVector( ( ( *getNumConfigurations( ) ) - 1 ) * ( *dim ) * ( *dim ), 0 ) );
+        dGradChi1dChin     = floatVector( tot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-        dGradChi1dGradChi = floatMatrix( ( *dim ) * ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( *dim ), 0 ) );
+        dGradChi1dGradChi  = floatVector( tot_dim * tot_dim, 0 );
 
-        dGradChi1dCn = floatMatrix( ( *dim ) * ( *dim ) * ( *dim ), floatVector( ( ( *getNumConfigurations( ) ) - 1 ) * ( *dim ) * ( *dim ), 0 ) );
+        dGradChi1dCn       = floatVector( tot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-        dGradChi1dGradChin = floatMatrix( ( *dim ) * ( *dim ) * ( *dim ), floatVector( ( ( *getNumConfigurations( ) ) - 1 ) * gradientMicroConfigurations[ 0 ].size( ), 0 ) );
+        dGradChi1dGradChin = floatVector( tot_dim * ( num_configs - 1 ) * tot_dim, 0 );
 
-        for ( unsigned int i = 0; i < *dim; i++ ){
+        for ( unsigned int i = 0; i < dim; i++ ){
 
-            for ( unsigned int I = 0; I < *dim; I++ ){
+            for ( unsigned int I = 0; I < dim; I++ ){
 
-                for ( unsigned int J = 0; J < *dim; J++ ){
+                for ( unsigned int J = 0; J < dim; J++ ){
 
-                    for ( unsigned int a = 0; a < *dim; a++ ){
+                    for ( unsigned int a = 0; a < dim; a++ ){
 
-                        for ( unsigned int b = 0; b < *dim; b++ ){
+                        for ( unsigned int b = 0; b < dim; b++ ){
 
-                            for ( unsigned int k = 0; k < *dim; k++ ){
+                            for ( unsigned int k = 0; k < dim; k++ ){
 
-                                for ( unsigned int l = 0; l < *dim; l++ ){
+                                for ( unsigned int l = 0; l < dim; l++ ){
 
-                                    dGradChi1dChi[ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ][ ( *dim ) * a + b ]
-                                        += dGradientChi1ReferencedChi[ ( *dim ) * ( *dim ) * i + ( *dim ) * k + l ][ ( *dim ) * a + b ] * invChiFollow[ ( *dim ) * k + I ] * invFFollow[ ( *dim ) * l + J ];
+                                    dGradChi1dChi[ dim * dim * sot_dim * i + dim * sot_dim * I + sot_dim * J + dim * a + b ]
+                                        += dGradientChi1ReferencedChi[ dim * dim * sot_dim * i + dim * sot_dim * k + sot_dim * l + dim * a + b ] * invChiFollow[ dim * k + I ] * invFFollow[ dim * l + J ];
 
-                                    for ( unsigned int index = 1; index < *getNumConfigurations( ); index++ ){
+                                    for ( unsigned int index = 1; index < num_configs; index++ ){
 
-                                        dGradChi1dChin[ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ][ ( *dim ) * ( *dim ) * ( index - 1 ) + ( *dim ) * a + b ]
-                                            += dGradientChi1ReferencedChin[ ( *dim ) * ( *dim ) * i + ( *dim ) * k + l ][ ( *dim ) * ( *dim ) * ( index - 1 ) + ( *dim ) * a + b ] * invChiFollow[ ( *dim ) * k + I ] * invFFollow[ ( *dim ) * l + J ]
-                                             + gradientChi1Reference[ ( *dim ) * ( *dim ) * i + ( *dim ) * k + l ] * dInvChiFollowdChin[ ( *dim ) * k + I ][ ( *dim ) * ( *dim ) * ( index - 1 ) + ( *dim ) * a + b ] * invFFollow[ ( *dim ) * l + J ];
+                                        dGradChi1dChin[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * I + ( num_configs - 1 ) * sot_dim * J + dim * dim * ( index - 1 ) + dim * a + b ]
+                                            += dGradientChi1ReferencedChin[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * k + ( num_configs - 1 ) * sot_dim * l + dim * dim * ( index - 1 ) + dim * a + b ] * invChiFollow[ dim * k + I ] * invFFollow[ dim * l + J ]
+                                             + gradientChi1Reference[ dim * dim * i + dim * k + l ] * dInvChiFollowdChin[ dim * ( num_configs - 1 ) * sot_dim * k + ( num_configs - 1 ) * sot_dim * I + dim * dim * ( index - 1 ) + dim * a + b ] * invFFollow[ dim * l + J ];
 
-                                        dGradChi1dCn[ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ][ ( *dim ) * ( *dim ) * ( index - 1 ) + ( *dim ) * a + b ]
-                                            += dGradientChi1ReferencedCn[ ( *dim ) * ( *dim ) * i + ( *dim ) * k + l ][ ( *dim ) * ( *dim ) * ( index - 1 ) + ( *dim ) * a + b ] * invChiFollow[ ( *dim ) * k + I ] * invFFollow[ ( *dim ) * l + J ]
-                                             + gradientChi1Reference[ ( *dim ) * ( *dim ) * i + ( *dim ) * k + l ] * invChiFollow[ ( *dim ) * k + I ] * dInvFFollowdFn[ ( *dim ) * l + J ][ ( *dim ) * ( *dim ) * ( index - 1 ) + ( *dim ) * a + b ];
+                                        dGradChi1dCn[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs -1 ) * sot_dim * I + ( num_configs - 1 ) * sot_dim * J + dim * dim * ( index - 1 ) + dim * a + b ]
+                                            += dGradientChi1ReferencedCn[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * k + ( num_configs - 1 ) * sot_dim * l + dim * dim * ( index - 1 ) + dim * a + b ] * invChiFollow[ dim * k + I ] * invFFollow[ dim * l + J ]
+                                             + gradientChi1Reference[ dim * dim * i + dim * k + l ] * invChiFollow[ dim * k + I ] * dInvFFollowdFn[ dim * ( num_configs - 1 ) * sot_dim  * l + ( num_configs - 1 ) * sot_dim * J + dim * dim * ( index - 1 ) + dim * a + b ];
 
                                     }
 
@@ -890,19 +892,19 @@ namespace tardigradeHydra{
 
                             }
 
-                            for ( unsigned int c = 0; c < *dim; c++ ){
+                            for ( unsigned int c = 0; c < dim; c++ ){
 
-                                dGradChi1dGradChi[ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ][ ( *dim ) * ( *dim ) * a + ( *dim ) * b + c ]
-                                    += eye[ ( *dim ) * i + a ] * invChiFollow[ ( *dim ) * b + I ] * invFFollow[ ( *dim ) * c + J ];
+                                dGradChi1dGradChi[ dim * dim * tot_dim * i + dim * tot_dim * I + tot_dim * J + dim * dim * a + dim * b + c ]
+                                    += eye[ dim * i + a ] * invChiFollow[ dim * b + I ] * invFFollow[ dim * c + J ];
 
-                                for ( unsigned int index = 1; index < *getNumConfigurations( ); index++ ){
+                                for ( unsigned int index = 1; index < num_configs; index++ ){
 
-                                    for ( unsigned int k = 0; k < *dim; k++ ){
+                                    for ( unsigned int k = 0; k < dim; k++ ){
 
-                                        for ( unsigned int l = 0; l < *dim; l++ ){
+                                        for ( unsigned int l = 0; l < dim; l++ ){
 
-                                            dGradChi1dGradChin[ ( *dim ) * ( *dim ) * i + ( *dim ) * I + J ][ gradientMicroConfiguration.size( ) * ( index - 1 ) + ( * dim ) * ( *dim ) * a + ( *dim ) * b + c ]
-                                                += dGradientChi1ReferencedGradChin[ ( *dim ) * ( *dim ) * i + ( *dim ) * k + l ][ gradientMicroConfiguration.size( ) * ( index - 1 ) + ( *dim ) * ( *dim ) * a + ( *dim ) * b + c ] * invChiFollow[ ( *dim ) * k + I ] * invFFollow[ ( *dim ) * l + J ];
+                                            dGradChi1dGradChin[ dim * dim * ( num_configs - 1 ) * tot_dim * i + dim * ( num_configs - 1 ) * tot_dim * I + ( num_configs - 1 ) * tot_dim * J + tot_dim * ( index - 1 ) + dim * dim * a + dim * b + c ]
+                                                += dGradientChi1ReferencedGradChin[ dim * dim * ( num_configs - 1 ) * tot_dim * i + dim * ( num_configs - 1 ) * tot_dim * k + ( num_configs - 1 ) * tot_dim * l + tot_dim * ( index - 1 ) + dim * dim * a + dim * b + c ] * invChiFollow[ dim * k + I ] * invFFollow[ dim * l + J ];
 
                                         }
 

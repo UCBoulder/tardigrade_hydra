@@ -7516,9 +7516,11 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
     residualMock RJ( &hydra, 55, 1, stateVariableIndices, parameters );
 
-    floatVector answerGradChie         = ( *hydra.get_gradientMicroConfigurations( ) )[ 0 ];
+    floatVector answerGradChie         = floatVector( hydra.get_gradientMicroConfigurations( )->begin( ),
+                                                      hydra.get_gradientMicroConfigurations( )->begin( ) + 27 );
 
-    floatVector answerPreviousGradChie = ( *hydra.get_previousGradientMicroConfigurations( ) )[ 0 ];
+    floatVector answerPreviousGradChie = floatVector( hydra.get_previousGradientMicroConfigurations( )->begin( ),
+                                                      hydra.get_previousGradientMicroConfigurations( )->begin( ) + 27 );
 
     RJ.get_dPrecedingMicroDeformationdChi( );
     RJ.get_previousdPrecedingMicroDeformationdChi( );

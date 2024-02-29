@@ -105,10 +105,13 @@ namespace tardigradeHydra{
              * knowledge of the elastic configuration.
              */
 
-            const unsigned int *dim = hydra->getDimension( );
-    
+            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = dim * dim;
+            const unsigned int elastic_config_index = *getElasticConfigurationIndex( );
+
             // Get the elastic deformation gradient
-            floatVector Fe = ( *hydra->get_configurations( ) )[ *getElasticConfigurationIndex( ) ];
+            floatVector Fe = floatVector( hydra->get_configurations( )->begin( ) + sot_dim * elastic_config_index,
+                                          hydra->get_configurations( )->begin( ) + sot_dim * ( elastic_config_index + 1 ) );
     
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
@@ -119,12 +122,12 @@ namespace tardigradeHydra{
             floatVector Ed = ( *get_damage( ) ) / ( 1 - ( *get_damage( ) ) ) * Ee;
     
             // Compute the square root to solve for the damage deformation gradient
-            floatVector eye( ( *dim ) * ( *dim ) );
+            floatVector eye( sot_dim );
             tardigradeVectorTools::eye( eye );
     
             floatVector Fd;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( Fd = tardigradeVectorTools::matrixSqrt( 2.0 * Ed + eye, *dim ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( Fd = tardigradeVectorTools::matrixSqrt( 2.0 * Ed + eye, dim ) );
     
             set_damageDeformationGradient( Fd );
 
@@ -179,7 +182,8 @@ namespace tardigradeHydra{
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
             // Get the elastic deformation gradient
-            floatVector Fe = ( *hydra->get_configurations( ) )[ *getElasticConfigurationIndex( ) ];
+            floatVector Fe = floatVector( hydra->get_configurations( )->begin( ) + sot_dim * elastic_config_index,
+                                          hydra->get_configurations( )->begin( ) + sot_dim * ( elastic_config_index + 1 ) );
     
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
@@ -198,9 +202,9 @@ namespace tardigradeHydra{
 
             if ( elastic_config_index == 0 ){
 
-                dFedF     = tardigradeVectorTools::appendVectors( *hydra->get_dF1dF( ) );
+                dFedF     = *hydra->get_dF1dF( );
 
-                dFedSubFs = tardigradeVectorTools::appendVectors( *hydra->get_dF1dFn( ) );
+                dFedSubFs = *hydra->get_dF1dFn( );
 
             }
             else{

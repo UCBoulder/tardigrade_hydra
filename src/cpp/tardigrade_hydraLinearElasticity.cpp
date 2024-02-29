@@ -40,14 +40,19 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to set the current (false) or previous (true) elastic deformation gradient
              */
 
+            const unsigned int dim = 3;
+            const unsigned int sot_dim = dim * dim;
+
             if ( isPrevious ){
 
-                set_previousFe( ( *hydra->get_previousConfigurations( ) )[ 0 ] );
+                set_previousFe( floatVector( hydra->get_previousConfigurations( )->begin( ),
+                                             hydra->get_previousConfigurations( )->begin( ) + sot_dim ) );
 
             }
             else{
 
-                set_Fe( ( *hydra->get_configurations( ) )[ 0 ] );
+                set_Fe( floatVector( hydra->get_configurations( )->begin( ),
+                                     hydra->get_configurations( )->begin( ) + sot_dim ) );
 
             }
 
@@ -78,16 +83,16 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousdFedF(  tardigradeVectorTools::appendVectors( *hydra->get_previousdF1dF( ) ) );
+                set_previousdFedF( *hydra->get_previousdF1dF( ) );
 
-                set_previousdFedFn( tardigradeVectorTools::appendVectors( *hydra->get_previousdF1dFn( ) ) );
+                set_previousdFedFn( *hydra->get_previousdF1dFn( ) );
 
             }
             else{
 
-                set_dFedF(  tardigradeVectorTools::appendVectors( *hydra->get_dF1dF( ) ) );
+                set_dFedF(  *hydra->get_dF1dF( ) );
 
-                set_dFedFn( tardigradeVectorTools::appendVectors( *hydra->get_dF1dFn( ) ) );
+                set_dFedFn( *hydra->get_dF1dFn( ) );
 
             }
 

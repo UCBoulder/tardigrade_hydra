@@ -605,9 +605,9 @@ namespace tardigradeHydra{
             //! Get a reference to the line-search alpha
             const floatType* getLSAlpha( ){ return &_lsAlpha; }
 
-            floatVector getSubConfiguration( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatVector getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatMatrix getSubConfigurationJacobian( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatVector getSubConfigurationJacobian( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
@@ -625,17 +625,17 @@ namespace tardigradeHydra{
 
             floatVector getPreviousConfiguration( const unsigned int &index );
 
-            floatMatrix getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatVector getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatMatrix getPrecedingConfigurationJacobian( const unsigned int &index );
+            floatVector getPrecedingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getFollowingConfigurationJacobian( const unsigned int &index );
+            floatVector getFollowingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getPreviousSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatVector getPreviousSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatMatrix getPreviousPrecedingConfigurationJacobian( const unsigned int &index );
+            floatVector getPreviousPrecedingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getPreviousFollowingConfigurationJacobian( const unsigned int &index );
+            floatVector getPreviousFollowingConfigurationJacobian( const unsigned int &index );
 
             const floatType* getLSResidualNorm( );
 
@@ -693,7 +693,7 @@ namespace tardigradeHydra{
             // Utility functions
             virtual void computeConfigurations( const floatVector *data_vector, const unsigned int start_index,
                                                 const floatVector &total_transformation,
-                                                floatMatrix &configurations, floatMatrix &inverseConfigurations,
+                                                floatVector &configurations, floatVector &inverseConfigurations,
                                                 const bool add_eye=false );
 
             virtual void extractStress( );
@@ -713,7 +713,7 @@ namespace tardigradeHydra{
 
             virtual void updateUnknownVector( const floatVector &newUnknownVector );
 
-            virtual void calculateFirstConfigurationJacobians( const floatMatrix &configurations, floatMatrix &dC1dC, floatMatrix &dC1dCn );
+            virtual void calculateFirstConfigurationJacobians( const floatVector &configurations, floatVector &dC1dC, floatVector &dC1dCn );
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
@@ -786,6 +786,9 @@ namespace tardigradeHydra{
                 _X.first = true;
 
             }
+
+            std::string build_upper_index_out_of_range_error_string( const unsigned int upperIndex, const unsigned int num_configurations );
+            std::string build_lower_index_out_of_range_error_string( const unsigned int lowerIndex, const unsigned int upperIndex );
 
         private:
 
@@ -884,13 +887,13 @@ namespace tardigradeHydra{
 
             void resetIterationData( );
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatMatrix, passThrough )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousConfigurations,               floatMatrix, passThrough )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousConfigurations,               floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, inverseConfigurations,                floatMatrix, passThrough )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, inverseConfigurations,                floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousInverseConfigurations,        floatMatrix, passThrough )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousInverseConfigurations,        floatVector, passThrough )
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, nonLinearSolveStateVariables,         floatVector, passThrough )
 
@@ -900,13 +903,13 @@ namespace tardigradeHydra{
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousAdditionalStateVariables,     floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,          get_dF1dF,          dF1dF,          floatMatrix, setFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,          get_dF1dF,          dF1dF,          floatVector, setFirstConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dFn,         get_dF1dFn,         dF1dFn,         floatMatrix, setFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dFn,         get_dF1dFn,         dF1dFn,         floatVector, setFirstConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dF,  get_previousdF1dF,  previousdF1dF,  floatMatrix, setPreviousFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dF,  get_previousdF1dF,  previousdF1dF,  floatVector, setPreviousFirstConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn, floatMatrix, setPreviousFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn, floatVector, setPreviousFirstConfigurationJacobians )
 
     };
 

@@ -15,8 +15,9 @@ New Features
 
 Breaking Changes
 ================
-- Changed the micromorphic tools to use the vector Jacobian formulations and changed the micromorphic linear elasticity calculation to use vector Jacobian formulations (:pull:`72`). By `Nathan Miller`_.
-- Changed Drucker Prager plasticity to use the vector Jacobian formulations (:pull:`72`). By `Nathan Miller`_.
+- Changed the micromorphic tools to use the vector Jacobian formulations and changed the micromorphic linear elasticity calculation to use vector Jacobian formulations (:pull:`81`). By `Nathan Miller`_.
+- Changed Drucker Prager plasticity to use the vector Jacobian formulations (:pull:`81`). By `Nathan Miller`_.
+- Changed hydra and hydraMicromorphic to use vector representations of the configurations and their jacobians (:pull:`82`). By `Nathan Miller`_.
 
 Internal Changes
 ================
