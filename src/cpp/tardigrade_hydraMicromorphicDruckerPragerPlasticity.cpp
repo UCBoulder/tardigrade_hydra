@@ -2676,15 +2676,15 @@ namespace tardigradeHydra{
 
             floatVector dFpdSubFs;
 
-            floatVector dF1dF;
+            const floatVector *dF1dF;
 
-            floatVector dF1dFn;
+            const floatVector *dF1dFn;
 
             floatVector dChipdSubChis;
 
-            floatVector dChi1dChi;
+            const floatVector *dChi1dChi;
 
-            floatVector dChi1dChin;
+            const floatVector *dChi1dChin;
 
             floatVector Fp;
 
@@ -2694,17 +2694,17 @@ namespace tardigradeHydra{
 
                 stress = hydra->getPreviousStress( );
 
-                dF1dF         = tardigradeVectorTools::appendVectors( *hydra->get_previousdF1dF( ) );
+                dF1dF         = hydra->get_previousdF1dF( );
 
-                dF1dFn        = tardigradeVectorTools::appendVectors( *hydra->get_previousdF1dFn( ) );
+                dF1dFn        = hydra->get_previousdF1dFn( );
 
-                dFpdSubFs     = tardigradeVectorTools::appendVectors( hydra->getPreviousFollowingConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 ) );
+                dFpdSubFs     = hydra->getPreviousFollowingConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
 
-                dChi1dChi     = tardigradeVectorTools::appendVectors( *hydra->get_previousdChi1dChi( ) );
+                dChi1dChi     = hydra->get_previousdChi1dChi( );
 
-                dChi1dChin    = tardigradeVectorTools::appendVectors( *hydra->get_previousdChi1dChin( ) );
+                dChi1dChin    = hydra->get_previousdChi1dChin( );
 
-                dChipdSubChis = tardigradeVectorTools::appendVectors( hydra->getPreviousFollowingMicroConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 ) );
+                dChipdSubChis = hydra->getPreviousFollowingMicroConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
 
                 Fp            = hydra->getPreviousFollowingConfiguration(         ( *getPlasticConfigurationIndex( ) ) - 1 );
 
@@ -2715,17 +2715,17 @@ namespace tardigradeHydra{
 
                 stress = hydra->getStress( );
 
-                dF1dF         = tardigradeVectorTools::appendVectors( *hydra->get_dF1dF( ) );
+                dF1dF         = hydra->get_dF1dF( );
 
-                dF1dFn        = tardigradeVectorTools::appendVectors( *hydra->get_dF1dFn( ) );
+                dF1dFn        = hydra->get_dF1dFn( );
 
-                dFpdSubFs     = tardigradeVectorTools::appendVectors( hydra->getFollowingConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 ) );
+                dFpdSubFs     = hydra->getFollowingConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
 
-                dChi1dChi     = tardigradeVectorTools::appendVectors( *hydra->get_dChi1dChi( ) );
+                dChi1dChi     = hydra->get_dChi1dChi( );
 
-                dChi1dChin    = tardigradeVectorTools::appendVectors( *hydra->get_dChi1dChin( ) );
+                dChi1dChin    = hydra->get_dChi1dChin( );
 
-                dChipdSubChis = tardigradeVectorTools::appendVectors( hydra->getFollowingMicroConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 ) );
+                dChipdSubChis = hydra->getFollowingMicroConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
 
                 Fp            = hydra->getFollowingConfiguration(         ( *getPlasticConfigurationIndex( ) ) - 1 );
 
@@ -2748,9 +2748,9 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                        dFpdF[ sot_dim * i + j ] += dFpdSubFs[ num_configs * sot_dim * i + k ] * dF1dF[ sot_dim * k + j ];
+                        dFpdF[ sot_dim * i + j ] += dFpdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dF )[ sot_dim * k + j ];
 
-                        dChipdChi[ sot_dim * i + j ] += dChipdSubChis[ num_configs * sot_dim * i +  k ] * dChi1dChi[ sot_dim * k + j ];
+                        dChipdChi[ sot_dim * i + j ] += dChipdSubChis[ num_configs * sot_dim * i +  k ] * ( *dChi1dChi )[ sot_dim * k + j ];
 
                     }
 
@@ -2764,9 +2764,9 @@ namespace tardigradeHydra{
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dFpdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dFpdSubFs[ num_configs * sot_dim * i + k ] * dF1dFn[ ( num_configs - 1 ) * sot_dim * k + j ];
+                        dFpdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dFpdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dFn )[ ( num_configs - 1 ) * sot_dim * k + j ];
 
-                        dChipdChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dChipdSubChis[ num_configs * sot_dim * i + k ] * dChi1dChin[ ( num_configs - 1 ) * sot_dim * k + j ];
+                        dChipdChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dChipdSubChis[ num_configs * sot_dim * i + k ] * ( *dChi1dChin )[ ( num_configs - 1 ) * sot_dim * k + j ];
 
                     }
 
@@ -5344,30 +5344,30 @@ namespace tardigradeHydra{
 
             floatVector dPrecedingFdSubFs;
 
-            floatVector dF1dF;
+            const floatVector *dF1dF;
 
-            floatVector dF1dFn;
+            const floatVector *dF1dFn;
 
             if ( isPrevious ){
 
                 set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
 
-                dPrecedingFdSubFs = tardigradeVectorTools::appendVectors( hydra->getPreviousPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) ) );
+                dPrecedingFdSubFs = hydra->getPreviousPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
 
-                dF1dF  = tardigradeVectorTools::appendVectors( *hydra->get_previousdF1dF( ) );
+                dF1dF  = hydra->get_previousdF1dF( );
 
-                dF1dFn = tardigradeVectorTools::appendVectors( *hydra->get_previousdF1dFn( ) );
+                dF1dFn = hydra->get_previousdF1dFn( );
 
             }
             else{
 
                 set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
 
-                dPrecedingFdSubFs = tardigradeVectorTools::appendVectors( hydra->getPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) ) );
+                dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
 
-                dF1dF  = tardigradeVectorTools::appendVectors( *hydra->get_dF1dF( ) );
+                dF1dF  = hydra->get_dF1dF( );
 
-                dF1dFn = tardigradeVectorTools::appendVectors( *hydra->get_dF1dFn( ) );
+                dF1dFn = hydra->get_dF1dFn( );
 
             }
 
@@ -5383,7 +5383,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                        dPrecedingFdF[ sot_dim * i + j ] += dPrecedingFdSubFs[ num_configs * sot_dim * i + k ] * dF1dF[ sot_dim * k + j ];
+                        dPrecedingFdF[ sot_dim * i + j ] += dPrecedingFdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dF )[ sot_dim * k + j ];
 
                     }
 
@@ -5395,7 +5395,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dPrecedingFdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dPrecedingFdSubFs[ num_configs * sot_dim * i + k ] * dF1dFn[ ( num_configs - 1 ) * sot_dim * k + j ];
+                        dPrecedingFdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dPrecedingFdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dFn )[ ( num_configs - 1 ) * sot_dim * k + j ];
 
                     }
 
@@ -5509,30 +5509,30 @@ namespace tardigradeHydra{
 
             floatVector dPrecedingChidSubChis;
 
-            floatVector dChi1dChi;
+            const floatVector *dChi1dChi;
 
-            floatVector dChi1dChin;
+            const floatVector *dChi1dChin;
 
             if ( isPrevious ){
 
                 set_previousPrecedingMicroDeformation( hydra->getPreviousPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
 
-                dPrecedingChidSubChis = tardigradeVectorTools::appendVectors( hydra->getPreviousPrecedingMicroConfigurationJacobian( *getPlasticConfigurationIndex( ) ) );
+                dPrecedingChidSubChis = hydra->getPreviousPrecedingMicroConfigurationJacobian( *getPlasticConfigurationIndex( ) );
 
-                dChi1dChi  = tardigradeVectorTools::appendVectors( *hydra->get_previousdChi1dChi( ) );
+                dChi1dChi  = hydra->get_previousdChi1dChi( );
 
-                dChi1dChin = tardigradeVectorTools::appendVectors( *hydra->get_previousdChi1dChin( ) );
+                dChi1dChin = hydra->get_previousdChi1dChin( );
 
             }
             else{
 
                 set_precedingMicroDeformation( hydra->getPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
 
-                dPrecedingChidSubChis = tardigradeVectorTools::appendVectors( hydra->getPrecedingMicroConfigurationJacobian( *getPlasticConfigurationIndex( ) ) );
+                dPrecedingChidSubChis = hydra->getPrecedingMicroConfigurationJacobian( *getPlasticConfigurationIndex( ) );
 
-                dChi1dChi  = tardigradeVectorTools::appendVectors( *hydra->get_dChi1dChi( ) );
+                dChi1dChi  = hydra->get_dChi1dChi( );
 
-                dChi1dChin = tardigradeVectorTools::appendVectors( *hydra->get_dChi1dChin( ) );
+                dChi1dChin = hydra->get_dChi1dChin( );
 
             }
 
@@ -5548,7 +5548,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                        dPrecedingChidChi[ sot_dim * i + j ] += dPrecedingChidSubChis[ num_configs * sot_dim * i + k ] * dChi1dChi[ sot_dim * k + j ];
+                        dPrecedingChidChi[ sot_dim * i + j ] += dPrecedingChidSubChis[ num_configs * sot_dim * i + k ] * ( *dChi1dChi )[ sot_dim * k + j ];
 
                     }
 
@@ -5560,7 +5560,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dPrecedingChidChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dPrecedingChidSubChis[ num_configs * sot_dim * i + k ] * dChi1dChin[ ( num_configs - 1 ) * sot_dim * k + j ];
+                        dPrecedingChidChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dPrecedingChidSubChis[ num_configs * sot_dim * i + k ] * ( *dChi1dChin )[ ( num_configs - 1 ) * sot_dim * k + j ];
 
                     }
 
@@ -5610,14 +5610,20 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to set the current (flase) or previous (true) gradient of the micro deformation
              */
 
+            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = dim * dim;
+            const unsigned int tot_dim = sot_dim * dim;
+
             if ( isPrevious ){
 
-                set_previousPrecedingGradientMicroDeformation( ( *hydra->get_previousGradientMicroConfigurations( ) )[ 0 ] ); // TODO: Generalize this expression
+                set_previousPrecedingGradientMicroDeformation( floatVector( hydra->get_previousGradientMicroConfigurations( )->begin( ),
+                                                                            hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim ) ); //TODO: Generalize this expression
 
             }
             else{
 
-                set_precedingGradientMicroDeformation( ( *hydra->get_gradientMicroConfigurations( ) )[ 0 ] ); // TODO: Generalize this expression
+                set_precedingGradientMicroDeformation( floatVector( hydra->get_gradientMicroConfigurations( )->begin( ),
+                                                                    hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim ) ); //TODO: Generalize this expression
 
             }
 
@@ -5720,34 +5726,40 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to set the current (flase) or previous (true) gradient of the micro deformation
              */
 
+            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = dim * dim;
+            const unsigned int tot_dim = sot_dim * dim;
+
             if ( isPrevious ){
 
-                set_previousPrecedingGradientMicroDeformation( ( *hydra->get_previousGradientMicroConfigurations( ) )[ 0 ] ); // TODO: Generalize this expression
+                set_previousPrecedingGradientMicroDeformation( floatVector( hydra->get_previousGradientMicroConfigurations( )->begin( ),
+                                                                            hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim ) ); //TODO: Generalize this expression
 
-                set_previousdPrecedingGradientMicroDeformationdFn(       tardigradeVectorTools::appendVectors( *hydra->get_previousdGradChi1dFn( ) ) );
+                set_previousdPrecedingGradientMicroDeformationdFn(       *hydra->get_previousdGradChi1dFn( ) );
 
-                set_previousdPrecedingGradientMicroDeformationdChi(      tardigradeVectorTools::appendVectors( *hydra->get_previousdGradChi1dChi( ) ) );
+                set_previousdPrecedingGradientMicroDeformationdChi(      *hydra->get_previousdGradChi1dChi( ) );
 
-                set_previousdPrecedingGradientMicroDeformationdChin(     tardigradeVectorTools::appendVectors( *hydra->get_previousdGradChi1dChin( ) ) );
+                set_previousdPrecedingGradientMicroDeformationdChin(     *hydra->get_previousdGradChi1dChin( ) );
 
-                set_previousdPrecedingGradientMicroDeformationdGradChi(  tardigradeVectorTools::appendVectors( *hydra->get_previousdGradChi1dGradChi( ) ) );
+                set_previousdPrecedingGradientMicroDeformationdGradChi(  *hydra->get_previousdGradChi1dGradChi( ) );
 
-                set_previousdPrecedingGradientMicroDeformationdGradChin( tardigradeVectorTools::appendVectors( *hydra->get_previousdGradChi1dGradChin( ) ) );
+                set_previousdPrecedingGradientMicroDeformationdGradChin( *hydra->get_previousdGradChi1dGradChin( ) );
 
             }
             else{
 
-                set_precedingGradientMicroDeformation( ( *hydra->get_gradientMicroConfigurations( ) )[ 0 ] ); // TODO: Generalize this expression
+                set_precedingGradientMicroDeformation( floatVector( hydra->get_gradientMicroConfigurations( )->begin( ),
+                                                                    hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim ) ); //TODO: Generalize this expression
+                                                                                                                                       //
+                set_dPrecedingGradientMicroDeformationdFn(       *hydra->get_dGradChi1dFn( ) );
 
-                set_dPrecedingGradientMicroDeformationdFn(       tardigradeVectorTools::appendVectors( *hydra->get_dGradChi1dFn( ) ) );
+                set_dPrecedingGradientMicroDeformationdChi(      *hydra->get_dGradChi1dChi( ) );
 
-                set_dPrecedingGradientMicroDeformationdChi(      tardigradeVectorTools::appendVectors( *hydra->get_dGradChi1dChi( ) ) );
+                set_dPrecedingGradientMicroDeformationdChin(     *hydra->get_dGradChi1dChin( ) );
 
-                set_dPrecedingGradientMicroDeformationdChin(     tardigradeVectorTools::appendVectors( *hydra->get_dGradChi1dChin( ) ) );
+                set_dPrecedingGradientMicroDeformationdGradChi(  *hydra->get_dGradChi1dGradChi( ) );
 
-                set_dPrecedingGradientMicroDeformationdGradChi(  tardigradeVectorTools::appendVectors( *hydra->get_dGradChi1dGradChi( ) ) );
-
-                set_dPrecedingGradientMicroDeformationdGradChin( tardigradeVectorTools::appendVectors( *hydra->get_dGradChi1dGradChin( ) ) );
+                set_dPrecedingGradientMicroDeformationdGradChin( *hydra->get_dGradChi1dGradChin( ) );
 
             }
 
@@ -6985,17 +6997,25 @@ namespace tardigradeHydra{
              * Set all of the plastic deformations
              */
 
+            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = dim * dim;
+            const unsigned int tot_dim = sot_dim * dim;
+            const unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+
             floatVector updatedPlasticDeformationGradient;
 
             floatVector updatedPlasticMicroDeformation;
 
             floatVector updatedPlasticGradientMicroDeformation;
 
-            const floatVector previousPlasticDeformationGradient      = ( *hydra->get_previousConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+            const floatVector previousPlasticDeformationGradient      = floatVector( hydra->get_previousConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
+                                                                                     hydra->get_previousConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
 
-            const floatVector previousPlasticMicroDeformation         = ( *hydra->get_previousMicroConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+            const floatVector previousPlasticMicroDeformation         = floatVector( hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
+                                                                                     hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
 
-            const floatVector previousPlasticGradientMicroDeformation = ( *hydra->get_previousGradientMicroConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+            const floatVector previousPlasticGradientMicroDeformation = floatVector( hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim * plasticConfigurationIndex,
+                                                                                     hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim * ( plasticConfigurationIndex + 1 ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 evolvePlasticDeformation( *hydra->getDeltaTime( ),
@@ -7419,17 +7439,22 @@ namespace tardigradeHydra{
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
+            const unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+
             floatVector updatedPlasticDeformationGradient;
 
             floatVector updatedPlasticMicroDeformation;
 
             floatVector updatedPlasticGradientMicroDeformation;
 
-            const floatVector previousPlasticDeformationGradient      = ( *hydra->get_previousConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+            const floatVector previousPlasticDeformationGradient      = floatVector( hydra->get_previousConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
+                                                                                     hydra->get_previousConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
 
-            const floatVector previousPlasticMicroDeformation         = ( *hydra->get_previousMicroConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+            const floatVector previousPlasticMicroDeformation         = floatVector( hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
+                                                                                     hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
 
-            const floatVector previousPlasticGradientMicroDeformation = ( *hydra->get_previousGradientMicroConfigurations( ) )[ *getPlasticConfigurationIndex( ) ];
+            const floatVector previousPlasticGradientMicroDeformation = floatVector( hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim * plasticConfigurationIndex,
+                                                                                     hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim * ( plasticConfigurationIndex + 1 ) );
 
             floatVector dPlasticFdPlasticMacroL;
 
@@ -8352,6 +8377,10 @@ namespace tardigradeHydra{
              * Set the residual equation
              */
 
+            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = dim * dim;
+            const unsigned int tot_dim = sot_dim * dim;
+
             const floatVector *updatedPlasticDeformationGradient;
 
             const floatVector *updatedPlasticMicroDeformation;
@@ -8363,11 +8392,14 @@ namespace tardigradeHydra{
             // Get the trial plastic deformation measures
             unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
 
-            const floatVector plasticDeformationGradient      = ( *hydra->get_configurations( ) )[ plasticConfigurationIndex ];
+            const floatVector plasticDeformationGradient      = floatVector( hydra->get_configurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
+                                                                             hydra->get_configurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
 
-            const floatVector plasticMicroDeformation         = ( *hydra->get_microConfigurations( ) )[ plasticConfigurationIndex ];
+            const floatVector plasticMicroDeformation         = floatVector( hydra->get_microConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
+                                                                             hydra->get_microConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
 
-            const floatVector plasticGradientMicroDeformation = ( *hydra->get_gradientMicroConfigurations( ) )[ plasticConfigurationIndex ];
+            const floatVector plasticGradientMicroDeformation = floatVector( hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim * plasticConfigurationIndex,
+                                                                             hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim * ( plasticConfigurationIndex + 1 ) );
 
             // Get the updated plastic deformation measures
             TARDIGRADE_ERROR_TOOLS_CATCH(
