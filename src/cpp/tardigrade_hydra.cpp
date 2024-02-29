@@ -106,7 +106,7 @@ namespace tardigradeHydra{
 
     void hydraBase::computeConfigurations( const floatVector *data_vector, const unsigned int start_index,
                                            const floatVector &total_transformation,
-                                           floatMatrix &configurations, floatMatrix &inverseConfigurations,
+                                           floatVector &configurations, floatVector &inverseConfigurations,
                                            const bool add_eye ){
         /*!
          * Compute the configurations from the provided vector. Each configuration is assumed to have a dimension
@@ -121,43 +121,50 @@ namespace tardigradeHydra{
          *     total transformation. Defaults to false.
          */
 
-        const unsigned int* dim = getDimension( );
+        const unsigned int dim = *getDimension( );
+        const unsigned int sot_dim = dim * dim;
 
-        const unsigned int* nConfig = getNumConfigurations( );
+        const unsigned int num_configs = *getNumConfigurations( );
 
-        floatVector eye( ( *dim ) * ( *dim ) );
+        floatVector eye( sot_dim );
         tardigradeVectorTools::eye( eye );
 
         // Set the configurations
-        configurations = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+        configurations = floatVector( num_configs * sot_dim, 0 );
 
-        inverseConfigurations = floatMatrix( *nConfig, floatVector( ( *dim ) * ( *dim ), 0 ) );
+        inverseConfigurations = floatVector( num_configs * sot_dim, 0 );
 
         // Initialize the first configuration with the total deformation gradient
-        configurations[ 0 ] = total_transformation;
+        floatMatrix local_configurations( num_configs );
+        floatMatrix local_inverseConfigurations( num_configs );
 
-        for ( int i = ( *nConfig ) - 2; i >= 0; i-- ){
+        local_configurations[ 0 ] = total_transformation;
+
+        for ( int i = num_configs - 2; i >= 0; i-- ){
 
             // Set the current configuration as being equal to the previous
-            configurations[ i + 1 ] = floatVector( data_vector->begin( ) + i * ( *dim ) * ( *dim ) + start_index,
-                                                   data_vector->begin( ) + ( i + 1 ) * ( *dim ) * ( *dim ) + start_index );
+            local_configurations[ i + 1 ] = floatVector( data_vector->begin( ) + i * sot_dim + start_index,
+                                                         data_vector->begin( ) + ( i + 1 ) * sot_dim + start_index );
 
             if ( add_eye ){
 
-                configurations[ i + 1 ] += eye;
+                local_configurations[ i + 1 ] += eye;
 
             }
 
             // Compute the inverse of the current configuration and store it
-            inverseConfigurations[ i + 1 ] = tardigradeVectorTools::inverse( configurations[ i + 1 ], ( *dim ), ( *dim ) );
+            local_inverseConfigurations[ i + 1 ] = tardigradeVectorTools::inverse( local_configurations[ i + 1 ], dim, dim );
 
             // Add contribution of deformation gradient to the first configuration
-            configurations[ 0 ] = tardigradeVectorTools::matrixMultiply( configurations[ 0 ], inverseConfigurations[ i + 1 ],
-                                                                         ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
+            local_configurations[ 0 ] = tardigradeVectorTools::matrixMultiply( local_configurations[ 0 ], local_inverseConfigurations[ i + 1 ],
+                                                                               dim, dim, dim, dim );
 
         }
 
-        inverseConfigurations[ 0 ] = tardigradeVectorTools::inverse( configurations[ 0 ], ( *dim ), ( *dim ) );
+        local_inverseConfigurations[ 0 ] = tardigradeVectorTools::inverse( local_configurations[ 0 ], dim, dim );
+
+        configurations        = tardigradeVectorTools::appendVectors( local_configurations );
+        inverseConfigurations = tardigradeVectorTools::appendVectors( local_inverseConfigurations );
 
         return;
 
@@ -174,9 +181,9 @@ namespace tardigradeHydra{
         extractStress( );
 
         // Set the configurations
-        floatMatrix configurations;
+        floatVector configurations;
 
-        floatMatrix inverseConfigurations;
+        floatVector inverseConfigurations;
 
         computeConfigurations( unknownVector, getStress( )->size( ), *getDeformationGradient( ), configurations, inverseConfigurations );
 
@@ -230,13 +237,13 @@ namespace tardigradeHydra{
 
         }
 
-        floatMatrix configurations;
+        floatVector configurations;
 
-        floatMatrix previousConfigurations;
+        floatVector previousConfigurations;
 
-        floatMatrix inverseConfigurations;
+        floatVector inverseConfigurations;
 
-        floatMatrix previousInverseConfigurations;
+        floatVector previousInverseConfigurations;
 
         // Compute the configurations
         computeConfigurations( getPreviousStateVariables( ), 0, *getDeformationGradient( ), configurations, inverseConfigurations, true );
@@ -267,7 +274,38 @@ namespace tardigradeHydra{
 
     }
 
-    floatVector hydraBase::getSubConfiguration( const floatMatrix &configurations, const unsigned int &lowerIndex,
+    std::string hydraBase::build_upper_index_out_of_range_error_string( const unsigned int upperIndex, const unsigned int num_configurations ){
+        /*!
+         * Build an error message for when the upper index is larger than the number of configurations
+         *
+         * \param upperIndex: The upper index
+         * \param num_configurations: The number of configurations
+         */
+
+        std::string message = "The upper index must be less than or equal to the total number of configurations\n";
+        message            += "  upperIndex      : " + std::to_string( upperIndex ) + "\n";
+        message            += "  # configurations: " + std::to_string( num_configurations );
+
+        return message;
+    }
+
+    std::string hydraBase::build_lower_index_out_of_range_error_string( const unsigned int lowerIndex, const unsigned int upperIndex ){
+        /*!
+         * Build an error message for when the lower index is larger than the upper index
+         *
+         * \param lowerIndex: The lower configuration index
+         * \param upperIndex: The upper configuration index
+         */
+
+        std::string message = "The upper index must be greater than or equal to the lower index\n";
+        message            += "  lowerIndex: " + std::to_string( lowerIndex ) + "\n";
+        message            += "  upperIndex: " + std::to_string( upperIndex ) + "\n";
+
+        return message;
+
+    }
+
+    floatVector hydraBase::getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex,
                                                 const unsigned int &upperIndex ){
         /*!
          * Get a sub-configuration \f$\bf{F}^{sc}\f$ defined as
@@ -279,34 +317,22 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        if ( upperIndex > configurations.size( ) ){
+        const unsigned int dim = *getDimension( );
+        const unsigned int sot_dim = dim * dim;
+        const unsigned int local_num_configurations = configurations.size( ) / sot_dim;
 
-            std::string message = "The upper index must be less than or equal to the total number of configurations\n";
-            message            += "  upperIndex      : " + std::to_string( upperIndex ) + "\n";
-            message            += "  # configurations: " + std::to_string( configurations.size( ) );
+        TARDIGRADE_ERROR_TOOLS_CHECK( configurations.size( ) % sot_dim == 0, "The configurations vector must be a multiple of the size of a second order tensor" )
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+        TARDIGRADE_ERROR_TOOLS_CHECK( upperIndex <= local_num_configurations, build_upper_index_out_of_range_error_string( upperIndex, local_num_configurations ) )
 
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK( lowerIndex <= upperIndex, build_lower_index_out_of_range_error_string( lowerIndex, upperIndex ) )
 
-        if ( lowerIndex > upperIndex ){
-
-            std::string message = "The upper index must be greater than or equal to the lower index\n";
-            message            += "  lowerIndex: " + std::to_string( lowerIndex ) + "\n";
-            message            += "  upperIndex: " + std::to_string( upperIndex ) + "\n";
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
-
-        }
-
-        const unsigned int* dim = getDimension( );
-
-        floatVector Fsc( ( *dim ) * ( *dim ), 0 );
+        floatVector Fsc( sot_dim, 0 );
         tardigradeVectorTools::eye( Fsc );
 
         for ( unsigned int i = lowerIndex; i < upperIndex; i++ ){
 
-            Fsc = tardigradeVectorTools::matrixMultiply( Fsc, configurations[ i ], ( *dim ), ( *dim ), ( *dim ), ( *dim ) );
+            Fsc = tardigradeVectorTools::matrixMultiply( Fsc, floatVector( configurations.begin( ) + sot_dim * i, configurations.begin( ) + sot_dim * ( i + 1 ) ), dim, dim, dim, dim );
 
         }
 
@@ -314,7 +340,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBase::getSubConfigurationJacobian( const floatMatrix &configurations, const unsigned int &lowerIndex,
+    floatVector hydraBase::getSubConfigurationJacobian( const floatVector &configurations, const unsigned int &lowerIndex,
                                                         const unsigned int &upperIndex ){
         /*!
          * Get the jacobian of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
@@ -329,9 +355,13 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        const unsigned int *dim = getDimension( );
+        const unsigned int dim = *getDimension( );
+        const unsigned int sot_dim = dim * dim;
+        const unsigned int num_incoming_configs = configurations.size( ) / sot_dim;
 
-        floatMatrix gradient( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * configurations.size( ), 0 ) );
+        TARDIGRADE_ERROR_TOOLS_CHECK( configurations.size( ) % sot_dim == 0, "The configurations vector must be a scalar multiple of the second order tensor size (9 for 3D)" )
+
+        floatVector gradient( sot_dim * sot_dim * num_incoming_configs, 0 );
 
         for ( unsigned int index = lowerIndex; index < upperIndex; index++ ){
 
@@ -341,15 +371,15 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( Fp = getSubConfiguration( configurations, index + 1, upperIndex ) );
 
-            for ( unsigned int i = 0; i < *dim; i++ ){
+            for ( unsigned int i = 0; i < dim; i++ ){
 
-                for ( unsigned int I = 0; I < *dim; I++ ){
+                for ( unsigned int I = 0; I < dim; I++ ){
 
-                    for ( unsigned int a = 0; a < *dim; a++ ){
+                    for ( unsigned int a = 0; a < dim; a++ ){
 
-                        for ( unsigned int A = 0; A < *dim; A++ ){
+                        for ( unsigned int A = 0; A < dim; A++ ){
 
-                            gradient[ ( *dim ) * i + I ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ] = Fm[ ( *dim ) * i + a ] * Fp[ ( *dim ) * A + I ];
+                            gradient[ dim * num_incoming_configs * sot_dim * i + num_incoming_configs * sot_dim * I + sot_dim * index + dim * a + A ] = Fm[ dim * i + a ] * Fp[ dim * A + I ];
 
                         }
 
@@ -459,7 +489,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBase::getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+    floatVector hydraBase::getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
          * Get the jacobian of a sub-configuration \f$\bf{F}^{sc}\f$ defined as
          *
@@ -476,7 +506,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBase::getPrecedingConfigurationJacobian( const unsigned int &index ){
+    floatVector hydraBase::getPrecedingConfigurationJacobian( const unsigned int &index ){
         /*!
          * Get the jacobian of the sub-configuration preceding but not including the index with respect to the current configurations.
          * 
@@ -487,7 +517,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBase::getFollowingConfigurationJacobian( const unsigned int &index ){
+    floatVector hydraBase::getFollowingConfigurationJacobian( const unsigned int &index ){
         /*!
          * Get the jacobian of the sub-configuration following but not including the index with respect to the current configurations.
          * 
@@ -498,7 +528,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBase::getPreviousSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+    floatVector hydraBase::getPreviousSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
          * Get the jacobian of a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
          *
@@ -515,7 +545,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBase::getPreviousPrecedingConfigurationJacobian( const unsigned int &index ){
+    floatVector hydraBase::getPreviousPrecedingConfigurationJacobian( const unsigned int &index ){
         /*!
          * Get the jacobian of the previous sub-configuration preceding but not including the index with
          * respect to the previous configurations.
@@ -527,7 +557,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatMatrix hydraBase::getPreviousFollowingConfigurationJacobian( const unsigned int &index ){
+    floatVector hydraBase::getPreviousFollowingConfigurationJacobian( const unsigned int &index ){
         /*!
          * Get the jacobian of the previous sub-configuration following but not including the index with
          * respect to the previous configurations
@@ -539,7 +569,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::calculateFirstConfigurationJacobians( const floatMatrix &configurations, floatMatrix &dC1dC, floatMatrix &dC1dCn ){
+    void hydraBase::calculateFirstConfigurationJacobians( const floatVector &configurations, floatVector &dC1dC, floatVector &dC1dCn ){
         /*!
          * Get the Jacobian of the first configuration w.r.t. the total mapping and the remaining configurations.
          * 
@@ -550,41 +580,43 @@ namespace tardigradeHydra{
          * whre \f$C^n = C^2, C^3, \cdots \f$
          */
 
-        const unsigned int* dim = getDimension( );
+        const unsigned int dim = *getDimension( );
+        const unsigned int sot_dim = dim * dim;
+        const unsigned int num_configs = *getNumConfigurations( );
 
-        dC1dC  = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ), 0 ) );
+        dC1dC  = floatVector( sot_dim * sot_dim, 0 );
 
-        dC1dCn = floatMatrix( ( *dim ) * ( *dim ), floatVector( ( *dim ) * ( *dim ) * ( ( *getNumConfigurations( ) ) - 1 ), 0 ) );
+        dC1dCn = floatVector( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-        floatVector eye( ( *dim ) * ( *dim ) );
+        floatVector eye( sot_dim );
         tardigradeVectorTools::eye( eye );
 
-        floatVector fullConfiguration = getSubConfiguration( configurations, 0, *getNumConfigurations( ) );
+        floatVector fullConfiguration = getSubConfiguration( configurations, 0, num_configs );
 
-        floatVector invCsc = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, *getNumConfigurations( ) ), ( *dim ), ( *dim ) );
+        floatVector invCsc = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, num_configs ), dim, dim );
 
-        floatMatrix dInvCscdCsc = tardigradeVectorTools::computeDInvADA( invCsc, ( *dim ), ( *dim ) );
+        floatVector dInvCscdCsc = tardigradeVectorTools::computeFlatDInvADA( invCsc, dim, dim );
 
-        floatMatrix dInvCscdCs = tardigradeVectorTools::dot( dInvCscdCsc, getSubConfigurationJacobian( configurations, 1, *getNumConfigurations( ) ) );
+        floatVector dInvCscdCs = tardigradeVectorTools::matrixMultiply( dInvCscdCsc, getSubConfigurationJacobian( configurations, 1, num_configs ), sot_dim, sot_dim, sot_dim, num_configs * sot_dim );
 
         // Compute the gradients
-        for ( unsigned int i = 0; i < ( *dim ); i++ ){
+        for ( unsigned int i = 0; i < dim; i++ ){
 
-            for ( unsigned int barI = 0; barI < ( *dim ); barI++ ){
+            for ( unsigned int barI = 0; barI < dim; barI++ ){
 
-                for ( unsigned int a = 0; a < ( *dim ); a++ ){
+                for ( unsigned int a = 0; a < dim; a++ ){
 
-                    for ( unsigned int A = 0; A < ( *dim ); A++ ){
+                    for ( unsigned int A = 0; A < dim; A++ ){
 
-                        dC1dC[ ( *dim ) * i + barI ][ ( * dim ) * a + A ] += eye[ ( *dim ) * i + a ] * invCsc[ ( *dim ) * A + barI ];
+                        dC1dC[ dim * sot_dim * i + sot_dim * barI + dim * a + A ] += eye[ dim * i + a ] * invCsc[ dim * A + barI ];
 
-                        for ( unsigned int index = 0; index < ( *getNumConfigurations( ) ) - 1; index++ ){
+                        for ( unsigned int index = 0; index < num_configs - 1; index++ ){
 
-                            for ( unsigned int J = 0; J < ( *dim ); J++ ){
+                            for ( unsigned int J = 0; J < dim; J++ ){
 
-                                dC1dCn[ ( *dim ) * i + barI ][ ( *dim ) * ( *dim ) * index + ( *dim ) * a + A ]
-                                    += fullConfiguration[ ( *dim ) * i + J ]
-                                     * dInvCscdCs[ ( *dim ) * J + barI ][ ( *dim ) * ( *dim ) * ( index + 1 ) + ( *dim ) * a + A ];
+                                dC1dCn[ dim * ( num_configs - 1 ) * sot_dim * i + ( num_configs - 1 ) * sot_dim * barI + sot_dim * index + dim * a + A ]
+                                    += fullConfiguration[ dim * i + J ]
+                                     * dInvCscdCs[ dim * num_configs * sot_dim * J + num_configs * sot_dim * barI + sot_dim * ( index + 1 ) + dim * a + A ];
 
                             }
 
@@ -605,9 +637,9 @@ namespace tardigradeHydra{
          * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining sub-configurations
          */
 
-        floatMatrix dF1dF;
+        floatVector dF1dF;
 
-        floatMatrix dF1dFn;
+        floatVector dF1dFn;
 
         calculateFirstConfigurationJacobians( *get_configurations( ), dF1dF, dF1dFn );
 
@@ -622,9 +654,9 @@ namespace tardigradeHydra{
          * Set the Jacobians of the previous first configuration w.r.t. the total configuration and the remaining sub-configurations
          */
 
-        floatMatrix dF1dF;
+        floatVector dF1dF;
 
-        floatMatrix dF1dFn;
+        floatVector dF1dFn;
 
         calculateFirstConfigurationJacobians( *get_previousConfigurations( ), dF1dF, dF1dFn );
 
@@ -1089,20 +1121,27 @@ namespace tardigradeHydra{
          * which returns a pointer to the current value of the stress.
          */
 
+        const unsigned int dim = *getDimension( );
+        const unsigned int sot_dim = dim * dim;
+
         const floatVector *cauchyStress;
         TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = getStress( ) );
 
-        const floatMatrix *configurations = get_configurations( );
+        const floatVector *configurations = get_configurations( );
+
+        const unsigned int num_local_configs = configurations->size( ) / sot_dim;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( configurations->size( ) % num_local_configs == 0, "The size of the configurations vector must be a scalar multiple of the second order tensor size" )
 
         const floatVector *nonLinearSolveStateVariables = get_nonLinearSolveStateVariables( );
 
-        floatMatrix Xmat( 1 + configurations->size( ) );
+        floatMatrix Xmat( 1 + num_local_configs );
 
         Xmat[ 0 ] = *cauchyStress;
 
-        for ( unsigned int i = 1; i < configurations->size( ); i++ ){
+        for ( unsigned int i = 1; i < num_local_configs; i++ ){
 
-            Xmat[ i ] = ( *configurations )[ i ];
+            Xmat[ i ] = floatVector( configurations->begin( ) + sot_dim * i, configurations->begin( ) + sot_dim * ( i + 1 ) );
 
         }
 
