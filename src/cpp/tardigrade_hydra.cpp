@@ -9,6 +9,8 @@
 
 #include<tardigrade_hydra.h>
 
+#include<libxsmm.h>
+
 namespace tardigradeHydra{
 
     //Define hydra global constants in a place that Doxygen can pick up for documentation
@@ -327,16 +329,19 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK( lowerIndex <= upperIndex, build_lower_index_out_of_range_error_string( lowerIndex, upperIndex ) )
 
-        floatVector Fsc( sot_dim, 0 );
-        tardigradeVectorTools::eye( Fsc );
+        floatVector Fsc( sot_dim * ( upperIndex - lowerIndex + 1 ), 0 );
+        for ( unsigned int i = 0; i < dim; i++ ){ Fsc[ dim * i + i ] = 1.0; };
+
+        typedef libxsmm_mmfunction<floatType> kernel_type; //NOTE: libxsmm assumes column major storage
+        kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1.0, 0.0 );
 
         for ( unsigned int i = lowerIndex; i < upperIndex; i++ ){
 
-            Fsc = tardigradeVectorTools::matrixMultiply( Fsc, floatVector( configurations.begin( ) + sot_dim * i, configurations.begin( ) + sot_dim * ( i + 1 ) ), dim, dim, dim, dim );
+            kernel( &configurations[ sot_dim * i ], &Fsc[ sot_dim * ( i - lowerIndex ) ], &Fsc[ sot_dim * ( i - lowerIndex + 1 ) ] );
 
         }
 
-        return Fsc;
+        return floatVector( Fsc.begin( ) + sot_dim * ( upperIndex - lowerIndex ), Fsc.end( ) );
 
     }
 

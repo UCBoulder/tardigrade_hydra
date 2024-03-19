@@ -632,9 +632,18 @@ namespace tardigradeHydra{
         }
 
         // Map the gradient of the micro-configuration to the reference of the first configuration
-        floatVector invChiFollow = tardigradeVectorTools::inverse( getSubConfiguration( microConfigurations, 1, num_configs ), dim, dim );
+        floatVector invChiFollow = getSubConfiguration( microConfigurations, 1, num_configs );
+        floatVector invFFollow = getSubConfiguration( configurations, 1, num_configs );
 
-        floatVector invFFollow = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, num_configs ), dim, dim );
+        Eigen::Map<Eigen::Matrix<floatType,3,3,Eigen::RowMajor>> mat1(invChiFollow.data( ), dim, dim ); //Forces 3d
+        Eigen::Map<Eigen::Matrix<floatType,3,3,Eigen::RowMajor>> mat2(invFFollow.data( ), dim, dim ); //Forces 3d
+       
+        mat1 = mat1.inverse( );//.transpose( );
+        mat2 = mat2.inverse( );//.transpose( );
+
+//        floatVector invChiFollow = tardigradeVectorTools::inverse( getSubConfiguration( microConfigurations, 1, num_configs ), dim, dim );
+//
+//        floatVector invFFollow = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, num_configs ), dim, dim );
 
         for ( unsigned int i = 0; i < tot_dim; i++ ){
             gradientMicroConfigurations[ i ] = 0;
