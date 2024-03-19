@@ -11,6 +11,8 @@
 #include<tardigrade_constitutive_tools.h>
 #include<tardigrade_micromorphic_tools.h>
 
+#include<libxsmm.h>
+
 namespace tardigradeHydra{
 
     namespace micromorphicDruckerPragerPlasticity{
@@ -452,8 +454,17 @@ namespace tardigradeHydra{
                                                        rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                                                        dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
 
-            floatVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, tot_dim, sot_dim, sot_dim, sot_dim );
-            floatVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG,  dRCGdPrecedingF, dim, sot_dim, sot_dim, sot_dim );
+            typedef libxsmm_mmfunction<floatType> kernel_type; //NOTE: libxsmm assumes column major storage
+            kernel_type kernel1(LIBXSMM_GEMM_FLAG_NONE, sot_dim, tot_dim, sot_dim, 1.0, 1.0 );
+            kernel_type kernel2(LIBXSMM_GEMM_FLAG_NONE, sot_dim, dim,     sot_dim, 1.0, 1.0 );
+            kernel_type kernel3(LIBXSMM_GEMM_FLAG_NONE, tot_dim, dim,     tot_dim, 1.0, 1.0 );
+            kernel_type kernel4(LIBXSMM_GEMM_FLAG_NONE, sot_dim, dim,     tot_dim, 1.0, 1.0 );
+
+            floatVector dDevStressdPrecedingF( tot_dim * sot_dim, 0 );// = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, tot_dim, sot_dim, sot_dim, sot_dim );
+            floatVector dPressuredPrecedingF( dim * sot_dim, 0 );//  = tardigradeVectorTools::matrixMultiply( dPressuredRCG,  dRCGdPrecedingF, dim, sot_dim, sot_dim, sot_dim );
+
+            kernel1( &dRCGdPrecedingF[ 0 ], &dDevStressdRCG[ 0 ], &dDevStressdPrecedingF[ 0 ] );
+            kernel2( &dRCGdPrecedingF[ 0 ], &dPressuredRCG[ 0 ],  &dPressuredPrecedingF[ 0 ] );
 
             //Compute the l2norm of the deviatoric stress
             variableVector normDevStress;
@@ -464,15 +475,19 @@ namespace tardigradeHydra{
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
             //Construct the Jacobians
-            dFdStress = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdStress, dim, tot_dim, tot_dim, tot_dim )
-                      + BAngle * dPressuredStress;
+            dFdStress = BAngle * dPressuredStress;
+            kernel3( &dDevStressdStress[ 0 ], &dNormDevStressdDevStress[ 0 ], &dFdStress[ 0 ] );
+//            dFdStress = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdStress, dim, tot_dim, tot_dim, tot_dim )
+//                      + BAngle * dPressuredStress;
 
             dFdc = variableVector( cohesion.size( ) * cohesion.size( ), 0 );
             tardigradeVectorTools::eye( dFdc );
             dFdc *= -AAngle;
 
-            dFdPrecedingF = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdPrecedingF, dim, tot_dim, tot_dim, sot_dim )
-                          + BAngle * dPressuredPrecedingF;
+            dFdPrecedingF = BAngle * dPressuredPrecedingF;
+            kernel4( &dDevStressdPrecedingF[ 0 ], &dNormDevStressdDevStress[ 0 ], &dFdPrecedingF[ 0 ] );
+//            = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdPrecedingF, dim, tot_dim, tot_dim, sot_dim )
+//                          + BAngle * dPressuredPrecedingF;
 
         }
 
@@ -542,12 +557,29 @@ namespace tardigradeHydra{
                                                        rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                                                        dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
 
-            floatVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, tot_dim, sot_dim, sot_dim, sot_dim );
-            floatVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG,  dRCGdPrecedingF, dim, sot_dim, sot_dim, sot_dim );
+            typedef libxsmm_mmfunction<floatType> kernel_type; //NOTE: libxsmm assumes column major storage
+            kernel_type kernel1(LIBXSMM_GEMM_FLAG_NONE,  sot_dim, tot_dim,           sot_dim, 1.0, 1.0 );
+            kernel_type kernel1a(LIBXSMM_GEMM_FLAG_NONE, sot_dim, tot_dim * tot_dim, sot_dim, 1.0, 1.0 );
+            kernel_type kernel2(LIBXSMM_GEMM_FLAG_NONE,  sot_dim, dim,               sot_dim, 1.0, 1.0 );
+            kernel_type kernel2a(LIBXSMM_GEMM_FLAG_NONE, sot_dim, dim * tot_dim,     sot_dim, 1.0, 1.0 );
+            kernel_type kernel3(LIBXSMM_GEMM_FLAG_NONE,  tot_dim, dim,               tot_dim, 1.0, 1.0 );
+            kernel_type kernel4(LIBXSMM_GEMM_FLAG_NONE,  sot_dim, dim,               tot_dim, 1.0, 1.0 );
 
-            variableVector d2DevStressdStressdPrecedingF = tardigradeVectorTools::matrixMultiply( d2DevStressdStressdRCG, dRCGdPrecedingF, tot_dim * tot_dim, sot_dim, sot_dim, sot_dim );
+//            floatVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, tot_dim, sot_dim, sot_dim, sot_dim );
+//            floatVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG,  dRCGdPrecedingF, dim, sot_dim, sot_dim, sot_dim );
 
-            variableVector d2PressuredStressdPrecedingF = tardigradeVectorTools::matrixMultiply( d2PressuredStressdRCG, dRCGdPrecedingF, dim * tot_dim, sot_dim, sot_dim, sot_dim );
+            floatVector dDevStressdPrecedingF( tot_dim * sot_dim, 0 );// = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, tot_dim, sot_dim, sot_dim, sot_dim );
+            floatVector dPressuredPrecedingF( dim * sot_dim, 0 );//  = tardigradeVectorTools::matrixMultiply( dPressuredRCG,  dRCGdPrecedingF, dim, sot_dim, sot_dim, sot_dim );
+
+            kernel1( &dRCGdPrecedingF[ 0 ], &dDevStressdRCG[ 0 ], &dDevStressdPrecedingF[ 0 ] );
+            kernel2( &dRCGdPrecedingF[ 0 ], &dPressuredRCG[ 0 ],  &dPressuredPrecedingF[ 0 ] );
+
+            variableVector d2DevStressdStressdPrecedingF( tot_dim * tot_dim * sot_dim, 0 );// = tardigradeVectorTools::matrixMultiply( d2DevStressdStressdRCG, dRCGdPrecedingF, tot_dim * tot_dim, sot_dim, sot_dim, sot_dim );
+
+            variableVector d2PressuredStressdPrecedingF( dim * tot_dim * sot_dim, 0 );// = tardigradeVectorTools::matrixMultiply( d2PressuredStressdRCG, dRCGdPrecedingF, dim * tot_dim, sot_dim, sot_dim, sot_dim );
+
+            kernel1a( &dRCGdPrecedingF[ 0 ], &d2DevStressdStressdRCG[ 0 ], &d2DevStressdStressdPrecedingF[ 0 ] );
+            kernel2a( &dRCGdPrecedingF[ 0 ], &d2PressuredStressdRCG[ 0 ], &d2PressuredStressdPrecedingF[ 0 ] );
 
             //Compute the l2norm of the deviatoric stress
             variableVector normDevStress;
@@ -561,15 +593,19 @@ namespace tardigradeHydra{
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
     
             //Construct the Jacobians
-            dFdStress = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdStress, dim, tot_dim, tot_dim, tot_dim )
-                      + BAngle * dPressuredStress;
+            dFdStress = BAngle * dPressuredStress;
+            kernel3( &dDevStressdStress[ 0 ], &dNormDevStressdDevStress[ 0 ], &dFdStress[ 0 ] );
+//            dFdStress = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdStress, dim, tot_dim, tot_dim, tot_dim )
+//                      + BAngle * dPressuredStress;
     
             dFdc = variableVector( cohesion.size( ) * cohesion.size( ), 0 );
             tardigradeVectorTools::eye( dFdc );
             dFdc *= -AAngle;
     
-            dFdPrecedingF = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdPrecedingF, dim, tot_dim, tot_dim, sot_dim )
-                          + BAngle * dPressuredPrecedingF;
+            dFdPrecedingF = BAngle * dPressuredPrecedingF;
+            kernel4( &dDevStressdPrecedingF[ 0 ], &dNormDevStressdDevStress[ 0 ], &dFdPrecedingF[ 0 ] );
+//            dFdPrecedingF = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdPrecedingF, dim, tot_dim, tot_dim, sot_dim )
+//                          + BAngle * dPressuredPrecedingF;
     
             //Construct the second-order jacobians
             d2FdStress2 = variableVector( dim * tot_dim * tot_dim, 0 );
