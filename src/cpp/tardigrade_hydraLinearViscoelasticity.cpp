@@ -363,7 +363,7 @@ namespace tardigradeHydra{
             tardigradeVectorTools::eye< floatType >( dFehatdFe );
             dFehatdFe *= std::pow( ( *Je ), -1. / 3 );
 
-            dFehatdFe -= tardigradeVectorTools::appendVectors( tardigradeVectorTools::dyadic( *Fe, *dJedFe ) * std::pow( ( *Je ), -4. / 3 ) / 3. );
+            dFehatdFe -= tardigradeVectorTools::matrixMultiply( *Fe, *dJedFe, sot_dim, 1, 1, sot_dim ) * std::pow( ( *Je ), -4. / 3 ) / 3.;
 
             if ( isPrevious ){
 
@@ -783,17 +783,17 @@ namespace tardigradeHydra{
                                                                                                      _dISVsdPreviousJe, dISVsdPreviousRateModifier,
                                                                                                      _dISVsdPreviousVolumetricISVs ) );
 
-            dPK2MeanStressdJe = tardigradeVectorTools::appendVectors( _dPK2MeanStressdJe );
+            dPK2MeanStressdJe                     = tardigradeVectorTools::appendVectors( _dPK2MeanStressdJe );
 
-            dPK2MeanStressdPreviousJe = tardigradeVectorTools::appendVectors( _dPK2MeanStressdPreviousJe );
+            dPK2MeanStressdPreviousJe             = tardigradeVectorTools::appendVectors( _dPK2MeanStressdPreviousJe );
 
             dPK2MeanStressdPreviousVolumetricISVs = tardigradeVectorTools::appendVectors( _dPK2MeanStressdPreviousVolumetricISVs );
 
-            dISVsdJe = tardigradeVectorTools::appendVectors( _dISVsdJe );
+            dISVsdJe                              = tardigradeVectorTools::appendVectors( _dISVsdJe );
 
-            dISVsdPreviousJe = tardigradeVectorTools::appendVectors( _dISVsdPreviousJe );
+            dISVsdPreviousJe                      = tardigradeVectorTools::appendVectors( _dISVsdPreviousJe );
 
-            dISVsdPreviousVolumetricISVs = tardigradeVectorTools::appendVectors( _dISVsdPreviousVolumetricISVs );
+            dISVsdPreviousVolumetricISVs          = tardigradeVectorTools::appendVectors( _dISVsdPreviousVolumetricISVs );
 
             if( isPrevious ){
 
@@ -1038,14 +1038,10 @@ namespace tardigradeHydra{
             // Compute the strain measures
 
             floatVector isochoricStrain, previousIsochoricStrain;
-            floatMatrix _dEehatdFehat, _previousdEehatdFehat;
             floatVector dEehatdFehat, previousdEehatdFehat;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fehat, isochoricStrain, _dEehatdFehat ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fehat, isochoricStrain, dEehatdFehat ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *previousFehat, previousIsochoricStrain, _previousdEehatdFehat ) );
-
-            dEehatdFehat = tardigradeVectorTools::appendVectors( _dEehatdFehat );
-            previousdEehatdFehat = tardigradeVectorTools::appendVectors( _previousdEehatdFehat );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *previousFehat, previousIsochoricStrain, previousdEehatdFehat ) );
 
             floatVector dEehatdFe = tardigradeVectorTools::matrixMultiply( dEehatdFehat, *dFehatdFe, sot_dim, sot_dim, sot_dim, sot_dim );
 
@@ -1409,9 +1405,10 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to compute the derivative of the current (false) or previous (true) stress
              */
 
-            const unsigned int* dim = hydra->getDimension( );
+            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = dim * dim;
 
-            floatVector eye( ( *dim ) * ( *dim ), 0 );
+            floatVector eye( sot_dim, 0 );
             tardigradeVectorTools::eye( eye );
 
             const floatVector *dIsodFe;
@@ -1433,7 +1430,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector dPK2StressdFe = *dIsodFe + tardigradeVectorTools::appendVectors( tardigradeVectorTools::dyadic( eye, *dMeandFe ) );
+            floatVector dPK2StressdFe = *dIsodFe + tardigradeVectorTools::matrixMultiply( eye, *dMeandFe, sot_dim, 1, 1, sot_dim );
 
             if ( isPrevious ){
 
@@ -1444,7 +1441,7 @@ namespace tardigradeHydra{
 
                 set_dPK2StressdFe( dPK2StressdFe );
 
-                set_dPK2StressdPreviousFe( *get_dPK2IsochoricStressdPreviousFe( ) + tardigradeVectorTools::appendVectors( tardigradeVectorTools::dyadic( eye, *get_dPK2MeanStressdPreviousFe( ) ) ) );
+                set_dPK2StressdPreviousFe( *get_dPK2IsochoricStressdPreviousFe( ) + tardigradeVectorTools::matrixMultiply( eye, *get_dPK2MeanStressdPreviousFe( ), sot_dim, 1, 1, sot_dim ) );
 
             }
 
@@ -1513,11 +1510,13 @@ namespace tardigradeHydra{
              */
 
             const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = dim * dim;
+            const unsigned int num_isvs = get_dPK2MeanStressdPreviousISVs( )->size( ); 
 
-            floatVector eye( dim * dim, 0 );
+            floatVector eye( sot_dim, 0 );
             tardigradeVectorTools::eye( eye );
 
-            floatVector dPK2StressdPreviousISVs = *get_dPK2IsochoricStressdPreviousISVs( ) + tardigradeVectorTools::appendVectors( tardigradeVectorTools::dyadic( eye, *get_dPK2MeanStressdPreviousISVs( ) ) );
+            floatVector dPK2StressdPreviousISVs = *get_dPK2IsochoricStressdPreviousISVs( ) + tardigradeVectorTools::matrixMultiply( eye, *get_dPK2MeanStressdPreviousISVs( ), sot_dim, 1, 1, num_isvs );
 
             set_dPK2StressdPreviousISVs( dPK2StressdPreviousISVs );
 

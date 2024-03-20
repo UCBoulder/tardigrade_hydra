@@ -24,6 +24,7 @@ Internal Changes
 - Removed extraneous semicolons (:pull:`69`). By `Nathan Miller`_.
 - Changed the Jacobians to use row-major vector fomulation rather than vector of vectors (:pull:`77`). By `Nathan Miller`_.
 - Changed the computation of the higher order yield surface to use row-major vector formation rather than vector of vectors (:pull:`78`). By `Nathan Miller`_.
+- Updated to use the row-major vector Jacobians for tardigrade_constitutive_tools (:pull:`86`). By `Nathan Miller`_.
 
 Bug Fixes
 =========

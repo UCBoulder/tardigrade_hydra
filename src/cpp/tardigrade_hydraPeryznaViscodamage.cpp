@@ -188,13 +188,9 @@ namespace tardigradeHydra{
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
 
-            floatMatrix _dEedFe;
-
             floatVector dEedFe;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( Fe, Ee, _dEedFe ) );
-
-            dEedFe = tardigradeVectorTools::appendVectors( _dEedFe );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( Fe, Ee, dEedFe ) );
 
             floatVector dFedF( sot_dim * sot_dim, 0 );
 
