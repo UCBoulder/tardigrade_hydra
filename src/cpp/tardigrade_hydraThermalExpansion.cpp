@@ -73,24 +73,30 @@ namespace tardigradeHydra{
              * Set the thermal deformation gradient
              */
 
-            const unsigned int *dim = hydra->getDimension( );
+            const unsigned int dim = *hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
 
             floatVector thermalDeformationGradient;
 
-            floatMatrix dThermalGreenLagrangeStraindThermalDeformationGradient;
+            floatVector dThermalGreenLagrangeStraindThermalDeformationGradient;
 
-            floatVector eye( ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ) );
+            floatMatrix _dThermalGreenLagrangeStraindThermalDeformationGradient;
+
+            floatVector eye( sot_dim, 0 );
             tardigradeVectorTools::eye( eye );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( thermalDeformationGradient = tardigradeVectorTools::matrixSqrt( 2 * ( *get_thermalGreenLagrangeStrain( ) ) + eye, *hydra->getDimension( ), dThermalGreenLagrangeStraindThermalDeformationGradient ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( thermalDeformationGradient = tardigradeVectorTools::matrixSqrt( 2 * ( *get_thermalGreenLagrangeStrain( ) ) + eye, dim, _dThermalGreenLagrangeStraindThermalDeformationGradient ) );
+
+            dThermalGreenLagrangeStraindThermalDeformationGradient = tardigradeVectorTools::appendVectors( _dThermalGreenLagrangeStraindThermalDeformationGradient );
 
             set_thermalDeformationGradient( thermalDeformationGradient );
 
-            floatMatrix dThermalDeformationGradientdGreenLagrangeStrain;
+            floatVector dThermalDeformationGradientdGreenLagrangeStrain;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dThermalDeformationGradientdGreenLagrangeStrain = tardigradeVectorTools::inflate( 2 * tardigradeVectorTools::inverse( tardigradeVectorTools::appendVectors( dThermalGreenLagrangeStraindThermalDeformationGradient ), ( *dim ) * ( *dim ), ( *dim ) * ( *dim ) ), ( *dim ) * ( *dim ), ( *dim ) * ( *dim ) ) );
+            dThermalDeformationGradientdGreenLagrangeStrain = 2 * tardigradeVectorTools::inverse( dThermalGreenLagrangeStraindThermalDeformationGradient, sot_dim, sot_dim );
 
-            set_dThermalDeformationGradientdT( tardigradeVectorTools::dot( dThermalDeformationGradientdGreenLagrangeStrain, *get_dThermalGreenLagrangeStraindT( ) ) );
+            set_dThermalDeformationGradientdT( tardigradeVectorTools::matrixMultiply( dThermalDeformationGradientdGreenLagrangeStrain, *get_dThermalGreenLagrangeStraindT( ), sot_dim, sot_dim, sot_dim, 1 ) );
 
         }
 

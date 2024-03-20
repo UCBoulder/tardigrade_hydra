@@ -158,11 +158,7 @@ namespace tardigradeHydra{
    
             floatVector dEedFe;
 
-            floatMatrix _dEedFe;
-
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fe, Ee, _dEedFe ) );
-
-            dEedFe = tardigradeVectorTools::appendVectors( _dEedFe );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fe, Ee, dEedFe ) );
 
             if ( isPrevious ){
     
@@ -281,17 +277,22 @@ namespace tardigradeHydra{
              * 
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) value
              */
-    
-            floatVector eye( get_Ee( )->size( ), 0 );
+   
+            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = dim * dim;
+            const unsigned int fot_dim = sot_dim * sot_dim;
+ 
+            floatVector eye( sot_dim, 0 );
             tardigradeVectorTools::eye( eye );
     
-            floatMatrix EYE = tardigradeVectorTools::eye< floatType >( get_Ee( )->size( ) );
+            floatVector EYE( fot_dim, 0 );
+            tardigradeVectorTools::eye( EYE );
     
-            floatMatrix dPK2StressdEe = ( *getLambda( ) ) * tardigradeVectorTools::dyadic( eye, eye ) + 2 * ( *getMu( ) ) * EYE;
+            floatVector dPK2StressdEe = ( *getLambda( ) ) * tardigradeVectorTools::matrixMultiply( eye, eye, sot_dim, 1, 1, sot_dim ) + 2 * ( *getMu( ) ) * EYE;
    
-            set_dPK2StressdEe( tardigradeVectorTools::appendVectors( dPK2StressdEe ) );
+            set_dPK2StressdEe( dPK2StressdEe );
 
-            set_previousdPK2StressdEe( tardigradeVectorTools::appendVectors( dPK2StressdEe ) );
+            set_previousdPK2StressdEe( dPK2StressdEe );
     
         }
     
@@ -412,15 +413,9 @@ namespace tardigradeHydra{
             floatVector cauchyStress;
             floatVector dCauchyStressdPK2Stress;
             floatVector dCauchyStressdFe;
-            floatMatrix _dCauchyStressdPK2Stress;
-            floatMatrix _dCauchyStressdFe;
  
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::pushForwardPK2Stress( *PK2Stress, *Fe, cauchyStress, _dCauchyStressdPK2Stress, _dCauchyStressdFe ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::pushForwardPK2Stress( *PK2Stress, *Fe, cauchyStress, dCauchyStressdPK2Stress, dCauchyStressdFe ) );
     
-            dCauchyStressdPK2Stress = tardigradeVectorTools::appendVectors( _dCauchyStressdPK2Stress );
-
-            dCauchyStressdFe = tardigradeVectorTools::appendVectors( _dCauchyStressdFe );
-
             floatVector dCauchyStressdF  = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdF, sot_dim, sot_dim, sot_dim, sot_dim )
                                          + tardigradeVectorTools::matrixMultiply( dCauchyStressdFe, *dFedF, sot_dim, sot_dim, sot_dim, sot_dim );
     

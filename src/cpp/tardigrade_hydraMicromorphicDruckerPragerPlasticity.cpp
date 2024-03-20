@@ -435,11 +435,8 @@ namespace tardigradeHydra{
 
             //Compute the right Cauchy-Green deformation tensor
             floatVector rightCauchyGreen;
-            floatMatrix _dRCGdPrecedingF;
             floatVector dRCGdPrecedingF;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, _dRCGdPrecedingF ) );
-
-            dRCGdPrecedingF = tardigradeVectorTools::appendVectors( _dRCGdPrecedingF );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
 
             //Compute the decomposition of the stress
             variableVector pressure;
@@ -523,11 +520,8 @@ namespace tardigradeHydra{
 
             //Compute the right Cauchy-Green deformation tensor
             floatVector rightCauchyGreen;
-            floatMatrix _dRCGdPrecedingF;
             floatVector dRCGdPrecedingF;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, _dRCGdPrecedingF ) );
-
-            dRCGdPrecedingF = tardigradeVectorTools::appendVectors( _dRCGdPrecedingF );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
 
             //Compute the decomposition of the stress
             variableVector pressure;
@@ -4493,19 +4487,13 @@ namespace tardigradeHydra{
 
             floatVector dISVs, updatedISVs;
 
-            floatMatrix _dISVsdEvolutionRates;
-
             floatVector dISVsdEvolutionRates;
 
             if ( addPrevious ){
 
-                floatMatrix _dISVsdPreviousEvolutionRates;
-
                 floatVector dISVsdPreviousEvolutionRates;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, updatedISVs, _dISVsdEvolutionRates, _dISVsdPreviousEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
-
-                dISVsdPreviousEvolutionRates = tardigradeVectorTools::appendVectors( _dISVsdPreviousEvolutionRates );
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, updatedISVs, dISVsdEvolutionRates, dISVsdPreviousEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
 
                 floatVector dISVsdStateVariables = tardigradeVectorTools::matrixMultiply( dISVsdPreviousEvolutionRates, *get_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( ),
                                                                                           num_isvs, num_isvs, num_isvs, num_psvs );
@@ -4521,11 +4509,9 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, updatedISVs, _dISVsdEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, updatedISVs, dISVsdEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
 
             }
-
-            dISVsdEvolutionRates = tardigradeVectorTools::appendVectors( _dISVsdEvolutionRates );
 
             set_dUpdatedPlasticStrainLikeISVsdStateVariables( tardigradeVectorTools::matrixMultiply( dISVsdEvolutionRates, *get_dPlasticStrainLikeISVEvolutionRatesdStateVariables( ),
                                                                                                      num_isvs, num_isvs, num_isvs, num_psvs ) );
@@ -6513,13 +6499,9 @@ namespace tardigradeHydra{
             // Form the preceding RCG and its inverse
             floatVector precedingRCG;
 
-            floatMatrix _dRCGdPrecedingF;
-
             floatVector dRCGdPrecedingF;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG, _dRCGdPrecedingF ) );
-
-            dRCGdPrecedingF = tardigradeVectorTools::appendVectors( _dRCGdPrecedingF );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG, dRCGdPrecedingF ) );
 
             floatVector inversePrecedingRCG = tardigradeVectorTools::inverse( precedingRCG, dim, dim );
 
@@ -6572,13 +6554,9 @@ namespace tardigradeHydra{
             // Form the preceding micro RCG and its inverse
             floatVector precedingMicroRCG;
 
-            floatMatrix _dMicroRCGdPrecedingChi;
-
             floatVector dMicroRCGdPrecedingChi;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingMicroDeformation, precedingMicroRCG, _dMicroRCGdPrecedingChi ) );
-
-            dMicroRCGdPrecedingChi = tardigradeVectorTools::appendVectors( _dMicroRCGdPrecedingChi );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingMicroDeformation, precedingMicroRCG, dMicroRCGdPrecedingChi ) );
 
             floatVector dMicroRCGdChi  = tardigradeVectorTools::matrixMultiply( dMicroRCGdPrecedingChi, *dPrecedingChidChi, sot_dim, sot_dim, sot_dim, sot_dim );
 
