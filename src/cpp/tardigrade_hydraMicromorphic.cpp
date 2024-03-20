@@ -67,9 +67,8 @@ namespace tardigradeHydra{
          * which returns a pointer to the current value of the stress.
          */
 
-        const unsigned int dim = *getDimension( );
-        const unsigned int sot_dim = dim * dim;
-        const unsigned int tot_dim = sot_dim * dim;
+        const unsigned int sot_dim = getSOTDimension( );
+        const unsigned int tot_dim = getTOTDimension( );
         const unsigned int num_configs = *getNumConfigurations( );
 
         const floatVector *stress;
@@ -200,9 +199,7 @@ namespace tardigradeHydra{
          * \param &gradientMicroConfigurations: The resulting gradients of the micro configurations
          */
 
-        const unsigned int dim = *getDimension( );
-        const unsigned int sot_dim = dim * dim;
-        const unsigned int tot_dim = sot_dim * dim;
+        const unsigned int tot_dim = getTOTDimension( );
         const unsigned int num_configs = *getNumConfigurations( );
 
         gradientMicroConfigurations = tardigradeVectorTools::appendVectors( { floatVector( tot_dim, 0 ),
@@ -218,8 +215,7 @@ namespace tardigradeHydra{
          * Decompose the micro-deformation parts of the unknown vector
          */
 
-        const unsigned int dim = *getDimension( );
-        const unsigned int sot_dim = dim * dim;
+        const unsigned int sot_dim = getSOTDimension( );
         const unsigned int num_configs = *getNumConfigurations( );
 
         unsigned int start_index = getStress( )->size( ) + ( num_configs - 1 ) * sot_dim;
@@ -254,8 +250,7 @@ namespace tardigradeHydra{
          * Decompose the micro-deformation parts of the state variable vector
          */
 
-        const unsigned int dim = *getDimension( );
-        const unsigned int sot_dim = dim * dim;
+        const unsigned int sot_dim = getSOTDimension( );
         const unsigned int num_configs = *getNumConfigurations( );
 
         unsigned int start_index = ( num_configs - 1 ) * sot_dim;
@@ -584,9 +579,8 @@ namespace tardigradeHydra{
          * \param &gradientMicroConfigurations: The matrix of gradients of the micro-configurations in their reference configurations
          */
 
-        const unsigned int dim = *getDimension( );
-        const unsigned int sot_dim = dim * dim;
-        const unsigned int tot_dim = sot_dim * dim;
+        const unsigned int dim = getDimension( );
+        const unsigned int tot_dim = getTOTDimension( );
         const unsigned int num_configs = *getNumConfigurations( );
 
         // Compute the gradient in the reference configuration
@@ -689,9 +683,9 @@ namespace tardigradeHydra{
          * \param &dGradChi1dGradChin: The Jacobian of the gradient of the first micro-configuration w.r.t. the gradient of the remaining sub micro-configurations
          */
 
-        const unsigned int dim = *getDimension( );
-        const unsigned int sot_dim = dim * dim;
-        const unsigned int tot_dim = sot_dim * dim;
+        const unsigned int dim = getDimension( );
+        const unsigned int sot_dim = getSOTDimension( );
+        const unsigned int tot_dim = getTOTDimension( );
         const unsigned int num_configs = *getNumConfigurations( );
 
         floatVector eye( sot_dim, 0 );

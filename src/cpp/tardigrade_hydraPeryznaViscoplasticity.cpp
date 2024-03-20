@@ -151,9 +151,7 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to compute this in the previous configuration
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -607,9 +605,7 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to compute the values in the previous configuration
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -846,9 +842,7 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether this is the previous timestep
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -1912,9 +1906,7 @@ namespace tardigradeHydra{
              *     timestep.
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -2448,9 +2440,7 @@ namespace tardigradeHydra{
              * \param setPreviousDerivatives: Flag for if the previous derivatives should be set
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -2651,9 +2641,7 @@ namespace tardigradeHydra{
              * Set the plastic state variables
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -2864,9 +2852,7 @@ namespace tardigradeHydra{
              * Set the value of the Jacobian
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -2981,9 +2967,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient.
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
