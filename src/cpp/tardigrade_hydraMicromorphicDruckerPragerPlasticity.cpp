@@ -5864,7 +5864,7 @@ namespace tardigradeHydra{
 
             floatVector inversePrecedingRCG = precedingRCG;
             Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( inversePrecedingRCG.data(), 3, 3 );
-            mat = mat.inverse( );
+            mat = mat.inverse( ).eval( );
 
             // Form the precedingPsi and its inverse
             floatVector precedingPsi;
@@ -5873,7 +5873,7 @@ namespace tardigradeHydra{
 
             floatVector inversePrecedingPsi = precedingPsi;
             new (&mat ) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( inversePrecedingPsi.data(), 3, 3 );
-            mat = mat.inverse( );
+            mat = mat.inverse( ).eval( );
 
             // Form the preceding micro RCG and its inverse
             floatVector precedingMicroRCG;
@@ -6499,7 +6499,7 @@ namespace tardigradeHydra{
 
             floatVector inversePrecedingRCG = precedingRCG;
             Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( inversePrecedingRCG.data(), 3, 3 );
-            mat = mat.inverse( );
+            mat = mat.inverse( ).eval( );
 
             floatVector dRCGdF = tardigradeVectorTools::matrixMultiply( dRCGdPrecedingF,  *dPrecedingFdF, sot_dim, sot_dim, sot_dim, sot_dim );
 
@@ -6547,7 +6547,7 @@ namespace tardigradeHydra{
 
             floatVector inversePrecedingPsi = precedingPsi;
             new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( inversePrecedingPsi.data(), 3, 3 );
-            mat = mat.inverse( );
+            mat = mat.inverse( ).eval( );
 
             // Form the preceding micro RCG and its inverse
             floatVector precedingMicroRCG;
