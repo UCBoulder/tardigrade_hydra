@@ -22,7 +22,7 @@ namespace tardigradeHydra{
              * \param &parameters: The paramter vector. Assumed to be a vector of length 2 which defines lambda and mu.
              */
    
-            const unsigned int *dim = hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
  
             if ( parameters.size( ) < 10 ){
     
@@ -34,7 +34,7 @@ namespace tardigradeHydra{
 
             setNumIsochoricViscousTerms( ( unsigned int )( parameters[ 1 ] + 0.5 ) );
 
-            setNumStateVariables( *getNumVolumetricViscousTerms( ) + ( *dim ) * ( *dim ) * ( *getNumIsochoricViscousTerms( ) ) );
+            setNumStateVariables( *getNumVolumetricViscousTerms( ) + sot_dim * ( *getNumIsochoricViscousTerms( ) ) );
 
             if ( *getNumStateVariables( ) != ( *getViscoelasticISVUpperIndex( ) - *getViscoelasticISVLowerIndex( ) ) ){
 
@@ -236,9 +236,9 @@ namespace tardigradeHydra{
              * \param &Fhat: The isochoric part of the deformation gradient
              */
 
-            const unsigned int *dim = hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( J = tardigradeVectorTools::determinant( F, ( *dim ), ( *dim ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( J = tardigradeVectorTools::determinant( F, dim, dim ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( Fhat = F / std::pow( J, 1./3 ) );
 
@@ -252,7 +252,7 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for if the derivative is of the current (false) or previous (true) value
              */
 
-            const unsigned int* dim = hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
 
             const floatVector *Fe;
 
@@ -267,7 +267,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector dJedFe = tardigradeVectorTools::computeDDetADA( *Fe, ( *dim ), ( *dim ) );
+            floatVector dJedFe = tardigradeVectorTools::computeDDetADA( *Fe, dim, dim );
 
             if ( isPrevious ){
 
@@ -330,9 +330,7 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for if the derivative is of the current (false) or previous (true) value
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const floatType   *Je;
 
@@ -385,7 +383,7 @@ namespace tardigradeHydra{
              * volumetric and isochoric viscoelasticity
              */
 
-            const unsigned int *dim = hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             unsigned int lb = *getViscoelasticISVLowerIndex( );
             unsigned int ub = lb + *getNumVolumetricViscousTerms( );
@@ -395,7 +393,7 @@ namespace tardigradeHydra{
 
             lb = ub;
 
-            ub = lb + ( *dim ) * ( *dim ) * *getNumIsochoricViscousTerms( );
+            ub = lb + sot_dim * *getNumIsochoricViscousTerms( );
 
             isochoricStateVariables = floatVector( hydra->get_additionalStateVariables( )->begin( ) + lb,
                                                    hydra->get_additionalStateVariables( )->begin( ) + ub );
@@ -667,9 +665,7 @@ namespace tardigradeHydra{
              * \param &isPrevious: Flag for if the previous (true) or current (false) stress should be calculated
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const floatType *Je;
 
@@ -988,7 +984,7 @@ namespace tardigradeHydra{
              * \param &isPrevious: Flag for if the previous (true) or current (false) stress should be calculated
              */
 
-            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
 
             const unsigned int sot_dim = dim * dim;
 
@@ -1341,9 +1337,7 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for if to compute the current (false) or previous (true) PK2 stress
              */
 
-            const unsigned int* dim = hydra->getDimension( );
-
-            floatVector eye( ( *dim ) * ( *dim ), 0 );
+            floatVector eye( hydra->getSOTDimension( ), 0 );
             tardigradeVectorTools::eye( eye );
 
             const floatVector *isochoric;
@@ -1405,7 +1399,7 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to compute the derivative of the current (false) or previous (true) stress
              */
 
-            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
             const unsigned int sot_dim = dim * dim;
 
             floatVector eye( sot_dim, 0 );
@@ -1461,9 +1455,7 @@ namespace tardigradeHydra{
              * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the temperature
              */
 
-            const unsigned int* dim = hydra->getDimension( );
-
-            floatVector eye( ( *dim ) * ( *dim ), 0 );
+            floatVector eye( hydra->getSOTDimension( ), 0 );
             tardigradeVectorTools::eye( eye );
 
             floatVector dPK2StressdT = *get_dPK2IsochoricStressdT( ) + *get_dPK2MeanStressdT( ) * eye;
@@ -1477,9 +1469,7 @@ namespace tardigradeHydra{
              * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the previous temperature
              */
 
-            const unsigned int* dim = hydra->getDimension( );
-
-            floatVector eye( ( *dim ) * ( *dim ), 0 );
+            floatVector eye( hydra->getSOTDimension( ), 0 );
             tardigradeVectorTools::eye( eye );
 
             floatVector dPK2StressdPreviousT = *get_dPK2IsochoricStressdPreviousT( ) + *get_dPK2MeanStressdPreviousT( ) * eye;
@@ -1493,9 +1483,7 @@ namespace tardigradeHydra{
              * Set the prevoius derivative of the second Piola-Kirchhoff stress w.r.t. the temperature
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            floatVector eye( dim * dim, 0 );
+            floatVector eye( hydra->getSOTDimension( ), 0 );
             tardigradeVectorTools::eye( eye );
 
             floatVector dPK2StressdT = *get_previousdPK2IsochoricStressdT( ) + *get_previousdPK2MeanStressdT( ) * eye;
@@ -1509,8 +1497,7 @@ namespace tardigradeHydra{
              * Set the prevoius derivative of the second Piola-Kirchhoff stress w.r.t. the previous ISVs
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
             const unsigned int num_isvs = get_dPK2MeanStressdPreviousISVs( )->size( ); 
 
             floatVector eye( sot_dim, 0 );
@@ -1527,9 +1514,7 @@ namespace tardigradeHydra{
              * Set the derivative of the Cauchy stress w.r.t. the temperature
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             floatVector dCauchyStressdT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdT( ), sot_dim, sot_dim, sot_dim, 1 );
 
@@ -1542,9 +1527,7 @@ namespace tardigradeHydra{
              * Set the derivative of the Cauchy stress w.r.t. the previous temperature
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             floatVector dCauchyStressdPreviousT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdPreviousT( ), sot_dim, sot_dim, sot_dim, 1 );
 
@@ -1557,9 +1540,7 @@ namespace tardigradeHydra{
              * Set the derivative of the Cauchy stress w.r.t. the previous internal state variables
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_isvs = get_dPK2StressdPreviousISVs( )->size( ) / sot_dim;
 
@@ -1574,9 +1555,7 @@ namespace tardigradeHydra{
              * Set previous the derivative of the Cauchy stress w.r.t. the temperature
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             floatVector previousdCauchyStressdT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_previousdPK2StressdT( ), sot_dim, sot_dim, sot_dim, 1 );
 

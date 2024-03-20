@@ -594,7 +594,16 @@ namespace tardigradeHydra{
             const unsigned int* getNumNonLinearSolveStateVariables( ){ return &_numNonLinearSolveStateVariables; }
 
             //! Get a reference to the dimension
-            const unsigned int* getDimension( ){ return &_dimension; }
+            constexpr unsigned int getDimension( ){ return _dimension; }
+
+            //! Get a reference to a second order tensor's dimension
+            constexpr unsigned int getSOTDimension( ){ return _dimension * _dimension; }
+
+            //! Get a reference to a third order tensor's dimension
+            constexpr unsigned int getTOTDimension( ){ return _dimension * _dimension * _dimension; }
+
+            //! Get a reference to a fourth order tensor's dimension
+            constexpr unsigned int getFOTDimension( ){ return _dimension * _dimension * _dimension * _dimension; }
 
             //! Get a reference to the relative tolerance
             const floatType* getRelativeTolerance( ){ return &_tolr; }

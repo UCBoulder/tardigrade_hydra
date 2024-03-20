@@ -1899,9 +1899,9 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int tot_dim = hydra->getTOTDimension( );
 
             floatVector deformationGradient1;
 
@@ -2654,11 +2654,9 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for if the stresses to be calculated are the current (false) or previous (true)
              */
 
-            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int sot_dim = dim * dim;
-
-            const unsigned int tot_dim = sot_dim * dim;
+            const unsigned int tot_dim = hydra->getTOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -3458,11 +3456,9 @@ namespace tardigradeHydra{
              * \param isPrevious: A flag for whether to compute the previous (true) or current (false) stresses and their Jacobians
              */
 
-            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int sot_dim = dim * dim;
-
-            const unsigned int tot_dim = sot_dim * dim;
+            const unsigned int tot_dim = hydra->getTOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -3739,11 +3735,9 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
              */
 
-            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int sot_dim = dim * dim;
-
-            const unsigned int tot_dim = sot_dim * dim;
+            const unsigned int tot_dim = hydra->getTOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -3940,11 +3934,9 @@ namespace tardigradeHydra{
              * Set the Jacobian w.r.t. the unknown vector
              */
 
-            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int sot_dim = dim * dim;
-
-            const unsigned int tot_dim = dim * dim * dim;
+            const unsigned int tot_dim = hydra->getTOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -4017,11 +4009,9 @@ namespace tardigradeHydra{
              * Set the Jacobian w.r.t. the deformation
              */
 
-            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int sot_dim = dim * dim;
-
-            const unsigned int tot_dim = dim * dim * dim;
+            const unsigned int tot_dim = hydra->getTOTDimension( );
 
             floatMatrix dRdD( *getNumEquations( ), floatVector( *hydra->getConfigurationUnknownCount( ), 0 ) );
 

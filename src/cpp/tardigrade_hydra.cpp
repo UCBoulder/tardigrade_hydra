@@ -121,7 +121,7 @@ namespace tardigradeHydra{
          *     total transformation. Defaults to false.
          */
 
-        const unsigned int dim = *getDimension( );
+        const unsigned int dim = getDimension( );
         const unsigned int sot_dim = dim * dim;
 
         const unsigned int num_configs = *getNumConfigurations( );
@@ -214,14 +214,12 @@ namespace tardigradeHydra{
          * configuration (i.e., the configuration that generates the stress) though we do not insist that users follow convention.
          */
 
-        const unsigned int* dim = getDimension( );
-
         const unsigned int* nConfig = getNumConfigurations( );
 
         const unsigned int* nNLISV  = getNumNonLinearSolveStateVariables( );
 
         // Extract the previous configurations
-        floatVector eye( ( *dim ) * ( *dim ) );
+        floatVector eye( getSOTDimension( ), 0 );
         tardigradeVectorTools::eye( eye );
 
         if ( getPreviousStateVariables( )->size( ) < ( ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + ( *nNLISV ) ) ){
@@ -317,7 +315,7 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        const unsigned int dim = *getDimension( );
+        const unsigned int dim = getDimension( );
         const unsigned int sot_dim = dim * dim;
         const unsigned int local_num_configurations = configurations.size( ) / sot_dim;
 
@@ -355,7 +353,7 @@ namespace tardigradeHydra{
          *   Note, the configuration indicated by the index is NOT included in the sub-configuration
          */
 
-        const unsigned int dim = *getDimension( );
+        const unsigned int dim = getDimension( );
         const unsigned int sot_dim = dim * dim;
         const unsigned int num_incoming_configs = configurations.size( ) / sot_dim;
 
@@ -580,7 +578,7 @@ namespace tardigradeHydra{
          * whre \f$C^n = C^2, C^3, \cdots \f$
          */
 
-        const unsigned int dim = *getDimension( );
+        const unsigned int dim = getDimension( );
         const unsigned int sot_dim = dim * dim;
         const unsigned int num_configs = *getNumConfigurations( );
 
@@ -1004,7 +1002,7 @@ namespace tardigradeHydra{
          * Get dRdF for the non-linear problem
          */
 
-        return tardigradeVectorTools::inflate( *getFlatdRdF( ), getResidual( )->size( ), ( *getDimension( ) ) * ( *getDimension( ) ) );
+        return tardigradeVectorTools::inflate( *getFlatdRdF( ), getResidual( )->size( ), getSOTDimension( ) );
     }
 
     const floatVector* hydraBase::getdRdT( ){
@@ -1121,7 +1119,7 @@ namespace tardigradeHydra{
          * which returns a pointer to the current value of the stress.
          */
 
-        const unsigned int dim = *getDimension( );
+        const unsigned int dim = getDimension( );
         const unsigned int sot_dim = dim * dim;
 
         const floatVector *cauchyStress;

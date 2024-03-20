@@ -278,9 +278,8 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) value
              */
    
-            const unsigned int dim = *hydra->getDimension( );
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int fot_dim = sot_dim * sot_dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+            const unsigned int fot_dim = hydra->getFOTDimension( );
  
             floatVector eye( sot_dim, 0 );
             tardigradeVectorTools::eye( eye );
@@ -320,7 +319,7 @@ namespace tardigradeHydra{
              * deformation gradient
              */
 
-             unsigned int sot_dim = ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) );
+             const unsigned int sot_dim = hydra->getSOTDimension( );
 
              floatVector dPK2StressdFe = tardigradeVectorTools::matrixMultiply( *get_dPK2StressdEe( ), *get_dEedFe( ), sot_dim, sot_dim, sot_dim, sot_dim );
 
@@ -346,7 +345,7 @@ namespace tardigradeHydra{
              * deformation gradient
              */
 
-             unsigned int sot_dim = ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) );
+             const unsigned int sot_dim = hydra->getSOTDimension( );
 
              floatVector previousdPK2StressdFe = tardigradeVectorTools::matrixMultiply( *get_previousdPK2StressdEe( ), *get_previousdEedFe( ), sot_dim, sot_dim, sot_dim, sot_dim );
 
@@ -361,9 +360,7 @@ namespace tardigradeHydra{
              * \param isPrevious: Whether to compute the current (false) or previous (true) Cauchy stress
              */
 
-            unsigned int dim = *hydra->getDimension( );
-
-            unsigned int sot_dim = dim * dim;
+            unsigned int sot_dim = hydra->getSOTDimension( );
 
             unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -590,9 +587,9 @@ namespace tardigradeHydra{
              * Set the Jacobian value
              */
 
-            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
 
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -635,9 +632,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             setdRdF( tardigradeVectorTools::inflate( *get_dCauchyStressdF( ), sot_dim, sot_dim ) );
 

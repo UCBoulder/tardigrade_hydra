@@ -103,7 +103,25 @@ namespace tardigradeHydra{
 
                 static void checkDimension( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._dimension == hydra.getDimension( ) );
+                    BOOST_CHECK( hydra._dimension == hydra.getDimension( ) );
+
+                }
+
+                static void checkSOTDimension( hydraBase &hydra ){
+
+                    BOOST_CHECK( hydra._dimension * hydra._dimension == hydra.getSOTDimension( ) );
+
+                }
+
+                static void checkTOTDimension( hydraBase &hydra ){
+
+                    BOOST_CHECK( hydra._dimension * hydra._dimension * hydra._dimension == hydra.getTOTDimension( ) );
+
+                }
+
+                static void checkFOTDimension( hydraBase &hydra ){
+
+                    BOOST_CHECK( hydra._dimension * hydra._dimension * hydra._dimension * hydra._dimension == hydra.getFOTDimension( ) );
 
                 }
 
@@ -521,6 +539,38 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getNumNonLinearSolveStateVariables ){
     tardigradeHydra::hydraBase hydra;
 
     tardigradeHydra::unit_test::hydraBaseTester::checkNumNonLinearSolveStateVariables( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_getDimension ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkDimension( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_getSOTDimension ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkSOTDimension( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_getTOTDimension ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkTOTDimension( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_getFOTDimension ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkFOTDimension( hydra );
 
 }
 

@@ -31,9 +31,7 @@ namespace tardigradeHydra{
              * \param withPrevious: Flag for whether to include the derivatives w.r.t. the previous values.
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -105,8 +103,8 @@ namespace tardigradeHydra{
              * knowledge of the elastic configuration.
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int dim = hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
             const unsigned int elastic_config_index = *getElasticConfigurationIndex( );
 
             // Get the elastic deformation gradient
@@ -171,9 +169,9 @@ namespace tardigradeHydra{
              * \param withPrevious: Flag for whether to set the Jacobians w.r.t. the previous unknowns
              */
 
-            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
 
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -414,9 +412,7 @@ namespace tardigradeHydra{
              * Set the Jacobian matrix
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -521,9 +517,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            const unsigned int dim = *hydra->getDimension( );
-
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 

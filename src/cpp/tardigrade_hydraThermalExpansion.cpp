@@ -73,9 +73,9 @@ namespace tardigradeHydra{
              * Set the thermal deformation gradient
              */
 
-            const unsigned int dim = *hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
 
-            const unsigned int sot_dim = dim * dim;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             floatVector thermalDeformationGradient;
 
@@ -137,13 +137,13 @@ namespace tardigradeHydra{
              * Set the values of the jacobian
              */
 
-            const unsigned int *dim = hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
 
             for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
 
-                jacobian[ i ][ ( *dim ) * ( *dim ) * ( *getThermalConfigurationIndex( ) ) + i ] = -1;
+                jacobian[ i ][ sot_dim * ( *getThermalConfigurationIndex( ) ) + i ] = -1;
 
             }
 
@@ -179,9 +179,11 @@ namespace tardigradeHydra{
              *     tardigradeConstitutiveTools::quadraticThermalExpansion.
              */
 
-            const unsigned int *dim = hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
 
-            unsigned int parametersPerTerm = ( *dim ) + ( ( *dim ) * ( *dim ) - ( *dim ) ) / 2;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            unsigned int parametersPerTerm = dim + ( dim * dim - dim ) / 2;
 
             unsigned int expectedSize = 1 + 2 * parametersPerTerm;
 
@@ -201,17 +203,17 @@ namespace tardigradeHydra{
 
             unsigned int index = 0;
 
-            floatVector linearParameters( ( *dim ) * ( *dim ), 0 );
+            floatVector linearParameters( sot_dim, 0 );
 
-            floatVector quadraticParameters( ( *dim ) * ( *dim ), 0 );
+            floatVector quadraticParameters( sot_dim, 0 );
 
-            for ( unsigned int i = 0; i < ( *dim ); i++ ){
+            for ( unsigned int i = 0; i < dim; i++ ){
 
-                for ( unsigned int j = i; j < ( *dim ); j++ ){
+                for ( unsigned int j = i; j < dim; j++ ){
 
-                    linearParameters[ ( *dim ) * i + j ] = linearParameters[ ( *dim ) * j + i ] = parameters[ 1 + index ];
+                    linearParameters[ dim * i + j ] = linearParameters[ dim * j + i ] = parameters[ 1 + index ];
 
-                    quadraticParameters[ ( *dim ) * i + j ] = quadraticParameters[ ( *dim ) * j + i ] = parameters[ 1 + parametersPerTerm + index ];
+                    quadraticParameters[ dim * i + j ] = quadraticParameters[ dim * j + i ] = parameters[ 1 + parametersPerTerm + index ];
 
                     index++;
 
