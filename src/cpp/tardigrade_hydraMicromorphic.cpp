@@ -626,9 +626,13 @@ namespace tardigradeHydra{
         }
 
         // Map the gradient of the micro-configuration to the reference of the first configuration
-        floatVector invChiFollow = tardigradeVectorTools::inverse( getSubConfiguration( microConfigurations, 1, num_configs ), dim, dim );
+        floatVector invChiFollow_T = getSubConfiguration( microConfigurations, 1, num_configs );
+        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invChiFollow_T.data(), 3, 3 );
+        mat = mat.inverse( ).transpose( );
 
-        floatVector invFFollow = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, num_configs ), dim, dim );
+        floatVector invFFollow_T = getSubConfiguration( configurations, 1, num_configs );
+        new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( invFFollow_T.data(), 3, 3 );
+        mat = mat.inverse( ).transpose( );
 
         for ( unsigned int i = 0; i < tot_dim; i++ ){
             gradientMicroConfigurations[ i ] = 0;
@@ -644,7 +648,7 @@ namespace tardigradeHydra{
 
                         for ( unsigned int b = 0; b < dim; b++ ){
 
-                            gradientMicroConfigurations[ dim * dim * i + dim * I + J ] += gradientChi1Reference[ dim * dim * i + dim * a + b ] * invChiFollow[ dim * a + I ] * invFFollow[ dim * b + J ];
+                            gradientMicroConfigurations[ dim * dim * i + dim * I + J ] += gradientChi1Reference[ dim * dim * i + dim * a + b ] * invChiFollow_T[ dim * I + a ] * invFFollow_T[ dim * J + b ];
    
 
                         }
@@ -811,9 +815,13 @@ namespace tardigradeHydra{
 
         floatVector FFollow = getSubConfiguration( configurations, 1, num_configs );
 
-        floatVector invChiFollow = tardigradeVectorTools::inverse( ChiFollow, dim, dim );
+        floatVector invChiFollow = ChiFollow;
+        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invChiFollow.data(), 3, 3 );
+        mat = mat.inverse( );
 
-        floatVector invFFollow = tardigradeVectorTools::inverse( FFollow, dim, dim );
+        floatVector invFFollow = FFollow;
+        new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( invFFollow.data(), 3, 3 );
+        mat = mat.inverse( );
 
         floatVector dChiFollowdChis = getSubConfigurationJacobian( microConfigurations, 1, num_configs );
 
@@ -829,9 +837,9 @@ namespace tardigradeHydra{
 
         for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-            for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
+            for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                for ( unsigned int k = 0; k < sot_dim; k++ ){
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
                     dInvChiFollowdChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dInvChiFollowdChiFollow[ sot_dim * i + k ] * dChiFollowdChis[ num_configs * sot_dim * k + j + sot_dim ];
 

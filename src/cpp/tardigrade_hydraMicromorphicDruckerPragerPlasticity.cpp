@@ -5862,14 +5862,18 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG ) );
 
-            floatVector inversePrecedingRCG = tardigradeVectorTools::inverse( precedingRCG, dim, dim );
+            floatVector inversePrecedingRCG = precedingRCG;
+            Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( inversePrecedingRCG.data(), 3, 3 );
+            mat = mat.inverse( );
 
             // Form the precedingPsi and its inverse
             floatVector precedingPsi;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( precedingPsi = tardigradeVectorTools::matrixMultiply( *precedingDeformationGradient, *precedingMicroDeformation, dim, dim, dim, dim, true, false ) );
 
-            floatVector inversePrecedingPsi = tardigradeVectorTools::inverse( precedingPsi, dim, dim );
+            floatVector inversePrecedingPsi = precedingPsi;
+            new (&mat ) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( inversePrecedingPsi.data(), 3, 3 );
+            mat = mat.inverse( );
 
             // Form the preceding micro RCG and its inverse
             floatVector precedingMicroRCG;
@@ -6493,7 +6497,9 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG, dRCGdPrecedingF ) );
 
-            floatVector inversePrecedingRCG = tardigradeVectorTools::inverse( precedingRCG, dim, dim );
+            floatVector inversePrecedingRCG = precedingRCG;
+            Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( inversePrecedingRCG.data(), 3, 3 );
+            mat = mat.inverse( );
 
             floatVector dRCGdF = tardigradeVectorTools::matrixMultiply( dRCGdPrecedingF,  *dPrecedingFdF, sot_dim, sot_dim, sot_dim, sot_dim );
 
@@ -6539,7 +6545,9 @@ namespace tardigradeHydra{
 
             floatVector dPsidChin = tardigradeVectorTools::matrixMultiply( dPsidPrecedingChi, *dPrecedingChidChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatVector inversePrecedingPsi = tardigradeVectorTools::inverse( precedingPsi, dim, dim );
+            floatVector inversePrecedingPsi = precedingPsi;
+            new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( inversePrecedingPsi.data(), 3, 3 );
+            mat = mat.inverse( );
 
             // Form the preceding micro RCG and its inverse
             floatVector precedingMicroRCG;
