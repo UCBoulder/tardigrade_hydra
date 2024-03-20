@@ -340,7 +340,9 @@ namespace tardigradeHydra{
             constantVector eye( dim * dim );
             tardigradeVectorTools::eye( eye );
     
-            variableVector invRCG = tardigradeVectorTools::inverse( rightCauchyGreenDeformation, dim, dim );
+            variableVector invRCG = rightCauchyGreenDeformation;
+            Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invRCG.data(), 3, 3 );
+            mat = mat.inverse( ).eval( );
     
             //Compute the strain measures
             variableVector greenLagrangeStrain = 0.5 * ( rightCauchyGreenDeformation - eye );
@@ -471,7 +473,9 @@ namespace tardigradeHydra{
             constantVector eye( dim * dim );
             tardigradeVectorTools::eye( eye );
     
-            variableVector invRCG = tardigradeVectorTools::inverse( rightCauchyGreenDeformation, dim, dim );
+            variableVector invRCG = rightCauchyGreenDeformation;
+            Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invRCG.data(), 3, 3 );
+            mat = mat.inverse( ).eval( );
     
             //Compute the strain measures
             variableVector greenLagrangeStrain = 0.5 * ( rightCauchyGreenDeformation - eye );

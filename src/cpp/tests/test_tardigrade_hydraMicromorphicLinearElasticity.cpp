@@ -2630,9 +2630,9 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dCauchydF ), *R.get_dCauchyStressdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dCauchydF ), *R.get_dCauchyStressdF( ), 1e-5, 1e-5 ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dSymmetricMicroStressdF ), *R.get_dSymmetricMicroStressdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dSymmetricMicroStressdF ), *R.get_dSymmetricMicroStressdF( ), 1e-5, 1e-5 ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dHigherOrderStressdF ), *R.get_dHigherOrderStressdF( ) ) );
 

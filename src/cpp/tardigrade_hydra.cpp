@@ -153,7 +153,9 @@ namespace tardigradeHydra{
             }
 
             // Compute the inverse of the current configuration and store it
-            local_inverseConfigurations[ i + 1 ] = tardigradeVectorTools::inverse( local_configurations[ i + 1 ], dim, dim );
+            local_inverseConfigurations[ i + 1 ] = local_configurations[ i + 1 ];
+            Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( local_inverseConfigurations[ i + 1 ].data(), 3, 3 );
+            mat = mat.inverse( ).eval( );
 
             // Add contribution of deformation gradient to the first configuration
             local_configurations[ 0 ] = tardigradeVectorTools::matrixMultiply( local_configurations[ 0 ], local_inverseConfigurations[ i + 1 ],
@@ -161,7 +163,9 @@ namespace tardigradeHydra{
 
         }
 
-        local_inverseConfigurations[ 0 ] = tardigradeVectorTools::inverse( local_configurations[ 0 ], dim, dim );
+        local_inverseConfigurations[ 0 ] = local_configurations[ 0 ];
+        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( local_inverseConfigurations[ 0 ].data(), 3, 3 );
+        mat = mat.inverse( ).eval( );
 
         configurations        = tardigradeVectorTools::appendVectors( local_configurations );
         inverseConfigurations = tardigradeVectorTools::appendVectors( local_inverseConfigurations );
@@ -591,7 +595,9 @@ namespace tardigradeHydra{
 
         floatVector fullConfiguration = getSubConfiguration( configurations, 0, num_configs );
 
-        floatVector invCsc = tardigradeVectorTools::inverse( getSubConfiguration( configurations, 1, num_configs ), dim, dim );
+        floatVector invCsc = getSubConfiguration( configurations, 1, num_configs );
+        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > mat( invCsc.data( ), dim, dim );
+        mat = mat.inverse( ).eval( );
 
         floatVector dInvCscdCsc = tardigradeVectorTools::computeFlatDInvADA( invCsc, dim, dim );
 
