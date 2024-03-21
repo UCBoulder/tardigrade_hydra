@@ -225,9 +225,6 @@ namespace tardigradeHydra{
         const unsigned int* nNLISV  = getNumNonLinearSolveStateVariables( );
 
         // Extract the previous configurations
-        floatVector eye( getSOTDimension( ), 0 );
-        tardigradeVectorTools::eye( eye );
-
         if ( getPreviousStateVariables( )->size( ) < ( ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + ( *nNLISV ) ) ){
 
             std::string message = "The number of state variables is less than required for the configurations and ";
