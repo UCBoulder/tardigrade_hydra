@@ -330,7 +330,7 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( lowerIndex <= upperIndex, build_lower_index_out_of_range_error_string( lowerIndex, upperIndex ) )
 
         floatVector Fsc( sot_dim, 0 );
-        tardigradeVectorTools::eye( Fsc );
+        for ( unsigned int i = 0; i < 3; i++ ){ Fsc[ dim * i + i ] = 1.; }
 
         for ( unsigned int i = lowerIndex; i < upperIndex; i++ ){
 
@@ -365,13 +365,17 @@ namespace tardigradeHydra{
 
         floatVector gradient( sot_dim * sot_dim * num_incoming_configs, 0 );
 
+        Eigen::Map< Eigen::Matrix< floatType, 3, 3 > > map( NULL, dim, dim );
+
         for ( unsigned int index = lowerIndex; index < upperIndex; index++ ){
 
-            floatVector Fm, Fp;
+            floatVector Fm, FpT;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( Fm = getSubConfiguration( configurations, lowerIndex, index ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( Fp = getSubConfiguration( configurations, index + 1, upperIndex ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( FpT = getSubConfiguration( configurations, index + 1, upperIndex ) );
+            new (&map) Eigen::Map< Eigen::Matrix< floatType, 3, 3 > >( FpT.data( ), 3, 3 );
+            map = map.transpose( ).eval( );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
@@ -381,7 +385,7 @@ namespace tardigradeHydra{
 
                         for ( unsigned int A = 0; A < dim; A++ ){
 
-                            gradient[ dim * num_incoming_configs * sot_dim * i + num_incoming_configs * sot_dim * I + sot_dim * index + dim * a + A ] = Fm[ dim * i + a ] * Fp[ dim * A + I ];
+                            gradient[ dim * num_incoming_configs * sot_dim * i + num_incoming_configs * sot_dim * I + sot_dim * index + dim * a + A ] = Fm[ dim * i + a ] * FpT[ dim * I + A ];
 
                         }
 
