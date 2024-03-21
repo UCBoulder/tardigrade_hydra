@@ -103,9 +103,9 @@ namespace tardigradeHydra{
              *     micro-deformation.
              */
 
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
  
             variableVector PK2Stress, referenceMicroStress, referenceHigherOrderStress;
     
@@ -251,9 +251,9 @@ namespace tardigradeHydra{
              */
     
             //Assume 3d
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
             constantVector eye( sot_dim );
             tardigradeVectorTools::eye( eye );
@@ -466,9 +466,9 @@ namespace tardigradeHydra{
              */
 
             //Assume 3d
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;   
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;   
  
             constantVector eye( dim * dim );
             tardigradeVectorTools::eye( eye );
@@ -904,8 +904,8 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
     
             errorOut error = computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1 );
     
@@ -951,8 +951,8 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
     
             if ( greenLagrangeStrain.size() != sot_dim ){
                 return new errorNode( "computeLinearElasticTerm2",
@@ -1026,8 +1026,8 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
     
             errorOut error = computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invCPsi, B, D, term2 );
     
@@ -1077,9 +1077,9 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
             if ( Gamma.size() != tot_dim ){
                 return new errorNode( "computeReferenceHigherOrderStress",
@@ -1126,9 +1126,9 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
             errorOut error = computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress );
     
@@ -1172,8 +1172,8 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
     
             if ( invCGamma.size() != dim * dim * dim ){
                 return new errorNode( "computeLinearElasticTerm3",
@@ -1219,9 +1219,9 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
             errorOut error = computeLinearElasticTerm3( invCGamma, referenceHigherOrderStress, term3 );
     
@@ -1263,7 +1263,7 @@ namespace tardigradeHydra{
              */
     
             //Assume 3d
-            const unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
     
             if ( invRCG.size() != dim * dim ){
                 return new errorNode( "computeInvRCGGamma", "invRCG has an improper dimension" );
@@ -1298,8 +1298,8 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
     
             errorOut error = computeInvRCGPsi( invRCG, Psi, invRCGPsi );
     
@@ -1340,9 +1340,9 @@ namespace tardigradeHydra{
              */
     
             //Assume 3d
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
             if ( invRCG.size() != sot_dim ){
                 return new errorNode( "computeInvRCGGamma", "invRCG has an improper dimension" );
@@ -1384,9 +1384,9 @@ namespace tardigradeHydra{
              */
     
             //Assume 3d
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
             errorOut error = computeInvRCGGamma( invRCG, Gamma, invRCGGamma );
     

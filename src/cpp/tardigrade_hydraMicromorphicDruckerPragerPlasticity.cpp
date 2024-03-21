@@ -159,8 +159,8 @@ namespace tardigradeHydra{
              * \param tol: The tolerance used to prevent nans in the Jacobians
              */
 
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
 
             parameterType AAngle, BAngle;
             TARDIGRADE_ERROR_TOOLS_CATCH( computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
@@ -247,8 +247,8 @@ namespace tardigradeHydra{
              * \param tol: The tolerance used to prevent nans in the Jacobians
              */
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
 
             parameterType AAngle, BAngle;
             TARDIGRADE_ERROR_TOOLS_CATCH(  computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
@@ -426,9 +426,9 @@ namespace tardigradeHydra{
              *     tensor.
              */
 
-            unsigned int dim = 3;
-            unsigned int sot_dim = dim * dim;
-            unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
 
             parameterType AAngle, BAngle;
             TARDIGRADE_ERROR_TOOLS_CATCH( computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
@@ -511,9 +511,9 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            unsigned int dim = 3;
-            unsigned int sot_dim = dim * dim;
-            unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
 
             parameterType AAngle, BAngle;
             TARDIGRADE_ERROR_TOOLS_CATCH( computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
@@ -626,7 +626,7 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( 
                 if ( inverseElasticRightCauchyGreen.size() != dim * dim ){
@@ -757,8 +757,8 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 computePlasticMacroVelocityGradient( macroGamma, microGamma, inverseElasticRightCauchyGreen,
@@ -822,7 +822,7 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 if ( elasticMicroRightCauchyGreen.size() != dim * dim ){
@@ -905,7 +905,7 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 if ( elasticMicroRightCauchyGreen.size() != dim * dim ){
@@ -997,8 +997,8 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
 
@@ -1291,9 +1291,9 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
 
@@ -1383,9 +1383,9 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
 
             variableVector skewTerm;
             TARDIGRADE_ERROR_TOOLS_CATCH(
@@ -1549,10 +1549,10 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
-            const unsigned int fot_dim = tot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int fot_dim = tot_dim * dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 if ( currentPlasticMicroDeformation.size() != sot_dim ){
@@ -1722,10 +1722,10 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
-            const unsigned int fot_dim = tot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int fot_dim = tot_dim * dim;
 
             //Compute the required identity terms
             constantVector eye( dim * dim );
@@ -1884,10 +1884,10 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
-            const unsigned int fot_dim = tot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int fot_dim = tot_dim * dim;
 
             //Compute the required identity terms
             constantVector eye( dim * dim );
@@ -2152,9 +2152,9 @@ namespace tardigradeHydra{
              * \param alphaMicroGradient: The integration parameter for the micro gradient plasticity. Defaults to 0.5.
              */
 
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 tardigradeConstitutiveTools::evolveFFlatJ( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
@@ -2271,9 +2271,9 @@ namespace tardigradeHydra{
              * :param alphaMicroGradient: The integration parameter for the micro gradient plasticity. Defaults to 0.5.
              */
 
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
-            const unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 tardigradeConstitutiveTools::evolveFFlatJ( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
@@ -7940,11 +7940,11 @@ namespace tardigradeHydra{
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            unsigned int dim = hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
 
-            unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
 
-            unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+            const unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
 
             unsigned int numConfigurations = *hydra->getNumConfigurations( );
 
@@ -8179,9 +8179,9 @@ namespace tardigradeHydra{
 
             const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
 
-            unsigned int dim = hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
 
-            unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
 
             const floatVector *plasticMultipliers = get_plasticMultipliers( );
 
