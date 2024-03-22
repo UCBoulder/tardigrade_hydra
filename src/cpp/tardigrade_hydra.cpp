@@ -122,7 +122,7 @@ namespace tardigradeHydra{
          */
 
         const unsigned int dim = getDimension( );
-        const unsigned int sot_dim = dim * dim;
+        const unsigned int sot_dim = getSOTDimension( );
 
         const unsigned int num_configs = *getNumConfigurations( );
 
@@ -320,7 +320,7 @@ namespace tardigradeHydra{
          */
 
         const unsigned int dim = getDimension( );
-        const unsigned int sot_dim = dim * dim;
+        const unsigned int sot_dim = getSOTDimension( );
         const unsigned int local_num_configurations = configurations.size( ) / sot_dim;
 
         TARDIGRADE_ERROR_TOOLS_CHECK( configurations.size( ) % sot_dim == 0, "The configurations vector must be a multiple of the size of a second order tensor" )
@@ -358,7 +358,7 @@ namespace tardigradeHydra{
          */
 
         const unsigned int dim = getDimension( );
-        const unsigned int sot_dim = dim * dim;
+        const unsigned int sot_dim = getSOTDimension( );
         const unsigned int num_incoming_configs = configurations.size( ) / sot_dim;
 
         TARDIGRADE_ERROR_TOOLS_CHECK( configurations.size( ) % sot_dim == 0, "The configurations vector must be a scalar multiple of the second order tensor size (9 for 3D)" )
@@ -583,7 +583,7 @@ namespace tardigradeHydra{
          */
 
         const unsigned int dim = getDimension( );
-        const unsigned int sot_dim = dim * dim;
+        const unsigned int sot_dim = getSOTDimension( );
         const unsigned int num_configs = *getNumConfigurations( );
 
         dC1dC  = floatVector( sot_dim * sot_dim, 0 );
@@ -1125,8 +1125,7 @@ namespace tardigradeHydra{
          * which returns a pointer to the current value of the stress.
          */
 
-        const unsigned int dim = getDimension( );
-        const unsigned int sot_dim = dim * dim;
+        const unsigned int sot_dim = getSOTDimension( );
 
         const floatVector *cauchyStress;
         TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = getStress( ) );

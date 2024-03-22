@@ -27,6 +27,7 @@ Internal Changes
 - Updated to use the row-major vector Jacobians for tardigrade_constitutive_tools (:pull:`86`). By `Nathan Miller`_.
 - Added definitions for common tensor sizes to the hydra base class (:pull:`87`). By `Nathan Miller`_.
 - Changed inverses to fixed size where possible (:pull:`88`). By `Nathan Miller`_.
+- Using constexpr instead of const when possible (:pull:`89`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
