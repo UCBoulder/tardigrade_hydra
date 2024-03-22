@@ -161,7 +161,7 @@ namespace tardigradeHydra{
                        configurations.begin( ) + sot_dim * ( i + 2 ),
                        inverseConfigurations.begin( ) + sot_dim * ( i + 1 ) );
             new (&mat) Eigen::Map< Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( inverseConfigurations.data() + sot_dim * ( i + 1 ), 3, 3 );
-            mat = mat.inverse( );
+            mat = mat.inverse( ).eval( );
 
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
             std::copy( configurations.begin( ),
