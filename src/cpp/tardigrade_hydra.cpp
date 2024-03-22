@@ -9,8 +9,6 @@
 
 #include<tardigrade_hydra.h>
 
-#include<libxsmm.h>
-
 namespace tardigradeHydra{
 
     //Define hydra global constants in a place that Doxygen can pick up for documentation
@@ -134,12 +132,14 @@ namespace tardigradeHydra{
         inverseConfigurations = floatVector( num_configs * sot_dim, 0 );
 
         Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( NULL, 3, 3 );
-
-        typedef libxsmm_mmfunction<floatType> kernel_type;
+#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
         kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0 );
 
         // Initialize the first configuration with the total deformation gradient
         floatVector temp( sot_dim, 0 );
+#else
+        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat2( NULL, 3, 3 );
+#endif
 
         std::copy( total_transformation.begin( ), total_transformation.end( ), configurations.begin( ) );
 
@@ -160,15 +160,22 @@ namespace tardigradeHydra{
             std::copy( configurations.begin( ) + sot_dim * ( i + 1 ),
                        configurations.begin( ) + sot_dim * ( i + 2 ),
                        inverseConfigurations.begin( ) + sot_dim * ( i + 1 ) );
-            new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( inverseConfigurations.data() + sot_dim * ( i + 1 ), 3, 3 );
-            mat = mat.inverse( ).eval( );
+            new (&mat) Eigen::Map< Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( inverseConfigurations.data() + sot_dim * ( i + 1 ), 3, 3 );
+            mat = mat.inverse( );
 
-            // Add contribution of deformation gradient to the first configuration
+#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
             std::copy( configurations.begin( ),
                        configurations.begin( ) + sot_dim,
                        temp.begin( ) );
 
             kernel( &inverseConfigurations[ sot_dim * ( i + 1 ) ], &temp[ 0 ], &configurations[ 0 ] );
+#else
+            // Add contribution of deformation gradient to the first configuration
+
+            new (&mat2) Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor>>( configurations.data( ), 3, 3 );
+
+            mat2 *= mat;
+#endif
 
         }
 
@@ -336,17 +343,26 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( lowerIndex <= upperIndex, build_lower_index_out_of_range_error_string( lowerIndex, upperIndex ) )
 
         floatVector Fsc( sot_dim, 0 );
-        floatVector temp;
         for ( unsigned int i = 0; i < 3; i++ ){ Fsc[ dim * i + i ] = 1.; }
 
-        typedef libxsmm_mmfunction<floatType> kernel_type;
+#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
+        floatVector temp;
         kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0 );
+#else
+        Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor>> Fsc_mat( Fsc.data( ), 3, 3 );
+        Eigen::Map<const Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor>> mat( NULL, 3, 3 );
+#endif
 
         for ( unsigned int i = lowerIndex; i < upperIndex; i++ ){
 
+#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
             temp = Fsc;
 
             kernel( &configurations[ sot_dim * i ], &temp[ 0 ], &Fsc[ 0 ] );
+#else
+            new (&mat) Eigen::Map<const Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor>>( configurations.data( ) + sot_dim * i, 3, 3 );
+            Fsc_mat *= mat;
+#endif
 
         }
 
@@ -639,9 +655,9 @@ namespace tardigradeHydra{
 
                     for ( unsigned int indexaA = 0; indexaA < ( num_configs - 1 ) * sot_dim; indexaA++ ){
 
-                                dC1dCn[ dim * ( num_configs - 1 ) * sot_dim * i + ( num_configs - 1 ) * sot_dim * barI + indexaA ]
-                                    += fullConfiguration[ dim * i + J ]
-                                     * dInvCscdCs[ dim * num_configs * sot_dim * J + num_configs * sot_dim * barI + indexaA + sot_dim ];
+                        dC1dCn[ dim * ( num_configs - 1 ) * sot_dim * i + ( num_configs - 1 ) * sot_dim * barI + indexaA ]
+                            += fullConfiguration[ dim * i + J ]
+                             * dInvCscdCs[ dim * num_configs * sot_dim * J + num_configs * sot_dim * barI + indexaA + sot_dim ];
 
                     }
 
@@ -650,35 +666,6 @@ namespace tardigradeHydra{
             }
 
         }
-//        for ( unsigned int i = 0; i < dim; i++ ){
-//
-//            for ( unsigned int barI = 0; barI < dim; barI++ ){
-//
-//                for ( unsigned int a = 0; a < dim; a++ ){
-//
-//                    for ( unsigned int A = 0; A < dim; A++ ){
-//
-//                        dC1dC[ dim * sot_dim * i + sot_dim * barI + dim * a + A ] += eye[ dim * i + a ] * invCsc[ dim * A + barI ];
-//
-//                        for ( unsigned int index = 0; index < num_configs - 1; index++ ){
-//
-//                            for ( unsigned int J = 0; J < dim; J++ ){
-//
-//                                dC1dCn[ dim * ( num_configs - 1 ) * sot_dim * i + ( num_configs - 1 ) * sot_dim * barI + sot_dim * index + dim * a + A ]
-//                                    += fullConfiguration[ dim * i + J ]
-//                                     * dInvCscdCs[ dim * num_configs * sot_dim * J + num_configs * sot_dim * barI + sot_dim * ( index + 1 ) + dim * a + A ];
-//
-//                            }
-//
-//                        }
-//
-//                    }
-//
-//                }
-//
-//            }
-//
-//        }
 
     }
 
