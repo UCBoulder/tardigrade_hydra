@@ -18,6 +18,8 @@
 #include<tardigrade_vector_tools.h>
 #include<tardigrade_abaqus_tools.h>
 
+#include<libxsmm.h>
+
 /*!
  * \brief Declares a named getter function
  * \param getname: The name of the getter function
@@ -213,6 +215,8 @@ namespace tardigradeHydra{
     typedef double floatType; //!< Define the float values type.
     typedef std::vector< floatType > floatVector; //!< Define a vector of floats
     typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
+
+    typedef libxsmm_mmfunction<floatType> kernel_type; //!< The libxsmm kernel type
 
     typedef void ( hydraBase::*hydraBaseFxn )( ); //!< Typedef for passing pointers to hydraBase functions
 
