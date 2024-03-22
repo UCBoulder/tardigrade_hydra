@@ -626,17 +626,26 @@ namespace tardigradeHydra{
         }
 
         // Map the gradient of the micro-configuration to the reference of the first configuration
-        floatVector invChiFollow_T = getSubConfiguration( microConfigurations, 1, num_configs );
-        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invChiFollow_T.data(), 3, 3 );
-        mat = mat.inverse( ).transpose( ).eval( );
+        floatVector invChiFollow = getSubConfiguration( microConfigurations, 1, num_configs );
 
-        floatVector invFFollow_T = getSubConfiguration( configurations, 1, num_configs );
-        new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( invFFollow_T.data(), 3, 3 );
-        mat = mat.inverse( ).transpose( ).eval( );
+        floatVector invFFollow = getSubConfiguration( configurations, 1, num_configs );
 
         for ( unsigned int i = 0; i < tot_dim; i++ ){
             gradientMicroConfigurations[ i ] = 0;
         }
+
+        floatVector temp( sot_dim * sot_dim, 0 );
+        for ( unsigned int a = 0; a < dim; a++ ){
+            for ( unsigned int b = 0; b < dim; b++ ){
+                for ( unsigned int I = 0; I < dim; I++ ){
+                    for ( unsigned int J = 0; J < dim; J++ ){
+                        temp[ dim * dim * dim * a + dim * dim * b + dim * I + J ] = invChiFollow[ dim * a + I ] * invFFollow[ dim * b + J ];
+                    }
+                }
+            }
+        }
+
+        Eigen::Map< Eigen::Matrix< floatType, 3, 9, Eigen::RowMajor > >
 
         for ( unsigned int i = 0; i < dim; i++ ){
 
