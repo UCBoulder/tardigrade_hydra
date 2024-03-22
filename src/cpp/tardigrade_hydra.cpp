@@ -128,49 +128,56 @@ namespace tardigradeHydra{
 
         const unsigned int num_configs = *getNumConfigurations( );
 
-        floatVector eye( sot_dim );
-        tardigradeVectorTools::eye( eye );
-
         // Set the configurations
         configurations = floatVector( num_configs * sot_dim, 0 );
 
         inverseConfigurations = floatVector( num_configs * sot_dim, 0 );
 
-        // Initialize the first configuration with the total deformation gradient
-        floatMatrix local_configurations( num_configs );
-        floatMatrix local_inverseConfigurations( num_configs );
+        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( NULL, 3, 3 );
 
-        local_configurations[ 0 ] = total_transformation;
+        typedef libxsmm_mmfunction<floatType> kernel_type;
+        kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0 );
+
+        // Initialize the first configuration with the total deformation gradient
+        floatVector temp( sot_dim, 0 );
+
+        std::copy( total_transformation.begin( ), total_transformation.end( ), configurations.begin( ) );
 
         for ( int i = num_configs - 2; i >= 0; i-- ){
 
             // Set the current configuration as being equal to the previous
-            local_configurations[ i + 1 ] = floatVector( data_vector->begin( ) + i * sot_dim + start_index,
-                                                         data_vector->begin( ) + ( i + 1 ) * sot_dim + start_index );
+            std::copy( data_vector->begin( ) + i * sot_dim + start_index,
+                       data_vector->begin( ) + ( i + 1 ) * sot_dim + start_index,
+                       configurations.begin( ) + sot_dim * ( i + 1 ) );
 
             if ( add_eye ){
 
-                local_configurations[ i + 1 ] += eye;
+                for ( unsigned int j = 0; j < dim; j++ ){ configurations[ sot_dim * ( i + 1 ) + dim * j + j ] += 1; }
 
             }
 
             // Compute the inverse of the current configuration and store it
-            local_inverseConfigurations[ i + 1 ] = local_configurations[ i + 1 ];
-            Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( local_inverseConfigurations[ i + 1 ].data(), 3, 3 );
+            std::copy( configurations.begin( ) + sot_dim * ( i + 1 ),
+                       configurations.begin( ) + sot_dim * ( i + 2 ),
+                       inverseConfigurations.begin( ) + sot_dim * ( i + 1 ) );
+            new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( inverseConfigurations.data() + sot_dim * ( i + 1 ), 3, 3 );
             mat = mat.inverse( ).eval( );
 
             // Add contribution of deformation gradient to the first configuration
-            local_configurations[ 0 ] = tardigradeVectorTools::matrixMultiply( local_configurations[ 0 ], local_inverseConfigurations[ i + 1 ],
-                                                                               dim, dim, dim, dim );
+            std::copy( configurations.begin( ),
+                       configurations.begin( ) + sot_dim,
+                       temp.begin( ) );
+
+            kernel( &inverseConfigurations[ sot_dim * ( i + 1 ) ], &temp[ 0 ], &configurations[ 0 ] );
 
         }
 
-        local_inverseConfigurations[ 0 ] = local_configurations[ 0 ];
-        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( local_inverseConfigurations[ 0 ].data(), 3, 3 );
-        mat = mat.inverse( ).eval( );
+        std::copy( configurations.begin( ),
+                   configurations.begin( ) + sot_dim,
+                   inverseConfigurations.begin( ) );
 
-        configurations        = tardigradeVectorTools::appendVectors( local_configurations );
-        inverseConfigurations = tardigradeVectorTools::appendVectors( local_inverseConfigurations );
+        new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( inverseConfigurations.data(), 3, 3 );
+        mat = mat.inverse( ).eval( );
 
         return;
 
@@ -340,8 +347,6 @@ namespace tardigradeHydra{
             temp = Fsc;
 
             kernel( &configurations[ sot_dim * i ], &temp[ 0 ], &Fsc[ 0 ] );
-
-//            Fsc = tardigradeVectorTools::matrixMultiply( Fsc, floatVector( configurations.begin( ) + sot_dim * i, configurations.begin( ) + sot_dim * ( i + 1 ) ), dim, dim, dim, dim );
 
         }
 
@@ -601,8 +606,8 @@ namespace tardigradeHydra{
 
         dC1dCn = floatVector( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-        floatVector eye( sot_dim );
-        tardigradeVectorTools::eye( eye );
+        floatVector eye( sot_dim, 0 );
+        for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
 
         floatVector fullConfiguration = getSubConfiguration( configurations, 0, num_configs );
 
@@ -619,23 +624,24 @@ namespace tardigradeHydra{
 
             for ( unsigned int barI = 0; barI < dim; barI++ ){
 
-                for ( unsigned int a = 0; a < dim; a++ ){
+                for ( unsigned int A = 0; A < dim; A++ ){
 
-                    for ( unsigned int A = 0; A < dim; A++ ){
+                    dC1dC[ dim * sot_dim * i + sot_dim * barI + dim * i + A ] += invCsc[ dim * A + barI ];
 
-                        dC1dC[ dim * sot_dim * i + sot_dim * barI + dim * a + A ] += eye[ dim * i + a ] * invCsc[ dim * A + barI ];
+                }
+            }
+        }
+        for ( unsigned int i = 0; i < dim; i++ ){
 
-                        for ( unsigned int index = 0; index < num_configs - 1; index++ ){
+            for ( unsigned int J = 0; J < dim; J++ ){
 
-                            for ( unsigned int J = 0; J < dim; J++ ){
+                for ( unsigned int barI = 0; barI < dim; barI++ ){
 
-                                dC1dCn[ dim * ( num_configs - 1 ) * sot_dim * i + ( num_configs - 1 ) * sot_dim * barI + sot_dim * index + dim * a + A ]
+                    for ( unsigned int indexaA = 0; indexaA < ( num_configs - 1 ) * sot_dim; indexaA++ ){
+
+                                dC1dCn[ dim * ( num_configs - 1 ) * sot_dim * i + ( num_configs - 1 ) * sot_dim * barI + indexaA ]
                                     += fullConfiguration[ dim * i + J ]
-                                     * dInvCscdCs[ dim * num_configs * sot_dim * J + num_configs * sot_dim * barI + sot_dim * ( index + 1 ) + dim * a + A ];
-
-                            }
-
-                        }
+                                     * dInvCscdCs[ dim * num_configs * sot_dim * J + num_configs * sot_dim * barI + indexaA + sot_dim ];
 
                     }
 
@@ -644,6 +650,35 @@ namespace tardigradeHydra{
             }
 
         }
+//        for ( unsigned int i = 0; i < dim; i++ ){
+//
+//            for ( unsigned int barI = 0; barI < dim; barI++ ){
+//
+//                for ( unsigned int a = 0; a < dim; a++ ){
+//
+//                    for ( unsigned int A = 0; A < dim; A++ ){
+//
+//                        dC1dC[ dim * sot_dim * i + sot_dim * barI + dim * a + A ] += eye[ dim * i + a ] * invCsc[ dim * A + barI ];
+//
+//                        for ( unsigned int index = 0; index < num_configs - 1; index++ ){
+//
+//                            for ( unsigned int J = 0; J < dim; J++ ){
+//
+//                                dC1dCn[ dim * ( num_configs - 1 ) * sot_dim * i + ( num_configs - 1 ) * sot_dim * barI + sot_dim * index + dim * a + A ]
+//                                    += fullConfiguration[ dim * i + J ]
+//                                     * dInvCscdCs[ dim * num_configs * sot_dim * J + num_configs * sot_dim * barI + sot_dim * ( index + 1 ) + dim * a + A ];
+//
+//                            }
+//
+//                        }
+//
+//                    }
+//
+//                }
+//
+//            }
+//
+//        }
 
     }
 
