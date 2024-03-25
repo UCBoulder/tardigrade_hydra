@@ -589,9 +589,16 @@ namespace tardigradeHydra{
 
         floatVector temp_tot1( tot_dim, 0 );
 
+        floatVector chiPrecede( sot_dim, 0. );
+        for ( unsigned int i = 0; i < dim; i++ ){ chiPrecede[ dim * i + i ] = 1.; }
+
+        Eigen::Map< Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > chip_map( chiPrecede.data( ), dim, dim );
+        Eigen::Map< const Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > map1( NULL, dim, dim );
+
         for ( unsigned int index = 1; index < num_configs; index++ ){
 
-            floatVector chiPrecede = getSubConfiguration( microConfigurations, 0, index );
+            new (&map1) Eigen::Map< const Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > >( microConfigurations.data( ) + ( index - 1 ) * sot_dim, 3, 3 );
+            chip_map *= map1;
 
             // Add the contribution of the term
             for ( unsigned int i = 0; i < dim; i++ ){
