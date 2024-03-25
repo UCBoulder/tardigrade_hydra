@@ -223,8 +223,11 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) PK2 stress
              */
     
-            floatVector eye( get_Ee( )->size( ), 0 );
-            tardigradeVectorTools::eye( eye );
+            const unsigned int dim     = hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            floatVector eye( sot_dim, 0 );
+            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
 
             const floatVector *Ee;
 
@@ -278,17 +281,27 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) value
              */
    
+            const unsigned int dim     = hydra->getDimension( );
             const unsigned int sot_dim = hydra->getSOTDimension( );
             const unsigned int fot_dim = hydra->getFOTDimension( );
  
-            floatVector eye( sot_dim, 0 );
-            tardigradeVectorTools::eye( eye );
-    
-            floatVector EYE( fot_dim, 0 );
-            tardigradeVectorTools::eye( EYE );
-    
-            floatVector dPK2StressdEe = ( *getLambda( ) ) * tardigradeVectorTools::matrixMultiply( eye, eye, sot_dim, 1, 1, sot_dim ) + 2 * ( *getMu( ) ) * EYE;
-   
+            floatVector dPK2StressdEe( fot_dim, 0 );
+            const floatType lambda = *getLambda( );
+
+            const floatType mu = *getMu( );
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                for ( unsigned int j = 0; j < dim; j++ ){
+
+                    dPK2StressdEe[ dim * dim * dim * i + dim * dim * i + dim * j + j ] += lambda;
+
+                }
+
+            }
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){ dPK2StressdEe[ sot_dim * i + i ] += 2 * mu; }
+ 
             set_dPK2StressdEe( dPK2StressdEe );
 
             set_previousdPK2StressdEe( dPK2StressdEe );
