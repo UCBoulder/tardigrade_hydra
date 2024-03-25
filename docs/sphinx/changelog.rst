@@ -28,6 +28,8 @@ Internal Changes
 - Added definitions for common tensor sizes to the hydra base class (:pull:`87`). By `Nathan Miller`_.
 - Changed inverses to fixed size where possible (:pull:`88`). By `Nathan Miller`_.
 - Using constexpr instead of const when possible (:pull:`89`). By `Nathan Miller`_.
+- Improved the efficiency of hydraBase (:pull:`90`). By `Nathan Miller`_.
+- Improved the efficiency of hydraBaseMicromorphic (:pull:`91`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
