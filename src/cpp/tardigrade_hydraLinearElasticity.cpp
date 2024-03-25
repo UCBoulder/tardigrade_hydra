@@ -415,22 +415,46 @@ namespace tardigradeHydra{
             }
 
             // Compute the Second Piola-Kirchhoff stress and it's gradients
-            floatVector dPK2StressdF = tardigradeVectorTools::matrixMultiply( *dPK2StressdFe, *dFedF, sot_dim, sot_dim, sot_dim, sot_dim );
-    
-            floatVector dPK2StressdFn = tardigradeVectorTools::matrixMultiply( *dPK2StressdFe, *dFedFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
-    
+            floatVector dPK2StressdF( sot_dim * sot_dim, 0 );
+            floatVector dPK2StressdFn( sot_dim * ( num_configs -1 ) * sot_dim, 0 );
+
+            Eigen::Map< Eigen::Matrix< floatType, 9,  9, Eigen::RowMajor > > dPK2StressdF_mat( dPK2StressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, 9, -1, Eigen::RowMajor > > dPK2StressdFn_mat( dPK2StressdFn.data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, 9,  9, Eigen::RowMajor > > dPK2StressdFe_mat( dPK2StressdFe->data( ), sot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, 9,  9, Eigen::RowMajor > > dFedF_mat( dFedF->data( ), sot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, 9, -1, Eigen::RowMajor > > dFedFn_mat( dFedFn->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
+
+            dPK2StressdF_mat = ( dPK2StressdFe_mat * dFedF_mat ).eval( );
+            dPK2StressdFn_mat = ( dPK2StressdFe_mat * dFedFn_mat ).eval( );
+
             // Map the PK2 stress to the current configuration
-            floatVector cauchyStress;
-            floatVector dCauchyStressdPK2Stress;
-            floatVector dCauchyStressdFe;
- 
+            floatVector cauchyStress( sot_dim, 0 );
+            floatVector dCauchyStressdPK2Stress( sot_dim * sot_dim, 0 );
+            floatVector dCauchyStressdFe( sot_dim * sot_dim, 0 );
+
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::pushForwardPK2Stress( *PK2Stress, *Fe, cauchyStress, dCauchyStressdPK2Stress, dCauchyStressdFe ) );
-    
-            floatVector dCauchyStressdF  = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdF, sot_dim, sot_dim, sot_dim, sot_dim )
-                                         + tardigradeVectorTools::matrixMultiply( dCauchyStressdFe, *dFedF, sot_dim, sot_dim, sot_dim, sot_dim );
-    
-            floatVector dCauchyStressdFn = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdFn, sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) )
-                                         + tardigradeVectorTools::matrixMultiply( dCauchyStressdFe, *dFedFn, sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            Eigen::Map< const Eigen::Matrix< floatType, 9, 9, Eigen::RowMajor > > dCauchyStressdPK2Stress_mat( dCauchyStressdPK2Stress.data( ), sot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, 9, 9, Eigen::RowMajor > > dCauchyStressdFe_mat( dCauchyStressdFe.data( ), sot_dim, sot_dim );
+
+            floatVector dCauchyStressdF( sot_dim * sot_dim, 0 );
+            floatVector dCauchyStressdFn( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
+
+            Eigen::Map< Eigen::Matrix< floatType, 9,  9, Eigen::RowMajor > > dCauchyStressdF_mat( dCauchyStressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, 9, -1, Eigen::RowMajor > > dCauchyStressdFn_mat( dCauchyStressdFn.data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
+
+            dCauchyStressdF_mat = ( dCauchyStressdPK2Stress_mat * dPK2StressdF_mat
+                                  + dCauchyStressdFe_mat * dFedF_mat ).eval( );
+
+            dCauchyStressdFn_mat = ( dCauchyStressdPK2Stress_mat * dPK2StressdFn_mat
+                                   + dCauchyStressdFe_mat * dFedFn_mat ).eval( );
+
+//            floatVector dCauchyStressdF  = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdF, sot_dim, sot_dim, sot_dim, sot_dim )
+//                                         + tardigradeVectorTools::matrixMultiply( dCauchyStressdFe, *dFedF, sot_dim, sot_dim, sot_dim, sot_dim );
+//    
+//            floatVector dCauchyStressdFn = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdFn, sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) )
+//                                         + tardigradeVectorTools::matrixMultiply( dCauchyStressdFe, *dFedFn, sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) );
 
             if ( isPrevious ){
 
