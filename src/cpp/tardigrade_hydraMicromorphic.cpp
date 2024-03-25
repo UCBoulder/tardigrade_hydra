@@ -751,7 +751,7 @@ namespace tardigradeHydra{
         tardigradeVectorTools::eye( eye );
 
         // Compute the gradient in the reference configuration
-        floatVector gradientChi1Reference = gradientMicroConfiguration; // Initialize to the total gradient in the reference configuration
+        floatVector gradientChi1Reference( tot_dim, 0 );
 
         floatVector dGradientChi1ReferencedCn( tot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
@@ -761,13 +761,13 @@ namespace tardigradeHydra{
 
         floatVector dGradientChi1ReferencedGradChin( tot_dim * ( num_configs - 1 ) * tot_dim, 0 );
 
+        floatVector temp_tot( tot_dim, 0 );
+
+        floatVector chiPrecede( sot_dim, 0 ), chiFollow( sot_dim, 0 ), FFollow( sot_dim, 0 );
+
         for ( unsigned int index = 1; index < num_configs; index++ ){
 
-            floatVector FFollow = getSubConfiguration( configurations, index + 1, num_configs );
-
-            floatVector chiPrecede = getSubConfiguration( microConfigurations, 0, index );
-
-            floatVector chiFollow  = getSubConfiguration( microConfigurations, index + 1, num_configs );
+            chiPrecede = getSubConfiguration( microConfigurations, 0, index );
 
             // Set the Jacobians of the mapping terms
             floatVector dFFollowdCs = getSubConfigurationJacobian( configurations, index + 1, num_configs );
@@ -808,6 +808,86 @@ namespace tardigradeHydra{
             // Add the contribution of the term
             for ( unsigned int i = 0; i < dim; i++ ){
 
+                for ( unsigned int j = 0; j < dim; j++ ){
+
+                    for ( unsigned int I = 0; I < dim; I++ ){
+
+                        for ( unsigned int J = 0; J < dim; J++ ){
+
+                                    gradientChi1Reference[ dim * dim * i + dim * I + J ]
+                                        -= chiPrecede[ dim * i + j ] * gradientMicroConfigurations[ tot_dim * index + dim * dim * j + dim * I + J ];
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            if ( index != ( num_configs - 1 ) ){
+
+                std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot.begin( ) );
+                std::fill( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), 0 );
+
+                chiFollow  = getSubConfiguration( microConfigurations, index + 1, *getNumConfigurations( ) );
+
+                for ( unsigned int i = 0; i < dim; i++ ){
+
+                    for ( unsigned int I = 0; I < dim; I++ ){
+
+                        for ( unsigned int J = 0; J < dim; J++ ){
+
+                            for ( unsigned int k = 0; k < dim; k++ ){
+
+                                        gradientChi1Reference[ dim * dim * i + dim * I + J ]
+                                            += chiFollow[ dim * k + I ] * temp_tot[ dim * dim * i + dim * k + J ];
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot.begin( ) );
+                std::fill( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), 0 );
+
+                FFollow = getSubConfiguration( configurations, index + 1, *getNumConfigurations( ) );
+
+                for ( unsigned int i = 0; i < dim; i++ ){
+
+                    for ( unsigned int I = 0; I < dim; I++ ){
+
+                        for ( unsigned int l = 0; l < dim; l++ ){
+
+                            for ( unsigned int J = 0; J < dim; J++ ){
+
+                                        gradientChi1Reference[ dim * dim * i + dim * I + J ]
+                                            += FFollow[ dim * l + J ] * temp_tot[ dim * dim * i + dim * I + l ];
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+            else{
+
+                std::fill( chiFollow.begin( ), chiFollow.end( ), 0. );
+
+                std::fill( FFollow.begin( ), FFollow.end( ), 0. );
+
+                for ( unsigned int i = 0; i < dim; i++ ){ chiFollow[ dim * i + i ] = 1.; FFollow[ dim * i + i ] = 1.; }
+
+            }
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
                 for ( unsigned int I = 0; I < dim; I++ ){
 
                     for ( unsigned int J = 0; J < dim; J++ ){
@@ -817,10 +897,6 @@ namespace tardigradeHydra{
                             for ( unsigned int k = 0; k < dim; k++ ){
 
                                 for ( unsigned int l = 0; l < dim; l++ ){
-
-                                    gradientChi1Reference[ dim * dim * i + dim * I + J ]
-                                        -= chiPrecede[ dim * i + j ] * chiFollow[ dim * k + I ] * FFollow[ dim * l + J ]
-                                         * gradientMicroConfigurations[ tot_dim * index + dim * dim * j + dim * k + l ];
 
                                     dGradientChi1ReferencedGradChin[ dim * dim * ( num_configs - 1 ) * tot_dim * i + dim * ( num_configs - 1 ) * tot_dim * I + ( num_configs - 1 ) * tot_dim * J + tot_dim * ( index - 1 ) + dim * dim * j + dim * k + l ]
                                         -= chiPrecede[ dim * i + j ] * chiFollow[ dim * k + I ] * FFollow[ dim * l + J ];
@@ -865,12 +941,14 @@ namespace tardigradeHydra{
 
         }
 
+        gradientChi1Reference += gradientMicroConfiguration;
+
         // Map the gradient of the micro-configuration to the reference of the first configuration
-        floatVector ChiFollow = getSubConfiguration( microConfigurations, 1, num_configs );
+        chiFollow = getSubConfiguration( microConfigurations, 1, num_configs );
 
-        floatVector FFollow = getSubConfiguration( configurations, 1, num_configs );
+        FFollow = getSubConfiguration( configurations, 1, num_configs );
 
-        floatVector invChiFollow = ChiFollow;
+        floatVector invChiFollow = chiFollow;
         Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invChiFollow.data(), 3, 3 );
         mat = mat.inverse( ).eval( );
 
