@@ -765,6 +765,8 @@ namespace tardigradeHydra{
 
         floatVector temp_tot2( tot_dim, 0 );
 
+        floatVector temp_tot2a( tot_dim, 0 );
+
         floatVector chiPrecede( sot_dim, 0 ), chiFollow( sot_dim, 0 ), FFollow( sot_dim, 0 );
 
         for ( unsigned int index = 1; index < num_configs; index++ ){
@@ -831,6 +833,7 @@ namespace tardigradeHydra{
 
                 std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot.begin( ) );
                 std::fill( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), 0 );
+                std::fill( temp_tot2.begin( ), temp_tot2.end( ), 0 );
 
                 chiFollow  = getSubConfiguration( microConfigurations, index + 1, *getNumConfigurations( ) );
 
@@ -844,6 +847,8 @@ namespace tardigradeHydra{
 
                                 gradientChi1Reference[ dim * dim * i + dim * I + J ]
                                     += chiFollow[ dim * k + I ] * temp_tot[ dim * dim * i + dim * k + J ];
+                                temp_tot2[ dim * dim * i + dim * I + J ]
+                                    -= chiFollow[ dim * k + I ] * gradientMicroConfigurations[ tot_dim * index + dim * dim * i + dim * k + J ];
 
                             }
 
@@ -855,6 +860,7 @@ namespace tardigradeHydra{
 
                 std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot.begin( ) );
                 std::fill( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), 0 );
+                std::fill( temp_tot2a.begin( ), temp_tot2a.end( ), 0 );
 
                 FFollow = getSubConfiguration( configurations, index + 1, *getNumConfigurations( ) );
 
@@ -868,6 +874,8 @@ namespace tardigradeHydra{
 
                                 gradientChi1Reference[ dim * dim * i + dim * I + J ]
                                     += FFollow[ dim * l + J ] * temp_tot[ dim * dim * i + dim * I + l ];
+
+                                temp_tot2a[ dim * dim * i + dim * I + J ] += FFollow[ dim * l + J ] * temp_tot2[ dim * dim * i + dim * I + l ];
 
                                 for ( unsigned int A = 0; A < ( num_configs - 1 ) * sot_dim; A++ ){
 
@@ -885,12 +893,18 @@ namespace tardigradeHydra{
 
                 }
 
+                std::copy( temp_tot2a.begin( ), temp_tot2a.end( ), temp_tot2.begin( ) );
+
             }
             else{
 
                 std::fill( chiFollow.begin( ), chiFollow.end( ), 0. );
 
                 std::fill( FFollow.begin( ), FFollow.end( ), 0. );
+
+                std::transform( gradientMicroConfigurations.begin( ) + tot_dim * index,
+                                gradientMicroConfigurations.begin( ) + tot_dim * ( index + 1 ),
+                                temp_tot2.begin( ), std::negate<floatType>( ) );
 
                 for ( unsigned int i = 0; i < dim; i++ ){ chiFollow[ dim * i + i ] = 1.; FFollow[ dim * i + i ] = 1.; }
 
@@ -928,20 +942,19 @@ namespace tardigradeHydra{
 
                         for ( unsigned int j = 0; j < dim; j++ ){
 
+                            for ( unsigned int A = 0; A < sot_dim; A++ ){
+
+                                dGradientChi1ReferencedChi[ dim * dim * sot_dim * i + dim * sot_dim * I + sot_dim * J + A ]
+                                    += dChiPrecededChi[ dim * sot_dim * i + sot_dim * j + A ] * temp_tot2[ dim * dim * j + dim * I + J ];
+
+                            }
+
                             for ( unsigned int k = 0; k < dim; k++ ){
 
                                 for ( unsigned int l = 0; l < dim; l++ ){
 
                                     dGradientChi1ReferencedGradChin[ dim * dim * ( num_configs - 1 ) * tot_dim * i + dim * ( num_configs - 1 ) * tot_dim * I + ( num_configs - 1 ) * tot_dim * J + tot_dim * ( index - 1 ) + dim * dim * j + dim * k + l ]
                                         -= chiPrecede[ dim * i + j ] * chiFollow[ dim * k + I ] * FFollow[ dim * l + J ];
-
-                                    for ( unsigned int A = 0; A < sot_dim; A++ ){
-
-                                        dGradientChi1ReferencedChi[ dim * dim * sot_dim * i + dim * sot_dim * I + sot_dim * J + A ]
-                                            -= dChiPrecededChi[ dim * sot_dim * i + sot_dim * j + A ] * chiFollow[ dim * k + I ] * FFollow[ dim * l + J ]
-                                             * gradientMicroConfigurations[ tot_dim * index + dim * dim * j + dim * k + l ];
-
-                                    }
 
                                     for ( unsigned int A = 0; A < ( num_configs - 1 ) * sot_dim; A++ ){
 
