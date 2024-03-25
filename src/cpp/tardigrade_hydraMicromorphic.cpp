@@ -767,6 +767,10 @@ namespace tardigradeHydra{
 
         floatVector temp_tot2a( tot_dim, 0 );
 
+        floatVector temp_tot3( tot_dim, 0 );
+
+        floatVector temp_tot3a( tot_dim, 0 );
+
         floatVector chiPrecede( sot_dim, 0 ), chiFollow( sot_dim, 0 ), FFollow( sot_dim, 0 );
 
         for ( unsigned int index = 1; index < num_configs; index++ ){
@@ -784,9 +788,9 @@ namespace tardigradeHydra{
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                for ( unsigned int j = 0; j < sot_dim; j++ ){
+                for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                    for ( unsigned int k = 0; k < sot_dim; k++ ){
+                    for ( unsigned int j = 0; j < sot_dim; j++ ){
 
                         dChiPrecededChi[ sot_dim * i + j ] += dChiPrecededChis[ num_configs * sot_dim * i + k ] * dChi1dChi[ sot_dim * k + j ];
 
@@ -829,6 +833,8 @@ namespace tardigradeHydra{
 
             }
 
+            std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot3.begin( ) );
+
             if ( index != ( num_configs - 1 ) ){
 
                 std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot.begin( ) );
@@ -861,6 +867,7 @@ namespace tardigradeHydra{
                 std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot.begin( ) );
                 std::fill( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), 0 );
                 std::fill( temp_tot2a.begin( ), temp_tot2a.end( ), 0 );
+                std::fill( temp_tot3a.begin( ), temp_tot3a.end( ), 0 );
 
                 FFollow = getSubConfiguration( configurations, index + 1, *getNumConfigurations( ) );
 
@@ -876,6 +883,8 @@ namespace tardigradeHydra{
                                     += FFollow[ dim * l + J ] * temp_tot[ dim * dim * i + dim * I + l ];
 
                                 temp_tot2a[ dim * dim * i + dim * I + J ] += FFollow[ dim * l + J ] * temp_tot2[ dim * dim * i + dim * I + l ];
+
+                                temp_tot3a[ dim * dim * i + dim * I +  J ] += FFollow[ dim * l + J ] * temp_tot3[ dim * dim * i + dim * I + l ];
 
                                 for ( unsigned int A = 0; A < ( num_configs - 1 ) * sot_dim; A++ ){
 
@@ -894,6 +903,7 @@ namespace tardigradeHydra{
                 }
 
                 std::copy( temp_tot2a.begin( ), temp_tot2a.end( ), temp_tot2.begin( ) );
+                std::copy( temp_tot3a.begin( ), temp_tot3a.end( ), temp_tot3.begin( ) );
 
             }
             else{
@@ -949,22 +959,20 @@ namespace tardigradeHydra{
 
                             }
 
+                            for ( unsigned int A = 0; A < ( num_configs - 1 ) * sot_dim; A++ ){
+
+                                        dGradientChi1ReferencedChin[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * I + ( num_configs - 1 ) * sot_dim * J + A ]
+                                            += dChiPrecededChin[ dim * ( num_configs - 1 ) * sot_dim * i + ( num_configs - 1 ) * sot_dim * j + A ] * temp_tot2[ dim * dim * j + dim * I + J ]
+                                             + dChiFollowdChis[ dim * num_configs * sot_dim * j + num_configs * sot_dim * I + A + sot_dim ] * temp_tot3[ dim * dim * i + dim * j + J ];
+
+                            }
+
                             for ( unsigned int k = 0; k < dim; k++ ){
 
                                 for ( unsigned int l = 0; l < dim; l++ ){
 
                                     dGradientChi1ReferencedGradChin[ dim * dim * ( num_configs - 1 ) * tot_dim * i + dim * ( num_configs - 1 ) * tot_dim * I + ( num_configs - 1 ) * tot_dim * J + tot_dim * ( index - 1 ) + dim * dim * j + dim * k + l ]
                                         -= chiPrecede[ dim * i + j ] * chiFollow[ dim * k + I ] * FFollow[ dim * l + J ];
-
-                                    for ( unsigned int A = 0; A < ( num_configs - 1 ) * sot_dim; A++ ){
-
-                                        dGradientChi1ReferencedChin[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * I + ( num_configs - 1 ) * sot_dim * J + A ]
-                                            -= dChiPrecededChin[ dim * ( num_configs - 1 ) * sot_dim * i + ( num_configs - 1 ) * sot_dim * j + A ] * chiFollow[ dim * k + I ] * FFollow[ dim * l + J ]
-                                             * gradientMicroConfigurations[ tot_dim * index + dim * dim * j + dim * k + l ]
-                                             + chiPrecede[ dim * i + j ] * dChiFollowdChis[ dim * num_configs * sot_dim * k + num_configs * sot_dim * I + A + sot_dim ] * FFollow[ dim * l + J ]
-                                             * gradientMicroConfigurations[ tot_dim * index + dim * dim * j + dim * k + l ];
-
-                                    }
 
                                 }
 
@@ -990,10 +998,16 @@ namespace tardigradeHydra{
         floatVector invChiFollow = chiFollow;
         Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invChiFollow.data(), 3, 3 );
         mat = mat.inverse( ).eval( );
+        floatVector invChiFollow_T = invChiFollow;
+        new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( invChiFollow_T.data(), 3, 3 );
+        mat = mat.transpose( ).eval( );
 
         floatVector invFFollow = FFollow;
         new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( invFFollow.data(), 3, 3 );
         mat = mat.inverse( ).eval( );
+        floatVector invFFollow_T = invFFollow;
+        new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( invFFollow_T.data(), 3, 3 );
+        mat = mat.transpose( ).eval( );
 
         floatVector dChiFollowdChis = getSubConfigurationJacobian( microConfigurations, 1, num_configs );
 
@@ -1033,6 +1047,61 @@ namespace tardigradeHydra{
 
         dGradChi1dGradChin = floatVector( tot_dim * ( num_configs - 1 ) * tot_dim, 0 );
 
+        floatVector fiot_tmp( tot_dim * sot_dim, 0 );
+
+        for ( unsigned int i = 0; i < dim; i++ ){
+
+            for ( unsigned int I = 0; I < dim; I++ ){
+
+                for ( unsigned int J = 0; J < dim; J++ ){
+
+                    for ( unsigned int a = 0; a < dim; a++ ){
+
+                        for ( unsigned int b = 0; b < dim; b++ ){
+
+                            for ( unsigned int k = 0; k < dim; k++ ){
+
+                                    fiot_tmp[ dim * dim * sot_dim * i + dim * sot_dim * I + sot_dim * J + dim * a + b ]
+                                        += dGradientChi1ReferencedChi[ dim * dim * sot_dim * i + dim * sot_dim * k + sot_dim * J + dim * a + b ] * invChiFollow_T[ dim * I + k ];
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+        for ( unsigned int i = 0; i < dim; i++ ){
+
+            for ( unsigned int I = 0; I < dim; I++ ){
+
+                for ( unsigned int J = 0; J < dim; J++ ){
+
+                    for ( unsigned int a = 0; a < dim; a++ ){
+
+                        for ( unsigned int b = 0; b < dim; b++ ){
+
+                            for ( unsigned int k = 0; k < dim; k++ ){
+
+                                    dGradChi1dChi[ dim * dim * sot_dim * i + dim * sot_dim * I + sot_dim * J + dim * a + b ]
+                                        += fiot_tmp[ dim * dim * sot_dim * i + dim * sot_dim * I + sot_dim * k + dim * a + b ] * invFFollow_T[ dim * J + k ];
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
         for ( unsigned int i = 0; i < dim; i++ ){
 
             for ( unsigned int I = 0; I < dim; I++ ){
@@ -1047,18 +1116,18 @@ namespace tardigradeHydra{
 
                                 for ( unsigned int l = 0; l < dim; l++ ){
 
-                                    dGradChi1dChi[ dim * dim * sot_dim * i + dim * sot_dim * I + sot_dim * J + dim * a + b ]
-                                        += dGradientChi1ReferencedChi[ dim * dim * sot_dim * i + dim * sot_dim * k + sot_dim * l + dim * a + b ] * invChiFollow[ dim * k + I ] * invFFollow[ dim * l + J ];
+//                                    dGradChi1dChi[ dim * dim * sot_dim * i + dim * sot_dim * I + sot_dim * J + dim * a + b ]
+//                                        += dGradientChi1ReferencedChi[ dim * dim * sot_dim * i + dim * sot_dim * k + sot_dim * l + dim * a + b ] * invChiFollow_T[ dim * I + k ] * invFFollow_T[ dim * J + l ];
 
                                     for ( unsigned int index = 1; index < num_configs; index++ ){
 
                                         dGradChi1dChin[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * I + ( num_configs - 1 ) * sot_dim * J + dim * dim * ( index - 1 ) + dim * a + b ]
-                                            += dGradientChi1ReferencedChin[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * k + ( num_configs - 1 ) * sot_dim * l + dim * dim * ( index - 1 ) + dim * a + b ] * invChiFollow[ dim * k + I ] * invFFollow[ dim * l + J ]
-                                             + gradientChi1Reference[ dim * dim * i + dim * k + l ] * dInvChiFollowdChin[ dim * ( num_configs - 1 ) * sot_dim * k + ( num_configs - 1 ) * sot_dim * I + dim * dim * ( index - 1 ) + dim * a + b ] * invFFollow[ dim * l + J ];
+                                            += dGradientChi1ReferencedChin[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * k + ( num_configs - 1 ) * sot_dim * l + dim * dim * ( index - 1 ) + dim * a + b ] * invChiFollow_T[ dim * I + k ] * invFFollow_T[ dim * J + l ]
+                                             + gradientChi1Reference[ dim * dim * i + dim * k + l ] * dInvChiFollowdChin[ dim * ( num_configs - 1 ) * sot_dim * k + ( num_configs - 1 ) * sot_dim * I + dim * dim * ( index - 1 ) + dim * a + b ] * invFFollow_T[ dim * J + l ];
 
                                         dGradChi1dCn[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs -1 ) * sot_dim * I + ( num_configs - 1 ) * sot_dim * J + dim * dim * ( index - 1 ) + dim * a + b ]
-                                            += dGradientChi1ReferencedCn[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * k + ( num_configs - 1 ) * sot_dim * l + dim * dim * ( index - 1 ) + dim * a + b ] * invChiFollow[ dim * k + I ] * invFFollow[ dim * l + J ]
-                                             + gradientChi1Reference[ dim * dim * i + dim * k + l ] * invChiFollow[ dim * k + I ] * dInvFFollowdFn[ dim * ( num_configs - 1 ) * sot_dim  * l + ( num_configs - 1 ) * sot_dim * J + dim * dim * ( index - 1 ) + dim * a + b ];
+                                            += dGradientChi1ReferencedCn[ dim * dim * ( num_configs - 1 ) * sot_dim * i + dim * ( num_configs - 1 ) * sot_dim * k + ( num_configs - 1 ) * sot_dim * l + dim * dim * ( index - 1 ) + dim * a + b ] * invChiFollow_T[ dim * I + k ] * invFFollow_T[ dim * J + l ]
+                                             + gradientChi1Reference[ dim * dim * i + dim * k + l ] * invChiFollow_T[ dim * I + k ] * dInvFFollowdFn[ dim * ( num_configs - 1 ) * sot_dim  * l + ( num_configs - 1 ) * sot_dim * J + dim * dim * ( index - 1 ) + dim * a + b ];
 
                                     }
 
@@ -1066,10 +1135,10 @@ namespace tardigradeHydra{
 
                             }
 
-                            for ( unsigned int c = 0; c < dim; c++ ){
+                            dGradChi1dGradChi[ dim * dim * tot_dim * i + dim * tot_dim * I + tot_dim * J + dim * dim * i + dim * a + b ]
+                                += invChiFollow_T[ dim * I + a ] * invFFollow_T[ dim * J + b ];
 
-                                dGradChi1dGradChi[ dim * dim * tot_dim * i + dim * tot_dim * I + tot_dim * J + dim * dim * a + dim * b + c ]
-                                    += eye[ dim * i + a ] * invChiFollow[ dim * b + I ] * invFFollow[ dim * c + J ];
+                            for ( unsigned int c = 0; c < dim; c++ ){
 
                                 for ( unsigned int index = 1; index < num_configs; index++ ){
 
@@ -1078,7 +1147,7 @@ namespace tardigradeHydra{
                                         for ( unsigned int l = 0; l < dim; l++ ){
 
                                             dGradChi1dGradChin[ dim * dim * ( num_configs - 1 ) * tot_dim * i + dim * ( num_configs - 1 ) * tot_dim * I + ( num_configs - 1 ) * tot_dim * J + tot_dim * ( index - 1 ) + dim * dim * a + dim * b + c ]
-                                                += dGradientChi1ReferencedGradChin[ dim * dim * ( num_configs - 1 ) * tot_dim * i + dim * ( num_configs - 1 ) * tot_dim * k + ( num_configs - 1 ) * tot_dim * l + tot_dim * ( index - 1 ) + dim * dim * a + dim * b + c ] * invChiFollow[ dim * k + I ] * invFFollow[ dim * l + J ];
+                                                += dGradientChi1ReferencedGradChin[ dim * dim * ( num_configs - 1 ) * tot_dim * i + dim * ( num_configs - 1 ) * tot_dim * k + ( num_configs - 1 ) * tot_dim * l + tot_dim * ( index - 1 ) + dim * dim * a + dim * b + c ] * invChiFollow_T[ dim * I + k ] * invFFollow_T[ dim * J + l ];
 
                                         }
 
