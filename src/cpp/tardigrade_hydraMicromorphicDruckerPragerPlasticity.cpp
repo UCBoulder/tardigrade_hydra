@@ -1812,10 +1812,6 @@ namespace tardigradeHydra{
             constexpr unsigned int tot_dim = sot_dim * dim;
             constexpr unsigned int fot_dim = tot_dim * dim;
 
-            //Compute the required identity terms
-            constantVector eye( sot_dim, 0 );
-            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
-
             //Compute the new currentPlasticMicroGradient
             variableVector LHS;
             TARDIGRADE_ERROR_TOOLS_CATCH(
@@ -6433,22 +6429,15 @@ namespace tardigradeHydra{
 
             floatVector dPsidPrecedingChi( sot_dim * sot_dim, 0 );
 
-            floatVector eye( sot_dim, 0 );
-            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
-
             for ( unsigned int I = 0; I < dim; I++ ){ //TODO: Try to improve the cache access here
 
                 for ( unsigned int J = 0; J < dim; J++ ){
 
                     for ( unsigned int A = 0; A < dim; A++ ){
 
-                        for ( unsigned int B = 0; B < dim; B++ ){
+                        dPsidPrecedingF[   dim * dim * dim * I + dim * dim * J + dim * A + I ] += ( *precedingMicroDeformation )[ dim * A + J ];
 
-                            dPsidPrecedingF[   dim * dim * dim * I + dim * dim * J + dim * A + B ] += eye[ dim * I + B ] * ( *precedingMicroDeformation )[ dim * A + J ];
-
-                            dPsidPrecedingChi[ dim * dim * dim * I + dim * dim * J + dim * A + B ] += ( *precedingDeformationGradient )[ dim * A + I ] * eye[ dim * J + B ];
-
-                        }
+                        dPsidPrecedingChi[ dim * dim * dim * I + dim * dim * J + dim * A + J ] += ( *precedingDeformationGradient )[ dim * A + I ];
 
                     }
 
@@ -6497,19 +6486,11 @@ namespace tardigradeHydra{
                             precedingGamma[ sot_dim * I + dim * J + K ]
                                 += ( *precedingDeformationGradient )[ dim * i + I ] * ( *precedingGradientMicroDeformation )[ sot_dim * i + dim * J + K ];
 
-                            for ( unsigned int A = 0; A < dim; A++ ){
+                            dPrecedingGammadPrecedingF[ sot_dim * sot_dim * I + dim * sot_dim * J + sot_dim * K + dim * i + I ]
+                                += ( *precedingGradientMicroDeformation )[ sot_dim * i + dim * J + K ];
 
-                                dPrecedingGammadPrecedingF[ sot_dim * sot_dim * I + dim * sot_dim * J + sot_dim * K + dim * i + A ]
-                                    += eye[ dim * I + A ] * ( *precedingGradientMicroDeformation )[ sot_dim * i + dim * J + K ];
-
-                                for ( unsigned int B = 0; B < dim; B++ ){
-
-                                    dPrecedingGammadPrecedingGradChi[ sot_dim * tot_dim * I + dim * tot_dim * J + tot_dim * K + sot_dim * i + dim * A + B ]
-                                        += ( *precedingDeformationGradient )[ dim * i + I ] * eye[ dim * J + A ] * eye[ dim * K + B ];
-
-                                }
-
-                            }
+                            dPrecedingGammadPrecedingGradChi[ sot_dim * tot_dim * I + dim * tot_dim * J + tot_dim * K + sot_dim * i + dim * J + K ]
+                                += ( *precedingDeformationGradient )[ dim * i + I ];
 
                         }
 
