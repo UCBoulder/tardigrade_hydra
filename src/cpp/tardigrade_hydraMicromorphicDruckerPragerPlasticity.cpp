@@ -990,9 +990,6 @@ namespace tardigradeHydra{
 
             )
 
-            constantVector eye( sot_dim, 0 );
-            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
-
             //Assemble the Jacobians
             dPlasticMicroLdElasticMicroRCG = variableVector( sot_dim * sot_dim, 0 );
 
@@ -1018,11 +1015,12 @@ namespace tardigradeHydra{
                                      * inverseElasticPsi[ dim * Lb + Ob ]
                                      * elasticMicroRightCauchyGreen[ dim * Lb + Kb ];
 
+                                dPlasticMicroLdElasticMicroRCG[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Kb ]
+                                    += microGamma * inverseElasticPsi[ dim * Bb + Pb ] * microFlowDirection[ dim * Lb + Pb ]
+                                     * inverseElasticPsi[ dim * Ob + Lb ];
+
                                 for ( unsigned int Eb = 0; Eb < dim; Eb++ ){
 
-                                    dPlasticMicroLdElasticMicroRCG[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
-                                        += microGamma * inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Eb + Lb ]
-                                         * inverseElasticPsi[ dim * Ob + Eb ] * eye[ dim * Kb + Pb ];
                                     for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
 
                                         dPlasticMicroLdElasticPsi[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
