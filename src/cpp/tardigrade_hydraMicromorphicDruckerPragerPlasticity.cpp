@@ -7812,7 +7812,6 @@ namespace tardigradeHydra{
             tardigradeConstitutiveTools::mac( -( *microYield ) );
 
             floatVector microGradientMac( microGradientYield->size( ), 0 );
-            floatVector nMicroGradientMac( microGradientYield->size( ), 0 );
 
             floatType macNegMacroGamma;
             floatType macNegMicroGamma;
@@ -7833,7 +7832,6 @@ namespace tardigradeHydra{
                 for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
                     unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
                     microGradientMac[ index ]  = weakMac( *y, *getWeakenedMacaulayParameter( ) );
-                    nMicroGradientMac[ index ] = weakMac( -( *y ), *getWeakenedMacaulayParameter( ) );
                     macNegMicroGradientGamma[ index ] = weakMac( -( *plasticMultipliers )[ index + 2 ], *getWeakenedMacaulayParameter( ) );
                 }
             }
@@ -7851,7 +7849,6 @@ namespace tardigradeHydra{
                 for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
                     unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
                     microGradientMac[ index ] = tardigradeConstitutiveTools::mac( *y );
-                    nMicroGradientMac[ index ] = tardigradeConstitutiveTools::mac( -( *y ) );
                     macNegMicroGradientGamma[ index ] = tardigradeConstitutiveTools::mac( -( *plasticMultipliers )[ index + 2 ] );
                 }
 
