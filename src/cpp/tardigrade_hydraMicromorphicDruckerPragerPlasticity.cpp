@@ -1251,58 +1251,47 @@ namespace tardigradeHydra{
              */
 
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
+            TARDIGRADE_ERROR_TOOLS_CHECK( microGradientGamma.size() == dim, "The micro gradient plastic multiplier must have a length of 3" );
 
-                if ( microGradientGamma.size() != dim ){
-                    throw std::runtime_error( "The micro gradient plastic multiplier must have a length of 3" );
-                }
+            TARDIGRADE_ERROR_TOOLS_CHECK( elasticPsi.size() == sot_dim, "The elastic micro deformation measure Psi must be 3D" );
 
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( inverseElasticPsi.size() == sot_dim, "The inverse elastic micro deformation measure Psi must be 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
+            TARDIGRADE_ERROR_TOOLS_CHECK( elasticGamma.size() == tot_dim, "The elastic higher order deformation measure Gamma must be 3D" );
 
-                if ( elasticPsi.size() != dim  * dim ){
-                    throw std::runtime_error( "The elastic micro deformation measure Psi must be 3D" );
-                }
+            TARDIGRADE_ERROR_TOOLS_CHECK( microGradientFlowDirection.size() == dim * tot_dim, "The micro gradient flow direction must be 3D" );
 
-            )
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-
-                if ( inverseElasticPsi.size() != dim  * dim ){
-                    throw std::runtime_error( "The inverse elastic micro deformation measure Psi must be 3D" );
-                }
-
-            )
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-
-                if ( elasticGamma.size() != dim * dim * dim ){
-                    throw std::runtime_error( "The elastic higher order deformation measure Gamma must be 3D" );
-                }
-
-            )
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-
-                if ( microGradientFlowDirection.size() != dim * dim * dim * dim ){
-                    throw std::runtime_error( "The micro gradient flow direction must be 3D" );
-                }
-
-            )
-
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-
-                if ( plasticMicroVelocityGradient.size() != dim * dim ){
-                    throw std::runtime_error( "The plastic micro velocity gradient must be 3D" );
-                }
-
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( plasticMicroVelocityGradient.size() == sot_dim, "The plastic micro velocity gradient must be 3D" );
 
             //Assemble the 'skew' term
-            skewTerm = variableVector( dim * dim * dim, 0 );
+            skewTerm = variableVector( tot_dim, 0 );
+            variableVector temp_sot( tot_dim, 0 );
+            variableVector temp_tot( tot_dim, 0 );
+
+            for ( unsigned int Db = 0; Db < dim; Db++ ){
+
+                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        temp_sot[ dim * Db + Kb ] += plasticMicroVelocityGradient[ dim * Db + Mb ]
+                                                   * inverseElasticPsi[ dim * Mb + Kb ];
+
+                        for ( unsigned int Cb = 0; Cb < dim; Cb++ ){
+
+                            temp_tot[ dim * dim * Db + dim * Kb + Cb ] -= inverseElasticPsi[ dim * Db + Mb ] * elasticGamma[ dim * dim * Mb + dim * Kb + Cb ];
+
+                        }
+
+                    }
+
+                }
+
+            }
 
             for ( unsigned int Db = 0; Db < dim; Db++ ){
 
@@ -1312,17 +1301,9 @@ namespace tardigradeHydra{
 
                         for ( unsigned int Cb = 0; Cb < dim; Cb++ ){
 
-                            for ( unsigned int Fb = 0; Fb < dim; Fb++ ){
-
-                                skewTerm[ dim * dim * Db + dim * Mb + Kb ]
-                                    += plasticMicroVelocityGradient[ dim * Db + Cb ]
-                                     * inverseElasticPsi[ dim * Cb + Fb ]
-                                     * elasticGamma[ dim * dim * Fb + dim * Mb + Kb ]
-                                     - plasticMicroVelocityGradient[ dim * Cb + Mb ]
-                                     * inverseElasticPsi[ dim * Db + Fb ]
-                                     * elasticGamma[ dim * dim * Fb + dim * Cb + Kb ];
-
-                            }
+                            skewTerm[ dim * dim * Db + dim * Mb + Kb ]
+                                += temp_sot[ dim * Db + Cb ] * elasticGamma[ dim * dim * Cb + dim * Mb + Kb ]
+                                 + plasticMicroVelocityGradient[ dim * Cb + Mb ] * temp_tot[ dim * dim * Db + dim * Cb + Kb ];
 
                         }
 
