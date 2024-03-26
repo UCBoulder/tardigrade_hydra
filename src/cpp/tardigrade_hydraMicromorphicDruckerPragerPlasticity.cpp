@@ -1539,10 +1539,6 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMicroGradientVelocityGradient.size() == tot_dim, "The previous plastic micro gradient velocity gradient must be 3D" );
 
-            //Compute the required identity terms
-            constantVector eye( sot_dim, 0 );
-            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
-
             //Assemble the A term ( forcing term ) and the fourth order A term
             variableVector DtAtilde( tot_dim, 0 );
             variableVector previousFourthA( fot_dim, 0 );
@@ -1597,10 +1593,8 @@ namespace tardigradeHydra{
                               RHS[ dim * dim * Db + dim * B + Kb ]
                                  += Dt * ( 1. - alpha ) * previousFourthA[ dim * dim * dim * Db + dim * dim * Bb + dim * Kb + Lb ]
                                   * previousPlasticMicroGradient[ dim * dim * Bb + dim * B + Lb ];
-                              for ( unsigned int Sb = 0; Sb < dim; Sb++ ){
-                                  LHS[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Lb + dim * Bb + Sb ]
-                                      -= Dt * alpha * currentFourthA[ dim * dim * dim * Db + dim * dim * Lb + dim * Kb + Sb ] * eye[ dim * B + Bb ];
-                              }
+                              LHS[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Lb + dim * B + Bb ]
+                                  -= Dt * alpha * currentFourthA[ dim * dim * dim * Db + dim * dim * Lb + dim * Kb + Bb ];
                            }
                         }
                     }
@@ -1611,11 +1605,7 @@ namespace tardigradeHydra{
             unsigned int rank;
             currentPlasticMicroGradient = tardigradeVectorTools::solveLinearSystem( LHS, RHS, RHS.size( ), RHS.size( ), rank );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( rank != RHS.size() ){
-                    throw std::runtime_error( "The left hand side matrix is not full rank" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( rank == RHS.size(), "The left hand side matrix is not full rank" );
 
         }
 
@@ -1702,19 +1692,18 @@ namespace tardigradeHydra{
             for ( unsigned int Db = 0; Db < dim; Db++ ){
                 for ( unsigned int B = 0; B < dim; B++ ){
                     for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                        negdRdCurrentDtAtilde[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Db + dim * B + Kb ] += 1;
+
                         for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
+                            dCurrentDTAtildedPlasticMicroDeformation[ dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Rb + B ]
+                                += Dt * alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ];
+
+                            dCurrentDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Db + dim * Rb + Kb ]
+                                += Dt * alpha * currentPlasticMicroDeformation[ dim * Rb + B ];
+
                             for ( unsigned int S = 0; S < dim; S++ ){
-                                dCurrentDTAtildedPlasticMicroDeformation[ dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Rb + S ]
-                                    += Dt * alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ]
-                                     * eye[ dim * B + S ];
 
                                 for ( unsigned int Tb = 0; Tb < dim; Tb++ ){
-                                    negdRdCurrentDtAtilde[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Rb + dim * S + Tb ]
-                                        += eye[ dim * Db + Rb ] * eye[ dim * B + S ] * eye[ dim * Kb + Tb ];
-
-                                    dCurrentDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Rb + dim * S + Tb ]
-                                        += Dt * alpha * eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ] * currentPlasticMicroDeformation[ dim * S + B ];
-
                                     dCurrentFourthAdMacroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * B + dim * sot_dim * Kb + sot_dim * Rb + dim * S + Tb ]
                                         -= eye[ dim * Rb + S ] * eye[ dim * Kb + Tb ] * eye[ dim * Db + B ];
 
