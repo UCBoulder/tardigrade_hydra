@@ -1864,13 +1864,13 @@ namespace tardigradeHydra{
                             dRHSdPreviousPlasticMicroVelocityGradient[ dim * dim * dim * dim * Db + dim * dim * dim * B + dim * dim * Kb + dim * Db + Rb ]
                                 += Dt * ( 1. - alpha ) * previousPlasticMicroGradient[ dim * dim * Rb + dim * B + Kb ];
 
+                            dCurrentDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Db + dim * Rb + Kb ]
+                                += Dt * alpha * currentPlasticMicroDeformation[ dim * Rb + B ];
+
+                            dPreviousDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Db + dim * Rb + Kb ]
+                                += Dt * ( 1. - alpha ) * previousPlasticMicroDeformation[ dim * Rb + B ];
+
                             for ( unsigned int S = 0; S < dim; S++ ){
-
-                                dCurrentDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Rb + dim * S + Kb ]
-                                    += Dt * alpha * eye[ dim * Db + Rb ] * currentPlasticMicroDeformation[ dim * S + B ];
-
-                                dPreviousDTAtildedPlasticMicroGradientVelocityGradient[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Rb + dim * S + Kb ]
-                                    += Dt * ( 1. - alpha ) * eye[ dim * Db + Rb ] * previousPlasticMicroDeformation[ dim * S + B ];
 
                                 dCurrentFourthAdMicroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * B + dim * sot_dim * Kb + sot_dim * Rb + dim * S + B ]
                                     += eye[ dim * Db + S ] * eye[ dim * Kb + Rb ];
