@@ -1663,10 +1663,6 @@ namespace tardigradeHydra{
             constexpr unsigned int tot_dim = sot_dim * dim;
             constexpr unsigned int fot_dim = tot_dim * dim;
 
-            //Compute the required identity terms
-            constantVector eye( sot_dim, 0 );
-            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
-
             //Compute the new currentPlasticMicroGradient
             variableVector LHS;
             TARDIGRADE_ERROR_TOOLS_CATCH(
@@ -1707,14 +1703,8 @@ namespace tardigradeHydra{
 
                             for ( unsigned int S = 0; S < dim; S++ ){
 
-                                for ( unsigned int Tb = 0; Tb < dim; Tb++ ){
-                                    for ( unsigned int Ub = 0; Ub < dim; Ub++ ){
-                                        negdRdCurrentFourthA[ dim * dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * dim * B + dim * dim * dim * dim * Kb + dim * dim * dim * Rb + dim * dim * S + dim * Tb + Ub ]
-                                            += Dt * alpha * eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ]
-                                             * currentPlasticMicroGradient[ dim * dim * S + dim * B + Ub ];
-
-                                    }
-                                }
+                                negdRdCurrentFourthA[ dim * dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * dim * B + dim * dim * dim * dim * Kb + dim * dim * dim * Db + dim * dim * Rb + dim * Kb + S ]
+                                    += Dt * alpha * currentPlasticMicroGradient[ dim * dim * Rb + dim * B + S ];
                             }
                         }
                     }
@@ -1859,17 +1849,17 @@ namespace tardigradeHydra{
                 for ( unsigned int B = 0; B < dim; B++ ){
                     for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
                         for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
+
+                            dCurrentDTAtildedPlasticMicroDeformation[ dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Rb + B ]
+                                += Dt * alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ];
+
+                            dPreviousDTAtildedPlasticMicroDeformation[ dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Rb + B ]
+                                += Dt * ( 1. - alpha ) * previousPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ];
+
+                            dRHSdPreviousPlasticMacroVelocityGradient[ dim * dim * dim * dim * Db + dim * dim * dim * B + dim * dim * Kb + dim * Rb + Kb ]
+                                -= Dt * ( 1. - alpha ) * previousPlasticMicroGradient[ dim * dim * Db + dim * B + Rb ];
+
                             for ( unsigned int S = 0; S < dim; S++ ){
-                                dCurrentDTAtildedPlasticMicroDeformation[ dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Rb + S ]
-                                    += Dt * alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ]
-                                     * eye[ dim * B + S ];
-
-                                dPreviousDTAtildedPlasticMicroDeformation[ dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Rb + S ]
-                                    += Dt * ( 1. - alpha ) * previousPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ]
-                                     * eye[ dim * B + S ];
-
-                                dRHSdPreviousPlasticMacroVelocityGradient[ dim * dim * dim * dim * Db + dim * dim * dim * B + dim * dim * Kb + dim * Rb + S ]
-                                    -= Dt * ( 1. - alpha ) * eye[ dim * Kb +  S ] * previousPlasticMicroGradient[ dim * dim * Db + dim * B + Rb ];
 
                                 dRHSdPreviousPlasticMicroVelocityGradient[ dim * dim * dim * dim * Db + dim * dim * dim * B + dim * dim * Kb + dim * Rb + S ]
                                     += Dt * ( 1. - alpha ) * eye[ dim * Db + Rb ] * previousPlasticMicroGradient[ dim * dim * S + dim * B + Kb ];
