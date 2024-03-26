@@ -1694,6 +1694,8 @@ namespace tardigradeHydra{
                     for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
                         negdRdCurrentDtAtilde[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Db + dim * B + Kb ] += 1;
 
+                        dCurrentFourthAdMacroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Kb + B ] -= 1;
+
                         for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
                             dCurrentDTAtildedPlasticMicroDeformation[ dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Rb + B ]
                                 += Dt * alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Rb + Kb ];
@@ -1704,9 +1706,6 @@ namespace tardigradeHydra{
                             for ( unsigned int S = 0; S < dim; S++ ){
 
                                 for ( unsigned int Tb = 0; Tb < dim; Tb++ ){
-                                    dCurrentFourthAdMacroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * B + dim * sot_dim * Kb + sot_dim * Rb + dim * S + Tb ]
-                                        -= eye[ dim * Rb + S ] * eye[ dim * Kb + Tb ] * eye[ dim * Db + B ];
-
                                     dCurrentFourthAdMicroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * B + dim * sot_dim * Kb + sot_dim * Rb + dim * S + Tb ]
                                         += eye[ dim * Db + S ] * eye[ dim * B + Tb ] * eye[ dim * Kb + Rb ];
 
