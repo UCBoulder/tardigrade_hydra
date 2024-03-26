@@ -936,88 +936,55 @@ namespace tardigradeHydra{
 
             //NOTE: I'm making the second inverse elastic Psi be the transpose of what was done previously.
             //      I think the way it was is a bug since it isn't consistent with the form in my dissertation.
+            variableVector temp_sot( sot_dim, 0 );
+
             for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
 
                 for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
 
                     for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
 
-                        for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
+                        plasticMicroVelocityGradient[ dim * Bb + Kb ] += microGamma * inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Kb + Lb ];
 
-                            for ( unsigned int Eb = 0; Eb < dim; Eb++ ){
-
-                                plasticMicroVelocityGradient[ dim * Bb + Kb ]
-                                    += microGamma
-                                     * inverseElasticPsi[ dim * Bb + Lb ]
-                                     * microFlowDirection[ dim * Eb + Lb ]
-                                     * inverseElasticPsi[ dim * Nb + Eb ]
-                                     * elasticMicroRightCauchyGreen[ dim * Nb + Kb ];
-
-                            }
-                        }
                     }
+
                 }
+
             }
 
-            std::cout << "plasticMicroVelocityGradient:\n"; tardigradeVectorTools::print( plasticMicroVelocityGradient );
+            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
 
-//
-//            plasticMicroVelocityGradient = variableVector( sot_dim, 0 );
-//            variableVector temp_sot( sot_dim, 0 );
-//
-//            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-//
-//                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-//
-//                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-//
-//                        temp_sot[ dim * Bb + Kb ] += microGamma * inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Kb + Lb ];
-//
-//                    }
-//
-//                }
-//
-//            }
-//
-//            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-//
-//                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-//
-//                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-//
-//                        plasticMicroVelocityGradient[ dim * Bb + Kb ]
-//                            += temp_sot[ dim * Bb + Lb ] * inverseElasticPsi[ dim * Kb + Lb ];
-//
-//                    }
-//
-//                }
-//
-//            }
-//
-//            std::copy( plasticMicroVelocityGradient.begin( ),
-//                       plasticMicroVelocityGradient.end( ),
-//                       temp_sot.begin( ) );
-//
-//            std::fill( plasticMicroVelocityGradient.begin( ),
-//                       plasticMicroVelocityGradient.end( ),
-//                       0 );
-//
-//            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-//
-//                for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
-//
-//                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-//
-//                        plasticMicroVelocityGradient[ dim * Bb + Kb ]
-//                            += temp_sot[ dim * Bb + Lb ] * elasticMicroRightCauchyGreen[ dim * Kb + Lb ];
-//
-//                    }
-//
-//                }
-//
-//            }
+                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
 
-            throw std::runtime_error("derp");
+                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+
+                        temp_sot[ dim * Bb + Kb ]
+                            += plasticMicroVelocityGradient[ dim * Bb + Lb ] * inverseElasticPsi[ dim * Kb + Lb ];
+
+                    }
+
+                }
+
+            }
+
+            std::fill( plasticMicroVelocityGradient.begin( ),
+                       plasticMicroVelocityGradient.end( ),
+                       0 );
+
+            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+
+                for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        plasticMicroVelocityGradient[ dim * Bb + Kb ]
+                            += temp_sot[ dim * Bb + Lb ] * elasticMicroRightCauchyGreen[ dim * Lb + Kb ];
+
+                    }
+
+                }
+
+            }
 
         }
 
@@ -1046,33 +1013,20 @@ namespace tardigradeHydra{
 
             //Assume 3D
             constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( elasticMicroRightCauchyGreen.size() != dim * dim ){
-                    throw std::runtime_error( "The elastic micro right Cauchy-Green deformation tensor is not 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( elasticMicroRightCauchyGreen.size() == dim * dim, "The elastic micro right Cauchy-Green deformation tensor is not 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( elasticPsi.size() != dim * dim ){
-                    throw std::runtime_error( "The elastic micro deformation tensor Psi is not 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( elasticPsi.size() == dim * dim, "The elastic micro deformation tensor Psi is not 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( inverseElasticPsi.size() != dim * dim ){
-                    throw std::runtime_error( "The inverse of the elastic micro deformation tensor Psi is not 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( inverseElasticPsi.size() == dim * dim, "The inverse of the elastic micro deformation tensor Psi is not 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( microFlowDirection.size() != dim * dim ){
-                    throw std::runtime_error( "The micro flow direction of the elastic micro plastic flow direction is not 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( microFlowDirection.size() == dim * dim, "The micro flow direction of the elastic micro plastic flow direction is not 3D" );
 
             plasticMicroVelocityGradient = variableVector( dim * dim, 0 );
             dPlasticMicroLdMicroGamma = variableVector( dim * dim, 0 );
+
+            variableVector temp_sot( sot_dim, 0 );
 
             for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
 
@@ -1080,27 +1034,49 @@ namespace tardigradeHydra{
 
                     for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
 
-                        for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
-
-                            for ( unsigned int Eb = 0; Eb < dim; Eb++ ){
-
-                                dPlasticMicroLdMicroGamma[ dim * Bb + Kb ]
-                                    += inverseElasticPsi[ dim * Bb + Lb ]
-                                     * microFlowDirection[ dim * Eb + Lb ]
-                                     * inverseElasticPsi[ dim * Nb + Eb ]
-                                     * elasticMicroRightCauchyGreen[ dim * Nb + Kb ];
-
-                            }
-
-                        }
+                        dPlasticMicroLdMicroGamma[ dim * Bb + Kb ] += inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Kb + Lb ];
 
                     }
-
-                    plasticMicroVelocityGradient[ dim * Bb + Kb ] = microGamma * dPlasticMicroLdMicroGamma[ dim * Bb + Kb ];
 
                 }
 
             }
+
+            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+
+                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+
+                        temp_sot[ dim * Bb + Kb ]
+                            += dPlasticMicroLdMicroGamma[ dim * Bb + Lb ] * inverseElasticPsi[ dim * Kb + Lb ];
+
+                    }
+
+                }
+
+            }
+
+            std::fill( dPlasticMicroLdMicroGamma.begin( ),
+                       dPlasticMicroLdMicroGamma.end( ),
+                       0 );
+
+            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+
+                for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        dPlasticMicroLdMicroGamma[ dim * Bb + Kb ]
+                            += temp_sot[ dim * Bb + Lb ] * elasticMicroRightCauchyGreen[ dim * Lb + Kb ];
+
+                    }
+
+                }
+
+            }
+
+            plasticMicroVelocityGradient = microGamma * dPlasticMicroLdMicroGamma;
 
         }
 
@@ -1139,6 +1115,7 @@ namespace tardigradeHydra{
             //Assume 3D
             constexpr unsigned int dim = 3;
             constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int fot_dim = sot_dim * sot_dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
 
@@ -1154,6 +1131,44 @@ namespace tardigradeHydra{
             dPlasticMicroLdElasticPsi = variableVector( sot_dim * sot_dim, 0 );
 
             dPlasticMicroLdMicroFlowDirection = variableVector( sot_dim * sot_dim, 0 );
+
+            variableVector temp_sot1( sot_dim, 0 );
+
+            variableVector temp_sot1a( sot_dim, 0 );
+
+            variableVector temp_sot1b( sot_dim, 0 );
+
+            for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
+
+                for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        temp_sot1[ dim * Bb + Kb ]  -= microGamma * inverseElasticPsi[ dim * Ob + Kb ] * elasticMicroRightCauchyGreen[ dim * Ob + Bb ];
+
+                        temp_sot1a[ dim * Bb + Kb ] += microFlowDirection[ dim * Ob + Bb ] * inverseElasticPsi[ dim * Kb + Ob ];
+
+                    }
+
+                }
+
+            }
+
+            for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
+
+                for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        temp_sot1b[ dim * Bb + Kb ] += inverseElasticPsi[ dim * Bb + Ob ] * temp_sot1a[ dim * Ob + Kb ]
+
+                    }
+
+                }
+
+            }
+
+            variableVector temp_fot1( fot_dim, 0 );
 
             for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
 
@@ -1177,17 +1192,9 @@ namespace tardigradeHydra{
                                     += microGamma * inverseElasticPsi[ dim * Bb + Pb ] * microFlowDirection[ dim * Lb + Pb ]
                                      * inverseElasticPsi[ dim * Ob + Lb ];
 
-                                for ( unsigned int Eb = 0; Eb < dim; Eb++ ){
-
-                                    for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
-
-                                        dPlasticMicroLdElasticPsi[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
-                                            -= microGamma * inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Eb + Lb ]
-                                             * inverseElasticPsi[ dim * Nb + Ob ] * inverseElasticPsi[ dim * Pb + Eb ]
-                                             * elasticMicroRightCauchyGreen[ dim * Nb + Kb ];
-                                    }
-
-                                }
+                                dPlasticMicroLdElasticPsi[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
+                                    += inverseElasticPsi[ dim * Bb + Lb ]
+                                     * temp_sot1[ dim * Kb + Ob ] * temp_sot1a[ dim * Lb + Pb ];
 
                             }
 
