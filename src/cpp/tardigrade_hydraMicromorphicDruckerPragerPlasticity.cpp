@@ -1592,7 +1592,9 @@ namespace tardigradeHydra{
                         for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
                            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
                               RHS[ dim * dim * Db + dim * B + Kb ]
-                                 += ( eye[ dim * Db + Bb ] * eye[ dim * Kb + Lb ] + Dt * ( 1. - alpha ) * previousFourthA[ dim * dim * dim * Db + dim * dim * Bb + dim * Kb + Lb ] )
+                                 += eye[ dim * Db + Bb ] * eye[ dim * Kb + Lb ] * previousPlasticMicroGradient[ dim * dim * Bb + dim * B + Lb ];
+                              RHS[ dim * dim * Db + dim * B + Kb ]
+                                 += Dt * ( 1. - alpha ) * previousFourthA[ dim * dim * dim * Db + dim * dim * Bb + dim * Kb + Lb ]
                                   * previousPlasticMicroGradient[ dim * dim * Bb + dim * B + Lb ];
                               for ( unsigned int Sb = 0; Sb < dim; Sb++ ){
                                   LHS[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Lb + dim * Bb + Sb ]
