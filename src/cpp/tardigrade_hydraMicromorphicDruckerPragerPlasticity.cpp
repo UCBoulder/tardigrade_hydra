@@ -1850,6 +1850,10 @@ namespace tardigradeHydra{
                     for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
                         negdRdCurrentDtAtilde[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Db + dim * B + Kb ] += 1;
 
+                        dCurrentFourthAdMicroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * B + dim * sot_dim * Kb + sot_dim * Kb + dim * Db + B ] += 1;
+
+                        dCurrentFourthAdMacroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Kb + B ] -= 1;
+
                         for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
 
                             dCurrentDTAtildedPlasticMicroDeformation[ dim * dim * sot_dim * Db + dim * sot_dim * B + sot_dim * Kb + dim * Rb + B ]
@@ -1872,23 +1876,14 @@ namespace tardigradeHydra{
 
                             for ( unsigned int S = 0; S < dim; S++ ){
 
-                                dCurrentFourthAdMicroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * B + dim * sot_dim * Kb + sot_dim * Rb + dim * S + B ]
-                                    += eye[ dim * Db + S ] * eye[ dim * Kb + Rb ];
-
-                                dCurrentFourthAdMacroVelocityGradient[ dim * dim * dim * sot_dim * Db + dim * dim * sot_dim * B + dim * sot_dim * Kb + sot_dim * Rb + dim * S + Kb ]
-                                    -= eye[ dim * Rb + S ] * eye[ dim * Db + B ];
+                                negdRdCurrentFourthA[ dim * dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * dim * B + dim * dim * dim * dim * Kb + dim * dim * dim * Db + dim * dim * Rb + dim * Kb + S ]
+                                    += Dt * alpha * currentPlasticMicroGradient[ dim * dim * Rb + dim * B + S ];
 
                                 for ( unsigned int Tb = 0; Tb < dim; Tb++ ){
                                     dRHSdPreviousPlasticMicroGradient[ dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * B + dim * dim * dim * Kb + dim * dim * Rb + dim * S + Tb ]
-                                        += ( eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ] + Dt * ( 1 - alpha ) * ( previousPlasticMicroVelocityGradient[ dim * Db + Rb ] * eye[ dim * Kb + Tb ]
-                                                                                                              -   previousPlasticMacroVelocityGradient[ dim * Tb + Kb ] * eye[ dim * Db + Rb ] ) ) * eye[ dim * B + S ];
+                                        += ( eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ] * eye[ dim * B + S ] + Dt * ( 1 - alpha ) * ( previousPlasticMicroVelocityGradient[ dim * Db + Rb ] * eye[ dim * Kb + Tb ]
+                                                                                                              -   previousPlasticMacroVelocityGradient[ dim * Tb + Kb ] * eye[ dim * Db + Rb ] ) * eye[ dim * B + S ] );
 
-                                    for ( unsigned int Ub = 0; Ub < dim; Ub++ ){
-                                        negdRdCurrentFourthA[ dim * dim * dim * dim * dim * dim * Db + dim * dim * dim * dim * dim * B + dim * dim * dim * dim * Kb + dim * dim * dim * Rb + dim * dim * S + dim * Tb + Ub ]
-                                            += Dt * alpha * eye[ dim * Db + Rb ] * eye[ dim * Kb + Tb ]
-                                             * currentPlasticMicroGradient[ dim * dim * S + dim * B + Ub ];
-
-                                    }
                                 }
                             }
                         }
