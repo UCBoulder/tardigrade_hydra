@@ -567,33 +567,67 @@ namespace tardigradeHydra{
     
             //Construct the second-order jacobians
             d2FdStress2 = variableVector( dim * tot_dim * tot_dim, 0 );
-            d2FdStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, d2DevStressdStressdPrecedingF, dim, tot_dim, tot_dim, tot_dim * sot_dim )
-                                  + BAngle * d2PressuredStressdPrecedingF;
+            d2FdStressdPrecedingF = variableVector( dim * tot_dim * sot_dim, 0 );
 
-            for ( unsigned int K = 0; K < 3; K++ ){ //TODO: This should be able to be reduced into a matrix multiplication
+            floatVector temp_siot1( dim * tot_dim * sot_dim, 0 );
+            floatVector temp_seot1( dim * tot_dim * tot_dim, 0 );
+
+            for ( unsigned int K = 0; K < 3; K++ ){
                 for ( unsigned int L = 0; L < 3; L++ ){
                     for ( unsigned int M = 0; M < 3; M++ ){
                         for ( unsigned int N = 0; N < 3; N++ ){
-                            for ( unsigned int O = 0; O < 3; O++ ){
-                                for ( unsigned int P = 0; P < 3; P++ ){
-                                    for ( unsigned int Q = 0; Q < 3; Q++ ){
-                                        for ( unsigned int A = 0; A < 3; A++ ){
-                                            for ( unsigned int B = 0; B < 3; B++ ){
-                                                for ( unsigned int C = 0; C < 3; C++ ){
-                                                    for ( unsigned int D = 0; D < 3; D++ ){
-                                                        for ( unsigned int E = 0; E < 3; E++ ){
-                                                            d2FdStressdPrecedingF[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * O + P ]
-                                                                += d2NormDevStressdDevStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * Q + dim * dim * dim * dim * A + dim * dim * dim * B + dim * dim * C + dim * D + E ]
-                                                                 * dDevStressdStress[ dim * dim * dim * dim * dim * Q + dim * dim * dim * dim * A + dim * dim * dim * B + dim * dim * L + dim * M + N ]
-                                                                 * dDevStressdPrecedingF[ dim * dim * dim * dim * C + dim * dim * dim * D + dim * dim * E + dim * O + P ];
-                                                            for ( unsigned int F = 0; F < 3; F++ ){
-                                                                d2FdStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * O + dim * P + Q ]
-                                                                    += d2NormDevStressdDevStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * D + dim * E + F ]
-                                                                     * dDevStressdStress[ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * L + dim * M + N ]
-                                                                     * dDevStressdStress[ dim * dim * dim * dim * dim * D + dim * dim * dim * dim * E + dim * dim * dim * F + dim * dim * O + dim * P + Q ];
-                                                            }
-                                                        }
-                                                    }
+                            for ( unsigned int A = 0; A < 3; A++ ){
+                                for ( unsigned int B = 0; B < 3; B++ ){
+                                    for ( unsigned int C = 0; C < 3; C++ ){
+                                        for ( unsigned int O = 0; O < 3; O++ ){
+                                            for ( unsigned int P = 0; P < 3; P++ ){
+                                                temp_siot1[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * O + P ]
+                                                    += d2NormDevStressdDevStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * A + dim * B + C ]
+                                                     * dDevStressdPrecedingF[ dim * dim * dim * dim * A + dim * dim * dim * B + dim * dim * C + dim * O + P ];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+            for ( unsigned int K = 0; K < 3; K++ ){
+                for ( unsigned int L = 0; L < 3; L++ ){
+                    for ( unsigned int M = 0; M < 3; M++ ){
+                        for ( unsigned int N = 0; N < 3; N++ ){
+                           for ( unsigned int A = 0; A < 3; A++ ){
+                               for ( unsigned int B = 0; B < 3; B++ ){
+                                   for ( unsigned int C = 0; C < 3; C++ ){
+                                       for ( unsigned int O = 0; O < 3; O++ ){
+                                           for ( unsigned int P = 0; P < 3; P++ ){
+                                                d2FdStressdPrecedingF[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * O + P ]
+                                                    += temp_siot1[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * A + dim * dim * dim * B + dim * dim * C + dim * O + P ]
+                                                     * dDevStressdStress[ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * L + dim * M + N ];
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            for ( unsigned int K = 0; K < 3; K++ ){
+                for ( unsigned int A = 0; A < 3; A++ ){
+                    for ( unsigned int B = 0; B < 3; B++ ){
+                        for ( unsigned int C = 0; C < 3; C++ ){
+                            for ( unsigned int L = 0; L < 3; L++ ){
+                                for ( unsigned int M = 0; M < 3; M++ ){
+                                    for ( unsigned int N = 0; N < 3; N++ ){
+                                        for ( unsigned int O = 0; O < 3; O++ ){
+                                            for ( unsigned int P = 0; P < 3; P++ ){
+                                                for ( unsigned int Q = 0; Q < 3; Q++ ){
+                                                    temp_seot1[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * O + dim * P + Q ]
+                                                        += d2NormDevStressdDevStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * O + dim * P + Q ]
+                                                         * dDevStressdStress[ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * L + dim * M + N ];
                                                 }
                                             }
                                         }
@@ -604,6 +638,33 @@ namespace tardigradeHydra{
                     }
                 }
             }
+
+            for ( unsigned int K = 0; K < 3; K++ ){
+                for ( unsigned int L = 0; L < 3; L++ ){
+                    for ( unsigned int M = 0; M < 3; M++ ){
+                        for ( unsigned int N = 0; N < 3; N++ ){
+                            for ( unsigned int A = 0; A < 3; A++ ){
+                                for ( unsigned int B = 0; B < 3; B++ ){
+                                    for ( unsigned int C = 0; C < 3; C++ ){
+                                        for ( unsigned int O = 0; O < 3; O++ ){
+                                            for ( unsigned int P = 0; P < 3; P++ ){
+                                                for ( unsigned int Q = 0; Q < 3; Q++ ){
+                                                    d2FdStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * O + dim * P + Q ]
+                                                        += temp_seot1[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * A + dim * B + C ]
+                                                         * dDevStressdStress[ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * O + dim * P + Q ];
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+
+            d2FdStressdPrecedingF += tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, d2DevStressdStressdPrecedingF, dim, tot_dim, tot_dim, tot_dim * sot_dim )
+                                   + BAngle * d2PressuredStressdPrecedingF;
 
         }
 
