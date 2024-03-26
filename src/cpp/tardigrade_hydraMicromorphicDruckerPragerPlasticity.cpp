@@ -449,8 +449,19 @@ namespace tardigradeHydra{
                                                        rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                                                        dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
 
-            floatVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, tot_dim, sot_dim, sot_dim, sot_dim );
-            floatVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG,  dRCGdPrecedingF, dim, sot_dim, sot_dim, sot_dim );
+            floatVector dDevStressdPrecedingF( tot_dim * sot_dim, 0. );
+            floatVector dPressuredPrecedingF( dim * sot_dim, 0 );
+
+            Eigen::Map< Eigen::Matrix< floatType,  9, 9, Eigen::RowMajor > > dRCGdPrecedingF_mat( dRCGdPrecedingF.data( ), sot_dim, sot_dim );
+
+            Eigen::Map< Eigen::Matrix< floatType, 27, 9, Eigen::RowMajor > > dDevStressdRCG_mat( dDevStressdRCG.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, 27, 9, Eigen::RowMajor > > dDevStressdPrecedingF_mat( dDevStressdPrecedingF.data( ), tot_dim, sot_dim );
+
+            Eigen::Map< Eigen::Matrix< floatType,  3, 9, Eigen::RowMajor > > dPressuredRCG_mat( dPressuredRCG.data( ), dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType,  3, 9, Eigen::RowMajor > > dPressuredPrecedingF_mat( dPressuredPrecedingF.data( ), dim, sot_dim );
+
+            dDevStressdPrecedingF_mat = ( dDevStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
+            dPressuredPrecedingF_mat = ( dPressuredRCG_mat * dRCGdPrecedingF_mat ).eval( );
 
             //Compute the l2norm of the deviatoric stress
             variableVector normDevStress;
