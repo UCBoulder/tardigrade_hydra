@@ -1589,16 +1589,17 @@ namespace tardigradeHydra{
             for ( unsigned int Db = 0; Db < dim; Db++ ){
                 for ( unsigned int B = 0; B < dim; B++ ){
                     for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+                        RHS[ dim * dim * Db + dim * B + Kb ]
+                           += previousPlasticMicroGradient[ dim * dim * Db + dim * B + Kb ];
+                        LHS[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Db + dim * B + Kb ] += 1;
                         for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
                            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
-                              RHS[ dim * dim * Db + dim * B + Kb ]
-                                 += eye[ dim * Db + Bb ] * eye[ dim * Kb + Lb ] * previousPlasticMicroGradient[ dim * dim * Bb + dim * B + Lb ];
                               RHS[ dim * dim * Db + dim * B + Kb ]
                                  += Dt * ( 1. - alpha ) * previousFourthA[ dim * dim * dim * Db + dim * dim * Bb + dim * Kb + Lb ]
                                   * previousPlasticMicroGradient[ dim * dim * Bb + dim * B + Lb ];
                               for ( unsigned int Sb = 0; Sb < dim; Sb++ ){
                                   LHS[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Lb + dim * Bb + Sb ]
-                                      = ( eye[ dim * Db + Lb ] * eye[ dim * Kb + Sb ] - Dt * alpha * currentFourthA[ dim * dim * dim * Db + dim * dim * Lb + dim * Kb + Sb ] ) * eye[ dim * B + Bb ];
+                                      -= Dt * alpha * currentFourthA[ dim * dim * dim * Db + dim * dim * Lb + dim * Kb + Sb ] * eye[ dim * B + Bb ];
                               }
                            }
                         }
