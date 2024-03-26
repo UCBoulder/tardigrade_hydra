@@ -1160,7 +1160,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
 
-                        temp_sot1b[ dim * Bb + Kb ] += inverseElasticPsi[ dim * Bb + Ob ] * temp_sot1a[ dim * Ob + Kb ]
+                        temp_sot1b[ dim * Bb + Kb ] += inverseElasticPsi[ dim * Bb + Ob ] * temp_sot1a[ dim * Ob + Kb ];
 
                     }
 
@@ -1179,7 +1179,8 @@ namespace tardigradeHydra{
                         for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
 
                             dPlasticMicroLdElasticPsi[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
-                                -= inverseElasticPsi[ dim * Bb + Ob ] * plasticMicroVelocityGradient[ dim * Pb + Kb ];
+                                += temp_sot1[ dim * Kb + Ob ] * temp_sot1b[ dim * Bb + Pb ]
+                                 - inverseElasticPsi[ dim * Bb + Ob ] * plasticMicroVelocityGradient[ dim * Pb + Kb ];
 
                             for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
 
@@ -1191,10 +1192,6 @@ namespace tardigradeHydra{
                                 dPlasticMicroLdElasticMicroRCG[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Kb ]
                                     += microGamma * inverseElasticPsi[ dim * Bb + Pb ] * microFlowDirection[ dim * Lb + Pb ]
                                      * inverseElasticPsi[ dim * Ob + Lb ];
-
-                                dPlasticMicroLdElasticPsi[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
-                                    += inverseElasticPsi[ dim * Bb + Lb ]
-                                     * temp_sot1[ dim * Kb + Ob ] * temp_sot1a[ dim * Lb + Pb ];
 
                             }
 
