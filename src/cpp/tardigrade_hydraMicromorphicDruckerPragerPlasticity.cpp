@@ -1549,27 +1549,37 @@ namespace tardigradeHydra{
             variableVector currentFourthA( fot_dim, 0 );
 
             for ( unsigned int Db = 0; Db < dim; Db++ ){
+
                 for ( unsigned int B = 0; B < dim; B++ ){
+
                     for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        previousFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Kb ]
+                            += previousPlasticMicroVelocityGradient[ dim * Db + B ];
+
+                        previousFourthA[ dim * dim * dim * Db + dim * dim * Db + dim * B + Kb ]
+                            -= previousPlasticMacroVelocityGradient[ dim * Kb + B ];
+
+                        currentFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Kb ]
+                            += currentPlasticMicroVelocityGradient[ dim * Db + B ];
+
+                        currentFourthA[ dim * dim * dim * Db + dim * dim * Db + dim * B + Kb ]
+                            -= currentPlasticMacroVelocityGradient[ dim * Kb + B ];
+
                         for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+
                             DtAtilde[ dim * dim * Db + dim * B + Kb ] += Dt
                                 * ( ( 1 - alpha ) * previousPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Lb + Kb ]
                                           *  previousPlasticMicroDeformation[ dim * Lb + B ]
                                 + alpha * currentPlasticMicroGradientVelocityGradient[ dim * dim * Db + dim * Lb + Kb ]
                                         * currentPlasticMicroDeformation[ dim * Lb + B ] );
 
-                            previousFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Lb ]
-                                += previousPlasticMicroVelocityGradient[ dim * Db + B ] * eye[ dim * Kb + Lb ];
-                            previousFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Lb ]
-                                -= previousPlasticMacroVelocityGradient[ dim * Lb + Kb ] * eye[ dim * Db + B ];
-
-                            currentFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Lb ]
-                                += currentPlasticMicroVelocityGradient[ dim * Db + B ] * eye[ dim * Kb + Lb ];
-                            currentFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Lb ]
-                                -= currentPlasticMacroVelocityGradient[ dim * Lb + Kb ] * eye[ dim * Db + B ];
                         }
+
                     }
+
                 }
+
             }
 
             //Assemble the right-hand side and left-hand side term
