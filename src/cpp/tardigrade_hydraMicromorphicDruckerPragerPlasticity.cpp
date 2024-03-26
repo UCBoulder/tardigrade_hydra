@@ -1284,9 +1284,6 @@ namespace tardigradeHydra{
 
             )
 
-            constantVector eye( dim * dim, 0 );
-            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
-
             dPlasticMicroGradientLdPlasticMicroL = variableVector( tot_dim * sot_dim, 0 );
             dPlasticMicroGradientLdMicroGradientGamma = variableVector( tot_dim * dim, 0 );
 
@@ -1304,15 +1301,11 @@ namespace tardigradeHydra{
                                     += inverseElasticPsi[ dim * Lb + Pb ]
                                      * microGradientFlowDirection[ dim * dim * dim * Ob + dim * dim * Kb + dim * Pb + Mb ];
 
-                                for ( unsigned int Qb = 0; Qb < dim; Qb++ ){
+                                dPlasticMicroGradientLdPlasticMicroL[ dim * dim * sot_dim * Lb + dim * sot_dim * Mb + sot_dim * Kb + dim * Lb + Ob ]
+                                    += inverseElasticPsi[ dim * Ob + Pb ] * elasticGamma[ dim * dim * Pb + dim * Mb + Kb ];
 
-                                    dPlasticMicroGradientLdPlasticMicroL[ dim * dim * sot_dim * Lb + dim * sot_dim * Mb + sot_dim * Kb + dim * Ob + Pb ]
-                                        += eye[ dim * Lb + Ob ] * inverseElasticPsi[ dim * Pb + Qb ]
-                                         * elasticGamma[ dim * dim * Qb + dim * Mb + Kb ]
-                                         - eye[ dim * Mb + Pb ] * inverseElasticPsi[ dim * Lb + Qb ]
-                                         * elasticGamma[ dim * dim * Qb + dim * Ob + Kb ];
-
-                                }
+                                dPlasticMicroGradientLdPlasticMicroL[ dim * dim * sot_dim * Lb + dim * sot_dim * Mb + sot_dim * Kb + dim * Ob + Mb ]
+                                    -= inverseElasticPsi[ dim * Lb + Pb ] * elasticGamma[ dim * dim * Pb + dim * Ob + Kb ];
 
                             }
 
@@ -1379,10 +1372,6 @@ namespace tardigradeHydra{
 
             )
 
-            constantVector eye( sot_dim, 0 );
-
-            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
-
             dPlasticMicroGradientLdElasticPsi = variableVector( tot_dim * sot_dim, 0 );
 
             dPlasticMicroGradientLdElasticGamma = variableVector( tot_dim * tot_dim, 0 );
@@ -1404,11 +1393,17 @@ namespace tardigradeHydra{
                                      * plasticMicroGradientVelocityGradient[ dim * dim * Pb + dim * Mb + Kb ]
                                      + inverseElasticPsi[ dim * Db + Ob ] * skewTerm[ dim * dim * Pb + dim * Mb + Kb ];
 
-                                for ( unsigned int Qb = 0; Qb < dim; Qb++ ){
+                                dPlasticMicroGradientLdElasticGamma[ dim * dim * tot_dim * Db + dim * tot_dim * Mb + tot_dim * Kb + dim * dim * Ob + dim * Pb + Kb ]
+                                    -= plasticMicroVelocityGradient[ dim * Pb + Mb ]
+                                     * inverseElasticPsi[ dim * Db + Ob ];
 
-                                    dPlasticMicroGradientLdElasticGamma[ dim * dim * tot_dim * Db + dim * tot_dim * Mb + tot_dim * Kb + dim * dim * Ob + dim * Pb + Qb ]
-                                        -= plasticMicroVelocityGradient[ dim * Pb + Mb ]
-                                         * inverseElasticPsi[ dim * Db + Ob ] * eye[ dim * Kb + Qb ];
+                                dPlasticMicroGradientLdElasticGamma[ dim * dim * tot_dim * Db + dim * tot_dim * Mb + tot_dim * Kb + dim * dim * Ob + dim * Mb + Kb ]
+                                    += plasticMicroVelocityGradient[ dim * Db + Pb ] * inverseElasticPsi[ dim * Pb + Ob ];
+
+                                dPlasticMicroGradientLdMicroGradientFlowDirection[ dim * dim * tot_dim * dim * Db + dim * tot_dim * dim * Mb + tot_dim * dim * Kb + dim * dim * dim * Ob + dim * dim * Kb + dim * Pb + Mb ]
+                                    += inverseElasticPsi[ dim * Db + Pb ] * microGradientGamma[ Ob ];
+
+                                for ( unsigned int Qb = 0; Qb < dim; Qb++ ){
 
                                     for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
 
@@ -1419,14 +1414,6 @@ namespace tardigradeHydra{
                                              - plasticMicroVelocityGradient[ dim * Qb + Mb ]
                                              * inverseElasticPsi[ dim * Db + Ob ] * inverseElasticPsi[ dim * Pb + Rb ]
                                              * elasticGamma[ dim * dim * Rb + dim * Qb + Kb ];
-
-                                        dPlasticMicroGradientLdElasticGamma[ dim * dim * tot_dim * Db + dim * tot_dim * Mb + tot_dim * Kb + dim * dim * Ob + dim * Pb + Qb ]
-                                            += plasticMicroVelocityGradient[ dim * Db + Rb ] * inverseElasticPsi[ dim * Rb + Ob ]
-                                             * eye[ dim * Mb + Pb ] * eye[ dim * Kb + Qb ];
-
-                                        dPlasticMicroGradientLdMicroGradientFlowDirection[ dim * dim * tot_dim * dim * Db + dim * tot_dim * dim * Mb + tot_dim * dim * Kb + dim * dim * dim * Ob + dim * dim * Pb + dim * Qb + Rb ]
-                                            += inverseElasticPsi[ dim * Db + Qb ] * microGradientGamma[ Ob ]
-                                             * eye[ dim * Kb + Pb ] * eye[ dim * Mb + Rb ];
 
                                     }
 
@@ -1534,59 +1521,23 @@ namespace tardigradeHydra{
             constexpr unsigned int tot_dim = sot_dim * dim;
             constexpr unsigned int fot_dim = tot_dim * dim;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( currentPlasticMicroDeformation.size() != sot_dim ){
-                    throw std::runtime_error( "The plastic micro-deformation must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( currentPlasticMicroDeformation.size() == sot_dim, "The plastic micro-deformation must be 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( currentPlasticMacroVelocityGradient.size() != sot_dim ){
-                    throw std::runtime_error( "The plastic macro velocity gradient must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( currentPlasticMacroVelocityGradient.size() == sot_dim, "The plastic macro velocity gradient must be 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( currentPlasticMicroVelocityGradient.size() != sot_dim ){
-                    throw std::runtime_error( "The plastic micro velocity gradient must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( currentPlasticMicroVelocityGradient.size() == sot_dim, "The plastic micro velocity gradient must be 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( currentPlasticMicroGradientVelocityGradient.size() != tot_dim ){
-                    throw std::runtime_error( "The plastic micro gradient velocity gradient must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( currentPlasticMicroGradientVelocityGradient.size() == tot_dim, "The plastic micro gradient velocity gradient must be 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( previousPlasticMicroDeformation.size() != sot_dim ){
-                    throw std::runtime_error( "The previous plastic micro-deformation must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMicroDeformation.size() == sot_dim, "The previous plastic micro-deformation must be 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( previousPlasticMicroGradient.size() != tot_dim ){
-                    throw std::runtime_error( "The previous plastic micro gradient must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMicroGradient.size() == tot_dim, "The previous plastic micro gradient must be 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( previousPlasticMacroVelocityGradient.size() != sot_dim ){
-                    throw std::runtime_error( "The previous plastic macro velocity gradient must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMacroVelocityGradient.size() == sot_dim, "The previous plastic macro velocity gradient must be 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( previousPlasticMicroVelocityGradient.size() != sot_dim ){
-                    throw std::runtime_error( "The previous plastic micro velocity gradient must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMicroVelocityGradient.size() == sot_dim, "The previous plastic micro velocity gradient must be 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( previousPlasticMicroGradientVelocityGradient.size() != tot_dim ){
-                    throw std::runtime_error( "The previous plastic micro gradient velocity gradient must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMicroGradientVelocityGradient.size() == tot_dim, "The previous plastic micro gradient velocity gradient must be 3D" );
 
             //Compute the required identity terms
             constantVector eye( sot_dim, 0 );
@@ -1608,12 +1559,14 @@ namespace tardigradeHydra{
                                         * currentPlasticMicroDeformation[ dim * Lb + B ] );
 
                             previousFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Lb ]
-                                = ( previousPlasticMicroVelocityGradient[ dim * Db + B ] * eye[ dim * Kb + Lb ]
-                                -   previousPlasticMacroVelocityGradient[ dim * Lb + Kb ] * eye[ dim * Db + B ] );
+                                += previousPlasticMicroVelocityGradient[ dim * Db + B ] * eye[ dim * Kb + Lb ];
+                            previousFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Lb ]
+                                -= previousPlasticMacroVelocityGradient[ dim * Lb + Kb ] * eye[ dim * Db + B ];
 
                             currentFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Lb ]
-                                = ( currentPlasticMicroVelocityGradient[ dim * Db + B ] * eye[ dim * Kb + Lb ]
-                                -   currentPlasticMacroVelocityGradient[ dim * Lb + Kb ] * eye[ dim * Db + B ] );
+                                += currentPlasticMicroVelocityGradient[ dim * Db + B ] * eye[ dim * Kb + Lb ];
+                            currentFourthA[ dim * dim * dim * Db + dim * dim * B + dim * Kb + Lb ]
+                                -= currentPlasticMacroVelocityGradient[ dim * Lb + Kb ] * eye[ dim * Db + B ];
                         }
                     }
                 }
