@@ -571,9 +571,9 @@ namespace tardigradeHydra{
             dDevStressdPrecedingF_mat = ( dDevStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
             dPressuredPrecedingF_mat = ( dPressuredRCG_mat * dRCGdPrecedingF_mat ).eval( );
 
-            variableVector d2DevStressdStressdPrecedingF( siot_dim * sot_dim, 0 );// = tardigradeVectorTools::matrixMultiply( d2DevStressdStressdRCG, dRCGdPrecedingF, tot_dim * tot_dim, sot_dim, sot_dim, sot_dim );
+            variableVector d2DevStressdStressdPrecedingF( siot_dim * sot_dim, 0 );
 
-            variableVector d2PressuredStressdPrecedingF( dim * tot_dim * sot_dim, 0 );// = tardigradeVectorTools::matrixMultiply( d2PressuredStressdRCG, dRCGdPrecedingF, dim * tot_dim, sot_dim, sot_dim, sot_dim );
+            variableVector d2PressuredStressdPrecedingF( dim * tot_dim * sot_dim, 0 );
 
             Eigen::Map< Eigen::Matrix< floatType, siot_dim, sot_dim, Eigen::RowMajor > > d2DevStressdStressdRCG_mat( d2DevStressdStressdRCG.data( ), siot_dim, sot_dim );
             Eigen::Map< Eigen::Matrix< floatType, siot_dim, sot_dim, Eigen::RowMajor > > d2DevStressdStressdPrecedingF_mat( d2DevStressdStressdPrecedingF.data( ), siot_dim, sot_dim );
@@ -719,8 +719,6 @@ namespace tardigradeHydra{
 
             d2FdStressdPrecedingF_mat = ( d2FdStressdPrecedingF_mat + dNormDevStressdDevStress_mat * d2DevStressdStressdPrecedingF_mat2 ).eval( );
 
-//            d2FdStressdPrecedingF += tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, d2DevStressdStressdPrecedingF, dim, tot_dim, tot_dim, tot_dim * sot_dim );
-
         }
 
         void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
@@ -744,23 +742,11 @@ namespace tardigradeHydra{
             //Assume 3D
             constexpr unsigned int dim = 3;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( 
-                if ( inverseElasticRightCauchyGreen.size() != dim * dim ){
-                    throw std::runtime_error( "The inverse elastic right Cauchy-Green deformation tensor must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( inverseElasticRightCauchyGreen.size() == dim * dim, "The inverse elastic right Cauchy-Green deformation tensor must be 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( macroFlowDirection.size() != dim * dim ){
-                    throw std::runtime_error( "The macro flow direction tensor must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( macroFlowDirection.size() == dim * dim, "The macro flow direction tensor must be 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( microFlowDirection.size() != dim * dim ){
-                    throw std::runtime_error( "The micro flow direction tensor must be 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( microFlowDirection.size() == dim * dim, "The micro flow direction tensor must be 3D" );
 
             //Compute the macro-scale velocity gradient
             plasticMacroVelocityGradient = variableVector( dim * dim, 0 );
@@ -968,14 +954,70 @@ namespace tardigradeHydra{
                                      * elasticMicroRightCauchyGreen[ dim * Nb + Kb ];
 
                             }
-
                         }
-
                     }
-
                 }
-
             }
+
+            std::cout << "plasticMicroVelocityGradient:\n"; tardigradeVectorTools::print( plasticMicroVelocityGradient );
+
+//
+//            plasticMicroVelocityGradient = variableVector( sot_dim, 0 );
+//            variableVector temp_sot( sot_dim, 0 );
+//
+//            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+//
+//                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+//
+//                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+//
+//                        temp_sot[ dim * Bb + Kb ] += microGamma * inverseElasticPsi[ dim * Bb + Lb ] * microFlowDirection[ dim * Kb + Lb ];
+//
+//                    }
+//
+//                }
+//
+//            }
+//
+//            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+//
+//                for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+//
+//                    for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+//
+//                        plasticMicroVelocityGradient[ dim * Bb + Kb ]
+//                            += temp_sot[ dim * Bb + Lb ] * inverseElasticPsi[ dim * Kb + Lb ];
+//
+//                    }
+//
+//                }
+//
+//            }
+//
+//            std::copy( plasticMicroVelocityGradient.begin( ),
+//                       plasticMicroVelocityGradient.end( ),
+//                       temp_sot.begin( ) );
+//
+//            std::fill( plasticMicroVelocityGradient.begin( ),
+//                       plasticMicroVelocityGradient.end( ),
+//                       0 );
+//
+//            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
+//
+//                for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+//
+//                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+//
+//                        plasticMicroVelocityGradient[ dim * Bb + Kb ]
+//                            += temp_sot[ dim * Bb + Lb ] * elasticMicroRightCauchyGreen[ dim * Kb + Lb ];
+//
+//                    }
+//
+//                }
+//
+//            }
+
+            throw std::runtime_error("derp");
 
         }
 
