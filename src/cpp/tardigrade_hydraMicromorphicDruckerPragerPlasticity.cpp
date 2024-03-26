@@ -452,13 +452,13 @@ namespace tardigradeHydra{
             floatVector dDevStressdPrecedingF( tot_dim * sot_dim, 0. );
             floatVector dPressuredPrecedingF( dim * sot_dim, 0 );
 
-            Eigen::Map< Eigen::Matrix< floatType,  9, 9, Eigen::RowMajor > > dRCGdPrecedingF_mat( dRCGdPrecedingF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > dRCGdPrecedingF_mat( dRCGdPrecedingF.data( ), sot_dim, sot_dim );
 
-            Eigen::Map< Eigen::Matrix< floatType, 27, 9, Eigen::RowMajor > > dDevStressdRCG_mat( dDevStressdRCG.data( ), tot_dim, sot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, 27, 9, Eigen::RowMajor > > dDevStressdPrecedingF_mat( dDevStressdPrecedingF.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > dDevStressdRCG_mat( dDevStressdRCG.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > dDevStressdPrecedingF_mat( dDevStressdPrecedingF.data( ), tot_dim, sot_dim );
 
-            Eigen::Map< Eigen::Matrix< floatType,  3, 9, Eigen::RowMajor > > dPressuredRCG_mat( dPressuredRCG.data( ), dim, sot_dim );
-            Eigen::Map< Eigen::Matrix< floatType,  3, 9, Eigen::RowMajor > > dPressuredPrecedingF_mat( dPressuredPrecedingF.data( ), dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dPressuredRCG_mat( dPressuredRCG.data( ), dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dPressuredPrecedingF_mat( dPressuredPrecedingF.data( ), dim, sot_dim );
 
             dDevStressdPrecedingF_mat = ( dDevStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
             dPressuredPrecedingF_mat = ( dPressuredRCG_mat * dRCGdPrecedingF_mat ).eval( );
@@ -472,15 +472,23 @@ namespace tardigradeHydra{
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
             //Construct the Jacobians
-            dFdStress = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdStress, dim, tot_dim, tot_dim, tot_dim )
-                      + BAngle * dPressuredStress;
+            dFdStress = BAngle * dPressuredStress;
+
+            Eigen::Map< Eigen::Matrix< floatType, dim, tot_dim, Eigen::RowMajor > > dNormDevStressdDevStress_mat( dNormDevStressdDevStress.data( ), dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > dDevStressdStress_mat( dDevStressdStress.data( ), tot_dim, tot_dim );
+            Eigen::Map< Eigen::Matrix< floatType,     dim, tot_dim, Eigen::RowMajor > > dFdStress_mat( dFdStress.data( ), dim, tot_dim );
+
+            dFdStress_mat  = ( dFdStress_mat + dNormDevStressdDevStress_mat * dDevStressdStress_mat ).eval( );
 
             dFdc = variableVector( cohesion.size( ) * cohesion.size( ), 0 );
-            for ( unsigned int i = 0; i < dim; i++ ){ dFdc[ dim * i + i ] = 1; }
-            dFdc *= -AAngle;
+            for ( unsigned int i = 0; i < dim; i++ ){ dFdc[ dim * i + i ] = -AAngle; }
 
-            dFdPrecedingF = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdPrecedingF, dim, tot_dim, tot_dim, sot_dim )
-                          + BAngle * dPressuredPrecedingF;
+            dFdPrecedingF  = BAngle * dPressuredPrecedingF;
+
+            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dFdPrecedingF_mat( dFdPrecedingF.data( ), dim, sot_dim );
+
+            dFdPrecedingF_mat = ( dFdPrecedingF_mat + dNormDevStressdDevStress_mat * dDevStressdPrecedingF_mat ).eval( );
 
         }
 
@@ -525,6 +533,8 @@ namespace tardigradeHydra{
             constexpr unsigned int dim = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int fot_dim = tot_dim * dim;
+            constexpr unsigned int siot_dim = tot_dim * tot_dim;
 
             parameterType AAngle, BAngle;
             TARDIGRADE_ERROR_TOOLS_CATCH( computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
@@ -547,12 +557,32 @@ namespace tardigradeHydra{
                                                        rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                                                        dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
 
-            floatVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, tot_dim, sot_dim, sot_dim, sot_dim );
-            floatVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG,  dRCGdPrecedingF, dim, sot_dim, sot_dim, sot_dim );
+            floatVector dDevStressdPrecedingF( tot_dim * sot_dim, 0. );
+            floatVector dPressuredPrecedingF( dim * sot_dim, 0 );
 
-            variableVector d2DevStressdStressdPrecedingF = tardigradeVectorTools::matrixMultiply( d2DevStressdStressdRCG, dRCGdPrecedingF, tot_dim * tot_dim, sot_dim, sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > dRCGdPrecedingF_mat( dRCGdPrecedingF.data( ), sot_dim, sot_dim );
 
-            variableVector d2PressuredStressdPrecedingF = tardigradeVectorTools::matrixMultiply( d2PressuredStressdRCG, dRCGdPrecedingF, dim * tot_dim, sot_dim, sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > dDevStressdRCG_mat( dDevStressdRCG.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > dDevStressdPrecedingF_mat( dDevStressdPrecedingF.data( ), tot_dim, sot_dim );
+
+            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dPressuredRCG_mat( dPressuredRCG.data( ), dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dPressuredPrecedingF_mat( dPressuredPrecedingF.data( ), dim, sot_dim );
+
+            dDevStressdPrecedingF_mat = ( dDevStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
+            dPressuredPrecedingF_mat = ( dPressuredRCG_mat * dRCGdPrecedingF_mat ).eval( );
+
+            variableVector d2DevStressdStressdPrecedingF( siot_dim * sot_dim, 0 );// = tardigradeVectorTools::matrixMultiply( d2DevStressdStressdRCG, dRCGdPrecedingF, tot_dim * tot_dim, sot_dim, sot_dim, sot_dim );
+
+            variableVector d2PressuredStressdPrecedingF( dim * tot_dim * sot_dim, 0 );// = tardigradeVectorTools::matrixMultiply( d2PressuredStressdRCG, dRCGdPrecedingF, dim * tot_dim, sot_dim, sot_dim, sot_dim );
+
+            Eigen::Map< Eigen::Matrix< floatType, siot_dim, sot_dim, Eigen::RowMajor > > d2DevStressdStressdRCG_mat( d2DevStressdStressdRCG.data( ), siot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, siot_dim, sot_dim, Eigen::RowMajor > > d2DevStressdStressdPrecedingF_mat( d2DevStressdStressdPrecedingF.data( ), siot_dim, sot_dim );
+
+            Eigen::Map< Eigen::Matrix< floatType,  fot_dim, sot_dim, Eigen::RowMajor > > d2PressuredStressdRCG_mat( d2PressuredStressdRCG.data( ), fot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType,  fot_dim, sot_dim, Eigen::RowMajor > > d2PressuredStressdPrecedingF_mat( d2PressuredStressdPrecedingF.data( ), fot_dim, sot_dim );
+
+            d2DevStressdStressdPrecedingF_mat = ( d2DevStressdStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
+            d2PressuredStressdPrecedingF_mat = ( d2PressuredStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
 
             //Compute the l2norm of the deviatoric stress
             variableVector normDevStress;
@@ -566,15 +596,23 @@ namespace tardigradeHydra{
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
     
             //Construct the Jacobians
-            dFdStress = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdStress, dim, tot_dim, tot_dim, tot_dim )
-                      + BAngle * dPressuredStress;
+            dFdStress = BAngle * dPressuredStress;
+
+            Eigen::Map< Eigen::Matrix< floatType, dim, tot_dim, Eigen::RowMajor > > dNormDevStressdDevStress_mat( dNormDevStressdDevStress.data( ), dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > dDevStressdStress_mat( dDevStressdStress.data( ), tot_dim, tot_dim );
+            Eigen::Map< Eigen::Matrix< floatType,     dim, tot_dim, Eigen::RowMajor > > dFdStress_mat( dFdStress.data( ), dim, tot_dim );
+
+            dFdStress_mat  = ( dFdStress_mat + dNormDevStressdDevStress_mat * dDevStressdStress_mat ).eval( );
     
             dFdc = variableVector( cohesion.size( ) * cohesion.size( ), 0 );
-            for ( unsigned int i = 0; i < dim; i++ ){ dFdc[ dim * i + i ] = 1; }
-            dFdc *= -AAngle;
+            for ( unsigned int i = 0; i < dim; i++ ){ dFdc[ dim * i + i ] = -AAngle; }
     
-            dFdPrecedingF = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdPrecedingF, dim, tot_dim, tot_dim, sot_dim )
-                          + BAngle * dPressuredPrecedingF;
+            dFdPrecedingF  = BAngle * dPressuredPrecedingF;
+
+            Eigen::Map< Eigen::Matrix< floatType,     dim, sot_dim, Eigen::RowMajor > > dFdPrecedingF_mat( dFdPrecedingF.data( ), dim, sot_dim );
+
+            dFdPrecedingF_mat = ( dFdPrecedingF_mat + dNormDevStressdDevStress_mat * dDevStressdPrecedingF_mat ).eval( );
     
             //Construct the second-order jacobians
             d2FdStress2 = variableVector( dim * tot_dim * tot_dim, 0 );
@@ -674,8 +712,14 @@ namespace tardigradeHydra{
                 }
             }
 
-            d2FdStressdPrecedingF += tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, d2DevStressdStressdPrecedingF, dim, tot_dim, tot_dim, tot_dim * sot_dim )
-                                   + BAngle * d2PressuredStressdPrecedingF;
+            d2FdStressdPrecedingF += BAngle * d2PressuredStressdPrecedingF;
+
+            Eigen::Map< Eigen::Matrix< floatType,     dim, tot_dim * sot_dim, Eigen::RowMajor > > d2FdStressdPrecedingF_mat( d2FdStressdPrecedingF.data( ), dim, tot_dim * sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, tot_dim * sot_dim, Eigen::RowMajor > > d2DevStressdStressdPrecedingF_mat2( d2DevStressdStressdPrecedingF.data( ), tot_dim, tot_dim * sot_dim );
+
+            d2FdStressdPrecedingF_mat = ( d2FdStressdPrecedingF_mat + dNormDevStressdDevStress_mat * d2DevStressdStressdPrecedingF_mat2 ).eval( );
+
+//            d2FdStressdPrecedingF += tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, d2DevStressdStressdPrecedingF, dim, tot_dim, tot_dim, tot_dim * sot_dim );
 
         }
 
