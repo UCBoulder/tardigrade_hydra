@@ -320,7 +320,7 @@ namespace tardigradeHydra{
 
             //Evaluate the second-order jacobians
             constantVector EYE( sot_dim * sot_dim );
-            tardigradeVectorTools::eye( EYE );
+            for ( unsigned int i = 0; i < sot_dim; i++ ){ EYE[ sot_dim * i + i ] = 1; }
             variableVector dDevStressDirectiondDevStress = ( EYE - tardigradeVectorTools::matrixMultiply( devStressDirection, devStressDirection, sot_dim, 1, 1, sot_dim ) ) / ( normDevStress + tol );
 
             d2FdStress2 = tardigradeVectorTools::matrixMultiply( dDevStressdStress, tardigradeVectorTools::matrixMultiply( dDevStressDirectiondDevStress, dDevStressdStress, sot_dim, sot_dim, sot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim, true, false );
@@ -465,7 +465,7 @@ namespace tardigradeHydra{
                       + BAngle * dPressuredStress;
 
             dFdc = variableVector( cohesion.size( ) * cohesion.size( ), 0 );
-            tardigradeVectorTools::eye( dFdc );
+            for ( unsigned int i = 0; i < dim; i++ ){ dFdc[ dim * i + i ] = 1; }
             dFdc *= -AAngle;
 
             dFdPrecedingF = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdPrecedingF, dim, tot_dim, tot_dim, sot_dim )
@@ -559,7 +559,7 @@ namespace tardigradeHydra{
                       + BAngle * dPressuredStress;
     
             dFdc = variableVector( cohesion.size( ) * cohesion.size( ), 0 );
-            tardigradeVectorTools::eye( dFdc );
+            for ( unsigned int i = 0; i < dim; i++ ){ dFdc[ dim * i + i ] = 1; }
             dFdc *= -AAngle;
     
             dFdPrecedingF = tardigradeVectorTools::matrixMultiply( dNormDevStressdDevStress, dDevStressdPrecedingF, dim, tot_dim, tot_dim, sot_dim )
@@ -766,9 +766,6 @@ namespace tardigradeHydra{
                                                      dPlasticMacroLdMacroGamma, dPlasticMacroLdMicroGamma );
             )
 
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
-
             dPlasticMacroLdElasticRCG = variableVector( sot_dim * sot_dim, 0 );
             dPlasticMacroLdMacroFlowDirection = variableVector( sot_dim * sot_dim, 0 );
             dPlasticMacroLdMicroFlowDirection = variableVector( sot_dim * sot_dim, 0 );
@@ -779,17 +776,17 @@ namespace tardigradeHydra{
 
                     for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
 
+                        dPlasticMacroLdMacroFlowDirection[ dim * sot_dim * Bb + sot_dim * Kb + dim * Kb + Ob ]
+                            += macroGamma * inverseElasticRightCauchyGreen[ dim * Bb + Ob ];
+
+                        dPlasticMacroLdMicroFlowDirection[ dim * sot_dim * Bb + sot_dim * Kb + dim * Kb + Ob ]
+                            += microGamma * inverseElasticRightCauchyGreen[ dim * Bb + Ob ];
+
                         for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
 
                             dPlasticMacroLdElasticRCG[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
                                 -= inverseElasticRightCauchyGreen[ dim * Bb + Ob ]
                                  * plasticMacroVelocityGradient[ dim * Pb + Kb ];
-
-                            dPlasticMacroLdMacroFlowDirection[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
-                                += macroGamma * inverseElasticRightCauchyGreen[ dim * Bb + Pb ] * eye[ dim * Kb + Ob ];
-
-                            dPlasticMacroLdMicroFlowDirection[ dim * sot_dim * Bb + sot_dim * Kb + dim * Ob + Pb ]
-                                += microGamma * inverseElasticRightCauchyGreen[ dim * Bb + Pb ] * eye[ dim * Kb + Ob ];
 
                         }
 
@@ -823,32 +820,17 @@ namespace tardigradeHydra{
 
             //Assume 3D
             constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( elasticMicroRightCauchyGreen.size() != dim * dim ){
-                    throw std::runtime_error( "The elastic micro right Cauchy-Green deformation tensor is not 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( elasticMicroRightCauchyGreen.size() == sot_dim, "The elastic micro right Cauchy-Green deformation tensor is not 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( elasticPsi.size() != dim * dim ){
-                    throw std::runtime_error( "The elastic micro deformation tensor Psi is not 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( elasticPsi.size() == sot_dim, "The elastic micro deformation tensor Psi is not 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( inverseElasticPsi.size() != dim * dim ){
-                    throw std::runtime_error( "The inverse of the elastic micro deformation tensor Psi is not 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( inverseElasticPsi.size() == sot_dim, "The inverse of the elastic micro deformation tensor Psi is not 3D" );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( microFlowDirection.size() != dim * dim ){
-                    throw std::runtime_error( "The micro flow direction of the elastic micro plastic flow direction is not 3D" );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( microFlowDirection.size() == dim * dim, "The micro flow direction of the elastic micro plastic flow direction is not 3D" );
 
-            plasticMicroVelocityGradient = variableVector( dim * dim, 0 );
+            plasticMicroVelocityGradient = variableVector( sot_dim, 0 );
 
             //NOTE: I'm making the second inverse elastic Psi be the transpose of what was done previously.
             //      I think the way it was is a bug since it isn't consistent with the form in my dissertation.
@@ -1008,8 +990,8 @@ namespace tardigradeHydra{
 
             )
 
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constantVector eye( sot_dim, 0 );
+            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
 
             //Assemble the Jacobians
             dPlasticMicroLdElasticMicroRCG = variableVector( sot_dim * sot_dim, 0 );
@@ -1304,8 +1286,8 @@ namespace tardigradeHydra{
 
             )
 
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constantVector eye( dim * dim, 0 );
+            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
 
             dPlasticMicroGradientLdPlasticMicroL = variableVector( tot_dim * sot_dim, 0 );
             dPlasticMicroGradientLdMicroGradientGamma = variableVector( tot_dim * dim, 0 );
@@ -1399,9 +1381,9 @@ namespace tardigradeHydra{
 
             )
 
-            constantVector eye( dim * dim );
+            constantVector eye( sot_dim, 0 );
 
-            tardigradeVectorTools::eye( eye );
+            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
 
             dPlasticMicroGradientLdElasticPsi = variableVector( tot_dim * sot_dim, 0 );
 
@@ -1609,8 +1591,8 @@ namespace tardigradeHydra{
             )
 
             //Compute the required identity terms
-            constantVector eye( sot_dim );
-            tardigradeVectorTools::eye( eye );
+            constantVector eye( sot_dim, 0 );
+            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
 
             //Assemble the A term ( forcing term ) and the fourth order A term
             variableVector DtAtilde( tot_dim, 0 );
@@ -1728,8 +1710,8 @@ namespace tardigradeHydra{
             constexpr unsigned int fot_dim = tot_dim * dim;
 
             //Compute the required identity terms
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constantVector eye( sot_dim, 0 );
+            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
 
             //Compute the new currentPlasticMicroGradient
             variableVector LHS;
@@ -1890,8 +1872,8 @@ namespace tardigradeHydra{
             constexpr unsigned int fot_dim = tot_dim * dim;
 
             //Compute the required identity terms
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constantVector eye( sot_dim, 0 );
+            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
 
             //Compute the new currentPlasticMicroGradient
             variableVector LHS;
@@ -6514,8 +6496,8 @@ namespace tardigradeHydra{
 
             floatVector dPsidPrecedingChi( sot_dim * sot_dim, 0 );
 
-            floatVector eye( precedingDeformationGradient->size( ), 0 );
-            tardigradeVectorTools::eye( eye );
+            floatVector eye( sot_dim, 0 );
+            for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
 
             for ( unsigned int I = 0; I < dim; I++ ){ //TODO: Try to improve the cache access here
 
