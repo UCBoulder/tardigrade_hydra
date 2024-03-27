@@ -241,6 +241,7 @@ namespace tardigradeHydra{
             //Assume 3D
             constexpr unsigned int dim = 3;
             constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int fot_dim = sot_dim * sot_dim;
 
             parameterType AAngle, BAngle;
             TARDIGRADE_ERROR_TOOLS_CATCH(  computeDruckerPragerInternalParameters( frictionAngle, beta, AAngle, BAngle ) );
@@ -279,8 +280,8 @@ namespace tardigradeHydra{
 
                         for ( unsigned int L = 0; L < rightCauchyGreen.size( ); L++ ){
 
-                            d2DevStressdStressdPrecedingF[ sot_dim * sot_dim * I + sot_dim * J + K ]
-                                += d2DevStressdStressdRCG[ sot_dim * sot_dim * I + sot_dim * J + L ] * dRCGdPrecedingF[ sot_dim * L + K ];
+                            d2DevStressdStressdPrecedingF[ sot_dim * sot_dim * I + sot_dim * J + L ]
+                                += d2DevStressdStressdRCG[ sot_dim * sot_dim * I + sot_dim * J + K ] * dRCGdPrecedingF[ sot_dim * K + L ];
 
                         }
 
@@ -302,32 +303,30 @@ namespace tardigradeHydra{
             //Evaluate the jacobians
             variableVector devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
 
-            dFdStress = tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdStress, 1, sot_dim, sot_dim, sot_dim )
-                      + BAngle * dPressuredStress;
+            dFdStress = BAngle * dPressuredStress;
+            dFdStress += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdStress, 1, sot_dim, sot_dim, sot_dim );
 
             dFdc = - AAngle;
 
-            dFdPrecedingF = tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdPrecedingF, 1, sot_dim, sot_dim, sot_dim )
-                          + BAngle * dPressuredPrecedingF;
+            dFdPrecedingF = BAngle * dPressuredPrecedingF;
+            dFdPrecedingF += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
 
             //Evaluate the second-order jacobians
-            constantVector EYE( sot_dim * sot_dim );
-            for ( unsigned int i = 0; i < sot_dim; i++ ){ EYE[ sot_dim * i + i ] = 1; }
-            variableVector dDevStressDirectiondDevStress = ( EYE - tardigradeVectorTools::matrixMultiply( devStressDirection, devStressDirection, sot_dim, 1, 1, sot_dim ) ) / ( normDevStress + tol );
+            variableVector dDevStressDirectiondDevStress( sot_dim * sot_dim, 0 );
+            for ( unsigned int i = 0; i < sot_dim; i++ ){ dDevStressDirectiondDevStress[ sot_dim * i + i ] = 1. / ( normDevStress + tol ); }
+            dDevStressDirectiondDevStress -= tardigradeVectorTools::matrixMultiply( devStressDirection, devStressDirection, sot_dim, 1, 1, sot_dim ) / ( normDevStress + tol );
 
             d2FdStress2 = tardigradeVectorTools::matrixMultiply( dDevStressdStress, tardigradeVectorTools::matrixMultiply( dDevStressDirectiondDevStress, dDevStressdStress, sot_dim, sot_dim, sot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim, true, false );
 
-            d2FdStressdPrecedingF = tardigradeVectorTools::matrixMultiply( tardigradeVectorTools::matrixMultiply( dDevStressDirectiondDevStress, dDevStressdStress, sot_dim, sot_dim, sot_dim, sot_dim ), dDevStressdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim, true, false )
-                                  + BAngle * d2PressuredStressdPrecedingF;
+            d2FdStressdPrecedingF  = BAngle * d2PressuredStressdPrecedingF;
+            d2FdStressdPrecedingF += tardigradeVectorTools::matrixMultiply( tardigradeVectorTools::matrixMultiply( dDevStressDirectiondDevStress, dDevStressdStress, sot_dim, sot_dim, sot_dim, sot_dim ), dDevStressdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim, true, false );
 
-            for ( unsigned int A = 0; A < dim; A++ ){
-                for ( unsigned int B = 0; B < dim; B++ ){
-                    for ( unsigned int I = 0; I < dim; I++ ){
-                        for ( unsigned int J = 0; J < dim; J++ ){
-                            for ( unsigned int K = 0; K < dim; K++ ){
-                                for ( unsigned int L = 0; L < dim; L++ ){
-                                    d2FdStressdPrecedingF[ dim * sot_dim * I + sot_dim * J + dim * K + L ] += devStressDirection[ dim * A + B ] * d2DevStressdStressdPrecedingF[ dim * sot_dim * sot_dim * A + sot_dim * sot_dim * B + dim * dim * dim * I + dim * dim * J + dim * K + L ];
-                                }
+            for ( unsigned int AB = 0; AB < sot_dim; AB++ ){
+                for ( unsigned int I = 0; I < dim; I++ ){
+                    for ( unsigned int J = 0; J < dim; J++ ){
+                        for ( unsigned int K = 0; K < dim; K++ ){
+                            for ( unsigned int L = 0; L < dim; L++ ){
+                                d2FdStressdPrecedingF[ dim * sot_dim * I + sot_dim * J + dim * K + L ] += devStressDirection[ AB ] * d2DevStressdStressdPrecedingF[ fot_dim * AB + dim * dim * dim * I + dim * dim * J + dim * K + L ];
                             }
                         }
                     }
