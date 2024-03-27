@@ -621,92 +621,46 @@ namespace tardigradeHydra{
             floatVector temp_siot1( dim * tot_dim * sot_dim, 0 );
             floatVector temp_seot1( dim * tot_dim * tot_dim, 0 );
 
-            for ( unsigned int K = 0; K < 3; K++ ){
-                for ( unsigned int L = 0; L < 3; L++ ){
-                    for ( unsigned int M = 0; M < 3; M++ ){
-                        for ( unsigned int N = 0; N < 3; N++ ){
-                            for ( unsigned int A = 0; A < 3; A++ ){
-                                for ( unsigned int B = 0; B < 3; B++ ){
-                                    for ( unsigned int C = 0; C < 3; C++ ){
-                                        for ( unsigned int O = 0; O < 3; O++ ){
-                                            for ( unsigned int P = 0; P < 3; P++ ){
-                                                temp_siot1[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * O + P ]
-                                                    += d2NormDevStressdDevStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * A + dim * B + C ]
-                                                     * dDevStressdPrecedingF[ dim * dim * dim * dim * A + dim * dim * dim * B + dim * dim * C + dim * O + P ];
-                                            }
-                                        }
-                                    }
-                                }
-                            }
-                        }
+            for ( unsigned int KLMN = 0; KLMN < fot_dim; KLMN++ ){
+                for ( unsigned int ABC = 0; ABC < tot_dim; ABC++ ){
+                    for ( unsigned int OP = 0; OP < sot_dim; OP++ ){
+                        temp_siot1[ sot_dim * KLMN + OP ]
+                            += d2NormDevStressdDevStress2[ tot_dim * KLMN + ABC ]
+                             * dDevStressdPrecedingF[ dim * dim * ABC + OP ];
                     }
                 }
             }
             for ( unsigned int K = 0; K < 3; K++ ){
-                for ( unsigned int L = 0; L < 3; L++ ){
-                    for ( unsigned int M = 0; M < 3; M++ ){
-                        for ( unsigned int N = 0; N < 3; N++ ){
-                           for ( unsigned int A = 0; A < 3; A++ ){
-                               for ( unsigned int B = 0; B < 3; B++ ){
-                                   for ( unsigned int C = 0; C < 3; C++ ){
-                                       for ( unsigned int O = 0; O < 3; O++ ){
-                                           for ( unsigned int P = 0; P < 3; P++ ){
-                                                d2FdStressdPrecedingF[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * O + P ]
-                                                    += temp_siot1[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * A + dim * dim * dim * B + dim * dim * C + dim * O + P ]
-                                                     * dDevStressdStress[ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * L + dim * M + N ];
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                for ( unsigned int ABC = 0; ABC < tot_dim; ABC++ ){
+                    for ( unsigned int LMN = 0; LMN < tot_dim; LMN++ ){
+                        for ( unsigned int OP = 0; OP < sot_dim; OP++ ){
+                            d2FdStressdPrecedingF[ tot_dim * sot_dim * K + sot_dim * LMN + OP ]
+                                += temp_siot1[ tot_dim * sot_dim * K + sot_dim * ABC + OP ]
+                                 * dDevStressdStress[ tot_dim * ABC + LMN ];
                         }
                     }
                 }
             }
 
             for ( unsigned int K = 0; K < 3; K++ ){
-                for ( unsigned int A = 0; A < 3; A++ ){
-                    for ( unsigned int B = 0; B < 3; B++ ){
-                        for ( unsigned int C = 0; C < 3; C++ ){
-                            for ( unsigned int L = 0; L < 3; L++ ){
-                                for ( unsigned int M = 0; M < 3; M++ ){
-                                    for ( unsigned int N = 0; N < 3; N++ ){
-                                        for ( unsigned int O = 0; O < 3; O++ ){
-                                            for ( unsigned int P = 0; P < 3; P++ ){
-                                                for ( unsigned int Q = 0; Q < 3; Q++ ){
-                                                    temp_seot1[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * O + dim * P + Q ]
-                                                        += d2NormDevStressdDevStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * O + dim * P + Q ]
-                                                         * dDevStressdStress[ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * L + dim * M + N ];
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                for ( unsigned int ABC = 0; ABC < tot_dim; ABC++ ){
+                    for ( unsigned int LMN = 0; LMN < tot_dim; LMN++ ){
+                        for ( unsigned int OPQ = 0; OPQ < tot_dim; OPQ++ ){
+                            temp_seot1[ tot_dim * tot_dim * K + tot_dim * LMN + OPQ ]
+                                += d2NormDevStressdDevStress2[ tot_dim * tot_dim * K + tot_dim * ABC + OPQ ]
+                                 * dDevStressdStress[ tot_dim * ABC + LMN ];
                         }
                     }
                 }
             }
 
             for ( unsigned int K = 0; K < 3; K++ ){
-                for ( unsigned int L = 0; L < 3; L++ ){
-                    for ( unsigned int M = 0; M < 3; M++ ){
-                        for ( unsigned int N = 0; N < 3; N++ ){
-                            for ( unsigned int A = 0; A < 3; A++ ){
-                                for ( unsigned int B = 0; B < 3; B++ ){
-                                    for ( unsigned int C = 0; C < 3; C++ ){
-                                        for ( unsigned int O = 0; O < 3; O++ ){
-                                            for ( unsigned int P = 0; P < 3; P++ ){
-                                                for ( unsigned int Q = 0; Q < 3; Q++ ){
-                                                    d2FdStress2[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * O + dim * P + Q ]
-                                                        += temp_seot1[ dim * dim * dim * dim * dim * dim * K + dim * dim * dim * dim * dim * L + dim * dim * dim * dim * M + dim * dim * dim * N + dim * dim * A + dim * B + C ]
-                                                         * dDevStressdStress[ dim * dim * dim * dim * dim * A + dim * dim * dim * dim * B + dim * dim * dim * C + dim * dim * O + dim * P + Q ];
-                                                }
-                                            }
-                                        }
-                                    }
-                                }
-                            }
+                for ( unsigned int LMN = 0; LMN < tot_dim; LMN++ ){
+                    for ( unsigned int ABC = 0; ABC < tot_dim; ABC++ ){
+                        for ( unsigned int OPQ = 0; OPQ < tot_dim; OPQ++ ){
+                            d2FdStress2[ tot_dim * tot_dim * K + tot_dim * LMN + OPQ ]
+                                += temp_seot1[ tot_dim * tot_dim * K + tot_dim * LMN + ABC ]
+                                 * dDevStressdStress[ tot_dim * ABC + OPQ ];
                         }
                     }
                 }
