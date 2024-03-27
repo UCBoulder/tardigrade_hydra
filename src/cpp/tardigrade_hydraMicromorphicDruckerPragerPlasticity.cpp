@@ -186,13 +186,13 @@ namespace tardigradeHydra{
             //Evaluate the jacobians
             variableVector devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
     
-            dFdStress = tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdStress, 1, sot_dim, sot_dim, sot_dim )
-                      + BAngle * dPressuredStress;
+            dFdStress  = BAngle * dPressuredStress;
+            dFdStress += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdStress, 1, sot_dim, sot_dim, sot_dim );
     
             dFdc = - AAngle;
     
-            dFdPrecedingF = tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdPrecedingF, 1, sot_dim, sot_dim, sot_dim )
-                          + BAngle * dPressuredPrecedingF;
+            dFdPrecedingF  = BAngle * dPressuredPrecedingF;
+            dFdPrecedingF += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
         }
 
         void computeSecondOrderDruckerPragerYieldEquation( const variableVector &stressMeasure, const variableType &cohesion,
@@ -284,8 +284,8 @@ namespace tardigradeHydra{
 
                         }
 
-                        d2PressuredStressdPrecedingF[ sot_dim * I + J ]
-                            += d2PressuredStressdRCG[ sot_dim * I + K ] * dRCGdPrecedingF[ sot_dim * K + J ];
+                        d2PressuredStressdPrecedingF[ sot_dim * I + K ]
+                            += d2PressuredStressdRCG[ sot_dim * I + J ] * dRCGdPrecedingF[ sot_dim * J + K ];
 
                     }
 
