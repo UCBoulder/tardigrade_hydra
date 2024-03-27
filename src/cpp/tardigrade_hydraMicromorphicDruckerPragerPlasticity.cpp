@@ -4088,29 +4088,11 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( get_macroHardeningParameters( )->size( ) != 2 ){
-    
-                    throw std::runtime_error( "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_macroHardeningParameters( )->size( ) ) );
-    
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( get_macroHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_macroHardeningParameters( )->size( ) ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( get_microHardeningParameters( )->size( ) != 2 ){
-    
-                    throw std::runtime_error( "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microHardeningParameters( )->size( ) ) );
-    
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( get_microHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microHardeningParameters( )->size( ) ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( get_microGradientHardeningParameters( )->size( ) != 2 ){
-    
-                    throw std::runtime_error( "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microGradientHardeningParameters( )->size( ) ) );
-    
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( get_microGradientHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microGradientHardeningParameters( )->size( ) ) );
 
             floatType macroCohesion           = ( *get_macroHardeningParameters( ) )[ 0 ] + ( *get_macroHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 0 ];
 
