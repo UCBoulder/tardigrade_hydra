@@ -322,14 +322,8 @@ namespace tardigradeHydra{
             d2FdStressdPrecedingF += tardigradeVectorTools::matrixMultiply( tardigradeVectorTools::matrixMultiply( dDevStressDirectiondDevStress, dDevStressdStress, sot_dim, sot_dim, sot_dim, sot_dim ), dDevStressdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim, true, false );
 
             for ( unsigned int AB = 0; AB < sot_dim; AB++ ){
-                for ( unsigned int I = 0; I < dim; I++ ){
-                    for ( unsigned int J = 0; J < dim; J++ ){
-                        for ( unsigned int K = 0; K < dim; K++ ){
-                            for ( unsigned int L = 0; L < dim; L++ ){
-                                d2FdStressdPrecedingF[ dim * sot_dim * I + sot_dim * J + dim * K + L ] += devStressDirection[ AB ] * d2DevStressdStressdPrecedingF[ fot_dim * AB + dim * dim * dim * I + dim * dim * J + dim * K + L ];
-                            }
-                        }
-                    }
+                for ( unsigned int IJKL = 0; IJKL < fot_dim; IJKL++ ){
+                    d2FdStressdPrecedingF[ IJKL ] += devStressDirection[ AB ] * d2DevStressdStressdPrecedingF[ fot_dim * AB + IJKL ];
                 }
             }
 
