@@ -1532,6 +1532,8 @@ namespace tardigradeHydra{
 
             floatVector temp_sot1( sot_dim, 0 );
 
+            floatVector temp_tot1( tot_dim, 0 );
+
             for ( unsigned int Db = 0; Db < dim; Db++ ){
 
                 for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
@@ -1539,6 +1541,13 @@ namespace tardigradeHydra{
                     for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
 
                         temp_sot1[ dim * Db + Kb ] += plasticMicroVelocityGradient[ dim * Db + Mb ] * inverseElasticPsi[ dim * Mb + Kb ];
+
+                        for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
+
+                            temp_tot1[ dim * dim * Db + dim * Kb + Ob ] += inverseElasticPsi[ dim * Db + Mb ]
+                                                                         * elasticGamma[ dim * dim * Mb + dim * Kb + Ob ]; 
+
+                        }
 
                     }
 
@@ -1569,14 +1578,12 @@ namespace tardigradeHydra{
                                 dPlasticMicroGradientLdMicroGradientFlowDirection[ dim * dim * tot_dim * dim * Db + dim * tot_dim * dim * Mb + tot_dim * dim * Kb + dim * dim * dim * Ob + dim * dim * Kb + dim * Pb + Mb ]
                                     += inverseElasticPsi[ dim * Db + Pb ] * microGradientGamma[ Ob ];
 
+                                dPlasticMicroGradientLdElasticPsi[ dim * dim * sot_dim * Db + dim * sot_dim * Mb + sot_dim * Kb +dim * Ob + Pb ]
+                                    -= temp_sot1[ dim * Db + Ob ] * temp_tot1[ dim * dim * Pb + dim * Mb + Kb ];
+
                                 for ( unsigned int Qb = 0; Qb < dim; Qb++ ){
 
                                     for ( unsigned int Rb = 0; Rb < dim; Rb++ ){
-
-                                        dPlasticMicroGradientLdElasticPsi[ dim * dim * sot_dim * Db + dim * sot_dim * Mb + sot_dim * Kb +dim * Ob + Pb ]
-                                            -= plasticMicroVelocityGradient[ dim * Db + Qb ]
-                                             * inverseElasticPsi[ dim * Qb + Ob ] * inverseElasticPsi[ dim * Pb + Rb ]
-                                             * elasticGamma[ dim * dim * Rb + dim * Mb + Kb ];
 
                                         dPlasticMicroGradientLdElasticPsi[ dim * dim * sot_dim * Db + dim * sot_dim * Mb + sot_dim * Kb +dim * Ob + Pb ]
                                             += plasticMicroVelocityGradient[ dim * Qb + Mb ]
