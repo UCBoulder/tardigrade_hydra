@@ -32,7 +32,7 @@ namespace tardigradeHydra{
              * :param const parameterVector &B: The B stiffness matrix.
              * :param const parameterVector &C: The C stiffness matrix.
              * :param const parameterVector &D: The D stiffness matrix.
-             * :param variableVector &CauchyStress: The Cauchy stress.
+             * :param variableVector &cauchyStress: The Cauchy stress.
              * :param variableVector &microStress: The symmetric micro-stress.
              * :param variableVector &higherOrderStress: The higher-order stress.
              */
@@ -86,7 +86,7 @@ namespace tardigradeHydra{
              * \param &B: The B stiffness matrix.
              * \param &C: The C stiffness matrix.
              * \param &D: The D stiffness matrix.
-             * \param &CauchyStress: The Cauchy stress.
+             * \param &cauchyStress: The Cauchy stress.
              * \param &microStress: The symmetric micro-stress.
              * \param &higherOrderStress: The higher-order stress.
              * \param &dCauchyStressdF: The Jacobian of the Cauchy stress w.r.t. the deformation gradient
@@ -238,14 +238,14 @@ namespace tardigradeHydra{
              * \param &PK2Stress: The second Piola-Kirchoff stress.
              * \param &referenceMicroStress: The symmetric micro-stress in the 
              * \   reference configuration.
-             * \param variableVector &referenceHigherOrderStress: The higher-order stress in the 
+             * \param &referenceHigherOrderStress: The higher-order stress in the 
              * \   reference configuration.
              * \param &dPK2StressdF: The Jacobian of the PK2 stress w.r.t. the deformation gradient.
              * \param &dPK2StressdChi: The Jacobian of the PK2 stress w.r.t. the micro deformation.
              * \param &dPK2StressdGradChi: The Jacobian of the PK2 stress w.r.t. the gradient of the micro deformation.
              * \param &dReferenceMicroStressdF: The Jacobian of the Micro stress w.r.t. the deformation gradient.
              * \param &dReferenceMicroStressdChi: The Jacobian of the Micro stress w.r.t. the micro deformation.
-             * \param &dReferenceStressdGradChi: The Jacobian of the Micro stress w.r.t. the gradient of the micro deformation.
+             * \param &dReferenceMicroStressdGradChi: The Jacobian of the Micro stress w.r.t. the gradient of the micro deformation.
              * \param &dMdF: The Jacobian of the higher order stress w.r.t. the deformation gradient.
              * \param &dMdGradChi: The Jacobian of the higher order stress w.r.t. the gradient of the micro deformation.
              */
@@ -459,7 +459,7 @@ namespace tardigradeHydra{
              *     right Cacuhy-Green deformation metric.
              * \param &dReferenceMicroStressdPsi: The Jacobian of the reference micro stress w.r.t. the 
              *     micro deformation measure.
-             * \param &dReferenceMicroStrssdGamma: The Jacobian of the reference micro stress w.r.t. the 
+             * \param &dReferenceMicroStressdGamma: The Jacobian of the reference micro stress w.r.t. the 
              *     higher order deformation measure.
              * \param &dMdGamma: The Jacobian of the reference higher order stress w.r.t. 
              *     the higher order deformation measure.
@@ -595,18 +595,18 @@ namespace tardigradeHydra{
             /*!
              * Map the stress measures in the reference configuration to the current configuration.
              *
-             * \param const variableVector &deformationGradient: The deformation gradient between the 
+             * \param &deformationGradient: The deformation gradient between the 
              *     reference configuration and the current configuration.
-             * \param const variableVector &microDeformation: The micro-deformation map between the 
+             * \param &microDeformation: The micro-deformation map between the 
              *     reference configuration and the current configuration.
-             * \param const variableVector &PK2Stress: The Second Piola-Kirchoff stress.
-             * \param const variableVector &referenceMicroStress: The symmetric micro-stress in the 
+             * \param &PK2Stress: The Second Piola-Kirchoff stress.
+             * \param &referenceMicroStress: The symmetric micro-stress in the 
              *     reference configuration.
-             * \param const variableVector &referenceHigherOrderStress: The higher order stress in 
+             * \param &referenceHigherOrderStress: The higher order stress in 
              *     the reference configuration.
-             * \param variableVector &cauchyStress: The Cauchy stress (PK2 stress in the current configuration).
-             * \param variableVector &microStress: The symmetric micro-stress in the current configuration.
-             * \param variableVector &higherOrderStress: The higher order stress in the current configuration.
+             * \param &cauchyStress: The Cauchy stress (PK2 stress in the current configuration).
+             * \param &microStress: The symmetric micro-stress in the current configuration.
+             * \param &higherOrderStress: The higher order stress in the current configuration.
              */
     
             //Map the PK2 stress to the Cauchy stress
@@ -901,6 +901,8 @@ namespace tardigradeHydra{
              * \param &A: The A stiffness matrix
              * \param &D: The D stiffness matrix
              * \param &term1: The first term.
+             * \param &dTerm1dGreenLagrangeStrain: The derivative of the first term w.r.t. the Green-Lagrange strain
+             * \param &dTerm1dMicroStrain: The derivative of the first term w.r.t. the micro strain
              */
     
             //Assume 3D
@@ -1114,7 +1116,7 @@ namespace tardigradeHydra{
                                                     variableVector &dReferenceHigherOrderStressdGamma ){
             /*!
              * Compute the higher order stress in the reference configuration.
-             * \f$M_{IJK} = C_{JKILMN} Gamma_{LMN}\f$
+             * \f$M_{IJK} = C_{JKILMN} \Gamma_{LMN}\f$
              *
              * Also compute the Jacobian
              * \f$\frac{ \partial M_{IJK} }{\partial \Gamma_{OPQ} } = C_{JKIOPQ}\f$
@@ -1123,6 +1125,7 @@ namespace tardigradeHydra{
              * \param &C: The C stiffness tensor.
              * \param &referenceHigherOrderStress: The higher order stress in the reference 
              *     configuration.
+             * \param &dReferenceHigherOrderStressdGamma: The derivative of the higher order stress in the reference configuration w.r.t. \f$ \bf{\Gamma} \f$
              */
     
             //Assume 3D
@@ -1216,6 +1219,8 @@ namespace tardigradeHydra{
              * \param &invCGamma: \f$ C_{JS}^{-1} \Gamma_{SQR} \f$
              * \param &referenceHigherOrderStress: The higher order stress in the reference configuration.
              * \param &term3: The third term in the linear elastic equation.
+             * \param &dTerm3dInvCGamma: The derivative of the third term w.r.t. \f$ C_{TW}^{-1} \Gamma_{WUV} \f$
+             * \param &dTerm3dReferenceHigherOrderStress: The derivative of the third term w.r.t. the reference higher order stress
              */
     
             //Assume 3D
@@ -1378,9 +1383,11 @@ namespace tardigradeHydra{
              * \frac{\partial C_{JS}^{-1} \Gamma_{SQR} }{ \partial \Gamma_{TUV} } &= C_{JT}^{-1} \delta_{QU} \delta_{RV}
              * \end{align}\f$
              *
-             * \param &invRCG: The inverse of the right Cauchy Green deformation tensor.
+             * \param &invRCG: The inverse of the right Cauchy-Green deformation tensor.
              * \param &Gamma: The gradient of the micro-deformation deformation tensor.
              * \param &invRCGGamma: The product.
+             * \param &dInvRCGGammadRCG: The derivative of the product w.r.t. the right Cauchy-Green deformation tensor
+             * \param &dInvRCGGammadGamma: The derivative of the product w.r.t. \f$ \bf{\Gamma} \f$
              */
     
             //Assume 3d
@@ -1669,9 +1676,9 @@ namespace tardigradeHydra{
             /*!
              * Assemble the fundamental deformation meaures from the degrees of freedom.
              *
-             * \param const &grad_u: The macro displacement gradient w.r.t. the reference configuration.
-             * \param const &phi: The micro displacement.
-             * \param const &grad_phi: The gradient of the micro displacement w.r.t. the reference configuration.
+             * \param &grad_u: The macro displacement gradient w.r.t. the reference configuration.
+             * \param &phi: The micro displacement.
+             * \param &grad_phi: The gradient of the micro displacement w.r.t. the reference configuration.
              * \param &deformationGradient: The deformation gradient
              * \param &microDeformation: The micro deformation
              * \param &gradientMicroDeformation: The gradient of the micro deformation.

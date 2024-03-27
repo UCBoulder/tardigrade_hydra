@@ -434,10 +434,13 @@ namespace tardigradeHydra{
 
                 const floatType* getIntegrationParameter( );
 
+                //!Return the flag for whether to use the weakened Macaulay bracket or not
                 const bool *useWeakenedMacaulay( ){ return &_useWeakenedMacaulay; }
 
+                //!Return the value of the Weakened Macaulay parameter
                 const floatType *getWeakenedMacaulayParameter( ){ return &_weakenedMacaulayParameter; }
 
+                //!Return the value of the barrier modulus to prevent the plastic multipliers from becoming negative
                 const floatType *getPlasticMultiplierBarrierModulus( ){ return &_plasticMultiplierBarrierModulus; }
 
             protected:
