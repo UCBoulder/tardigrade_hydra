@@ -1315,6 +1315,8 @@ namespace tardigradeHydra{
 
             plasticMicroGradientVelocityGradient = variableVector( dim * dim * dim, 0 );
 
+            std::fill( temp_tot.begin( ), temp_tot.end( ), 0 );
+
             for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
 
                 for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
@@ -1323,14 +1325,28 @@ namespace tardigradeHydra{
 
                         for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
 
-                            for ( unsigned int Ib = 0; Ib < dim; Ib++ ){
+                            temp_tot[ dim * dim * Nb + dim * Mb + Kb ]
+                                += microGradientGamma[ Lb ] * microGradientFlowDirection[ dim * dim * dim * Lb + dim * dim * Mb + dim * Kb + Nb ]
+                                 + elasticPsi[ dim * Kb + Lb ] * skewTerm[ dim * dim * Lb + dim * Nb + Mb ];
 
-                                plasticMicroGradientVelocityGradient[ dim * dim * Nb + dim * Mb + Kb ]
-                                    += inverseElasticPsi[ dim * Nb + Lb ]
-                                     * ( microGradientGamma[ Ib ] * microGradientFlowDirection[ dim * dim * dim * Ib + dim * dim * Kb + dim * Lb + Mb ]
-                                     +   elasticPsi[ dim * Lb + Ib ] * skewTerm[ dim * dim * Ib + dim * Mb + Kb ] );
+                        }
 
-                            }
+                    }
+
+                }
+
+            }
+
+            for ( unsigned int Nb = 0; Nb < dim; Nb++ ){
+
+                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
+
+                            plasticMicroGradientVelocityGradient[ dim * dim * Nb + dim * Mb + Kb ]
+                                += inverseElasticPsi[ dim * Nb + Lb ] * temp_tot[ dim * dim * Mb + dim * Kb + Lb ];
 
                         }
 
