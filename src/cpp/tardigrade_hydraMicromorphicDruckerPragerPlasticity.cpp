@@ -1530,6 +1530,22 @@ namespace tardigradeHydra{
 
             dPlasticMicroGradientLdMicroGradientFlowDirection = variableVector( tot_dim * dim * tot_dim, 0 );
 
+            floatVector temp_sot1( sot_dim, 0 );
+
+            for ( unsigned int Db = 0; Db < dim; Db++ ){
+
+                for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
+
+                    for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
+
+                        temp_sot1[ dim * Db + Kb ] += plasticMicroVelocityGradient[ dim * Db + Mb ] * inverseElasticPsi[ dim * Mb + Kb ];
+
+                    }
+
+                }
+
+            }
+
             for ( unsigned int Db = 0; Db < dim; Db++ ){
 
                 for ( unsigned int Mb = 0; Mb < dim; Mb++ ){
@@ -1538,19 +1554,17 @@ namespace tardigradeHydra{
 
                         for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
 
+                            dPlasticMicroGradientLdElasticGamma[ dim * dim * tot_dim * Db + dim * tot_dim * Mb + tot_dim * Kb + dim * dim * Ob + dim * Mb + Kb ]
+                                += temp_sot1[ dim * Db + Ob ];
+
                             for ( unsigned int Pb = 0; Pb < dim; Pb++ ){
 
                                 dPlasticMicroGradientLdElasticPsi[ dim * dim * sot_dim * Db + dim * sot_dim * Mb + sot_dim * Kb + dim * Ob + Pb ]
-                                    += -inverseElasticPsi[ dim * Db + Ob ]
-                                     * plasticMicroGradientVelocityGradient[ dim * dim * Pb + dim * Mb + Kb ]
-                                     + inverseElasticPsi[ dim * Db + Ob ] * skewTerm[ dim * dim * Pb + dim * Mb + Kb ];
+                                    += inverseElasticPsi[ dim * Db + Ob ]
+                                     * ( skewTerm[ dim * dim * Pb + dim * Mb + Kb ] - plasticMicroGradientVelocityGradient[ dim * dim * Pb + dim * Mb + Kb ] );
 
                                 dPlasticMicroGradientLdElasticGamma[ dim * dim * tot_dim * Db + dim * tot_dim * Mb + tot_dim * Kb + dim * dim * Ob + dim * Pb + Kb ]
-                                    -= plasticMicroVelocityGradient[ dim * Pb + Mb ]
-                                     * inverseElasticPsi[ dim * Db + Ob ];
-
-                                dPlasticMicroGradientLdElasticGamma[ dim * dim * tot_dim * Db + dim * tot_dim * Mb + tot_dim * Kb + dim * dim * Ob + dim * Mb + Kb ]
-                                    += plasticMicroVelocityGradient[ dim * Db + Pb ] * inverseElasticPsi[ dim * Pb + Ob ];
+                                    -= plasticMicroVelocityGradient[ dim * Pb + Mb ] * inverseElasticPsi[ dim * Db + Ob ];
 
                                 dPlasticMicroGradientLdMicroGradientFlowDirection[ dim * dim * tot_dim * dim * Db + dim * tot_dim * dim * Mb + tot_dim * dim * Kb + dim * dim * dim * Ob + dim * dim * Kb + dim * Pb + Mb ]
                                     += inverseElasticPsi[ dim * Db + Pb ] * microGradientGamma[ Ob ];
@@ -1562,8 +1576,10 @@ namespace tardigradeHydra{
                                         dPlasticMicroGradientLdElasticPsi[ dim * dim * sot_dim * Db + dim * sot_dim * Mb + sot_dim * Kb +dim * Ob + Pb ]
                                             -= plasticMicroVelocityGradient[ dim * Db + Qb ]
                                              * inverseElasticPsi[ dim * Qb + Ob ] * inverseElasticPsi[ dim * Pb + Rb ]
-                                             * elasticGamma[ dim * dim * Rb + dim * Mb + Kb ]
-                                             - plasticMicroVelocityGradient[ dim * Qb + Mb ]
+                                             * elasticGamma[ dim * dim * Rb + dim * Mb + Kb ];
+
+                                        dPlasticMicroGradientLdElasticPsi[ dim * dim * sot_dim * Db + dim * sot_dim * Mb + sot_dim * Kb +dim * Ob + Pb ]
+                                            += plasticMicroVelocityGradient[ dim * Qb + Mb ]
                                              * inverseElasticPsi[ dim * Db + Ob ] * inverseElasticPsi[ dim * Pb + Rb ]
                                              * elasticGamma[ dim * dim * Rb + dim * Qb + Kb ];
 
