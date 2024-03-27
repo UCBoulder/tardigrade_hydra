@@ -54,17 +54,9 @@ namespace tardigradeHydra{
              */
     
             //Make sure the parameters are within bounds
-            TARDIGRADE_ERROR_TOOLS_CATCH( 
-                if ( ( 0 > frictionAngle ) || ( frictionAngle > 1.570796 ) ){
-                    throw std::runtime_error( "The friction angle must be betwen 0 and pi / 2 not " + std::to_string( frictionAngle ) );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( ( 0 <= frictionAngle ) && ( frictionAngle <= 1.570796 ), "The friction angle must be betwen 0 and pi / 2 not " + std::to_string( frictionAngle ) );
     
-            TARDIGRADE_ERROR_TOOLS_CATCH(
-                if ( abs( beta ) > 1 ){
-                    throw std::runtime_error( "Beta must be between -1 and 1 not " + std::to_string( beta ) );
-                }
-            )
+            TARDIGRADE_ERROR_TOOLS_CHECK( abs( beta ) <= 1, "Beta must be between -1 and 1 not " + std::to_string( beta ) );
     
             //Compute the parameters
             parameterType betaAngle = 2. * std::sqrt(6.) / ( 3. + beta * std::sin( frictionAngle ) );
