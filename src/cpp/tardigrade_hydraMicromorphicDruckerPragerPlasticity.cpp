@@ -368,8 +368,6 @@ namespace tardigradeHydra{
 
             d2FdStressdPrecedingF_map = ( d2FdStressdPrecedingF_map + ( dDevStressDirectiondDevStress_map * dDevStressdStress_map ).transpose( ) * dDevStressdPrecedingF_map ).eval( );
 
-//            d2FdStressdPrecedingF += tardigradeVectorTools::matrixMultiply( tardigradeVectorTools::matrixMultiply( dDevStressDirectiondDevStress, dDevStressdStress, sot_dim, sot_dim, sot_dim, sot_dim ), dDevStressdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim, true, false );
-
             for ( unsigned int AB = 0; AB < sot_dim; AB++ ){
                 for ( unsigned int IJKL = 0; IJKL < fot_dim; IJKL++ ){
                     d2FdStressdPrecedingF[ IJKL ] += devStressDirection[ AB ] * d2DevStressdStressdPrecedingF[ fot_dim * AB + IJKL ];
@@ -2283,8 +2281,11 @@ namespace tardigradeHydra{
                                            dPlasticMicroGradientdPlasticMicroGradientL, alphaMicroGradient );
             )
 
-            dPlasticMicroGradientdPlasticMicroL += tardigradeVectorTools::matrixMultiply( dPlasticMicroGradientdPlasticMicroDeformation,
-                                                                                          dPlasticMicroDeformationdPlasticMicroL, tot_dim, sot_dim, sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > map1( dPlasticMicroGradientdPlasticMicroDeformation.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > map2( dPlasticMicroDeformationdPlasticMicroL.data( ),        sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > map3( dPlasticMicroGradientdPlasticMicroL.data( ),           tot_dim, sot_dim );
+
+            map3 = ( map3 + map1 * map2 ).eval( );
 
         }
 
@@ -2409,15 +2410,17 @@ namespace tardigradeHydra{
                                            alphaMicroGradient );
             )
 
-            dPlasticMicroGradientdPlasticMicroL += tardigradeVectorTools::matrixMultiply( dPlasticMicroGradientdPlasticMicroDeformation,
-                                                                                          dPlasticMicroDeformationdPlasticMicroL, tot_dim, sot_dim, sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > map1( dPlasticMicroGradientdPlasticMicroDeformation.data( ),            tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > map2( dPlasticMicroDeformationdPlasticMicroL.data( ),                   sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > map3( dPlasticMicroGradientdPlasticMicroL.data( ),                      tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > map4( dPlasticMicroDeformationdPreviousPlasticMicroL.data( ),           sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > map5( dPlasticMicroGradientdPreviousPlasticMicroL.data( ),              tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > map6( dPlasticMicroDeformationdPreviousPlasticMicroDeformation.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > map7( dPlasticMicroGradientdPreviousPlasticMicroDeformation.data( ),    tot_dim, sot_dim );
 
-            dPlasticMicroGradientdPreviousPlasticMicroDeformation += tardigradeVectorTools::matrixMultiply( dPlasticMicroGradientdPlasticMicroDeformation,
-                                                                                                            dPlasticMicroDeformationdPreviousPlasticMicroDeformation, tot_dim, sot_dim, sot_dim, sot_dim );
-
-            dPlasticMicroGradientdPreviousPlasticMicroL += tardigradeVectorTools::matrixMultiply( dPlasticMicroGradientdPlasticMicroDeformation,
-                                                                                                  dPlasticMicroDeformationdPreviousPlasticMicroL, tot_dim, sot_dim, sot_dim, sot_dim );
-
+            map3 = ( map3 + map1 * map2 ).eval( );
+            map5 = ( map5 + map1 * map4 ).eval( );
+            map7 = ( map7 + map1 * map6 ).eval( );
 
         }
 
