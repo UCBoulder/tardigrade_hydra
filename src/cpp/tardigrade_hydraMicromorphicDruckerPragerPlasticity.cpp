@@ -1704,14 +1704,13 @@ namespace tardigradeHydra{
 
             //Assemble the right-hand side and left-hand side term
             variableVector RHS = DtAtilde;
+            RHS += previousPlasticMicroGradient;
             LHS = variableVector( tot_dim * tot_dim, 0 );
+            for ( unsigned int i = 0; i < tot_dim; i++ ){ LHS[ tot_dim * i + i ] = 1; }
 
             for ( unsigned int Db = 0; Db < dim; Db++ ){
                 for ( unsigned int B = 0; B < dim; B++ ){
                     for ( unsigned int Kb = 0; Kb < dim; Kb++ ){
-                        RHS[ dim * dim * Db + dim * B + Kb ]
-                           += previousPlasticMicroGradient[ dim * dim * Db + dim * B + Kb ];
-                        LHS[ dim * dim * tot_dim * Db + dim * tot_dim * B + tot_dim * Kb + dim * dim * Db + dim * B + Kb ] += 1;
                         for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
                            for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
                               RHS[ dim * dim * Db + dim * B + Kb ]
@@ -6436,12 +6435,6 @@ namespace tardigradeHydra{
 
                 d2MicroFlowdDrivingStressdFn     = get_previousd2MicroFlowdDrivingStressdFn( );
 
-                dMacroFlowdDrivingStress         = get_previousdMacroFlowdDrivingStress( );
-
-                dMicroFlowdDrivingStress         = get_previousdMicroFlowdDrivingStress( );
-
-                dMicroGradientFlowdDrivingStress = get_previousdMicroGradientFlowdDrivingStress( );
-
                 d2MicroGradientFlowdDrivingStressdStress = get_previousd2MicroGradientFlowdDrivingStressdStress( );
 
                 d2MicroGradientFlowdDrivingStressdF      = get_previousd2MicroGradientFlowdDrivingStressdF( );
@@ -6451,6 +6444,12 @@ namespace tardigradeHydra{
                 d2MicroGradientFlowdDrivingStressdChi    = get_previousd2MicroGradientFlowdDrivingStressdChi( );
 
                 d2MicroGradientFlowdDrivingStressdChin   = get_previousd2MicroGradientFlowdDrivingStressdChin( );
+
+                dMacroFlowdDrivingStress         = get_previousdMacroFlowdDrivingStress( );
+
+                dMicroFlowdDrivingStress         = get_previousdMicroFlowdDrivingStress( );
+
+                dMicroGradientFlowdDrivingStress = get_previousdMicroGradientFlowdDrivingStress( );
 
             }
             else{
@@ -6493,12 +6492,6 @@ namespace tardigradeHydra{
 
                 d2MicroFlowdDrivingStressdFn     = get_d2MicroFlowdDrivingStressdFn( );
 
-                dMacroFlowdDrivingStress         = get_dMacroFlowdDrivingStress( );
-
-                dMicroFlowdDrivingStress         = get_dMicroFlowdDrivingStress( );
-
-                dMicroGradientFlowdDrivingStress = get_dMicroGradientFlowdDrivingStress( );
-
                 d2MicroGradientFlowdDrivingStressdStress = get_d2MicroGradientFlowdDrivingStressdStress( );
 
                 d2MicroGradientFlowdDrivingStressdF      = get_d2MicroGradientFlowdDrivingStressdF( );
@@ -6508,6 +6501,12 @@ namespace tardigradeHydra{
                 d2MicroGradientFlowdDrivingStressdChi    = get_d2MicroGradientFlowdDrivingStressdChi( );
 
                 d2MicroGradientFlowdDrivingStressdChin   = get_d2MicroGradientFlowdDrivingStressdChin( );
+
+                dMacroFlowdDrivingStress         = get_dMacroFlowdDrivingStress( );
+
+                dMicroFlowdDrivingStress         = get_dMicroFlowdDrivingStress( );
+
+                dMicroGradientFlowdDrivingStress = get_dMicroGradientFlowdDrivingStress( );
 
             }
 
@@ -6686,57 +6685,6 @@ namespace tardigradeHydra{
             floatVector dPlasticMicroLdMicroStress = tardigradeVectorTools::matrixMultiply( dPlasticMicroLdMicroFlowDirection, *d2MicroFlowdDrivingStressdStress, sot_dim, sot_dim, sot_dim, sot_dim );
 
             floatVector dPlasticGradientMicroLdMicroStress = tardigradeVectorTools::matrixMultiply( dPlasticGradientMicroLdPlasticMicroL, dPlasticMicroLdMicroStress, tot_dim, sot_dim, sot_dim, sot_dim );
-
-//            floatVector reshaped_d2MicroGradientFlowdDrivingStressdStress( dim * tot_dim * tot_dim, 0 );
-//
-//            floatVector reshaped_d2MicroGradientFlowdDrivingStressdF( dim * tot_dim * sot_dim, 0 );
-//
-//            floatVector reshaped_d2MicroGradientFlowdDrivingStressdFn( dim * tot_dim * ( num_configs - 1 ) * sot_dim, 0 );
-//
-//            floatVector reshaped_d2MicroGradientFlowdDrivingStressdChi( dim * tot_dim * sot_dim, 0 );
-//
-//            floatVector reshaped_d2MicroGradientFlowdDrivingStressdChin( dim * tot_dim * ( num_configs - 1 ) * sot_dim, 0 );
-//
-//            for ( unsigned int i = 0; i < dim; i++ ){ //TODO: Try and improve the cache access here
-//
-//                for ( unsigned int j = 0; j < tot_dim; j++ ){
-//
-//                    for ( unsigned int k = 0; k < tot_dim; k++ ){
-//
-//                        reshaped_d2MicroGradientFlowdDrivingStressdStress[ tot_dim * tot_dim * i + tot_dim * j + k ]
-//                            = ( *d2MicroGradientFlowdDrivingStressdStress )[ tot_dim * tot_dim * i + tot_dim * j + k ];
-//
-//                    }
-//
-//                }
-//                for ( unsigned int j = 0; j < tot_dim; j++ ){
-//
-//                    for ( unsigned int k = 0; k < sot_dim; k++ ){
-//
-//                        reshaped_d2MicroGradientFlowdDrivingStressdF[ tot_dim * sot_dim * i + sot_dim * j + k ]
-//                            = ( *d2MicroGradientFlowdDrivingStressdF )[ i ][ ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( *dim ) *  ( *dim ) * j + k ];
-//
-//                        reshaped_d2MicroGradientFlowdDrivingStressdChi[ ( *dim ) * ( *dim ) * ( *dim ) * i + j ][ k ]
-//                            = ( *d2MicroGradientFlowdDrivingStressdChi )[ i ][ ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( *dim ) *  ( *dim ) * j + k ];
-//
-//                    }
-//
-//                }
-//                for ( unsigned int j = 0; j < tot_dim; j++ ){
-//
-//                    for ( unsigned int k = 0; k < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( *dim ) * ( *dim ); k++ ){
-//
-//                        reshaped_d2MicroGradientFlowdDrivingStressdFn[ ( *dim ) * ( *dim ) * ( *dim ) * i + j ][ k ]
-//                            = ( *d2MicroGradientFlowdDrivingStressdFn )[ i ][ ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( *dim ) *  ( *dim ) * j + k ];
-//
-//                        reshaped_d2MicroGradientFlowdDrivingStressdChin[ ( *dim ) * ( *dim ) * ( *dim ) * i + j ][ k ]
-//                            = ( *d2MicroGradientFlowdDrivingStressdChin )[ i ][ ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( *dim ) *  ( *dim ) * j + k ];
-//
-//                    }
-//
-//                }
-//
-//            }
 
             floatVector dPlasticGradientMicroLdHigherOrderStress = tardigradeVectorTools::matrixMultiply( dPlasticGradientMicroLdMicroGradientFlowDirection, *d2MicroGradientFlowdDrivingStressdStress,
                                                                                                           tot_dim, 3 * tot_dim, 3 * tot_dim, tot_dim );
