@@ -173,10 +173,20 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
                                                        rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                                                        dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
-   
-            variableVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim );
-            variableVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG, dRCGdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
- 
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dDevStressdRCG_map(        dDevStressdRCG.data( ),  sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,       1, sot_dim, Eigen::RowMajor > > dPressuredRCG_map(         dPressuredRCG.data( ),   1,       sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dRCGdPrecedingF_map(       dRCGdPrecedingF.data( ), sot_dim, sot_dim );
+
+            variableVector dDevStressdPrecedingF( sot_dim * sot_dim, 0 );
+            variableVector dPressuredPrecedingF( sot_dim, 0 );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dDevStressdPrecedingF_map( dDevStressdPrecedingF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,       1, sot_dim, Eigen::RowMajor > > dPressuredPrecedingF_map(  dPressuredPrecedingF.data( ),  sot_dim, sot_dim );
+
+            dDevStressdPrecedingF_map = ( dDevStressdRCG_map * dRCGdPrecedingF_map ).eval( );
+            dPressuredPrecedingF_map  = ( dPressuredRCG_map * dRCGdPrecedingF_map ).eval( );
+
             //Compute the l2norm of the deviatoric stress
             variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
     
@@ -187,12 +197,21 @@ namespace tardigradeHydra{
             variableVector devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
     
             dFdStress  = BAngle * dPressuredStress;
-            dFdStress += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdStress, 1, sot_dim, sot_dim, sot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, 1, sot_dim, Eigen::RowMajor > > devStressDirection_map( devStressDirection.data( ), 1, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dDevStressdStress_map( dDevStressdStress.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, 1, sot_dim, Eigen::RowMajor > > dFdStress_map( dFdStress.data( ), 1, sot_dim );
+
+            dFdStress_map = ( dFdStress_map + devStressDirection_map * dDevStressdStress_map ).eval( );
     
             dFdc = - AAngle;
     
             dFdPrecedingF  = BAngle * dPressuredPrecedingF;
-            dFdPrecedingF += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, 1, sot_dim, Eigen::RowMajor > > dFdPrecedingF_map( dFdPrecedingF.data( ), 1, sot_dim );
+
+            dFdPrecedingF_map = ( dFdPrecedingF_map + devStressDirection_map * dDevStressdPrecedingF_map ).eval( );
+
         }
 
         void computeSecondOrderDruckerPragerYieldEquation( const variableVector &stressMeasure, const variableType &cohesion,
@@ -265,8 +284,18 @@ namespace tardigradeHydra{
                                                        rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                                                        dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
 
-            variableVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim );
-            variableVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG, dRCGdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dDevStressdRCG_map(        dDevStressdRCG.data( ),  sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,       1, sot_dim, Eigen::RowMajor > > dPressuredRCG_map(         dPressuredRCG.data( ),   1,       sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dRCGdPrecedingF_map(       dRCGdPrecedingF.data( ), sot_dim, sot_dim );
+
+            variableVector dDevStressdPrecedingF( sot_dim * sot_dim, 0 );
+            variableVector dPressuredPrecedingF( sot_dim, 0 );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dDevStressdPrecedingF_map( dDevStressdPrecedingF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,       1, sot_dim, Eigen::RowMajor > > dPressuredPrecedingF_map(  dPressuredPrecedingF.data( ),  sot_dim, sot_dim );
+
+            dDevStressdPrecedingF_map = ( dDevStressdRCG_map * dRCGdPrecedingF_map ).eval( );
+            dPressuredPrecedingF_map  = ( dPressuredRCG_map * dRCGdPrecedingF_map ).eval( );
 
             variableVector d2DevStressdStressdPrecedingF( sot_dim * sot_dim * sot_dim, 0 );
 
@@ -304,22 +333,42 @@ namespace tardigradeHydra{
             variableVector devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
 
             dFdStress = BAngle * dPressuredStress;
-            dFdStress += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdStress, 1, sot_dim, sot_dim, sot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, 1, sot_dim, Eigen::RowMajor > > devStressDirection_map( devStressDirection.data( ), 1, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dDevStressdStress_map( dDevStressdStress.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, 1, sot_dim, Eigen::RowMajor > > dFdStress_map( dFdStress.data( ), 1, sot_dim );
+
+            dFdStress_map = ( dFdStress_map + devStressDirection_map * dDevStressdStress_map ).eval( );
 
             dFdc = - AAngle;
 
             dFdPrecedingF = BAngle * dPressuredPrecedingF;
-            dFdPrecedingF += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, 1, sot_dim, Eigen::RowMajor > > dFdPrecedingF_map( dFdPrecedingF.data( ), 1, sot_dim );
+
+            dFdPrecedingF_map = ( dFdPrecedingF_map + devStressDirection_map * dDevStressdPrecedingF_map ).eval( );
 
             //Evaluate the second-order jacobians
             variableVector dDevStressDirectiondDevStress( sot_dim * sot_dim, 0 );
             for ( unsigned int i = 0; i < sot_dim; i++ ){ dDevStressDirectiondDevStress[ sot_dim * i + i ] = 1. / ( normDevStress + tol ); }
-            dDevStressDirectiondDevStress -= tardigradeVectorTools::matrixMultiply( devStressDirection, devStressDirection, sot_dim, 1, 1, sot_dim ) / ( normDevStress + tol );
 
-            d2FdStress2 = tardigradeVectorTools::matrixMultiply( dDevStressdStress, tardigradeVectorTools::matrixMultiply( dDevStressDirectiondDevStress, dDevStressdStress, sot_dim, sot_dim, sot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim, true, false );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dDevStressDirectiondDevStress_map( dDevStressDirectiondDevStress.data( ), sot_dim, sot_dim );
+
+            dDevStressDirectiondDevStress_map = ( dDevStressDirectiondDevStress_map - devStressDirection_map.transpose( ) * devStressDirection_map / ( normDevStress + tol ) ).eval( );
+
+            d2FdStress2 = variableVector( sot_dim * sot_dim, 0 );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > d2FdStress2_map( d2FdStress2.data( ), sot_dim, sot_dim );
+
+            d2FdStress2_map = ( dDevStressdStress_map.transpose( ) * dDevStressDirectiondDevStress_map * dDevStressdStress_map ).eval( );
 
             d2FdStressdPrecedingF  = BAngle * d2PressuredStressdPrecedingF;
-            d2FdStressdPrecedingF += tardigradeVectorTools::matrixMultiply( tardigradeVectorTools::matrixMultiply( dDevStressDirectiondDevStress, dDevStressdStress, sot_dim, sot_dim, sot_dim, sot_dim ), dDevStressdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim, true, false );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > d2FdStressdPrecedingF_map( d2FdStressdPrecedingF.data( ), sot_dim, sot_dim );
+
+            d2FdStressdPrecedingF_map = ( d2FdStressdPrecedingF_map + ( dDevStressDirectiondDevStress_map * dDevStressdStress_map ).transpose( ) * dDevStressdPrecedingF_map ).eval( );
+
+//            d2FdStressdPrecedingF += tardigradeVectorTools::matrixMultiply( tardigradeVectorTools::matrixMultiply( dDevStressDirectiondDevStress, dDevStressdStress, sot_dim, sot_dim, sot_dim, sot_dim ), dDevStressdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim, true, false );
 
             for ( unsigned int AB = 0; AB < sot_dim; AB++ ){
                 for ( unsigned int IJKL = 0; IJKL < fot_dim; IJKL++ ){
@@ -1838,30 +1887,39 @@ namespace tardigradeHydra{
             variableVector dCurrentPlasticMicroGradientdCurrentDTAtilde( dim * dim * dim * dim * dim * dim );
             variableVector dCurrentPlasticMicroGradientdCurrentFourthA( dim * dim * dim * dim * dim * dim * dim );
 
-            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > LHSMat( LHS.data(), tot_dim, tot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > nDRDCDA( negdRdCurrentDtAtilde.data(), tot_dim, tot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > nDRDCFA( negdRdCurrentFourthA.data(), tot_dim, sot_dim * sot_dim );
+            Eigen::Map< const Eigen::Matrix< variableType, tot_dim,           tot_dim, Eigen::RowMajor > > LHSMat( LHS.data(), tot_dim, tot_dim );
+            Eigen::Map< const Eigen::Matrix< variableType, tot_dim,           tot_dim, Eigen::RowMajor > > nDRDCDA( negdRdCurrentDtAtilde.data(), tot_dim, tot_dim );
+            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, sot_dim * sot_dim, Eigen::RowMajor > > nDRDCFA( negdRdCurrentFourthA.data(), tot_dim, sot_dim * sot_dim );
 
-            Eigen::ColPivHouseholderQR< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > qrSolver( LHSMat );
+            Eigen::ColPivHouseholderQR< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > qrSolver( LHSMat );
 
-            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > X1( dCurrentPlasticMicroGradientdCurrentDTAtilde.data(), tot_dim, tot_dim );
-            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > X2( dCurrentPlasticMicroGradientdCurrentFourthA.data(), tot_dim, sot_dim * sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim,           tot_dim, Eigen::RowMajor > > X1( dCurrentPlasticMicroGradientdCurrentDTAtilde.data(), tot_dim, tot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim * sot_dim, Eigen::RowMajor > > X2( dCurrentPlasticMicroGradientdCurrentFourthA.data(), tot_dim, sot_dim * sot_dim );
 
             X1 = qrSolver.solve( nDRDCDA );
             X2 = qrSolver.solve( nDRDCFA );
 
             //Assemble the final terms of the deformation
-            dCurrentPlasticMicroGradientdPlasticMicroDeformation = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentDTAtilde,
-                                                                                                          dCurrentDTAtildedPlasticMicroDeformation, tot_dim, tot_dim, tot_dim, sot_dim );
 
-            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentFourthA,
-                                                                                                               dCurrentFourthAdMacroVelocityGradient, tot_dim, sot_dim * sot_dim, sot_dim * sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,           tot_dim, sot_dim, Eigen::RowMajor > > X3( dCurrentDTAtildedPlasticMicroDeformation.data( ),              tot_dim,           tot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim * sot_dim, sot_dim, Eigen::RowMajor > > X4( dCurrentFourthAdMacroVelocityGradient.data( ),                 sot_dim * sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim * sot_dim, sot_dim, Eigen::RowMajor > > X5( dCurrentFourthAdMicroVelocityGradient.data( ),                 sot_dim * sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,           tot_dim, tot_dim, Eigen::RowMajor > > X6( dCurrentDTAtildedPlasticMicroGradientVelocityGradient.data( ), tot_dim,           tot_dim );
 
-            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentFourthA,
-                                                                                                               dCurrentFourthAdMicroVelocityGradient, tot_dim, sot_dim * sot_dim, sot_dim * sot_dim, sot_dim );
+            dCurrentPlasticMicroGradientdPlasticMicroDeformation              = floatVector( tot_dim * sot_dim, 0. );
+            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient         = floatVector( tot_dim * sot_dim, 0. );
+            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient         = floatVector( tot_dim * sot_dim, 0. );
+            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = floatVector( tot_dim * tot_dim, 0. );
 
-            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentDTAtilde,
-                                                                                                                       dCurrentDTAtildedPlasticMicroGradientVelocityGradient, tot_dim, tot_dim, tot_dim, tot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > A1( dCurrentPlasticMicroGradientdPlasticMicroDeformation.data( ),              tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > A2( dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient.data( ),         tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > A3( dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient.data( ),         tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > A4( dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient.data( ), tot_dim, tot_dim );
+
+            A1 = ( X1 * X3 ).eval( );
+            A2 = ( X2 * X4 ).eval( );
+            A3 = ( X2 * X5 ).eval( );
+            A4 = ( X1 * X6 ).eval( );
 
         }
 
@@ -2041,26 +2099,33 @@ namespace tardigradeHydra{
             DCPMGDPMiVG = qrSolver.solve( DRDPPMiVG );
 
             //Assemble the final terms of the deformation
-            dCurrentPlasticMicroGradientdPlasticMicroDeformation = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentDTAtilde,
-                                                                                                          dCurrentDTAtildedPlasticMicroDeformation, tot_dim, tot_dim, tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,           tot_dim, sot_dim, Eigen::RowMajor > > X3( dCurrentDTAtildedPlasticMicroDeformation.data( ),               tot_dim,           tot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim * sot_dim, sot_dim, Eigen::RowMajor > > X4( dCurrentFourthAdMacroVelocityGradient.data( ),                  sot_dim * sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim * sot_dim, sot_dim, Eigen::RowMajor > > X5( dCurrentFourthAdMicroVelocityGradient.data( ),                  sot_dim * sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,           tot_dim, tot_dim, Eigen::RowMajor > > X6( dCurrentDTAtildedPlasticMicroGradientVelocityGradient.data( ),  tot_dim,           tot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,           tot_dim, sot_dim, Eigen::RowMajor > > X7( dPreviousDTAtildedPlasticMicroDeformation.data( ),              tot_dim,           sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,           tot_dim, tot_dim, Eigen::RowMajor > > X8( dPreviousDTAtildedPlasticMicroGradientVelocityGradient.data( ), tot_dim,           tot_dim );
 
-            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentFourthA,
-                                                                                                               dCurrentFourthAdMacroVelocityGradient, tot_dim, fot_dim, fot_dim, sot_dim );
+            dCurrentPlasticMicroGradientdPlasticMicroDeformation                      = floatVector( tot_dim * sot_dim, 0. );
+            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient                 = floatVector( tot_dim * sot_dim, 0. );
+            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient                 = floatVector( tot_dim * sot_dim, 0. );
+            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient         = floatVector( tot_dim * tot_dim, 0. );
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation              = floatVector( tot_dim * sot_dim, 0. );
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient = floatVector( tot_dim * tot_dim, 0. );
 
-            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentFourthA,
-                                                                                                               dCurrentFourthAdMicroVelocityGradient, tot_dim, fot_dim, fot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > A1( dCurrentPlasticMicroGradientdPlasticMicroDeformation.data( ),                      tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > A2( dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient.data( ),                 tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > A3( dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient.data( ),                 tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > A4( dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient.data( ),         tot_dim, tot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > A5( dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation.data( ),              tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > A6( dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient.data( ), tot_dim, tot_dim );
 
-            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentDTAtilde,
-                                                                                                                       dCurrentDTAtildedPlasticMicroGradientVelocityGradient,
-                                                                                                                       tot_dim, tot_dim, tot_dim, tot_dim );
-
-            dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentDTAtilde,
-                                                                                                                  dPreviousDTAtildedPlasticMicroDeformation,
-                                                                                                                  tot_dim, tot_dim, tot_dim, sot_dim );
-
-            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentDTAtilde,
-                                                                                                                               dPreviousDTAtildedPlasticMicroGradientVelocityGradient,
-                                                                                                                               tot_dim, tot_dim, tot_dim, tot_dim );
+            A1 = ( X1 * X3 ).eval( );
+            A2 = ( X2 * X4 ).eval( );
+            A3 = ( X2 * X5 ).eval( );
+            A4 = ( X1 * X6 ).eval( );
+            A5 = ( X1 * X7 ).eval( );
+            A6 = ( X1 * X8 ).eval( );
 
         }
 
