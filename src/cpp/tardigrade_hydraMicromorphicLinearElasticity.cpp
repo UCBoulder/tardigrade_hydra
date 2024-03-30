@@ -1109,13 +1109,9 @@ namespace tardigradeHydra{
     
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            A[ dim * dim * dim * K + dim * dim * L + dim * M + N ] = lambda * eye[ dim * K + L ] * eye[ dim * M + N ]
-                                                                                   + mu * ( eye[ dim * K + M ] * eye[ dim * L + N ]
-                                                                                          + eye[ dim * K + N ] * eye[ dim * L + M ] );
-                        }
-                    }
+                    A[ dim * dim * dim * K + dim * dim * L + dim * K + L ] += mu;
+                    A[ dim * dim * dim * K + dim * dim * L + dim * L + K ] += mu;
+                    A[ dim * dim * dim * K + dim * dim * K + dim * L + L ] += lambda;
                 }
             }
     
@@ -1149,15 +1145,9 @@ namespace tardigradeHydra{
     
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            B[ dim * dim * dim * K + dim * dim * L + dim * M + N ] = ( eta - tau ) * eye[ dim * K + L ] * eye[ dim * M + N ]
-                                                                                   + kappa * eye[ dim * K + M ] * eye[ dim * L + N ]
-                                                                                   + nu * eye[ dim * K + N ] * eye[ dim * L + M ]
-                                                                                   - sigma * ( eye[ dim * K + M ] * eye[ dim * L + N ]
-                                                                                             + eye[ dim * K + N ] * eye[ dim * L + M ] );
-                        }
-                    }
+                    B[ dim * dim * dim * K + dim * dim * K + dim * L + L ] += ( eta - tau );
+                    B[ dim * dim * dim * K + dim * dim * L + dim * K + L ] += kappa - sigma;
+                    B[ dim * dim * dim * K + dim * dim * L + dim * L + K ] += nu - sigma;
                 }
             }
     
