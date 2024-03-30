@@ -765,8 +765,6 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invCPsi, B, D, term2 ) )
     
             //Compute the Jacobians
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
             dTerm2dGreenLagrangeStrain = variableVector( sot_dim * sot_dim, 0 );
             dTerm2dMicroStrain         = variableVector( sot_dim * sot_dim, 0 );
             dTerm2dInvCPsi             = variableVector( sot_dim * sot_dim, 0 );
@@ -878,25 +876,18 @@ namespace tardigradeHydra{
             //Assume 3D
             constexpr unsigned int dim = 3;
             constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
-            if ( invCGamma.size() != dim * dim * dim ){
-                return new errorNode( "computeLinearElasticTerm3",
-                                      "invCGamma must have a size of 27" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( invCGamma.size() == tot_dim, "invCGamma must have a size of 27" );
     
-            if ( referenceHigherOrderStress.size() != dim * dim * dim ){
-                return new errorNode( "computeLinearElasticTerm3",
-                                      "The referenceHigherOrder stress must have a size of 27" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( referenceHigherOrderStress.size() == tot_dim, "The referenceHigherOrder stress must have a size of 27" );
     
             term3 = variableVector( sot_dim, 0 );
     
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
-                    for ( unsigned int Q = 0; Q < dim; Q++ ){
-                        for ( unsigned int R = 0; R < dim; R++ ){
-                            term3[ dim * I + J ] += referenceHigherOrderStress[ dim * dim * I + dim * Q + R ] * invCGamma[ dim * dim * J + dim * Q + R ];
-                        }
+                    for ( unsigned int QR = 0; QR < sot_dim; QR++ ){
+                            term3[ dim * I + J ] += referenceHigherOrderStress[ dim * dim * I + QR ] * invCGamma[ dim * dim * J + QR ];
                     }
                 }
             }
@@ -929,30 +920,16 @@ namespace tardigradeHydra{
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
     
-            errorOut error = computeLinearElasticTerm3( invCGamma, referenceHigherOrderStress, term3 );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeLinearElasticTerm3 (jacobian)",
-                                                 "Error in computation of term 3" );
-                result->addNext( error );
-                return result;
-            }
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm3( invCGamma, referenceHigherOrderStress, term3 ) );
     
             dTerm3dInvCGamma = variableVector( sot_dim * tot_dim, 0 );
             dTerm3dReferenceHigherOrderStress = variableVector( sot_dim * tot_dim, 0 );
     
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
-                    for ( unsigned int T = 0; T < dim; T++ ){
-                        for ( unsigned int U = 0; U < dim; U++ ){
-                            for ( unsigned int V = 0; V < dim; V++ ){
-                                dTerm3dInvCGamma[ dim * tot_dim * I + tot_dim * J + dim * dim * T + dim * U + V ] = referenceHigherOrderStress[ dim * dim * I + dim * U + V ] * eye[ dim * J + T ];
-                                dTerm3dReferenceHigherOrderStress[ dim * tot_dim * I + tot_dim * J + dim * dim * T + dim * U + V ] = eye[ dim * I + T ] * invCGamma[ dim * dim * J + dim * U + V ];
-                            }
-                        }
+                    for ( unsigned int TU = 0; TU < sot_dim; TU++ ){
+                            dTerm3dInvCGamma[ dim * tot_dim * I + tot_dim * J + dim * dim * J + TU ] = referenceHigherOrderStress[ dim * dim * I + TU ];
+                            dTerm3dReferenceHigherOrderStress[ dim * tot_dim * I + tot_dim * J + dim * dim * I + TU ] = invCGamma[ dim * dim * J + TU ];
                     }
                 }
             }
@@ -970,14 +947,11 @@ namespace tardigradeHydra{
     
             //Assume 3d
             constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
     
-            if ( invRCG.size() != dim * dim ){
-                return new errorNode( "computeInvRCGGamma", "invRCG has an improper dimension" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( invRCG.size() == sot_dim, "InvRCG has an improper dimension" )
     
-            if ( Psi.size() != dim * dim ){
-                return new errorNode( "computeInvRCGGamma", "Psi has an improper dimension" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( Psi.size() == sot_dim, "Psi has an improper dimension" )
     
             invRCGPsi = tardigradeVectorTools::matrixMultiply( invRCG, Psi, dim, dim, dim, dim );
     
@@ -1007,13 +981,7 @@ namespace tardigradeHydra{
             constexpr unsigned int dim = 3;
             constexpr unsigned int sot_dim = dim * dim;
     
-            errorOut error = computeInvRCGPsi( invRCG, Psi, invRCGPsi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeInvRCGPsi (jacobian)", "Error in computation of invRCG Psi product" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGPsi( invRCG, Psi, invRCGPsi ) );
     
             //Construct the jacobians
             variableVector eye( sot_dim );
@@ -1025,9 +993,9 @@ namespace tardigradeHydra{
             for ( unsigned int I = 0; I < 3; I++ ){
                 for ( unsigned int J = 0; J < 3; J++ ){
                     for ( unsigned int K = 0; K < 3; K++ ){
+                        dInvRCGPsidPsi[ dim * sot_dim * I + sot_dim * J + dim * K + J ] = invRCG[ dim * I + K ];
                         for ( unsigned int L = 0; L < 3; L++ ){
                             dInvRCGPsidRCG[ dim * sot_dim * I + sot_dim * J + dim * K + L ] = -invRCG[ dim * I + K ] * invRCGPsi[ dim * L + J ];
-                            dInvRCGPsidPsi[ dim * sot_dim * I + sot_dim * J + dim * K + L ] = invRCG[ dim * I + K ] * eye[ dim * J + L ];
                         }
                     }
                 }
@@ -1050,13 +1018,9 @@ namespace tardigradeHydra{
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
     
-            if ( invRCG.size() != sot_dim ){
-                return new errorNode( "computeInvRCGGamma", "invRCG has an improper dimension" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( invRCG.size() == sot_dim, "invRCG has an improper dimension" );
     
-            if ( Gamma.size() != tot_dim ){
-                return new errorNode( "computeInvRCGGamma", "Gamma has an improper dimension" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( Gamma.size() == tot_dim, "Gamma has an improper dimension" );
     
             invRCGGamma = variableVector( tot_dim, 0 );
             for ( unsigned int J = 0; J < dim; J++ ){
@@ -1096,13 +1060,7 @@ namespace tardigradeHydra{
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
     
-            errorOut error = computeInvRCGGamma( invRCG, Gamma, invRCGGamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeInvRCGGamma (jacobian)", "Error in computation of invRCG Gamma product" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGGamma( invRCG, Gamma, invRCGGamma ) )
     
             //Assemble jacobians of invCGamma w.r.t. C and Gamma
             variableVector eye( dim * dim );
@@ -1115,13 +1073,11 @@ namespace tardigradeHydra{
                 for ( unsigned int Q = 0; Q < dim; Q++ ){
                     for ( unsigned int R = 0; R < dim; R++ ){
                         for ( unsigned int T = 0; T < dim; T++ ){
+                            dInvRCGGammadGamma[ dim * dim * tot_dim * J + dim * tot_dim * Q + tot_dim * R + dim * dim * T + dim * Q + R]
+                                = invRCG[ dim * J + T ];
                             for ( unsigned int U = 0; U < dim; U++ ){
                                 dInvRCGGammadRCG[ dim * dim * sot_dim * J + dim * sot_dim * Q + sot_dim * R + dim * T + U ]
                                     = -invRCG[ dim * J + T] * invRCGGamma[ dim * dim * U + dim * Q + R ];
-                                for ( unsigned int V = 0; V < dim; V++ ){
-                                    dInvRCGGammadGamma[ dim * dim * tot_dim * J + dim * tot_dim * Q + tot_dim * R + dim * dim * T + dim * U + V]
-                                        = invRCG[ dim * J + T ] * eye[ dim * Q + U ] * eye[ dim * R + V ];
-                                }
                             }
                         }
                     }
