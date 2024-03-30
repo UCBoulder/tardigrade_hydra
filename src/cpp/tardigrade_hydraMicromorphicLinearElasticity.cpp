@@ -1176,35 +1176,32 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
-            if ( taus.size() != 11 ){
-                return new errorNode( "formIsotropicC", "11 moduli required to form C" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( taus.size() == 11, "11 moduli required to form C" );
     
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
-    
-            C = parameterVector( dim * dim * dim * dim * dim * dim, 0 );
+            C = parameterVector( tot_dim * tot_dim, 0 );
     
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
                     for ( unsigned int M = 0; M < dim; M++ ){
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * L + dim * M + M ] += taus[  0 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L + dim * dim * M + dim * M + K ] += taus[  0 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * M + dim * L + M ] += taus[  1 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K + dim * dim * M + dim * M + L ] += taus[  1 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * M + dim * M + L ] += taus[  2 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L + dim * dim * K + dim * M + M ] += taus[  3 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K + dim * dim * L + dim * M + M ] += taus[  4 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L + dim * dim * M + dim * K + M ] += taus[  4 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K + dim * dim * M + dim * L + M ] += taus[  5 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * K + dim * L + M ] += taus[  6 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * M + dim * K + L ] += taus[  7 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * L + dim * M + K ] += taus[  7 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * K + dim * M + L ] += taus[  8 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * L + dim * K + M ] += taus[  9 ];
-                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * M + dim * L + K ] += taus[ 10 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * K + tot_dim * L + dim * dim * L + dim * M + M ] += taus[  0 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * L + dim * dim * M + dim * M + K ] += taus[  0 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * K + tot_dim * L + dim * dim * M + dim * L + M ] += taus[  1 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * K + dim * dim * M + dim * M + L ] += taus[  1 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * K + tot_dim * L + dim * dim * M + dim * M + L ] += taus[  2 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * L + dim * dim * K + dim * M + M ] += taus[  3 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * K + dim * dim * L + dim * M + M ] += taus[  4 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * L + dim * dim * M + dim * K + M ] += taus[  4 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * K + dim * dim * M + dim * L + M ] += taus[  5 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * M + dim * dim * K + dim * L + M ] += taus[  6 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * M + dim * dim * M + dim * K + L ] += taus[  7 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * M + dim * dim * L + dim * M + K ] += taus[  7 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * M + dim * dim * K + dim * M + L ] += taus[  8 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * M + dim * dim * L + dim * K + M ] += taus[  9 ];
+                        C[ tot_dim * dim * dim * K + tot_dim * dim * L + tot_dim * M + dim * dim * M + dim * L + K ] += taus[ 10 ];
                     }
                 }
             }
@@ -1231,12 +1228,9 @@ namespace tardigradeHydra{
             D = parameterVector( dim * dim * dim * dim, 0 );
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            D[ dim * dim * dim * K + dim * dim * L + dim * M + N ] = tau * eye[ dim * K + L ] * eye[ dim * M + N ]
-                                + sigma * ( eye[ dim * K + M ] * eye[ dim * L + N ] + eye[ dim * K + N ] * eye[ dim * L + M ] );
-                        }
-                    }
+                    D[ dim * dim * dim * K + dim * dim * K + dim * L + L ] += tau;
+                    D[ dim * dim * dim * K + dim * dim * L + dim * K + L ] += sigma;
+                    D[ dim * dim * dim * K + dim * dim * L + dim * L + K ] += sigma;
                 }
             }
     
