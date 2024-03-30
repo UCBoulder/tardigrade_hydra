@@ -38,27 +38,13 @@ namespace tardigradeHydra{
              */
     
             variableVector PK2Stress, referenceMicroStress, referenceHigherOrderStress;
-            errorOut error = linearElasticityReference( deformationGradient, microDeformation, gradientMicroDeformation,
-                                                        A, B, C, D,
-                                                        PK2Stress, referenceMicroStress, referenceHigherOrderStress );
+            TARDIGRADE_ERROR_TOOLS_CATCH( linearElasticityReference( deformationGradient, microDeformation, gradientMicroDeformation,
+                                                                     A, B, C, D,
+                                                                     PK2Stress, referenceMicroStress, referenceHigherOrderStress ) )
     
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticity",
-                                                 "Error in the computation of the stresses in the reference configuration" );
-                result->addNext( error );
-                return result;
-            }
-    
-            error = mapStressMeasuresToCurrent( deformationGradient, microDeformation, PK2Stress,
-                                                referenceMicroStress, referenceHigherOrderStress,
-                                                cauchyStress, microStress, higherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticity",
-                                                 "Error in mapping the reference stresses to the current configuration" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( mapStressMeasuresToCurrent( deformationGradient, microDeformation, PK2Stress,
+                                                                      referenceMicroStress, referenceHigherOrderStress,
+                                                                      cauchyStress, microStress, higherOrderStress ) )
     
             return NULL;
         }
@@ -113,36 +99,22 @@ namespace tardigradeHydra{
             variableVector dReferenceMicroStressdF, dReferenceMicroStressdChi, dReferenceMicroStressdGradChi;
             variableVector dReferenceHigherOrderStressdF, dReferenceHigherOrderStressdGradChi;
     
-            errorOut error = linearElasticityReference( deformationGradient, microDeformation, gradientMicroDeformation,
-                                                        A, B, C, D,
-                                                        PK2Stress, referenceMicroStress, referenceHigherOrderStress,
-                                                        dPK2StressdF, dPK2StressdChi, dPK2StressdGradChi,
-                                                        dReferenceMicroStressdF, dReferenceMicroStressdChi, dReferenceMicroStressdGradChi,
-                                                        dReferenceHigherOrderStressdF, dReferenceHigherOrderStressdGradChi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticity",
-                                                 "Error in the computation of the stresses in the reference configuration" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( linearElasticityReference( deformationGradient, microDeformation, gradientMicroDeformation,
+                                                                     A, B, C, D,
+                                                                     PK2Stress, referenceMicroStress, referenceHigherOrderStress,
+                                                                     dPK2StressdF, dPK2StressdChi, dPK2StressdGradChi,
+                                                                     dReferenceMicroStressdF, dReferenceMicroStressdChi, dReferenceMicroStressdGradChi,
+                                                                     dReferenceHigherOrderStressdF, dReferenceHigherOrderStressdGradChi ) )
     
             variableVector dCauchyStressdPK2Stress, dMicroStressdReferenceMicroStress, dHigherOrderStressdReferenceHigherOrderStress;
     
-            error = mapStressMeasuresToCurrent( deformationGradient, microDeformation, PK2Stress,
-                                                referenceMicroStress, referenceHigherOrderStress,
-                                                cauchyStress, microStress, higherOrderStress,
-                                                dCauchyStressdF, dCauchyStressdPK2Stress,
-                                                dMicroStressdF, dMicroStressdReferenceMicroStress,
-                                                dHigherOrderStressdF, dHigherOrderStressdChi,
-                                                dHigherOrderStressdReferenceHigherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticity",
-                                                 "Error in mapping the reference stresses to the current configuration" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( mapStressMeasuresToCurrent( deformationGradient, microDeformation, PK2Stress,
+                                                                      referenceMicroStress, referenceHigherOrderStress,
+                                                                      cauchyStress, microStress, higherOrderStress,
+                                                                      dCauchyStressdF, dCauchyStressdPK2Stress,
+                                                                      dMicroStressdF, dMicroStressdReferenceMicroStress,
+                                                                      dHigherOrderStressdF, dHigherOrderStressdChi,
+                                                                      dHigherOrderStressdReferenceHigherOrderStress ) )
     
             //Assemble the jacobians of the Cauchy stress
             dCauchyStressdF += tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdF, sot_dim, sot_dim, sot_dim, sot_dim );
@@ -189,26 +161,12 @@ namespace tardigradeHydra{
     
             //Compute the required deformation measures
             variableVector RCG, Psi, Gamma;
-            errorOut error = computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
-                                                         RCG, Psi, Gamma );
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
+                                                                      RCG, Psi, Gamma ) )
     
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReference",
-                                                 "Error in the computation of the deformation measures" );
-                result->addNext( error );
-                return result;
-            }
-    
-            error = linearElasticityReferenceDerivedMeasures( RCG, Psi, Gamma, A, B, C, D,
-                                                              PK2Stress, referenceMicroStress,
-                                                              referenceHigherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReference",
-                                                 "Error in the computation of the reference stresses" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( linearElasticityReferenceDerivedMeasures( RCG, Psi, Gamma, A, B, C, D,
+                                                                                    PK2Stress, referenceMicroStress,
+                                                                                    referenceHigherOrderStress ) )
     
             return NULL;
         }
@@ -261,32 +219,18 @@ namespace tardigradeHydra{
             //Compute the required deformation measures
             variableVector RCG, Psi, Gamma;
             variableVector dRCGdF, dPsidF, dPsidChi, dGammadF, dGammadGradChi;
-            errorOut error = computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
-                                                         RCG, Psi, Gamma, dRCGdF, dPsidF, dPsidChi, dGammadF, dGammadGradChi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReference (jacobian)",
-                                                 "Error in the computation of the deformation measures" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
+                                                                      RCG, Psi, Gamma, dRCGdF, dPsidF, dPsidChi, dGammadF, dGammadGradChi ) )
     
             variableVector dPK2StressdRCG, dPK2StressdPsi, dPK2StressdGamma;
             variableVector dReferenceMicroStressdRCG, dReferenceMicroStressdPsi, dReferenceMicroStressdGamma;
             variableVector dMdGamma;
     
-            error = linearElasticityReferenceDerivedMeasures( RCG, Psi, Gamma, A, B, C, D,
-                                                              PK2Stress, referenceMicroStress, referenceHigherOrderStress,
-                                                              dPK2StressdRCG, dPK2StressdPsi, dPK2StressdGamma,
-                                                              dReferenceMicroStressdRCG, dReferenceMicroStressdPsi,
-                                                              dReferenceMicroStressdGamma, dMdGamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReference (jacobian)",
-                                                 "Error in the computation of the deformation measures" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( linearElasticityReferenceDerivedMeasures( RCG, Psi, Gamma, A, B, C, D,
+                                                                                    PK2Stress, referenceMicroStress, referenceHigherOrderStress,
+                                                                                    dPK2StressdRCG, dPK2StressdPsi, dPK2StressdGamma,
+                                                                                    dReferenceMicroStressdRCG, dReferenceMicroStressdPsi,
+                                                                                    dReferenceMicroStressdGamma, dMdGamma ) )
     
             dPK2StressdF = tardigradeVectorTools::matrixMultiply( dPK2StressdRCG, dRCGdF, sot_dim, sot_dim, sot_dim, sot_dim )
                          + tardigradeVectorTools::matrixMultiply( dPK2StressdPsi, dPsidF, sot_dim, sot_dim, sot_dim, sot_dim )
@@ -349,73 +293,31 @@ namespace tardigradeHydra{
             variableVector microStrain   = Psi - eye;
     
             //Compute the higher order stress
-            errorOut error = computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMeasures",
-                                                 "Error in computation of higher-order stress" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress ) )
     
             //Compute the first common term for the PK2 and symmetric micro-stress
             variableVector term1;
-            error = computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1 );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMeasures",
-                                                 "Error in computation of term 1" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1 ) )
     
             //Compute the second common term for the PK2 and symmetric micro-stress
             variableVector invRCGPsi;
-            error = computeInvRCGPsi( invRCG, Psi, invRCGPsi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMeasures",
-                                                 "Error in computation of invRCG Psi product" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGPsi( invRCG, Psi, invRCGPsi ) )
     
             variableVector term2;
-            error = computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invRCGPsi, B, D, term2 );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMesures",
-                                                 "Error in computation of term 2" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invRCGPsi, B, D, term2 ) )
     
             //Compute the third common term for the PK2 and symmetric micro-stress
             variableVector invRCGGamma;
-            error = computeInvRCGGamma( invRCG, Gamma, invRCGGamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMeasures",
-                                                 "Error in computation of invRCG Gamma product" );
-                result->addNext(error);
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGGamma( invRCG, Gamma, invRCGGamma ) )
     
             variableVector term3;
-            error = computeLinearElasticTerm3( invRCGGamma, referenceHigherOrderStress, term3 );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMeasures",
-                                                 "Error in computation of term 3" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm3( invRCGGamma, referenceHigherOrderStress, term3 ) )
     
             //Construct the PK2 and reference symmetric stresses
             PK2Stress            = term1 + term2 + term3;
     
             variableVector symmTerm2Term3;
-            error = tardigradeConstitutiveTools::computeSymmetricPart( term2 + term3, symmTerm2Term3 );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeSymmetricPart( term2 + term3, symmTerm2Term3 ) )
             referenceMicroStress = term1 + 2 * symmTerm2Term3;
     
             return NULL;
@@ -482,28 +384,14 @@ namespace tardigradeHydra{
             variableVector microStrain   = Psi - eye;
     
             //Compute the higher order stress
-            errorOut error = computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress, dMdGamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityRefereneDerivedMetrics (jacobian)",
-                                                 "Error in computation of higher-order stress" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress, dMdGamma ) )
     
             //Compute the first common term for the PK2 and symmetric micro-stress
             variableVector term1;
     
             variableVector dTerm1dRCG, dTerm1dPsi;
-            error = computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1,
-                                               dTerm1dRCG, dTerm1dPsi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMetrics (jacobian)",
-                                                 "Error in computation of term 1" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1,
+                                                                     dTerm1dRCG, dTerm1dPsi ) )
     
             //Assemble term1 jacobians w.r.t. F and Chi
             dTerm1dRCG *= 0.5;
@@ -512,26 +400,12 @@ namespace tardigradeHydra{
             variableVector invRCGPsi;
             variableVector dInvRCGPsidRCG, dInvRCGPsidPsi;
     
-            error = computeInvRCGPsi( invRCG, Psi, invRCGPsi, dInvRCGPsidRCG, dInvRCGPsidPsi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMetrics (jacobian)",
-                                                 "Error in computation of invRCG Psi product" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGPsi( invRCG, Psi, invRCGPsi, dInvRCGPsidRCG, dInvRCGPsidPsi ) )
     
             variableVector term2;
             variableVector dTerm2dRCG, dTerm2dPsi, dTerm2dInvRCGPsi;
-            error = computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invRCGPsi, B, D, term2,
-                                               dTerm2dRCG, dTerm2dPsi, dTerm2dInvRCGPsi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMetrics (jacobian)",
-                                                 "Error in computation of term 2" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invRCGPsi, B, D, term2,
+                                                                     dTerm2dRCG, dTerm2dPsi, dTerm2dInvRCGPsi ) )
 
             dTerm2dRCG *= 0.5;
             dTerm2dRCG += tardigradeVectorTools::matrixMultiply( dTerm2dInvRCGPsi, dInvRCGPsidRCG, sot_dim, sot_dim, sot_dim, sot_dim );
@@ -542,25 +416,11 @@ namespace tardigradeHydra{
             variableVector invRCGGamma;
             variableVector dInvRCGGammadRCG, dInvRCGGammadGamma;
     
-            error = computeInvRCGGamma( invRCG, Gamma, invRCGGamma, dInvRCGGammadRCG, dInvRCGGammadGamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMetrics (jacobian)",
-                                                 "Error in computation of invRCG Gamma product" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGGamma( invRCG, Gamma, invRCGGamma, dInvRCGGammadRCG, dInvRCGGammadGamma ) )
     
             variableVector term3;
             variableVector dTerm3dInvRCGGamma, dTerm3dM;
-            error = computeLinearElasticTerm3( invRCGGamma, referenceHigherOrderStress, term3, dTerm3dInvRCGGamma, dTerm3dM );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMetrics (jacobian)",
-                                                 "Error in computation of term 3" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm3( invRCGGamma, referenceHigherOrderStress, term3, dTerm3dInvRCGGamma, dTerm3dM ) )
     
             variableVector dTerm3dRCG = tardigradeVectorTools::matrixMultiply( dTerm3dInvRCGGamma, dInvRCGGammadRCG, sot_dim, tot_dim, tot_dim, sot_dim );
             variableVector dTerm3dGamma = tardigradeVectorTools::matrixMultiply( dTerm3dInvRCGGamma, dInvRCGGammadGamma, sot_dim, tot_dim, tot_dim, tot_dim )
@@ -575,7 +435,7 @@ namespace tardigradeHydra{
 
             variableVector symmTerm2Term3;
             variableVector dSymmTerm2Term3dTerm2Term3;
-            error = tardigradeConstitutiveTools::computeSymmetricPart( term2 + term3, symmTerm2Term3, dSymmTerm2Term3dTerm2Term3 );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeSymmetricPart( term2 + term3, symmTerm2Term3, dSymmTerm2Term3dTerm2Term3 ) )
             referenceMicroStress = term1 + 2 * symmTerm2Term3;
 
             dReferenceMicroStressdRCG = dTerm1dRCG + 2 * ( tardigradeVectorTools::matrixMultiply( dSymmTerm2Term3dTerm2Term3, dTerm2dRCG, sot_dim, sot_dim, sot_dim, sot_dim )
@@ -610,35 +470,14 @@ namespace tardigradeHydra{
              */
     
             //Map the PK2 stress to the Cauchy stress
-            errorOut error = tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, deformationGradient, cauchyStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the PK2 stress to the Cauchy stress" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, deformationGradient, cauchyStress ) )
     
             //Map the symmetric micro stress to the current configuration
-            error = tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceMicroStress, deformationGradient, microStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the micro-stress to the current configuation" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceMicroStress, deformationGradient, microStress ) )
     
             //Map the higher order stress to the current configuration
-            error = tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, deformationGradient,
-                                                                     microDeformation, higherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the higher-order stress to the current configuation" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, deformationGradient,
+                                                                                                     microDeformation, higherOrderStress ) )
     
             return NULL;
         }
@@ -686,40 +525,19 @@ namespace tardigradeHydra{
              */
     
             //Map the PK2 stress to the Cauchy stress
-            errorOut error = tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, deformationGradient, cauchyStress,
-                                                                      dCauchyStressdPK2Stress, dCauchyStressdF );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the PK2 stress to the Cauchy stress" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, deformationGradient, cauchyStress,
+                                                                                             dCauchyStressdPK2Stress, dCauchyStressdF ) )
     
             //Map the symmetric micro stress to the current configuration
-            error = tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceMicroStress, deformationGradient, microStress,
-                                                                        dMicroStressdReferenceMicroStress, dMicroStressdF );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the micro-stress to the current configuation" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceMicroStress, deformationGradient, microStress,
+                                                                                                        dMicroStressdReferenceMicroStress, dMicroStressdF ) )
     
             //Map the higher order stress to the current configuration
-            error = tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, deformationGradient,
-                                                                     microDeformation, higherOrderStress,
-                                                                     dHigherOrderStressdReferenceHigherOrderStress,
-                                                                     dHigherOrderStressdF,
-                                                                     dHigherOrderStressdChi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the higher-order stress to the current configuation" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, deformationGradient,
+                                                                                                     microDeformation, higherOrderStress,
+                                                                                                     dHigherOrderStressdReferenceHigherOrderStress,
+                                                                                                     dHigherOrderStressdF,
+                                                                                                     dHigherOrderStressdChi ) )
     
             return NULL;
         }
@@ -743,32 +561,11 @@ namespace tardigradeHydra{
              * \param &Gamma: The gradient micro-deformation measure
              */
     
-            errorOut error = tardigradeConstitutiveTools::computeRightCauchyGreen( deformationGradient, rightCauchyGreen );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( deformationGradient, rightCauchyGreen ) )
     
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures",
-                                                 "Error in the computation of the right Cauchy-Green Deformation measure" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computePsi( deformationGradient, microDeformation, Psi ) )
     
-            error = tardigradeMicromorphicTools::computePsi( deformationGradient, microDeformation, Psi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures",
-                                                 "Error in the computation of Psi" );
-                result->addNext( error );
-                return result;
-            }
-    
-            error = tardigradeMicromorphicTools::computeGamma( deformationGradient, gradientMicroDeformation, Gamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures",
-                                                 "Error in the computation of Gamma" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeGamma( deformationGradient, gradientMicroDeformation, Gamma ) )
     
             return NULL;
     
@@ -801,32 +598,11 @@ namespace tardigradeHydra{
              * \param &dGammadGradChi: The gradient of Gamma w.r.t. the spatial gradient of Chi
              */
     
-            errorOut error = tardigradeConstitutiveTools::computeRightCauchyGreen( deformationGradient, rightCauchyGreen, dCdF );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( deformationGradient, rightCauchyGreen, dCdF ) )
     
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures (jacobian)",
-                                                 "Error in the computation of the right Cauchy-Green Deformation measure" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computePsi( deformationGradient, microDeformation, Psi, dPsidF, dPsidChi ) )
     
-            error = tardigradeMicromorphicTools::computePsi( deformationGradient, microDeformation, Psi, dPsidF, dPsidChi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures (jacobian)",
-                                                 "Error in the computation of Psi" );
-                result->addNext( error );
-                return result;
-            }
-    
-            error = tardigradeMicromorphicTools::computeGamma( deformationGradient, gradientMicroDeformation, Gamma, dGammadF, dGammadGradChi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures (jacobian)",
-                                                 "Error in the computation of Gamma" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeGamma( deformationGradient, gradientMicroDeformation, Gamma, dGammadF, dGammadGradChi ) )
     
             return NULL;
         }
@@ -845,38 +621,24 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int fot_dim = sot_dim * sot_dim;
     
-            if ( greenLagrangeStrain.size() != dim * dim ){
-                return new errorNode( "computeLinearElasticTerm1",
-                                      "The green lagrange strain must have a length of 9" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( greenLagrangeStrain.size() == sot_dim,  "The green lagrange strain must have a length of 9" );
     
-            if ( microStrain.size() != dim * dim ){
-                return new errorNode( "computeLinearElasticTerm1",
-                                      "The micro-strain must have a length of 9" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( microStrain.size() == sot_dim, "The micro-strain must have a length of 9" );
     
-            if ( A.size() != dim * dim * dim * dim ){
-                return new errorNode( "computeLinearElasticTerm1",
-                                      "A must have a size of 3**4" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( A.size() == fot_dim, "A must have a size of 3**4" );
     
-            if ( D.size() != dim * dim * dim * dim ){
-                return new errorNode( "computeLinearElasticTerm1",
-                                      "D must have a size of 3**4" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( D.size() == fot_dim, "D must have a size of 3**4" );
     
             //Compute the first common term for the PK2 and symmetric micro-stress
             term1 = variableVector( dim * dim, 0 );
-            for ( unsigned int I = 0; I < dim; I++ ){
-                for ( unsigned int J = 0; J < dim; J++ ){
-                    for ( unsigned int K = 0; K < dim; K++ ){
-                        for ( unsigned int L = 0; L < dim; L++ ){
-                            term1[ dim * I + J ] += A[ dim * dim * dim * I + dim * dim * J + dim * K + L ] * greenLagrangeStrain[ dim * K + L ]
-                                                  + D[ dim * dim * dim * I + dim * dim * J + dim * K + L ] * microStrain[ dim * K + L ];
-                        }
-                    }
+            for ( unsigned int IJ = 0; IJ < sot_dim; IJ++ ){
+                for ( unsigned int KL = 0; KL < sot_dim; KL++ ){
+                    term1[ IJ ] += A[ sot_dim * IJ + KL ] * greenLagrangeStrain[ KL ]
+                                 + D[ sot_dim * IJ + KL ] * microStrain[ KL ];
                 }
             }
     
@@ -909,29 +671,14 @@ namespace tardigradeHydra{
             constexpr unsigned int dim = 3;
             constexpr unsigned int sot_dim = dim * dim;
     
-            errorOut error = computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1 );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeLinearElasticTerm1 (jacobian)",
-                                                 "Error in computation of linear elastic term1" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1 ) )
     
             //Compute the first common term for the PK2 and symmetric micro-stress
             dTerm1dGreenLagrangeStrain = variableVector( sot_dim * sot_dim, 0 );
             dTerm1dMicroStrain = variableVector( sot_dim * sot_dim, 0 );
-    
-            for ( unsigned int I = 0; I < dim; I++ ){
-                for ( unsigned int J = 0; J < dim; J++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            dTerm1dGreenLagrangeStrain[ dim * sot_dim * I + sot_dim * J + dim * M + N ] = A[ dim * dim * dim * I + dim * dim * J + dim * M + N ];
-                            dTerm1dMicroStrain[ dim * sot_dim * I + sot_dim * J + dim * M + N ] = D[ dim * dim * dim * I + dim * dim * J + dim * M + N ];
-                        }
-                    }
-                }
-            }
+
+            dTerm1dGreenLagrangeStrain = A;
+            dTerm1dMicroStrain = D;
     
             return NULL;
         }
