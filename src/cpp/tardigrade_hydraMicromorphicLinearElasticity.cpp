@@ -1195,11 +1195,10 @@ namespace tardigradeHydra{
                         C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * M + dim * L + M ] += taus[  1 ];
                         C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K + dim * dim * M + dim * M + L ] += taus[  1 ];
                         C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * M + dim * M + L ] += taus[  2 ];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L + dim * dim * K + dim * M + M ] += taus[  3 ];
                         for ( unsigned int N = 0; N < dim; N++ ){
                             for ( unsigned int P = 0; P < dim; P++ ){
                                 for ( unsigned int Q = 0; Q < dim; Q++ ){
-                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[  3 ] * eye[ dim * K + N ] * eye[ dim * L + M ] * eye[ dim * P + Q ];
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
                                                                      += taus[  4 ] * eye[ dim * K + M ] * eye[ dim * L + N ] * eye[ dim * P + Q ];
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
