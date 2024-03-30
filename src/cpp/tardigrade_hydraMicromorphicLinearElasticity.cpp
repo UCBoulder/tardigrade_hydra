@@ -778,9 +778,7 @@ namespace tardigradeHydra{
                             for ( unsigned int K = 0; K < dim; K++ ){
                                 dTerm2dGreenLagrangeStrain[ dim * sot_dim * I + sot_dim * J + dim * M + N ] += D[ dim * dim * dim * M + dim * dim * N + dim * I + K] * invCPsi[ dim * J + K ];
                                 dTerm2dMicroStrain[ dim * sot_dim * I + sot_dim * J + dim * M + N ] += B[ dim * dim * dim * I + dim * dim * K + dim * M + N] * invCPsi[ dim * J + K ];
-                                for ( unsigned int L = 0; L < dim; L++ ){
-                                    dTerm2dInvCPsi[ dim * sot_dim * I + sot_dim * J + dim * M + N ] += ( B[ dim * dim * dim * I + dim * dim * N + dim * K + L ] * microStrain[ dim * K + L ] + greenLagrangeStrain[ dim * K + L ] * D[ dim * dim * dim * K + dim * dim * L + dim * I + N ] ) * eye[ dim * J + M ];
-                                }
+                                dTerm2dInvCPsi[ dim * sot_dim * I + sot_dim * J + dim * J + M ] += ( B[ dim * dim * dim * I + dim * dim * M + dim * N + K ] * microStrain[ dim * N + K ] + greenLagrangeStrain[ dim * N + K ] * D[ dim * dim * dim * N + dim * dim * K + dim * I + M ] );
                             }
                         }
                     }
@@ -807,27 +805,17 @@ namespace tardigradeHydra{
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
     
-            if ( Gamma.size() != tot_dim ){
-                return new errorNode( "computeReferenceHigherOrderStress",
-                                      "Gamma must have a length of 27" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( Gamma.size() == tot_dim, "Gamma must have a length of 27" );
     
-            if ( C.size() != tot_dim * tot_dim ){
-                return new errorNode( "computeReferenceHigherOrderStress",
-                                      "The C stiffness tensor must have a length of 3**6.\nThe current size is " + std::to_string( C.size( ) ) );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( C.size() == tot_dim * tot_dim, "The C stiffness tensor must have a length of 3**6.\nThe current size is " + std::to_string( C.size( ) ) );
     
             referenceHigherOrderStress = variableVector( tot_dim, 0 );
     
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
                     for ( unsigned int K = 0; K < dim; K++ ){
-                        for ( unsigned int L = 0; L < dim; L++ ){
-                            for ( unsigned int M = 0; M < dim; M++ ){
-                                for ( unsigned int N = 0; N < dim; N++ ){
-                                    referenceHigherOrderStress[ dim * dim * I + dim * J + K ] += C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + dim * dim * L + dim * M + N ] * Gamma[ dim * dim * L + dim * M + N ];
-                                }
-                            }
+                        for ( unsigned int LMN = 0; LMN < tot_dim; LMN++ ){
+                                    referenceHigherOrderStress[ dim * dim * I + dim * J + K ] += C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + LMN ] * Gamma[ LMN ];
                         }
                     }
                 }
@@ -857,14 +845,7 @@ namespace tardigradeHydra{
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
     
-            errorOut error = computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeReferenceHigherOrderStress (jacobian)",
-                                                 "Error in computation of higher order stress" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress ) )
     
             //Assemble the Jacobian
             dReferenceHigherOrderStressdGamma = variableVector( tot_dim * tot_dim, 0 );
@@ -872,13 +853,9 @@ namespace tardigradeHydra{
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
                     for ( unsigned int K = 0; K < dim; K++ ){
-                        for ( unsigned int O = 0; O < dim; O++ ){
-                            for ( unsigned int P = 0; P < dim; P++ ){
-                                for ( unsigned int Q = 0; Q < dim; Q++ ){
-                                    dReferenceHigherOrderStressdGamma[ dim * dim * tot_dim * I + dim * tot_dim * J + tot_dim * K + dim * dim * O + dim * P + Q ] +=
-                                        C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + dim * dim * O + dim * P + Q ];
-                                }
-                            }
+                        for ( unsigned int OPQ = 0; OPQ < tot_dim; OPQ++ ){
+                                    dReferenceHigherOrderStressdGamma[ dim * dim * tot_dim * I + dim * tot_dim * J + tot_dim * K + OPQ ] +=
+                                        C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + OPQ ];
                         }
                     }
                 }
