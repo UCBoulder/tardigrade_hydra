@@ -702,44 +702,28 @@ namespace tardigradeHydra{
             //Assume 3D
             constexpr unsigned int dim = 3;
             constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int fot_dim = sot_dim * sot_dim;
     
-            if ( greenLagrangeStrain.size() != sot_dim ){
-                return new errorNode( "computeLinearElasticTerm2",
-                                      "The green lagrange strain must have a length of 9" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( greenLagrangeStrain.size() == sot_dim, "The green lagrange strain must have a length of 9" );
     
-            if ( microStrain.size() != sot_dim ){
-                return new errorNode( "computeLinearElasticTerm2",
-                                      "The micro-strain must have a length of 9" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( microStrain.size() == sot_dim, "The micro-strain must have a length of 9" );
     
-            if ( invCPsi.size() != sot_dim ){
-                return new errorNode( "computeLinearElasticTerm2",
-                                      "invCPsi must have a size of 9" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( invCPsi.size() == sot_dim, "invCPsi must have a size of 9" );
     
-            if ( B.size() != sot_dim * sot_dim ){
-                return new errorNode( "computeLinearElasticTerm2",
-                                      "B must have a size of 3**4" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( B.size() == fot_dim, "B must have a size of 3**4" );
     
-            if ( D.size() != sot_dim * sot_dim ){
-                return new errorNode( "computeLinearElasticTerm2",
-                                      "D must have a size of 3**4" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( D.size() == sot_dim * sot_dim, "D must have a size of 3**4" );
     
             term2 = variableVector( greenLagrangeStrain.size(), 0 );
     
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
-                    for ( unsigned int K = 0; K < dim; K++ ){
-                        for ( unsigned int L = 0; L < dim; L++ ){
+                    for ( unsigned int KL = 0; KL < sot_dim; KL++ ){
                             for ( unsigned int Q = 0; Q < dim; Q++ ){
-                                term2[ dim * I + J] += ( B[ dim * dim * dim * I + dim * dim * Q + dim * K + L ] * microStrain[ dim * K + L ]
-                                                     + greenLagrangeStrain[ dim * K + L ] * D[ dim * dim * dim * K + dim * dim * L + dim * I + Q ] )
+                                term2[ dim * I + J] += ( B[ dim * dim * dim * I + dim * dim * Q + KL ] * microStrain[ KL ]
+                                                     + greenLagrangeStrain[ KL ] * D[ dim * dim * KL + dim * I + Q ] )
                                                      * invCPsi[ dim * J + Q ];
                             }
-                        }
                     }
                 }
             }
@@ -778,14 +762,7 @@ namespace tardigradeHydra{
             constexpr unsigned int dim = 3;
             constexpr unsigned int sot_dim = dim * dim;
     
-            errorOut error = computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invCPsi, B, D, term2 );
-    
-            if ( error ){
-                errorOut result = new errorNode("computeLinearElasticTerm2 (jacobian)",
-                                                "Error in computation of term 2" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invCPsi, B, D, term2 ) )
     
             //Compute the Jacobians
             constantVector eye( dim * dim );
