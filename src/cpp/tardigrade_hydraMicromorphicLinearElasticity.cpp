@@ -1190,39 +1190,34 @@ namespace tardigradeHydra{
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
                     for ( unsigned int M = 0; M < dim; M++ ){
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * L + dim * M + M ] += taus[  0 ];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L + dim * dim * M + dim * M + K ] += taus[  0 ];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * M + dim * L + M ] += taus[  1 ];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K + dim * dim * M + dim * M + L ] += taus[  1 ];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * M + dim * M + L ] += taus[  2 ];
                         for ( unsigned int N = 0; N < dim; N++ ){
                             for ( unsigned int P = 0; P < dim; P++ ){
                                 for ( unsigned int Q = 0; Q < dim; Q++ ){
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 0] * eye[ dim * K + L ] * eye[ dim * M + N ] * eye[ dim * P + Q ];
+                                                                     += taus[  3 ] * eye[ dim * K + N ] * eye[ dim * L + M ] * eye[ dim * P + Q ];
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 0] * eye[ dim * K + Q ] * eye[ dim * L + M ] * eye[ dim * N + P ];
+                                                                     += taus[  4 ] * eye[ dim * K + M ] * eye[ dim * L + N ] * eye[ dim * P + Q ];
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 1] * eye[ dim * K + L ] * eye[ dim * M + P ] * eye[ dim * N + Q ];
+                                                                     += taus[  4 ] * eye[ dim * K + P ] * eye[ dim * L + M ] * eye[ dim * N + Q ];
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 1] * eye[ dim * K + M ] * eye[ dim * L + Q ] * eye[ dim * N + P ];
+                                                                     += taus[  5 ] * eye[ dim * K + M ] * eye[ dim * L + P ] * eye[ dim * N + Q ];
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 2] * eye[ dim * K + L ] * eye[ dim * M + Q ] * eye[ dim * N + P ];
+                                                                     += taus[  6 ] * eye[ dim * K + N ] * eye[ dim * L + P ] * eye[ dim * M + Q ];
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 3] * eye[ dim * K + N ] * eye[ dim * L + M ] * eye[ dim * P + Q ];
+                                                                     += taus[  7 ] * eye[ dim * K + P ] * eye[ dim * L + Q ] * eye[ dim * M + N ];
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 4] * eye[ dim * K + M ] * eye[ dim * L + N ] * eye[ dim * P + Q ];
+                                                                     += taus[  7 ] * eye[ dim * K + Q ] * eye[ dim * L + N ] * eye[ dim * M + P ];
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 4] * eye[ dim * K + P ] * eye[ dim * L + M ] * eye[ dim * N + Q ];
+                                                                     += taus[  8 ] * eye[ dim * K + N ] * eye[ dim * L + Q ] * eye[ dim * M + P ];
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 5] * eye[ dim * K + M ] * eye[ dim * L + P ] * eye[ dim * N + Q ];
+                                                                     += taus[  9 ] * eye[ dim * K + P ] * eye[ dim * L + N ] * eye[ dim * M + Q ];
                                     C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 6] * eye[ dim * K + N ] * eye[ dim * L + P ] * eye[ dim * M + Q ];
-                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 7] * eye[ dim * K + P ] * eye[ dim * L + Q ] * eye[ dim * M + N ];
-                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 7] * eye[ dim * K + Q ] * eye[ dim * L + N ] * eye[ dim * M + P ];
-                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 8] * eye[ dim * K + N ] * eye[ dim * L + Q ] * eye[ dim * M + P ];
-                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[ 9] * eye[ dim * K + P ] * eye[ dim * L + N ] * eye[ dim * M + Q ];
-                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
-                                                                     += taus[10] * eye[ dim * K + Q ] * eye[ dim * L + P ] * eye[ dim * M + N ];
+                                                                     += taus[ 10 ] * eye[ dim * K + Q ] * eye[ dim * L + P ] * eye[ dim * M + N ];
                                 }
                             }
                         }
