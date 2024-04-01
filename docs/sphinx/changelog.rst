@@ -30,10 +30,12 @@ Internal Changes
 - Using constexpr instead of const when possible (:pull:`89`). By `Nathan Miller`_.
 - Improved the efficiency of hydraBase (:pull:`90`). By `Nathan Miller`_.
 - Improved the efficiency of hydraBaseMicromorphic (:pull:`91`). By `Nathan Miller`_.
+- Improved the efficiency of tardigradeHydraMicromorphicDruckerPrager (:pull:`92`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
 - Corrected bug where the plastic state variable integration parameter was one minus the expected value (:pull:`71`). By `Nathan Miller`_.
+- Corrected issue where libxsmm is not being used but was still required to be installed (:pull:`93`). By `Nathan Miller`_.
 
 ******************
 0.4.1 (01-24-2024)
