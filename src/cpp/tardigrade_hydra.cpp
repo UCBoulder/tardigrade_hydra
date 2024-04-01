@@ -9,6 +9,8 @@
 
 #include<tardigrade_hydra.h>
 
+#include<tardigrade_abaqus_tools.h>
+
 namespace tardigradeHydra{
 
     //Define hydra global constants in a place that Doxygen can pick up for documentation

@@ -16,7 +16,6 @@
 //!We will use the functions that depend on Eigen
 #define USE_EIGEN
 #include<tardigrade_vector_tools.h>
-#include<tardigrade_abaqus_tools.h>
 
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
 #include<libxsmm.h>
