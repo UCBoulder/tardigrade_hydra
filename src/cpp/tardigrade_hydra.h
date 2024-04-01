@@ -18,7 +18,9 @@
 #include<tardigrade_vector_tools.h>
 #include<tardigrade_abaqus_tools.h>
 
+#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
 #include<libxsmm.h>
+#endif
 
 /*!
  * \brief Declares a named getter function
