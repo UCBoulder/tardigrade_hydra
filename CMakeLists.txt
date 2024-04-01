@@ -14,6 +14,7 @@ set(SPHINX_SRC_PATH "docs/sphinx")
 
 # Add a flag for whether the python bindings should be built or not
 set(TARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built for hydra")
+set(TARDIGRADE_HYDRA_USE_LIBXSMM OFF CACHE BOOL "Flag for whether to use libxsmm for matrix math")
 
 # Set the internal support libraries
 set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPeryznaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPeryznaViscodamage" "tardigrade_hydraMicromorphicDruckerPragerPlasticity")
@@ -23,7 +24,12 @@ foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
     set(PROJECT_SOURCE_FILES ${PROJECT_SOURCE_FILES} ${package}.cpp ${package}.h)
     set(PROJECT_PRIVATE_HEADERS ${PROJECT_PRIVATE_HEADERS} ${package}.h)
 endforeach(package)
-set(PROJECT_LINK_LIBRARIES ${PROJECT_LINK_LIBRARIES} "xsmm" "blas")
+if(TARDIGRADE_HYDRA_USE_LIBXSMM)
+    message(STATUS "Using libxsmm for matrix math")
+    find_library(libxsmm_DIR xsmm REQUIRED PATHS "$ENV{CONDA_PREFIX}/lib")
+    add_definitions(-DTARDIGRADE_HYDRA_USE_LLXSMM )
+    set(PROJECT_LINK_LIBRARIES ${PROJECT_LINK_LIBRARIES} "xsmm" "blas")
+endif()
 set(TARDIGRADE_HYDRAMICROMORPHIC_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
 set(TARDIGRADE_HYDRALINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
 set(TARDIGRADE_HYDRALINEARVISCOELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")

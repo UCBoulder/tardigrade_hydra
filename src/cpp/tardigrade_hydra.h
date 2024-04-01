@@ -218,7 +218,9 @@ namespace tardigradeHydra{
     typedef std::vector< floatType > floatVector; //!< Define a vector of floats
     typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
 
+#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
     typedef libxsmm_mmfunction<floatType> kernel_type; //!< The libxsmm kernel type
+#endif
 
     typedef void ( hydraBase::*hydraBaseFxn )( ); //!< Typedef for passing pointers to hydraBase functions
 
