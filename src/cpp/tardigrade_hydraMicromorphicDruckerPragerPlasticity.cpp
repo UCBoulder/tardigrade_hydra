@@ -2856,13 +2856,21 @@ namespace tardigradeHydra{
 
                 }
 
-                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){ //TODO: Investigate ways to prevent cache misses here
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
                     dFpdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dFpdSubFs[ num_configs * sot_dim * i + j + sot_dim ];
 
                     dChipdChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dChipdSubChis[ num_configs * sot_dim * i + j + sot_dim ];
 
-                    for ( unsigned int k = 0; k < sot_dim; k++ ){
+                }
+
+            }
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                for ( unsigned int k = 0; k < sot_dim; k++ ){
+
+                    for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
                         dFpdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dFpdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dFn )[ ( num_configs - 1 ) * sot_dim * k + j ];
 
@@ -2911,6 +2919,25 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, higherOrderDrivingStress,
                                                                                                                   dHigherdM, dHigherdFp, dHigherdChip ) );
 
+            Eigen::Map< Eigen::Matrix< variableType,  9,  9, Eigen::RowMajor > > dMacrodFp_map(    dMacrodFp.data( ),  sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,  9,  9, Eigen::RowMajor > > dMicrodFp_map(    dMicrodFp.data( ),  sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, 27,  9, Eigen::RowMajor > > dHigherdFp_map(   dHigherdFp.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, 27,  9, Eigen::RowMajor > > dHigherdChip_map( dHigherdChip.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,  9,  9, Eigen::RowMajor > > dFpdF_map(        dFpdF.data( ),      sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,  9, -1, Eigen::RowMajor > > dFpdFn_map(       dFpdFn.data( ),     sot_dim, ( num_configs - 1 ) * sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,  9,  9, Eigen::RowMajor > > dChipdChi_map(    dChipdChi.data( ),  sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,  9, -1, Eigen::RowMajor > > dChipdChin_map(   dChipdChin.data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
+
+            floatVector temp_fot(   sot_dim * sot_dim,                       0 );
+            floatVector temp_fiot(  tot_dim * sot_dim,                       0 );
+            floatVector temp_fotn(  sot_dim * sot_dim * ( num_configs - 1 ), 0 );
+            floatVector temp_fiotn( tot_dim * sot_dim * ( num_configs - 1 ), 0 );
+
+            Eigen::Map< Eigen::Matrix< variableType,  9,  9, Eigen::RowMajor > > temp_fot_map(   temp_fot.data( ),   sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, 27,  9, Eigen::RowMajor > > temp_fiot_map(  temp_fiot.data( ),  tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType,  9, -1, Eigen::RowMajor > > temp_fotn_map(  temp_fotn.data( ),  sot_dim, ( num_configs - 1 ) * sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, 27, -1, Eigen::RowMajor > > temp_fiotn_map( temp_fiotn.data( ), tot_dim, ( num_configs - 1 ) * sot_dim );
+
             if ( isPrevious ){
 
                 set_previousMacroDrivingStress(          macroDrivingStress );
@@ -2921,25 +2948,41 @@ namespace tardigradeHydra{
 
                 set_previousdMacroDrivingStressdMacroStress( dMacrodPK2 );
 
-                set_previousdMacroDrivingStressdF( tardigradeVectorTools::matrixMultiply( dMacrodFp, dFpdF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                temp_fot_map = ( dMacrodFp_map * dFpdF_map ).eval( );
 
-                set_previousdMacroDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dMacrodFp, dFpdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_previousdMacroDrivingStressdF( temp_fot );
+
+                temp_fotn_map = ( dMacrodFp_map * dFpdFn_map ).eval( );
+
+                set_previousdMacroDrivingStressdFn( temp_fotn );
 
                 set_previousdSymmetricMicroDrivingStressdMicroStress( dMicrodSigma );
 
-                set_previousdSymmetricMicroDrivingStressdF( tardigradeVectorTools::matrixMultiply( dMicrodFp, dFpdF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                temp_fot_map = ( dMicrodFp_map * dFpdF_map ).eval( );
 
-                set_previousdSymmetricMicroDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dMicrodFp, dFpdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_previousdSymmetricMicroDrivingStressdF( temp_fot );
+
+                temp_fotn_map = ( dMicrodFp_map * dFpdFn_map ).eval( );
+
+                set_previousdSymmetricMicroDrivingStressdFn( temp_fotn );
 
                 set_previousdHigherOrderDrivingStressdHigherOrderStress( dHigherdM );
 
-                set_previousdHigherOrderDrivingStressdF( tardigradeVectorTools::matrixMultiply( dHigherdFp, dFpdF, tot_dim, sot_dim, sot_dim, sot_dim ) );
+                temp_fiot_map = ( dHigherdFp_map * dFpdF_map ).eval( );
 
-                set_previousdHigherOrderDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dHigherdFp, dFpdFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_previousdHigherOrderDrivingStressdF( temp_fiot );
 
-                set_previousdHigherOrderDrivingStressdChi( tardigradeVectorTools::matrixMultiply( dHigherdChip, dChipdChi, tot_dim, sot_dim, sot_dim, sot_dim ) );
+                temp_fiotn_map = ( dHigherdFp_map * dFpdFn_map ).eval( );
 
-                set_previousdHigherOrderDrivingStressdChin( tardigradeVectorTools::matrixMultiply( dHigherdChip, dChipdChin, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_previousdHigherOrderDrivingStressdFn( temp_fiotn );
+
+                temp_fiot_map = ( dHigherdChip_map * dChipdChi_map ).eval( );
+
+                set_previousdHigherOrderDrivingStressdChi( temp_fiot );
+
+                temp_fiotn_map = ( dHigherdChip_map * dChipdChin_map ).eval( );
+
+                set_previousdHigherOrderDrivingStressdChin( temp_fiotn );
 
             }
             else{
@@ -2952,25 +2995,41 @@ namespace tardigradeHydra{
 
                 set_dMacroDrivingStressdMacroStress( dMacrodPK2 );
 
-                set_dMacroDrivingStressdF( tardigradeVectorTools::matrixMultiply( dMacrodFp, dFpdF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                temp_fot_map = ( dMacrodFp_map * dFpdF_map ).eval( );
 
-                set_dMacroDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dMacrodFp, dFpdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_dMacroDrivingStressdF( temp_fot );
+
+                temp_fotn_map = ( dMacrodFp_map * dFpdFn_map ).eval( );
+
+                set_dMacroDrivingStressdFn( temp_fotn );
 
                 set_dSymmetricMicroDrivingStressdMicroStress( dMicrodSigma );
 
-                set_dSymmetricMicroDrivingStressdF( tardigradeVectorTools::matrixMultiply( dMicrodFp, dFpdF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                temp_fot_map = ( dMicrodFp_map * dFpdF_map ).eval( );
 
-                set_dSymmetricMicroDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dMicrodFp, dFpdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_dSymmetricMicroDrivingStressdF( temp_fot );
+
+                temp_fotn_map = ( dMicrodFp_map * dFpdFn_map ).eval( );
+
+                set_dSymmetricMicroDrivingStressdFn( temp_fotn );
 
                 set_dHigherOrderDrivingStressdHigherOrderStress( dHigherdM );
 
-                set_dHigherOrderDrivingStressdF( tardigradeVectorTools::matrixMultiply( dHigherdFp, dFpdF, tot_dim, sot_dim, sot_dim, sot_dim ) );
+                temp_fiot_map = ( dHigherdFp_map * dFpdF_map ).eval( );
 
-                set_dHigherOrderDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dHigherdFp, dFpdFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_dHigherOrderDrivingStressdF( temp_fiot );
 
-                set_dHigherOrderDrivingStressdChi( tardigradeVectorTools::matrixMultiply( dHigherdChip, dChipdChi, tot_dim, sot_dim, sot_dim, sot_dim ) );
+                temp_fiotn_map = ( dHigherdFp_map * dFpdFn_map ).eval( );
 
-                set_dHigherOrderDrivingStressdChin( tardigradeVectorTools::matrixMultiply( dHigherdChip, dChipdChin, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+                set_dHigherOrderDrivingStressdFn( temp_fiotn );
+
+                temp_fiot_map = ( dHigherdChip_map * dChipdChi_map ).eval( );
+
+                set_dHigherOrderDrivingStressdChi( temp_fiot );
+
+                temp_fiotn_map = ( dHigherdChip_map * dChipdChin_map ).eval( );
+
+                set_dHigherOrderDrivingStressdChin( temp_fiotn );
 
             }
 
