@@ -32,6 +32,7 @@ Internal Changes
 - Improved the efficiency of hydraBaseMicromorphic (:pull:`91`). By `Nathan Miller`_.
 - Improved the efficiency of tardigradeHydraMicromorphicDruckerPrager (:pull:`92`). By `Nathan Miller`_.
 - Moved tardigrade_abaqus_tools.h from the header to the source file for tardigrade_hydra (:pull:`94`). By `Nathan Miller`_.
+- Changed fatal error for non-full rank internal Jacobians to convergence errors (:pull:`95`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
