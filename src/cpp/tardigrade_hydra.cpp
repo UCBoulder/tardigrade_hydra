@@ -1422,9 +1422,13 @@ namespace tardigradeHydra{
         unsigned int rank = solver.rank( );
 
         TARDIGRADE_ERROR_TOOLS_CATCH(
+
             if ( rank != getResidual( )->size( ) ){
-                throw std::runtime_error( "The Jacobian is not full rank" );
+
+                throw convergence_error( "The Jacobian is not full rank" );
+
             }
+
         )
 
         // Solve for dXdF
