@@ -40,7 +40,8 @@ namespace tardigradeHydra{
                           const floatVector &previousStateVariables, const floatVector &parameters,
                           const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                           const unsigned int dimension, const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola, const unsigned int maxIterations,
-                          const unsigned int maxLSIterations, const floatType lsAlpha ) : _dimension( dimension ),
+                          const unsigned int maxLSIterations, const floatType lsAlpha,
+                          const bool use_preconditioner, const unsigned int preconditioner_type ) : _dimension( dimension ),
                                                            _configuration_unknown_count( configuration_unknown_count ),
                                                            _time( time ), _deltaTime( deltaTime ),
                                                            _temperature( temperature ), _previousTemperature( previousTemperature ),
@@ -52,7 +53,8 @@ namespace tardigradeHydra{
                                                            _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
                                                            _tolr( tolr ), _tola( tola ),
                                                            _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ),
-                                                           _lsAlpha( lsAlpha ){
+                                                           _lsAlpha( lsAlpha ),
+                                                           _use_preconditioner( use_preconditioner ), _preconditioner_type( preconditioner_type ){
         /*!
          * The main constructor for the hydra base class. Inputs are all the required values for most solves.
          * 
@@ -73,6 +75,9 @@ namespace tardigradeHydra{
          * \param &maxIterations: The maximum number of non-linear iterations (defaults to 20)
          * \param &maxLSIterations: The maximum number of line-search iterations (defaults to 5)
          * \param &lsAlpha: The alpha term for the line search (defaults to 1e-4)
+         * \param &use_preconditioner: A flag for whether to pre-condition the Jacobian (can help with scaling issues)
+         * \param &preconditioner_type: The type of pre-conditioner to use. Options are
+         *     0. A diagonal pre-conditioner populate by the inverse of the absolute largest entries of the Jacobian's rows
          */
 
         // Decompose the state variable vector initializing all of the configurations
@@ -80,6 +85,13 @@ namespace tardigradeHydra{
 
         // Set the residual classes
         setResidualClasses( );
+
+        // Initialize the preconditioner if required
+        if ( _use_preconditioner ){
+
+            initializePreconditioner( );
+
+        }
 
     }
 
@@ -984,6 +996,48 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::formPreconditioner( ){
+        /*!
+         * Form the preconditioner matrix
+         */
+
+        if ( _preconditioner_type == 0 ){
+
+            formMaxRowPreconditioner( );
+
+        }
+        else{
+
+            throw std::runtime_error( "Preconditioner type not recognized" );
+
+        }
+
+        _preconditioner.first = true;
+
+        addIterationData( &_preconditioner );
+
+    }
+
+    void hydraBase::formMaxRowPreconditioner( ){
+        /*!
+         * Form a left preconditioner comprised of the inverse of the maximum value of each row
+         */
+
+        const unsigned int problem_size = getUnknownVector( )->size( );
+
+        _preconditioner.second = floatVector( problem_size, 0 );
+
+        // Find the absolute maximum value in each row
+        for ( unsigned int i = 0; i < problem_size; i++ ){
+
+            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( getFlatJacobian( )->begin( ) + problem_size * i,
+                                                                                      getFlatJacobian( )->begin( ) + problem_size * ( i + 1 ),
+                                                                                      [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
+
+        }
+
+    }
+
     const floatVector* hydraBase::getResidual( ){
         /*!
          * Get the residual vector for the non-linear problem
@@ -1011,6 +1065,21 @@ namespace tardigradeHydra{
         }
 
         return &_jacobian.second;
+
+    }
+
+    const floatVector* hydraBase::getFlatPreconditioner( ){
+        /*!
+         * Get the flattened row-major preconditioner for the non-linear problem
+         */
+
+        if ( !_preconditioner.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( formPreconditioner( ) );
+
+        }
+        
+        return &_preconditioner.second;
 
     }
 
@@ -1336,7 +1405,9 @@ namespace tardigradeHydra{
 
         unsigned int rank;
 
-        floatVector deltaX;
+        floatVector deltaX( getUnknownVector( )->size( ), 0 );
+
+        Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX.data( ), getUnknownVector( )->size( ) );
 
         resetLSIteration( );
 
@@ -1344,8 +1415,42 @@ namespace tardigradeHydra{
 
             floatVector X0 = *getUnknownVector( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( deltaX = -tardigradeVectorTools::solveLinearSystem( *getFlatJacobian( ), *getResidual( ),
-                                                                         getResidual( )->size( ), getResidual( )->size( ), rank ) );
+            tardigradeVectorTools::solverType< floatType > linearSolver;
+
+            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( getFlatJacobian( )->data( ), X0.size( ), X0.size( ) );
+
+            Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getResidual( )->data( ), X0.size( ) );
+
+            if ( *getUsePreconditioner( ) ){
+
+                if( *getPreconditionerIsDiagonal( ) ){
+
+                    Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), X0.size( ) );
+
+                    linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
+
+                    dx_map = -linearSolver.solve( p_map.asDiagonal( ) * R_map );
+
+                }
+                else{
+
+                    Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), X0.size( ), X0.size( ) );
+
+                    linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
+
+                    dx_map = -linearSolver.solve( p_map * R_map );
+
+                }
+
+            }
+            else{
+
+                linearSolver = tardigradeVectorTools::solverType< floatType >( J_map );
+                dx_map = -linearSolver.solve( R_map );
+
+            }
+
+            rank = linearSolver.rank( );
 
             if ( rank != getResidual( )->size( ) ){
 
@@ -1417,7 +1522,57 @@ namespace tardigradeHydra{
         //Form the solver based on the current value of the jacobian
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Amat( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
-        tardigradeVectorTools::solverType< floatType > solver( Amat );
+        // Form the maps for dXdF
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdFmat( getFlatdRdF( )->data( ), getResidual( )->size( ), *getConfigurationUnknownCount( ) );
+
+        _flatdXdF.second = floatVector( getUnknownVector( )->size( ) * ( *getConfigurationUnknownCount( ) ) );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdFmat( _flatdXdF.second.data( ), getUnknownVector( )->size( ), ( *getConfigurationUnknownCount( ) ) );
+
+        // Form the maps for dXdT
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdTmat( getdRdT( )->data( ), getResidual( )->size( ), 1 );
+
+        _flatdXdT.second = floatVector( getUnknownVector( )->size( ) );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getUnknownVector( )->size( ), 1 );
+
+        // Solve
+
+        tardigradeVectorTools::solverType< floatType > solver;
+
+        if ( *getUsePreconditioner( ) ){
+
+            if( *getPreconditionerIsDiagonal( ) ){
+
+                Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
+
+                solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
+
+                dXdFmat = -solver.solve( p_map.asDiagonal( ) * dRdFmat );
+
+                dXdTmat = -solver.solve( p_map.asDiagonal( ) * dRdTmat );
+
+            }
+            else{
+
+                Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+
+                solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
+
+                dXdFmat = -solver.solve( p_map * dRdFmat );
+
+                dXdTmat = -solver.solve( p_map * dRdTmat );
+
+            }
+
+        }
+        else{
+
+            solver = tardigradeVectorTools::solverType< floatType >( Amat );
+
+            dXdFmat = -solver.solve( dRdFmat );
+
+            dXdTmat = -solver.solve( dRdTmat );
+
+        }
 
         unsigned int rank = solver.rank( );
 
@@ -1431,23 +1586,7 @@ namespace tardigradeHydra{
 
         )
 
-        // Solve for dXdF
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdFmat( getFlatdRdF( )->data( ), getResidual( )->size( ), *getConfigurationUnknownCount( ) );
-
-        _flatdXdF.second = floatVector( getUnknownVector( )->size( ) * ( *getConfigurationUnknownCount( ) ) );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdFmat( _flatdXdF.second.data( ), getUnknownVector( )->size( ), ( *getConfigurationUnknownCount( ) ) );
-
-        dXdFmat = -solver.solve( dRdFmat );
-
         _flatdXdF.first = true;
-
-        // Solve for dXdT
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdTmat( getdRdT( )->data( ), getResidual( )->size( ), 1 );
-
-        _flatdXdT.second = floatVector( getUnknownVector( )->size( ) );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getUnknownVector( )->size( ), 1 );
-
-        dXdTmat = -solver.solve( dRdTmat );
 
         _flatdXdT.first = true;
 
@@ -1480,6 +1619,26 @@ namespace tardigradeHydra{
         }
 
         return &_flatdXdT.second;
+
+    }
+
+    void hydraBase::initializePreconditioner( ){
+        /*!
+         * Initialize the preconditioner
+         */
+
+        _preconditioner_is_diagonal = false;
+
+        if ( _preconditioner_type == 0 ){
+
+            _preconditioner_is_diagonal = true;
+
+        }
+        else{
+
+            throw std::runtime_error( "Preconditioner type " + std::to_string( _preconditioner_type ) + " is not recognized." );
+
+        }
 
     }
 
