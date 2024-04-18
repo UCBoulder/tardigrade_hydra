@@ -1030,9 +1030,9 @@ namespace tardigradeHydra{
         // Find the absolute maximum value in each row
         for ( unsigned int i = 0; i < problem_size; i++ ){
 
-            _preconditioner.second[ i ] = 1 / ( *std::max_element( getFlatJacobian( )->begin( ) + problem_size * i,
-                                                                   getFlatJacobian( )->begin( ) + problem_size * ( i + 1 ),
-                                                                   [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) );
+            _preconditioner.second[ i ] = 1 / std::max( *std::max_element( getFlatJacobian( )->begin( ) + problem_size * i,
+                                                                           getFlatJacobian( )->begin( ) + problem_size * ( i + 1 ),
+                                                                           [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ), 1e-15 );
 
         }
 
