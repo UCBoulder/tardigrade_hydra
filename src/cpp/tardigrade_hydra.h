@@ -560,7 +560,8 @@ namespace tardigradeHydra{
                        const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                        const unsigned int dimension=3, const unsigned int configuration_unknown_count=9,
                        const floatType tolr=1e-9, const floatType tola=1e-9,
-                       const unsigned int maxIterations=20, const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4 );
+                       const unsigned int maxIterations=20, const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4,
+                       const bool use_preconditioner=false, const unsigned int preconditioner_type=0 );
 
             // User defined functions
 
@@ -621,6 +622,12 @@ namespace tardigradeHydra{
             //! Get a reference to the line-search alpha
             const floatType* getLSAlpha( ){ return &_lsAlpha; }
 
+            //! Get a reference to whether to use a preconditioner
+            const bool* getUsePreconditioner( ){ return &_use_preconditioner; }
+
+            //! Get a reference to the preconditioner type
+            const unsigned int* getPreconditionerType( ){ return &_preconditioner_type; }
+
             floatVector getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getSubConfigurationJacobian( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
@@ -664,6 +671,8 @@ namespace tardigradeHydra{
             const floatVector* getResidual( );
 
             const floatVector* getFlatJacobian( );
+
+            const floatVector* getFlatPreconditioner( );
 
             floatMatrix getJacobian( );
 
@@ -720,9 +729,15 @@ namespace tardigradeHydra{
 
             virtual void formNonLinearProblem( );
 
+            virtual void formPreconditioner( );
+
+            virtual void formMaxRowPreconditioner( );
+
             virtual void initializeUnknownVector( );
 
             virtual void setTolerance( );
+
+            virtual void initializePreconditioner( );
 
             //! Update the line-search lambda parameter
             virtual void updateLambda( ){ _lambda *= 0.5; }
@@ -852,6 +867,14 @@ namespace tardigradeHydra{
             dataStorage< floatVector > _residual; //!< The residual vector for the global solve
 
             dataStorage< floatVector > _jacobian; //!< The jacobian matrix in row-major form for the global solve
+
+            dataStorage< floatVector > _preconditioner; //!< The pre-conditioner matrix in row-major form for the global solve
+
+            bool _use_preconditioner; //!< Flag for whether to pre-condition the Jacobian or not
+
+            unsigned int _preconditioner_type; //<! The type of preconditioner to use
+
+            bool _preconditioner_is_diagonal; //!< Flag for if the pre-conditioner only stores the diagonal elements
 
             dataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
 

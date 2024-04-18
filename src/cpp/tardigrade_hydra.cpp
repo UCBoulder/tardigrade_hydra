@@ -40,7 +40,8 @@ namespace tardigradeHydra{
                           const floatVector &previousStateVariables, const floatVector &parameters,
                           const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                           const unsigned int dimension, const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola, const unsigned int maxIterations,
-                          const unsigned int maxLSIterations, const floatType lsAlpha ) : _dimension( dimension ),
+                          const unsigned int maxLSIterations, const floatType lsAlpha,
+                          const bool use_preconditioner, const unsigned int preconditioner_type ) : _dimension( dimension ),
                                                            _configuration_unknown_count( configuration_unknown_count ),
                                                            _time( time ), _deltaTime( deltaTime ),
                                                            _temperature( temperature ), _previousTemperature( previousTemperature ),
@@ -52,7 +53,8 @@ namespace tardigradeHydra{
                                                            _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
                                                            _tolr( tolr ), _tola( tola ),
                                                            _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ),
-                                                           _lsAlpha( lsAlpha ){
+                                                           _lsAlpha( lsAlpha ),
+                                                           _use_preconditioner( use_preconditioner ), _preconditioner_type( preconditioner_type ){
         /*!
          * The main constructor for the hydra base class. Inputs are all the required values for most solves.
          * 
@@ -73,6 +75,9 @@ namespace tardigradeHydra{
          * \param &maxIterations: The maximum number of non-linear iterations (defaults to 20)
          * \param &maxLSIterations: The maximum number of line-search iterations (defaults to 5)
          * \param &lsAlpha: The alpha term for the line search (defaults to 1e-4)
+         * \param &use_preconditioner: A flag for whether to pre-condition the Jacobian (can help with scaling issues)
+         * \param &preconditioner_type: The type of pre-conditioner to use. Options are
+         *     0. A diagonal pre-conditioner populate by the inverse of the absolute largest entries of the Jacobian's rows
          */
 
         // Decompose the state variable vector initializing all of the configurations
@@ -80,6 +85,13 @@ namespace tardigradeHydra{
 
         // Set the residual classes
         setResidualClasses( );
+
+        // Initialize the preconditioner if required
+        if ( _use_preconditioner ){
+
+            initializePreconditioner( );
+
+        }
 
     }
 
@@ -984,6 +996,48 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::formPreconditioner( ){
+        /*!
+         * Form the preconditioner matrix
+         */
+
+        if ( _preconditioner_type == 0 ){
+
+            formMaxRowPreconditioner( );
+
+        }
+        else{
+
+            throw std::runtime_error( "Preconditioner type not recognized" );
+
+        }
+
+        _preconditioner.first = true;
+
+        addIterationData( &_preconditioner );
+
+    }
+
+    void hydraBase::formMaxRowPreconditioner( ){
+        /*!
+         * Form a left preconditioner comprised of the inverse of the maximum value of each row
+         */
+
+        const unsigned int problem_size = getUnknownVector( )->size( );
+
+        _preconditioner.second = floatVector( problem_size, 0 );
+
+        // Find the absolute maximum value in each row
+        for ( unsigned int i = 0; i < problem_size; i++ ){
+
+            _preconditioner.second[ i ] = 1 / ( *std::max_element( getFlatJacobian( )->begin( ) + problem_size * i,
+                                                                   getFlatJacobian( )->begin( ) + problem_size * ( i + 1 ),
+                                                                   [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) );
+
+        }
+
+    }
+
     const floatVector* hydraBase::getResidual( ){
         /*!
          * Get the residual vector for the non-linear problem
@@ -1011,6 +1065,21 @@ namespace tardigradeHydra{
         }
 
         return &_jacobian.second;
+
+    }
+
+    const floatVector* hydraBase::getFlatPreconditioner( ){
+        /*!
+         * Get the flattened row-major preconditioner for the non-linear problem
+         */
+
+        if ( !_preconditioner.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( formPreconditioner( ) );
+
+        }
+        
+        return &_preconditioner.second;
 
     }
 
@@ -1480,6 +1549,26 @@ namespace tardigradeHydra{
         }
 
         return &_flatdXdT.second;
+
+    }
+
+    void hydraBase::initializePreconditioner( ){
+        /*!
+         * Initialize the preconditioner
+         */
+
+        _preconditioner_is_diagonal = false;
+
+        if ( _preconditioner_type == 0 ){
+
+            _preconditioner_is_diagonal = true;
+
+        }
+        else{
+
+            throw std::runtime_error( "Preconditioner type " + std::to_string( _preconditioner_type ) + " is not recognized." );
+
+        }
 
     }
 
