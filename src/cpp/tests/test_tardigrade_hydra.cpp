@@ -277,6 +277,12 @@ namespace tardigradeHydra{
                     hydra.addIterationData( &hydra._preconditioner );
                 }
 
+                static void set_usePreconditioner( hydraBase &hydra, const bool &value ){
+
+                    hydra._use_preconditioner = value;
+
+                }
+
                 static void set_preconditionerType( hydraBase &hydra, const unsigned int &value ){
 
                     hydra._preconditioner_type = value;
@@ -3494,6 +3500,12 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem ){
 
     tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra );
 
+    hydraBaseMock hydra_pre( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension,
+                             9, 1e-9, 1e-9, 20, 5, 1e-4, true, 0 );
+
+    tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra_pre );
+
 }
 
 BOOST_AUTO_TEST_CASE( test_residual_setdRdF ){
@@ -3738,6 +3750,13 @@ BOOST_AUTO_TEST_CASE( test_computeTangents ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dXdT, *flatdXdT ) );
 
+    hydraBaseMock hydra_pre( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension,
+                             9, 1e-9, 1e-9, 20, 5, 1e-4, true, 0 );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dXdF, *hydra_pre.getFlatdXdF( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dXdT, *hydra_pre.getFlatdXdT( ) ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_formPreconditioner ){
