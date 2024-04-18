@@ -32,40 +32,6 @@ struct cout_redirect{
         std::streambuf * old;
 };
 
-BOOST_AUTO_TEST_CASE( testSayHello ){
-    /*!
-     * Test message printed to stdout in sayHello function
-     */
-
-    //Setup redirect variables for stdout
-    std::stringbuf buffer;
-    cout_redirect rd(&buffer);
-    boost::test_tools::output_test_stream result;
-
-    //Initialize test variables
-    std::string message;
-    std::string answer;
-    errorOut error = NULL;
-
-    cout_redirect guard( result.rdbuf() );
-
-    //Check normal operation
-    message = "World!";
-    answer = "Hello World!\n";
-    error = tardigradeHydra::sayHello(message);
-    BOOST_CHECK( ! error );
-    BOOST_CHECK( result.is_equal( answer ) );
-
-    //Reset error code between tests
-    error = NULL;
-
-    //Check for "George" error
-    message = "George";
-    error = tardigradeHydra::sayHello(message);
-    BOOST_CHECK( error );
-
-}
-
 BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor ){
 
     floatType time = 1.23;
