@@ -628,6 +628,9 @@ namespace tardigradeHydra{
             //! Get a reference to the preconditioner type
             const unsigned int* getPreconditionerType( ){ return &_preconditioner_type; }
 
+            //! Get whether the preconditioner is diagonal or not
+            const bool* getPreconditionerIsDiagonal( ){ return &_preconditioner_is_diagonal; }
+
             floatVector getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getSubConfigurationJacobian( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );

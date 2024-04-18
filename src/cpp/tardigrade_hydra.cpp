@@ -1030,9 +1030,9 @@ namespace tardigradeHydra{
         // Find the absolute maximum value in each row
         for ( unsigned int i = 0; i < problem_size; i++ ){
 
-            _preconditioner.second[ i ] = 1 / std::max( *std::max_element( getFlatJacobian( )->begin( ) + problem_size * i,
-                                                                           getFlatJacobian( )->begin( ) + problem_size * ( i + 1 ),
-                                                                           [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ), 1e-15 );
+            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( getFlatJacobian( )->begin( ) + problem_size * i,
+                                                                                      getFlatJacobian( )->begin( ) + problem_size * ( i + 1 ),
+                                                                                      [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
 
         }
 
@@ -1405,7 +1405,9 @@ namespace tardigradeHydra{
 
         unsigned int rank;
 
-        floatVector deltaX;
+        floatVector deltaX( getUnknownVector( )->size( ), 0 );
+
+        Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX.data( ), getUnknownVector( )->size( ) );
 
         resetLSIteration( );
 
@@ -1413,8 +1415,42 @@ namespace tardigradeHydra{
 
             floatVector X0 = *getUnknownVector( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( deltaX = -tardigradeVectorTools::solveLinearSystem( *getFlatJacobian( ), *getResidual( ),
-                                                                         getResidual( )->size( ), getResidual( )->size( ), rank ) );
+            tardigradeVectorTools::solverType< floatType > linearSolver;
+
+            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( getFlatJacobian( )->data( ), X0.size( ), X0.size( ) );
+
+            Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getResidual( )->data( ), X0.size( ) );
+
+            if ( *getUsePreconditioner( ) ){
+
+                if( *getPreconditionerIsDiagonal( ) ){
+
+                    Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), X0.size( ) );
+
+                    linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
+
+                    dx_map = -linearSolver.solve( p_map.asDiagonal( ) * R_map );
+
+                }
+                else{
+
+                    Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), X0.size( ), X0.size( ) );
+
+                    linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
+
+                    dx_map = -linearSolver.solve( p_map * R_map );
+
+                }
+
+            }
+            else{
+
+                linearSolver = tardigradeVectorTools::solverType< floatType >( J_map );
+                dx_map = -linearSolver.solve( R_map );
+
+            }
+
+            rank = linearSolver.rank( );
 
             if ( rank != getResidual( )->size( ) ){
 
@@ -1486,7 +1522,57 @@ namespace tardigradeHydra{
         //Form the solver based on the current value of the jacobian
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Amat( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
-        tardigradeVectorTools::solverType< floatType > solver( Amat );
+        // Form the maps for dXdF
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdFmat( getFlatdRdF( )->data( ), getResidual( )->size( ), *getConfigurationUnknownCount( ) );
+
+        _flatdXdF.second = floatVector( getUnknownVector( )->size( ) * ( *getConfigurationUnknownCount( ) ) );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdFmat( _flatdXdF.second.data( ), getUnknownVector( )->size( ), ( *getConfigurationUnknownCount( ) ) );
+
+        // Form the maps for dXdT
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdTmat( getdRdT( )->data( ), getResidual( )->size( ), 1 );
+
+        _flatdXdT.second = floatVector( getUnknownVector( )->size( ) );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getUnknownVector( )->size( ), 1 );
+
+        // Solve
+
+        tardigradeVectorTools::solverType< floatType > solver;
+
+        if ( *getUsePreconditioner( ) ){
+
+            if( *getPreconditionerIsDiagonal( ) ){
+
+                Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
+
+                solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
+
+                dXdFmat = -solver.solve( p_map.asDiagonal( ) * dRdFmat );
+
+                dXdTmat = -solver.solve( p_map.asDiagonal( ) * dRdTmat );
+
+            }
+            else{
+
+                Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+
+                solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
+
+                dXdFmat = -solver.solve( p_map * dRdFmat );
+
+                dXdTmat = -solver.solve( p_map * dRdTmat );
+
+            }
+
+        }
+        else{
+
+            solver = tardigradeVectorTools::solverType< floatType >( Amat );
+
+            dXdFmat = -solver.solve( dRdFmat );
+
+            dXdTmat = -solver.solve( dRdTmat );
+
+        }
 
         unsigned int rank = solver.rank( );
 
@@ -1500,23 +1586,7 @@ namespace tardigradeHydra{
 
         )
 
-        // Solve for dXdF
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdFmat( getFlatdRdF( )->data( ), getResidual( )->size( ), *getConfigurationUnknownCount( ) );
-
-        _flatdXdF.second = floatVector( getUnknownVector( )->size( ) * ( *getConfigurationUnknownCount( ) ) );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdFmat( _flatdXdF.second.data( ), getUnknownVector( )->size( ), ( *getConfigurationUnknownCount( ) ) );
-
-        dXdFmat = -solver.solve( dRdFmat );
-
         _flatdXdF.first = true;
-
-        // Solve for dXdT
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdTmat( getdRdT( )->data( ), getResidual( )->size( ), 1 );
-
-        _flatdXdT.second = floatVector( getUnknownVector( )->size( ) );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getUnknownVector( )->size( ), 1 );
-
-        dXdTmat = -solver.solve( dRdTmat );
 
         _flatdXdT.first = true;
 
