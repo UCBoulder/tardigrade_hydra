@@ -1589,14 +1589,11 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
     
             if ( taus.size() != 11 ){
                 return new errorNode( "formIsotropicC", "11 moduli required to form C" );
             }
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
     
             C = parameterVector( dim * dim * dim * dim * dim * dim, 0 );
     
@@ -1651,20 +1648,16 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constexpr unsigned int dim = 3;
     
             D = parameterVector( dim * dim * dim * dim, 0 );
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            D[ dim * dim * dim * K + dim * dim * L + dim * M + N ] = tau * eye[ dim * K + L ] * eye[ dim * M + N ]
-                                + sigma * ( eye[ dim * K + M ] * eye[ dim * L + N ] + eye[ dim * K + N ] * eye[ dim * L + M ] );
-                        }
-                    }
+                    D[ dim * dim * dim * K + dim * dim * K + dim * L + L ] += tau;
+                    D[ dim * dim * dim * K + dim * dim * L + dim * K + L ]
+                        += sigma;
+                    D[ dim * dim * dim * K + dim * dim * L + dim * L + K ]
+                        += sigma;
                 }
             }
     
