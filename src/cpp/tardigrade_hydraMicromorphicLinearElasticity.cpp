@@ -1503,22 +1503,15 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constexpr unsigned int dim = 3;
     
             A = parameterVector( dim * dim * dim * dim, 0 );
     
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            A[ dim * dim * dim * K + dim * dim * L + dim * M + N ] = lambda * eye[ dim * K + L ] * eye[ dim * M + N ]
-                                                                                   + mu * ( eye[ dim * K + M ] * eye[ dim * L + N ]
-                                                                                          + eye[ dim * K + N ] * eye[ dim * L + M ] );
-                        }
-                    }
+                    A[ dim * dim * dim * K + dim * dim * K + dim * L + L ] += lambda;
+                    A[ dim * dim * dim * K + dim * dim * L + dim * K + L ] += mu;
+                    A[ dim * dim * dim * K + dim * dim * L + dim * L + K ] += mu;
                 }
             }
     
@@ -1543,24 +1536,17 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constexpr unsigned int dim = 3;
     
             B = parameterVector( dim * dim * dim * dim, 0 );
     
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            B[ dim * dim * dim * K + dim * dim * L + dim * M + N ] = ( eta - tau ) * eye[ dim * K + L ] * eye[ dim * M + N ]
-                                                                                   + kappa * eye[ dim * K + M ] * eye[ dim * L + N ]
-                                                                                   + nu * eye[ dim * K + N ] * eye[ dim * L + M ]
-                                                                                   - sigma * ( eye[ dim * K + M ] * eye[ dim * L + N ]
-                                                                                             + eye[ dim * K + N ] * eye[ dim * L + M ] );
-                        }
-                    }
+                    B[ dim * dim * dim * K + dim * dim * K + dim * L + L ] += ( eta - tau );
+                    B[ dim * dim * dim * K + dim * dim * L + dim * K + L ] += kappa;
+                    B[ dim * dim * dim * K + dim * dim * L + dim * L + K ] += nu;
+                    B[ dim * dim * dim * K + dim * dim * L + dim * K + L ] -= sigma;;
+                    B[ dim * dim * dim * K + dim * dim * L + dim * L + K ] -= sigma;
                 }
             }
     
