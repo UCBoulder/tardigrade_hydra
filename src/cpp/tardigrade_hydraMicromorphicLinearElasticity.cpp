@@ -143,11 +143,29 @@ namespace tardigradeHydra{
                 result->addNext( error );
                 return result;
             }
-    
+
+            // Size the target vectors
+            dCauchyStressdChi = floatVector( sot_dim * sot_dim, 0 );
+            dCauchyStressdGradChi = floatVector( sot_dim * tot_dim, 0 );
+            dReferenceStressdChi = floatVector( sot_dim * sot_dim, 0 );
+            dReferenceStressdGradChi = floatVector( sot_dim * tot_dim, 0 );
+ 
+            // Set up the Eigen Maps
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dCauchyStressdF_map( dCauchyStressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dCauchyStressdChi_map( dCauchyStressdChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dCauchyStressdGradChi_map( dCauchyStressdGradChi.data( ), sot_dim, tot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dCauchyStressdPK2Stress_map( dCauchyStressdPK2Stress.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdF_map( dPK2StressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdChi_map( dPK2StressdChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dPK2StressdGradChi_map( dPK2StressdGradChi.data( ), sot_dim, tot_dim );
+
             //Assemble the jacobians of the Cauchy stress
-            dCauchyStressdF += tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdF, sot_dim, sot_dim, sot_dim, sot_dim );
-            dCauchyStressdChi = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdChi, sot_dim, sot_dim, sot_dim, sot_dim );
-            dCauchyStressdGradChi = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdGradChi, sot_dim, sot_dim, sot_dim, tot_dim );
+            dCauchyStressdF_map = ( dCauchyStressdF_map + dCauchyStressdPK2Stress_map * dPK2StressdF_map ).eval( );
+            dCauchyStressdChi_map = ( dCauchyStressdPK2Stress_map * dPK2StressdChi_map ).eval( );
+            dCauchyStressdGradChi_map = ( dCauchyStressdPK2Stress_map * dPK2StressdGradChi_map ).eval( );
+//            dCauchyStressdF += tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdF, sot_dim, sot_dim, sot_dim, sot_dim );
+//            dCauchyStressdChi = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdChi, sot_dim, sot_dim, sot_dim, sot_dim );
+//            dCauchyStressdGradChi = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdGradChi, sot_dim, sot_dim, sot_dim, tot_dim );
     
             //Assemble the jacobians of the symmetric micro-stress
             dMicroStressdF += tardigradeVectorTools::matrixMultiply( dMicroStressdReferenceMicroStress, dReferenceMicroStressdF, sot_dim, sot_dim, sot_dim, sot_dim );
