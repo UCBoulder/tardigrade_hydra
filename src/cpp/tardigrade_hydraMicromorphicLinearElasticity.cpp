@@ -1252,10 +1252,8 @@ namespace tardigradeHydra{
     
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
-                    for ( unsigned int Q = 0; Q < dim; Q++ ){
-                        for ( unsigned int R = 0; R < dim; R++ ){
-                            term3[ dim * I + J ] += referenceHigherOrderStress[ dim * dim * I + dim * Q + R ] * invCGamma[ dim * dim * J + dim * Q + R ];
-                        }
+                    for ( unsigned int QR = 0; QR < sot_dim; QR++ ){
+                        term3[ dim * I + J ] += referenceHigherOrderStress[ dim * dim * I + QR ] * invCGamma[ dim * dim * J + QR ];
                     }
                 }
             }
@@ -1297,9 +1295,6 @@ namespace tardigradeHydra{
                 return result;
             }
     
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
-    
             dTerm3dInvCGamma = variableVector( sot_dim * tot_dim, 0 );
             dTerm3dReferenceHigherOrderStress = variableVector( sot_dim * tot_dim, 0 );
     
@@ -1307,10 +1302,8 @@ namespace tardigradeHydra{
                 for ( unsigned int J = 0; J < dim; J++ ){
                     for ( unsigned int T = 0; T < dim; T++ ){
                         for ( unsigned int U = 0; U < dim; U++ ){
-                            for ( unsigned int V = 0; V < dim; V++ ){
-                                dTerm3dInvCGamma[ dim * tot_dim * I + tot_dim * J + dim * dim * T + dim * U + V ] = referenceHigherOrderStress[ dim * dim * I + dim * U + V ] * eye[ dim * J + T ];
-                                dTerm3dReferenceHigherOrderStress[ dim * tot_dim * I + tot_dim * J + dim * dim * T + dim * U + V ] = eye[ dim * I + T ] * invCGamma[ dim * dim * J + dim * U + V ];
-                            }
+                            dTerm3dReferenceHigherOrderStress[ dim * tot_dim * I + tot_dim * J + dim * dim * I + dim * T + U ] += invCGamma[ dim * dim * J + dim * T + U ];
+                            dTerm3dInvCGamma[ dim * tot_dim * I + tot_dim * J + dim * dim * J + dim * T + U ] += referenceHigherOrderStress[ dim * dim * I + dim * T + U ];
                         }
                     }
                 }
@@ -1384,9 +1377,9 @@ namespace tardigradeHydra{
             for ( unsigned int I = 0; I < 3; I++ ){
                 for ( unsigned int J = 0; J < 3; J++ ){
                     for ( unsigned int K = 0; K < 3; K++ ){
+                        dInvRCGPsidPsi[ dim * sot_dim * I + sot_dim * J + dim * K + J ] = invRCG[ dim * I + K ];
                         for ( unsigned int L = 0; L < 3; L++ ){
                             dInvRCGPsidRCG[ dim * sot_dim * I + sot_dim * J + dim * K + L ] = -invRCG[ dim * I + K ] * invRCGPsi[ dim * L + J ];
-                            dInvRCGPsidPsi[ dim * sot_dim * I + sot_dim * J + dim * K + L ] = invRCG[ dim * I + K ] * eye[ dim * J + L ];
                         }
                     }
                 }
@@ -1419,9 +1412,9 @@ namespace tardigradeHydra{
     
             invRCGGamma = variableVector( tot_dim, 0 );
             for ( unsigned int J = 0; J < dim; J++ ){
-                for ( unsigned int Q = 0; Q < dim; Q++ ){
-                    for ( unsigned int R = 0; R < dim; R++ ){
-                        for ( unsigned int S = 0; S < dim; S++ ){
+                for ( unsigned int S = 0; S < dim; S++ ){
+                    for ( unsigned int Q = 0; Q < dim; Q++ ){
+                        for ( unsigned int R = 0; R < dim; R++ ){
                             invRCGGamma[ dim * dim * J + dim * Q + R ] += invRCG[ dim * J + S ] * Gamma[ dim * dim * S + dim * Q + R ];
                         }
                     }
@@ -1464,9 +1457,6 @@ namespace tardigradeHydra{
             }
     
             //Assemble jacobians of invCGamma w.r.t. C and Gamma
-            variableVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
-    
             dInvRCGGammadRCG = variableVector( tot_dim * sot_dim, 0 );
             dInvRCGGammadGamma = variableVector( tot_dim * tot_dim, 0 );
     
@@ -1474,13 +1464,11 @@ namespace tardigradeHydra{
                 for ( unsigned int Q = 0; Q < dim; Q++ ){
                     for ( unsigned int R = 0; R < dim; R++ ){
                         for ( unsigned int T = 0; T < dim; T++ ){
+                            dInvRCGGammadGamma[ dim * dim * tot_dim * J + dim * tot_dim * Q + tot_dim * R + dim * dim * T + dim * Q + R]
+                                = invRCG[ dim * J + T ];
                             for ( unsigned int U = 0; U < dim; U++ ){
                                 dInvRCGGammadRCG[ dim * dim * sot_dim * J + dim * sot_dim * Q + sot_dim * R + dim * T + U ]
                                     = -invRCG[ dim * J + T] * invRCGGamma[ dim * dim * U + dim * Q + R ];
-                                for ( unsigned int V = 0; V < dim; V++ ){
-                                    dInvRCGGammadGamma[ dim * dim * tot_dim * J + dim * tot_dim * Q + tot_dim * R + dim * dim * T + dim * U + V]
-                                        = invRCG[ dim * J + T ] * eye[ dim * Q + U ] * eye[ dim * R + V ];
-                                }
                             }
                         }
                     }
