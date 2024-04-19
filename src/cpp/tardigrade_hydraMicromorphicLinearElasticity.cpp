@@ -283,9 +283,6 @@ namespace tardigradeHydra{
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
     
-            constantVector eye( sot_dim );
-            tardigradeVectorTools::eye( eye );
-    
             //Compute the required deformation measures
             variableVector RCG, Psi, Gamma;
             variableVector dRCGdF, dPsidF, dPsidChi, dGammadF, dGammadGradChi;
@@ -395,19 +392,20 @@ namespace tardigradeHydra{
              */
     
             //Assume 3D
-            const unsigned int dim = 3;
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constexpr unsigned int dim = 3;
     
             variableVector invRCG = rightCauchyGreenDeformation;
             Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invRCG.data(), 3, 3 );
             mat = mat.inverse( ).eval( );
     
             //Compute the strain measures
-            variableVector greenLagrangeStrain = 0.5 * ( rightCauchyGreenDeformation - eye );
-            variableVector microStrain   = Psi - eye;
-    
+            variableVector greenLagrangeStrain = 0.5 * rightCauchyGreenDeformation;
+            variableVector microStrain   = Psi;
+            for ( unsigned int i = 0; i < dim; i++ ){
+                greenLagrangeStrain[ dim * i + i ] -= 0.5;
+                microStrain[dim * i + i ] -= 1;
+            }
+ 
             //Compute the higher order stress
             errorOut error = computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress );
     
@@ -530,16 +528,17 @@ namespace tardigradeHydra{
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;   
  
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
-    
             variableVector invRCG = rightCauchyGreenDeformation;
             Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invRCG.data(), 3, 3 );
             mat = mat.inverse( ).eval( );
     
             //Compute the strain measures
-            variableVector greenLagrangeStrain = 0.5 * ( rightCauchyGreenDeformation - eye );
-            variableVector microStrain   = Psi - eye;
+            variableVector greenLagrangeStrain = 0.5 * rightCauchyGreenDeformation;
+            variableVector microStrain   = Psi;
+            for ( unsigned int i = 0; i < dim; i++ ){
+                greenLagrangeStrain[ dim * i + i ] -= 0.5;
+                microStrain[dim * i + i ] -= 1;
+            }
     
             //Compute the higher order stress
             errorOut error = computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress, dMdGamma );
@@ -1101,8 +1100,6 @@ namespace tardigradeHydra{
             }
     
             //Compute the Jacobians
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
             dTerm2dGreenLagrangeStrain = variableVector( sot_dim * sot_dim, 0 );
             dTerm2dMicroStrain         = variableVector( sot_dim * sot_dim, 0 );
             dTerm2dInvCPsi             = variableVector( sot_dim * sot_dim, 0 );
@@ -1114,9 +1111,7 @@ namespace tardigradeHydra{
                             for ( unsigned int K = 0; K < dim; K++ ){
                                 dTerm2dGreenLagrangeStrain[ dim * sot_dim * I + sot_dim * J + dim * M + N ] += D[ dim * dim * dim * M + dim * dim * N + dim * I + K] * invCPsi[ dim * J + K ];
                                 dTerm2dMicroStrain[ dim * sot_dim * I + sot_dim * J + dim * M + N ] += B[ dim * dim * dim * I + dim * dim * K + dim * M + N] * invCPsi[ dim * J + K ];
-                                for ( unsigned int L = 0; L < dim; L++ ){
-                                    dTerm2dInvCPsi[ dim * sot_dim * I + sot_dim * J + dim * M + N ] += ( B[ dim * dim * dim * I + dim * dim * N + dim * K + L ] * microStrain[ dim * K + L ] + greenLagrangeStrain[ dim * K + L ] * D[ dim * dim * dim * K + dim * dim * L + dim * I + N ] ) * eye[ dim * J + M ];
-                                }
+                                dTerm2dInvCPsi[ dim * sot_dim * I + sot_dim * J + dim * J + M ] += ( B[ dim * dim * dim * I + dim * dim * M + dim * N + K ] * microStrain[ dim * N + K ] + greenLagrangeStrain[ dim * N + K ] * D[ dim * dim * dim * N + dim * dim * K + dim * I + M ] );
                             }
                         }
                     }
@@ -1158,12 +1153,8 @@ namespace tardigradeHydra{
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
                     for ( unsigned int K = 0; K < dim; K++ ){
-                        for ( unsigned int L = 0; L < dim; L++ ){
-                            for ( unsigned int M = 0; M < dim; M++ ){
-                                for ( unsigned int N = 0; N < dim; N++ ){
-                                    referenceHigherOrderStress[ dim * dim * I + dim * J + K ] += C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + dim * dim * L + dim * M + N ] * Gamma[ dim * dim * L + dim * M + N ];
-                                }
-                            }
+                        for ( unsigned int LMN = 0; LMN < tot_dim; LMN++ ){
+                                    referenceHigherOrderStress[ dim * dim * I + dim * J + K ] += C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + LMN ] * Gamma[ LMN ];
                         }
                     }
                 }
@@ -1208,13 +1199,9 @@ namespace tardigradeHydra{
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
                     for ( unsigned int K = 0; K < dim; K++ ){
-                        for ( unsigned int O = 0; O < dim; O++ ){
-                            for ( unsigned int P = 0; P < dim; P++ ){
-                                for ( unsigned int Q = 0; Q < dim; Q++ ){
-                                    dReferenceHigherOrderStressdGamma[ dim * dim * tot_dim * I + dim * tot_dim * J + tot_dim * K + dim * dim * O + dim * P + Q ] +=
-                                        C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + dim * dim * O + dim * P + Q ];
-                                }
-                            }
+                        for ( unsigned int OPQ = 0; OPQ < tot_dim; OPQ++ ){
+                            dReferenceHigherOrderStressdGamma[ dim * dim * tot_dim * I + dim * tot_dim * J + tot_dim * K + OPQ ] +=
+                                C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + OPQ ];
                         }
                     }
                 }
@@ -1368,9 +1355,6 @@ namespace tardigradeHydra{
             }
     
             //Construct the jacobians
-            variableVector eye( sot_dim );
-            tardigradeVectorTools::eye( eye );
-    
             dInvRCGPsidRCG = variableVector( sot_dim * sot_dim, 0 );
             dInvRCGPsidPsi = variableVector( sot_dim * sot_dim, 0 );
     
