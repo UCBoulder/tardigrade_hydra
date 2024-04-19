@@ -178,25 +178,15 @@ namespace tardigradeHydra{
             dCauchyStressdF_map = ( dCauchyStressdF_map + dCauchyStressdPK2Stress_map * dPK2StressdF_map ).eval( );
             dCauchyStressdChi_map = ( dCauchyStressdPK2Stress_map * dPK2StressdChi_map ).eval( );
             dCauchyStressdGradChi_map = ( dCauchyStressdPK2Stress_map * dPK2StressdGradChi_map ).eval( );
-//            dCauchyStressdF += tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdF, sot_dim, sot_dim, sot_dim, sot_dim );
-//            dCauchyStressdChi = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdChi, sot_dim, sot_dim, sot_dim, sot_dim );
-//            dCauchyStressdGradChi = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdGradChi, sot_dim, sot_dim, sot_dim, tot_dim );
     
             //Assemble the jacobians of the symmetric micro-stress
             dMicroStressdF_map = ( dMicroStressdF_map + dMicroStressdReferenceMicroStress_map * dReferenceMicroStressdF_map ).eval( );
             dMicroStressdChi_map = ( dMicroStressdReferenceMicroStress_map * dReferenceMicroStressdChi_map ).eval( );
             dMicroStressdGradChi_map = ( dMicroStressdReferenceMicroStress_map * dReferenceMicroStressdGradChi_map ).eval( );
-//            dMicroStressdF += tardigradeVectorTools::matrixMultiply( dMicroStressdReferenceMicroStress, dReferenceMicroStressdF, sot_dim, sot_dim, sot_dim, sot_dim );
-//            dMicroStressdChi = tardigradeVectorTools::matrixMultiply( dMicroStressdReferenceMicroStress, dReferenceMicroStressdChi, sot_dim, sot_dim, sot_dim, sot_dim );
-//            dMicroStressdGradChi = tardigradeVectorTools::matrixMultiply( dMicroStressdReferenceMicroStress, dReferenceMicroStressdGradChi, sot_dim, sot_dim, sot_dim, tot_dim );
     
             //Assemble the jacobians of the higher-order stress
             dHigherOrderStressdF_map       = ( dHigherOrderStressdF_map + dHigherOrderStressdReferenceHigherOrderStress_map * dReferenceHigherOrderStressdF_map ).eval( );
             dHigherOrderStressdGradChi_map = ( dHigherOrderStressdReferenceHigherOrderStress_map * dReferenceHigherOrderStressdGradChi_map ).eval( );
-//            dHigherOrderStressdF += tardigradeVectorTools::matrixMultiply( dHigherOrderStressdReferenceHigherOrderStress,
-//                                                      dReferenceHigherOrderStressdF, tot_dim, tot_dim, tot_dim, sot_dim );
-//            dHigherOrderStressdGradChi = tardigradeVectorTools::matrixMultiply( dHigherOrderStressdReferenceHigherOrderStress,
-//                                                          dReferenceHigherOrderStressdGradChi, tot_dim, tot_dim, tot_dim, tot_dim );
     
             return NULL;
         }
@@ -325,25 +315,57 @@ namespace tardigradeHydra{
                 result->addNext( error );
                 return result;
             }
-    
-            dPK2StressdF = tardigradeVectorTools::matrixMultiply( dPK2StressdRCG, dRCGdF, sot_dim, sot_dim, sot_dim, sot_dim )
-                         + tardigradeVectorTools::matrixMultiply( dPK2StressdPsi, dPsidF, sot_dim, sot_dim, sot_dim, sot_dim )
-                         + tardigradeVectorTools::matrixMultiply( dPK2StressdGamma, dGammadF, sot_dim, tot_dim, tot_dim, sot_dim );
-    
-            dPK2StressdChi = tardigradeVectorTools::matrixMultiply( dPK2StressdPsi, dPsidChi, sot_dim, sot_dim, sot_dim, sot_dim );
-    
-            dPK2StressdGradChi = tardigradeVectorTools::matrixMultiply( dPK2StressdGamma, dGammadGradChi, sot_dim, tot_dim, tot_dim, tot_dim );
-    
-            dReferenceMicroStressdF = tardigradeVectorTools::matrixMultiply( dReferenceMicroStressdRCG, dRCGdF, sot_dim, sot_dim, sot_dim, sot_dim )
-                                    + tardigradeVectorTools::matrixMultiply( dReferenceMicroStressdPsi, dPsidF, sot_dim, sot_dim, sot_dim, sot_dim )
-                                    + tardigradeVectorTools::matrixMultiply( dReferenceMicroStressdGamma, dGammadF, sot_dim, tot_dim, tot_dim, sot_dim );
-    
-            dReferenceMicroStressdChi = tardigradeVectorTools::matrixMultiply( dReferenceMicroStressdPsi, dPsidChi, sot_dim, sot_dim, sot_dim, sot_dim );
-    
-            dReferenceMicroStressdGradChi = tardigradeVectorTools::matrixMultiply( dReferenceMicroStressdGamma, dGammadGradChi, sot_dim, tot_dim, tot_dim, tot_dim );
-    
-            dMdF = tardigradeVectorTools::matrixMultiply( dMdGamma, dGammadF, tot_dim, tot_dim, tot_dim, sot_dim );
-            dMdGradChi = tardigradeVectorTools::matrixMultiply( dMdGamma, dGammadGradChi, tot_dim, tot_dim, tot_dim, tot_dim );
+   
+            // Size the arrays
+            dPK2StressdF       = floatVector( sot_dim * sot_dim, 0 );
+            dPK2StressdChi     = floatVector( sot_dim * sot_dim, 0 );
+            dPK2StressdGradChi = floatVector( sot_dim * tot_dim, 0 );
+
+            dReferenceMicroStressdF       = floatVector( sot_dim * sot_dim, 0 );
+            dReferenceMicroStressdChi     = floatVector( sot_dim * sot_dim, 0 );
+            dReferenceMicroStressdGradChi = floatVector( sot_dim * tot_dim, 0 );
+
+            dMdF       = floatVector( tot_dim * sot_dim, 0 );
+            dMdGradChi = floatVector( tot_dim * tot_dim, 0 );
+
+            // Form the Eigen maps
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdF_map(       dPK2StressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdChi_map(     dPK2StressdChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dPK2StressdGradChi_map( dPK2StressdGradChi.data( ), sot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdRCG_map(   dPK2StressdRCG.data( ),   sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdPsi_map(   dPK2StressdPsi.data( ),   sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dPK2StressdGamma_map( dPK2StressdGamma.data( ), sot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dReferenceMicroStressdF_map(       dReferenceMicroStressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dReferenceMicroStressdChi_map(     dReferenceMicroStressdChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dReferenceMicroStressdGradChi_map( dReferenceMicroStressdGradChi.data( ), sot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dReferenceMicroStressdRCG_map(   dReferenceMicroStressdRCG.data( ),   sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dReferenceMicroStressdPsi_map(   dReferenceMicroStressdPsi.data( ),   sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dReferenceMicroStressdGamma_map( dReferenceMicroStressdGamma.data( ), sot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > dMdF_map(       dMdF.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > dMdGradChi_map( dMdGradChi.data( ), tot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > dMdGamma_map( dMdGamma.data( ), tot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dRCGdF_map(   dRCGdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPsidF_map(   dPsidF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPsidChi_map( dPsidChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > dGammadF_map( dGammadF.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > dGammadGradChi_map( dGammadGradChi.data( ), tot_dim, tot_dim );
+
+            dPK2StressdF_map       = ( dPK2StressdRCG_map * dRCGdF_map + dPK2StressdPsi_map * dPsidF_map + dPK2StressdGamma_map * dGammadF_map ).eval( );
+            dPK2StressdChi_map     = ( dPK2StressdPsi_map * dPsidChi_map ).eval( );
+            dPK2StressdGradChi_map = ( dPK2StressdGamma_map * dGammadGradChi_map ).eval( );
+
+            dReferenceMicroStressdF_map       = ( dReferenceMicroStressdRCG_map * dRCGdF_map + dReferenceMicroStressdPsi_map * dPsidF_map + dReferenceMicroStressdGamma_map * dGammadF_map ).eval( );
+            dReferenceMicroStressdChi_map     = ( dReferenceMicroStressdPsi_map * dPsidChi_map ).eval( );
+            dReferenceMicroStressdGradChi_map = ( dReferenceMicroStressdGamma_map * dGammadGradChi_map ).eval( );
+
+            dMdF_map       = ( dMdGamma_map * dGammadF_map ).eval( );
+            dMdGradChi_map = ( dMdGamma_map * dGammadGradChi_map ).eval( );
     
             return NULL;
         }
@@ -1581,25 +1603,39 @@ namespace tardigradeHydra{
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
                     for ( unsigned int M = 0; M < dim; M++ ){
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * L + dim * M + M ]
+                                                         += taus[0];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L + dim * dim * M + dim * M + K ]
+                                                         += taus[0];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * M + dim * L + M ]
+                                                         += taus[1];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K + dim * dim * M + dim * M + L ]
+                                                         += taus[1];
                         for ( unsigned int N = 0; N < dim; N++ ){
                             for ( unsigned int P = 0; P < dim; P++ ){
                                 for ( unsigned int Q = 0; Q < dim; Q++ ){
-                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M
-                                     + dim * dim * N + dim * P + Q ] = taus[0] * ( eye[ dim * K + L ] * eye[ dim * M + N ] * eye[ dim * P + Q ]
-                                                                                 + eye[ dim * K + Q ] * eye[ dim * L + M ] * eye[ dim * N + P ] )
-                                                                     + taus[1] * ( eye[ dim * K + L ] * eye[ dim * M + P ] * eye[ dim * N + Q ]
-                                                                                 + eye[ dim * K + M ] * eye[ dim * L + Q ] * eye[ dim * N + P ] )
-                                                                     + taus[2] * eye[ dim * K + L ] * eye[ dim * M + Q ] * eye[ dim * N + P]
-                                                                     + taus[3] * eye[ dim * K + N ] * eye[ dim * L + M ] * eye[ dim * P + Q]
-                                                                     + taus[4] * ( eye[ dim * K + M ] * eye[ dim * L + N ] * eye[ dim * P + Q ]
-                                                                                 + eye[ dim * K + P ] * eye[ dim * L + M ] * eye[ dim * N + Q ] )
-                                                                     + taus[5] * eye[ dim * K + M ] * eye[ dim * L + P ] * eye[ dim * N + Q ]
-                                                                     + taus[6] * eye[ dim * K + N ] * eye[ dim * L + P ] * eye[ dim * M + Q ]
-                                                                     + taus[7] * ( eye[ dim * K + P ] * eye[ dim * L + Q ] * eye[ dim * M + N ]
-                                                                                 + eye[ dim * K + Q ] * eye[ dim * L + N ] * eye[ dim * M + P ] )
-                                                                     + taus[8] * eye[ dim * K + N ] * eye[ dim * L + Q ] * eye[ dim * M + P ]
-                                                                     + taus[9] * eye[ dim * K + P ] * eye[ dim * L + N ] * eye[ dim * M + Q ]
-                                                                     + taus[10] * eye[ dim * K + Q ] * eye[ dim * L + P ] * eye[ dim * M + N ];
+                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
+                                                                     += taus[2] * eye[ dim * K + L ] * eye[ dim * M + Q ] * eye[ dim * N + P];
+                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
+                                                                     += taus[3] * eye[ dim * K + N ] * eye[ dim * L + M ] * eye[ dim * P + Q];
+                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
+                                                                     += taus[4] * eye[ dim * K + M ] * eye[ dim * L + N ] * eye[ dim * P + Q ];
+                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
+                                                                     += taus[4] * eye[ dim * K + P ] * eye[ dim * L + M ] * eye[ dim * N + Q ];
+                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
+                                                                     += taus[5] * eye[ dim * K + M ] * eye[ dim * L + P ] * eye[ dim * N + Q ];
+                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
+                                                                     += taus[6] * eye[ dim * K + N ] * eye[ dim * L + P ] * eye[ dim * M + Q ];
+                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
+                                                                     += taus[7] * eye[ dim * K + P ] * eye[ dim * L + Q ] * eye[ dim * M + N ];
+                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
+                                                                     += taus[7] * eye[ dim * K + Q ] * eye[ dim * L + N ] * eye[ dim * M + P ];
+                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
+                                                                     += taus[8] * eye[ dim * K + N ] * eye[ dim * L + Q ] * eye[ dim * M + P ];
+                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
+                                                                     += taus[9] * eye[ dim * K + P ] * eye[ dim * L + N ] * eye[ dim * M + Q ];
+                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * N + dim * P + Q ]
+                                                                     += taus[10] * eye[ dim * K + Q ] * eye[ dim * L + P ] * eye[ dim * M + N ];
                                 }
                             }
                         }
