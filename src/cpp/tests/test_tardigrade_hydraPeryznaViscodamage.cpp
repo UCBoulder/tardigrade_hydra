@@ -2609,7 +2609,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, *R.getJacobian( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.getJacobian( ) ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -2643,7 +2643,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdF, *R.getdRdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdF ), *R.getdRdF( ) ) );
 
     for ( unsigned int i = 0; i < 1; i++ ){
 

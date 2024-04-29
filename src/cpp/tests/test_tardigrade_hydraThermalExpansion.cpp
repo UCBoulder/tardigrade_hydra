@@ -1121,9 +1121,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, *R.getJacobian( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.getJacobian( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdF, *R.getdRdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdF ), *R.getdRdF( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdT, *R.getdRdT( ) ) );
 

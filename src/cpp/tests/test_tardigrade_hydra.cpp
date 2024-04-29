@@ -2110,7 +2110,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setJacobian ){
 
             using tardigradeHydra::residualBase::setJacobian;
 
-            floatMatrix jacobian = { { 1, 2, 3 }, { 4, 5, 6 } };
+            floatVector jacobian = { 1, 2, 3, 4, 5, 6 };
     
             residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
 
@@ -2140,7 +2140,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setdRdF ){
 
             using tardigradeHydra::residualBase::setdRdF;
 
-            floatMatrix dRdF = { { 1, 2, 3 }, { 4, 5, 6 } };
+            floatVector dRdF = { 1, 2, 3, 4, 5, 6 };
 
             residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
@@ -2200,7 +2200,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setAdditionalDerivatives ){
 
             using tardigradeHydra::residualBase::setAdditionalDerivatives;
 
-            floatMatrix additionalDerivatives = { { 4, 5, 6 } };
+            floatVector additionalDerivatives = { 4, 5, 6 };
 
             residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
@@ -2534,7 +2534,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
                 }
 
-                setJacobian( jacobian );
+                setJacobian( tardigradeVectorTools::appendVectors( jacobian ) );
 
             }
 
@@ -2552,7 +2552,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
                 }
 
-                setdRdF( dRdF );
+                setdRdF( tardigradeVectorTools::appendVectors( dRdF ) );
 
             }
 
@@ -2584,7 +2584,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
                 }
 
-                setAdditionalDerivatives( additionalDerivatives );
+                setAdditionalDerivatives( tardigradeVectorTools::appendVectors( additionalDerivatives ) );
 
             }
 
@@ -2677,21 +2677,21 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
                                                                *hydraGet.r2.getResidual( ),
                                                                *hydraGet.r3.getResidual( ) } );
 
-    floatMatrix jacobianAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getJacobian( ),
-                                                               *hydraGet.r2.getJacobian( ),
-                                                               *hydraGet.r3.getJacobian( ) } );
+    floatMatrix jacobianAnswer = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::inflate( *hydraGet.r1.getJacobian( ), 36, 41 ),
+                                                                         tardigradeVectorTools::inflate( *hydraGet.r2.getJacobian( ),  2, 41 ),
+                                                                         tardigradeVectorTools::inflate( *hydraGet.r3.getJacobian( ),  3, 41 ) } );
 
-    floatMatrix dRdFAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getdRdF( ),
-                                                           *hydraGet.r2.getdRdF( ),
-                                                           *hydraGet.r3.getdRdF( ) } );
+    floatMatrix dRdFAnswer = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::inflate( *hydraGet.r1.getdRdF( ), 36, 9 ),
+                                                                     tardigradeVectorTools::inflate( *hydraGet.r2.getdRdF( ),  2, 9 ),
+                                                                     tardigradeVectorTools::inflate( *hydraGet.r3.getdRdF( ),  3, 9 ) } );
 
     floatVector dRdTAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getdRdT( ),
                                                            *hydraGet.r2.getdRdT( ),
                                                            *hydraGet.r3.getdRdT( ) } );
 
-    floatMatrix additionalDerivativesAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getAdditionalDerivatives( ),
-                                                                            *hydraGet.r2.getAdditionalDerivatives( ),
-                                                                            *hydraGet.r3.getAdditionalDerivatives( ) } );
+    floatMatrix additionalDerivativesAnswer = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::inflate( *hydraGet.r1.getAdditionalDerivatives( ), 36, 4 ),
+                                                                                      tardigradeVectorTools::inflate( *hydraGet.r2.getAdditionalDerivatives( ),  2, 4 ),
+                                                                                      tardigradeVectorTools::inflate( *hydraGet.r3.getAdditionalDerivatives( ),  3, 4 ) } );
 
     tardigradeHydra::unit_test::hydraBaseTester::formNonLinearProblem( hydra );
 
@@ -2755,7 +2755,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
                 }
 
-                setJacobian( jacobian );
+                setJacobian( tardigradeVectorTools::appendVectors( jacobian ) );
 
             }
 
@@ -2773,7 +2773,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
                 }
 
-                setdRdF( dRdF );
+                setdRdF( tardigradeVectorTools::appendVectors( dRdF ) );
 
             }
 

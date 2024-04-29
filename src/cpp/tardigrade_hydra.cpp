@@ -808,13 +808,15 @@ namespace tardigradeHydra{
          * Form the residual, jacobian, and gradient matrices
          */
 
-        const unsigned int residualSize = ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( );
+        const unsigned int configurationUnknownCount = *getConfigurationUnknownCount( );
+
+        const unsigned int residualSize = ( *getNumConfigurations( ) ) * configurationUnknownCount + *getNumNonLinearSolveStateVariables( );
 
         _residual.second = floatVector( residualSize, 0 );
 
         _jacobian.second = floatVector( residualSize * residualSize, 0 );
 
-        _dRdF.second = floatVector( residualSize * ( *getConfigurationUnknownCount( ) ), 0 );
+        _dRdF.second = floatVector( residualSize * configurationUnknownCount, 0 );
 
         _dRdT.second = floatVector( residualSize, 0 );
 
@@ -833,16 +835,16 @@ namespace tardigradeHydra{
             const floatVector* localResidual;
             TARDIGRADE_ERROR_TOOLS_CATCH( localResidual = residual->getResidual( ) );
 
-            const floatMatrix* localJacobian;
+            const floatVector* localJacobian;
             TARDIGRADE_ERROR_TOOLS_CATCH( localJacobian = residual->getJacobian( ) );
 
-            const floatMatrix* localdRdF;
+            const floatVector* localdRdF;
             TARDIGRADE_ERROR_TOOLS_CATCH( localdRdF = residual->getdRdF( ) );
 
             const floatVector* localdRdT;
             TARDIGRADE_ERROR_TOOLS_CATCH( localdRdT = residual->getdRdT( ) );
 
-            const floatMatrix* localAdditionalDerivatives;
+            const floatVector* localAdditionalDerivatives;
             TARDIGRADE_ERROR_TOOLS_CATCH( localAdditionalDerivatives = residual->getAdditionalDerivatives( ) );
 
             // Check the contributions to make sure they are consistent sizes
@@ -853,15 +855,15 @@ namespace tardigradeHydra{
                 + "  actual:   " + std::to_string( localResidual->size( ) ) + "\n"
             )
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( localJacobian->size( ) == *residual->getNumEquations( ),
+            TARDIGRADE_ERROR_TOOLS_CHECK( localJacobian->size( ) == *residual->getNumEquations( ) * residualSize,
                   "The jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                + "  expected: " + std::to_string( *residual->getNumEquations( ) * residualSize ) + "\n"
                 + "  actual:   " + std::to_string( localJacobian->size( ) ) + "\n"
             )
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( localdRdF->size( ) == *residual->getNumEquations( ),
+            TARDIGRADE_ERROR_TOOLS_CHECK( localdRdF->size( ) == *residual->getNumEquations( ) * configurationUnknownCount,
                   "dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                + "  expected: " + std::to_string( *residual->getNumEquations( ) * configurationUnknownCount ) + "\n"
                 + "  actual:   " + std::to_string( localdRdF->size( ) ) + "\n"
             )
 
@@ -873,17 +875,11 @@ namespace tardigradeHydra{
 
             if ( localAdditionalDerivatives->size( ) != 0 ){
 
-                TARDIGRADE_ERROR_TOOLS_CHECK( localAdditionalDerivatives->size( ) == *residual->getNumEquations( ),
-                      "additionalDerivatives for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                    + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
-                    + "  actual:   " + std::to_string( localAdditionalDerivatives->size( ) ) + "\n"
-                )
-
-                if ( ( *localAdditionalDerivatives )[ 0 ].size( ) != numAdditionalDerivatives ){
+                if ( ( *localAdditionalDerivatives ).size( ) != localResidual->size( ) * numAdditionalDerivatives ){
     
                     if ( ( residual_ptr - getResidualClasses( )->begin( ) ) == 0 ){
     
-                        numAdditionalDerivatives = ( *localAdditionalDerivatives )[ 0 ].size( );
+                        numAdditionalDerivatives = ( *localAdditionalDerivatives ).size( ) / localResidual->size( );
     
                         _additionalDerivatives.second = floatVector( residualSize * numAdditionalDerivatives, 0 );
     
@@ -892,7 +888,7 @@ namespace tardigradeHydra{
     
                         std::string message = "The additional derivatives for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " are not the expected length as determined from the first residual\n";
                         message            += "  expected: " + std::to_string( numAdditionalDerivatives ) + "\n";
-                        message            += "  actual:   " + std::to_string( ( *localAdditionalDerivatives )[ 0 ].size( ) ) + "\n";
+                        message            += "  actual:   " + std::to_string( ( *localAdditionalDerivatives ).size( ) ) + "\n";
     
                         TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
     
@@ -904,45 +900,16 @@ namespace tardigradeHydra{
 
             // Store the values in the global quantities
 
-            const unsigned int rows = *residual->getNumEquations( );
+            // Copy over the values of the local vector to the global structures
+            std::copy( localResidual->begin( ), localResidual->end( ), _residual.second.begin( ) + offset );
 
-            for ( unsigned int row = 0; row < rows; row++ ){
+            std::copy( localJacobian->begin( ), localJacobian->end( ), _jacobian.second.begin( ) + residualSize * offset );
 
-                _residual.second[ row + offset ] = ( *localResidual )[ row ];
+            std::copy( localdRdF->begin( ), localdRdF->end( ), _dRdF.second.begin( ) + configurationUnknownCount * offset );
 
-                TARDIGRADE_ERROR_TOOLS_CHECK( ( *localJacobian )[ row ].size( ) == residualSize,
-                      "Row " + std::to_string( row ) + " of the jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                    + "  expected: " + std::to_string( residualSize ) + "\n"
-                    + "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n"
-                )
+            std::copy( localdRdT->begin( ), localdRdT->end( ), _dRdT.second.begin( ) + offset );
 
-                for ( unsigned int col = 0; col < residualSize; col++ ){
-                
-                    _jacobian.second[ residualSize * ( row + offset ) + col ] = ( *localJacobian )[ row ][ col ];
-
-                }
-
-                TARDIGRADE_ERROR_TOOLS_CHECK( ( *localdRdF )[ row ].size( ) == *getConfigurationUnknownCount( ),
-                      "Row " + std::to_string( row ) + " of dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                    + "  expected: " + std::to_string( ( *getConfigurationUnknownCount( ) ) ) + "\n"
-                    + "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n"
-                )
-
-                for ( unsigned int col = 0; col < ( *getConfigurationUnknownCount( ) ); col++ ){
-
-                    _dRdF.second[ ( *getConfigurationUnknownCount( ) ) * ( row + offset ) + col ] = ( *localdRdF )[ row ][ col ];
-
-                }
-
-                _dRdT.second[ row + offset ] = ( *localdRdT )[ row ];
-
-                for ( unsigned int col = 0; col < numAdditionalDerivatives; col++ ){
-
-                    _additionalDerivatives.second[ numAdditionalDerivatives * ( row + offset ) + col ] = ( *localAdditionalDerivatives )[ row ][ col ];
-
-                }
-
-            }
+            std::copy( localAdditionalDerivatives->begin( ), localAdditionalDerivatives->end( ), _additionalDerivatives.second.begin( ) + numAdditionalDerivatives * offset );
 
             offset += *residual->getNumEquations( );
 

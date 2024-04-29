@@ -3545,7 +3545,9 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+            const unsigned int num_unknowns = hydra->getUnknownVector( )->size( );
+
+            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
 
             //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
             const floatVector *dS1dFn       = get_dPK2dFn( );
@@ -3582,7 +3584,7 @@ namespace tardigradeHydra{
                     unsigned int col = 0;
 
                     // Jacobians w.r.t. the stress
-                    jacobian[ row ][ row ] += 1;
+                    jacobian[ num_unknowns * row + row ] += 1;
 
                     // Jacobians w.r.t. the sub configurations
                     col = *hydra->getConfigurationUnknownCount( );
@@ -3591,7 +3593,7 @@ namespace tardigradeHydra{
 
                         for ( unsigned int j = 0; j < ( num_configs - 1 ) * dims[ ( unsigned int )( Sn - S->begin( ) ) ]; j++ ){
 
-                            jacobian[ row ][ col ] -= ( **Sn )[ ( num_configs - 1 ) * dims[ ( unsigned int ) ( Sn - S->begin( ) ) ] * i + j ];
+                            jacobian[ num_unknowns * row + col ] -= ( **Sn )[ ( num_configs - 1 ) * dims[ ( unsigned int ) ( Sn - S->begin( ) ) ] * i + j ];
 
                             col++;
 
@@ -3618,7 +3620,11 @@ namespace tardigradeHydra{
 
             const unsigned int tot_dim = hydra->getTOTDimension( );
 
-            floatMatrix dRdD( *getNumEquations( ), floatVector( *hydra->getConfigurationUnknownCount( ), 0 ) );
+            const unsigned int num_equations = *getNumEquations( );
+
+            const unsigned int num_configurationUnknowns = *hydra->getConfigurationUnknownCount( );
+
+            floatVector dRdD( num_equations * num_configurationUnknowns, 0 );
 
             //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
             const floatVector *dS1dF       = get_dPK2dF( );
@@ -3660,7 +3666,7 @@ namespace tardigradeHydra{
 
                         for ( unsigned int j = 0; j < dims[ ( unsigned int )( Sn - S->begin( ) ) ]; j++ ){
 
-                            dRdD[ row ][ col ] -= ( **Sn )[ dims[ ( unsigned int )( Sn - S->begin( ) ) ] * i + j ];
+                            dRdD[ num_configurationUnknowns * row + col ] -= ( **Sn )[ dims[ ( unsigned int )( Sn - S->begin( ) ) ] * i + j ];
 
                             col++;
 

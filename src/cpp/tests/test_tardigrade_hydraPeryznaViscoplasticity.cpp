@@ -7445,7 +7445,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( jacobian, *R.getJacobian( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.getJacobian( ) ) );
 
 }
 
@@ -7807,6 +7807,6 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdF, *R.getdRdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdF ), *R.getdRdF( ) ) );
 
 }

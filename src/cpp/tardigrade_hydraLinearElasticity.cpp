@@ -595,18 +595,20 @@ namespace tardigradeHydra{
 
             const unsigned int num_unknown_config_vars = ( num_configs - 1 ) * sot_dim;
 
+            const unsigned int num_unknowns = hydra->getUnknownVector( )->size( );
+
             // Form the Jacobian
-            floatMatrix jacobian = floatMatrix( sot_dim, floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+            floatVector jacobian = floatVector( sot_dim * num_unknowns, 0 );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
                 for ( unsigned int j = 0; j < dim; j++ ){
 
-                    jacobian[ dim * i + j ][ dim * i + j ] = -1;
+                    jacobian[ num_unknowns * dim * i + num_unknowns * j + dim * i + j ] = -1;
 
                     for ( unsigned int I = 0; I < num_unknown_config_vars; I++ ){
 
-                        jacobian[ dim * i + j ][ getStress( )->size( ) + I ] = ( *get_dCauchyStressdFn( ) )[ dim * num_unknown_config_vars * i + num_unknown_config_vars * j + I ];
+                        jacobian[ num_unknowns * dim * i + num_unknowns * j + getStress( )->size( ) + I ] = ( *get_dCauchyStressdFn( ) )[ dim * num_unknown_config_vars * i + num_unknown_config_vars * j + I ];
 
                     }
 
@@ -632,9 +634,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
-
-            setdRdF( tardigradeVectorTools::inflate( *get_dCauchyStressdF( ), sot_dim, sot_dim ) );
+            setdRdF( *get_dCauchyStressdF( ) );
 
         }
 
