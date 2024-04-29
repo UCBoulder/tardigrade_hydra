@@ -37,6 +37,7 @@ Internal Changes
 - Changed additional fatal error for non-full rank internal Jacobians to convergence errors (:pull:`96`). By `Nathan Miller`_.
 - Removed all sayHello tests (:pull:`97`). By `Nathan Miller`_.
 - Improved performance of the linear elasticity subroutine (:pull:`99`). By `Nathan Miller`_.
+- Using new error_tools check for error function (:pull:`100`). By `Nathan Miller`_.
 
 Bug Fixes
 =========

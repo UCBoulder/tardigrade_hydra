@@ -808,7 +808,7 @@ namespace tardigradeHydra{
          * Form the residual, jacobian, and gradient matrices
          */
 
-        unsigned int residualSize = ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( );
+        const unsigned int residualSize = ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( );
 
         _residual.second = floatVector( residualSize, 0 );
 
@@ -847,57 +847,37 @@ namespace tardigradeHydra{
 
             // Check the contributions to make sure they are consistent sizes
 
-            if ( localResidual->size( ) != *residual->getNumEquations( ) ){
+            TARDIGRADE_ERROR_TOOLS_CHECK( localResidual->size( ) == *residual->getNumEquations( ),
+                  "The residual for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
+                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                + "  actual:   " + std::to_string( localResidual->size( ) ) + "\n"
+            )
 
-                std::string message = "The residual for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
-                message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
-                message            += "  actual:   " + std::to_string( localResidual->size( ) ) + "\n";
+            TARDIGRADE_ERROR_TOOLS_CHECK( localJacobian->size( ) == *residual->getNumEquations( ),
+                  "The jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
+                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                + "  actual:   " + std::to_string( localJacobian->size( ) ) + "\n"
+            )
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK( localdRdF->size( ) == *residual->getNumEquations( ),
+                  "dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
+                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                + "  actual:   " + std::to_string( localdRdF->size( ) ) + "\n"
+            )
 
-            }
-
-            if ( localJacobian->size( ) != *residual->getNumEquations( ) ){
-
-                std::string message = "The jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
-                message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
-                message            += "  actual:   " + std::to_string( localJacobian->size( ) ) + "\n";
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
-
-            }
-
-            if ( localdRdF->size( ) != *residual->getNumEquations( ) ){
-
-                std::string message = "dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
-                message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
-                message            += "  actual:   " + std::to_string( localdRdF->size( ) ) + "\n";
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
-
-            }
-
-            if ( localdRdT->size( ) != *residual->getNumEquations( ) ){
-
-                std::string message = "dRdT for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
-                message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
-                message            += "  actual:   " + std::to_string( localdRdT->size( ) ) + "\n";
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
-
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( localdRdT->size( ) == *residual->getNumEquations( ),
+                  "dRdT for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
+                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                + "  actual:   " + std::to_string( localdRdT->size( ) ) + "\n"
+            )
 
             if ( localAdditionalDerivatives->size( ) != 0 ){
 
-                if ( localAdditionalDerivatives->size( ) != *residual->getNumEquations( ) ){
-
-                    std::string message = "additionalDerivatives for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
-                    message            += "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n";
-                    message            += "  actual:   " + std::to_string( localAdditionalDerivatives->size( ) ) + "\n";
-    
-                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
-
-                }
+                TARDIGRADE_ERROR_TOOLS_CHECK( localAdditionalDerivatives->size( ) == *residual->getNumEquations( ),
+                      "additionalDerivatives for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
+                    + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                    + "  actual:   " + std::to_string( localAdditionalDerivatives->size( ) ) + "\n"
+                )
 
                 if ( ( *localAdditionalDerivatives )[ 0 ].size( ) != numAdditionalDerivatives ){
     
@@ -924,19 +904,17 @@ namespace tardigradeHydra{
 
             // Store the values in the global quantities
 
-            for ( unsigned int row = 0; row < *residual->getNumEquations( ); row++ ){
+            const unsigned int rows = *residual->getNumEquations( );
+
+            for ( unsigned int row = 0; row < rows; row++ ){
 
                 _residual.second[ row + offset ] = ( *localResidual )[ row ];
 
-                if ( ( *localJacobian )[ row ].size( ) != residualSize ){
-
-                    std::string message = "Row " + std::to_string( row ) + " of the jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
-                    message            += "  expected: " + std::to_string( residualSize ) + "\n";
-                    message            += "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n";
-
-                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
-
-                }
+                TARDIGRADE_ERROR_TOOLS_CHECK( ( *localJacobian )[ row ].size( ) == residualSize,
+                      "Row " + std::to_string( row ) + " of the jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
+                    + "  expected: " + std::to_string( residualSize ) + "\n"
+                    + "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n"
+                )
 
                 for ( unsigned int col = 0; col < residualSize; col++ ){
                 
@@ -944,15 +922,11 @@ namespace tardigradeHydra{
 
                 }
 
-                if ( ( *localdRdF )[ row ].size( ) != *getConfigurationUnknownCount( ) ){
-
-                    std::string message = "Row " + std::to_string( row ) + " of dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n";
-                    message            += "  expected: " + std::to_string( ( *getConfigurationUnknownCount( ) ) ) + "\n";
-                    message            += "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n";
-
-                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
-
-                }
+                TARDIGRADE_ERROR_TOOLS_CHECK( ( *localdRdF )[ row ].size( ) == *getConfigurationUnknownCount( ),
+                      "Row " + std::to_string( row ) + " of dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
+                    + "  expected: " + std::to_string( ( *getConfigurationUnknownCount( ) ) ) + "\n"
+                    + "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n"
+                )
 
                 for ( unsigned int col = 0; col < ( *getConfigurationUnknownCount( ) ); col++ ){
 
