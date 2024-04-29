@@ -2140,7 +2140,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setdRdF ){
 
             using tardigradeHydra::residualBase::setdRdF;
 
-            floatMatrix dRdF = { { 1, 2, 3 }, { 4, 5, 6 } };
+            floatVector dRdF = { 1, 2, 3, 4, 5, 6 };
 
             residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
@@ -2552,7 +2552,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
                 }
 
-                setdRdF( dRdF );
+                setdRdF( tardigradeVectorTools::appendVectors( dRdF ) );
 
             }
 
@@ -2681,9 +2681,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
                                                                          tardigradeVectorTools::inflate( *hydraGet.r2.getJacobian( ),  2, 41 ),
                                                                          tardigradeVectorTools::inflate( *hydraGet.r3.getJacobian( ),  3, 41 ) } );
 
-    floatMatrix dRdFAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getdRdF( ),
-                                                           *hydraGet.r2.getdRdF( ),
-                                                           *hydraGet.r3.getdRdF( ) } );
+    floatMatrix dRdFAnswer = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::inflate( *hydraGet.r1.getdRdF( ), 36, 9 ),
+                                                                     tardigradeVectorTools::inflate( *hydraGet.r2.getdRdF( ),  2, 9 ),
+                                                                     tardigradeVectorTools::inflate( *hydraGet.r3.getdRdF( ),  3, 9 ) } );
 
     floatVector dRdTAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getdRdT( ),
                                                            *hydraGet.r2.getdRdT( ),
@@ -2773,7 +2773,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
                 }
 
-                setdRdF( dRdF );
+                setdRdF( tardigradeVectorTools::appendVectors( dRdF ) );
 
             }
 

@@ -167,7 +167,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            setdRdF( floatMatrix( *getNumEquations( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) ) );
+            setdRdF( floatVector( *getNumEquations( ) * hydra->getDeformationGradient( )->size( ), 0 ) );
 
         }
 

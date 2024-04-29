@@ -808,13 +808,15 @@ namespace tardigradeHydra{
          * Form the residual, jacobian, and gradient matrices
          */
 
-        const unsigned int residualSize = ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( );
+        const unsigned int configurationUnknownCount = *getConfigurationUnknownCount( );
+
+        const unsigned int residualSize = ( *getNumConfigurations( ) ) * configurationUnknownCount + *getNumNonLinearSolveStateVariables( );
 
         _residual.second = floatVector( residualSize, 0 );
 
         _jacobian.second = floatVector( residualSize * residualSize, 0 );
 
-        _dRdF.second = floatVector( residualSize * ( *getConfigurationUnknownCount( ) ), 0 );
+        _dRdF.second = floatVector( residualSize * configurationUnknownCount, 0 );
 
         _dRdT.second = floatVector( residualSize, 0 );
 
@@ -836,7 +838,7 @@ namespace tardigradeHydra{
             const floatVector* localJacobian;
             TARDIGRADE_ERROR_TOOLS_CATCH( localJacobian = residual->getJacobian( ) );
 
-            const floatMatrix* localdRdF;
+            const floatVector* localdRdF;
             TARDIGRADE_ERROR_TOOLS_CATCH( localdRdF = residual->getdRdF( ) );
 
             const floatVector* localdRdT;
@@ -859,9 +861,9 @@ namespace tardigradeHydra{
                 + "  actual:   " + std::to_string( localJacobian->size( ) ) + "\n"
             )
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( localdRdF->size( ) == *residual->getNumEquations( ),
+            TARDIGRADE_ERROR_TOOLS_CHECK( localdRdF->size( ) == *residual->getNumEquations( ) * configurationUnknownCount,
                   "dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                + "  expected: " + std::to_string( *residual->getNumEquations( ) * configurationUnknownCount ) + "\n"
                 + "  actual:   " + std::to_string( localdRdF->size( ) ) + "\n"
             )
 
@@ -898,32 +900,16 @@ namespace tardigradeHydra{
 
             // Store the values in the global quantities
 
-            const unsigned int rows = *residual->getNumEquations( );
-
             // Copy over the values of the local vector to the global structures
             std::copy( localResidual->begin( ), localResidual->end( ), _residual.second.begin( ) + offset );
 
             std::copy( localJacobian->begin( ), localJacobian->end( ), _jacobian.second.begin( ) + residualSize * offset );
 
+            std::copy( localdRdF->begin( ), localdRdF->end( ), _dRdF.second.begin( ) + configurationUnknownCount * offset );
+
+            std::copy( localdRdT->begin( ), localdRdT->end( ), _dRdT.second.begin( ) + offset );
+
             std::copy( localAdditionalDerivatives->begin( ), localAdditionalDerivatives->end( ), _additionalDerivatives.second.begin( ) + numAdditionalDerivatives * offset );
-
-            for ( unsigned int row = 0; row < rows; row++ ){
-
-                TARDIGRADE_ERROR_TOOLS_CHECK( ( *localdRdF )[ row ].size( ) == *getConfigurationUnknownCount( ),
-                      "Row " + std::to_string( row ) + " of dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                    + "  expected: " + std::to_string( ( *getConfigurationUnknownCount( ) ) ) + "\n"
-                    + "  actual:   " + std::to_string( ( *localdRdF )[ row ].size( ) ) + "\n"
-                )
-
-                for ( unsigned int col = 0; col < ( *getConfigurationUnknownCount( ) ); col++ ){
-
-                    _dRdF.second[ ( *getConfigurationUnknownCount( ) ) * ( row + offset ) + col ] = ( *localdRdF )[ row ][ col ];
-
-                }
-
-                _dRdT.second[ row + offset ] = ( *localdRdT )[ row ];
-
-            }
 
             offset += *residual->getNumEquations( );
 

@@ -205,7 +205,7 @@ namespace tardigradeHydra{
 
             }
 
-            void setdRdD( const floatMatrix &dRdD ){
+            void setdRdD( const floatVector &dRdD ){
                 /*!
                  * Set the derivative of the residual w.r.t. the deformation.
                  *
@@ -218,7 +218,7 @@ namespace tardigradeHydra{
 
             }
 
-            const floatMatrix *getdRdD( ){
+            const floatVector *getdRdD( ){
                 /*!
                  * Get the derivative of the residual w.r.t. the deformation.
                  *

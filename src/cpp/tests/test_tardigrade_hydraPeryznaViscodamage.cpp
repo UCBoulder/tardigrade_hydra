@@ -2643,7 +2643,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdF, *R.getdRdF( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdF ), *R.getdRdF( ) ) );
 
     for ( unsigned int i = 0; i < 1; i++ ){
 

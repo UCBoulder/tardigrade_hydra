@@ -634,9 +634,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
-
-            setdRdF( tardigradeVectorTools::inflate( *get_dCauchyStressdF( ), sot_dim, sot_dim ) );
+            setdRdF( *get_dCauchyStressdF( ) );
 
         }
 

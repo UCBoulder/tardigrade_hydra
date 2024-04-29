@@ -521,21 +521,12 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+            floatVector dRdF( ( *getNumEquations( ) ) * sot_dim, 0 );
 
-            floatMatrix dRdF( *getNumEquations( ), floatVector( sot_dim, 0 ) );
+            dRdF = tardigradeVectorTools::appendVectors( { *get_dDamageDeformationGradientdF( ),
+                                                           *get_dPlasticStateVariablesdF( ) } );
 
-            for ( unsigned int i = 0; i < sot_dim; i++ ){
-
-                dRdF[ i ] = -tardigradeVectorTools::getRow( *get_dDamageDeformationGradientdF( ), sot_dim, sot_dim, i );
-
-            }
-
-            for ( unsigned int i = 0; i < num_isvs; i++ ){
-
-                dRdF[ sot_dim + i ] = -tardigradeVectorTools::getRow( *get_dPlasticStateVariablesdF( ), num_isvs, sot_dim, i );
-
-            }
+            std::transform( dRdF.cbegin( ), dRdF.cend( ), dRdF.begin( ), std::negate<floatType>( ) );
 
             setdRdF( dRdF );
 

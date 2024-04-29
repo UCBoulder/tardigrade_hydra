@@ -3620,7 +3620,11 @@ namespace tardigradeHydra{
 
             const unsigned int tot_dim = hydra->getTOTDimension( );
 
-            floatMatrix dRdD( *getNumEquations( ), floatVector( *hydra->getConfigurationUnknownCount( ), 0 ) );
+            const unsigned int num_equations = *getNumEquations( );
+
+            const unsigned int num_configurationUnknowns = *hydra->getConfigurationUnknownCount( );
+
+            floatVector dRdD( num_equations * num_configurationUnknowns, 0 );
 
             //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
             const floatVector *dS1dF       = get_dPK2dF( );
@@ -3662,7 +3666,7 @@ namespace tardigradeHydra{
 
                         for ( unsigned int j = 0; j < dims[ ( unsigned int )( Sn - S->begin( ) ) ]; j++ ){
 
-                            dRdD[ row ][ col ] -= ( **Sn )[ dims[ ( unsigned int )( Sn - S->begin( ) ) ] * i + j ];
+                            dRdD[ num_configurationUnknowns * row + col ] -= ( **Sn )[ dims[ ( unsigned int )( Sn - S->begin( ) ) ] * i + j ];
 
                             col++;
 

@@ -2973,7 +2973,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
-            floatMatrix dRdF( *getNumEquations( ), floatVector( sot_dim, 0 ) );
+            floatVector dRdF( sot_dim * ( *getNumEquations( ) ), 0 );
 
             // Set the derivatives
             get_dPlasticDeformationGradientdF( );
@@ -2985,7 +2985,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                    dRdF[ i ][ j ] = ( *get_dPlasticDeformationGradientdF( ) )[ sot_dim * i + j ];
+                    dRdF[ sot_dim * i + j ] = ( *get_dPlasticDeformationGradientdF( ) )[ sot_dim * i + j ];
 
                 }
 
@@ -2996,7 +2996,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                    dRdF[ i + sot_dim ][ j ] += ( *get_dPlasticStateVariablesdF( ) )[ sot_dim * i + j ];
+                    dRdF[ sot_dim * ( i + sot_dim ) + j ] += ( *get_dPlasticStateVariablesdF( ) )[ sot_dim * i + j ];
 
                 }
 

@@ -17652,7 +17652,7 @@ BOOST_AUTO_TEST_CASE( test_setdRdD ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdD, *R.getdRdD( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdD ), *R.getdRdD( ) ) );
 
 }
 
