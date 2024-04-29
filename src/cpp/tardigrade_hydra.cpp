@@ -842,7 +842,7 @@ namespace tardigradeHydra{
             const floatVector* localdRdT;
             TARDIGRADE_ERROR_TOOLS_CATCH( localdRdT = residual->getdRdT( ) );
 
-            const floatMatrix* localAdditionalDerivatives;
+            const floatVector* localAdditionalDerivatives;
             TARDIGRADE_ERROR_TOOLS_CATCH( localAdditionalDerivatives = residual->getAdditionalDerivatives( ) );
 
             // Check the contributions to make sure they are consistent sizes
@@ -873,17 +873,11 @@ namespace tardigradeHydra{
 
             if ( localAdditionalDerivatives->size( ) != 0 ){
 
-                TARDIGRADE_ERROR_TOOLS_CHECK( localAdditionalDerivatives->size( ) == *residual->getNumEquations( ),
-                      "additionalDerivatives for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                    + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
-                    + "  actual:   " + std::to_string( localAdditionalDerivatives->size( ) ) + "\n"
-                )
-
-                if ( ( *localAdditionalDerivatives )[ 0 ].size( ) != numAdditionalDerivatives ){
+                if ( ( *localAdditionalDerivatives ).size( ) != localResidual->size( ) * numAdditionalDerivatives ){
     
                     if ( ( residual_ptr - getResidualClasses( )->begin( ) ) == 0 ){
     
-                        numAdditionalDerivatives = ( *localAdditionalDerivatives )[ 0 ].size( );
+                        numAdditionalDerivatives = ( *localAdditionalDerivatives ).size( ) / localResidual->size( );
     
                         _additionalDerivatives.second = floatVector( residualSize * numAdditionalDerivatives, 0 );
     
@@ -892,7 +886,7 @@ namespace tardigradeHydra{
     
                         std::string message = "The additional derivatives for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " are not the expected length as determined from the first residual\n";
                         message            += "  expected: " + std::to_string( numAdditionalDerivatives ) + "\n";
-                        message            += "  actual:   " + std::to_string( ( *localAdditionalDerivatives )[ 0 ].size( ) ) + "\n";
+                        message            += "  actual:   " + std::to_string( ( *localAdditionalDerivatives ).size( ) ) + "\n";
     
                         TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
     
@@ -911,19 +905,9 @@ namespace tardigradeHydra{
 
             std::copy( localJacobian->begin( ), localJacobian->end( ), _jacobian.second.begin( ) + residualSize * offset );
 
-            for ( unsigned int row = 0; row < rows; row++ ){
+            std::copy( localAdditionalDerivatives->begin( ), localAdditionalDerivatives->end( ), _additionalDerivatives.second.begin( ) + numAdditionalDerivatives * offset );
 
-//                TARDIGRADE_ERROR_TOOLS_CHECK( ( *localJacobian )[ row ].size( ) == residualSize,
-//                      "Row " + std::to_string( row ) + " of the jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-//                    + "  expected: " + std::to_string( residualSize ) + "\n"
-//                    + "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n"
-//                )
-//
-//                for ( unsigned int col = 0; col < residualSize; col++ ){
-//                
-//                    _jacobian.second[ residualSize * ( row + offset ) + col ] = ( *localJacobian )[ row ][ col ];
-//
-//                }
+            for ( unsigned int row = 0; row < rows; row++ ){
 
                 TARDIGRADE_ERROR_TOOLS_CHECK( ( *localdRdF )[ row ].size( ) == *getConfigurationUnknownCount( ),
                       "Row " + std::to_string( row ) + " of dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
@@ -938,12 +922,6 @@ namespace tardigradeHydra{
                 }
 
                 _dRdT.second[ row + offset ] = ( *localdRdT )[ row ];
-
-                for ( unsigned int col = 0; col < numAdditionalDerivatives; col++ ){
-
-                    _additionalDerivatives.second[ numAdditionalDerivatives * ( row + offset ) + col ] = ( *localAdditionalDerivatives )[ row ][ col ];
-
-                }
 
             }
 

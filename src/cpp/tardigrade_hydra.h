@@ -525,7 +525,7 @@ namespace tardigradeHydra{
                                                                                                                                               
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdT,                             getdRdT,                            dRdT,                            floatVector, setdRdT )
                                                                                                                                               
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setAdditionalDerivatives,            getAdditionalDerivatives,           additionalDerivatives,           floatMatrix, setAdditionalDerivatives )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setAdditionalDerivatives,            getAdditionalDerivatives,           additionalDerivatives,           floatVector, setAdditionalDerivatives )
                                                                                                                                               
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setStress,                           getStress,                          stress,                          floatVector, setStress )
                                                                                                                                               

@@ -2200,7 +2200,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setAdditionalDerivatives ){
 
             using tardigradeHydra::residualBase::setAdditionalDerivatives;
 
-            floatMatrix additionalDerivatives = { { 4, 5, 6 } };
+            floatVector additionalDerivatives = { 4, 5, 6 };
 
             residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
     
@@ -2584,7 +2584,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
                 }
 
-                setAdditionalDerivatives( additionalDerivatives );
+                setAdditionalDerivatives( tardigradeVectorTools::appendVectors( additionalDerivatives ) );
 
             }
 
@@ -2689,9 +2689,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
                                                            *hydraGet.r2.getdRdT( ),
                                                            *hydraGet.r3.getdRdT( ) } );
 
-    floatMatrix additionalDerivativesAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getAdditionalDerivatives( ),
-                                                                            *hydraGet.r2.getAdditionalDerivatives( ),
-                                                                            *hydraGet.r3.getAdditionalDerivatives( ) } );
+    floatMatrix additionalDerivativesAnswer = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::inflate( *hydraGet.r1.getAdditionalDerivatives( ), 36, 4 ),
+                                                                                      tardigradeVectorTools::inflate( *hydraGet.r2.getAdditionalDerivatives( ),  2, 4 ),
+                                                                                      tardigradeVectorTools::inflate( *hydraGet.r3.getAdditionalDerivatives( ),  3, 4 ) } );
 
     tardigradeHydra::unit_test::hydraBaseTester::formNonLinearProblem( hydra );
 
