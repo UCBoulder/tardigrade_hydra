@@ -906,9 +906,10 @@ namespace tardigradeHydra{
 
             const unsigned int rows = *residual->getNumEquations( );
 
-            for ( unsigned int row = 0; row < rows; row++ ){
+            // Copy over the values of the local vector to the global structures
+            std::copy( localResidual->begin( ), localResidual->end( ), _residual.second.begin( ) + offset );
 
-                _residual.second[ row + offset ] = ( *localResidual )[ row ];
+            for ( unsigned int row = 0; row < rows; row++ ){
 
                 TARDIGRADE_ERROR_TOOLS_CHECK( ( *localJacobian )[ row ].size( ) == residualSize,
                       "Row " + std::to_string( row ) + " of the jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
