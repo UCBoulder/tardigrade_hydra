@@ -3545,7 +3545,9 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+            const unsigned int num_unknowns = hydra->getUnknownVector( )->size( );
+
+            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
 
             //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
             const floatVector *dS1dFn       = get_dPK2dFn( );
@@ -3582,7 +3584,7 @@ namespace tardigradeHydra{
                     unsigned int col = 0;
 
                     // Jacobians w.r.t. the stress
-                    jacobian[ row ][ row ] += 1;
+                    jacobian[ num_unknowns * row + row ] += 1;
 
                     // Jacobians w.r.t. the sub configurations
                     col = *hydra->getConfigurationUnknownCount( );
@@ -3591,7 +3593,7 @@ namespace tardigradeHydra{
 
                         for ( unsigned int j = 0; j < ( num_configs - 1 ) * dims[ ( unsigned int )( Sn - S->begin( ) ) ]; j++ ){
 
-                            jacobian[ row ][ col ] -= ( **Sn )[ ( num_configs - 1 ) * dims[ ( unsigned int ) ( Sn - S->begin( ) ) ] * i + j ];
+                            jacobian[ num_unknowns * row + col ] -= ( **Sn )[ ( num_configs - 1 ) * dims[ ( unsigned int ) ( Sn - S->begin( ) ) ] * i + j ];
 
                             col++;
 

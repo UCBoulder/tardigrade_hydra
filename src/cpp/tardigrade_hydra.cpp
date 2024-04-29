@@ -833,7 +833,7 @@ namespace tardigradeHydra{
             const floatVector* localResidual;
             TARDIGRADE_ERROR_TOOLS_CATCH( localResidual = residual->getResidual( ) );
 
-            const floatMatrix* localJacobian;
+            const floatVector* localJacobian;
             TARDIGRADE_ERROR_TOOLS_CATCH( localJacobian = residual->getJacobian( ) );
 
             const floatMatrix* localdRdF;
@@ -853,9 +853,9 @@ namespace tardigradeHydra{
                 + "  actual:   " + std::to_string( localResidual->size( ) ) + "\n"
             )
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( localJacobian->size( ) == *residual->getNumEquations( ),
+            TARDIGRADE_ERROR_TOOLS_CHECK( localJacobian->size( ) == *residual->getNumEquations( ) * residualSize,
                   "The jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                + "  expected: " + std::to_string( *residual->getNumEquations( ) * residualSize ) + "\n"
                 + "  actual:   " + std::to_string( localJacobian->size( ) ) + "\n"
             )
 
@@ -909,24 +909,26 @@ namespace tardigradeHydra{
             // Copy over the values of the local vector to the global structures
             std::copy( localResidual->begin( ), localResidual->end( ), _residual.second.begin( ) + offset );
 
+            std::copy( localJacobian->begin( ), localJacobian->end( ), _jacobian.second.begin( ) + residualSize * offset );
+
             for ( unsigned int row = 0; row < rows; row++ ){
 
-                TARDIGRADE_ERROR_TOOLS_CHECK( ( *localJacobian )[ row ].size( ) == residualSize,
-                      "Row " + std::to_string( row ) + " of the jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                    + "  expected: " + std::to_string( residualSize ) + "\n"
-                    + "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n"
-                )
-
-                for ( unsigned int col = 0; col < residualSize; col++ ){
-                
-                    _jacobian.second[ residualSize * ( row + offset ) + col ] = ( *localJacobian )[ row ][ col ];
-
-                }
+//                TARDIGRADE_ERROR_TOOLS_CHECK( ( *localJacobian )[ row ].size( ) == residualSize,
+//                      "Row " + std::to_string( row ) + " of the jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
+//                    + "  expected: " + std::to_string( residualSize ) + "\n"
+//                    + "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n"
+//                )
+//
+//                for ( unsigned int col = 0; col < residualSize; col++ ){
+//                
+//                    _jacobian.second[ residualSize * ( row + offset ) + col ] = ( *localJacobian )[ row ][ col ];
+//
+//                }
 
                 TARDIGRADE_ERROR_TOOLS_CHECK( ( *localdRdF )[ row ].size( ) == *getConfigurationUnknownCount( ),
                       "Row " + std::to_string( row ) + " of dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
                     + "  expected: " + std::to_string( ( *getConfigurationUnknownCount( ) ) ) + "\n"
-                    + "  actual:   " + std::to_string( ( *localJacobian )[ row ].size( ) ) + "\n"
+                    + "  actual:   " + std::to_string( ( *localdRdF )[ row ].size( ) ) + "\n"
                 )
 
                 for ( unsigned int col = 0; col < ( *getConfigurationUnknownCount( ) ); col++ ){

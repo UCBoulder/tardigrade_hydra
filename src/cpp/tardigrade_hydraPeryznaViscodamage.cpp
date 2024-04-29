@@ -420,7 +420,9 @@ namespace tardigradeHydra{
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
-            floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+            const unsigned int num_unknowns = hydra->getUnknownVector( )->size( );
+
+            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
 
             // Jacobians of the damage deformation gradient
             for ( unsigned int i = 0; i < sot_dim; i++ ){
@@ -430,17 +432,17 @@ namespace tardigradeHydra{
                 for ( unsigned int j = 0; j < sot_dim; j++ ){
                     unsigned int col = j;
 
-                    jacobian[ row ][ col ] -= ( *get_dDamageDeformationGradientdCauchyStress( ) )[ sot_dim * i + j ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdCauchyStress( ) )[ sot_dim * i + j ];
 
                 }
 
                 // Jacobians w.r.t. the sub configurations
-                jacobian[ row ][ sot_dim * damage_configuration_index + i ] += 1;
+                jacobian[ num_unknowns * row + sot_dim * damage_configuration_index + i ] += 1;
 
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
                     unsigned int col = sot_dim + j;
 
-                    jacobian[ row ][ col ] -= ( *get_dDamageDeformationGradientdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
 
                 }
 
@@ -448,7 +450,7 @@ namespace tardigradeHydra{
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
                     unsigned int col = sot_dim + ( num_configs - 1 ) * sot_dim + *ind;
 
-                    jacobian[ row ][ col ] -= ( *get_dDamageDeformationGradientdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
@@ -462,7 +464,7 @@ namespace tardigradeHydra{
                 for ( unsigned int j = 0; j < sot_dim; j++ ){
                     unsigned int col = j;
 
-                    jacobian[ row ][ col ] -= ( *get_dPlasticStateVariablesdCauchyStress( ) )[ sot_dim * i + j ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdCauchyStress( ) )[ sot_dim * i + j ];
 
                 }
 
@@ -470,16 +472,16 @@ namespace tardigradeHydra{
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
                     unsigned int col = sot_dim + j;
 
-                    jacobian[ row ][ col ] -= ( *get_dPlasticStateVariablesdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
 
                 }
 
                 // Jacobians w.r.t. the state variables
-                jacobian[ row ][ sot_dim + ( num_configs - 1 ) * sot_dim + ( *getStateVariableIndices( ) )[ i ] ] += 1;
+                jacobian[ num_unknowns * row + sot_dim + ( num_configs - 1 ) * sot_dim + ( *getStateVariableIndices( ) )[ i ] ] += 1;
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
                     unsigned int col = sot_dim + ( num_configs - 1 ) * sot_dim + *ind;
 
-                    jacobian[ row ][ col ] -= ( *get_dPlasticStateVariablesdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 

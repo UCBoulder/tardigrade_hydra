@@ -1855,7 +1855,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setJacobian ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.getJacobian( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.getJacobian( ) ) );
 
 }
 

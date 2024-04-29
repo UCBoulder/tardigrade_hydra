@@ -2110,7 +2110,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setJacobian ){
 
             using tardigradeHydra::residualBase::setJacobian;
 
-            floatMatrix jacobian = { { 1, 2, 3 }, { 4, 5, 6 } };
+            floatVector jacobian = { 1, 2, 3, 4, 5, 6 };
     
             residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
 
@@ -2534,7 +2534,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
 
                 }
 
-                setJacobian( jacobian );
+                setJacobian( tardigradeVectorTools::appendVectors( jacobian ) );
 
             }
 
@@ -2677,9 +2677,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem ){
                                                                *hydraGet.r2.getResidual( ),
                                                                *hydraGet.r3.getResidual( ) } );
 
-    floatMatrix jacobianAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getJacobian( ),
-                                                               *hydraGet.r2.getJacobian( ),
-                                                               *hydraGet.r3.getJacobian( ) } );
+    floatMatrix jacobianAnswer = tardigradeVectorTools::appendVectors( { tardigradeVectorTools::inflate( *hydraGet.r1.getJacobian( ), 36, 41 ),
+                                                                         tardigradeVectorTools::inflate( *hydraGet.r2.getJacobian( ),  2, 41 ),
+                                                                         tardigradeVectorTools::inflate( *hydraGet.r3.getJacobian( ),  3, 41 ) } );
 
     floatMatrix dRdFAnswer = tardigradeVectorTools::appendVectors( { *hydraGet.r1.getdRdF( ),
                                                            *hydraGet.r2.getdRdF( ),
@@ -2755,7 +2755,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector ){
 
                 }
 
-                setJacobian( jacobian );
+                setJacobian( tardigradeVectorTools::appendVectors( jacobian ) );
 
             }
 

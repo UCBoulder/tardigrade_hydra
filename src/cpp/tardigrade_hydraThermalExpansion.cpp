@@ -139,11 +139,13 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+            const unsigned int num_unknowns = hydra->getUnknownVector( )->size( );
+
+            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
 
             for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
 
-                jacobian[ i ][ sot_dim * ( *getThermalConfigurationIndex( ) ) + i ] = -1;
+                jacobian[ num_unknowns * i + sot_dim * ( *getThermalConfigurationIndex( ) ) + i ] = -1;
 
             }
 
