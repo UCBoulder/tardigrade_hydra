@@ -425,11 +425,15 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
 
     floatVector dYieldFunctiondSubFs( 9 * 2, 0 );
 
+    floatVector dYieldFunctiondStateVariables( 2, 0 );
+
     floatVector dPreviousYieldFunctiondPreviousCauchyStress( 9, 0 );
 
     floatVector dPreviousYieldFunctiondPreviousF( 9, 0 );
 
     floatVector dPreviousYieldFunctiondPreviousSubFs( 9 * 2, 0 );
+
+    floatVector dPreviousYieldFunctiondPreviousStateVariables( 2, 0 );
 
     floatType eps = 1e-6;
 
@@ -524,6 +528,38 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dYieldFunctiondSubFs( ), dYieldFunctiondSubFs ) );
+
+    offset = 9+18+1;
+
+    for ( unsigned int i = 0; i < 2; i++ ){
+
+        floatVector delta( unknownVector.size( ), 0 );
+
+        delta[ i + offset ] = eps * std::fabs( unknownVector[ i + offset ] ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector + delta );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
+
+        residualMock Rp( &hydrap, 11, 1, hydrap.stateVariableIndices, hydrap.viscoPlasticParameters );
+
+        residualMock Rm( &hydram, 11, 1, hydram.stateVariableIndices, hydram.viscoPlasticParameters );
+
+        floatType vp = *Rp.get_yieldFunction( );
+
+        floatType vm = *Rm.get_yieldFunction( );
+
+        dYieldFunctiondStateVariables[ i ] = ( vp - vm ) / ( 2 * delta[ i + offset ] );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dYieldFunctiondStateVariables( ), dYieldFunctiondStateVariables ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -620,5 +656,37 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
     }
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dPreviousYieldFunctiondPreviousSubFs( ), dPreviousYieldFunctiondPreviousSubFs ) );
+
+    offset = 18+1;
+
+    for ( unsigned int i = 0; i < 2; i++ ){
+
+        floatVector delta( previousStateVariables.size( ), 0 );
+
+        delta[ i + offset ] = eps * std::fabs( previousStateVariables[ i + offset ] ) + eps;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 11, 1, hydrap.stateVariableIndices, hydrap.viscoPlasticParameters );
+
+        residualMock Rm( &hydram, 11, 1, hydram.stateVariableIndices, hydram.viscoPlasticParameters );
+
+        floatType vp = *Rp.get_previousYieldFunction( );
+
+        floatType vm = *Rm.get_previousYieldFunction( );
+
+        dPreviousYieldFunctiondPreviousStateVariables[ i ] = ( vp - vm ) / ( 2 * delta[ i + offset ] );
+
+    }
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dPreviousYieldFunctiondPreviousStateVariables( ), dPreviousYieldFunctiondPreviousStateVariables ) );
 
 }

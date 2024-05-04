@@ -150,7 +150,7 @@ namespace tardigradeHydra{
 
             floatVector dYieldFunctiondDrivingStress = sgn( term1 ) * dVonMisesdDrivingStress;
 
-            floatVector dYieldFunctiondStateVariables = { -( *yieldParameters )[ 0 ], -std::fabs( term1 ) * ( *yieldParameters )[ 1 ] };
+            floatVector dYieldFunctiondStateVariables = { -( *yieldParameters )[ 0 ], -sgn( term1 ) * ( *yieldParameters )[ 1 ] };
 
             floatVector dYieldFunctiondCauchyStress = tardigradeVectorTools::matrixMultiply( dYieldFunctiondDrivingStress, *dDrivingStressdCauchyStress, 1, sot_dim, sot_dim, sot_dim );
 
