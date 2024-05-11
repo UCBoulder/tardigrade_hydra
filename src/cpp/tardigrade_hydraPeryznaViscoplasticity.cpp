@@ -731,6 +731,17 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdYieldFunctiondStateVariables( const bool isPrevious ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the state variables
+             * 
+             * \param isPrevious: Flag for if the calculation is for the previous value (true) or the current value (false)
+             */
+
+            setYieldFunctionDerivatives( isPrevious );
+
+        }
+
         void residual::setdYieldFunctiondCauchyStress( ){
             /*!
              * Set the value of the derivative of the yield function w.r.t. the Cauchy stress
@@ -755,6 +766,15 @@ namespace tardigradeHydra{
              */
 
             setdYieldFunctiondSubFs( false );
+
+        }
+
+        void residual::setdYieldFunctiondStateVariables( ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the state variables
+             */
+
+            setdYieldFunctiondStateVariables( false );
 
         }
 
@@ -791,6 +811,15 @@ namespace tardigradeHydra{
              */
 
             setdYieldFunctiondSubFs( true );
+
+        }
+
+        void residual::setdPreviousYieldFunctiondPreviousStateVariables( ){
+            /*!
+             * Set the value of the derivative of the previous yield function w.r.t. the previous state variables
+             */
+
+            setdYieldFunctiondStateVariables( true );
 
         }
 
@@ -903,6 +932,8 @@ namespace tardigradeHydra{
 
                 set_dPreviousYieldFunctiondPreviousSubFs( dYieldFunctiondSubFs );
 
+                set_dPreviousYieldFunctiondPreviousStateVariables( floatVector( get_previousStateVariables( )->size( ), 0 ) );
+
             }
             else{
 
@@ -913,6 +944,8 @@ namespace tardigradeHydra{
                 set_dYieldFunctiondF( dYieldFunctiondF );
 
                 set_dYieldFunctiondSubFs( dYieldFunctiondSubFs );
+
+                set_dYieldFunctiondStateVariables( floatVector( get_stateVariables( )->size( ), 0 ) );
 
             }
 
@@ -1587,6 +1620,8 @@ namespace tardigradeHydra{
 
             const floatVector *dYieldFunctiondSubFs;
 
+            const floatVector *dYieldFunctiondStateVariables;
+
             const floatVector *dDragStressdStateVariables;
 
             const floatType   *dPlasticThermalMultiplierdT;
@@ -1598,6 +1633,8 @@ namespace tardigradeHydra{
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = get_dPreviousYieldFunctiondPreviousF( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = get_dPreviousYieldFunctiondPreviousSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondStateVariables = get_dPreviousYieldFunctiondPreviousStateVariables( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = get_dPreviousDragStressdPreviousStateVariables( ) );
 
@@ -1617,6 +1654,8 @@ namespace tardigradeHydra{
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = get_dYieldFunctiondF( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = get_dYieldFunctiondSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondStateVariables = get_dYieldFunctiondStateVariables( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = get_dDragStressdStateVariables( ) );
 
@@ -1648,7 +1687,9 @@ namespace tardigradeHydra{
 
             floatType   dPlasticMultiplierdT = dPlasticMultiplierdPlasticThermalMultiplier * ( *dPlasticThermalMultiplierdT );
 
-            floatVector dPlasticMultiplierdStateVariables = dPlasticMultiplierdDragStress * ( *dDragStressdStateVariables );
+            
+            floatVector dPlasticMultiplierdStateVariables = dPlasticMultiplierdYieldFunction * ( *dYieldFunctiondStateVariables )
+                                                          + dPlasticMultiplierdDragStress    * ( *dDragStressdStateVariables );
 
             if ( isPrevious ){
 

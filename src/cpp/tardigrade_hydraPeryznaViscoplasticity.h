@@ -142,6 +142,8 @@ namespace tardigradeHydra{
 
                 virtual void setdYieldFunctiondSubFs( );
 
+                virtual void setdYieldFunctiondStateVariables( );
+
                 virtual void setPlasticThermalMultiplier( );
 
                 virtual void setdPlasticThermalMultiplierdT( );
@@ -213,6 +215,8 @@ namespace tardigradeHydra{
                 virtual void setdPreviousYieldFunctiondPreviousF( );
 
                 virtual void setdPreviousYieldFunctiondPreviousSubFs( );
+
+                virtual void setdPreviousYieldFunctiondPreviousStateVariables( );
 
                 virtual void setPreviousPlasticThermalMultiplier( );
 
@@ -291,6 +295,8 @@ namespace tardigradeHydra{
                 virtual void setdYieldFunctiondF( const bool isPrevious );
 
                 virtual void setdYieldFunctiondSubFs( const bool isPrevious );
+
+                virtual void setdYieldFunctiondStateVariables( const bool isPrevious );
 
                 virtual void setPlasticThermalMultiplier( const bool isPrevious );
 
@@ -482,6 +488,8 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dYieldFunctiondSubFs,                                        floatVector, setdYieldFunctiondSubFs                                        )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dYieldFunctiondStateVariables,                               floatVector, setdYieldFunctiondStateVariables                               )
+
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousYieldFunction,                                       floatType,   setPreviousYieldFunction                                       )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousYieldFunctiondPreviousCauchyStress,                 floatVector, setdPreviousYieldFunctiondPreviousCauchyStress                 )
@@ -489,6 +497,8 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousYieldFunctiondPreviousF,                            floatVector, setdPreviousYieldFunctiondPreviousF                            )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousYieldFunctiondPreviousSubFs,                        floatVector, setdPreviousYieldFunctiondPreviousSubFs                        )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousYieldFunctiondPreviousStateVariables,               floatVector, setdPreviousYieldFunctiondPreviousStateVariables               )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticThermalMultiplier,                                    floatType,   setPlasticThermalMultiplier                                    )
 
