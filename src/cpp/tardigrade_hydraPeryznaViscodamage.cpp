@@ -532,6 +532,27 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::decomposeParameters( const floatVector &parameters ){
+            /*!
+             * Decompose the incoming parameter vector
+             * 
+             * \param &parameters: The incoming parameter vector
+             * 
+             * The form has the same interpretation as the base viscoplastic case
+             * except we have a different method of hardening for the damage state
+             * variable which we account for here.
+             */
+
+            tardigradeHydra::peryznaViscoplasticity::residual::decomposeParameters( parameters );
+
+            //Setting the contribution of damage to the calculation of the drag stress to zero
+            set_dragStressParameters( { parameters[ 1 ], parameters[  2 ], 0. } );
+
+            //Setting the contribution of damage to the hardening of the damage state variable to zero
+            set_hardeningParameters(  { parameters[ 9 ], parameters[ 10 ], 0. } );
+
+        }
+
     }
 
 }

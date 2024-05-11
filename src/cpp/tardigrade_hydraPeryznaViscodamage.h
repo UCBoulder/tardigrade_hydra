@@ -150,6 +150,10 @@ namespace tardigradeHydra{
                 //! The index of the scalar damage
                 unsigned int damageISVIndex = 1;
 
+            protected:
+
+                virtual void decomposeParameters( const floatVector &parameters ) override;
+
             private:
 
                 unsigned int _elasticConfigurationIndex;
