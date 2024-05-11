@@ -123,6 +123,10 @@ namespace tardigradeHydra{
 
                 virtual void setYieldFunctionDerivatives( const bool isPrevious ) override;
 
+                virtual void setDragStress( const bool isPrevious ) override;
+
+                virtual void setDragStressDerivatives( const bool isPrevious ) override;
+
                 virtual void decomposeParameters( const floatVector &parameters ) override;
 
             private:

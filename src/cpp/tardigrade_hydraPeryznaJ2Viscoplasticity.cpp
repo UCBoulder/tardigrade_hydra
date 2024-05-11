@@ -169,6 +169,29 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setDragStress( const bool isPrevious ){
+            /*!
+             * Set the viscous drag stress
+             */
+
+            set_dragStress( ( *get_dragStressParameters( ) )[ 0 ] );
+
+        }
+
+        void residual::setDragStressDerivatives( const bool isPrevious ){
+            /*!
+             * Set the derivatives of the drag stress
+             */
+
+            if ( isPrevious ){
+                set_dPreviousDragStressdPreviousStateVariables( floatVector( get_stateVariables( )->size( ), 0 ) );
+            }
+            else{
+                set_dDragStressdStateVariables( floatVector( get_stateVariables( )->size( ), 0 ) );
+            }
+
+        }
+
         void residual::decomposeParameters( const floatVector &parameters ){
             /*!
              * Decompose the incoming parameter vector
