@@ -3090,17 +3090,9 @@ namespace tardigradeHydra{
              *     modulus.
              */
 
-            unsigned int expectedSize = 11;
+            constexpr unsigned int expectedSize = 11;
 
-            if ( parameters.size( ) != expectedSize ){
-
-                std::string message = "The parameters vector is not the correct length.\n";
-                message            += "  parameters: " + std::to_string( parameters.size( ) ) + "\n";
-                message            += "  required:   " + std::to_string( expectedSize ) + "\n";
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
-
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( parameters.size( ) == expectedSize, "The parameters vector is not the correct length.\n  parameters: " + std::to_string( parameters.size( ) ) + "\n  required:   " + std::to_string( expectedSize ) + "\n" );
 
             set_peryznaParameters( { parameters[ 0 ] } );
 
