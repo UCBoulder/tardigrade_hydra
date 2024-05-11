@@ -123,17 +123,9 @@ namespace tardigradeHydra{
 
                 virtual void setYieldFunctionDerivatives( const bool isPrevious ) override;
 
-                virtual void setdYieldFunctiondStateVariables( );
-
-                virtual void setdPreviousYieldFunctiondPreviousStateVariables( );
-
             private:
 
                 unsigned int _elasticConfigurationIndex;
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dYieldFunctiondStateVariables,                 floatVector, setdYieldFunctiondStateVariables                 )
-
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousYieldFunctiondPreviousStateVariables, floatVector, setdPreviousYieldFunctiondPreviousStateVariables )
 
         };
 

@@ -15,24 +15,6 @@ namespace tardigradeHydra{
 
     namespace peryznaJ2Viscoplasticity{
 
-        void residual::setdYieldFunctiondStateVariables( ){
-            /*!
-             * Set the derivative of the yield function w.r.t. the state variables
-             */
-
-            setYieldFunctionDerivatives( false );
-
-        }
-
-        void residual::setdPreviousYieldFunctiondPreviousStateVariables( ){
-            /*!
-             * Set the derivative of the previous yield function w.r.t. the previous state variables
-             */
-
-            setYieldFunctionDerivatives( true );
-
-        }
-
         void residual::setYieldFunction( const bool isPrevious ){
             /*!
              * Set the value of the yield function
