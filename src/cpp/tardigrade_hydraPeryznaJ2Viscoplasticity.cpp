@@ -51,7 +51,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::calculateVonMisesStress( *drivingStress, vonMises ) );
 
-            yieldFunction = std::fabs( vonMises - ( *yieldParameters )[ 1 ] * ( *stateVariables )[ 1 ] ) - ( *yieldParameters )[ 0 ] * ( *stateVariables )[ 0 ];
+            yieldFunction = std::fabs( vonMises - ( *yieldParameters )[ 2 ] * ( *stateVariables )[ 1 ] ) - ( *yieldParameters )[ 1 ] * ( *stateVariables )[ 0 ] - ( *yieldParameters )[ 0 ];
 
             if ( isPrevious ){
 
@@ -126,13 +126,13 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::calculateVonMisesStress( *drivingStress, vonMises, dVonMisesdDrivingStress ) );
 
-            floatType term1 = vonMises - ( *yieldParameters )[ 1 ] * ( *stateVariables )[ 1 ];
+            floatType term1 = vonMises - ( *yieldParameters )[ 2 ] * ( *stateVariables )[ 1 ];
 
-            yieldFunction = std::fabs( term1 ) - ( *yieldParameters )[ 0 ] * ( *stateVariables )[ 0 ];
+            yieldFunction = std::fabs( term1 ) - ( *yieldParameters )[ 1 ] * ( *stateVariables )[ 0 ] - ( *yieldParameters )[ 0 ];
 
             floatVector dYieldFunctiondDrivingStress = sgn( term1 ) * dVonMisesdDrivingStress;
 
-            floatVector dYieldFunctiondStateVariables = { -( *yieldParameters )[ 0 ], -sgn( term1 ) * ( *yieldParameters )[ 1 ] };
+            floatVector dYieldFunctiondStateVariables = { -( *yieldParameters )[ 1 ], -sgn( term1 ) * ( *yieldParameters )[ 2 ] };
 
             floatVector dYieldFunctiondCauchyStress = tardigradeVectorTools::matrixMultiply( dYieldFunctiondDrivingStress, *dDrivingStressdCauchyStress, 1, sot_dim, sot_dim, sot_dim );
 
@@ -166,6 +166,39 @@ namespace tardigradeHydra{
                 set_dYieldFunctiondStateVariables( dYieldFunctiondStateVariables );
 
             }
+
+        }
+
+        void residual::decomposeParameters( const floatVector &parameters ){
+            /*!
+             * Decompose the incoming parameter vector
+             * 
+             * \param &parameters: The incoming parameter vector. We assume a
+             *     Peryzna viscoplastic driving stress with a Drucker-Prager
+             *     yield and flow potential surface. The parameters are
+             *     [ n, q0, C1, C2, Tref, Y, Ei, Ek, hi0, hi1, hk0, hk1 ] where n is the
+             *     Peryzna exponent, q0 is the initial drag stress,
+             *     C1, C2, and Tref are the temperature effect
+             *     parameters, Y is the yield stress for the yield equation,
+             *     Ei is the isotroping hardening modulus, Ek is the kinematic hardening
+             *     modulus, hi0 and hi1 are the initial and linear hardening moduli for
+             *     the isotropic hardening, and hk0 and hk1 are the initial and linear hardening
+             *     modulus for the kinematic hardening.
+             */
+
+            constexpr unsigned int expectedSize = 12;
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( parameters.size( ) == expectedSize, "The parameters vector is not the correct length.\n  parameters: " + std::to_string( parameters.size( ) ) + "\n  required:   " + std::to_string( expectedSize ) + "\n" );
+
+            set_peryznaParameters( { parameters[ 0 ] } );
+
+            set_dragStressParameters( { parameters[ 1 ] } );
+
+            set_thermalParameters( { parameters[ 2 ], parameters[ 3 ], parameters[ 4 ] } );
+
+            set_yieldParameters( { parameters[ 5 ], parameters[ 6 ], parameters[ 7 ] } );
+
+            set_hardeningParameters( { parameters[ 8 ], parameters[ 9 ], parameters[ 10 ], parameters[ 11 ] } );
 
         }
 

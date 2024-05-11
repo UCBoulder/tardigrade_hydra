@@ -123,6 +123,8 @@ namespace tardigradeHydra{
 
                 virtual void setYieldFunctionDerivatives( const bool isPrevious ) override;
 
+                virtual void decomposeParameters( const floatVector &parameters ) override;
+
             private:
 
                 unsigned int _elasticConfigurationIndex;

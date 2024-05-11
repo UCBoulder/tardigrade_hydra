@@ -160,12 +160,11 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction ){
 
         public:
 
-            floatVector viscoPlasticParameters = { 2.0,
-                                                   1e1, 1e2,
+            floatVector viscoPlasticParameters = { 2.0, 1e1,
                                                    10, 200, 293.15,
-                                                   1, 0.34,
-                                                   0.12,
-                                                   13., 14.};
+                                                   0.1, 1, 0.34,
+                                                   0.12, 13.,
+                                                   0.14, 15. };
 
             std::vector< unsigned int > stateVariableIndices = { 1, 2 };
 
@@ -255,9 +254,9 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction ){
 
     residualMock R_grad2( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
 
-    floatType answer = 10.70823934929885;
+    floatType answer = 10.60823934929885;
 
-    floatType previousAnswer = 0.24517606507011494;
+    floatType previousAnswer = 0.14517606507011494;
 
     R_grad1.get_dYieldFunctiondStateVariables( );
 
@@ -324,12 +323,11 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
 
         public:
 
-            floatVector viscoPlasticParameters = { 2.0,
-                                                   1e1, 1e2,
+            floatVector viscoPlasticParameters = { 2.0, 1e1,
                                                    10, 200, 293.15,
-                                                   1, 0.34,
-                                                   0.12,
-                                                   13., 14.};
+                                                   0.1, 1, 0.34,
+                                                   0.12, 13.,
+                                                   0.14, 15. };
 
             std::vector< unsigned int > stateVariableIndices = { 1, 2 };
 
