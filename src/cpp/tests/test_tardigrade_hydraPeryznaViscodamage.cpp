@@ -137,13 +137,13 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates ){
 
             virtual void setHardeningFunction( ) override{
 
-                set_hardeningFunction( stateVariableEvolutionRates[ 0 ] / plasticMultiplier );
+                set_hardeningFunction( stateVariableEvolutionRates / plasticMultiplier );
 
             }
 
             virtual void setPreviousHardeningFunction( ) override{
 
-                set_previousHardeningFunction( previousStateVariableEvolutionRates[ 0 ] / previousPlasticMultiplier );
+                set_previousHardeningFunction( previousStateVariableEvolutionRates / previousPlasticMultiplier );
 
             }
 
