@@ -2892,19 +2892,25 @@ namespace tardigradeHydra{
              * and the difference between the computed state variable's and hydra's stored values.
              */
 
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
+
+            const unsigned int num_isvs = get_stateVariables( )->size( );
+
             floatVector residual( *getNumEquations( ), 0 );
 
             // Set the residual for the plastic deformation gradient
-            for ( unsigned int i = 0; i < get_plasticDeformationGradient( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
 
                 residual[ i ] = ( *get_plasticDeformationGradient( ) )[ i ] - hydra->getConfiguration( *getPlasticConfigurationIndex( ) )[ i ];
     
             }
 
             // Set the residual for the plastic state variables
-            for ( unsigned int i = 0; i < get_stateVariables( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < num_isvs; i++ ){
 
-                residual[ i + get_plasticDeformationGradient( )->size( ) ] = ( *get_plasticStateVariables( ) )[ i ] - ( *get_stateVariables( ) )[ i ];
+                residual[ i + sot_dim ] = ( *get_plasticStateVariables( ) )[ i ] - ( *get_stateVariables( ) )[ i ];
     
             }
 
