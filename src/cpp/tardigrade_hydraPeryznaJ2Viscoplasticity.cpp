@@ -174,7 +174,12 @@ namespace tardigradeHydra{
              * Set the viscous drag stress
              */
 
-            set_dragStress( ( *get_dragStressParameters( ) )[ 0 ] );
+            if ( isPrevious ){
+                set_previousDragStress( ( *get_dragStressParameters( ) )[ 0 ] );
+            }
+            else{
+                set_dragStress( ( *get_dragStressParameters( ) )[ 0 ] );
+            }
 
         }
 
@@ -184,9 +189,11 @@ namespace tardigradeHydra{
              */
 
             if ( isPrevious ){
+                set_previousDragStress( ( *get_dragStressParameters( ) )[ 0 ] );
                 set_dPreviousDragStressdPreviousStateVariables( floatVector( get_stateVariables( )->size( ), 0 ) );
             }
             else{
+                set_previousDragStress( ( *get_dragStressParameters( ) )[ 0 ] );
                 set_dDragStressdStateVariables( floatVector( get_stateVariables( )->size( ), 0 ) );
             }
 
