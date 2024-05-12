@@ -307,6 +307,12 @@ namespace tardigradeHydra{
              * \param &isPrevious: Whether to compute the previous values or not
              */
 
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
             floatVector evolutionRates;
 
             floatVector tempJac;
@@ -320,17 +326,26 @@ namespace tardigradeHydra{
                 set_previousStateVariableEvolutionRates( evolutionRates );
 
                 // Set the derivatives w.r.t. the previous Cauchy stress
-                tempJac = tardigradeVectorTools::appendVectors( { *get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ), *get_dPreviousPlasticMultiplierdPreviousCauchyStress( ) } );
+                tempJac = *get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( );
+                for ( unsigned int i = 0; i < sot_dim; i++ ){
+                    tempJac[ sot_dim + i ] = ( *get_dPreviousPlasticMultiplierdPreviousCauchyStress( ) )[ i ];
+                }
 
                 set_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( tempJac );
 
                 // Set the derivatives w.r.t. the previous deformation gradient
-                tempJac = tardigradeVectorTools::appendVectors( { *get_dPreviousStateVariableEvolutionRatesdPreviousF( ), *get_dPreviousPlasticMultiplierdPreviousF( ) } );
+                tempJac = *get_dPreviousStateVariableEvolutionRatesdPreviousF( );
+                for ( unsigned int i = 0; i < sot_dim; i++ ){
+                    tempJac[ sot_dim + i ] = ( *get_dPreviousPlasticMultiplierdPreviousF( ) )[ i ];
+                }
 
                 set_dPreviousStateVariableEvolutionRatesdPreviousF( tempJac );
 
                 // Set the derivatives w.r.t. the previous sub-deformation gradients
-                tempJac = tardigradeVectorTools::appendVectors( { *get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( ), *get_dPreviousPlasticMultiplierdPreviousSubFs( ) } );
+                tempJac = *get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( );
+                for ( unsigned int i = 0; i < ( num_configs - 1 ) * sot_dim; i++ ){
+                    tempJac[ ( num_configs - 1 ) * sot_dim + i ] = ( *get_dPreviousPlasticMultiplierdPreviousSubFs( ) )[ i ];
+                }
 
                 set_dPreviousStateVariableEvolutionRatesdPreviousSubFs( tempJac );
 
@@ -353,28 +368,37 @@ namespace tardigradeHydra{
 
                 set_stateVariableEvolutionRates( evolutionRates );
 
-                // Set the derivatives w.r.t. the previous Cauchy stress
-                tempJac = tardigradeVectorTools::appendVectors( { *get_dStateVariableEvolutionRatesdCauchyStress( ), *get_dPlasticMultiplierdCauchyStress( ) } );
+                // Set the derivatives w.r.t. the Cauchy stress
+                tempJac = *get_dStateVariableEvolutionRatesdCauchyStress( );
+                for ( unsigned int i = 0; i < sot_dim; i++ ){
+                    tempJac[ sot_dim + i ] = ( *get_dPlasticMultiplierdCauchyStress( ) )[ i ];
+                }
 
                 set_dStateVariableEvolutionRatesdCauchyStress( tempJac );
 
-                // Set the derivatives w.r.t. the previous deformation gradient
-                tempJac = tardigradeVectorTools::appendVectors( { *get_dStateVariableEvolutionRatesdF( ), *get_dPlasticMultiplierdF( ) } );
+                // Set the derivatives w.r.t. the deformation gradient
+                tempJac = *get_dStateVariableEvolutionRatesdF( );
+                for ( unsigned int i = 0; i < sot_dim; i++ ){
+                    tempJac[ sot_dim + i ] = ( *get_dPlasticMultiplierdF( ) )[ i ];
+                }
 
                 set_dStateVariableEvolutionRatesdF( tempJac );
 
-                // Set the derivatives w.r.t. the previous sub-deformation gradients
-                tempJac = tardigradeVectorTools::appendVectors( { *get_dStateVariableEvolutionRatesdSubFs( ), *get_dPlasticMultiplierdSubFs( ) } );
+                // Set the derivatives w.r.t. the sub-deformation gradients
+                tempJac = *get_dStateVariableEvolutionRatesdSubFs( );
+                for ( unsigned int i = 0; i < ( num_configs - 1 ) * sot_dim; i++ ){
+                    tempJac[ ( num_configs - 1 ) * sot_dim + i ] = ( *get_dPlasticMultiplierdSubFs( ) )[ i ];
+                }
 
                 set_dStateVariableEvolutionRatesdSubFs( tempJac );
 
-                // Set the derivatives w.r.t. the previous temperature
+                // Set the derivatives w.r.t. the temperature
                 floatVector tempJacVec = tardigradeVectorTools::appendVectors( { *get_dStateVariableEvolutionRatesdT( ),
                                                                                { *get_dPlasticMultiplierdT( ) } } );
 
                 set_dStateVariableEvolutionRatesdT( tempJacVec );
 
-                // Set the derivatives w.r.t. the previous state variables
+                // Set the derivatives w.r.t. the state variables
                 tempJac = { ( *get_dStateVariableEvolutionRatesdStateVariables( ) )[ 0 ], 0.,
                             ( *get_dPlasticMultiplierdStateVariables( ) )[ 0 ], 0. };
 
