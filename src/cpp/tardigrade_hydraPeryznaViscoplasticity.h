@@ -514,11 +514,11 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousDragStressdPreviousStateVariables,                  floatVector, setdPreviousDragStressdPreviousStateVariables                  )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, hardeningFunction,                                           floatType,   setHardeningFunction                                           )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, hardeningFunction,                                           floatVector, setHardeningFunction                                           )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHardeningFunctiondStateVariables,                           floatVector, setdHardeningFunctiondStateVariables                           )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousHardeningFunction,                                   floatType,   setPreviousHardeningFunction                                   )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousHardeningFunction,                                   floatVector, setPreviousHardeningFunction                                   )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousHardeningFunctiondPreviousStateVariables,           floatVector, setdPreviousHardeningFunctiondPreviousStateVariables           )
 

@@ -1301,12 +1301,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousHardeningFunction( hardeningFunction );
+                set_previousHardeningFunction( { hardeningFunction } );
 
             }
             else{
 
-                set_hardeningFunction( hardeningFunction );
+                set_hardeningFunction( { hardeningFunction } );
 
             }
 
@@ -1345,14 +1345,14 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousHardeningFunction( hardeningFunction );
+                set_previousHardeningFunction( { hardeningFunction } );
 
                 set_dPreviousHardeningFunctiondPreviousStateVariables( dHardeningFunctiondStateVariables );
 
             }
             else{
 
-                set_hardeningFunction( hardeningFunction );
+                set_hardeningFunction( { hardeningFunction } );
 
                 set_dHardeningFunctiondStateVariables( dHardeningFunctiondStateVariables );
 
@@ -2217,7 +2217,7 @@ namespace tardigradeHydra{
 
             const floatType *plasticMultiplier;
 
-            const floatType *hardeningFunction;
+            const floatVector *hardeningFunction;
 
             if ( isPrevious ){
 
@@ -2234,7 +2234,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector stateVariableEvolutionRates = { ( *plasticMultiplier ) * ( *hardeningFunction ) };
+            floatVector stateVariableEvolutionRates = ( *plasticMultiplier ) * ( *hardeningFunction );
 
             if ( isPrevious ){
 
@@ -2257,9 +2257,17 @@ namespace tardigradeHydra{
              *     should be computed.
              */
 
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const unsigned int num_stateVariables = get_stateVariables( )->size( );
+
             const floatType *plasticMultiplier;
 
-            const floatType *hardeningFunction;
+            const floatVector *hardeningFunction;
 
             const floatVector *dPlasticMultiplierdCauchyStress;
 
@@ -2312,17 +2320,33 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector stateVariableEvolutionRates = { ( *plasticMultiplier ) * ( *hardeningFunction ) };
+            floatVector stateVariableEvolutionRates = ( *plasticMultiplier ) * ( *hardeningFunction );
 
-            floatVector dStateVariableEvolutionRatesdCauchyStress = ( *dPlasticMultiplierdCauchyStress ) * ( *hardeningFunction );
+            floatVector dStateVariableEvolutionRatesdCauchyStress( num_stateVariables * sot_dim, 0 );
 
-            floatVector dStateVariableEvolutionRatesdF = ( *dPlasticMultiplierdF ) * ( *hardeningFunction );
+            floatVector dStateVariableEvolutionRatesdF( num_stateVariables * sot_dim, 0 );
 
-            floatVector dStateVariableEvolutionRatesdSubFs = ( *dPlasticMultiplierdSubFs ) * ( *hardeningFunction );
+            floatVector dStateVariableEvolutionRatesdSubFs( num_stateVariables * ( num_configs - 1 ) * sot_dim, 0 );
 
-            floatVector dStateVariableEvolutionRatesdT = { ( *dPlasticMultiplierdT ) * ( *hardeningFunction ) };
+            for ( unsigned int i = 0; i < num_stateVariables; i++ ){
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
+                    dStateVariableEvolutionRatesdCauchyStress[ sot_dim * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdCauchyStress )[ j ];
+                    dStateVariableEvolutionRatesdF[ sot_dim * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdF )[ j ];
+                }
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
+                    dStateVariableEvolutionRatesdSubFs[  ( num_configs - 1 ) * sot_dim * i + j ] += ( *dPlasticMultiplierdSubFs )[ j ] * ( *hardeningFunction )[ i ];
+                }
+            }
 
-            floatVector dStateVariableEvolutionRatesdStateVariables = ( *dPlasticMultiplierdStateVariables ) * ( *hardeningFunction ) + ( *plasticMultiplier ) * ( *dHardeningFunctiondStateVariables );
+            floatVector dStateVariableEvolutionRatesdT = ( *dPlasticMultiplierdT ) * ( *hardeningFunction );
+
+            floatVector dStateVariableEvolutionRatesdStateVariables = ( *plasticMultiplier ) * ( *dHardeningFunctiondStateVariables );
+
+            for ( unsigned int i = 0; i < num_stateVariables; i++ ){
+                for ( unsigned int j = 0; j < num_stateVariables; j++ ){
+                    dStateVariableEvolutionRatesdStateVariables[ num_stateVariables * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdStateVariables )[ j ];
+                }
+            }
 
             if ( isPrevious ){
 
