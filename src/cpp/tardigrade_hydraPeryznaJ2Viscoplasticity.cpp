@@ -361,6 +361,8 @@ namespace tardigradeHydra{
 
             set_yieldParameters( { parameters[ 5 ], parameters[ 6 ], parameters[ 7 ] } );
 
+            set_flowParameters( { 0., 0. } );
+
             set_hardeningParameters( { parameters[ 8 ], parameters[ 9 ], parameters[ 10 ], parameters[ 11 ] } );
 
         }
