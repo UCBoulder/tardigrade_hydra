@@ -731,6 +731,17 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdYieldFunctiondStateVariables( const bool isPrevious ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the state variables
+             * 
+             * \param isPrevious: Flag for if the calculation is for the previous value (true) or the current value (false)
+             */
+
+            setYieldFunctionDerivatives( isPrevious );
+
+        }
+
         void residual::setdYieldFunctiondCauchyStress( ){
             /*!
              * Set the value of the derivative of the yield function w.r.t. the Cauchy stress
@@ -755,6 +766,15 @@ namespace tardigradeHydra{
              */
 
             setdYieldFunctiondSubFs( false );
+
+        }
+
+        void residual::setdYieldFunctiondStateVariables( ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the state variables
+             */
+
+            setdYieldFunctiondStateVariables( false );
 
         }
 
@@ -791,6 +811,15 @@ namespace tardigradeHydra{
              */
 
             setdYieldFunctiondSubFs( true );
+
+        }
+
+        void residual::setdPreviousYieldFunctiondPreviousStateVariables( ){
+            /*!
+             * Set the value of the derivative of the previous yield function w.r.t. the previous state variables
+             */
+
+            setdYieldFunctiondStateVariables( true );
 
         }
 
@@ -903,6 +932,8 @@ namespace tardigradeHydra{
 
                 set_dPreviousYieldFunctiondPreviousSubFs( dYieldFunctiondSubFs );
 
+                set_dPreviousYieldFunctiondPreviousStateVariables( floatVector( get_previousStateVariables( )->size( ), 0 ) );
+
             }
             else{
 
@@ -913,6 +944,8 @@ namespace tardigradeHydra{
                 set_dYieldFunctiondF( dYieldFunctiondF );
 
                 set_dYieldFunctiondSubFs( dYieldFunctiondSubFs );
+
+                set_dYieldFunctiondStateVariables( floatVector( get_stateVariables( )->size( ), 0 ) );
 
             }
 
@@ -1268,12 +1301,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousHardeningFunction( hardeningFunction );
+                set_previousHardeningFunction( { hardeningFunction } );
 
             }
             else{
 
-                set_hardeningFunction( hardeningFunction );
+                set_hardeningFunction( { hardeningFunction } );
 
             }
 
@@ -1312,14 +1345,14 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousHardeningFunction( hardeningFunction );
+                set_previousHardeningFunction( { hardeningFunction } );
 
                 set_dPreviousHardeningFunctiondPreviousStateVariables( dHardeningFunctiondStateVariables );
 
             }
             else{
 
-                set_hardeningFunction( hardeningFunction );
+                set_hardeningFunction( { hardeningFunction } );
 
                 set_dHardeningFunctiondStateVariables( dHardeningFunctiondStateVariables );
 
@@ -1587,6 +1620,8 @@ namespace tardigradeHydra{
 
             const floatVector *dYieldFunctiondSubFs;
 
+            const floatVector *dYieldFunctiondStateVariables;
+
             const floatVector *dDragStressdStateVariables;
 
             const floatType   *dPlasticThermalMultiplierdT;
@@ -1598,6 +1633,8 @@ namespace tardigradeHydra{
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = get_dPreviousYieldFunctiondPreviousF( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = get_dPreviousYieldFunctiondPreviousSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondStateVariables = get_dPreviousYieldFunctiondPreviousStateVariables( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = get_dPreviousDragStressdPreviousStateVariables( ) );
 
@@ -1617,6 +1654,8 @@ namespace tardigradeHydra{
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = get_dYieldFunctiondF( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = get_dYieldFunctiondSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondStateVariables = get_dYieldFunctiondStateVariables( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = get_dDragStressdStateVariables( ) );
 
@@ -1648,7 +1687,9 @@ namespace tardigradeHydra{
 
             floatType   dPlasticMultiplierdT = dPlasticMultiplierdPlasticThermalMultiplier * ( *dPlasticThermalMultiplierdT );
 
-            floatVector dPlasticMultiplierdStateVariables = dPlasticMultiplierdDragStress * ( *dDragStressdStateVariables );
+            
+            floatVector dPlasticMultiplierdStateVariables = dPlasticMultiplierdYieldFunction * ( *dYieldFunctiondStateVariables )
+                                                          + dPlasticMultiplierdDragStress    * ( *dDragStressdStateVariables );
 
             if ( isPrevious ){
 
@@ -2176,7 +2217,7 @@ namespace tardigradeHydra{
 
             const floatType *plasticMultiplier;
 
-            const floatType *hardeningFunction;
+            const floatVector *hardeningFunction;
 
             if ( isPrevious ){
 
@@ -2193,7 +2234,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector stateVariableEvolutionRates = { ( *plasticMultiplier ) * ( *hardeningFunction ) };
+            floatVector stateVariableEvolutionRates = ( *plasticMultiplier ) * ( *hardeningFunction );
 
             if ( isPrevious ){
 
@@ -2216,9 +2257,17 @@ namespace tardigradeHydra{
              *     should be computed.
              */
 
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const unsigned int num_stateVariables = get_stateVariables( )->size( );
+
             const floatType *plasticMultiplier;
 
-            const floatType *hardeningFunction;
+            const floatVector *hardeningFunction;
 
             const floatVector *dPlasticMultiplierdCauchyStress;
 
@@ -2271,17 +2320,33 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector stateVariableEvolutionRates = { ( *plasticMultiplier ) * ( *hardeningFunction ) };
+            floatVector stateVariableEvolutionRates = ( *plasticMultiplier ) * ( *hardeningFunction );
 
-            floatVector dStateVariableEvolutionRatesdCauchyStress = ( *dPlasticMultiplierdCauchyStress ) * ( *hardeningFunction );
+            floatVector dStateVariableEvolutionRatesdCauchyStress( num_stateVariables * sot_dim, 0 );
 
-            floatVector dStateVariableEvolutionRatesdF = ( *dPlasticMultiplierdF ) * ( *hardeningFunction );
+            floatVector dStateVariableEvolutionRatesdF( num_stateVariables * sot_dim, 0 );
 
-            floatVector dStateVariableEvolutionRatesdSubFs = ( *dPlasticMultiplierdSubFs ) * ( *hardeningFunction );
+            floatVector dStateVariableEvolutionRatesdSubFs( num_stateVariables * ( num_configs - 1 ) * sot_dim, 0 );
 
-            floatVector dStateVariableEvolutionRatesdT = { ( *dPlasticMultiplierdT ) * ( *hardeningFunction ) };
+            for ( unsigned int i = 0; i < num_stateVariables; i++ ){
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
+                    dStateVariableEvolutionRatesdCauchyStress[ sot_dim * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdCauchyStress )[ j ];
+                    dStateVariableEvolutionRatesdF[ sot_dim * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdF )[ j ];
+                }
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
+                    dStateVariableEvolutionRatesdSubFs[  ( num_configs - 1 ) * sot_dim * i + j ] += ( *dPlasticMultiplierdSubFs )[ j ] * ( *hardeningFunction )[ i ];
+                }
+            }
 
-            floatVector dStateVariableEvolutionRatesdStateVariables = ( *dPlasticMultiplierdStateVariables ) * ( *hardeningFunction ) + ( *plasticMultiplier ) * ( *dHardeningFunctiondStateVariables );
+            floatVector dStateVariableEvolutionRatesdT = ( *dPlasticMultiplierdT ) * ( *hardeningFunction );
+
+            floatVector dStateVariableEvolutionRatesdStateVariables = ( *plasticMultiplier ) * ( *dHardeningFunctiondStateVariables );
+
+            for ( unsigned int i = 0; i < num_stateVariables; i++ ){
+                for ( unsigned int j = 0; j < num_stateVariables; j++ ){
+                    dStateVariableEvolutionRatesdStateVariables[ num_stateVariables * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdStateVariables )[ j ];
+                }
+            }
 
             if ( isPrevious ){
 
@@ -2827,19 +2892,25 @@ namespace tardigradeHydra{
              * and the difference between the computed state variable's and hydra's stored values.
              */
 
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
+
+            const unsigned int num_isvs = get_stateVariables( )->size( );
+
             floatVector residual( *getNumEquations( ), 0 );
 
             // Set the residual for the plastic deformation gradient
-            for ( unsigned int i = 0; i < get_plasticDeformationGradient( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
 
                 residual[ i ] = ( *get_plasticDeformationGradient( ) )[ i ] - hydra->getConfiguration( *getPlasticConfigurationIndex( ) )[ i ];
     
             }
 
             // Set the residual for the plastic state variables
-            for ( unsigned int i = 0; i < get_stateVariables( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < num_isvs; i++ ){
 
-                residual[ i + get_plasticDeformationGradient( )->size( ) ] = ( *get_plasticStateVariables( ) )[ i ] - ( *get_stateVariables( ) )[ i ];
+                residual[ i + sot_dim ] = ( *get_plasticStateVariables( ) )[ i ] - ( *get_stateVariables( ) )[ i ];
     
             }
 
@@ -3049,17 +3120,9 @@ namespace tardigradeHydra{
              *     modulus.
              */
 
-            unsigned int expectedSize = 11;
+            constexpr unsigned int expectedSize = 11;
 
-            if ( parameters.size( ) != expectedSize ){
-
-                std::string message = "The parameters vector is not the correct length.\n";
-                message            += "  parameters: " + std::to_string( parameters.size( ) ) + "\n";
-                message            += "  required:   " + std::to_string( expectedSize ) + "\n";
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
-
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( parameters.size( ) == expectedSize, "The parameters vector is not the correct length.\n  parameters: " + std::to_string( parameters.size( ) ) + "\n  required:   " + std::to_string( expectedSize ) + "\n" );
 
             set_peryznaParameters( { parameters[ 0 ] } );
 

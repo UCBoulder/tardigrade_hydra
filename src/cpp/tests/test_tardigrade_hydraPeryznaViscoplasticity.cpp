@@ -136,11 +136,15 @@ namespace tardigradeHydra{
 
                             BOOST_CHECK( &R._dYieldFunctiondSubFs.second == R.get_dYieldFunctiondSubFs( ) );
 
+                            BOOST_CHECK( &R._dYieldFunctiondStateVariables.second == R.get_dYieldFunctiondStateVariables( ) );
+
                             BOOST_CHECK( &R._dPreviousYieldFunctiondPreviousCauchyStress.second == R.get_dPreviousYieldFunctiondPreviousCauchyStress( ) );
 
                             BOOST_CHECK( &R._dPreviousYieldFunctiondPreviousF.second == R.get_dPreviousYieldFunctiondPreviousF( ) );
 
                             BOOST_CHECK( &R._dPreviousYieldFunctiondPreviousSubFs.second == R.get_dPreviousYieldFunctiondPreviousSubFs( ) );
+
+                            BOOST_CHECK( &R._dPreviousYieldFunctiondPreviousStateVariables.second == R.get_dPreviousYieldFunctiondPreviousStateVariables( ) );
 
                             BOOST_CHECK( &R._dPlasticThermalMultiplierdT.second == R.get_dPlasticThermalMultiplierdT( ) );
 
@@ -2529,9 +2533,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction ){
 
     residualMock Rjac( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
 
-    floatType answer = hydra.viscoPlasticParameters[ 9 ] + R.stateVariables[ 0 ] * hydra.viscoPlasticParameters[ 10 ];
+    floatVector answer = { hydra.viscoPlasticParameters[ 9 ] + R.stateVariables[ 0 ] * hydra.viscoPlasticParameters[ 10 ] };
 
-    floatType answer2 = hydra.viscoPlasticParameters[ 9 ] + R.previousStateVariables[ 0 ] * hydra.viscoPlasticParameters[ 10 ];
+    floatVector answer2 = { hydra.viscoPlasticParameters[ 9 ] + R.previousStateVariables[ 0 ] * hydra.viscoPlasticParameters[ 10 ] };
 
     Rjac.get_dHardeningFunctiondStateVariables( );
 
@@ -2547,7 +2551,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction ){
 
     floatType eps = 1e-6;
 
-    floatVector dHardeningFunctiondStateVariables( R.stateVariables.size( ), 0 );
+    floatVector dHardeningFunctiondStateVariables( R.stateVariables.size( ) * R.stateVariables.size( ), 0 );
 
     for ( unsigned int i = 0; i < R.stateVariables.size( ); i++ ){
 
@@ -2569,16 +2573,18 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction ){
 
         Rm.stateVariables -= delta;
 
-        floatType dp = *Rp.get_hardeningFunction( );
+        floatVector dp = *Rp.get_hardeningFunction( );
 
-        floatType dm = *Rm.get_hardeningFunction( );
+        floatVector dm = *Rm.get_hardeningFunction( );
 
-        dHardeningFunctiondStateVariables[ i ] = ( dp - dm ) / ( 2 * delta[ i ] );
+        for ( unsigned int j = 0; j < R.stateVariables.size( ); j++ ){
+            dHardeningFunctiondStateVariables[ R.stateVariables.size( ) * j + i ] = ( dp[ j ] - dm[ j ] ) / ( 2 * delta[ i ] );
+        }
 
     }
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dHardeningFunctiondStateVariables, *Rjac.get_dHardeningFunctiondStateVariables( ) ) );
 
-    floatVector dPreviousHardeningFunctiondPreviousStateVariables( R.previousStateVariables.size( ), 0 );
+    floatVector dPreviousHardeningFunctiondPreviousStateVariables( R.previousStateVariables.size( ) * R.previousStateVariables.size( ), 0 );
 
     for ( unsigned int i = 0; i < R.previousStateVariables.size( ); i++ ){
 
@@ -2600,11 +2606,13 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction ){
 
         Rm.previousStateVariables -= delta;
 
-        floatType dp = *Rp.get_previousHardeningFunction( );
+        floatVector dp = *Rp.get_previousHardeningFunction( );
 
-        floatType dm = *Rm.get_previousHardeningFunction( );
+        floatVector dm = *Rm.get_previousHardeningFunction( );
 
-        dPreviousHardeningFunctiondPreviousStateVariables[ i ] = ( dp - dm ) / ( 2 * delta[ i ] );
+        for ( unsigned int j = 0; j < R.stateVariables.size( ); j++ ){
+            dPreviousHardeningFunctiondPreviousStateVariables[ R.stateVariables.size( ) * j + i ] = ( dp[ j ] - dm[ j ] ) / ( 2 * delta[ i ] );
+        }
 
     }
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousHardeningFunctiondPreviousStateVariables, *Rjac.get_dPreviousHardeningFunctiondPreviousStateVariables( ) ) );
@@ -3064,6 +3072,8 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier ){
             floatVector dfdSubFs = { 19, 20, 21, 22, 23, 24, 25, 26, 27,
                                      28, 29, 30, 31, 32, 33, 34, 35, 36 };
 
+            floatVector dfdStateVariables = { 19 };
+
             floatVector dqdXi = { 27 };
 
             floatType   dAdT  = 28;
@@ -3074,6 +3084,8 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier ){
 
             floatVector dPreviousfdPreviousSubFs = { 47, 48, 49, 50, 51, 52, 53, 54, 55,
                                                      56, 57, 58, 59, 60, 61, 62, 63, 64 };
+
+            floatVector dPreviousfdPreviousStateVariables = { 47 };
 
             floatVector dPreviousqdPreviousXi = { 65 };
 
@@ -3145,6 +3157,23 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier ){
                 else{
 
                     tardigradeHydra::peryznaViscoplasticity::residual::set_dYieldFunctiondSubFs( dfdSubFs );
+
+                }
+
+            }
+
+            virtual void setdYieldFunctiondStateVariables( const bool isPrevious ) override{
+
+                set_peryznaParameters( { n } );
+
+                if ( isPrevious ){
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousYieldFunctiondPreviousStateVariables( dPreviousfdPreviousStateVariables );
+
+                }
+                else{
+
+                    tardigradeHydra::peryznaViscoplasticity::residual::set_dYieldFunctiondStateVariables( dfdStateVariables );
 
                 }
 
@@ -4710,7 +4739,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate ){
 
             floatVector dGammadXi = { 1.1 };
 
-            floatType hardeningFunction = 7.8;
+            floatVector hardeningFunction = { 7.8 };
 
             floatVector dHardeningFunctiondXi = initializeVector( 1, -0.72 );
 
@@ -4726,7 +4755,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate ){
 
             floatVector dPreviousGammadPreviousXi = { 2.5 };
 
-            floatType previousHardeningFunction = .56;
+            floatVector previousHardeningFunction = { .56 };
 
             floatVector dPreviousHardeningFunctiondPreviousXi = initializeVector( 1, 0.22 );
 
