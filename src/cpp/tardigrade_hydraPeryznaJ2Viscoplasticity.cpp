@@ -15,6 +15,24 @@ namespace tardigradeHydra{
 
     namespace peryznaJ2Viscoplasticity{
 
+        void residual::setSignTerm( ){
+            /*!
+             * Set the sign term for kinematic hardening
+             */
+
+            setYieldFunction( false );
+
+        }
+
+        void residual::setPreviousSignTerm( ){
+            /*!
+             * Set the previous value of the sign term for kinematic hardening
+             */
+
+            setYieldFunction( true );
+
+        }
+
         void residual::setYieldFunction( const bool isPrevious ){
             /*!
              * Set the value of the yield function
@@ -51,16 +69,24 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::calculateVonMisesStress( *drivingStress, vonMises ) );
 
-            yieldFunction = std::fabs( vonMises - ( *yieldParameters )[ 2 ] * ( *stateVariables )[ 1 ] ) - ( *yieldParameters )[ 1 ] * ( *stateVariables )[ 0 ] - ( *yieldParameters )[ 0 ];
+            floatType term1 = vonMises - ( *yieldParameters )[ 2 ] * ( *stateVariables )[ 1 ];
+
+            yieldFunction = std::fabs( term1 ) - ( *yieldParameters )[ 1 ] * ( *stateVariables )[ 0 ] - ( *yieldParameters )[ 0 ];
+
+            floatType sign_term1 = sgn( term1 );
 
             if ( isPrevious ){
 
                 set_previousYieldFunction( yieldFunction );
 
+                set_previousSignTerm( sign_term1 );
+
             }
             else{
 
                 set_yieldFunction( yieldFunction );
+
+                set_signTerm( sign_term1 );
 
             }
 
@@ -130,9 +156,11 @@ namespace tardigradeHydra{
 
             yieldFunction = std::fabs( term1 ) - ( *yieldParameters )[ 1 ] * ( *stateVariables )[ 0 ] - ( *yieldParameters )[ 0 ];
 
-            floatVector dYieldFunctiondDrivingStress = sgn( term1 ) * dVonMisesdDrivingStress;
+            floatType sign_term = sgn( term1 );
 
-            floatVector dYieldFunctiondStateVariables = { -( *yieldParameters )[ 1 ], -sgn( term1 ) * ( *yieldParameters )[ 2 ] };
+            floatVector dYieldFunctiondDrivingStress = sign_term * dVonMisesdDrivingStress;
+
+            floatVector dYieldFunctiondStateVariables = { -( *yieldParameters )[ 1 ], -sign_term * ( *yieldParameters )[ 2 ] };
 
             floatVector dYieldFunctiondCauchyStress = tardigradeVectorTools::matrixMultiply( dYieldFunctiondDrivingStress, *dDrivingStressdCauchyStress, 1, sot_dim, sot_dim, sot_dim );
 
@@ -143,6 +171,8 @@ namespace tardigradeHydra{
             if ( isPrevious ){
 
                 set_previousYieldFunction( yieldFunction );
+
+                set_previousSignTerm( sign_term );
 
                 set_dPreviousYieldFunctiondPreviousCauchyStress( dYieldFunctiondCauchyStress );
 
@@ -156,6 +186,8 @@ namespace tardigradeHydra{
             else{
 
                 set_yieldFunction( yieldFunction );
+
+                set_signTerm( sign_term );
 
                 set_dYieldFunctiondCauchyStress( dYieldFunctiondCauchyStress );
 
@@ -195,6 +227,107 @@ namespace tardigradeHydra{
             else{
                 set_previousDragStress( ( *get_dragStressParameters( ) )[ 0 ] );
                 set_dDragStressdStateVariables( floatVector( get_stateVariables( )->size( ), 0 ) );
+            }
+
+        }
+        void residual::setHardeningFunction( const bool isPrevious ){
+            /*!
+             * Set the value of the hardening function
+             * 
+             * \param &isPrevious: Flag for whether to compute the values for the
+             *     previous timestep
+             */
+
+            const floatVector *stateVariables;
+
+            const floatVector *hardeningParameters;
+
+            const floatType *sign_term;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( sign_term = get_previousSignTerm( ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( sign_term = get_signTerm( ) );
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = get_hardeningParameters( ) );
+
+            floatVector hardeningFunction = { ( ( *hardeningParameters )[ 0 ] + ( *hardeningParameters )[ 1 ] * ( *stateVariables )[ 0 ] ),
+                                              ( ( *hardeningParameters )[ 2 ] + ( *hardeningParameters )[ 3 ] * ( *stateVariables )[ 0 ] ) * ( *sign_term ) };
+
+            if ( isPrevious ){
+
+                set_previousHardeningFunction( hardeningFunction );
+
+            }
+            else{
+
+                set_hardeningFunction( hardeningFunction );
+
+            }
+
+        }
+
+        void residual::setHardeningFunctionDerivatives( const bool isPrevious ){
+            /*!
+             * Set the value of the derivatives of the hardening function
+             * 
+             * \param &isPrevious: Flag for whether to compute the values for the
+             *     previous timestep
+             */
+
+            const floatVector *stateVariables;
+
+            const floatVector *hardeningParameters;
+
+            const floatType *sign_term;
+
+            if ( isPrevious ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( sign_term = get_previousSignTerm( ) );
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( sign_term = get_signTerm( ) );
+
+            }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = get_hardeningParameters( ) );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = get_hardeningParameters( ) );
+
+            floatVector hardeningFunction = { ( ( *hardeningParameters )[ 0 ] + ( *hardeningParameters )[ 1 ] * ( *stateVariables )[ 0 ] ),
+                                              ( ( *hardeningParameters )[ 2 ] + ( *hardeningParameters )[ 3 ] * ( *stateVariables )[ 0 ] ) * ( *sign_term ) };
+
+            floatVector dHardeningFunctiondStateVariables = { ( *hardeningParameters )[ 1 ], 0., ( *hardeningParameters )[ 3 ] * ( *sign_term ), 0 };
+
+            if ( isPrevious ){
+
+                set_previousHardeningFunction( hardeningFunction );
+
+                set_dPreviousHardeningFunctiondPreviousStateVariables( dHardeningFunctiondStateVariables );
+
+            }
+            else{
+
+                set_hardeningFunction( hardeningFunction );
+
+                set_dHardeningFunctiondStateVariables( dHardeningFunctiondStateVariables );
+
             }
 
         }

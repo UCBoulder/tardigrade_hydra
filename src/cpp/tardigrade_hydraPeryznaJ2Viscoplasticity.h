@@ -123,15 +123,28 @@ namespace tardigradeHydra{
 
                 virtual void setYieldFunctionDerivatives( const bool isPrevious ) override;
 
+                virtual void setSignTerm( );
+
+                virtual void setPreviousSignTerm( );
+
                 virtual void setDragStress( const bool isPrevious ) override;
 
                 virtual void setDragStressDerivatives( const bool isPrevious ) override;
+
+                virtual void setHardeningFunction( const bool isPrevious ) override;
+
+                virtual void setHardeningFunctionDerivatives( const bool isPrevious ) override;
 
                 virtual void decomposeParameters( const floatVector &parameters ) override;
 
             private:
 
                 unsigned int _elasticConfigurationIndex;
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, signTerm,         floatType,   setSignTerm         )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousSignTerm, floatType,   setPreviousSignTerm )
+
 
         };
 
