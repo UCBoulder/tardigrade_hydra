@@ -16,6 +16,7 @@ namespace tardigradeHydra{
                                                   const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                                                   const floatVector &microDeformation, const floatVector &previousMicroDeformation,
                                                   const floatVector &gradientMicroDeformation, const floatVector &previousGradientMicroDeformation,
+                                                  const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
                                                   const floatVector &previousStateVariables, const floatVector &parameters,
                                                   const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                                                   const unsigned int dimension, const unsigned int configuration_unknown_count,
@@ -23,6 +24,7 @@ namespace tardigradeHydra{
                                                   const unsigned int maxLSIterations, const floatType lsAlpha,
                                                   const bool use_preconditioner, const unsigned int preconditioner_type ) :
                                                   hydraBase( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                                             additionalDOF, previousAdditionalDOF,
                                                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables,
                                                              dimension, configuration_unknown_count, tolr, tola, maxIterations, maxLSIterations, lsAlpha,
                                                              use_preconditioner, preconditioner_type ),

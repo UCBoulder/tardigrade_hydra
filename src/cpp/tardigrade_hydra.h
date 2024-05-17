@@ -556,6 +556,7 @@ namespace tardigradeHydra{
             hydraBase( const floatType &time, const floatType &deltaTime,
                        const floatType &temperature, const floatType &previousTemperature,
                        const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
+                       const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
                        const floatVector &previousStateVariables, const floatVector &parameters,
                        const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                        const unsigned int dimension=3, const unsigned int configuration_unknown_count=9,
@@ -588,6 +589,12 @@ namespace tardigradeHydra{
 
             //! Get a reference to the previous deformation gradient
             const floatVector* getPreviousDeformationGradient( ){ return &_previousDeformationGradient; }
+
+            //! Get a reference to the additional degrees of freedom
+            const floatVector* getAdditionalDOF( ){ return &_additionalDOF; }
+
+            //! Get a reference to the previous additional degrees of freedom
+            const floatVector* getPreviousAdditionalDOF( ){ return &_previousAdditionalDOF; }
 
             //! Get a reference to the previous values of the state variables
             const floatVector* getPreviousStateVariables( ){ return &_previousStateVariables; }
@@ -844,6 +851,10 @@ namespace tardigradeHydra{
             floatVector _deformationGradient; //!< The current deformation gradient
 
             floatVector _previousDeformationGradient; //!< The previous deformation gradient
+
+            floatVector _additionalDOF; //!< The current additional degrees of freedom
+
+            floatVector _previousAdditionalDOF; //!< The previous additional degrees of freedom
 
             floatVector _previousStateVariables; //!< The previous state variables
 
