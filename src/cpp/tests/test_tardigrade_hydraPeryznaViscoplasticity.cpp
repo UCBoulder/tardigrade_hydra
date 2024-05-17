@@ -403,6 +403,7 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -548,6 +549,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -625,9 +627,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
         delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -660,9 +664,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
         delta[ i + 9 ] = eps * std::fabs( unknownVector[ i + 9 ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -695,9 +701,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
         delta[ i ] = eps * std::fabs( hydra.elasticity.previousCauchyStress[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydra_p._local_deltaPreviousCauchyStress = delta;
@@ -734,9 +742,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
         delta[ i ] = eps * std::fabs( previousDeformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -769,9 +779,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress ){
         delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -935,6 +947,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -1091,6 +1104,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R_ngrad( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -1154,9 +1168,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
         delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -1189,9 +1205,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
         delta[ i + 9 ] = eps * std::fabs( unknownVector[ i + 9 ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -1224,9 +1242,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
         delta[ i ] = eps * std::fabs( hydra.elasticity.previousCauchyStress[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydra_p._local_deltaPreviousCauchyStress = delta;
@@ -1263,9 +1283,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
         delta[ i ] = eps * std::fabs( previousDeformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -1298,9 +1320,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian ){
         delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -1464,6 +1488,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -1613,6 +1638,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R_ngrad( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -1671,9 +1697,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian ){
         delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -1702,9 +1730,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian ){
         delta[ i + 9 ] = eps * std::fabs( unknownVector[ i + 9 ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -1733,9 +1763,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian ){
         delta[ i ] = eps * std::fabs( hydra.elasticity.previousCauchyStress[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydra_p._local_deltaPreviousCauchyStress = delta;
@@ -1768,9 +1800,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian ){
         delta[ i ] = eps * std::fabs( previousDeformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -1799,9 +1833,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian ){
         delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -1935,6 +1971,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticThermalMultiplier ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -1971,9 +2008,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticThermalMultiplier ){
         floatType delta = eps * std::fabs( temperature ) + eps;
 
         hydraBaseMock hydrap( time, deltaTime, temperature + delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydram( time, deltaTime, temperature - delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         residualMock Rp( &hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -1996,9 +2035,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticThermalMultiplier ){
         floatType delta = eps * std::fabs( previousTemperature ) + eps;
 
         hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature + delta, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature - delta, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         residualMock Rp( &hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -2150,6 +2191,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -2305,6 +2347,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress_jacobian ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -2338,9 +2381,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress_jacobian ){
         delta[ i ] = eps * std::fabs( R.stateVariables[ i ] ) + eps;
 
         hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         residualMock Rp( &hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -2369,9 +2414,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress_jacobian ){
         delta[ i ] = eps * std::fabs( R.previousStateVariables[ i ] ) + eps;
 
         hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         residualMock Rp( &hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -2527,6 +2574,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -2560,9 +2608,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction ){
         delta[ i ] = eps * std::fabs( R.stateVariables[ i ] ) + eps;
 
         hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         residualMock Rp( &hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -2593,9 +2643,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction ){
         delta[ i ] = eps * std::fabs( R.previousStateVariables[ i ] ) + eps;
 
         hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              { }, { },
                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         residualMock Rp( &hydrap, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -2734,6 +2786,7 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -2881,6 +2934,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariableIndices ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -3006,6 +3060,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariables ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -3341,6 +3396,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
@@ -3502,6 +3558,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R_ngrad( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -3568,9 +3625,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian ){
         delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -3599,9 +3658,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian ){
         delta[ i + 9 ] = eps * std::fabs( unknownVector[ i + 9 ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -3628,9 +3689,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian ){
         floatType delta = eps * std::fabs( temperature ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature + delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature - delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -3659,9 +3722,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian ){
         delta[ 27 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( unknownVector[ 27 + hydra.stateVariableIndices[ i ] ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -3690,9 +3755,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian ){
         delta[ i ] = eps * std::fabs( hydra.elasticity.previousCauchyStress[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydra_p._local_deltaPreviousCauchyStress = delta;
@@ -3725,9 +3792,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian ){
         delta[ i ] = eps * std::fabs( previousDeformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -3756,9 +3825,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian ){
         delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -3785,9 +3856,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian ){
         floatType delta = eps * std::fabs( previousTemperature ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature + delta, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature - delta, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -3816,9 +3889,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian ){
         delta[ 18 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( previousStateVariables[ 18 + hydra.stateVariableIndices[ i ] ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -4177,6 +4252,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -4337,6 +4413,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R_ngrad( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -4407,9 +4484,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
         delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -4442,9 +4521,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
         delta[ i + 9 ] = eps * std::fabs( unknownVector[ i + 9 ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -4475,9 +4556,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
         floatType delta = eps * std::fabs( temperature ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature + delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature - delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -4510,9 +4593,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
         delta[ 27 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( unknownVector[ 27 + hydra.stateVariableIndices[ i ] ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -4545,9 +4630,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
         delta[ i ] = eps * std::fabs( hydra.elasticity.previousCauchyStress[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydra_p._local_deltaPreviousCauchyStress = delta;
@@ -4584,9 +4671,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
         delta[ i ] = eps * std::fabs( previousDeformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -4619,9 +4708,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
         delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -4652,9 +4743,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
         floatType delta = eps * std::fabs( previousTemperature ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature + delta, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature - delta, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -4687,9 +4780,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian ){
         delta[ 18 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( previousStateVariables[ 18 + hydra.stateVariableIndices[ i ] ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -5015,6 +5110,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -5174,6 +5270,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R_ngrad( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -5246,9 +5343,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
         delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -5281,9 +5380,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
         delta[ i + 9 ] = eps * std::fabs( unknownVector[ i + 9 ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -5314,9 +5415,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
         floatType delta = eps * std::fabs( temperature ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature + delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature - delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -5349,9 +5452,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
         delta[ 27 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( unknownVector[ 27 + hydra.stateVariableIndices[ i ] ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -5384,9 +5489,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
         delta[ i ] = eps * std::fabs( hydra.elasticity.previousCauchyStress[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydra_p._local_deltaPreviousCauchyStress = delta;
@@ -5423,9 +5530,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
         delta[ i ] = eps * std::fabs( previousDeformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -5458,9 +5567,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
         delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -5491,9 +5602,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
         floatType delta = eps * std::fabs( previousTemperature ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature + delta, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature - delta, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -5526,9 +5639,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian ){
         delta[ 18 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( previousStateVariables[ 18 + hydra.stateVariableIndices[ i ] ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -5815,6 +5930,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
@@ -5974,6 +6090,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R_ngrad( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -6046,9 +6163,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
         delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -6081,9 +6200,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
         delta[ i + 9 ] = eps * std::fabs( unknownVector[ i + 9 ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -6114,9 +6235,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
         floatType delta = eps * std::fabs( temperature ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature + delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature - delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -6149,9 +6272,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
         delta[ 27 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( unknownVector[ 27 + hydra.stateVariableIndices[ i ] ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -6184,9 +6309,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
         delta[ i ] = eps * std::fabs( hydra.elasticity.previousCauchyStress[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydra_p._local_deltaPreviousCauchyStress = delta;
@@ -6223,9 +6350,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
         delta[ i ] = eps * std::fabs( previousDeformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -6258,9 +6387,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
         delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -6291,9 +6422,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
         floatType delta = eps * std::fabs( previousTemperature ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature + delta, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature - delta, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -6326,9 +6459,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian ){
         delta[ 18 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( previousStateVariables[ 18 + hydra.stateVariableIndices[ i ] ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -6623,6 +6758,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
@@ -6780,6 +6916,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R_ngrad( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -6852,9 +6989,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
         delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -6887,9 +7026,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
         delta[ i + 9 ] = eps * std::fabs( unknownVector[ i + 9 ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -6920,9 +7061,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
         floatType delta = eps * std::fabs( temperature ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature + delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature - delta, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -6955,9 +7098,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
         delta[ 27 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( unknownVector[ 27 + hydra.stateVariableIndices[ i ] ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector + delta );
@@ -6990,9 +7135,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
         delta[ i ] = eps * std::fabs( hydra.elasticity.previousCauchyStress[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydra_p._local_deltaPreviousCauchyStress = delta;
@@ -7029,9 +7176,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
         delta[ i ] = eps * std::fabs( previousDeformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -7064,9 +7213,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
         delta[ i ] = eps * std::fabs( unknownVector[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -7097,9 +7248,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
         floatType delta = eps * std::fabs( previousTemperature ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature + delta, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature - delta, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -7132,9 +7285,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian ){
         delta[ 18 + hydra.stateVariableIndices[ i ] ] += eps * std::fabs( previousStateVariables[ 18 + hydra.stateVariableIndices[ i ] ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables + delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables - delta, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -7291,6 +7446,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters, 0.6 );
@@ -7438,6 +7594,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -7613,6 +7770,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -7632,9 +7790,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT ){
         delta[ i ] = eps * std::fabs( temperature ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature + delta[ i ], previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature - delta[ i ], previousTemperature, deformationGradient, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
@@ -7792,6 +7952,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF ){
     unsigned int dimension = 3;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     residualMock R( &hydra, 10, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
@@ -7811,9 +7972,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF ){
         delta[ i ] = eps * std::fabs( deformationGradient[ i ] ) + eps;
 
         hydraBaseMock hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         hydraBaseMock hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
+                               { }, { },
                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );

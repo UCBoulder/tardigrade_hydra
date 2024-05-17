@@ -950,6 +950,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
     hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                      microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     { }, { },
                                      previousStateVariables, parameters,
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
@@ -1047,6 +1048,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1054,6 +1056,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1089,6 +1092,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation + delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1096,6 +1100,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation - delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1131,6 +1136,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation + delta, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1138,6 +1144,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation - delta, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1173,6 +1180,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1180,6 +1188,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1215,6 +1224,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation + delta, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1222,6 +1232,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation - delta, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1257,6 +1268,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation + delta,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1264,6 +1276,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation - delta,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1307,6 +1320,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables + delta, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -1314,6 +1328,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables - delta, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2088,6 +2103,7 @@ BOOST_AUTO_TEST_CASE( testMapStressesToCurrent ){
 
     hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                      microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     { }, { },
                                      previousStateVariables, parameters,
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
@@ -2474,6 +2490,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
     hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                      microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     { }, { },
                                      previousStateVariables, parameters,
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
@@ -2578,6 +2595,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2585,6 +2603,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2646,6 +2665,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2653,6 +2673,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2714,6 +2735,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2721,6 +2743,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2782,6 +2805,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables + delta, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2789,6 +2813,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables - delta, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2850,6 +2875,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation + delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2857,6 +2883,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation - delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2918,6 +2945,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation + delta, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2925,6 +2953,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation - delta, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2986,6 +3015,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -2993,6 +3023,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3054,6 +3085,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables + delta, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3061,6 +3093,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables - delta, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3122,6 +3155,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation + delta, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3129,6 +3163,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation - delta, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3190,6 +3225,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation + delta,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3197,6 +3233,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation - delta,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3258,6 +3295,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3265,6 +3303,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3326,6 +3365,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables + delta, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3333,6 +3373,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables - delta, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3497,6 +3538,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
 
     hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                      microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     { }, { },
                                      previousStateVariables, parameters,
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
@@ -3927,6 +3969,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
     hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                      microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     { }, { },
                                      previousStateVariables, parameters,
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
@@ -3974,6 +4017,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient + delta, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -3981,6 +4025,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient - delta, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4016,6 +4061,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation + delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4023,6 +4069,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation - delta, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4058,6 +4105,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation + delta, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4065,6 +4113,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation - delta, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4100,6 +4149,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient + delta,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4107,6 +4157,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient - delta,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4142,6 +4193,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation + delta, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4149,6 +4201,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation - delta, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4184,6 +4237,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation + delta,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4191,6 +4245,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation - delta,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4234,6 +4289,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables + delta, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -4241,6 +4297,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables - delta, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -5760,6 +5817,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual ){
 
     hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                      microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     { }, { },
                                      previousStateVariables, parameters,
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
@@ -5894,6 +5952,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
     hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                      microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     { }, { },
                                      previousStateVariables, parameters,
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
@@ -5919,6 +5978,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -5926,6 +5986,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -5975,6 +6036,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature, previousTemperature, Fp, previousDeformationGradient,
                                           chip, previousMicroDeformation, gradChip, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -5982,6 +6044,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature, previousTemperature, Fm, previousDeformationGradient,
                                           chim, previousMicroDeformation, gradChim, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -6017,6 +6080,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
         hydraBaseMicromorphicMock hydrap( time, deltaTime, temperature + delta[ i ], previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -6024,6 +6088,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
         hydraBaseMicromorphicMock hydram( time, deltaTime, temperature - delta[ i ], previousTemperature, deformationGradient, previousDeformationGradient,
                                           microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                          { }, { },
                                           previousStateVariables, parameters,
                                           numConfigurations, numNonLinearSolveStateVariables,
                                           dimension, configuration_unknown_count,
@@ -6192,6 +6257,7 @@ BOOST_AUTO_TEST_CASE( test_setStress ){
 
     hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                      microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     { }, { },
                                      previousStateVariables, parameters,
                                      numConfigurations, numNonLinearSolveStateVariables,
                                      dimension, configuration_unknown_count,
