@@ -37,6 +37,7 @@ namespace tardigradeHydra{
     hydraBase::hydraBase( const floatType &time, const floatType &deltaTime,
                           const floatType &temperature, const floatType &previousTemperature,
                           const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
+                          const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
                           const floatVector &previousStateVariables, const floatVector &parameters,
                           const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                           const unsigned int dimension, const unsigned int configuration_unknown_count, const floatType tolr, const floatType tola, const unsigned int maxIterations,
@@ -47,6 +48,8 @@ namespace tardigradeHydra{
                                                            _temperature( temperature ), _previousTemperature( previousTemperature ),
                                                            _deformationGradient( deformationGradient ),
                                                            _previousDeformationGradient( previousDeformationGradient ),
+                                                           _additionalDOF( additionalDOF ),
+                                                           _previousAdditionalDOF( previousAdditionalDOF ),
                                                            _previousStateVariables( previousStateVariables ),
                                                            _parameters( parameters ),
                                                            _numConfigurations( numConfigurations ),
@@ -63,6 +66,8 @@ namespace tardigradeHydra{
          * \param &temperature: The current temperature
          * \param &previousTemperature: The previous temperature
          * \param &deformationGradient: The current deformation gradient
+         * \param &additionalDOF: Any additional degrees of freedom required for the model
+         * \param &previousAdditionalDOF: Any previous additional degrees of freedom required for the model
          * \param &previousDeformationGradient The previous deformation gradient
          * \param &previousStateVariables: The previous state variables
          * \param &parameters: The model parameters

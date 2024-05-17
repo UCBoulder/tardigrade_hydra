@@ -26,6 +26,7 @@ namespace tardigradeHydra{
                                    const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
                                    const floatVector &microDeformation, const floatVector &previousMicroDeformation,
                                    const floatVector &gradientMicroDeformation, const floatVector &previousGradientMicroDeformation,
+                                   const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
                                    const floatVector &previousStateVariables, const floatVector &parameters,
                                    const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                                    const unsigned int dimension=3, const unsigned int configuration_unknown_count=45,
