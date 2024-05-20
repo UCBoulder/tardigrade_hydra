@@ -27,19 +27,19 @@ namespace tardigradeHydra{
 
             set_massChangeRate( ( *hydra->getAdditionalDOF( ) )[ 1 ] );
 
-            set_massChangeRateGradient( floatVector( *hydra->getAdditionalDOF( )->begin( ) + 2,
-                                                     *hydra->getAdditionalDOF( )->begin( ) + 5 ) );
+            set_massChangeRateGradient( floatVector( hydra->getAdditionalDOF( )->begin( ) + 2,
+                                                     hydra->getAdditionalDOF( )->begin( ) + 5 ) );
 
             set_previousDensity( ( *hydra->getPreviousAdditionalDOF( ) )[ 0 ] );
 
             set_previousMassChangeRate( ( *hydra->getPreviousAdditionalDOF( ) )[ 1 ] );
 
-            set_previousMassChangeRateGradient( floatVector( *hydra->getPreviousAdditionalDOF( )->begin( ) + 2,
-                                                             *hydra->getPreviousAdditionalDOF( )->begin( ) + 5 ) );
+            set_previousMassChangeRateGradient( floatVector( hydra->getPreviousAdditionalDOF( )->begin( ) + 2,
+                                                             hydra->getPreviousAdditionalDOF( )->begin( ) + 5 ) );
 
         }
 
-        void residual::setMassChangeVelocityGradientTrace( const bool isPrevious ){
+        void residual::setMassChangeVelocityGradientTrace( const bool &isPrevious ){
             /*!
              * Set the mass-change velocity gradient trace \f$ \left( \ell_{\bar{I}\bar{I}}^{A} \right) \f$
              * 
@@ -80,14 +80,56 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setMassChangeVelocityGradientTraceDerivatives( const bool isPrevious ){
+        void residual::setMassChangeVelocityGradientTraceDerivatives( const bool &isPrevious ){
             /*!
              * Set the derivatives mass-change velocity gradient trace \f$ \left( \ell_{\bar{I}\bar{I}}^{A} \right) \f$
              * 
              * \param isPrevious: Flag for whether to compute the current or previous value
              */
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
+            const floatType *density;
+
+            const floatType *mass_change_rate;
+
+            if ( isPrevious ){
+
+                density = get_previousDensity( );
+
+                mass_change_rate = get_previousMassChangeRate( );
+
+            }
+            else{
+
+                density = get_density( );
+
+                mass_change_rate = get_massChangeRate( );
+
+            }
+
+            floatType massChangeVelocityGradientTrace = ( *mass_change_rate ) / ( *density );
+
+            floatType dMassChangeVelocityGradientTracedDensity = - ( *mass_change_rate ) / ( ( *density ) * ( *density ) );
+
+            floatType dMassChangeVelocityGradientTracedMassChangeRate = 1. / ( *density );
+
+            if ( isPrevious ){
+
+                set_previousMassChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
+
+                set_dPreviousMassChangeVelocityGradientTracedPreviousDensity( dMassChangeVelocityGradientTracedDensity );
+
+                set_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( dMassChangeVelocityGradientTracedMassChangeRate );
+
+            }
+            else{
+
+                set_massChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
+
+                set_dMassChangeVelocityGradientTracedDensity( dMassChangeVelocityGradientTracedDensity );
+
+                set_dMassChangeVelocityGradientTracedMassChangeRate( dMassChangeVelocityGradientTracedMassChangeRate );
+
+            }
 
         }
 
@@ -142,6 +184,158 @@ namespace tardigradeHydra{
              */
 
             setMassChangeVelocityGradientTraceDerivatives( true );
+
+        }
+
+        void residual::setDirectionVector( const bool &isPrevious ){
+            /*!
+             * Set the direction vector
+             * 
+             * \param &isPrevious: Flag for whether this is the previous or current direction
+             */
+
+            const unsigned int dim = hydra->getDimension( );
+
+            const floatVector *massChangeRateGradient;
+
+            if ( isPrevious ){
+
+                massChangeRateGradient = get_previousMassChangeRateGradient( );
+
+            }
+            else{
+
+                massChangeRateGradient = get_massChangeRateGradient( );
+
+            }
+
+            floatType normMassChangeRateGradient = tardigradeVectorTools::l2norm( *massChangeRateGradient );
+
+            floatVector directionVector( dim, 0 );
+
+            if ( std::isfinite( normMassChangeRateGradient ) ){
+
+                directionVector = ( *massChangeRateGradient ) / normMassChangeRateGradient;
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousDirectionVector( directionVector );
+
+            }
+            else{
+
+                set_directionVector( directionVector );
+
+            }
+
+
+        }
+
+        void residual::setDirectionVector( ){
+            /*!
+             * Set the direction vector
+             */
+
+            setDirectionVector( false );
+
+        }
+
+        void residual::setPreviousDirectionVector( ){
+            /*!
+             * Set the previous direction vector
+             */
+
+            setDirectionVector( true );
+
+        }
+
+        void residual::setDirectionVectorDerivatives( const bool &isPrevious ){
+            /*!
+             * Set the direction vector derivatives
+             * 
+             * \param &isPrevious: Flag for whether this is the previous or current direction
+             */
+
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
+
+            const floatVector *massChangeRateGradient;
+
+            if ( isPrevious ){
+
+                massChangeRateGradient = get_previousMassChangeRateGradient( );
+
+            }
+            else{
+
+                massChangeRateGradient = get_massChangeRateGradient( );
+
+            }
+
+            floatType normMassChangeRateGradient = tardigradeVectorTools::l2norm( *massChangeRateGradient );
+
+            floatVector directionVector( dim, 0 );
+
+            floatVector dDirectionVectordMassChangeRateGradient( sot_dim, 0 );
+
+            if ( std::isfinite( normMassChangeRateGradient ) ){
+
+                directionVector = ( *massChangeRateGradient ) / normMassChangeRateGradient;
+
+                for ( unsigned int i = 0; i < dim; i++ ){
+
+                    dDirectionVectordMassChangeRateGradient[ dim * i + i ] += 1 / normMassChangeRateGradient;
+
+                }
+
+                for ( unsigned int i = 0; i < dim; i++ ){
+
+                    for ( unsigned int j = 0; j < dim; j++ ){
+
+                        dDirectionVectordMassChangeRateGradient[ dim * i + j ] -= directionVector[ i ] * directionVector[ j ] / normMassChangeRateGradient;
+
+                    }
+
+                }
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousDirectionVector( directionVector );
+
+                set_dPreviousDirectionVectordPreviousMassChangeRateGradient( dDirectionVectordMassChangeRateGradient );
+
+            }
+            else{
+
+                set_directionVector( directionVector );
+
+                set_dDirectionVectordMassChangeRateGradient( dDirectionVectordMassChangeRateGradient );
+
+            }
+
+
+        }
+
+        void residual::setdDirectionVectordMassChangeRateGradient( ){
+            /*!
+             * Set the direction vector derivatives
+             */
+
+            setDirectionVectorDerivatives( false );
+
+        }
+
+        void residual::setdPreviousDirectionVectordPreviousMassChangeRateGradient( ){
+            /*!
+             * Set the previous direction vector derivatives
+             */
+
+            setDirectionVectorDerivatives( true );
 
         }
 

@@ -98,9 +98,9 @@ namespace tardigradeHydra{
 
                 virtual void decomposeAdditionalDOF( );
 
-                virtual void setMassChangeVelocityGradientTrace( const bool isPrevious );
+                virtual void setMassChangeVelocityGradientTrace( const bool &isPrevious );
 
-                virtual void setMassChangeVelocityGradientTraceDerivatives( const bool isPrevious );
+                virtual void setMassChangeVelocityGradientTraceDerivatives( const bool &isPrevious );
 
                 virtual void setMassChangeVelocityGradientTrace( );
 
@@ -113,6 +113,18 @@ namespace tardigradeHydra{
                 virtual void setdPreviousMassChangeVelocityGradientTracedPreviousDensity( );
 
                 virtual void setdPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( );
+
+                virtual void setDirectionVector( const bool &isPrevious );
+
+                virtual void setDirectionVectorDerivatives( const bool &isPrevious );
+
+                virtual void setDirectionVector( );
+
+                virtual void setdDirectionVectordMassChangeRateGradient( );
+
+                virtual void setPreviousDirectionVector( );
+
+                virtual void setdPreviousDirectionVectordPreviousMassChangeRateGradient( );
 
                 virtual void setMassChangeVelocityGradientDirection( );
 
@@ -175,11 +187,19 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate, floatType, setdPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeVelocityGradientDirection,             floatVector, setMassChangeVelocityGradientDirection             )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, directionVector,                                     floatVector, setDirectionVector                                     ) 
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeVelocityGradient,                      floatVector, setMassChangeVelocityGradient                      )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousDirectionVector,                             floatVector, setPreviousDirectionVector                             ) 
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeDeformationGradient,                   floatVector, setMassChangeDeformationGradient                   )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDirectionVectordMassChangeRateGradient,                 floatVector, setdDirectionVectordMassChangeRateGradient                 ) 
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousDirectionVectordPreviousMassChangeRateGradient, floatVector, setdPreviousDirectionVectordPreviousMassChangeRateGradient ) 
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeVelocityGradientDirection,                 floatVector, setMassChangeVelocityGradientDirection                 )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeVelocityGradient,                          floatVector, setMassChangeVelocityGradient                          )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeDeformationGradient,                       floatVector, setMassChangeDeformationGradient                       )
 
         };
 
