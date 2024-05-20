@@ -14,6 +14,155 @@ namespace tardigradeHydra{
 
     namespace massChange{
 
+        void residual::decomposeAdditionalDOF( ){
+            /*!
+             * Decompose the additional DOF vectors
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( hydra->getAdditionalDOF( )->size( ) >= 5, "The additional DOF vector is of size " + std::to_string( hydra->getAdditionalDOF( )->size( ) ) + " which is less than the required size of 5" );
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( hydra->getPreviousAdditionalDOF( )->size( ) >= 5, "The previous additional DOF vector is of size " + std::to_string( hydra->getPreviousAdditionalDOF( )->size( ) ) + " which is less than the required size of 5" );
+
+            set_density( ( *hydra->getAdditionalDOF( ) )[ 0 ] );
+
+            set_massChangeRate( ( *hydra->getAdditionalDOF( ) )[ 1 ] );
+
+            set_massChangeRateGradient( floatVector( *hydra->getAdditionalDOF( )->begin( ) + 2,
+                                                     *hydra->getAdditionalDOF( )->begin( ) + 5 ) );
+
+            set_previousDensity( ( *hydra->getPreviousAdditionalDOF( ) )[ 0 ] );
+
+            set_previousMassChangeRate( ( *hydra->getPreviousAdditionalDOF( ) )[ 1 ] );
+
+            set_previousMassChangeRateGradient( floatVector( *hydra->getPreviousAdditionalDOF( )->begin( ) + 2,
+                                                             *hydra->getPreviousAdditionalDOF( )->begin( ) + 5 ) );
+
+        }
+
+        void residual::setMassChangeVelocityGradientTrace( const bool isPrevious ){
+            /*!
+             * Set the mass-change velocity gradient trace \f$ \left( \ell_{\bar{I}\bar{I}}^{A} \right) \f$
+             * 
+             * \param isPrevious: Flag for whether to compute the current or previous value
+             */
+
+            const floatType *density;
+
+            const floatType *mass_change_rate;
+
+            if ( isPrevious ){
+
+                density = get_previousDensity( );
+
+                mass_change_rate = get_previousMassChangeRate( );
+
+            }
+            else{
+
+                density = get_density( );
+
+                mass_change_rate = get_massChangeRate( );
+
+            }
+
+            floatType massChangeVelocityGradientTrace = ( *mass_change_rate ) / ( *density );
+
+            if ( isPrevious ){
+
+                set_previousMassChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
+
+            }
+            else{
+
+                set_massChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
+
+            }
+
+        }
+
+        void residual::setMassChangeVelocityGradientTraceDerivatives( const bool isPrevious ){
+            /*!
+             * Set the derivatives mass-change velocity gradient trace \f$ \left( \ell_{\bar{I}\bar{I}}^{A} \right) \f$
+             * 
+             * \param isPrevious: Flag for whether to compute the current or previous value
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
+
+        }
+
+        void residual::setMassChangeVelocityGradientTrace( ){
+            /*!
+             * Set the mass-change velocity gradient trace \f$ \left( \ell_{\bar{I}\bar{I}}^{A} \right) \f$
+             */
+
+            setMassChangeVelocityGradientTrace( false );
+
+        }
+
+        void residual::setdMassChangeVelocityGradientTracedDensity( ){
+            /*!
+             * Set the derivative of the mass-change velocity gradient trace \f$ \left( \ell_{\bar{I}\bar{I}}^{A} \right) \f$ w.r.t. the density
+             */
+
+            setMassChangeVelocityGradientTraceDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeVelocityGradientTracedMassChangeRate( ){
+            /*!
+             * Set the derivative of the mass-change velocity gradient trace \f$ \left( \ell_{\bar{I}\bar{I}}^{A} \right) \f$ w.r.t. the mass change rate
+             */
+
+            setMassChangeVelocityGradientTraceDerivatives( false );
+
+        }
+
+        void residual::setPreviousMassChangeVelocityGradientTrace( ){
+            /*!
+             * Set the previous mass-change velocity gradient trace \f$ \left( \ell_{\bar{I}\bar{I}}^{A} \right) \f$
+             */
+
+            setMassChangeVelocityGradientTrace( true );
+
+        }
+
+        void residual::setdPreviousMassChangeVelocityGradientTracedPreviousDensity( ){
+            /*!
+             * Set the derivative of the previous mass-change velocity gradient trace \f$ \left( \ell_{\bar{I}\bar{I}}^{A} \right) \f$ w.r.t. previous density
+             */
+
+            setMassChangeVelocityGradientTraceDerivatives( true );
+
+        }
+
+        void residual::setdPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( ){
+            /*!
+             * Set the derivative of the previous mass-change velocity gradient trace \f$ \left( \ell_{\bar{I}\bar{I}}^{A} \right) \f$ w.r.t. the previous mass change rate
+             */
+
+            setMassChangeVelocityGradientTraceDerivatives( true );
+
+        }
+
+        void residual::setMassChangeVelocityGradientDirection( ){
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
+
+        }
+
+        void residual::setMassChangeVelocityGradient( ){
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
+
+        }
+
+        void residual::setMassChangeDeformationGradient( ){
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
+
+        }
+
         void residual::setResidual( ){
             /*!
              * Set the value of the residual

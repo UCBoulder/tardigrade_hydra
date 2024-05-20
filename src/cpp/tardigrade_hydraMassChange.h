@@ -63,7 +63,11 @@ namespace tardigradeHydra{
         typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
 
         /*!
-         * A class which defines a thermal expansion residual
+         * A class which defines a mass-change residual
+         *
+         * Assumes that the additional DOF vector is comprised of
+         * 
+         * [density, mass_change_rate, mass_change_gradient_x, mass_change_gradient_y, mass_change_gradient_z]
          */
         class residual : public tardigradeHydra::residualBase{
 
@@ -82,6 +86,8 @@ namespace tardigradeHydra{
 
                     _massChangeConfigurationIndex = massChangeConfigurationIndex;
 
+                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeAdditionalDOF( ) );
+
                     TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameters( parameters ) );
 
                 }
@@ -89,6 +95,28 @@ namespace tardigradeHydra{
                 const unsigned int *getMassChangeConfigurationIndex( ){ return &_massChangeConfigurationIndex; };
 
             protected:
+
+                virtual void decomposeAdditionalDOF( );
+
+                virtual void setMassChangeVelocityGradientTrace( const bool isPrevious );
+
+                virtual void setMassChangeVelocityGradientTraceDerivatives( const bool isPrevious );
+
+                virtual void setMassChangeVelocityGradientTrace( );
+
+                virtual void setdMassChangeVelocityGradientTracedDensity( );
+
+                virtual void setdMassChangeVelocityGradientTracedMassChangeRate( );
+
+                virtual void setPreviousMassChangeVelocityGradientTrace( );
+
+                virtual void setdPreviousMassChangeVelocityGradientTracedPreviousDensity( );
+
+                virtual void setdPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( );
+
+                virtual void setMassChangeVelocityGradientDirection( );
+
+                virtual void setMassChangeVelocityGradient( );
 
                 virtual void setMassChangeDeformationGradient( );
 
@@ -121,9 +149,37 @@ namespace tardigradeHydra{
 
                 virtual void decomposeParameters( const floatVector &parameters );
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, massDirectionMixingParameter,  floatType,   unexpectedError                  )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, density,                                         floatType,   unexpectedError                                    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeDeformationGradient, floatVector, setMassChangeDeformationGradient )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, previousDensity,                                 floatType,   unexpectedError                                    )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, massChangeRate,                                  floatType,   unexpectedError                                    )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, previousMassChangeRate,                          floatType,   unexpectedError                                    )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, massChangeRateGradient,                          floatVector, unexpectedError                                    )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, previousMassChangeRateGradient,                  floatVector, unexpectedError                                    )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, massDirectionMixingParameter,                    floatType,   unexpectedError                                    )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeVelocityGradientTrace,                 floatType,   setMassChangeVelocityGradientTrace                 )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeVelocityGradientTracedDensity,        floatType,   setdMassChangeVelocityGradientTracedDensity        )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeVelocityGradientTracedMassChangeRate, floatType,   setdMassChangeVelocityGradientTracedMassChangeRate )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMassChangeVelocityGradientTrace,         floatType,   setPreviousMassChangeVelocityGradientTrace         )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientTracedPreviousDensity, floatType, setdPreviousMassChangeVelocityGradientTracedPreviousDensity        )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate, floatType, setdPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeVelocityGradientDirection,             floatVector, setMassChangeVelocityGradientDirection             )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeVelocityGradient,                      floatVector, setMassChangeVelocityGradient                      )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeDeformationGradient,                   floatVector, setMassChangeDeformationGradient                   )
 
         };
 
