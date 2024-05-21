@@ -1120,7 +1120,25 @@ namespace tardigradeHydra{
              * \param &computePrevious: Compute the gradients w.r.t. previous values
              */
 
+            constexpr unsigned int dim = 3;
+
+            constexpr unsigned int sot_dim = dim * dim;
+
+            constexpr unsigned int tot_dim = sot_dim * dim;
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
             const floatVector *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
+
+            const floatVector *dLdRho = get_dMassChangeIntermediateVelocityGradientdDensity( );
+
+            const floatVector *dLdC = get_dMassChangeIntermediateVelocityGradientdMassChangeRate( );
+
+            const floatVector *dLdGradC = get_dMassChangeIntermediateVelocityGradientdMassChangeRateGradient( );
+
+            const floatVector *dLdF = get_dMassChangeIntermediateVelocityGradientdDeformationGradient( );
+
+            const floatVector *dLdFn = get_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( );
 
             const floatVector *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
 
@@ -1130,12 +1148,84 @@ namespace tardigradeHydra{
 
             floatVector massChangeDeformationGradient;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
-                                                                                *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                dMassChangeDeformationGradient, massChangeDeformationGradient,
-                                                                                ( 1 - ( *getIntegrationParameter( ) ) ), 1 ) )
+            floatVector dFmdL;
+
+            if ( computePrevious ){
+
+                floatVector ddFmdFp;
+
+                floatVector dFmdFp;
+
+                floatVector dFmdLp;
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                                                                                         *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                         dMassChangeDeformationGradient, massChangeDeformationGradient,
+                                                                                         dFmdL, ddFmdFp, dFmdFp, dFmdLp,
+                                                                                         ( 1 - ( *getIntegrationParameter( ) ) ), 1 ) )
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                                                                                         *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                         dMassChangeDeformationGradient, massChangeDeformationGradient,
+                                                                                         dFmdL,
+                                                                                         ( 1 - ( *getIntegrationParameter( ) ) ), 1 ) )
+
+            }
+
+            floatVector dFmdRho( sot_dim, 0 );
+
+            floatVector dFmdC( sot_dim, 0 );
+
+            floatVector dFmdGradC( tot_dim, 0 );
+
+            floatVector dFmdF( sot_dim * sot_dim, 0 );
+
+            floatVector dFmdFn( ( num_configs - 1 ) * sot_dim * sot_dim, 0 );
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
+
+                    dFmdRho[ i ] += dFmdL[ sot_dim * i + j ] * ( *dLdRho )[ j ];
+
+                    dFmdC[ i ] += dFmdL[ sot_dim * i + j ] * ( *dLdC )[ j ];
+
+                    for ( unsigned int k = 0; k < dim; k++ ){
+
+                        dFmdGradC[ dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdGradC )[ dim * j + k ];
+
+                    }
+
+                    for ( unsigned int k = 0; k < sot_dim; k++ ){
+
+                        dFmdF[ sot_dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdF )[ sot_dim * j + k ];
+
+                    }
+
+                    for ( unsigned int k = 0; k < ( num_configs - 1 ) * sot_dim; k++ ){
+
+                        dFmdFn[ ( num_configs - 1 ) * sot_dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
+
+                    }
+
+                }
+
+            }
 
             set_massChangeDeformationGradient( massChangeDeformationGradient );
+
+            set_dMassChangeDeformationGradientdDensity( dFmdRho );
+
+            set_dMassChangeDeformationGradientdMassChangeRate( dFmdC );
+
+            set_dMassChangeDeformationGradientdMassChangeRateGradient( dFmdGradC );
+
+            set_dMassChangeDeformationGradientdDeformationGradient( dFmdF );
+
+            set_dMassChangeDeformationGradientdSubDeformationGradients( dFmdFn );
 
         }
 
