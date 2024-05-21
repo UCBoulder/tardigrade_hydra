@@ -148,6 +148,12 @@ namespace tardigradeHydra{
 
                 virtual void setdPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( );
 
+                virtual void setMassChangeIntermediateVelocityGradient( const bool &isPrevious );
+
+                virtual void setMassChangeIntermediateVelocityGradient( );
+
+                virtual void setPreviousMassChangeIntermediateVelocityGradient( );
+
                 virtual void setMassChangeDeformationGradient( );
 
                 virtual void setResidual( ) override;
@@ -230,6 +236,10 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientdPreviousMassChangeRate,         floatVector, setdPreviousMassChangeVelocityGradientdPreviousMassChangeRate          )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient, floatVector, setdPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient  )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeIntermediateVelocityGradient,                             floatVector, setMassChangeIntermediateVelocityGradient         )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMassChangeIntermediateVelocityGradient,                     floatVector, setPreviousMassChangeIntermediateVelocityGradient )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeDeformationGradient,                       floatVector, setMassChangeDeformationGradient                       )
 

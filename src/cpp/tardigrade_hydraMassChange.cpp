@@ -628,13 +628,71 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setMassChangeIntermediateVelocityGradient( const bool &isPrevious ){
+            /*!
+             * Set the velocity gradient in the intermediate configuration
+             *
+             * \param &isPrevious: Flag for whether this is being computed for the current or previous timestep
+             */
+
+            const floatVector *velocityGradient;
+
+            floatVector precedingDeformationGradient;
+
+            if ( isPrevious ){
+
+                velocityGradient = get_previousMassChangeVelocityGradient( );
+
+                precedingDeformationGradient = hydra->getPreviousPrecedingConfiguration( *getMassChangeConfigurationIndex( ) );
+
+            }
+            else{
+
+                velocityGradient = get_massChangeVelocityGradient( );
+
+                precedingDeformationGradient = hydra->getPrecedingConfiguration( *getMassChangeConfigurationIndex( ) );
+
+            }
+
+            floatVector intermediateVelocityGradient;
+
+            tardigradeConstitutiveTools::pullBackVelocityGradient( *velocityGradient, precedingDeformationGradient, intermediateVelocityGradient );
+
+            if ( isPrevious ){
+
+                set_previousMassChangeIntermediateVelocityGradient( intermediateVelocityGradient );
+
+            }
+            else{
+
+                set_massChangeIntermediateVelocityGradient( intermediateVelocityGradient );
+
+            }
+
+        }
+
+        void residual::setMassChangeIntermediateVelocityGradient( ){
+            /*!
+             * Set the current intermediate velocity gradient
+             */
+
+            setMassChangeIntermediateVelocityGradient( false );
+
+        }
+
+        void residual::setPreviousMassChangeIntermediateVelocityGradient( ){
+            /*!
+             * Set the previous intermediate velocity gradient
+             */
+
+            setMassChangeIntermediateVelocityGradient( true );
+
+        }
 
         void residual::setMassChangeDeformationGradient( ){
             /*!
              * Set the mass-change deformation gradient
              */
-
-            
 
             TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
 
