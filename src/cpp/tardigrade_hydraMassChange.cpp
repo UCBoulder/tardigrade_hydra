@@ -628,6 +628,173 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setPrecedingDeformationGradient( const bool &isPrevious ){
+            /*!
+             * Set the preceding deformation gradient
+             *
+             * \param &isPrevious: Flag for whether to set the current (false) or previous (true) value
+             */
+
+            if ( isPrevious ){
+
+                set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getMassChangeConfigurationIndex( ) ) );
+
+            }
+            else{
+
+                set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getMassChangeConfigurationIndex( ) ) );
+
+            }
+
+        }
+
+        void residual::setPrecedingDeformationGradientDerivatives( const bool &isPrevious ){
+            /*!
+             * Set the derivatives of the preceding deformation gradient
+             *
+             * \param &isPrevious Flag for whether to set the current (false) or previous (true) values
+             */
+
+            constexpr unsigned int dim = 3;
+
+            constexpr unsigned int sot_dim = dim * dim;
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const floatVector *dF1dF;
+
+            const floatVector *dF1dFn;
+
+            floatVector dpFdFs;
+
+            if ( isPrevious ){
+
+                dF1dF = hydra->get_previousdF1dF( );
+
+                dF1dFn = hydra->get_previousdF1dFn( );
+
+                dpFdFs = hydra->getPreviousPrecedingConfigurationJacobian( *getMassChangeConfigurationIndex( ) );
+
+                set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getMassChangeConfigurationIndex( ) ) );
+
+            }
+            else{
+
+                dF1dF = hydra->get_dF1dF( );
+
+                dF1dFn = hydra->get_dF1dFn( );
+
+                dpFdFs = hydra->getPrecedingConfigurationJacobian( *getMassChangeConfigurationIndex( ) );
+
+                set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getMassChangeConfigurationIndex( ) ) );
+
+            }
+
+            floatVector dpFdF( sot_dim * sot_dim, 0 );
+
+            floatVector dpFdFn( sot_dim * sot_dim * ( num_configs - 1 ), 0 );
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
+
+                    for ( unsigned int k = 0; k < sot_dim; k++ ){
+
+                        dpFdF[ sot_dim * i + k ] += dpFdFs[ num_configs * sot_dim * i + j ] * ( *dF1dF )[ sot_dim * j + k ];
+
+                    }
+
+                }
+
+            }
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
+
+                    dpFdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dpFdFs[ num_configs * sot_dim * i + j + sot_dim ];
+
+                    for ( unsigned int k = 0; k < sot_dim; k++ ){
+
+                        dpFdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dpFdFs[ num_configs * sot_dim * i + k ] * ( *dF1dFn )[ ( num_configs - 1 ) * sot_dim * k + j ];
+
+                    }
+
+                }
+
+            }
+
+            if ( isPrevious ){
+
+                set_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient( dpFdF );
+
+                set_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( dpFdFn );
+
+            }
+            else{
+
+                set_dPrecedingDeformationGradientdDeformationGradient( dpFdF );
+
+                set_dPrecedingDeformationGradientdSubDeformationGradients( dpFdFn );
+
+            }
+
+        }
+
+        void residual::setPrecedingDeformationGradient( ){
+            /*!
+             * Set the value of the preceding deformation gradient
+             */
+
+            setPrecedingDeformationGradient( false );
+
+        }
+
+        void residual::setPreviousPrecedingDeformationGradient( ){
+            /*!
+             * Set the value of the previous preceding deformation gradient
+             */
+
+            setPrecedingDeformationGradient( true );
+
+        }
+
+        void residual::setdPrecedingDeformationGradientdDeformationGradient( ){
+            /*!
+             * Set the derivative of the preceding deformation gradient w.r.t. the total deformation gradient
+             */
+
+            setPrecedingDeformationGradientDerivatives( false );
+
+        }
+
+        void residual::setdPrecedingDeformationGradientdSubDeformationGradients( ){
+            /*!
+             * Set the derivative of the preceding deformation gradient w.r.t. the sub-deformation gradients
+             */
+
+            setPrecedingDeformationGradientDerivatives( false );
+
+        }
+
+        void residual::setdPreviousPrecedingDeformationGradientdPreviousDeformationGradient( ){
+            /*!
+             * Set the derivative of the previous preceding deformation gradient w.r.t. the previous total deformation gradient
+             */
+
+            setPrecedingDeformationGradientDerivatives( true );
+
+        }
+
+        void residual::setdPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( ){
+            /*!
+             * Set the derivative of the previous preceding deformation gradient w.r.t. the previous sub-deformation gradients
+             */
+
+            setPrecedingDeformationGradientDerivatives( true );
+
+        }
+
         void residual::setMassChangeIntermediateVelocityGradient( const bool &isPrevious ){
             /*!
              * Set the velocity gradient in the intermediate configuration
@@ -637,26 +804,26 @@ namespace tardigradeHydra{
 
             const floatVector *velocityGradient;
 
-            floatVector precedingDeformationGradient;
+            const floatVector *precedingDeformationGradient;
 
             if ( isPrevious ){
 
                 velocityGradient = get_previousMassChangeVelocityGradient( );
 
-                precedingDeformationGradient = hydra->getPreviousPrecedingConfiguration( *getMassChangeConfigurationIndex( ) );
+                precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
 
             }
             else{
 
                 velocityGradient = get_massChangeVelocityGradient( );
 
-                precedingDeformationGradient = hydra->getPrecedingConfiguration( *getMassChangeConfigurationIndex( ) );
+                precedingDeformationGradient = get_precedingDeformationGradient( );
 
             }
 
             floatVector intermediateVelocityGradient;
 
-            tardigradeConstitutiveTools::pullBackVelocityGradient( *velocityGradient, precedingDeformationGradient, intermediateVelocityGradient );
+            tardigradeConstitutiveTools::pullBackVelocityGradient( *velocityGradient, *precedingDeformationGradient, intermediateVelocityGradient );
 
             if ( isPrevious ){
 
@@ -666,6 +833,101 @@ namespace tardigradeHydra{
             else{
 
                 set_massChangeIntermediateVelocityGradient( intermediateVelocityGradient );
+
+            }
+
+        }
+
+        void residual::setMassChangeIntermediateVelocityGradientDerivatives( const bool &isPrevious ){
+            /*!
+             * Set the derivatives of the velocity gradient in the intermediate configuration
+             *
+             * \param &isPrevious: Flag for whether this is being computed for the current or previous timestep
+             */
+
+            constexpr unsigned int dim = 3;
+
+            constexpr unsigned int sot_dim = dim * dim;
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const floatVector *velocityGradient;
+
+            const floatVector *precedingDeformationGradient;
+
+            const floatVector *dPFdF;
+
+            const floatVector *dPFdFn;
+
+            if ( isPrevious ){
+
+                dPFdF = get_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient( );
+
+                dPFdFn = get_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( );
+
+                velocityGradient = get_previousMassChangeVelocityGradient( );
+
+                precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
+
+            }
+            else{
+
+                dPFdF = get_dPrecedingDeformationGradientdDeformationGradient( );
+
+                dPFdFn = get_dPrecedingDeformationGradientdSubDeformationGradients( );
+
+                velocityGradient = get_massChangeVelocityGradient( );
+
+                precedingDeformationGradient = get_precedingDeformationGradient( );
+
+            }
+
+            floatVector intermediateVelocityGradient;
+
+            floatVector dILdL, dILdPF;
+
+            tardigradeConstitutiveTools::pullBackVelocityGradient( *velocityGradient, *precedingDeformationGradient, intermediateVelocityGradient, dILdL, dILdPF );
+
+            floatVector dILdF( sot_dim * sot_dim, 0 );
+
+            floatVector dILdFn( ( num_configs - 1 ) * sot_dim * sot_dim, 0 );
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
+
+                    for ( unsigned int k = 0; k < sot_dim; k++ ){
+
+                        dILdF[ sot_dim * i + k ] += dILdPF[ sot_dim * i + j ] * ( *dPFdF )[ sot_dim * j + k ];
+
+                    }
+
+                    for ( unsigned int k = 0; k < ( num_configs - 1 ) * sot_dim; k++ ){
+
+                        dILdFn[ ( num_configs - 1 ) * sot_dim * i + k ] += dILdPF[ sot_dim * i + j ] * ( *dPFdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
+
+                    }
+
+                }
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousMassChangeIntermediateVelocityGradient( intermediateVelocityGradient );
+
+                set_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( dILdF );
+
+                set_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( dILdFn );
+
+            }
+            else{
+
+                set_massChangeIntermediateVelocityGradient( intermediateVelocityGradient );
+
+                set_dMassChangeIntermediateVelocityGradientdDeformationGradient( dILdF );
+
+                set_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( dILdFn );
 
             }
 
@@ -686,6 +948,96 @@ namespace tardigradeHydra{
              */
 
             setMassChangeIntermediateVelocityGradient( true );
+
+        }
+
+        void residual::setdMassChangeIntermediateVelocityGradientdDensity( ){
+            /*!
+             * Set the derivative of the current intermediate velocity gradient w.r.t. the density
+             */
+
+            setMassChangeIntermediateVelocityGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeIntermediateVelocityGradientdMassChangeRate( ){
+            /*!
+             * Set the derivative of the current intermediate velocity gradient w.r.t. the mass change rate
+             */
+
+            setMassChangeIntermediateVelocityGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeIntermediateVelocityGradientdMassChangeRateGradient( ){
+            /*!
+             * Set the derivative of the current intermediate velocity gradient w.r.t. the mass change rate gradient
+             */
+
+            setMassChangeIntermediateVelocityGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeIntermediateVelocityGradientdDeformationGradient( ){
+            /*!
+             * Set the derivative of the current intermediate velocity gradient w.r.t. the deformation gradient
+             */
+
+            setMassChangeIntermediateVelocityGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeIntermediateVelocityGradientdSubDeformationGradients( ){
+            /*!
+             * Set the derivative of the current intermediate velocity gradient w.r.t. the sub-deformation gradients
+             */
+
+            setMassChangeIntermediateVelocityGradientDerivatives( false );
+
+        }
+
+        void residual::setdPreviousMassChangeIntermediateVelocityGradientdPreviousDensity( ){
+            /*!
+             * Set the derivative of the previous intermediate velocity gradient w.r.t. the previous density
+             */
+
+            setMassChangeIntermediateVelocityGradientDerivatives( true );
+
+        }
+
+        void residual::setdPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate( ){
+            /*!
+             * Set the derivative of the previous intermediate velocity gradient w.r.t. the previous mass change rate
+             */
+
+            setMassChangeIntermediateVelocityGradientDerivatives( true );
+
+        }
+
+        void residual::setdPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRateGradient( ){
+            /*!
+             * Set the derivative of the previous intermediate velocity gradient w.r.t. the previous mass change rate gradient
+             */
+
+            setMassChangeIntermediateVelocityGradientDerivatives( true );
+
+        }
+
+        void residual::setdPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( ){
+            /*!
+             * Set the derivative of the previous intermediate velocity gradient w.r.t. the previous deformation gradient
+             */
+
+            setMassChangeIntermediateVelocityGradientDerivatives( true );
+
+        }
+
+        void residual::setdPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( ){
+            /*!
+             * Set the derivative of the previous intermediate velocity gradient w.r.t. the previous sub-deformation gradients
+             */
+
+            setMassChangeIntermediateVelocityGradientDerivatives( true );
 
         }
 
