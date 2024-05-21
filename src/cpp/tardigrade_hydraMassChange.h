@@ -194,6 +194,28 @@ namespace tardigradeHydra{
 
                 virtual void setMassChangeDeformationGradient( );
 
+                virtual void setMassChangeDeformationGradientDerivatives( const bool &computePrevious );
+
+                virtual void setdMassChangeDeformationGradientdDensity( );
+
+                virtual void setdMassChangeDeformationGradientdMassChangeRate( );
+
+                virtual void setdMassChangeDeformationGradientdMassChangeRateGradient( );
+
+                virtual void setdMassChangeDeformationGradientdDeformationGradient( );
+
+                virtual void setdMassChangeDeformationGradientdSubDeformationGradients( );
+
+                virtual void setdMassChangeDeformationGradientdPreviousDensity( );
+
+                virtual void setdMassChangeDeformationGradientdPreviousMassChangeRate( );
+
+                virtual void setdMassChangeDeformationGradientdPreviousMassChangeRateGradient( );
+
+                virtual void setdMassChangeDeformationGradientdPreviousDeformationGradient( );
+
+                virtual void setdMassChangeDeformationGradientdPreviousSubDeformationGradients( );
+
                 virtual void setResidual( ) override;
 
                 virtual void setJacobian( ) override;
@@ -311,7 +333,27 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients,    floatVector, setdPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeDeformationGradient,                       floatVector, setMassChangeDeformationGradient                       )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeDeformationGradient,                                                      floatVector, setMassChangeDeformationGradient )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdDensity,                                             floatVector, setdMassChangeDeformationGradientdDensity )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdMassChangeRate,                                      floatVector, setdMassChangeDeformationGradientdMassChangeRate )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdMassChangeRateGradient,                              floatVector, setdMassChangeDeformationGradientdMassChangeRateGradient )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdDeformationGradient,                                 floatVector, setdMassChangeDeformationGradientdDeformationGradient )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdSubDeformationGradients,                             floatVector, setdMassChangeDeformationGradientdSubDeformationGradients )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousDensity,                                     floatVector, setdMassChangeDeformationGradientdPreviousDensity )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousMassChangeRate,                              floatVector, setdMassChangeDeformationGradientdPreviousMassChangeRate )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousMassChangeRateGradient,                      floatVector, setdMassChangeDeformationGradientdPreviousMassChangeRateGradient )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousDeformationGradient,                         floatVector, setdMassChangeDeformationGradientdPreviousDeformationGradient )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousSubDeformationGradients,                     floatVector, setdMassChangeDeformationGradientdPreviousSubDeformationGradients )
 
         };
 

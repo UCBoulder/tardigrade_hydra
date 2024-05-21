@@ -1098,6 +1098,107 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setMassChangeDeformationGradientDerivatives( const bool &computePrevious ){
+            /*!
+             * Compute the derivatives of the mass-change deformation gradient
+             *
+             * \param &computePrevious: Compute the gradients w.r.t. previous values
+             */
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdDensity( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the density
+             */
+
+            setMassChangeDeformationGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdMassChangeRate( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the mass change rate
+             */
+
+            setMassChangeDeformationGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdMassChangeRateGradient( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the mass change rate gradient
+             */
+
+            setMassChangeDeformationGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdDeformationGradient( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the deformation gradient
+             */
+
+            setMassChangeDeformationGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdSubDeformationGradients( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the sub deformation gradients
+             */
+
+            setMassChangeDeformationGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdPreviousDensity( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous density
+             */
+
+            setMassChangeDeformationGradientDerivatives( true );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdPreviousMassChangeRate( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous mass change rate
+             */
+
+            setMassChangeDeformationGradientDerivatives( true );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdPreviousMassChangeRateGradient( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous mass change rate gradient
+             */
+
+            setMassChangeDeformationGradientDerivatives( true );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdPreviousDeformationGradient( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous deformation gradient
+             */
+
+            setMassChangeDeformationGradientDerivatives( true );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdPreviousSubDeformationGradients( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous sub deformation gradients
+             */
+
+            setMassChangeDeformationGradientDerivatives( true );
+
+        }
+
         void residual::setResidual( ){
             /*!
              * Set the value of the residual
