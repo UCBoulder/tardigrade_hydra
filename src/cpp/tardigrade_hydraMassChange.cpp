@@ -439,6 +439,8 @@ namespace tardigradeHydra{
 
             const floatVector *directionVector;
 
+            const floatVector *dDirectionVectordMassChangeRateGradient;
+
             if ( isPrevious ){
 
                 dVelocityGradientTracedDensity = get_dPreviousMassChangeVelocityGradientTracedPreviousDensity( );
@@ -446,6 +448,8 @@ namespace tardigradeHydra{
                 dVelocityGradientTracedMassChangeRate = get_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( );
 
                 velocityGradientTrace = get_previousMassChangeVelocityGradientTrace( );
+
+                dDirectionVectordMassChangeRateGradient = get_dPreviousDirectionVectordPreviousMassChangeRateGradient( );
 
                 directionVector = get_previousDirectionVector( );
 
@@ -457,6 +461,8 @@ namespace tardigradeHydra{
                 dVelocityGradientTracedMassChangeRate = get_dMassChangeVelocityGradientTracedMassChangeRate( );
 
                 velocityGradientTrace = get_massChangeVelocityGradientTrace( );
+
+                dDirectionVectordMassChangeRateGradient = get_dDirectionVectordMassChangeRateGradient( );
 
                 directionVector = get_directionVector( );
 
@@ -472,11 +478,19 @@ namespace tardigradeHydra{
 
             floatType a = ( *velocityGradientTrace ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
 
+            floatType dadDensity = ( *dVelocityGradientTracedDensity ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
+
+            floatType dadMassChangeRate = ( *dVelocityGradientTracedMassChangeRate ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
+
             if ( tardigradeVectorTools::l2norm( *directionVector ) > 0.5 ){
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
                     velocityGradient[ dim * i + i ] += a * ( 1 - *massDirectionMixingParameter );
+
+                    dVelocityGradientdDensity[ dim * i + i ] += dadDensity * ( 1 - *massDirectionMixingParameter );
+
+                    dVelocityGradientdMassChangeRate[ dim * i + i ] += dadMassChangeRate * ( 1 - *massDirectionMixingParameter );
 
                 }
 
@@ -485,6 +499,18 @@ namespace tardigradeHydra{
                     for ( unsigned int j = 0; j < dim; j++ ){
 
                         velocityGradient[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *directionVector )[ i ] * ( *directionVector )[ j ];
+
+                        dVelocityGradientdDensity[ dim * i + j ] += dadDensity * ( *massDirectionMixingParameter ) * ( *directionVector )[ i ] * ( *directionVector )[ j ];
+
+                        dVelocityGradientdMassChangeRate[ dim * i + j ] += dadMassChangeRate * ( *massDirectionMixingParameter ) * ( *directionVector )[ i ] * ( *directionVector )[ j ];
+
+                        for ( unsigned int k = 0; k < dim; k++ ){
+
+                            dVelocityGradientdMassChangeRateGradient[ dim * dim * i + dim * j + k ]
+                                += a * ( *massDirectionMixingParameter ) * ( ( *dDirectionVectordMassChangeRateGradient )[ dim * i + k ] * ( *directionVector )[ j ]
+                                                                           + ( *directionVector )[ i ] * ( *dDirectionVectordMassChangeRateGradient )[ dim * j + k ] );
+
+                        }
 
                     }
 
