@@ -230,7 +230,6 @@ namespace tardigradeHydra{
 
             }
 
-
         }
 
         void residual::setDirectionVector( ){
@@ -339,15 +338,99 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setMassChangeVelocityGradientDirection( ){
+        void residual::setMassChangeVelocityGradient( const bool &isPrevious ){
+            /*!
+             * Set the mass-change velocity gradient
+             * 
+             * \param &isPrevious: Flag for whether this is the previous or current direction
+             */
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
+
+            const floatType *massDirectionMixingParameter = get_massDirectionMixingParameter( );
+
+            const floatType *velocityGradientTrace = get_massChangeVelocityGradientTrace( );
+
+            const floatVector *directionVector;
+
+            if ( isPrevious ){
+
+                velocityGradientTrace = get_previousMassChangeVelocityGradientTrace( );
+
+                directionVector = get_previousDirectionVector( );
+
+            }
+            else{
+
+                velocityGradientTrace = get_massChangeVelocityGradientTrace( );
+
+                directionVector = get_directionVector( );
+
+            }
+
+            floatVector velocityGradient( sot_dim, 0 );
+
+            floatType a = ( *velocityGradientTrace ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
+
+            if ( tardigradeVectorTools::l2norm( *directionVector ) > 0.5 ){
+
+                for ( unsigned int i = 0; i < dim; i++ ){
+
+                    velocityGradient[ dim * i + i ] += a * ( 1 - *massDirectionMixingParameter );
+
+                }
+
+                for ( unsigned int i = 0; i < dim; i++ ){
+
+                    for ( unsigned int j = 0; j < dim; j++ ){
+
+                        velocityGradient[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *directionVector )[ i ] * ( *directionVector )[ j ];
+
+                    }
+
+                }
+
+            }
+            else{
+
+                for ( unsigned int i = 0; i < dim; i++ ){
+
+                    velocityGradient[ dim * i + i ] += *velocityGradientTrace;
+
+                }
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousMassChangeVelocityGradient( velocityGradient );
+
+            }
+            else{
+
+                set_massChangeVelocityGradient( velocityGradient );
+
+            }
 
         }
 
         void residual::setMassChangeVelocityGradient( ){
+            /*!
+             * Set the value of the mass-change velocity gradient
+             */
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
+            setMassChangeVelocityGradient( false );
+
+        }
+
+        void residual::setPreviousMassChangeVelocityGradient( ){
+            /*!
+             * Set the value of the previous mass-change velocity gradient
+             */
+
+            setMassChangeVelocityGradient( true );
 
         }
 
