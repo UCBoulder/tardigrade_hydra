@@ -73,7 +73,7 @@ namespace tardigradeHydra{
 
             public:
 
-                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int massChangeConfigurationIndex, const floatVector &parameters ) : tardigradeHydra::residualBase( hydra, numEquations ){
+                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int massChangeConfigurationIndex, const floatVector &parameters, const floatType integrationParameter = 0.5 ) : tardigradeHydra::residualBase( hydra, numEquations ), _integrationParameter( integrationParameter ){
                     /*!
                      * The main constructor function
                      *
@@ -92,7 +92,9 @@ namespace tardigradeHydra{
 
                 }
 
-                const unsigned int *getMassChangeConfigurationIndex( ){ return &_massChangeConfigurationIndex; };
+                const unsigned int *getMassChangeConfigurationIndex( ){ return &_massChangeConfigurationIndex; }
+
+                const floatType *getIntegrationParameter( ){ return &_integrationParameter; }
 
             protected:
 
@@ -174,6 +176,8 @@ namespace tardigradeHydra{
                 using tardigradeHydra::residualBase::setAdditionalDerivatives;
 
                 unsigned int _massChangeConfigurationIndex;
+
+                floatType _integrationParameter;
 
                 virtual void decomposeParameters( const floatVector &parameters );
 

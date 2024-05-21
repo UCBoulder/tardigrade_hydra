@@ -49,6 +49,8 @@ namespace tardigradeHydra{
 
                         BOOST_CHECK( &R._massChangeConfigurationIndex == R.getMassChangeConfigurationIndex( ) );
 
+                        BOOST_CHECK( &R._integrationParameter == R.getIntegrationParameter( ) );
+
                         BOOST_CHECK( &R._density.second         == R.get_density( ) );
 
                         BOOST_CHECK( &R._previousDensity.second == R.get_previousDensity( ) );

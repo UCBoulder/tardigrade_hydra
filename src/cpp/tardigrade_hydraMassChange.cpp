@@ -630,6 +630,11 @@ namespace tardigradeHydra{
 
 
         void residual::setMassChangeDeformationGradient( ){
+            /*!
+             * Set the mass-change deformation gradient
+             */
+
+            
 
             TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
 
