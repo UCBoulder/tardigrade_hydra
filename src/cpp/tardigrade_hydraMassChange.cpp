@@ -357,16 +357,16 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                velocityGradientTrace = get_previousMassChangeVelocityGradientTrace( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradientTrace = get_previousMassChangeVelocityGradientTrace( ) );
 
-                directionVector = get_previousDirectionVector( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( directionVector = get_previousDirectionVector( ) );
 
             }
             else{
 
-                velocityGradientTrace = get_massChangeVelocityGradientTrace( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradientTrace = get_massChangeVelocityGradientTrace( ) );
 
-                directionVector = get_directionVector( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( directionVector = get_directionVector( ) );
 
             }
 
@@ -443,28 +443,28 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                dVelocityGradientTracedDensity = get_dPreviousMassChangeVelocityGradientTracedPreviousDensity( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dVelocityGradientTracedDensity = get_dPreviousMassChangeVelocityGradientTracedPreviousDensity( ) )
 
-                dVelocityGradientTracedMassChangeRate = get_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dVelocityGradientTracedMassChangeRate = get_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( ) )
 
-                velocityGradientTrace = get_previousMassChangeVelocityGradientTrace( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradientTrace = get_previousMassChangeVelocityGradientTrace( ) )
 
-                dDirectionVectordMassChangeRateGradient = get_dPreviousDirectionVectordPreviousMassChangeRateGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDirectionVectordMassChangeRateGradient = get_dPreviousDirectionVectordPreviousMassChangeRateGradient( ) )
 
-                directionVector = get_previousDirectionVector( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( directionVector = get_previousDirectionVector( ) )
 
             }
             else{
 
-                dVelocityGradientTracedDensity = get_dMassChangeVelocityGradientTracedDensity( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dVelocityGradientTracedDensity = get_dMassChangeVelocityGradientTracedDensity( ) )
 
-                dVelocityGradientTracedMassChangeRate = get_dMassChangeVelocityGradientTracedMassChangeRate( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dVelocityGradientTracedMassChangeRate = get_dMassChangeVelocityGradientTracedMassChangeRate( ) )
 
-                velocityGradientTrace = get_massChangeVelocityGradientTrace( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradientTrace = get_massChangeVelocityGradientTrace( ) )
 
-                dDirectionVectordMassChangeRateGradient = get_dDirectionVectordMassChangeRateGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dDirectionVectordMassChangeRateGradient = get_dDirectionVectordMassChangeRateGradient( ) )
 
-                directionVector = get_directionVector( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( directionVector = get_directionVector( ) )
 
             }
 
@@ -669,22 +669,22 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                dF1dF = hydra->get_previousdF1dF( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->get_previousdF1dF( ) )
 
-                dF1dFn = hydra->get_previousdF1dFn( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dFn = hydra->get_previousdF1dFn( ) )
 
-                dpFdFs = hydra->getPreviousPrecedingConfigurationJacobian( *getMassChangeConfigurationIndex( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dpFdFs = hydra->getPreviousPrecedingConfigurationJacobian( *getMassChangeConfigurationIndex( ) ) )
 
                 set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getMassChangeConfigurationIndex( ) ) );
 
             }
             else{
 
-                dF1dF = hydra->get_dF1dF( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->get_dF1dF( ) )
 
-                dF1dFn = hydra->get_dF1dFn( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dF1dFn = hydra->get_dF1dFn( ) )
 
-                dpFdFs = hydra->getPrecedingConfigurationJacobian( *getMassChangeConfigurationIndex( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dpFdFs = hydra->getPrecedingConfigurationJacobian( *getMassChangeConfigurationIndex( ) ) )
 
                 set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getMassChangeConfigurationIndex( ) ) );
 
@@ -808,16 +808,16 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                velocityGradient = get_previousMassChangeVelocityGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_previousMassChangeVelocityGradient( ) )
 
-                precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_previousPrecedingDeformationGradient( ) )
 
             }
             else{
 
-                velocityGradient = get_massChangeVelocityGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_massChangeVelocityGradient( ) )
 
-                precedingDeformationGradient = get_precedingDeformationGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_precedingDeformationGradient( ) )
 
             }
 
@@ -869,36 +869,36 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                dLdRho = get_dPreviousMassChangeVelocityGradientdPreviousDensity( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dLdRho = get_dPreviousMassChangeVelocityGradientdPreviousDensity( ) )
 
-                dLdC = get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dLdC = get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( ) )
 
-                dLdGradC = get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dLdGradC = get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( ) )
 
-                dPFdF = get_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPFdF = get_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient( ) )
 
-                dPFdFn = get_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPFdFn = get_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( ) )
 
-                velocityGradient = get_previousMassChangeVelocityGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_previousMassChangeVelocityGradient( ) )
 
-                precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_previousPrecedingDeformationGradient( ) )
 
             }
             else{
 
-                dLdRho = get_dMassChangeVelocityGradientdDensity( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dLdRho = get_dMassChangeVelocityGradientdDensity( ) )
 
-                dLdC = get_dMassChangeVelocityGradientdMassChangeRate( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dLdC = get_dMassChangeVelocityGradientdMassChangeRate( ) )
 
-                dLdGradC = get_dMassChangeVelocityGradientdMassChangeRateGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dLdGradC = get_dMassChangeVelocityGradientdMassChangeRateGradient( ) )
 
-                dPFdF = get_dPrecedingDeformationGradientdDeformationGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPFdF = get_dPrecedingDeformationGradientdDeformationGradient( ) )
 
-                dPFdFn = get_dPrecedingDeformationGradientdSubDeformationGradients( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( dPFdFn = get_dPrecedingDeformationGradientdSubDeformationGradients( ) )
 
-                velocityGradient = get_massChangeVelocityGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_massChangeVelocityGradient( ) )
 
-                precedingDeformationGradient = get_precedingDeformationGradient( );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_precedingDeformationGradient( ) )
 
             }
 
@@ -1094,7 +1094,22 @@ namespace tardigradeHydra{
              * Set the mass-change deformation gradient
              */
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
+            const floatVector *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
+
+            const floatVector *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
+
+            const floatVector previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
+
+            floatVector dMassChangeDeformationGradient;
+
+            floatVector massChangeDeformationGradient;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                                                                                *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                dMassChangeDeformationGradient, massChangeDeformationGradient,
+                                                                                ( 1 - ( *getIntegrationParameter( ) ) ), 1 ) )
+
+            set_massChangeDeformationGradient( massChangeDeformationGradient );
 
         }
 
@@ -1105,7 +1120,22 @@ namespace tardigradeHydra{
              * \param &computePrevious: Compute the gradients w.r.t. previous values
              */
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( false, "not implemented" );
+            const floatVector *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
+
+            const floatVector *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
+
+            const floatVector previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
+
+            floatVector dMassChangeDeformationGradient;
+
+            floatVector massChangeDeformationGradient;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                                                                                *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                dMassChangeDeformationGradient, massChangeDeformationGradient,
+                                                                                ( 1 - ( *getIntegrationParameter( ) ) ), 1 ) )
+
+            set_massChangeDeformationGradient( massChangeDeformationGradient );
 
         }
 
