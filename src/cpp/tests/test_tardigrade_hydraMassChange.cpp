@@ -662,9 +662,21 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient ){
 
             floatType previousMassChangeVelocityGradientTrace = 0.9;
 
+            floatType dtrLdRho = 0.123;
+
+            floatType dtrLdC = 0.234;
+
+            floatType previousdtrLdRho = 0.345;
+
+            floatType previousdtrLdC = 0.456;
+
             floatVector directionVector = { 0.2, 0.3, 0.4 };
 
             floatVector previousDirectionVector = { -0.1, 0.4, 0.30 };
+
+            floatVector dDdGradC = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector previousdDdGradC = { .1, .2, .3, .4, .5, .6, .7, .8, .9 };
 
         protected:
 
@@ -693,6 +705,40 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient ){
                 else{
 
                     set_directionVector( directionVector );
+
+                }
+
+            }
+
+            virtual void setDirectionVectorDerivatives( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_dPreviousDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
+
+                }
+                else{
+
+                    set_dDirectionVectordMassChangeRateGradient( dDdGradC );
+
+                }
+
+            }
+
+            virtual void setMassChangeVelocityGradientTraceDerivatives( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_dPreviousMassChangeVelocityGradientTracedPreviousDensity( previousdtrLdRho );
+
+                    set_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( previousdtrLdC );
+
+                }
+                else{
+
+                    set_dMassChangeVelocityGradientTracedDensity( dtrLdRho );
+
+                    set_dMassChangeVelocityGradientTracedMassChangeRate( dtrLdC );
 
                 }
 
@@ -796,8 +842,448 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient ){
 
     residualMock Rgrad( &hydra, 9, 1, hydra.massChangeParameters );
 
+    Rgrad.get_dMassChangeVelocityGradientdDensity( );
+
+    Rgrad.get_dPreviousMassChangeVelocityGradientdPreviousDensity( );
+
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.get_massChangeVelocityGradient( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *R.get_previousMassChangeVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rgrad.get_massChangeVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *Rgrad.get_previousMassChangeVelocityGradient( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_2 ){
+
+    class residualMock : public tardigradeHydra::massChange::residual {
+
+        public:
+
+            using tardigradeHydra::massChange::residual::residual;
+
+            floatType massChangeVelocityGradientTrace = 0.4;
+
+            floatType previousMassChangeVelocityGradientTrace = 0.9;
+
+            floatType dtrLdRho = 0.123;
+
+            floatType dtrLdC = 0.234;
+
+            floatType previousdtrLdRho = 0.345;
+
+            floatType previousdtrLdC = 0.456;
+
+            floatVector directionVector = { 0.2, 0.3, 0.1 };
+
+            floatVector previousDirectionVector = { -0.1, 0.4, 0.30 };
+
+            floatVector dDdGradC = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector previousdDdGradC = { .1, .2, .3, .4, .5, .6, .7, .8, .9 };
+
+        protected:
+
+            virtual void setMassChangeVelocityGradientTrace( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_previousMassChangeVelocityGradientTrace( previousMassChangeVelocityGradientTrace );
+
+                }
+                else{
+
+                    set_massChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
+
+                }
+
+            }
+
+            virtual void setDirectionVector( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_previousDirectionVector( previousDirectionVector );
+
+                }
+                else{
+
+                    set_directionVector( directionVector );
+
+                }
+
+            }
+
+            virtual void setDirectionVectorDerivatives( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_dPreviousDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
+
+                }
+                else{
+
+                    set_dDirectionVectordMassChangeRateGradient( dDdGradC );
+
+                }
+
+            }
+
+            virtual void setMassChangeVelocityGradientTraceDerivatives( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_dPreviousMassChangeVelocityGradientTracedPreviousDensity( previousdtrLdRho );
+
+                    set_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( previousdtrLdC );
+
+                }
+                else{
+
+                    set_dMassChangeVelocityGradientTracedDensity( dtrLdRho );
+
+                    set_dMassChangeVelocityGradientTracedMassChangeRate( dtrLdC );
+
+                }
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            floatVector elasticityParameters = { 123.4, 56.7 };
+
+            floatVector massChangeParameters = { 0.78 };
+
+            tardigradeHydra::linearElasticity::residual elasticity;
+
+            residualMock massChange;
+
+            tardigradeHydra::residualBase remainder;
+
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+
+            }
+
+        private:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+
+                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+
+                massChange = residualMock( this, 9, 1, massChangeParameters );
+
+                remainder = tardigradeHydra::residualBase( this, 3 );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &massChange;
+
+                residuals[ 2 ] = &remainder;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector additionalDOF = { 0.11, 0.22, 0.33, 0.44, 0.55 };
+
+    floatVector previousAdditionalDOF = { 0.12, 0.23, 0.36, 0.47, 0.58 };
+
+    floatVector previousStateVariables = { 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3 };
+
+    floatVector parameters = { 123.4, 56.7, 0.78 };
+
+    floatVector unknownVector = { 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                  2, 2, 2, 2, 2, 2, 2, 2, 2,
+                                  3, 4, 5 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 3;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         additionalDOF, previousAdditionalDOF,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    floatVector answer = { 0.4, 0.0, 0.0,
+                           0.0, 0.4, 0.0,
+                           0.0, 0.0, 0.4 };
+
+    floatVector previousAnswer = { 0.142375, -0.0195  , -0.014625,
+                                  -0.0195  ,  0.2155  ,  0.0585  ,
+                                  -0.014625,  0.0585  ,  0.181375 };
+
+    residualMock R( &hydra, 9, 1, hydra.massChangeParameters );
+
+    residualMock Rgrad( &hydra, 9, 1, hydra.massChangeParameters );
+
+    Rgrad.get_dMassChangeVelocityGradientdDensity( );
+
+    Rgrad.get_dPreviousMassChangeVelocityGradientdPreviousDensity( );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.get_massChangeVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *R.get_previousMassChangeVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rgrad.get_massChangeVelocityGradient( ) ) );
+
+    floatVector dtrLdRho = { R.dtrLdRho, 0, 0, 0, R.dtrLdRho, 0, 0, 0, R.dtrLdRho };
+
+    floatVector dtrLdC = { R.dtrLdC, 0, 0, 0, R.dtrLdC, 0, 0, 0, R.dtrLdC };
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dtrLdRho, *Rgrad.get_dMassChangeVelocityGradientdDensity( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dtrLdC, *Rgrad.get_dMassChangeVelocityGradientdMassChangeRate( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( floatVector( 27, 0 ), *Rgrad.get_dMassChangeVelocityGradientdMassChangeRateGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *Rgrad.get_previousMassChangeVelocityGradient( ) ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_3 ){
+
+    class residualMock : public tardigradeHydra::massChange::residual {
+
+        public:
+
+            using tardigradeHydra::massChange::residual::residual;
+
+            floatType massChangeVelocityGradientTrace = 0.4;
+
+            floatType previousMassChangeVelocityGradientTrace = 0.9;
+
+            floatType dtrLdRho = 0.123;
+
+            floatType dtrLdC = 0.234;
+
+            floatType previousdtrLdRho = 0.345;
+
+            floatType previousdtrLdC = 0.456;
+
+            floatVector directionVector = { 0.2, 0.3, 0.4 };
+
+            floatVector previousDirectionVector = { -0.1, 0.1, 0.30 };
+
+            floatVector dDdGradC = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector previousdDdGradC = { .1, .2, .3, .4, .5, .6, .7, .8, .9 };
+
+        protected:
+
+            virtual void setMassChangeVelocityGradientTrace( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_previousMassChangeVelocityGradientTrace( previousMassChangeVelocityGradientTrace );
+
+                }
+                else{
+
+                    set_massChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
+
+                }
+
+            }
+
+            virtual void setDirectionVector( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_previousDirectionVector( previousDirectionVector );
+
+                }
+                else{
+
+                    set_directionVector( directionVector );
+
+                }
+
+            }
+
+            virtual void setDirectionVectorDerivatives( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_dPreviousDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
+
+                }
+                else{
+
+                    set_dDirectionVectordMassChangeRateGradient( dDdGradC );
+
+                }
+
+            }
+
+            virtual void setMassChangeVelocityGradientTraceDerivatives( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_dPreviousMassChangeVelocityGradientTracedPreviousDensity( previousdtrLdRho );
+
+                    set_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( previousdtrLdC );
+
+                }
+                else{
+
+                    set_dMassChangeVelocityGradientTracedDensity( dtrLdRho );
+
+                    set_dMassChangeVelocityGradientTracedMassChangeRate( dtrLdC );
+
+                }
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            floatVector elasticityParameters = { 123.4, 56.7 };
+
+            floatVector massChangeParameters = { 0.78 };
+
+            tardigradeHydra::linearElasticity::residual elasticity;
+
+            residualMock massChange;
+
+            tardigradeHydra::residualBase remainder;
+
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+
+            }
+
+        private:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+
+                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+
+                massChange = residualMock( this, 9, 1, massChangeParameters );
+
+                remainder = tardigradeHydra::residualBase( this, 3 );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &massChange;
+
+                residuals[ 2 ] = &remainder;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector additionalDOF = { 0.11, 0.22, 0.33, 0.44, 0.55 };
+
+    floatVector previousAdditionalDOF = { 0.12, 0.23, 0.36, 0.47, 0.58 };
+
+    floatVector previousStateVariables = { 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3 };
+
+    floatVector parameters = { 123.4, 56.7, 0.78 };
+
+    floatVector unknownVector = { 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                  2, 2, 2, 2, 2, 2, 2, 2, 2,
+                                  3, 4, 5 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 3;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         additionalDOF, previousAdditionalDOF,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    floatVector answer = { 0.06977778, 0.013     , 0.01733333,
+                           0.013     , 0.08061111, 0.026     ,
+                           0.01733333, 0.026     , 0.09577778 };
+
+    floatVector previousAnswer = { 0.9, 0.0, 0.0,
+                                   0.0, 0.9, 0.0,
+                                   0.0, 0.0, 0.9 };
+
+    residualMock R( &hydra, 9, 1, hydra.massChangeParameters );
+
+    residualMock Rgrad( &hydra, 9, 1, hydra.massChangeParameters );
+
+    Rgrad.get_dMassChangeVelocityGradientdDensity( );
+
+    Rgrad.get_dPreviousMassChangeVelocityGradientdPreviousDensity( );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.get_massChangeVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *R.get_previousMassChangeVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rgrad.get_massChangeVelocityGradient( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *Rgrad.get_previousMassChangeVelocityGradient( ) ) );
+
+    floatVector previousdtrLdRho = { R.previousdtrLdRho, 0, 0, 0, R.previousdtrLdRho, 0, 0, 0, R.previousdtrLdRho };
+
+    floatVector previousdtrLdC = { R.previousdtrLdC, 0, 0, 0, R.previousdtrLdC, 0, 0, 0, R.previousdtrLdC };
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdtrLdRho, *Rgrad.get_dPreviousMassChangeVelocityGradientdPreviousDensity( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdtrLdC, *Rgrad.get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( floatVector( 27, 0 ), *Rgrad.get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( ) ) );
 
 }

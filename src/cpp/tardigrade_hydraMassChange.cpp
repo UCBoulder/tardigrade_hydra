@@ -416,12 +416,153 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setMassChangeVelocityGradientDerivatives( const bool &isPrevious ){
+            /*!
+             * Set the mass-change velocity gradient derivatives
+             * 
+             * \param &isPrevious: Flag for whether this is the previous or current direction
+             */
+
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
+
+            const unsigned int tot_dim = sot_dim * dim;
+
+            const floatType *massDirectionMixingParameter = get_massDirectionMixingParameter( );
+
+            const floatType *velocityGradientTrace;
+
+            const floatType *dVelocityGradientTracedDensity;
+
+            const floatType *dVelocityGradientTracedMassChangeRate;
+
+            const floatVector *directionVector;
+
+            if ( isPrevious ){
+
+                dVelocityGradientTracedDensity = get_dPreviousMassChangeVelocityGradientTracedPreviousDensity( );
+
+                dVelocityGradientTracedMassChangeRate = get_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( );
+
+                velocityGradientTrace = get_previousMassChangeVelocityGradientTrace( );
+
+                directionVector = get_previousDirectionVector( );
+
+            }
+            else{
+
+                dVelocityGradientTracedDensity = get_dMassChangeVelocityGradientTracedDensity( );
+
+                dVelocityGradientTracedMassChangeRate = get_dMassChangeVelocityGradientTracedMassChangeRate( );
+
+                velocityGradientTrace = get_massChangeVelocityGradientTrace( );
+
+                directionVector = get_directionVector( );
+
+            }
+
+            floatVector velocityGradient( sot_dim, 0 );
+
+            floatVector dVelocityGradientdDensity( sot_dim, 0 );
+
+            floatVector dVelocityGradientdMassChangeRate( sot_dim, 0 );
+
+            floatVector dVelocityGradientdMassChangeRateGradient( tot_dim, 0 );
+
+            floatType a = ( *velocityGradientTrace ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
+
+            if ( tardigradeVectorTools::l2norm( *directionVector ) > 0.5 ){
+
+                for ( unsigned int i = 0; i < dim; i++ ){
+
+                    velocityGradient[ dim * i + i ] += a * ( 1 - *massDirectionMixingParameter );
+
+                }
+
+                for ( unsigned int i = 0; i < dim; i++ ){
+
+                    for ( unsigned int j = 0; j < dim; j++ ){
+
+                        velocityGradient[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *directionVector )[ i ] * ( *directionVector )[ j ];
+
+                    }
+
+                }
+
+            }
+            else{
+
+                for ( unsigned int i = 0; i < dim; i++ ){
+
+                    velocityGradient[ dim * i + i ] += *velocityGradientTrace;
+
+                    dVelocityGradientdDensity[ dim * i + i ] += ( *dVelocityGradientTracedDensity );
+
+                    dVelocityGradientdMassChangeRate[ dim * i + i ] += ( *dVelocityGradientTracedMassChangeRate );
+
+                }
+
+            }
+
+            if ( isPrevious ){
+
+                set_previousMassChangeVelocityGradient( velocityGradient );
+
+                set_dPreviousMassChangeVelocityGradientdPreviousDensity( dVelocityGradientdDensity );
+
+                set_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( dVelocityGradientdMassChangeRate );
+
+                set_dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( dVelocityGradientdMassChangeRateGradient );
+
+            }
+            else{
+
+                set_massChangeVelocityGradient( velocityGradient );
+
+                set_dMassChangeVelocityGradientdDensity( dVelocityGradientdDensity );
+
+                set_dMassChangeVelocityGradientdMassChangeRate( dVelocityGradientdMassChangeRate );
+
+                set_dMassChangeVelocityGradientdMassChangeRateGradient( dVelocityGradientdMassChangeRateGradient );
+
+            }
+
+        }
+
         void residual::setMassChangeVelocityGradient( ){
             /*!
              * Set the value of the mass-change velocity gradient
              */
 
             setMassChangeVelocityGradient( false );
+
+        }
+
+        void residual::setdMassChangeVelocityGradientdDensity( ){
+            /*!
+             * Set the derivative of the mass-change velocity gradient w.r.t. the density
+             */
+
+            setMassChangeVelocityGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeVelocityGradientdMassChangeRate( ){
+            /*!
+             * Set the derivative of the mass-change velocity gradient w.r.t. the mass change rate
+             */
+
+            setMassChangeVelocityGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeVelocityGradientdMassChangeRateGradient( ){
+            /*!
+             * Set the derivative of the mass-change velocity gradient w.r.t. the mass change rate gradient
+             */
+
+            setMassChangeVelocityGradientDerivatives( false );
 
         }
 
@@ -433,6 +574,34 @@ namespace tardigradeHydra{
             setMassChangeVelocityGradient( true );
 
         }
+
+        void residual::setdPreviousMassChangeVelocityGradientdPreviousDensity( ){
+            /*!
+             * Set the derivative of the previous mass-change velocity gradient w.r.t. the previous density
+             */
+
+            setMassChangeVelocityGradientDerivatives( true );
+
+        }
+
+        void residual::setdPreviousMassChangeVelocityGradientdPreviousMassChangeRate( ){
+            /*!
+             * Set the derivative of the previous mass-change velocity gradient w.r.t. the previous mass change rate
+             */
+
+            setMassChangeVelocityGradientDerivatives( true );
+
+        }
+
+        void residual::setdPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( ){
+            /*!
+             * Set the derivative of the previous mass-change velocity gradient w.r.t. the previous mass change rate gradient
+             */
+
+            setMassChangeVelocityGradientDerivatives( true );
+
+        }
+
 
         void residual::setMassChangeDeformationGradient( ){
 
