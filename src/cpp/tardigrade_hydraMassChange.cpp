@@ -849,17 +849,31 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
+            constexpr unsigned int tot_dim = sot_dim * dim;
+
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
             const floatVector *velocityGradient;
 
             const floatVector *precedingDeformationGradient;
 
+            const floatVector *dLdRho;
+
+            const floatVector *dLdC;
+
+            const floatVector *dLdGradC;
+
             const floatVector *dPFdF;
 
             const floatVector *dPFdFn;
 
             if ( isPrevious ){
+
+                dLdRho = get_dPreviousMassChangeVelocityGradientdPreviousDensity( );
+
+                dLdC = get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( );
+
+                dLdGradC = get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( );
 
                 dPFdF = get_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient( );
 
@@ -871,6 +885,12 @@ namespace tardigradeHydra{
 
             }
             else{
+
+                dLdRho = get_dMassChangeVelocityGradientdDensity( );
+
+                dLdC = get_dMassChangeVelocityGradientdMassChangeRate( );
+
+                dLdGradC = get_dMassChangeVelocityGradientdMassChangeRateGradient( );
 
                 dPFdF = get_dPrecedingDeformationGradientdDeformationGradient( );
 
@@ -888,6 +908,12 @@ namespace tardigradeHydra{
 
             tardigradeConstitutiveTools::pullBackVelocityGradient( *velocityGradient, *precedingDeformationGradient, intermediateVelocityGradient, dILdL, dILdPF );
 
+            floatVector dILdRho( sot_dim, 0 );
+
+            floatVector dILdC( sot_dim, 0 );
+
+            floatVector dILdGradC( tot_dim, 0 );
+
             floatVector dILdF( sot_dim * sot_dim, 0 );
 
             floatVector dILdFn( ( num_configs - 1 ) * sot_dim * sot_dim, 0 );
@@ -895,6 +921,16 @@ namespace tardigradeHydra{
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
                 for ( unsigned int j = 0; j < sot_dim; j++ ){
+
+                    dILdRho[ i ] += dILdL[ sot_dim * i + j ] * ( *dLdRho )[ j ];
+
+                    dILdC[ i ] += dILdL[ sot_dim * i + j ] * ( *dLdC )[ j ];
+
+                    for ( unsigned int k = 0; k < dim; k++ ){
+
+                        dILdGradC[ dim * i + k ] += dILdL[ sot_dim * i + j ] * ( *dLdGradC )[ dim * j + k ];
+
+                    }
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
@@ -916,6 +952,12 @@ namespace tardigradeHydra{
 
                 set_previousMassChangeIntermediateVelocityGradient( intermediateVelocityGradient );
 
+                set_dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity( dILdRho );
+
+                set_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate( dILdC );
+
+                set_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRateGradient( dILdGradC );
+
                 set_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( dILdF );
 
                 set_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( dILdFn );
@@ -924,6 +966,12 @@ namespace tardigradeHydra{
             else{
 
                 set_massChangeIntermediateVelocityGradient( intermediateVelocityGradient );
+
+                set_dMassChangeIntermediateVelocityGradientdDensity( dILdRho );
+
+                set_dMassChangeIntermediateVelocityGradientdMassChangeRate( dILdC );
+
+                set_dMassChangeIntermediateVelocityGradientdMassChangeRateGradient( dILdGradC );
 
                 set_dMassChangeIntermediateVelocityGradientdDeformationGradient( dILdF );
 
