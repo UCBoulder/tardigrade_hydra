@@ -4271,9 +4271,6 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2 ){
 
     }
 
-    std::cout << "previousdFmdFn: "; tardigradeVectorTools::print( previousdFmdFn );
-    std::cout << "R.previousdFmdFn: "; tardigradeVectorTools::print( *R.get_dMassChangeDeformationGradientdPreviousSubDeformationGradients( ) );
-
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdFmdFn, *R.get_dMassChangeDeformationGradientdPreviousSubDeformationGradients( ) ) );
 
 }

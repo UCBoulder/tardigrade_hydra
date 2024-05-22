@@ -1192,6 +1192,9 @@ namespace tardigradeHydra{
 
                         dFmdPreviousC[ i ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdC )[ j ];
 
+                        dFmdPreviousFn[ ( num_configs - 1 ) * sot_dim * i + j + ( ( *getMassChangeConfigurationIndex( ) ) - 1 ) * sot_dim ]
+                            += dFmdFp[ sot_dim * i + j ];
+
                         for ( unsigned int k = 0; k < dim; k++ ){
 
                             dFmdPreviousGradC[ dim * i + k ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdGradC )[ dim * j + k ];
@@ -1211,13 +1214,6 @@ namespace tardigradeHydra{
                         }
 
                     }
-
-//                    for ( unsigned int j = 0; j < sot_dim; j++ ){
-//
-//                        dFmdPreviousFn[ ( num_configs - 1 ) * sot_dim * i + j + ( *getMassChangeConfigurationIndex( ) ) * sot_dim ]
-//                            += dFmdFp[ sot_dim * i + j ];
-//
-//                    }
 
                 }
 
