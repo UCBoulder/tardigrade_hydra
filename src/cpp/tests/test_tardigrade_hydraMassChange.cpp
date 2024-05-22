@@ -4795,6 +4795,8 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel ){
 
     floatVector dStressdT(     9, 0 );
 
+    floatVector dStressdAdditionalDOF( 5 * 9, 0 );
+
     hydra.evaluate( );
 
     floatType eps = 1e-6;
@@ -4878,5 +4880,45 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel ){
     floatVector RdStressdT( hydra.getFlatdXdT( )->begin( ), hydra.getFlatdXdT( )->begin( ) + 9 );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStressdT, RdStressdT ) );
+
+    for ( unsigned int i = 0; i < 5; i++ ){
+
+        floatType delta = eps * std::fabs( additionalDOF[ i ] ) + eps;
+
+        floatVector xp = additionalDOF;
+
+        floatVector xm = additionalDOF;
+
+        xp[ i ] += delta;
+
+        xm[ i ] -= delta;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              xp, previousAdditionalDOF,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              xm, previousAdditionalDOF,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydrap.evaluate( );
+
+        hydram.evaluate( );
+
+        floatVector vp = *hydrap.getStress( );
+
+        floatVector vm = *hydram.getStress( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            dStressdAdditionalDOF[ 5 * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    floatVector RdStressdAdditionalDOF( hydra.getFlatdXdAdditionalDOF( )->begin( ), hydra.getFlatdXdAdditionalDOF( )->begin( ) + 9 * 5 );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStressdAdditionalDOF, RdStressdAdditionalDOF ) );
 
 }
