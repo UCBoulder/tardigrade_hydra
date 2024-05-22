@@ -224,6 +224,8 @@ namespace tardigradeHydra{
 
                 virtual void setdRdF( ) override;
 
+                virtual void setAdditionalDerivatives( ) override;
+
             private:
 
                 // Friend classes

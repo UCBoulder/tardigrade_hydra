@@ -1409,7 +1409,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
+            floatVector jacobian( num_equations * num_unknowns, 0 );
 
             const floatVector *dFmdFn = get_dMassChangeDeformationGradientdSubDeformationGradients( );
 
@@ -1417,7 +1417,7 @@ namespace tardigradeHydra{
 
                 jacobian[ num_unknowns * i + sot_dim * ( *getMassChangeConfigurationIndex( ) ) + i ] += -1;
 
-                for ( unsigned int j = sot_dim; j < num_equations * num_unknowns; j++ ){
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
                     jacobian[ num_unknowns * i + j + sot_dim ] += ( *dFmdFn )[ ( num_configs - 1 ) * sot_dim * i + j ];
 
@@ -1446,6 +1446,45 @@ namespace tardigradeHydra{
              */
 
             setdRdF( *get_dMassChangeDeformationGradientdDeformationGradient( ) );
+
+        }
+
+        void residual::setAdditionalDerivatives( ){
+            /*!
+             * Set the additional derivatives
+             */
+
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_equations = *getNumEquations( );
+
+            const unsigned int num_additional_dof = hydra->getAdditionalDOF( )->size( );
+
+            const floatVector *dMassChangeDeformationdDensity = get_dMassChangeDeformationGradientdDensity( );
+
+            const floatVector *dMassChangeDeformationdMassChangeRate = get_dMassChangeDeformationGradientdMassChangeRate( );
+
+            const floatVector *dMassChangeDeformationdMassChangeRateGradient = get_dMassChangeDeformationGradientdMassChangeRateGradient( );
+
+            floatVector additionalDOF( num_equations * num_additional_dof, 0 );
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                additionalDOF[ num_additional_dof * i + 0 ] = ( *dMassChangeDeformationdDensity )[ i ];
+
+                additionalDOF[ num_additional_dof * i + 1 ] = ( *dMassChangeDeformationdMassChangeRate )[ i ];
+
+                for ( unsigned int j = 0; j < dim; j++ ){
+
+                    additionalDOF[ num_additional_dof * i + j + 2 ] = ( *dMassChangeDeformationdMassChangeRateGradient )[ dim * i + j ];
+
+                }
+
+            }
+
+            setAdditionalDerivatives( additionalDOF );
 
         }
 
