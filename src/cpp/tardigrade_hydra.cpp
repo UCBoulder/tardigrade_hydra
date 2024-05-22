@@ -882,7 +882,7 @@ namespace tardigradeHydra{
 
                 if ( ( *localAdditionalDerivatives ).size( ) != localResidual->size( ) * numAdditionalDerivatives ){
     
-                    if ( ( residual_ptr - getResidualClasses( )->begin( ) ) == 0 ){
+                    if ( numAdditionalDerivatives == 0 ){
     
                         numAdditionalDerivatives = ( *localAdditionalDerivatives ).size( ) / localResidual->size( );
     
