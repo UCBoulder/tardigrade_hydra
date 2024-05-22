@@ -224,7 +224,7 @@ namespace tardigradeHydra{
 
                 virtual void setdRdF( ) override;
 
-                virtual void setAdditionalDerivatives( ) override;
+                virtual void setdRdAdditionalDOF( ) override;
 
             private:
 
@@ -240,6 +240,8 @@ namespace tardigradeHydra{
                 using tardigradeHydra::residualBase::setdRdF;
 
                 using tardigradeHydra::residualBase::setdRdT;
+
+                using tardigradeHydra::residualBase::setdRdAdditionalDOF;
 
                 using tardigradeHydra::residualBase::setAdditionalDerivatives;
 

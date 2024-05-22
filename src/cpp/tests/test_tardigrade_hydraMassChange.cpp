@@ -4703,7 +4703,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdAdditionalDOF, *R.getAdditionalDerivatives( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdAdditionalDOF, *R.getdRdAdditionalDOF( ) ) );
 
 }
 

@@ -1449,7 +1449,7 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setAdditionalDerivatives( ){
+        void residual::setdRdAdditionalDOF( ){
             /*!
              * Set the additional derivatives
              */
@@ -1468,23 +1468,23 @@ namespace tardigradeHydra{
 
             const floatVector *dMassChangeDeformationdMassChangeRateGradient = get_dMassChangeDeformationGradientdMassChangeRateGradient( );
 
-            floatVector additionalDOF( num_equations * num_additional_dof, 0 );
+            floatVector dRdAdditionalDOF( num_equations * num_additional_dof, 0 );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                additionalDOF[ num_additional_dof * i + 0 ] = ( *dMassChangeDeformationdDensity )[ i ];
+                dRdAdditionalDOF[ num_additional_dof * i + 0 ] = ( *dMassChangeDeformationdDensity )[ i ];
 
-                additionalDOF[ num_additional_dof * i + 1 ] = ( *dMassChangeDeformationdMassChangeRate )[ i ];
+                dRdAdditionalDOF[ num_additional_dof * i + 1 ] = ( *dMassChangeDeformationdMassChangeRate )[ i ];
 
                 for ( unsigned int j = 0; j < dim; j++ ){
 
-                    additionalDOF[ num_additional_dof * i + j + 2 ] = ( *dMassChangeDeformationdMassChangeRateGradient )[ dim * i + j ];
+                    dRdAdditionalDOF[ num_additional_dof * i + j + 2 ] = ( *dMassChangeDeformationdMassChangeRateGradient )[ dim * i + j ];
 
                 }
 
             }
 
-            setAdditionalDerivatives( additionalDOF );
+            setdRdAdditionalDOF( dRdAdditionalDOF );
 
         }
 
