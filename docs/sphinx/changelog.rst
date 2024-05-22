@@ -14,6 +14,8 @@ New Features
 - Throw a custom convergence error class rather than a nested exception if a failure happens because of the line-search or the Newton loop iterations (:pull:`70`). By `Nathan Miller`_.
 - Added a pre-conditioner (jacobian scaling) to try and improve the stability of the Jacobian (:pull:`98`). By `Nathan Miller`_.
 - Added a J2 flow isotropic-kinematic hardening viscoplastic model (:pull:`102`). By `Nathan Miller`_.
+- Added a mass-change deformation gradient evolution model (:pull:`104`). By `Nathan Miller`_.
+- Added the calculation of the total derivative of the unknown vector w.r.t. the additional degrees of freedom (:pull:`104`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
