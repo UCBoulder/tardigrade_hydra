@@ -817,6 +817,8 @@ namespace tardigradeHydra{
 
         const unsigned int residualSize = ( *getNumConfigurations( ) ) * configurationUnknownCount + *getNumNonLinearSolveStateVariables( );
 
+        const unsigned int numAdditionalDOF = getAdditionalDOF( )->size( );
+
         _residual.second = floatVector( residualSize, 0 );
 
         _jacobian.second = floatVector( residualSize * residualSize, 0 );
@@ -824,6 +826,8 @@ namespace tardigradeHydra{
         _dRdF.second = floatVector( residualSize * configurationUnknownCount, 0 );
 
         _dRdT.second = floatVector( residualSize, 0 );
+
+        _dRdAdditionalDOF.second = floatVector( residualSize * numAdditionalDOF, 0 );
 
         _additionalDerivatives.second.clear( );
 
@@ -848,6 +852,9 @@ namespace tardigradeHydra{
 
             const floatVector* localdRdT;
             TARDIGRADE_ERROR_TOOLS_CATCH( localdRdT = residual->getdRdT( ) );
+
+            const floatVector* localdRdAdditionalDOF;
+            TARDIGRADE_ERROR_TOOLS_CATCH( localdRdAdditionalDOF = residual->getdRdAdditionalDOF( ) );
 
             const floatVector* localAdditionalDerivatives;
             TARDIGRADE_ERROR_TOOLS_CATCH( localAdditionalDerivatives = residual->getAdditionalDerivatives( ) );
@@ -877,6 +884,18 @@ namespace tardigradeHydra{
                 + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
                 + "  actual:   " + std::to_string( localdRdT->size( ) ) + "\n"
             )
+
+            if ( localdRdAdditionalDOF->size( ) != 0 ){
+
+                TARDIGRADE_ERROR_TOOLS_CHECK( localdRdAdditionalDOF->size( ) == ( ( *residual->getNumEquations( ) ) * numAdditionalDOF ),
+                                              "dRdAdditionalDOF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
+                                            + "  expected: " + std::to_string( ( *residual->getNumEquations( ) ) * numAdditionalDOF ) + "\n"
+                                            + "  actual  : " + std::to_string( localdRdAdditionalDOF->size( ) ) + "\n"
+                )
+
+                std::copy ( localdRdAdditionalDOF->begin( ), localdRdAdditionalDOF->end( ), _dRdAdditionalDOF.second.begin( ) + numAdditionalDOF * offset );
+
+            }
 
             if ( localAdditionalDerivatives->size( ) != 0 ){
 
@@ -928,6 +947,8 @@ namespace tardigradeHydra{
 
         _dRdT.first = true;
 
+        _dRdAdditionalDOF.first = true;
+
         _additionalDerivatives.first = true;
 
         addIterationData( &_residual );
@@ -937,6 +958,8 @@ namespace tardigradeHydra{
         addIterationData( &_dRdF );
 
         addIterationData( &_dRdT );
+
+        addIterationData( &_dRdAdditionalDOF );
 
         addIterationData( &_additionalDerivatives );
 
@@ -1059,6 +1082,29 @@ namespace tardigradeHydra{
          */
 
         return tardigradeVectorTools::inflate( *getFlatdRdF( ), getResidual( )->size( ), getSOTDimension( ) );
+    }
+
+    const floatVector* hydraBase::getFlatdRdAdditionalDOF( ){
+        /*!
+         * Get the flattened row-major dRdAdditional for the non-linear problem
+         */
+
+        if ( !_dRdAdditionalDOF.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+
+        }
+
+        return &_dRdAdditionalDOF.second;
+
+    }
+
+    floatMatrix hydraBase::getdRdAdditionalDOF( ){
+        /*!
+         * Get dRdAdditionalDOF for the non-linear problem
+         */
+
+        return tardigradeVectorTools::inflate( *getFlatdRdAdditionalDOF( ), getResidual( )->size( ), getAdditionalDOF( )->size( ) );
     }
 
     const floatVector* hydraBase::getdRdT( ){
@@ -1539,13 +1585,13 @@ namespace tardigradeHydra{
 
     void hydraBase::computedXdAdditionalDOF( ){
         /*!
-         * Compute the consistent tangent w.r.t. the additional dof (assumes additionalDerivatives is dRdAdditionalDOF )
+         * Compute the consistent tangent w.r.t. the additional dof
          */
 
         //Form the solver based on the current value of the jacobian
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Amat( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdAdditionalDOF( getFlatAdditionalDerivatives( )->data( ), getResidual( )->size( ), getAdditionalDOF( )->size( ) );
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdAdditionalDOF( getFlatdRdAdditionalDOF( )->data( ), getResidual( )->size( ), getAdditionalDOF( )->size( ) );
 
         // Form the map for dXdF
         _flatdXdAdditionalDOF.second = floatVector( getUnknownVector( )->size( ) * getAdditionalDOF( )->size( ), 0 );
