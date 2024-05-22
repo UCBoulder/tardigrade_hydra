@@ -406,6 +406,13 @@ namespace tardigradeHydra{
  
             }
 
+            virtual void setdRdAdditionalDOF( ){
+                /*!
+                 * The user-defined derivative of the residual w.r.t. the additional DOF
+                 */
+
+            }
+
             virtual void setAdditionalDerivatives( ){
                 /*!
                  * The user-defined derivative of the residual w.r.t. additional values
@@ -524,6 +531,8 @@ namespace tardigradeHydra{
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdF,                             getdRdF,                            dRdF,                            floatVector, setdRdF )
                                                                                                                                               
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdT,                             getdRdT,                            dRdT,                            floatVector, setdRdT )
+                                                                                                                                              
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdAdditionalDOF,                 getdRdAdditionalDOF,                dRdAdditionalDOF,                floatVector, setdRdAdditionalDOF )
                                                                                                                                               
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setAdditionalDerivatives,            getAdditionalDerivatives,           additionalDerivatives,           floatVector, setAdditionalDerivatives )
                                                                                                                                               
@@ -692,6 +701,10 @@ namespace tardigradeHydra{
 
             const floatVector* getdRdT( );
 
+            const floatVector* getFlatdRdAdditionalDOF( );
+
+            floatMatrix getdRdAdditionalDOF( );
+
             const floatVector* getFlatAdditionalDerivatives( );
 
             floatMatrix getAdditionalDerivatives( );
@@ -712,9 +725,13 @@ namespace tardigradeHydra{
 
             virtual void computeTangents( );
 
+            virtual void computedXdAdditionalDOF( );
+
             const floatVector *getFlatdXdF( );
 
             const floatVector *getFlatdXdT( );
+
+            const floatVector *getFlatdXdAdditionalDOF( );
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
@@ -894,6 +911,8 @@ namespace tardigradeHydra{
 
             dataStorage< floatVector > _dRdT; //!< The gradient of the residual w.r.t. the temperature for the global solve
 
+            dataStorage< floatVector > _dRdAdditionalDOF; //!< The derivatives of the residual w.r.t. the additional degrees of freedom
+
             dataStorage< floatVector > _additionalDerivatives; //!< Additional derivatives of the residual
 
             dataStorage< floatVector > _X; //!< The unknown vector { stress, F1, ..., Fn, xi1, ..., xim }
@@ -909,6 +928,8 @@ namespace tardigradeHydra{
             dataStorage< floatVector > _flatdXdF; //!< The total derivative of the unknown vector w.r.t. the deformation in row-major form
 
             dataStorage< floatVector > _flatdXdT; //!< The total derivative of the unknown vector w.r.t. the temperature
+
+            dataStorage< floatVector > _flatdXdAdditionalDOF; //!< The total derivative of the unknown vector w.r.t. the additional DOF
 
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
