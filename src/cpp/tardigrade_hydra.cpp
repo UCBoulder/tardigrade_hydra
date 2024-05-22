@@ -1481,7 +1481,6 @@ namespace tardigradeHydra{
         Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getUnknownVector( )->size( ), 1 );
 
         // Solve
-
         tardigradeVectorTools::solverType< floatType > solver;
 
         if ( *getUsePreconditioner( ) ){
@@ -1538,6 +1537,57 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::computedXdAdditionalDOF( ){
+        /*!
+         * Compute the consistent tangent w.r.t. the additional dof (assumes additionalDerivatives is dRdAdditionalDOF )
+         */
+
+        //Form the solver based on the current value of the jacobian
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Amat( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdAdditionalDOF( getFlatAdditionalDerivatives( )->data( ), getResidual( )->size( ), getAdditionalDOF( )->size( ) );
+
+        // Form the map for dXdF
+        _flatdXdAdditionalDOF.second = floatVector( getUnknownVector( )->size( ) * getAdditionalDOF( )->size( ), 0 );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdAdditionalDOF( _flatdXdAdditionalDOF.second.data( ), getUnknownVector( )->size( ), getAdditionalDOF( )->size( ) );
+
+        // Solve
+        tardigradeVectorTools::solverType< floatType > solver;
+
+        if ( *getUsePreconditioner( ) ){
+
+            if( *getPreconditionerIsDiagonal( ) ){
+
+                Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
+
+                solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
+
+                dXdAdditionalDOF = -solver.solve( p_map.asDiagonal( ) * dRdAdditionalDOF );
+
+            }
+            else{
+
+                Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+
+                solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
+
+                dXdAdditionalDOF = -solver.solve( p_map * dRdAdditionalDOF );
+
+            }
+
+        }
+        else{
+
+            solver = tardigradeVectorTools::solverType< floatType >( Amat );
+
+            dXdAdditionalDOF = -solver.solve( dRdAdditionalDOF );
+
+        }
+
+        _flatdXdAdditionalDOF.first = true;
+
+    }
+
     const floatVector *hydraBase::getFlatdXdF( ){
         /*!
          * Get the total derivative of X w.r.t. the deformation in row-major format
@@ -1565,6 +1615,21 @@ namespace tardigradeHydra{
         }
 
         return &_flatdXdT.second;
+
+    }
+
+    const floatVector *hydraBase::getFlatdXdAdditionalDOF( ){
+        /*!
+         * Get the total derivative of X w.r.t. the additional degrees of freedom
+         */
+
+        if ( !_flatdXdAdditionalDOF.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( computedXdAdditionalDOF( ) );
+
+        }
+
+        return &_flatdXdAdditionalDOF.second;
 
     }
 

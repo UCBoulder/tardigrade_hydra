@@ -712,9 +712,13 @@ namespace tardigradeHydra{
 
             virtual void computeTangents( );
 
+            virtual void computedXdAdditionalDOF( );
+
             const floatVector *getFlatdXdF( );
 
             const floatVector *getFlatdXdT( );
+
+            const floatVector *getFlatdXdAdditionalDOF( );
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
@@ -909,6 +913,8 @@ namespace tardigradeHydra{
             dataStorage< floatVector > _flatdXdF; //!< The total derivative of the unknown vector w.r.t. the deformation in row-major form
 
             dataStorage< floatVector > _flatdXdT; //!< The total derivative of the unknown vector w.r.t. the temperature
+
+            dataStorage< floatVector > _flatdXdAdditionalDOF; //!< The total derivative of the unknown vector w.r.t. the additional DOF
 
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
