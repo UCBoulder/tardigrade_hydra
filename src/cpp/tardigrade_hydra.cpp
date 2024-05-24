@@ -1392,18 +1392,11 @@ namespace tardigradeHydra{
          * Check the line-search convergence
          */
 
-        std::cout << "in checkLSConvergence\n";
-
         if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < ( 1 - *getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
-
-            std::cout << "    LS residual: " << tardigradeVectorTools::l2norm( *getResidual( ) ) << "\n";
 
             return true;
 
         }
-
-        std::cout << "    LS residual: " << tardigradeVectorTools::l2norm( *getResidual( ) ) << "\n";
-        std::cout << "    LS residual norm: " << *getLSResidualNorm( ) << "\n";
 
         return false;
 
@@ -1445,11 +1438,7 @@ namespace tardigradeHydra{
 
         while( !checkConvergence( ) && checkIteration( ) ){
 
-            std::cout << "  iteration: " << _iteration << "\n";
-
             floatVector X0 = *getUnknownVector( );
-
-            std::cout << "    X0: "; tardigradeVectorTools::print( X0 );
 
             tardigradeVectorTools::solverType< floatType > linearSolver;
 

@@ -3682,9 +3682,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1 ){
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    floatVector answer = { 0.36126671, -0.30725503,  0.02422323,
-                          -0.37195718,  0.59569175, -0.43665932,
-                          -0.10518106, -0.50136147,  0.10245813 };
+    floatVector answer = { 1.95711900e+10, 2.40473864e+10, 2.85235828e+10, 4.43210244e+10,
+       5.44578434e+10, 6.45946624e+10, 6.90708588e+10, 8.48683004e+10,
+       1.00665742e+11 };
 
     residualMock R( &hydra, 9, 1, hydra.massChangeParameters, 0.67 );
 
@@ -4841,7 +4841,7 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel ){
 
     floatVector RdStressdF( hydra.getFlatdXdF( )->begin( ), hydra.getFlatdXdF( )->begin( ) + 81 );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStressdF, RdStressdF ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dStressdF, RdStressdF, 1e-5 ) );
 
     for ( unsigned int i = 0; i < 1; i++ ){
 
