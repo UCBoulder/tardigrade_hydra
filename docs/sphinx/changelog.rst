@@ -47,6 +47,7 @@ Internal Changes
 - Using new error_tools check for error function (:pull:`100`). By `Nathan Miller`_.
 - Changed Jacobian, dRdF, and dRdD to row-major vectors (:pull:`101`). By `Nathan Miller`_.
 - Replaced queries to getUnknownVector purely to get the size of the vector (:pull:`109`). By `Nathan Miller`_.
+- Added a better guess for the mass-change residual to improve convergence (:pull:`110`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
