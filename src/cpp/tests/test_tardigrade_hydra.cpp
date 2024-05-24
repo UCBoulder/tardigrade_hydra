@@ -4407,6 +4407,8 @@ BOOST_AUTO_TEST_CASE( test_formMaxRowPreconditioner ){
 
             }
 
+            virtual const unsigned int getNumUnknowns( ) override{ return 5; }
+
     };
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
