@@ -4773,7 +4773,7 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel ){
                                                 0.0, 1.0, 0.0,
                                                 0.0, 0.0, 1.0 };
 
-    floatVector additionalDOF = { 0.11, 0.01, 0.33, 0.44, 0.55 };
+    floatVector additionalDOF = { 0.11, 0.22, 0.33, 0.44, 0.55 };
 
     floatVector previousAdditionalDOF = { 0.12, 0.00, 0.36, 0.47, 0.58 };
 
@@ -4797,7 +4797,9 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel ){
 
     floatVector dStressdAdditionalDOF( 5 * 9, 0 );
 
+    try{
     hydra.evaluate( );
+    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e); throw;}
 
     floatType eps = 1e-6;
 

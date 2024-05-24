@@ -1100,14 +1100,19 @@ namespace tardigradeHydra{
 
             const floatVector previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
 
-            floatVector dMassChangeDeformationGradient;
+//            floatVector dMassChangeDeformationGradient;
 
             floatVector massChangeDeformationGradient;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
-                                                                                *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                dMassChangeDeformationGradient, massChangeDeformationGradient,
-                                                                                ( 1 - ( *getIntegrationParameter( ) ) ), 1 ) )
+//            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+//                                                                                *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+//                                                                                dMassChangeDeformationGradient, massChangeDeformationGradient,
+//                                                                                ( 1 - ( *getIntegrationParameter( ) ) ), 1 ) )
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                                                                                              *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                               massChangeDeformationGradient,
+                                                                                              *getIntegrationParameter( ) ) )
 
             set_massChangeDeformationGradient( massChangeDeformationGradient );
 
@@ -1144,7 +1149,7 @@ namespace tardigradeHydra{
 
             const floatVector previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
 
-            floatVector dMassChangeDeformationGradient;
+//            floatVector dMassChangeDeformationGradient;
 
             floatVector massChangeDeformationGradient;
 
@@ -1162,17 +1167,23 @@ namespace tardigradeHydra{
 
                 const floatVector *dLpdFn    = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( );
 
-                floatVector ddFmdFp;
+//                floatVector ddFmdFp;
 
                 floatVector dFmdFp;
 
                 floatVector dFmdLp;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
-                                                                                         *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                         dMassChangeDeformationGradient, massChangeDeformationGradient,
-                                                                                         dFmdL, ddFmdFp, dFmdFp, dFmdLp,
-                                                                                         ( 1 - ( *getIntegrationParameter( ) ) ), 1 ) )
+//                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+//                                                                                         *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+//                                                                                         dMassChangeDeformationGradient, massChangeDeformationGradient,
+//                                                                                         dFmdL, ddFmdFp, dFmdFp, dFmdLp,
+//                                                                                         ( 1 - ( *getIntegrationParameter( ) ) ), 1 ) )
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                                                                                                  *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                                  massChangeDeformationGradient,
+                                                                                                  dFmdL, dFmdFp, dFmdLp,
+                                                                                                  *getIntegrationParameter( ) ) )
 
                 floatVector dFmdPreviousRho( sot_dim, 0 );
 
@@ -1230,11 +1241,17 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
-                                                                                         *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                         dMassChangeDeformationGradient, massChangeDeformationGradient,
-                                                                                         dFmdL,
-                                                                                         ( 1 - ( *getIntegrationParameter( ) ) ), 1 ) )
+//                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+//                                                                                         *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+//                                                                                         dMassChangeDeformationGradient, massChangeDeformationGradient,
+//                                                                                         dFmdL,
+//                                                                                         ( 1 - ( *getIntegrationParameter( ) ) ), 1 ) )
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                                                                                                  *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                                  massChangeDeformationGradient,
+                                                                                                  dFmdL,
+                                                                                                  *getIntegrationParameter( ) ) )
 
             }
 
