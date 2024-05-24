@@ -2109,15 +2109,15 @@ namespace tardigradeHydra{
              */
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveF( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
-                                            currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
-                                            1. - alphaMacro, 1 );
+                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+                                                                    currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
+                                                                    alphaMacro );
             )
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveF( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
-                                            currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
-                                            1. - alphaMicro, 1 );
+                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+                                                                    currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
+                                                                    alphaMicro );
             )
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
@@ -2195,15 +2195,15 @@ namespace tardigradeHydra{
             constexpr unsigned int tot_dim = sot_dim * dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveFFlatJ( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
-                                            currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
-                                            dPlasticFdPlasticMacroL, 1. - alphaMacro, 1 );
+                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+                                                                    currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
+                                                                    dPlasticFdPlasticMacroL, alphaMacro );
             )
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveFFlatJ( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
-                                            currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
-                                            dPlasticMicroDeformationdPlasticMicroL, 1. - alphaMicro, 1 );
+                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+                                                                    currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
+                                                                    dPlasticMicroDeformationdPlasticMicroL, alphaMicro );
             )
 
             variableVector dPlasticMicroGradientdPlasticMicroDeformation;
@@ -2314,16 +2314,16 @@ namespace tardigradeHydra{
             constexpr unsigned int tot_dim = sot_dim * dim;
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveFFlatJ( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
-                                            currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
-                                            dPlasticFdPlasticMacroL, dPlasticFdPreviousPlasticF, dPlasticFdPreviousPlasticMacroL, 1. - alphaMacro, 1 );
+                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticDeformationGradient, previousPlasticMacroVelocityGradient,
+                                                                    currentPlasticMacroVelocityGradient, currentPlasticDeformationGradient,
+                                                                    dPlasticFdPlasticMacroL, dPlasticFdPreviousPlasticF, dPlasticFdPreviousPlasticMacroL, alphaMacro );
             )
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                tardigradeConstitutiveTools::evolveFFlatJ( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
-                                            currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
-                                            dPlasticMicroDeformationdPlasticMicroL, dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
-                                            dPlasticMicroDeformationdPreviousPlasticMicroL, 1. - alphaMicro, 1 );
+                tardigradeConstitutiveTools::evolveFExponentialMap( Dt, previousPlasticMicroDeformation, previousPlasticMicroVelocityGradient,
+                                                                    currentPlasticMicroVelocityGradient, currentPlasticMicroDeformation,
+                                                                    dPlasticMicroDeformationdPlasticMicroL, dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
+                                                                    dPlasticMicroDeformationdPreviousPlasticMicroL, alphaMicro );
             )
 
             variableVector dPlasticMicroGradientdPlasticMicroDeformation;
