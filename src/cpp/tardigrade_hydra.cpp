@@ -1248,6 +1248,8 @@ namespace tardigradeHydra{
 
         floatVector X = tardigradeVectorTools::appendVectors( Xmat );
 
+        bool resetRequired = false;
+
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
 
             std::vector< unsigned int > indices;
@@ -1255,6 +1257,10 @@ namespace tardigradeHydra{
             std::vector< floatType > values;
 
             ( *residual_ptr )->suggestInitialIterateValues( indices, values );
+
+            if ( indices.size( ) > 0 ){
+                resetRequired = true;
+            }
 
             for ( auto i = indices.begin( ); i != indices.end( ); i++ ){
 
@@ -1264,7 +1270,16 @@ namespace tardigradeHydra{
 
         }
 
-        setX( X );
+        if ( resetRequired ){
+
+            updateUnknownVector( X );
+
+        }
+        else{
+
+            setX( X );
+
+        }
 
     }
 

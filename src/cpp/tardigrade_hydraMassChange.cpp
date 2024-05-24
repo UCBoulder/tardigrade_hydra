@@ -1503,6 +1503,28 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::suggestInitialIterateValues( std::vector< unsigned int >   &indices,
+                                                    std::vector< floatType > &values ){
+            /*!
+             * Suggest initial iterate values to try and improve convergence
+             * 
+             * \param &indices: The indices of the unknown vector to suggest initial values
+             * \param &values: The values to suggest
+             */
+
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int configuration = *getMassChangeConfigurationIndex( );
+
+            const floatVector *massChangeDeformationGradient = get_massChangeDeformationGradient( );
+
+            indices = std::vector< unsigned int >( sot_dim, sot_dim * configuration );
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){ indices[ i ] += i; }
+            values = *massChangeDeformationGradient;
+
+        }
+
     }
 
 }

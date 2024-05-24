@@ -96,6 +96,9 @@ namespace tardigradeHydra{
 
                 const floatType *getIntegrationParameter( ){ return &_integrationParameter; }
 
+                virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
+                                                          std::vector< floatType > &values ) override;
+
             protected:
 
                 virtual void decomposeAdditionalDOF( );
