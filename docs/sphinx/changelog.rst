@@ -17,6 +17,8 @@ New Features
 - Added a mass-change deformation gradient evolution model (:pull:`104`). By `Nathan Miller`_.
 - Added the calculation of the total derivative of the unknown vector w.r.t. the additional degrees of freedom (:pull:`104`). By `Nathan Miller`_.
 - Added storage for the derivative of the residual w.r.t. the additional dof (:pull:`104`). By `Nathan Miller`_.
+- Added the ability to initialize the unknown vector (:pull:`109`). By `Nathan Miller`_.
+- Added function that returns the size of the unknown vector (:pull:`109`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
@@ -44,6 +46,7 @@ Internal Changes
 - Improved performance of the linear elasticity subroutine (:pull:`99`). By `Nathan Miller`_.
 - Using new error_tools check for error function (:pull:`100`). By `Nathan Miller`_.
 - Changed Jacobian, dRdF, and dRdD to row-major vectors (:pull:`101`). By `Nathan Miller`_.
+- Replaced queries to getUnknownVector purely to get the size of the vector (:pull:`109`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
