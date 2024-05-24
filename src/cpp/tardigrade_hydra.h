@@ -455,6 +455,23 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
+                                                      std::vector< floatType > &values ){
+
+                /*!
+                 * Function which is called which allows the residual to suggest initial values for given
+                 * configurations. This is called when the unknown vector is being initialized. If more than
+                 * one residual attempts to set the initial vector the last residual will override all of the others.
+                 * 
+                 * \param &indices: The indices of the unknown vector to set
+                 * \param &values:  The values to be set in the unknown vector
+                 */
+
+                indices.clear( );
+                values.clear( );
+
+            }
+
             // Getter functions
 
             //! Get the number of equations the residual defined
@@ -616,6 +633,9 @@ namespace tardigradeHydra{
 
             //! Get a reference to the number of state variables involved in the non-linear solve
             const unsigned int* getNumNonLinearSolveStateVariables( ){ return &_numNonLinearSolveStateVariables; }
+
+            //! Get a reference to the number of terms in the unknown vector
+            virtual const unsigned int getNumUnknowns( ){ return ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( ); }
 
             //! Get a reference to the dimension
             constexpr unsigned int getDimension( ){ return _dimension; }

@@ -7907,7 +7907,7 @@ namespace tardigradeHydra{
 
             unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
 
-            const unsigned int numUnknowns = hydra->getUnknownVector( )->size( );
+            const unsigned int numUnknowns = hydra->getNumUnknowns( );
 
             const unsigned int numISVs = get_plasticStateVariables( )->size( );
 
@@ -8358,7 +8358,7 @@ namespace tardigradeHydra{
 
             const unsigned int numEquations = *getNumEquations( );
 
-            const unsigned int numUnknowns  = hydra->getUnknownVector( )->size( );
+            const unsigned int numUnknowns  = hydra->getNumUnknowns( );
 
             const unsigned int numConfigurations = *hydra->getNumConfigurations( );
 
