@@ -992,7 +992,7 @@ namespace tardigradeHydra{
          * Form a left preconditioner comprised of the inverse of the maximum value of each row
          */
 
-        const unsigned int problem_size = getUnknownVector( )->size( );
+        const unsigned int problem_size = getNumUnknowns( );
 
         _preconditioner.second = floatVector( problem_size, 0 );
 
@@ -1246,7 +1246,25 @@ namespace tardigradeHydra{
 
         Xmat[ Xmat.size( ) - 1 ] = *nonLinearSolveStateVariables;
 
-        setX( tardigradeVectorTools::appendVectors( Xmat ) );
+        floatVector X = tardigradeVectorTools::appendVectors( Xmat );
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+            std::vector< unsigned int > indices;
+
+            std::vector< floatType > values;
+
+            ( *residual_ptr )->suggestInitialIterateValues( indices, values );
+
+            for ( auto i = indices.begin( ); i != indices.end( ); i++ ){
+
+                X[ *i ] = values[ ( unsigned int )( i - indices.begin( ) ) ];
+
+            }
+
+        }
+
+        setX( X );
 
     }
 
@@ -1397,7 +1415,7 @@ namespace tardigradeHydra{
 
         unsigned int rank;
 
-        floatVector deltaX( getUnknownVector( )->size( ), 0 );
+        floatVector deltaX( getNumUnknowns( ), 0 );
 
         Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX.data( ), getUnknownVector( )->size( ) );
 
@@ -1517,14 +1535,14 @@ namespace tardigradeHydra{
         // Form the maps for dXdF
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdFmat( getFlatdRdF( )->data( ), getResidual( )->size( ), *getConfigurationUnknownCount( ) );
 
-        _flatdXdF.second = floatVector( getUnknownVector( )->size( ) * ( *getConfigurationUnknownCount( ) ) );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdFmat( _flatdXdF.second.data( ), getUnknownVector( )->size( ), ( *getConfigurationUnknownCount( ) ) );
+        _flatdXdF.second = floatVector( getNumUnknowns( ) * ( *getConfigurationUnknownCount( ) ) );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdFmat( _flatdXdF.second.data( ), getNumUnknowns( ), ( *getConfigurationUnknownCount( ) ) );
 
         // Form the maps for dXdT
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdTmat( getdRdT( )->data( ), getResidual( )->size( ), 1 );
 
-        _flatdXdT.second = floatVector( getUnknownVector( )->size( ) );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getUnknownVector( )->size( ), 1 );
+        _flatdXdT.second = floatVector( getNumUnknowns( ) );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getNumUnknowns( ), 1 );
 
         // Solve
         tardigradeVectorTools::solverType< floatType > solver;
@@ -1594,8 +1612,8 @@ namespace tardigradeHydra{
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdAdditionalDOF( getFlatdRdAdditionalDOF( )->data( ), getResidual( )->size( ), getAdditionalDOF( )->size( ) );
 
         // Form the map for dXdF
-        _flatdXdAdditionalDOF.second = floatVector( getUnknownVector( )->size( ) * getAdditionalDOF( )->size( ), 0 );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdAdditionalDOF( _flatdXdAdditionalDOF.second.data( ), getUnknownVector( )->size( ), getAdditionalDOF( )->size( ) );
+        _flatdXdAdditionalDOF.second = floatVector( getNumUnknowns( ) * getAdditionalDOF( )->size( ), 0 );
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdAdditionalDOF( _flatdXdAdditionalDOF.second.data( ), getNumUnknowns( ), getAdditionalDOF( )->size( ) );
 
         // Solve
         tardigradeVectorTools::solverType< floatType > solver;

@@ -2929,7 +2929,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
-            const unsigned int num_unknowns = hydra->getUnknownVector( )->size( );
+            const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
             floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
 

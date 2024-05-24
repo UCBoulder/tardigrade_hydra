@@ -3545,7 +3545,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            const unsigned int num_unknowns = hydra->getUnknownVector( )->size( );
+            const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
             floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
 

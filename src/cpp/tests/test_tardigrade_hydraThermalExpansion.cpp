@@ -1053,9 +1053,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives ){
 
     floatType eps = 1e-6;
 
-    for ( unsigned int i = 0; i < hydra.getUnknownVector( )->size( ); i++ ){
+    for ( unsigned int i = 0; i < hydra.getNumUnknowns( ); i++ ){
 
-        floatVector deltas( hydra.getUnknownVector( )->size( ), 0 );
+        floatVector deltas( hydra.getNumUnknowns( ), 0 );
 
         deltas[ i ] = eps * std::fabs( deltas[ i ] ) + eps;
 
