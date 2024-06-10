@@ -59,9 +59,9 @@ namespace tardigradeHydra{
 
                         BOOST_CHECK( &R._previousMassChangeRate.second == R.get_previousMassChangeRate( ) );
 
-                        BOOST_CHECK( &R._massChangeRateGradient.second         == R.get_massChangeRateGradient( ) );
+                        BOOST_CHECK( &R._directionVector.second         == R.get_directionVector( ) );
 
-                        BOOST_CHECK( &R._previousMassChangeRateGradient.second == R.get_previousMassChangeRateGradient( ) );
+                        BOOST_CHECK( &R._previousDirectionVector.second == R.get_previousDirectionVector( ) );
 
                     }
 
@@ -177,13 +177,13 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0.22, *R.get_massChangeRate( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( massChangeRateAnswer, *R.get_massChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( massChangeRateAnswer, *R.get_directionVector( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0.12, *R.get_previousDensity( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0.23, *R.get_previousMassChangeRate( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousMassChangeRateAnswer, *R.get_previousMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousMassChangeRateAnswer, *R.get_previousDirectionVector( ) ) );
 
 }
 
@@ -554,9 +554,9 @@ BOOST_AUTO_TEST_CASE( test_residual_unitDirectionVector ){
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    Rgrad.get_dUnitDirectionVectordMassChangeRateGradient( );
+    Rgrad.get_dUnitDirectionVectordDirectionVector( );
 
-    Rgrad.get_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( );
+    Rgrad.get_dPreviousUnitDirectionVectordPreviousDirectionVector( );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.get_unitDirectionVector( ) ) );
 
@@ -610,7 +610,7 @@ BOOST_AUTO_TEST_CASE( test_residual_unitDirectionVector ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDdGradC, *R.get_dUnitDirectionVectordMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDdGradC, *R.get_dUnitDirectionVectordDirectionVector( ) ) );
 
     for ( unsigned int i = 0; i < 3; i++ ){
 
@@ -648,7 +648,7 @@ BOOST_AUTO_TEST_CASE( test_residual_unitDirectionVector ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDdPreviousGradC, *R.get_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDdPreviousGradC, *R.get_dPreviousUnitDirectionVectordPreviousDirectionVector( ) ) );
 
 }
 
@@ -716,12 +716,12 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_1 ){
 
                 if ( isPrevious ){
 
-                    set_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
+                    set_dPreviousUnitDirectionVectordPreviousDirectionVector( previousdDdGradC );
 
                 }
                 else{
 
-                    set_dUnitDirectionVectordMassChangeRateGradient( dDdGradC );
+                    set_dUnitDirectionVectordDirectionVector( dDdGradC );
 
                 }
 
@@ -922,12 +922,12 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_2 ){
 
                 if ( isPrevious ){
 
-                    set_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
+                    set_dPreviousUnitDirectionVectordPreviousDirectionVector( previousdDdGradC );
 
                 }
                 else{
 
-                    set_dUnitDirectionVectordMassChangeRateGradient( dDdGradC );
+                    set_dUnitDirectionVectordDirectionVector( dDdGradC );
 
                 }
 
@@ -1068,7 +1068,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_2 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dtrLdC, *Rgrad.get_dMassChangeVelocityGradientdMassChangeRate( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( floatVector( 27, 0 ), *Rgrad.get_dMassChangeVelocityGradientdMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( floatVector( 27, 0 ), *Rgrad.get_dMassChangeVelocityGradientdDirectionVector( ) ) );
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *Rgrad.get_previousMassChangeVelocityGradient( ) ) );
 
@@ -1138,12 +1138,12 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_3 ){
 
                 if ( isPrevious ){
 
-                    set_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
+                    set_dPreviousUnitDirectionVectordPreviousDirectionVector( previousdDdGradC );
 
                 }
                 else{
 
-                    set_dUnitDirectionVectordMassChangeRateGradient( dDdGradC );
+                    set_dUnitDirectionVectordDirectionVector( dDdGradC );
 
                 }
 
@@ -1286,7 +1286,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_3 ){
 
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdtrLdC, *Rgrad.get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( floatVector( 27, 0 ), *Rgrad.get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( floatVector( 27, 0 ), *Rgrad.get_dPreviousMassChangeVelocityGradientdPreviousDirectionVector( ) ) );
 
 }
 
@@ -1512,7 +1512,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_4 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dMassChangeVelocityGradientdMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dMassChangeVelocityGradientdDirectionVector( ) ) );
 
     offset = 0;
 
@@ -1632,7 +1632,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_4 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dPreviousMassChangeVelocityGradientdPreviousDirectionVector( ) ) );
 
 }
 
@@ -1858,7 +1858,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_5 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dMassChangeVelocityGradientdMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dMassChangeVelocityGradientdDirectionVector( ) ) );
 
     offset = 0;
 
@@ -1978,7 +1978,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_5 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dPreviousMassChangeVelocityGradientdPreviousDirectionVector( ) ) );
 
 }
 
@@ -2204,7 +2204,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_6 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dMassChangeVelocityGradientdMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dMassChangeVelocityGradientdDirectionVector( ) ) );
 
     offset = 0;
 
@@ -2324,7 +2324,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_6 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dLdGradC, *R.get_dPreviousMassChangeVelocityGradientdPreviousDirectionVector( ) ) );
 
 }
 
@@ -2765,13 +2765,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_1 ){
 
             floatVector dMassChangeVelocityGradientdMassChangeRate                         = initializeVector(  9 );
 
-            floatVector dMassChangeVelocityGradientdMassChangeRateGradient                 = initializeVector( 27 );
+            floatVector dMassChangeVelocityGradientdDirectionVector                 = initializeVector( 27 );
 
             floatVector dPreviousMassChangeVelocityGradientdPreviousDensity                = initializeVector(  9 );
 
             floatVector dPreviousMassChangeVelocityGradientdPreviousMassChangeRate         = initializeVector(  9 );
 
-            floatVector dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient = initializeVector( 27 );
+            floatVector dPreviousMassChangeVelocityGradientdPreviousDirectionVector = initializeVector( 27 );
 
             floatVector initializeVector( unsigned int size ){
 
@@ -2804,7 +2804,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_1 ){
 
                     set_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( dPreviousMassChangeVelocityGradientdPreviousMassChangeRate );
 
-                    set_dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient( dPreviousMassChangeVelocityGradientdPreviousMassChangeRateGradient );
+                    set_dPreviousMassChangeVelocityGradientdPreviousDirectionVector( dPreviousMassChangeVelocityGradientdPreviousDirectionVector );
 
                 }
                 else{
@@ -2813,7 +2813,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_1 ){
 
                     set_dMassChangeVelocityGradientdMassChangeRate( dMassChangeVelocityGradientdMassChangeRate );
 
-                    set_dMassChangeVelocityGradientdMassChangeRateGradient( dMassChangeVelocityGradientdMassChangeRateGradient );
+                    set_dMassChangeVelocityGradientdDirectionVector( dMassChangeVelocityGradientdDirectionVector );
 
                 }
 
@@ -3200,7 +3200,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dILdGradC, *R.get_dMassChangeIntermediateVelocityGradientdMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dILdGradC, *R.get_dMassChangeIntermediateVelocityGradientdDirectionVector( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -3418,7 +3418,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdILdGradC, *R.get_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdILdGradC, *R.get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -3524,7 +3524,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1 ){
 
             floatVector dMassChangeIntermediateVelocityGradientdMassChangeRate                          = initializeVector(  9 );
 
-            floatVector dMassChangeIntermediateVelocityGradientdMassChangeRateGradient                  = initializeVector( 27 );
+            floatVector dMassChangeIntermediateVelocityGradientdDirectionVector                  = initializeVector( 27 );
 
             floatVector dMassChangeIntermediateVelocityGradientdDeformationGradient                     = initializeVector( 81 );
 
@@ -3534,7 +3534,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1 ){
 
             floatVector dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate          = initializeVector(  9 );
 
-            floatVector dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRateGradient  = initializeVector( 27 );
+            floatVector dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector  = initializeVector( 27 );
 
             floatVector dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient     = initializeVector( 81 );
 
@@ -3571,7 +3571,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1 ){
 
                     set_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate( dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate );
 
-                    set_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRateGradient( dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRateGradient );
+                    set_dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector( dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector );
 
                     set_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient );
 
@@ -3584,7 +3584,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1 ){
 
                     set_dMassChangeIntermediateVelocityGradientdMassChangeRate( dMassChangeIntermediateVelocityGradientdMassChangeRate );
 
-                    set_dMassChangeIntermediateVelocityGradientdMassChangeRateGradient( dMassChangeIntermediateVelocityGradientdMassChangeRateGradient );
+                    set_dMassChangeIntermediateVelocityGradientdDirectionVector( dMassChangeIntermediateVelocityGradientdDirectionVector );
 
                     set_dMassChangeIntermediateVelocityGradientdDeformationGradient( dMassChangeIntermediateVelocityGradientdDeformationGradient );
 
@@ -3967,7 +3967,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dFmdGradC, *R.get_dMassChangeDeformationGradientdMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dFmdGradC, *R.get_dMassChangeDeformationGradientdDirectionVector( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -4185,7 +4185,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdFmdGradC, *R.get_dMassChangeDeformationGradientdPreviousMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdFmdGradC, *R.get_dMassChangeDeformationGradientdPreviousDirectionVector( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
