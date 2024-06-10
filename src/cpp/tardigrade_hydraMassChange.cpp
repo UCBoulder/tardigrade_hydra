@@ -187,7 +187,7 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setDirectionVector( const bool &isPrevious ){
+        void residual::setUnitDirectionVector( const bool &isPrevious ){
             /*!
              * Set the direction vector
              * 
@@ -211,46 +211,46 @@ namespace tardigradeHydra{
 
             floatType normMassChangeRateGradient = tardigradeVectorTools::l2norm( *massChangeRateGradient );
 
-            floatVector directionVector( dim, 0 );
+            floatVector unitDirectionVector( dim, 0 );
 
             if ( std::isfinite( normMassChangeRateGradient ) ){
 
-                directionVector = ( *massChangeRateGradient ) / normMassChangeRateGradient;
+                unitDirectionVector = ( *massChangeRateGradient ) / normMassChangeRateGradient;
 
             }
 
             if ( isPrevious ){
 
-                set_previousDirectionVector( directionVector );
+                set_previousUnitDirectionVector( unitDirectionVector );
 
             }
             else{
 
-                set_directionVector( directionVector );
+                set_unitDirectionVector( unitDirectionVector );
 
             }
 
         }
 
-        void residual::setDirectionVector( ){
+        void residual::setUnitDirectionVector( ){
             /*!
              * Set the direction vector
              */
 
-            setDirectionVector( false );
+            setUnitDirectionVector( false );
 
         }
 
-        void residual::setPreviousDirectionVector( ){
+        void residual::setPreviousUnitDirectionVector( ){
             /*!
              * Set the previous direction vector
              */
 
-            setDirectionVector( true );
+            setUnitDirectionVector( true );
 
         }
 
-        void residual::setDirectionVectorDerivatives( const bool &isPrevious ){
+        void residual::setUnitDirectionVectorDerivatives( const bool &isPrevious ){
             /*!
              * Set the direction vector derivatives
              * 
@@ -276,17 +276,17 @@ namespace tardigradeHydra{
 
             floatType normMassChangeRateGradient = tardigradeVectorTools::l2norm( *massChangeRateGradient );
 
-            floatVector directionVector( dim, 0 );
+            floatVector unitDirectionVector( dim, 0 );
 
-            floatVector dDirectionVectordMassChangeRateGradient( sot_dim, 0 );
+            floatVector dUnitDirectionVectordMassChangeRateGradient( sot_dim, 0 );
 
             if ( std::isfinite( normMassChangeRateGradient ) ){
 
-                directionVector = ( *massChangeRateGradient ) / normMassChangeRateGradient;
+                unitDirectionVector = ( *massChangeRateGradient ) / normMassChangeRateGradient;
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
-                    dDirectionVectordMassChangeRateGradient[ dim * i + i ] += 1 / normMassChangeRateGradient;
+                    dUnitDirectionVectordMassChangeRateGradient[ dim * i + i ] += 1 / normMassChangeRateGradient;
 
                 }
 
@@ -294,7 +294,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < dim; j++ ){
 
-                        dDirectionVectordMassChangeRateGradient[ dim * i + j ] -= directionVector[ i ] * directionVector[ j ] / normMassChangeRateGradient;
+                        dUnitDirectionVectordMassChangeRateGradient[ dim * i + j ] -= unitDirectionVector[ i ] * unitDirectionVector[ j ] / normMassChangeRateGradient;
 
                     }
 
@@ -304,37 +304,37 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousDirectionVector( directionVector );
+                set_previousUnitDirectionVector( unitDirectionVector );
 
-                set_dPreviousDirectionVectordPreviousMassChangeRateGradient( dDirectionVectordMassChangeRateGradient );
+                set_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( dUnitDirectionVectordMassChangeRateGradient );
 
             }
             else{
 
-                set_directionVector( directionVector );
+                set_unitDirectionVector( unitDirectionVector );
 
-                set_dDirectionVectordMassChangeRateGradient( dDirectionVectordMassChangeRateGradient );
+                set_dUnitDirectionVectordMassChangeRateGradient( dUnitDirectionVectordMassChangeRateGradient );
 
             }
 
 
         }
 
-        void residual::setdDirectionVectordMassChangeRateGradient( ){
+        void residual::setdUnitDirectionVectordMassChangeRateGradient( ){
             /*!
              * Set the direction vector derivatives
              */
 
-            setDirectionVectorDerivatives( false );
+            setUnitDirectionVectorDerivatives( false );
 
         }
 
-        void residual::setdPreviousDirectionVectordPreviousMassChangeRateGradient( ){
+        void residual::setdPreviousUnitDirectionVectordPreviousMassChangeRateGradient( ){
             /*!
              * Set the previous direction vector derivatives
              */
 
-            setDirectionVectorDerivatives( true );
+            setUnitDirectionVectorDerivatives( true );
 
         }
 
@@ -353,20 +353,20 @@ namespace tardigradeHydra{
 
             const floatType *velocityGradientTrace = get_massChangeVelocityGradientTrace( );
 
-            const floatVector *directionVector;
+            const floatVector *unitDirectionVector;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradientTrace = get_previousMassChangeVelocityGradientTrace( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( directionVector = get_previousDirectionVector( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_previousUnitDirectionVector( ) );
 
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradientTrace = get_massChangeVelocityGradientTrace( ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( directionVector = get_directionVector( ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_unitDirectionVector( ) );
 
             }
 
@@ -374,7 +374,7 @@ namespace tardigradeHydra{
 
             floatType a = ( *velocityGradientTrace ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
 
-            if ( tardigradeVectorTools::l2norm( *directionVector ) > 0.5 ){
+            if ( tardigradeVectorTools::l2norm( *unitDirectionVector ) > 0.5 ){
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
@@ -386,7 +386,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < dim; j++ ){
 
-                        velocityGradient[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *directionVector )[ i ] * ( *directionVector )[ j ];
+                        velocityGradient[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
                     }
 
@@ -437,9 +437,9 @@ namespace tardigradeHydra{
 
             const floatType *dVelocityGradientTracedMassChangeRate;
 
-            const floatVector *directionVector;
+            const floatVector *unitDirectionVector;
 
-            const floatVector *dDirectionVectordMassChangeRateGradient;
+            const floatVector *dUnitDirectionVectordMassChangeRateGradient;
 
             if ( isPrevious ){
 
@@ -449,9 +449,9 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradientTrace = get_previousMassChangeVelocityGradientTrace( ) )
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDirectionVectordMassChangeRateGradient = get_dPreviousDirectionVectordPreviousMassChangeRateGradient( ) )
+                TARDIGRADE_ERROR_TOOLS_CATCH( dUnitDirectionVectordMassChangeRateGradient = get_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( ) )
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( directionVector = get_previousDirectionVector( ) )
+                TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_previousUnitDirectionVector( ) )
 
             }
             else{
@@ -462,9 +462,9 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradientTrace = get_massChangeVelocityGradientTrace( ) )
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dDirectionVectordMassChangeRateGradient = get_dDirectionVectordMassChangeRateGradient( ) )
+                TARDIGRADE_ERROR_TOOLS_CATCH( dUnitDirectionVectordMassChangeRateGradient = get_dUnitDirectionVectordMassChangeRateGradient( ) )
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( directionVector = get_directionVector( ) )
+                TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_unitDirectionVector( ) )
 
             }
 
@@ -482,7 +482,7 @@ namespace tardigradeHydra{
 
             floatType dadMassChangeRate = ( *dVelocityGradientTracedMassChangeRate ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
 
-            if ( tardigradeVectorTools::l2norm( *directionVector ) > 0.5 ){
+            if ( tardigradeVectorTools::l2norm( *unitDirectionVector ) > 0.5 ){
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
@@ -498,17 +498,17 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < dim; j++ ){
 
-                        velocityGradient[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *directionVector )[ i ] * ( *directionVector )[ j ];
+                        velocityGradient[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
-                        dVelocityGradientdDensity[ dim * i + j ] += dadDensity * ( *massDirectionMixingParameter ) * ( *directionVector )[ i ] * ( *directionVector )[ j ];
+                        dVelocityGradientdDensity[ dim * i + j ] += dadDensity * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
-                        dVelocityGradientdMassChangeRate[ dim * i + j ] += dadMassChangeRate * ( *massDirectionMixingParameter ) * ( *directionVector )[ i ] * ( *directionVector )[ j ];
+                        dVelocityGradientdMassChangeRate[ dim * i + j ] += dadMassChangeRate * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
                         for ( unsigned int k = 0; k < dim; k++ ){
 
                             dVelocityGradientdMassChangeRateGradient[ dim * dim * i + dim * j + k ]
-                                += a * ( *massDirectionMixingParameter ) * ( ( *dDirectionVectordMassChangeRateGradient )[ dim * i + k ] * ( *directionVector )[ j ]
-                                                                           + ( *directionVector )[ i ] * ( *dDirectionVectordMassChangeRateGradient )[ dim * j + k ] );
+                                += a * ( *massDirectionMixingParameter ) * ( ( *dUnitDirectionVectordMassChangeRateGradient )[ dim * i + k ] * ( *unitDirectionVector )[ j ]
+                                                                           + ( *unitDirectionVector )[ i ] * ( *dUnitDirectionVectordMassChangeRateGradient )[ dim * j + k ] );
 
                         }
 

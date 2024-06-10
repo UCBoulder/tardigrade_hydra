@@ -450,7 +450,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradientTrace ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_directionVector ){
+BOOST_AUTO_TEST_CASE( test_residual_unitDirectionVector ){
 
     class residualMock : public tardigradeHydra::massChange::residual {
 
@@ -554,17 +554,17 @@ BOOST_AUTO_TEST_CASE( test_residual_directionVector ){
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    Rgrad.get_dDirectionVectordMassChangeRateGradient( );
+    Rgrad.get_dUnitDirectionVectordMassChangeRateGradient( );
 
-    Rgrad.get_dPreviousDirectionVectordPreviousMassChangeRateGradient( );
+    Rgrad.get_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.get_directionVector( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.get_unitDirectionVector( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *R.get_previousDirectionVector( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *R.get_previousUnitDirectionVector( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rgrad.get_directionVector( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rgrad.get_unitDirectionVector( ) ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *Rgrad.get_previousDirectionVector( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *Rgrad.get_previousUnitDirectionVector( ) ) );
 
     floatType eps = 1e-6;
 
@@ -598,9 +598,9 @@ BOOST_AUTO_TEST_CASE( test_residual_directionVector ){
 
         residualMock Rm( &hydram, 9, 1, hydra.massChangeParameters );
 
-        floatVector vp = *Rp.get_directionVector( );
+        floatVector vp = *Rp.get_unitDirectionVector( );
 
-        floatVector vm = *Rm.get_directionVector( );
+        floatVector vm = *Rm.get_unitDirectionVector( );
 
         for ( unsigned int j = 0; j < 3; j++ ){
 
@@ -610,7 +610,7 @@ BOOST_AUTO_TEST_CASE( test_residual_directionVector ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDdGradC, *R.get_dDirectionVectordMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDdGradC, *R.get_dUnitDirectionVectordMassChangeRateGradient( ) ) );
 
     for ( unsigned int i = 0; i < 3; i++ ){
 
@@ -636,9 +636,9 @@ BOOST_AUTO_TEST_CASE( test_residual_directionVector ){
 
         residualMock Rm( &hydram, 9, 1, hydra.massChangeParameters );
 
-        floatVector vp = *Rp.get_previousDirectionVector( );
+        floatVector vp = *Rp.get_previousUnitDirectionVector( );
 
-        floatVector vm = *Rm.get_previousDirectionVector( );
+        floatVector vm = *Rm.get_previousUnitDirectionVector( );
 
         for ( unsigned int j = 0; j < 3; j++ ){
 
@@ -648,7 +648,7 @@ BOOST_AUTO_TEST_CASE( test_residual_directionVector ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDdPreviousGradC, *R.get_dPreviousDirectionVectordPreviousMassChangeRateGradient( ) ) );
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDdPreviousGradC, *R.get_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( ) ) );
 
 }
 
@@ -672,9 +672,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_1 ){
 
             floatType previousdtrLdC = 0.456;
 
-            floatVector directionVector = { 0.2, 0.3, 0.4 };
+            floatVector unitDirectionVector = { 0.2, 0.3, 0.4 };
 
-            floatVector previousDirectionVector = { -0.1, 0.4, 0.30 };
+            floatVector previousUnitDirectionVector = { -0.1, 0.4, 0.30 };
 
             floatVector dDdGradC = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -697,31 +697,31 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_1 ){
 
             }
 
-            virtual void setDirectionVector( const bool &isPrevious ) override{
+            virtual void setUnitDirectionVector( const bool &isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    set_previousDirectionVector( previousDirectionVector );
+                    set_previousUnitDirectionVector( previousUnitDirectionVector );
 
                 }
                 else{
 
-                    set_directionVector( directionVector );
+                    set_unitDirectionVector( unitDirectionVector );
 
                 }
 
             }
 
-            virtual void setDirectionVectorDerivatives( const bool &isPrevious ) override{
+            virtual void setUnitDirectionVectorDerivatives( const bool &isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    set_dPreviousDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
+                    set_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
 
                 }
                 else{
 
-                    set_dDirectionVectordMassChangeRateGradient( dDdGradC );
+                    set_dUnitDirectionVectordMassChangeRateGradient( dDdGradC );
 
                 }
 
@@ -878,9 +878,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_2 ){
 
             floatType previousdtrLdC = 0.456;
 
-            floatVector directionVector = { 0.2, 0.3, 0.1 };
+            floatVector unitDirectionVector = { 0.2, 0.3, 0.1 };
 
-            floatVector previousDirectionVector = { -0.1, 0.4, 0.30 };
+            floatVector previousUnitDirectionVector = { -0.1, 0.4, 0.30 };
 
             floatVector dDdGradC = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -903,31 +903,31 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_2 ){
 
             }
 
-            virtual void setDirectionVector( const bool &isPrevious ) override{
+            virtual void setUnitDirectionVector( const bool &isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    set_previousDirectionVector( previousDirectionVector );
+                    set_previousUnitDirectionVector( previousUnitDirectionVector );
 
                 }
                 else{
 
-                    set_directionVector( directionVector );
+                    set_unitDirectionVector( unitDirectionVector );
 
                 }
 
             }
 
-            virtual void setDirectionVectorDerivatives( const bool &isPrevious ) override{
+            virtual void setUnitDirectionVectorDerivatives( const bool &isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    set_dPreviousDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
+                    set_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
 
                 }
                 else{
 
-                    set_dDirectionVectordMassChangeRateGradient( dDdGradC );
+                    set_dUnitDirectionVectordMassChangeRateGradient( dDdGradC );
 
                 }
 
@@ -1094,9 +1094,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_3 ){
 
             floatType previousdtrLdC = 0.456;
 
-            floatVector directionVector = { 0.2, 0.3, 0.4 };
+            floatVector unitDirectionVector = { 0.2, 0.3, 0.4 };
 
-            floatVector previousDirectionVector = { -0.1, 0.1, 0.30 };
+            floatVector previousUnitDirectionVector = { -0.1, 0.1, 0.30 };
 
             floatVector dDdGradC = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -1119,31 +1119,31 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_3 ){
 
             }
 
-            virtual void setDirectionVector( const bool &isPrevious ) override{
+            virtual void setUnitDirectionVector( const bool &isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    set_previousDirectionVector( previousDirectionVector );
+                    set_previousUnitDirectionVector( previousUnitDirectionVector );
 
                 }
                 else{
 
-                    set_directionVector( directionVector );
+                    set_unitDirectionVector( unitDirectionVector );
 
                 }
 
             }
 
-            virtual void setDirectionVectorDerivatives( const bool &isPrevious ) override{
+            virtual void setUnitDirectionVectorDerivatives( const bool &isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    set_dPreviousDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
+                    set_dPreviousUnitDirectionVectordPreviousMassChangeRateGradient( previousdDdGradC );
 
                 }
                 else{
 
-                    set_dDirectionVectordMassChangeRateGradient( dDdGradC );
+                    set_dUnitDirectionVectordMassChangeRateGradient( dDdGradC );
 
                 }
 
