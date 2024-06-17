@@ -19,6 +19,7 @@ New Features
 - Added storage for the derivative of the residual w.r.t. the additional dof (:pull:`104`). By `Nathan Miller`_.
 - Added the ability to initialize the unknown vector (:pull:`109`). By `Nathan Miller`_.
 - Added function that returns the size of the unknown vector (:pull:`109`). By `Nathan Miller`_.
+- Generalized the mass-change evolution residual to not be just the mass change rate (:pull:`113`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
@@ -49,6 +50,7 @@ Internal Changes
 - Replaced queries to getUnknownVector purely to get the size of the vector (:pull:`109`). By `Nathan Miller`_.
 - Added a better guess for the mass-change residual to improve convergence (:pull:`110`). By `Nathan Miller`_.
 - Replaced the trapezoidal evolveF with the exponential map version (:pull:`111`). By `Nathan Miller`_.
+- Rolled back exponential integrator for micromorphic (:pull:`114`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
