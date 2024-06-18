@@ -176,17 +176,17 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
 
     floatVector previousMassChangeRateAnswer = { 0.36, 0.47, 0.58 };
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0.11, *R.get_density( ) ) );
+    BOOST_TEST( 0.11 == *R.get_density( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0.22, *R.get_massChangeRate( ) ) );
+    BOOST_TEST( 0.22 == *R.get_massChangeRate( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( massChangeRateAnswer, *R.get_directionVector( ) ) );
+    BOOST_TEST( massChangeRateAnswer == *R.get_directionVector( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0.12, *R.get_previousDensity( ) ) );
+    BOOST_TEST( 0.12 == *R.get_previousDensity( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0.23, *R.get_previousMassChangeRate( ) ) );
+    BOOST_TEST( 0.23 == *R.get_previousMassChangeRate( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousMassChangeRateAnswer, *R.get_previousDirectionVector( ) ) );
+    BOOST_TEST( previousMassChangeRateAnswer == *R.get_previousDirectionVector( ), CHECK_PER_ELEMENT );
 
 }
 
