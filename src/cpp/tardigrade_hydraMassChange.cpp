@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraMassChange.h
+  * \file tardigrade_hydraMassChange.cpp
   ******************************************************************************
   * An implementation of the mass-change residual. Used as the basis for more
   * complex models.
