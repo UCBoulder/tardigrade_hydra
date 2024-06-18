@@ -61,6 +61,7 @@ Bug Fixes
 - Corrected issue where libxsmm is not being used but was still required to be installed (:pull:`93`). By `Nathan Miller`_.
 - Residuals setting initial guesses now force a reset of the current configurations (:pull:`110`). By `Nathan Miller`_.
 - Direction vectors of length zero are now handled correctly (:pull:`116`). By `Nathan Miller`_.
+- Removed extra whitespace in add_library from CMakeLists file (:pull:`120`). By `Nathan Miller`_.
 
 ******************
 0.4.1 (01-24-2024)
