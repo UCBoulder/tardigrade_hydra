@@ -51,6 +51,8 @@ Internal Changes
 - Added a better guess for the mass-change residual to improve convergence (:pull:`110`). By `Nathan Miller`_.
 - Replaced the trapezoidal evolveF with the exponential map version (:pull:`111`). By `Nathan Miller`_.
 - Rolled back exponential integrator for micromorphic (:pull:`114`). By `Nathan Miller`_.
+- Added test for a fully directional integration where we know the answer (:pull:`116`). By `Nathan Miller`_.
+- Added test for a fully spherical integration where we know the answer (:pull:`117`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
