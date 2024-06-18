@@ -652,6 +652,132 @@ BOOST_AUTO_TEST_CASE( test_residual_unitDirectionVector ){
 
 }
 
+BOOST_AUTO_TEST_CASE( test_residual_unitDirectionVector2 ){
+
+    class residualMock : public tardigradeHydra::massChange::residual {
+
+        public:
+
+            using tardigradeHydra::massChange::residual::residual;
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            floatVector elasticityParameters = { 123.4, 56.7 };
+
+            floatVector massChangeParameters = { 0.78 };
+
+            tardigradeHydra::linearElasticity::residual elasticity;
+
+            residualMock massChange;
+
+            tardigradeHydra::residualBase remainder;
+
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+
+            }
+
+        private:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+
+                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+
+                massChange = residualMock( this, 9, 1, massChangeParameters );
+
+                remainder = tardigradeHydra::residualBase( this, 3 );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &massChange;
+
+                residuals[ 2 ] = &remainder;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector additionalDOF = { 0.11, 0.22, 0.0, 0.0, 0.0 };
+
+    floatVector previousAdditionalDOF = { 0.12, 0.23, 0.0, 0.0, 0.0 };
+
+    floatVector previousStateVariables = { 1, 2, 3, 4, 5, 6, 7, 8, 9, -1, -2, -3 };
+
+    floatVector parameters = { 123.4, 56.7, 0.78 };
+
+    floatVector unknownVector = { 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                  2, 2, 2, 2, 2, 2, 2, 2, 2,
+                                  3, 4, 5 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 3;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         additionalDOF, previousAdditionalDOF,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    floatVector answer = { 0.0, 0.0, 0.0 };
+
+    floatVector previousAnswer = { 0.0, 0.0, 0.0 };
+
+    residualMock R( &hydra, 9, 1, hydra.massChangeParameters );
+
+    residualMock Rgrad( &hydra, 9, 1, hydra.massChangeParameters );
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
+    Rgrad.get_dUnitDirectionVectordDirectionVector( );
+
+    Rgrad.get_dPreviousUnitDirectionVectordPreviousDirectionVector( );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.get_unitDirectionVector( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *R.get_previousUnitDirectionVector( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *Rgrad.get_unitDirectionVector( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *Rgrad.get_previousUnitDirectionVector( ) ) );
+
+    floatVector dDdGradC( 9, 0 );
+
+    floatVector dPreviousDdPreviousGradC( 9, 0 );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dDdGradC, *R.get_dUnitDirectionVectordDirectionVector( ) ) );
+
+    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dPreviousDdPreviousGradC, *R.get_dPreviousUnitDirectionVectordPreviousDirectionVector( ) ) );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_1 ){
 
     class residualMock : public tardigradeHydra::massChange::residual {
@@ -5062,3 +5188,101 @@ BOOST_AUTO_TEST_CASE( test_residual_suggestInitialIterateValues ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( values, result_2 ) );
 
 }
+
+//BOOST_AUTO_TEST_CASE( test_residual_expectedDeformation ){
+//
+//    std::cout << "in test_residual_expectedDeformation\n";
+//
+//    class residualMock : public tardigradeHydra::massChange::residual {
+//
+//        public:
+//
+//            using tardigradeHydra::massChange::residual::residual;
+//
+//    };
+//
+//    class hydraBaseMock : public tardigradeHydra::hydraBase {
+//
+//        public:
+//
+//            using tardigradeHydra::hydraBase::hydraBase;
+//
+//            floatVector elasticityParameters = { 123.4, 56.7 };
+//
+//            floatVector massChangeParameters = { 0.78 };
+//
+//            tardigradeHydra::linearElasticity::residual elasticity;
+//
+//            residualMock massChange;
+//
+//            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+//
+//                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+//
+//            }
+//
+//        private:
+//
+//            virtual void setResidualClasses( ){
+//
+//                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+//
+//                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+//
+//                massChange = residualMock( this, 9, 1, massChangeParameters, 1.0 );
+//
+//                residuals[ 0 ] = &elasticity;
+//
+//                residuals[ 1 ] = &massChange;
+//
+//                setResidualClasses( residuals );
+//
+//            }
+//
+//    };
+//
+//    floatType time = 1.0;
+//
+//    floatType deltaTime = 1.0;
+//
+//    floatType temperature = 300.0;
+//
+//    floatType previousTemperature = 320.4;
+//
+//    floatVector deformationGradient = { 1.1, 0.0, 0.0,
+//                                        0.0, 1.0, 0.0,
+//                                        0.0, 0.0, 1.0 };
+//
+//    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+//                                                0.0, 1.0, 0.0,
+//                                                0.0, 0.0, 1.0 };
+//
+//    floatVector additionalDOF = { 1.00, -0.50, .1, 0, 0 };
+//
+//    floatVector previousAdditionalDOF = { 1.00, -0.00, 0.00, 0.00, 0.00 };
+//
+//    floatVector previousStateVariables = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+//
+//    floatVector parameters = { 123.4, 56.7, 1.00 };
+//
+//    unsigned int numConfigurations = 2;
+//
+//    unsigned int numNonLinearSolveStateVariables = 0;
+//
+//    unsigned int dimension = 3;
+//
+//    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+//                         additionalDOF, previousAdditionalDOF,
+//                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+//
+//    floatVector dStressdF( 9 * 9, 0 );
+//
+//    floatVector dStressdT(     9, 0 );
+//
+//    floatVector dStressdAdditionalDOF( 5 * 9, 0 );
+//
+//    hydra.evaluate( );
+//
+//    std::cout << "X: "; tardigradeVectorTools::print( *hydra.getUnknownVector( ) );
+//
+//}

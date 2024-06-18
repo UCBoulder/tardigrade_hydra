@@ -57,6 +57,7 @@ Bug Fixes
 - Corrected bug where the plastic state variable integration parameter was one minus the expected value (:pull:`71`). By `Nathan Miller`_.
 - Corrected issue where libxsmm is not being used but was still required to be installed (:pull:`93`). By `Nathan Miller`_.
 - Residuals setting initial guesses now force a reset of the current configurations (:pull:`110`). By `Nathan Miller`_.
+- Direction vectors of length zero are now handled correctly (:pull:`116`). By `Nathan Miller`_.
 
 ******************
 0.4.1 (01-24-2024)
