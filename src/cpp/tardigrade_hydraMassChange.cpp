@@ -213,7 +213,7 @@ namespace tardigradeHydra{
 
             floatVector unitDirectionVector( dim, 0 );
 
-            if ( std::isfinite( normDirectionVector ) ){
+            if ( std::isfinite( 1. / normDirectionVector ) ){
 
                 unitDirectionVector = ( *directionVector ) / normDirectionVector;
 
@@ -280,7 +280,7 @@ namespace tardigradeHydra{
 
             floatVector dUnitDirectionVectordDirectionVector( sot_dim, 0 );
 
-            if ( std::isfinite( normDirectionVector ) ){
+            if ( std::isfinite( 1. / normDirectionVector ) ){
 
                 unitDirectionVector = ( *directionVector ) / normDirectionVector;
 
