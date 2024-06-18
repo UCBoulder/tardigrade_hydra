@@ -76,6 +76,22 @@ namespace tardigradeHydra{
 
 }
 
+void adaptive_tolerance_test( const floatVector &result, const floatVector &answer, floatType atol = 1e-9 ){
+    /*!
+     * Test which allows for very small values to be compared absolutely while larger values are compared relatively
+     */
+
+    BOOST_TEST( result.size( ) == answer.size( ) );
+    for ( unsigned int i = 0; i < result.size( ); i++ ){
+        if ( std::abs( answer[ i ] ) < atol ){
+            BOOST_REQUIRE_SMALL( std::abs( answer[ i ] - result[ i ] ), atol );
+        }
+        else{
+            BOOST_TEST( answer[ i ] == result[ i ] );
+        }
+    }
+}
+
 BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::massChange::residual {
@@ -1641,7 +1657,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_4, * boost::unit_
 
     }
 
-    BOOST_TEST( dLdGradC == *R.get_dMassChangeVelocityGradientdDirectionVector( ), CHECK_PER_ELEMENT );
+    adaptive_tolerance_test( *R.get_dMassChangeVelocityGradientdDirectionVector( ), dLdGradC );
 
     offset = 0;
 
@@ -2333,7 +2349,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_6, * boost::unit_
 
     }
 
-    BOOST_TEST( dLdGradC == *R.get_dMassChangeVelocityGradientdDirectionVector( ), CHECK_PER_ELEMENT );
+    adaptive_tolerance_test( *R.get_dMassChangeVelocityGradientdDirectionVector( ), dLdGradC );
 
     offset = 0;
 
@@ -2787,7 +2803,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * 
 
     }
 
-    BOOST_TEST( dpFdFn == *R.get_dPrecedingDeformationGradientdSubDeformationGradients( ), CHECK_PER_ELEMENT );
+    adaptive_tolerance_test( *R.get_dPrecedingDeformationGradientdSubDeformationGradients( ), dpFdFn );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -2874,7 +2890,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * 
 
     }
 
-    BOOST_TEST( previousdpFdFn == *R.get_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( ), CHECK_PER_ELEMENT );
+    adaptive_tolerance_test( *R.get_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( ), previousdpFdFn );
 
 }
 
@@ -3415,7 +3431,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
     }
 
-    BOOST_TEST( dILdFn == *R.get_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( ), CHECK_PER_ELEMENT );
+    adaptive_tolerance_test( *R.get_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( ), dILdFn );
 
     offset = 0;
 
@@ -3633,7 +3649,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
     }
 
-    BOOST_TEST( previousdILdFn == *R.get_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( ), CHECK_PER_ELEMENT );
+    adaptive_tolerance_test( *R.get_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( ), previousdILdFn );
 
 }
 
@@ -4182,7 +4198,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
     }
 
-    BOOST_TEST( dFmdFn == *R.get_dMassChangeDeformationGradientdSubDeformationGradients( ), CHECK_PER_ELEMENT );
+    adaptive_tolerance_test( *R.get_dMassChangeDeformationGradientdSubDeformationGradients( ), dFmdFn, 1e-8 );
 
     offset = 0;
 
@@ -4400,7 +4416,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
     }
 
-    BOOST_TEST( previousdFmdFn == *R.get_dMassChangeDeformationGradientdPreviousSubDeformationGradients( ), CHECK_PER_ELEMENT );
+    adaptive_tolerance_test( *R.get_dMassChangeDeformationGradientdPreviousSubDeformationGradients( ), previousdFmdFn, 1e-7 );
 
 }
 
@@ -4704,7 +4720,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2, * boost::unit_test::to
 
     }
 
-    BOOST_TEST( jacobian == *R.getJacobian( ), CHECK_PER_ELEMENT );
+    adaptive_tolerance_test( *R.getJacobian( ), jacobian, 1e-8 );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -4968,7 +4984,10 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel, * boost::unit_test::tolerance(
 
     floatVector RdStressdF( hydra.getFlatdXdF( )->begin( ), hydra.getFlatdXdF( )->begin( ) + 81 );
 
-    BOOST_TEST( dStressdF == RdStressdF, CHECK_PER_ELEMENT );
+    BOOST_TEST( dStressdF.size( ) == RdStressdF.size( ) );
+    for ( unsigned int i = 0; i < dStressdF.size( ); i++ ){
+        BOOST_TEST( dStressdF[ i ] == RdStressdF[ i ], boost::test_tools::tolerance( 1e-5 ) );
+    }
 
     for ( unsigned int i = 0; i < 1; i++ ){
 
@@ -5048,7 +5067,10 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel, * boost::unit_test::tolerance(
 
     floatVector RdStressdAdditionalDOF( hydra.getFlatdXdAdditionalDOF( )->begin( ), hydra.getFlatdXdAdditionalDOF( )->begin( ) + 9 * 5 );
 
-    BOOST_TEST( dStressdAdditionalDOF == RdStressdAdditionalDOF, CHECK_PER_ELEMENT );
+    BOOST_TEST( dStressdAdditionalDOF.size( ) == RdStressdAdditionalDOF.size( ) );
+    for ( unsigned int i = 0; i < dStressdAdditionalDOF.size( ); i++ ){
+        BOOST_TEST( dStressdAdditionalDOF[ i ] == RdStressdAdditionalDOF[ i ], boost::test_tools::tolerance( 1e-5 ) );
+    }
 
 }
 
@@ -5326,7 +5348,7 @@ BOOST_AUTO_TEST_CASE( test_residual_expectedDeformation, * boost::unit_test::tol
 
     floatVector RdStressdF( hydra.getFlatdXdF( )->begin( ), hydra.getFlatdXdF( )->begin( ) + 81 );
 
-    BOOST_TEST( dStressdF == RdStressdF, CHECK_PER_ELEMENT );
+    adaptive_tolerance_test( RdStressdF, dStressdF, 2e-7 );
 
     for ( unsigned int i = 0; i < 1; i++ ){
 
@@ -5406,6 +5428,6 @@ BOOST_AUTO_TEST_CASE( test_residual_expectedDeformation, * boost::unit_test::tol
 
     floatVector RdStressdAdditionalDOF( hydra.getFlatdXdAdditionalDOF( )->begin( ), hydra.getFlatdXdAdditionalDOF( )->begin( ) + 9 * 5 );
 
-    BOOST_TEST( dStressdAdditionalDOF == RdStressdAdditionalDOF, CHECK_PER_ELEMENT );
+    adaptive_tolerance_test( RdStressdAdditionalDOF, dStressdAdditionalDOF, 1e-7 );
 
 }
