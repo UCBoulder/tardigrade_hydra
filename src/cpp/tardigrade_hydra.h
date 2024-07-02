@@ -966,6 +966,8 @@ namespace tardigradeHydra{
 
             void solveNonLinearProblem( );
 
+            void solveNewtonUpdate( floatVector &X_tr );
+
             void setTolerance( const floatVector &tolerance );
 
             void incrementIteration( ){ _iteration++; }

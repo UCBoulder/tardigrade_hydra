@@ -1420,6 +1420,62 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::solveNewtonUpdate( floatVector &deltaX_tr ){
+        /*!
+         * Solve the Newton update returning the trial value of the unknown vector
+         *
+         * \param &deltaX_tr: The trial change in the unknown vector
+         */
+
+        unsigned int rank;
+
+        Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX_tr.data( ), getNumUnknowns( ) );
+
+        tardigradeVectorTools::solverType< floatType > linearSolver;
+
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( getFlatJacobian( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+
+        Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getResidual( )->data( ), getNumUnknowns( ) );
+
+        if ( *getUsePreconditioner( ) ){
+
+            if( *getPreconditionerIsDiagonal( ) ){
+
+                Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
+
+                linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
+
+                dx_map = -linearSolver.solve( p_map.asDiagonal( ) * R_map );
+
+            }
+            else{
+
+                Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+
+                linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
+
+                dx_map = -linearSolver.solve( p_map * R_map );
+
+            }
+
+        }
+        else{
+
+            linearSolver = tardigradeVectorTools::solverType< floatType >( J_map );
+            dx_map = -linearSolver.solve( R_map );
+
+        }
+
+        rank = linearSolver.rank( );
+
+        if ( rank != getResidual( )->size( ) ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
+
+        }
+
+    }
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
@@ -1428,11 +1484,7 @@ namespace tardigradeHydra{
         // Form the initial unknown vector
         TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
 
-        unsigned int rank;
-
         floatVector deltaX( getNumUnknowns( ), 0 );
-
-        Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX.data( ), getUnknownVector( )->size( ) );
 
         resetLSIteration( );
 
@@ -1440,48 +1492,7 @@ namespace tardigradeHydra{
 
             floatVector X0 = *getUnknownVector( );
 
-            tardigradeVectorTools::solverType< floatType > linearSolver;
-
-            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( getFlatJacobian( )->data( ), X0.size( ), X0.size( ) );
-
-            Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getResidual( )->data( ), X0.size( ) );
-
-            if ( *getUsePreconditioner( ) ){
-
-                if( *getPreconditionerIsDiagonal( ) ){
-
-                    Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), X0.size( ) );
-
-                    linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
-
-                    dx_map = -linearSolver.solve( p_map.asDiagonal( ) * R_map );
-
-                }
-                else{
-
-                    Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), X0.size( ), X0.size( ) );
-
-                    linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
-
-                    dx_map = -linearSolver.solve( p_map * R_map );
-
-                }
-
-            }
-            else{
-
-                linearSolver = tardigradeVectorTools::solverType< floatType >( J_map );
-                dx_map = -linearSolver.solve( R_map );
-
-            }
-
-            rank = linearSolver.rank( );
-
-            if ( rank != getResidual( )->size( ) ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
-
-            }
+            solveNewtonUpdate( deltaX );
 
             updateUnknownVector( X0 + *getLambda( ) * deltaX );
 
