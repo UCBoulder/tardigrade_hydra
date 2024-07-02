@@ -714,6 +714,10 @@ namespace tardigradeHydra{
 
             const floatVector* getFlatJacobian( );
 
+            virtual const floatVector* getFlatNonlinearLHS( );
+
+            virtual const floatVector* getNonlinearRHS( );
+
             const floatVector* getFlatPreconditioner( );
 
             floatMatrix getJacobian( );
@@ -966,7 +970,9 @@ namespace tardigradeHydra{
 
             void solveNonLinearProblem( );
 
-            void solveNewtonUpdate( floatVector &X_tr );
+            void performPreconditionedSolve( floatVector &deltaX_tr );
+
+            void solveNewtonUpdate( floatVector &deltaX_tr );
 
             void setTolerance( const floatVector &tolerance );
 

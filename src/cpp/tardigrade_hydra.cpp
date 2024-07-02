@@ -999,8 +999,8 @@ namespace tardigradeHydra{
         // Find the absolute maximum value in each row
         for ( unsigned int i = 0; i < problem_size; i++ ){
 
-            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( getFlatJacobian( )->begin( ) + problem_size * i,
-                                                                                      getFlatJacobian( )->begin( ) + problem_size * ( i + 1 ),
+            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( getFlatNonlinearLHS( )->begin( ) + problem_size * i,
+                                                                                      getFlatNonlinearLHS( )->begin( ) + problem_size * ( i + 1 ),
                                                                                       [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
 
         }
@@ -1034,6 +1034,24 @@ namespace tardigradeHydra{
         }
 
         return &_jacobian.second;
+
+    }
+
+    const floatVector* hydraBase::getNonlinearRHS( ){
+        /*!
+         * Get the RHS vector for the non-linear problem
+         */
+
+        return getResidual( );
+
+    }
+
+    const floatVector* hydraBase::getFlatNonlinearLHS( ){
+        /*!
+         * Get the flat LHS matrix for the non-linear problem
+         */
+
+        return getFlatJacobian( );
 
     }
 
@@ -1420,6 +1438,50 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::performPreconditionedSolve( floatVector &deltaX_tr ){
+        /*!
+         * Perform a pre-conditioned solve
+         *
+         * \param &deltaX_tr: The trial chcange in the unknown vector
+         */
+
+        tardigradeVectorTools::solverType< floatType > linearSolver;
+
+        Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX_tr.data( ), getNumUnknowns( ) );
+
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+
+        Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
+
+        if( *getPreconditionerIsDiagonal( ) ){
+
+            Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
+
+            linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
+
+            dx_map = -linearSolver.solve( p_map.asDiagonal( ) * R_map );
+
+        }
+        else{
+
+            Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+
+            linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
+
+            dx_map = -linearSolver.solve( p_map * R_map );
+
+        }
+
+        unsigned int rank = linearSolver.rank( );
+
+        if ( rank != getResidual( )->size( ) ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
+
+        }
+
+    }
+
     void hydraBase::solveNewtonUpdate( floatVector &deltaX_tr ){
         /*!
          * Solve the Newton update returning the trial value of the unknown vector
@@ -1427,50 +1489,29 @@ namespace tardigradeHydra{
          * \param &deltaX_tr: The trial change in the unknown vector
          */
 
-        unsigned int rank;
-
-        Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX_tr.data( ), getNumUnknowns( ) );
-
-        tardigradeVectorTools::solverType< floatType > linearSolver;
-
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( getFlatJacobian( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
-
-        Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getResidual( )->data( ), getNumUnknowns( ) );
-
         if ( *getUsePreconditioner( ) ){
 
-            if( *getPreconditionerIsDiagonal( ) ){
-
-                Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
-
-                linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
-
-                dx_map = -linearSolver.solve( p_map.asDiagonal( ) * R_map );
-
-            }
-            else{
-
-                Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
-
-                linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
-
-                dx_map = -linearSolver.solve( p_map * R_map );
-
-            }
+            performPreconditionedSolve( deltaX_tr );
 
         }
         else{
 
-            linearSolver = tardigradeVectorTools::solverType< floatType >( J_map );
+            Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX_tr.data( ), getNumUnknowns( ) );
+
+            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+
+            Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
+
+            tardigradeVectorTools::solverType< floatType > linearSolver( J_map );
             dx_map = -linearSolver.solve( R_map );
 
-        }
+            unsigned int rank = linearSolver.rank( );
 
-        rank = linearSolver.rank( );
+            if ( rank != getResidual( )->size( ) ){
 
-        if ( rank != getResidual( )->size( ) ){
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
+            }
 
         }
 

@@ -54,6 +54,8 @@ Internal Changes
 - Added test for a fully directional integration where we know the answer (:pull:`117`). By `Nathan Miller`_.
 - Added test for a fully spherical integration where we know the answer (:pull:`118`). By `Nathan Miller`_.
 - Added test for when the mass-change rate is zero (:pull:`119`). By `Nathan Miller`_.
+- Moved the Newton solve to its own function (:pull:`121`). By `Nathan Miller`_.
+- Moved the preconditioned Newton solve to its own function (:pull:`122`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
