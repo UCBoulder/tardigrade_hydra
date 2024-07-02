@@ -56,6 +56,7 @@ Internal Changes
 - Added test for when the mass-change rate is zero (:pull:`119`). By `Nathan Miller`_.
 - Moved the Newton solve to its own function (:pull:`121`). By `Nathan Miller`_.
 - Moved the preconditioned Newton solve to its own function (:pull:`122`). By `Nathan Miller`_.
+- Changed the function calls for the Newton solve to a more general LHS and RHS form (:pull:`122`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
