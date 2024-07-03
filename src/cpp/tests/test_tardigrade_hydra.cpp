@@ -2258,7 +2258,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setJacobian, * boost::unit_test::toleran
 
     residualBaseMock residual( &hydra, numEquations );
 
-    BOOST_TEST( *residual.getJacobian( ) ==residual.jacobian, CHECK_PER_ELEMENT );
+    BOOST_TEST( *residual.getJacobian( ) == residual.jacobian, CHECK_PER_ELEMENT );
 
 }
 
@@ -4231,7 +4231,7 @@ BOOST_AUTO_TEST_CASE( test_getConfiguration, * boost::unit_test::tolerance( DEFA
 
 }
 
-BOOST_AUTO_TEST_CASE( test_computeTangents, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_computeTangents, * boost::unit_test::tolerance( 2e-6 ) ){
     /*!
      * Boost test of the get-configuration command
      */
