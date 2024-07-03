@@ -532,7 +532,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives, * 
 
     floatType eps = 1e-6;
 
-    floatMatrix dThermalGreenLagrangeStraindF( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
+    floatVector dThermalGreenLagrangeStraindF( deformationGradient.size( ) * deformationGradient.size( ), 0 );
 
     floatVector dThermalGreenLagrangeStraindT( deformationGradient.size( ), 0 );
 
@@ -557,7 +557,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives, * 
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dThermalGreenLagrangeStraindF[ j ][ i ] = ( ( *Rp.get_thermalGreenLagrangeStrain( ) )[ j ] - ( *Rm.get_thermalGreenLagrangeStrain( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            dThermalGreenLagrangeStraindF[ deformationGradient.size( ) * j + i ] = ( ( *Rp.get_thermalGreenLagrangeStrain( ) )[ j ] - ( *Rm.get_thermalGreenLagrangeStrain( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -590,7 +590,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives, * 
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dThermalGreenLagrangeStraindF ) == floatVector( 9 * 9, 0 ), CHECK_PER_ELEMENT );
+    BOOST_TEST( dThermalGreenLagrangeStraindF == floatVector( 9 * 9, 0 ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( dThermalGreenLagrangeStraindT == *R.get_dThermalGreenLagrangeStraindT( ), CHECK_PER_ELEMENT );
 
@@ -820,7 +820,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives, * 
 
     floatType eps = 1e-6;
 
-    floatMatrix dThermalDeformationGradientdF( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
+    floatVector dThermalDeformationGradientdF( deformationGradient.size( ) * deformationGradient.size( ), 0 );
 
     floatVector dThermalDeformationGradientdT( deformationGradient.size( ), 0 );
 
@@ -845,7 +845,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives, * 
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dThermalDeformationGradientdF[ j ][ i ] = ( ( *Rp.get_thermalDeformationGradient( ) )[ j ] - ( *Rm.get_thermalDeformationGradient( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            dThermalDeformationGradientdF[ deformationGradient.size( ) * j + i ] = ( ( *Rp.get_thermalDeformationGradient( ) )[ j ] - ( *Rm.get_thermalDeformationGradient( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -878,7 +878,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives, * 
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dThermalDeformationGradientdF ) == floatVector( 81, 0 ), CHECK_PER_ELEMENT );
+    BOOST_TEST( dThermalDeformationGradientdF == floatVector( 81, 0 ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( dThermalDeformationGradientdT == *R.get_dThermalDeformationGradientdT( ), CHECK_PER_ELEMENT );
 
@@ -1092,9 +1092,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives, * boost::unit_test::
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    floatMatrix jacobian( deformationGradient.size( ), floatVector( unknownVector.size( ), 0 ) );
+    floatVector jacobian( deformationGradient.size( ) * unknownVector.size( ), 0 );
 
-    floatMatrix dRdF( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
+    floatVector dRdF( deformationGradient.size( ) * deformationGradient.size( ), 0 );
 
     floatVector dRdT( deformationGradient.size( ), 0 );
 
@@ -1124,7 +1124,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives, * boost::unit_test::
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            jacobian[ j ][ i ] = ( ( *Rp.getResidual( ) )[ j ] - ( *Rm.getResidual( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            jacobian[ unknownVector.size( ) * j + i ] = ( ( *Rp.getResidual( ) )[ j ] - ( *Rm.getResidual( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -1154,7 +1154,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives, * boost::unit_test::
 
         for ( unsigned int j = 0; j < deformationGradient.size( ); j++ ){
 
-            dRdF[ j ][ i ] = ( ( *Rp.getResidual( ) )[ j ] - ( *Rm.getResidual( ) )[ j ] ) / ( 2 * deltas[ i ] );
+            dRdF[ deformationGradient.size( ) * j + i ] = ( ( *Rp.getResidual( ) )[ j ] - ( *Rm.getResidual( ) )[ j ] ) / ( 2 * deltas[ i ] );
 
         }
 
@@ -1190,9 +1190,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives, * boost::unit_test::
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( jacobian ) == *R.getJacobian( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( jacobian == *R.getJacobian( ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dRdF ) == *R.getdRdF( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( dRdF == *R.getdRdF( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( dRdT == *R.getdRdT( ), CHECK_PER_ELEMENT );
 
