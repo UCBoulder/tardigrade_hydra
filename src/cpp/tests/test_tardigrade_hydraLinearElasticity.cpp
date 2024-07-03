@@ -176,13 +176,13 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameterVector, * boost::unit_test
 
     tardigradeHydra::linearElasticity::residual R( &hydra, 9, parameters );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( parameters[ 0 ], *R.getLambda( ) ) );
+    BOOST_TEST( parameters[ 0 ] == *R.getLambda( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( parameters[ 1 ], *R.getMu( ) ) );
+    BOOST_TEST( parameters[ 1 ] == *R.getMu( ) );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_setFe, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_residual_setFe, * boost::unit_test::tolerance( 1e-5 ) ){
 
     class hydraBaseMock : public tardigradeHydra::hydraBase{
 
@@ -262,13 +262,13 @@ BOOST_AUTO_TEST_CASE( test_residual_setFe, * boost::unit_test::tolerance( DEFAUL
 
     RJ.get_dFedF( );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( FeAnswer, *R.get_Fe( ) ) );
+    BOOST_TEST( FeAnswer == *R.get_Fe( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousFeAnswer, *R.get_previousFe( ) ) );
+    BOOST_TEST( previousFeAnswer == *R.get_previousFe( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( FeAnswer, *RJ.get_Fe( ) ) );
+    BOOST_TEST( FeAnswer == *RJ.get_Fe( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousFeAnswer, *RJ.get_previousFe( ) ) );
+    BOOST_TEST( previousFeAnswer == *RJ.get_previousFe( ), CHECK_PER_ELEMENT );
 
     //Test the Jacobians
     floatType eps = 1e-6;
@@ -303,7 +303,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setFe, * boost::unit_test::tolerance( DEFAUL
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jac ), *R.get_dFedF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( jac ) == *R.get_dFedF( ), CHECK_PER_ELEMENT );
 
     jac = floatMatrix( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
@@ -336,7 +336,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setFe, * boost::unit_test::tolerance( DEFAUL
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jac ), *R.get_previousdFedF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( jac ) == *R.get_previousdFedF( ), CHECK_PER_ELEMENT );
 
     jac = floatMatrix( deformationGradient.size( ), floatVector( previousStateVariables.size( ), 0 ) );
     for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
@@ -369,7 +369,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setFe, * boost::unit_test::tolerance( DEFAUL
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jac ), *R.get_dFedFn( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( jac ) == *R.get_dFedFn( ), CHECK_PER_ELEMENT );
 
     jac = floatMatrix( deformationGradient.size( ), floatVector( previousStateVariables.size( ), 0 ) );
     for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
@@ -402,7 +402,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setFe, * boost::unit_test::tolerance( DEFAUL
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jac ), *R.get_previousdFedFn( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( jac ) == *R.get_previousdFedFn( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -474,9 +474,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setEe, * boost::unit_test::tolerance( DEFAUL
 
     tardigradeHydra::linearElasticity::residual R( &hydra, 9, parameters );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( EeAnswer, *R.get_Ee( ) ) );
+    BOOST_TEST( EeAnswer == *R.get_Ee( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousEeAnswer, *R.get_previousEe( ) ) );
+    BOOST_TEST( previousEeAnswer == *R.get_previousEe( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -552,9 +552,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setdEedFe, * boost::unit_test::tolerance( DE
 
     tardigradeHydra::linearElasticity::residual R( &hydra, 9, parameters );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dEedFeAnswer ), *R.get_dEedFe( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dEedFeAnswer ) == *R.get_dEedFe( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdEedFeAnswer ), *R.get_previousdEedFe( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousdEedFeAnswer ) == *R.get_previousdEedFe( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -652,9 +652,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2Stress, * boost::unit_test::tolerance(
 
     residualMock R( &hydra, 9, parameters );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( PK2StressAnswer, *R.get_PK2Stress( ) ) );
+    BOOST_TEST( PK2StressAnswer == *R.get_PK2Stress( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( -PK2StressAnswer, *R.get_previousPK2Stress( ) ) );
+    BOOST_TEST( -PK2StressAnswer == *R.get_previousPK2Stress( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -778,7 +778,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdEe, * boost::unit_test::tolera
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dPK2StressdEe( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( gradient ) == *R.get_dPK2StressdEe( ), CHECK_PER_ELEMENT );
 
     gradient = floatMatrix( R.previousEe.size( ), floatVector( R.previousEe.size( ), 0 ) );
 
@@ -804,7 +804,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdEe, * boost::unit_test::tolera
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_previousdPK2StressdEe( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( gradient ) == *R.get_previousdPK2StressdEe( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -911,7 +911,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdFe, * boost::unit_test::tolera
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dPK2StressdFe( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( gradient ) == *R.get_dPK2StressdFe( ), CHECK_PER_ELEMENT );
 
     gradient = floatMatrix( deformationGradient.size( ), floatVector( deformationGradient.size( ), 0 ) );
 
@@ -942,7 +942,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdFe, * boost::unit_test::tolera
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_previousdPK2StressdFe( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( gradient ) == *R.get_previousdPK2StressdFe( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -1044,9 +1044,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setCauchyStress, * boost::unit_test::toleran
 
     residualMock R( &hydra, 9, parameters );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *R.get_cauchyStress( ) ) );
+    BOOST_TEST( cauchyStressAnswer == *R.get_cauchyStress( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousCauchyStressAnswer, *R.get_previousCauchyStress( ) ) );
+    BOOST_TEST( previousCauchyStressAnswer == *R.get_previousCauchyStress( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -1148,9 +1148,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setStress, * boost::unit_test::tolerance( DE
 
     residualMock R( &hydra, 9, parameters );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( cauchyStressAnswer, *R.getStress( ) ) );
+    BOOST_TEST( cauchyStressAnswer == *R.getStress( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousCauchyStressAnswer, *R.getPreviousStress( ) ) );
+    BOOST_TEST( previousCauchyStressAnswer == *R.getPreviousStress( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -1272,7 +1272,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdPK2Stress, * boost::unit_te
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dCauchyStressdPK2Stress( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( gradient ) == *R.get_dCauchyStressdPK2Stress( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -1366,7 +1366,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdF, * boost::unit_test::tole
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dCauchyStressdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( gradient ) == *R.get_dCauchyStressdF( ), CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -1394,7 +1394,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdF, * boost::unit_test::tole
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dCauchyStressdPreviousF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( gradient ) == *R.get_dCauchyStressdPreviousF( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -1555,7 +1555,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn2, * boost::unit_test::to
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dCauchyStressdFn( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( gradient ) == *R.get_dCauchyStressdFn( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -1658,7 +1658,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn3, * boost::unit_test::to
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.get_dCauchyStressdPreviousFn( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( gradient ) == *R.get_dCauchyStressdPreviousFn( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -1731,7 +1731,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual, * boost::unit_test::tolerance( 
 
     tardigradeHydra::linearElasticity::residual R( &hydra, 9, parameters );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( residualAnswer, *R.getResidual( ) ) );
+    BOOST_TEST( residualAnswer == *R.getResidual( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -1830,7 +1830,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual2, * boost::unit_test::tolerance(
 
     residualMock R( &hydra, 9, parameters );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( residualAnswer, *R.getResidual( ) ) );
+    BOOST_TEST( residualAnswer == *R.getResidual( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -1943,7 +1943,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setJacobian, * boost::unit_test::tolerance( 
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.getJacobian( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( gradient ) == *R.getJacobian( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -2052,7 +2052,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdT, * boost::unit_test::tolerance( DEFA
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradient, *R.getdRdT( ) ) );
+    BOOST_TEST( gradient == *R.getdRdT( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -2165,6 +2165,6 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdF, * boost::unit_test::tolerance( DEFA
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( gradient ), *R.getdRdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( gradient ) == *R.getdRdF( ), CHECK_PER_ELEMENT );
 
 }
