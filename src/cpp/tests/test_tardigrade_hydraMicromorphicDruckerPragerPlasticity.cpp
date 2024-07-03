@@ -95,6 +95,11 @@ bool tolerantCheck( const std::vector< double > &v1, const std::vector< double >
             if ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) > eps ) ||
                  ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) > eps ) ){
 
+                std::cout << "v1: " << v1[ i ] << "\n";
+                std::cout << "v2: " << v2[ i ] << "\n";
+                std::cout << "r1: " << ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) ) << "\n";
+                std::cout << "r2: " << ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) ) << "\n";
+
                 return false;
 
             }
@@ -104,6 +109,16 @@ bool tolerantCheck( const std::vector< double > &v1, const std::vector< double >
     }
 
     return true;
+
+}
+
+bool tolerantCheck( const double &v1, const double &v2, double eps = 1e-6, double tol = 1e-9 ){
+
+    std::vector< double > _v1 = { v1 };
+
+    std::vector< double > _v2 = { v2 };
+
+    return tolerantCheck( _v1, _v2, eps, tol );
 
 }
 
@@ -9695,11 +9710,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMacroLdX, assembled_dMacroLdX ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dMacroLdX )         == tardigradeVectorTools::appendVectors( assembled_dMacroLdX )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroLdX, assembled_dMicroLdX ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dMicroLdX )         == tardigradeVectorTools::appendVectors( assembled_dMicroLdX )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdX, assembled_dMicroGradientLdX ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dMicroGradientLdX ), tardigradeVectorTools::appendVectors( assembled_dMicroGradientLdX ), 3e-5, 1e-6 ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -9763,11 +9778,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMacroLdF ), *R.get_dPlasticMacroVelocityGradientdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dMacroLdF )         == *R.get_dPlasticMacroVelocityGradientdF( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroLdF ), *R.get_dPlasticMicroVelocityGradientdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dMicroLdF )         == *R.get_dPlasticMicroVelocityGradientdF( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientLdF ), *R.get_dPlasticGradientMicroVelocityGradientdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dMicroGradientLdF ) == *R.get_dPlasticGradientMicroVelocityGradientdF( ), CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -9805,7 +9820,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+            BOOST_TEST( 0. == ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) );
 
         }
 
@@ -9831,9 +9846,9 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroLdChi ), *R.get_dPlasticMicroVelocityGradientdChi( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dMicroLdChi )         == *R.get_dPlasticMicroVelocityGradientdChi( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientLdChi ), *R.get_dPlasticGradientMicroVelocityGradientdChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dMicroGradientLdChi ), *R.get_dPlasticGradientMicroVelocityGradientdChi( ), 1e-5, 1e-6 ) );
 
     for ( unsigned int i = 0; i < 27; i++ ){
 
@@ -9871,7 +9886,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+            BOOST_TEST( 0. == ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) );
 
         }
 
@@ -9881,7 +9896,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+            BOOST_TEST( 0. == ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) );
 
         }
 
@@ -9897,7 +9912,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dMicroGradientLdGradChi ), *R.get_dPlasticGradientMicroVelocityGradientdGradChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dMicroGradientLdGradChi ), *R.get_dPlasticGradientMicroVelocityGradientdGradChi( ), 1e-5, 1e-6 ) );
 
     // Check previous Jacobians
     for ( unsigned int i = 0; i < configuration_unknown_count; i++ ){
@@ -10014,11 +10029,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroLdStress, assembled_previousdMacroLdStress ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousdMacroLdStress )          == tardigradeVectorTools::appendVectors( assembled_previousdMacroLdStress )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroLdStress, assembled_previousdMicroLdStress ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( previousdMicroLdStress )        , tardigradeVectorTools::appendVectors( assembled_previousdMicroLdStress )        , 1e-5, 1e-6 ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroGradientLdStress, assembled_previousdMicroGradientLdStress ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( previousdMicroGradientLdStress ), tardigradeVectorTools::appendVectors( assembled_previousdMicroGradientLdStress ), 3e-5, 1e-6 ) );
 
     for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
 
@@ -10134,11 +10149,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMacroLdISVs, assembled_previousdMacroLdISVs ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousdMacroLdISVs ) == tardigradeVectorTools::appendVectors( assembled_previousdMacroLdISVs ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousdMicroLdISVs, assembled_previousdMicroLdISVs ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousdMicroLdISVs ) == tardigradeVectorTools::appendVectors( assembled_previousdMicroLdISVs ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dMicroGradientLdX, assembled_dMicroGradientLdX ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dMicroGradientLdX    ), tardigradeVectorTools::appendVectors( assembled_dMicroGradientLdX    ), 1e-5, 1e-6 ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -10202,11 +10217,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMacroLdF ), *R.get_previousdPlasticMacroVelocityGradientdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousdMacroLdF )         == *R.get_previousdPlasticMacroVelocityGradientdF( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroLdF ), *R.get_previousdPlasticMicroVelocityGradientdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousdMicroLdF )         == *R.get_previousdPlasticMicroVelocityGradientdF( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientLdF ), *R.get_previousdPlasticGradientMicroVelocityGradientdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousdMicroGradientLdF ) == *R.get_previousdPlasticGradientMicroVelocityGradientdF( ), CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -10244,7 +10259,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+            BOOST_TEST( 0. == ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) );
 
         }
 
@@ -10270,9 +10285,9 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroLdChi ), *R.get_previousdPlasticMicroVelocityGradientdChi( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousdMicroLdChi )         == *R.get_previousdPlasticMicroVelocityGradientdChi( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientLdChi ), *R.get_previousdPlasticGradientMicroVelocityGradientdChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( previousdMicroGradientLdChi ), *R.get_previousdPlasticGradientMicroVelocityGradientdChi( ), 1e-5, 1e-6 ) );
 
     for ( unsigned int i = 0; i < 27; i++ ){
 
@@ -10310,7 +10325,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+            BOOST_TEST( 0. == ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) );
 
         }
 
@@ -10320,7 +10335,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
         for ( unsigned int j = 0; j < vp.size( ); j++ ){
 
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( 0., ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) ) );
+            BOOST_TEST( 0. == ( vp[ j ] - vm[ j ] ) / ( 2 * delta[ i ] ) );
 
         }
 
@@ -10336,7 +10351,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tol
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( previousdMicroGradientLdGradChi ), *R.get_previousdPlasticGradientMicroVelocityGradientdGradChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( previousdMicroGradientLdGradChi ), *R.get_previousdPlasticGradientMicroVelocityGradientdGradChi( ), 3e-5, 1e-6 ) );
 
 }
 
@@ -10447,7 +10462,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
                                                                                      previousPlasticMicroGradientVelocityGradient,
                                                                                      resultCurrentPlasticMicroGradient, alpha );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradient ) );
+    BOOST_TEST( answerCurrentPlasticMicroGradient == resultCurrentPlasticMicroGradient, CHECK_PER_ELEMENT );
 
     variableVector resultCurrentPlasticMicroGradient2;
     variableVector LHS2;
@@ -10463,9 +10478,9 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
                                                                                      previousPlasticMicroGradientVelocityGradient,
                                                                                      resultCurrentPlasticMicroGradient2, LHS2, alpha );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradient2 ) );
+    BOOST_TEST( answerCurrentPlasticMicroGradient == resultCurrentPlasticMicroGradient2, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerLHS, LHS2 ) );
+    BOOST_TEST( answerLHS == LHS2, CHECK_PER_ELEMENT );
 
     //Test the Jacobians
     variableVector resultCurrentPlasticMicroGradientJ;
@@ -10491,7 +10506,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
                                                                                      dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
                                                                                      alpha );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradientJ ) );
+    BOOST_TEST( answerCurrentPlasticMicroGradient == resultCurrentPlasticMicroGradientJ, CHECK_PER_ELEMENT );
 
     variableVector resultCurrentPlasticMicroGradientJ2;
 
@@ -10527,15 +10542,15 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
                                                                                      dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient,
                                                                                      alpha );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answerCurrentPlasticMicroGradient, resultCurrentPlasticMicroGradientJ2 ) );
+    BOOST_TEST( answerCurrentPlasticMicroGradient == resultCurrentPlasticMicroGradientJ2, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCurrentPlasticMicroGradientdPlasticMicroDeformation, dCurrentPlasticMicroGradientdPlasticMicroDeformationJ2 ) );
+    BOOST_TEST( dCurrentPlasticMicroGradientdPlasticMicroDeformation == dCurrentPlasticMicroGradientdPlasticMicroDeformationJ2, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient, dCurrentPlasticMicroGradientdPlasticMacroVelocityGradientJ2 ) );
+    BOOST_TEST( dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient == dCurrentPlasticMicroGradientdPlasticMacroVelocityGradientJ2, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient, dCurrentPlasticMicroGradientdPlasticMicroVelocityGradientJ2 ) );
+    BOOST_TEST( dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient == dCurrentPlasticMicroGradientdPlasticMicroVelocityGradientJ2, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient, dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradientJ2 ) );
+    BOOST_TEST( dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient == dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradientJ2, CHECK_PER_ELEMENT );
 
     //Test the jacobian w.r.t. the current plastic macro deformation
     constantType eps = 1e-6;
@@ -10570,7 +10585,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroDeformation[ 9 * j + i ] ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroDeformation[ 9 * j + i ], 1e-5, 1e-6 ) );
         }
     }
 
@@ -10606,7 +10621,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient[ 9 * j + i ] ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient[ 9 * j + i ], 1e-5, 1e-6 ) );
         }
     }
 
@@ -10642,7 +10657,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient[ 9 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient[ 9 * j + i ] );
         }
     }
 
@@ -10678,7 +10693,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient[ 27 * j + i ] ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient[ 27 * j + i ], 6e-5, 5e-5 ) );
         }
     }
 
@@ -10714,7 +10729,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation[ 9 * j + i ] ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation[ 9 * j + i ], 1e-5, 1e-6 ) );
         }
     }
 
@@ -10750,7 +10765,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient[ 27 * j + i ] ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient[ 27 * j + i ], 5e-5, 1e-6 ) );
         }
     }
 
@@ -10786,7 +10801,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient[ 9 * j + i ] ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient[ 9 * j + i ], 1e-4, 1e-6 ) );
         }
     }
 
@@ -10822,7 +10837,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient[ 9 * j + i ] ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient[ 9 * j + i ], 4e-5, 1e-6 ) );
         }
     }
 
@@ -10858,7 +10873,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient[ 27 * j + i ] ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient[ 27 * j + i ], 3e-5, 1e-6 ) );
         }
     }
 }
@@ -10963,11 +10978,11 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
                                                                                     resultMacro, resultMicro, resultMicroGrad,
                                                                                     alphaMacro, alphaMicro, alphaMicroGrad );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMacro, answerMacro ) );
+    BOOST_TEST( resultMacro == answerMacro, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicro, answerMicro ) );
+    BOOST_TEST( resultMicro == answerMicro, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicroGrad, answerMicroGrad ) );
+    BOOST_TEST( tolerantCheck( resultMicroGrad, answerMicroGrad, 1e-5, 1e-6 ) );
 
     //Test the computation of the Jacobians
     variableVector resultMacroJ, resultMicroJ, resultMicroGradJ;
@@ -10987,11 +11002,11 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
                                                                                     dGradChidMicroL, dGradChidMicroGradL,
                                                                                     alphaMacro, alphaMicro, alphaMicroGrad );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMacroJ, answerMacro ) );
+    BOOST_TEST( resultMacroJ == answerMacro, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicroJ, answerMicro ) );
+    BOOST_TEST( resultMicroJ == answerMicro, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicroGradJ, answerMicroGrad ) );
+    BOOST_TEST( tolerantCheck( resultMicroGradJ, answerMicroGrad, 1e-5, 1e-6 ) );
 
     variableVector resultMacroJ2, resultMicroJ2, resultMicroGradJ2;
     variableVector dFdMacroLJ2, dChidMicroLJ2, dGradChidMacroLJ2, dGradChidMicroLJ2, dGradChidMicroGradLJ2,
@@ -11016,21 +11031,21 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
                                                                                     dGradChidPreviousMacroL, dGradChidPreviousMicroL, dGradChidPreviousMicroGradL,
                                                                                     alphaMacro, alphaMicro, alphaMicroGrad );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMacroJ2, answerMacro ) );
+    BOOST_TEST( resultMacroJ2 == answerMacro, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicroJ2, answerMicro ) );
+    BOOST_TEST( resultMicroJ2 == answerMicro, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( resultMicroGradJ2, answerMicroGrad ) );
+    BOOST_TEST( tolerantCheck( resultMicroGradJ2, answerMicroGrad, 1e-5, 1e-6 ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dFdMacroLJ2, dFdMacroL ) );
+    BOOST_TEST( dFdMacroLJ2 == dFdMacroL, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dChidMicroLJ2, dChidMicroL ) );
+    BOOST_TEST( dChidMicroLJ2 == dChidMicroL, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChidMacroLJ2, dGradChidMacroL ) );
+    BOOST_TEST( dGradChidMacroLJ2 == dGradChidMacroL, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChidMicroLJ2, dGradChidMicroL ) );
+    BOOST_TEST( dGradChidMicroLJ2 == dGradChidMicroL, CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dGradChidMicroGradLJ2, dGradChidMicroGradL ) );
+    BOOST_TEST( dGradChidMicroGradLJ2 == dGradChidMicroGradL, CHECK_PER_ELEMENT );
 
     //Test jacobians w.r.t. the current plastic macro velocity gradient
     constantType eps = 1e-6;
@@ -11068,19 +11083,19 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dFdMacroL[ 9 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dFdMacroL[ 9 * j + i ] );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidMacroL[ 9 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dGradChidMacroL[ 9 * j + i ] );
         }
     }
 
@@ -11118,19 +11133,19 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dChidMicroL[ 9 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dChidMicroL[ 9 * j + i ] );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidMicroL[ 9 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dGradChidMicroL[ 9 * j + i ] );
         }
     }
 
@@ -11168,19 +11183,19 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidMicroGradL[ 27 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dGradChidMicroGradL[ 27 * j + i ] );
         }
     }
 
@@ -11218,19 +11233,19 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dFdPreviousF[ 9 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dFdPreviousF[ 9 * j + i ] );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
     }
 
@@ -11268,19 +11283,19 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dChidPreviousChi[ 9 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dChidPreviousChi[ 9 * j + i ] );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidPreviousChi[ 9 * j + i ] ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dGradChidPreviousChi[ 9 * j + i ], 1e-6, 1e-6 ) );
         }
     }
 
@@ -11318,19 +11333,19 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidPreviousGradChi[ 27 * j + i ] ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dGradChidPreviousGradChi[ 27 * j + i ], 1e-5, 1e-6 ) );
         }
     }
 
@@ -11368,19 +11383,19 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dFdPreviousMacroL[ 9 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dFdPreviousMacroL[ 9 * j + i ] );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidPreviousMacroL[ 9 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dGradChidPreviousMacroL[ 9 * j + i ] );
         }
     }
 
@@ -11418,19 +11433,19 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dChidPreviousMicroL[ 9 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dChidPreviousMicroL[ 9 * j + i ] );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidPreviousMicroL[ 9 * j + i ] ) );
+            BOOST_TEST( gradCol[ j ] == dGradChidPreviousMicroL[ 9 * j + i ] );
         }
     }
 
@@ -11468,19 +11483,19 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
         variableVector gradCol = ( resultMacroP - resultMacroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroP - resultMicroM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], 0. ) );
+            BOOST_TEST( gradCol[ j ] == 0. );
         }
 
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( gradCol[ j ], dGradChidPreviousMicroGradL[ 27 * j + i ] ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dGradChidPreviousMicroGradL[ 27 * j + i ], 1e-5, 1e-6 ) );
         }
     }
 
@@ -11939,17 +11954,17 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation, * boost::unit_test::tolerance(
     RJ.get_dUpdatedPlasticDeformationGradientdMacroStress( );
     RJ.get_dUpdatedPlasticDeformationGradientdPreviousMacroStress( );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals(       plasticF, *R.get_updatedPlasticDeformationGradient( )         ) );
+    BOOST_TEST(       plasticF == *R.get_updatedPlasticDeformationGradient( )      , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals(     plasticChi, *R.get_updatedPlasticMicroDeformation( )            ) );
+    BOOST_TEST(     plasticChi == *R.get_updatedPlasticMicroDeformation( )         , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( plasticGradChi, *R.get_updatedPlasticGradientMicroDeformation( )    ) );
+    BOOST_TEST( plasticGradChi == *R.get_updatedPlasticGradientMicroDeformation( ) , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals(       plasticF, *RJ.get_updatedPlasticDeformationGradient( )         ) );
+    BOOST_TEST(       plasticF == *RJ.get_updatedPlasticDeformationGradient( )     , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals(     plasticChi, *RJ.get_updatedPlasticMicroDeformation( )            ) );
+    BOOST_TEST(     plasticChi == *RJ.get_updatedPlasticMicroDeformation( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( plasticGradChi, *RJ.get_updatedPlasticGradientMicroDeformation( )    ) );
+    BOOST_TEST( plasticGradChi == *RJ.get_updatedPlasticGradientMicroDeformation( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -12378,11 +12393,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdX,       assembled_dUpdatedPlasticFdX       ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdX       ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticFdX       ), 1e-5, 1e-6 ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidX,     assembled_dUpdatedPlasticChidX     ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidX     ) == tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidX     ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidX, assembled_dUpdatedPlasticGradChidX ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidX ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidX ), 4e-5, 3e-6 ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -12446,11 +12461,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdF ),       *R.get_dUpdatedPlasticDeformationGradientdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdF )       == *R.get_dUpdatedPlasticDeformationGradientdF( )     , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF ),     *R.get_dUpdatedPlasticMicroDeformationdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF )     == *R.get_dUpdatedPlasticMicroDeformationdF( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ), *R.get_dUpdatedPlasticGradientMicroDeformationdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ) == *R.get_dUpdatedPlasticGradientMicroDeformationdF( ), CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < microDeformation.size( ); i++ ){
 
@@ -12514,11 +12529,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdChi,       floatMatrix( 9, floatVector( 9, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdChi )       == floatVector( 9 * 9, 0 )                              , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidChi ),     *R.get_dUpdatedPlasticMicroDeformationdChi( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidChi )     == *R.get_dUpdatedPlasticMicroDeformationdChi( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdChi( ), 1e-5, 1e-6 ) );
 
     for ( unsigned int i = 0; i < gradientMicroDeformation.size( ); i++ ){
 
@@ -12582,11 +12597,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdGradChi,       floatMatrix( 9, floatVector( 27, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdGradChi )       == floatVector( 9 * 27, 0 )                                 , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidGradChi,     floatMatrix( 9, floatVector( 27, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidGradChi )     == floatVector( 9 * 27, 0 )                                 , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdGradChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdGradChi( ), 2e-5, 3e-6 ) );
 
     floatVector previousStress = tardigradeVectorTools::appendVectors( { hydra.elasticity.previousPK2, hydra.elasticity.previousSIGMA, hydra.elasticity.previousM } );
 
@@ -12708,11 +12723,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousStress, assembled_dUpdatedPlasticFdPreviousStress ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousStress       ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticFdPreviousStress )      , 1e-5, 1e-6 ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousStress, assembled_dUpdatedPlasticChidPreviousStress ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousStress     ) == tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidPreviousStress )    , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidPreviousStress, assembled_dUpdatedPlasticGradChidPreviousStress ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousStress ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousStress ), 1e-5, 1e-6 ) );
 
     for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
 
@@ -12828,11 +12843,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousISVs, assembled_dUpdatedPlasticFdPreviousISVs ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousISVs       ) == tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticFdPreviousISVs       ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousISVs, assembled_dUpdatedPlasticChidPreviousISVs ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousISVs     ) == tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidPreviousISVs     ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidPreviousISVs, assembled_dUpdatedPlasticGradChidPreviousISVs ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousISVs ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousISVs ), 3e-5, 3e-6 ) );
 
     for ( unsigned int i = 0; i < previousDeformationGradient.size( ); i++ ){
 
@@ -12896,11 +12911,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousF ), *R.get_dUpdatedPlasticDeformationGradientdPreviousF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousF       ) == *R.get_dUpdatedPlasticDeformationGradientdPreviousF( )     , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousF ), *R.get_dUpdatedPlasticMicroDeformationdPreviousF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousF     ) == *R.get_dUpdatedPlasticMicroDeformationdPreviousF( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousF ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousF ) == *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousF( ), CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < previousMicroDeformation.size( ); i++ ){
 
@@ -12964,11 +12979,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousChi, floatMatrix( 9, floatVector( 9, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousChi       ) == floatVector( 9 * 9, 0 )                                      , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousChi ), *R.get_dUpdatedPlasticMicroDeformationdPreviousChi( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousChi     ) == *R.get_dUpdatedPlasticMicroDeformationdPreviousChi( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChi( ), 1e-5, 1e-6 ) );
 
     for ( unsigned int i = 0; i < previousGradientMicroDeformation.size( ); i++ ){
 
@@ -13032,11 +13047,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousGradChi, floatMatrix( 9, floatVector( 27, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousGradChi       ) == floatVector( 9 * 27, 0 )                                         , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousGradChi, floatMatrix( 9, floatVector( 27, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousGradChi     ) == floatVector( 9 * 27, 0 )                                         , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ), 3e-5, 3e-6 ) );
 
 }
 
@@ -13467,11 +13482,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdX,       assembled_dUpdatedPlasticFdX       ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdX       ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticFdX       ), 1e-5, 1e-6 ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidX,     assembled_dUpdatedPlasticChidX     ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidX     ) == tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidX     ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidX, assembled_dUpdatedPlasticGradChidX ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidX ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidX ), 4e-5, 3e-6 ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -13535,11 +13550,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdF ),       *R.get_dUpdatedPlasticDeformationGradientdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdF )       == *R.get_dUpdatedPlasticDeformationGradientdF( )     , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF ),     *R.get_dUpdatedPlasticMicroDeformationdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF )     == *R.get_dUpdatedPlasticMicroDeformationdF( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ), *R.get_dUpdatedPlasticGradientMicroDeformationdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ) == *R.get_dUpdatedPlasticGradientMicroDeformationdF( ), CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < microDeformation.size( ); i++ ){
 
@@ -13603,11 +13618,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdChi,       floatMatrix( 9, floatVector( 9, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdChi       ) == floatVector( 9 * 9, 0 )                              , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidChi ),     *R.get_dUpdatedPlasticMicroDeformationdChi( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidChi     ) == *R.get_dUpdatedPlasticMicroDeformationdChi( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdChi( ), 1e-5, 1e-6 ) );
 
     for ( unsigned int i = 0; i < gradientMicroDeformation.size( ); i++ ){
 
@@ -13671,11 +13686,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdGradChi,       floatMatrix( 9, floatVector( 27, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdGradChi       ) == floatVector( 9 * 27, 0 )                                 , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidGradChi,     floatMatrix( 9, floatVector( 27, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidGradChi     ) == floatVector( 9 * 27, 0 )                                 , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdGradChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdGradChi( ), 2e-5, 3e-6 ) );
 
     floatVector previousStress = tardigradeVectorTools::appendVectors( { hydra.elasticity.previousPK2, hydra.elasticity.previousSIGMA, hydra.elasticity.previousM } );
 
@@ -13797,11 +13812,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousStress, assembled_dUpdatedPlasticFdPreviousStress ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousStress       ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticFdPreviousStress )      , 1e-5, 1e-6 ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousStress, assembled_dUpdatedPlasticChidPreviousStress ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousStress     ) == tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidPreviousStress )    , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidPreviousStress, assembled_dUpdatedPlasticGradChidPreviousStress ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousStress ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousStress ), 1e-5, 1e-6 ) );
 
     for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
 
@@ -13917,11 +13932,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousISVs, assembled_dUpdatedPlasticFdPreviousISVs ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousISVs       ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticFdPreviousISVs )      , 1e-5, 1e-6 ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousISVs, assembled_dUpdatedPlasticChidPreviousISVs ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousISVs     ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidPreviousISVs )    , 1e-5, 1e-6 ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticGradChidPreviousISVs, assembled_dUpdatedPlasticGradChidPreviousISVs ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousISVs ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousISVs ), 3e-5, 2e-6 ) );
 
     for ( unsigned int i = 0; i < previousDeformationGradient.size( ); i++ ){
 
@@ -13985,11 +14000,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousF ), *R.get_dUpdatedPlasticDeformationGradientdPreviousF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousF )       == *R.get_dUpdatedPlasticDeformationGradientdPreviousF( )     , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousF ), *R.get_dUpdatedPlasticMicroDeformationdPreviousF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousF )     == *R.get_dUpdatedPlasticMicroDeformationdPreviousF( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousF ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousF ) == *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousF( ), CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < previousMicroDeformation.size( ); i++ ){
 
@@ -14053,11 +14068,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousChi, floatMatrix( 9, floatVector( 9, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousChi       ) == floatVector( 9 * 9, 0 )                                      , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousChi ), *R.get_dUpdatedPlasticMicroDeformationdPreviousChi( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousChi     ) == *R.get_dUpdatedPlasticMicroDeformationdPreviousChi( )        , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousChi( ), 1e-5, 1e-6 ) );
 
     for ( unsigned int i = 0; i < previousGradientMicroDeformation.size( ); i++ ){
 
@@ -14121,11 +14136,11 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticFdPreviousGradChi, floatMatrix( 9, floatVector( 27, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdPreviousGradChi       ) == floatVector( 9 * 27, 0 )                                         , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dUpdatedPlasticChidPreviousGradChi, floatMatrix( 9, floatVector( 27, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousGradChi     ) == floatVector( 9 * 27, 0 )                                         , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ), 1e-4, 1e-6 ) );
 
 }
 
@@ -14404,9 +14419,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
     answer2[ 8 ] = R2.updatedPlasticStrainLikeISVs[ 3 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 3 ];
     answer2[ 9 ] = R2.updatedPlasticStrainLikeISVs[ 4 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 4 ];
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer1, *R.get_stateVariableResiduals( ) ) );
+    BOOST_TEST( answer1 == *R.get_stateVariableResiduals( ) , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R2.get_stateVariableResiduals( ) ) );
+    BOOST_TEST( answer2 == *R2.get_stateVariableResiduals( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -14697,7 +14712,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ), 1e-5, 1e-6 ) );
 
 }
 
@@ -14988,7 +15003,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians2, * boost::unit_test::toler
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ), 1e-5, 1e-6 ) );
 
 }
 
@@ -15287,7 +15302,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD, * boost::unit_test::tol
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdD ), *R.get_dStateVariableResidualsdD( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dRdD ) == *R.get_dStateVariableResidualsdD( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -15578,7 +15593,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdPreviousISVs, * boost::uni
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdPreviousISVs ), *R.get_dStateVariableResidualsdPreviousISVs( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dRdPreviousISVs ) == *R.get_dStateVariableResidualsdPreviousISVs( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -15879,9 +15894,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals_weak, * boost::unit_test::t
     answer2[ 8 ] = R2.updatedPlasticStrainLikeISVs[ 3 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 3 ];
     answer2[ 9 ] = R2.updatedPlasticStrainLikeISVs[ 4 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 4 ];
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer1, *R.get_stateVariableResiduals( ) ) );
+    BOOST_TEST( answer1 == *R.get_stateVariableResiduals( ) , CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer2, *R2.get_stateVariableResiduals( ) ) );
+    BOOST_TEST( answer2 == *R2.get_stateVariableResiduals( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -16176,7 +16191,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians_weak, * boost::unit_test::t
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ), 2e-4, 1e-6 ) );
 
 }
 
@@ -16471,7 +16486,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians_weak2, * boost::unit_test::
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ), 1e-3, 3e-6 ) ); //TODO: This seems like a high tolerance
 
 }
 
@@ -16772,7 +16787,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD_weak, * boost::unit_test
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdD ), *R.get_dStateVariableResidualsdD( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dRdD ), *R.get_dStateVariableResidualsdD( ), 1e-5, 1e-6 ) );
 
 }
 
@@ -17065,7 +17080,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdPreviousISVs_weak, * boost
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdPreviousISVs ), *R.get_dStateVariableResidualsdPreviousISVs( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dRdPreviousISVs ) == *R.get_dStateVariableResidualsdPreviousISVs( ), CHECK_PER_ELEMENT );
 
 }
 BOOST_AUTO_TEST_CASE( test_setResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
@@ -17311,7 +17326,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual, * boost::unit_test::tolerance( DEFAULT_T
                                                                                                                             unknownVector.begin( ) + configuration_unknown_count + 45 ),
                                                                  R.stateVariableResiduals } );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.getResidual( ) ) );
+    BOOST_TEST( answer == *R.getResidual( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -17602,7 +17617,7 @@ BOOST_AUTO_TEST_CASE( test_setJacobian, * boost::unit_test::tolerance( DEFAULT_T
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.getJacobian( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( jacobian ), *R.getJacobian( ), 2e-5, 5e-6 ) );
 
 }
 
@@ -17901,7 +17916,7 @@ BOOST_AUTO_TEST_CASE( test_setdRdD, * boost::unit_test::tolerance( DEFAULT_TEST_
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdD ), *R.getdRdD( ) ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dRdD ), *R.getdRdD( ), 2e-5, 3e-6 ) );
 
 }
 
@@ -18192,6 +18207,6 @@ BOOST_AUTO_TEST_CASE( test_setdRdT, * boost::unit_test::tolerance( DEFAULT_TEST_
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdT, *R.getdRdT( ) ) );
+    BOOST_TEST( dRdT == *R.getdRdT( ), CHECK_PER_ELEMENT );
 
 }
