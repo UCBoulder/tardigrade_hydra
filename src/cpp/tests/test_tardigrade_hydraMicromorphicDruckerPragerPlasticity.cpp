@@ -14,6 +14,9 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
+#define DEFAULT_TEST_TOLERANCE 1e-6
+#define CHECK_PER_ELEMENT boost::test_tools::per_element( )
+
 typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
 typedef tardigradeHydra::micromorphicDruckerPragerPlasticity::floatType floatType; //!< Redefinition of the floating point type
@@ -64,7 +67,51 @@ namespace tardigradeHydra{
 
 }
 
-BOOST_AUTO_TEST_CASE( test_weakMac ){
+bool tolerantCheck( const std::vector< double > &v1, const std::vector< double > &v2, double eps = 1e-6, double tol = 1e-9 ){
+
+    if ( v1.size( ) != v2.size( ) ){
+
+        return false;
+
+    }
+
+    BOOST_CHECK( v1.size( ) == v2.size( ) );
+
+    const unsigned int len = v1.size( );
+
+    for ( unsigned int i = 0; i < len; i++ ){
+
+        if ( std::fabs( v1[ i ] ) < tol ){
+
+            if ( std::fabs( v1[ i ] - v2[ i ] ) > eps ){
+
+                return false;
+
+            }
+
+            BOOST_CHECK( std::fabs( v1[ i ] - v2[ i ] ) <= eps );
+
+        }
+        else{
+
+            if ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) > eps ) ||
+                 ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) > eps ) ){
+
+                return false;
+
+            }
+
+            BOOST_TEST( v1[ i ] == v2[ i ] );
+
+        }
+
+    }
+
+    return true;
+
+}
+
+BOOST_AUTO_TEST_CASE( test_weakMac, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test of the weakened Macaulay bracket
      */
@@ -87,7 +134,7 @@ BOOST_AUTO_TEST_CASE( test_weakMac ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_extractParameters ){
+BOOST_AUTO_TEST_CASE( test_extractParameters, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test of the extraction of the parameters
      */
@@ -308,7 +355,7 @@ BOOST_AUTO_TEST_CASE( test_extractParameters ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_set_state_variables ){
+BOOST_AUTO_TEST_CASE( test_set_state_variables, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test of the extraction of the state variables
      */
@@ -517,7 +564,7 @@ BOOST_AUTO_TEST_CASE( test_set_state_variables ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
+BOOST_AUTO_TEST_CASE( test_setDrivingStresses, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test of the driving stresses
      */
@@ -1459,7 +1506,7 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setCohesion ){
+BOOST_AUTO_TEST_CASE( test_setCohesion, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the cohesion values
      */
@@ -1871,7 +1918,7 @@ BOOST_AUTO_TEST_CASE( test_setCohesion ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testComputeDruckerPragerInternalParameters ){
+BOOST_AUTO_TEST_CASE( testComputeDruckerPragerInternalParameters, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the internal parameters for the Drucker-Prager plasticity.
      *
@@ -1893,7 +1940,7 @@ BOOST_AUTO_TEST_CASE( testComputeDruckerPragerInternalParameters ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testComputeSecondOrderDruckerPragerYieldEquation ){
+BOOST_AUTO_TEST_CASE( testComputeSecondOrderDruckerPragerYieldEquation, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the second order stress Drucker-Prager yield equation.
      *
@@ -2055,7 +2102,7 @@ BOOST_AUTO_TEST_CASE( testComputeSecondOrderDruckerPragerYieldEquation ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testComputeHigherOrderDruckerPragerYieldEquation ){
+BOOST_AUTO_TEST_CASE( testComputeHigherOrderDruckerPragerYieldEquation, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the higher order stress Drucker-Prager yield equation.
      *
@@ -2238,7 +2285,7 @@ BOOST_AUTO_TEST_CASE( testComputeHigherOrderDruckerPragerYieldEquation ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setFlowDerivatives ){
+BOOST_AUTO_TEST_CASE( test_setFlowDerivatives, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the cohesion values
      */
@@ -2704,7 +2751,7 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
+BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the cohesion values
      */
@@ -3687,7 +3734,7 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives2 ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setPlasticStrainLikeISVEvolutionRates ){
+BOOST_AUTO_TEST_CASE( test_setPlasticStrainLikeISVEvolutionRates, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the strain-like ISV evolution rates
      */
@@ -3987,7 +4034,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticStrainLikeISVEvolutionRates ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setPlasticStrainLikeISVEvolutionRates2 ){
+BOOST_AUTO_TEST_CASE( test_setPlasticStrainLikeISVEvolutionRates2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the strain-like ISV evolution rates
      */
@@ -4352,7 +4399,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticStrainLikeISVEvolutionRates2 ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs ){
+BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the strain-like ISV evolution rates
      */
@@ -4618,7 +4665,7 @@ BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs2 ){
+BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the strain-like ISV evolution rates
      */
@@ -5148,7 +5195,7 @@ BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs2 ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setYield ){
+BOOST_AUTO_TEST_CASE( test_setYield, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the cohesion values
      */
@@ -5611,7 +5658,7 @@ BOOST_AUTO_TEST_CASE( test_setYield ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setYield2 ){
+BOOST_AUTO_TEST_CASE( test_setYield2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the cohesion values
      */
@@ -6508,7 +6555,7 @@ BOOST_AUTO_TEST_CASE( test_setYield2 ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setPrecedingDeformationGradient ){
+BOOST_AUTO_TEST_CASE( test_setPrecedingDeformationGradient, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the cohesion values
      */
@@ -6932,7 +6979,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingDeformationGradient ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setPrecedingMicroDeformation ){
+BOOST_AUTO_TEST_CASE( test_setPrecedingMicroDeformation, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the cohesion values
      */
@@ -7356,7 +7403,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingMicroDeformation ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
+BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the cohesion values
      */
@@ -8050,7 +8097,7 @@ BOOST_AUTO_TEST_CASE( test_setPrecedingGradientMicroDeformation ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testComputePlasticMacroVelocityGradient ){
+BOOST_AUTO_TEST_CASE( testComputePlasticMacroVelocityGradient, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the plastic macro velocity gradient.
      *
@@ -8227,7 +8274,7 @@ BOOST_AUTO_TEST_CASE( testComputePlasticMacroVelocityGradient ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testComputePlasticMicroVelocityGradient ){
+BOOST_AUTO_TEST_CASE( testComputePlasticMicroVelocityGradient, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the plastic micro velocity gradient.
      *
@@ -8384,7 +8431,7 @@ BOOST_AUTO_TEST_CASE( testComputePlasticMicroVelocityGradient ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testComputePlasticMicroGradientVelocityGradient ){
+BOOST_AUTO_TEST_CASE( testComputePlasticMicroGradientVelocityGradient, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the plastic micro gradient velocity gradient.
      *
@@ -8647,7 +8694,7 @@ BOOST_AUTO_TEST_CASE( testComputePlasticMicroGradientVelocityGradient ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
+BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the cohesion values
      */
@@ -9246,7 +9293,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
+BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the cohesion values
      */
@@ -10302,7 +10349,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients2 ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi ){
+BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the evolution of the plastic micro gradient deformation.
      *
@@ -10825,7 +10872,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation ){
+BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Evolve the plastic deformation.
      *
@@ -11448,7 +11495,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setPlasticDeformation ){
+BOOST_AUTO_TEST_CASE( test_setPlasticDeformation, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -11915,7 +11962,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
+BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -13002,7 +13049,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2 ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
+BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -14091,7 +14138,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3 ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals ){
+BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -14372,7 +14419,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians ){
+BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -14663,7 +14710,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians2 ){
+BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -14954,7 +15001,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians2 ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD ){
+BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -15253,7 +15300,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdPreviousISVs ){
+BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdPreviousISVs, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -15544,7 +15591,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdPreviousISVs ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals_weak ){
+BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals_weak, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -15847,7 +15894,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals_weak ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians_weak ){
+BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians_weak, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -16142,7 +16189,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians_weak ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians_weak2 ){
+BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians_weak2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -16437,7 +16484,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians_weak2 ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD_weak ){
+BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD_weak, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -16738,7 +16785,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD_weak ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdPreviousISVs_weak ){
+BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdPreviousISVs_weak, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -17030,7 +17077,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdPreviousISVs_weak ){
     BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdPreviousISVs ), *R.get_dStateVariableResidualsdPreviousISVs( ) ) );
 
 }
-BOOST_AUTO_TEST_CASE( test_setResidual ){
+BOOST_AUTO_TEST_CASE( test_setResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -17277,7 +17324,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setJacobian ){
+BOOST_AUTO_TEST_CASE( test_setJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -17568,7 +17615,7 @@ BOOST_AUTO_TEST_CASE( test_setJacobian ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setdRdD ){
+BOOST_AUTO_TEST_CASE( test_setdRdD, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
@@ -17867,7 +17914,7 @@ BOOST_AUTO_TEST_CASE( test_setdRdD ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setdRdT ){
+BOOST_AUTO_TEST_CASE( test_setdRdT, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test setting the plastic deformation
      */
