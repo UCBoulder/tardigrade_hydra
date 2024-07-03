@@ -12,6 +12,9 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
+#define DEFAULT_TEST_TOLERANCE 1e-6
+#define CHECK_PER_ELEMENT boost::test_tools::per_element( )
+
 typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
 typedef tardigradeHydra::thermalExpansion::floatType floatType; //!< Redefinition of the floating point type
@@ -73,7 +76,51 @@ namespace tardigradeHydra{
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
+bool tolerantCheck( const std::vector< double > &v1, const std::vector< double > &v2, double eps = 1e-6, double tol = 1e-9 ){
+
+    if ( v1.size( ) != v2.size( ) ){
+
+        return false;
+
+    }
+
+    BOOST_CHECK( v1.size( ) == v2.size( ) );
+
+    const unsigned int len = v1.size( );
+
+    for ( unsigned int i = 0; i < len; i++ ){
+
+        if ( std::fabs( v1[ i ] ) < tol ){
+
+            if ( std::fabs( v1[ i ] - v2[ i ] ) > eps ){
+
+                return false;
+
+            }
+
+            BOOST_CHECK( std::fabs( v1[ i ] - v2[ i ] ) <= eps );
+
+        }
+        else{
+
+            if ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) > eps ) ||
+                 ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) > eps ) ){
+
+                return false;
+
+            }
+
+            BOOST_TEST( v1[ i ] == v2[ i ] );
+
+        }
+
+    }
+
+    return true;
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::thermalExpansion::residual {
 
@@ -171,7 +218,7 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters ){
+BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::thermalExpansion::residual {
 
@@ -277,17 +324,17 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters ){
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( thermalConfigurationIndex, *R.getThermalConfigurationIndex( ) ) );
+    BOOST_TEST( thermalConfigurationIndex == *R.getThermalConfigurationIndex( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( Tref, *R.getReferenceTemperature( ) ) );
+    BOOST_TEST( Tref == *R.getReferenceTemperature( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( linearParameters, *R.getLinearParameters( ) ) );
+    BOOST_TEST( linearParameters == *R.getLinearParameters( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( quadraticParameters, *R.getQuadraticParameters( ) ) );
+    BOOST_TEST( quadraticParameters == *R.getQuadraticParameters( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrain ){
+BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrain, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::thermalExpansion::residual {
 
@@ -385,11 +432,11 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrain ){
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( thermalGreenLagrangeStrain, *R.get_thermalGreenLagrangeStrain( ) ) );
+    BOOST_TEST( thermalGreenLagrangeStrain == *R.get_thermalGreenLagrangeStrain( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives ){
+BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::thermalExpansion::residual {
 
@@ -543,13 +590,13 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalGreenLagrangeStrainDerivatives ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dThermalGreenLagrangeStraindF, floatMatrix( 9, floatVector( 9, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dThermalGreenLagrangeStraindF ) == floatVector( 9 * 9, 0 ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dThermalGreenLagrangeStraindT, *R.get_dThermalGreenLagrangeStraindT( ) ) );
+    BOOST_TEST( dThermalGreenLagrangeStraindT == *R.get_dThermalGreenLagrangeStraindT( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradient ){
+BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradient, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::thermalExpansion::residual {
 
@@ -673,11 +720,11 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradient ){
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( thermalDeformationGradient, *R.get_thermalDeformationGradient( ) ) );
+    BOOST_TEST( thermalDeformationGradient == *R.get_thermalDeformationGradient( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives ){
+BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::thermalExpansion::residual {
 
@@ -831,13 +878,13 @@ BOOST_AUTO_TEST_CASE( test_residual_setThermalDeformationGradientDerivatives ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dThermalDeformationGradientdF, floatMatrix( 9, floatVector( 9, 0 ) ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dThermalDeformationGradientdF ) == floatVector( 81, 0 ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dThermalDeformationGradientdT, *R.get_dThermalDeformationGradientdT( ) ) );
+    BOOST_TEST( dThermalDeformationGradientdT == *R.get_dThermalDeformationGradientdT( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_setResidual ){
+BOOST_AUTO_TEST_CASE( test_residual_setResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::thermalExpansion::residual {
 
@@ -947,11 +994,11 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual ){
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( residual, *R.getResidual( ) ) );
+    BOOST_TEST( residual == *R.getResidual( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives ){
+BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::thermalExpansion::residual {
 
@@ -1143,10 +1190,10 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidualDerivatives ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( jacobian ), *R.getJacobian( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( jacobian ) == *R.getJacobian( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( tardigradeVectorTools::appendVectors( dRdF ), *R.getdRdF( ) ) );
+    BOOST_TEST( tardigradeVectorTools::appendVectors( dRdF ) == *R.getdRdF( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( dRdT, *R.getdRdT( ) ) );
+    BOOST_TEST( dRdT == *R.getdRdT( ), CHECK_PER_ELEMENT );
 
 }
