@@ -345,13 +345,13 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeElasticDeformation, * boost::unit_t
 
     tardigradeHydra::linearViscoelasticity::residual R2( &hydra, 9, parameters, ISVlb, ISVub );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( JeAnswer, *R1.get_Je( ) ) );
+    BOOST_TEST( JeAnswer == *R1.get_Je( ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( FehatAnswer, *R2.get_Fehat( ) ) );
+    BOOST_TEST( FehatAnswer == *R2.get_Fehat( ), CHECK_PER_ELEMENT );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( previousJeAnswer, *R1.get_previousJe( ) ) );
+    BOOST_TEST( previousJeAnswer == *R1.get_previousJe( ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( previousFehatAnswer, *R2.get_previousFehat( ) ) );
+    BOOST_TEST( previousFehatAnswer == *R2.get_previousFehat( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -413,9 +413,9 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposePreviousElasticDeformation, * boost
 
     tardigradeHydra::linearViscoelasticity::residual R2( &hydra, 9, parameters, ISVlb, ISVub );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( JeAnswer, *R1.get_previousJe( ) ) );
+    BOOST_TEST( JeAnswer == *R1.get_previousJe( ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( FehatAnswer, *R2.get_previousFehat( ) ) );
+    BOOST_TEST( FehatAnswer == *R2.get_previousFehat( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -617,11 +617,9 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeStateVariableVector, * boost::unit_
     BOOST_CHECK_NO_THROW( R.decomposeStateVariableVector( volumetricStateVariables,
                                                           isochoricStateVariables ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( volumetricStateVariables,
-                                                 volumetricStateVariablesAnswer ) );
+    BOOST_TEST( volumetricStateVariables == volumetricStateVariablesAnswer, CHECK_PER_ELEMENT );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( isochoricStateVariables,
-                                                 isochoricStateVariablesAnswer ) );
+    BOOST_TEST( isochoricStateVariables == isochoricStateVariablesAnswer, CHECK_PER_ELEMENT );
 
 }
 
@@ -660,7 +658,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setRateMultipliers, * boost::unit_test::tole
                                            12, 13, 14, 15, 16, 17, 18, 19, 20,
                                            21, 22, 23, 24, 25, 26, 27, 28, 29 };
 
-    floatVector parameters = { 2, 3, 123.4, 56.7, 1, 100, 293.15, 2, 110, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
+    floatVector parameters = { 2, 3, 123.4, 56.7, 10, 5, 293.15, 2, 3, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.01, 10.0, 100.0 };
 
     unsigned int numConfigurations = 1;
 
@@ -672,13 +670,13 @@ BOOST_AUTO_TEST_CASE( test_residual_setRateMultipliers, * boost::unit_test::tole
 
     unsigned int ISVub = 31;
 
-    floatType volumetricRateMultiplierAnswer = 7.457812578748434;
+    floatType volumetricRateMultiplierAnswer = 306.5460721724233;
 
-    floatType previousVolumetricRateMultiplierAnswer = 8.814658257473116;
+    floatType previousVolumetricRateMultiplierAnswer = 339.2630810101799;
 
-    floatType isochoricRateMultiplierAnswer = 35.32015484464411;
+    floatType isochoricRateMultiplierAnswer = 32.53168221009231;
 
-    floatType previousIsochoricRateMultiplierAnswer = 61.973752329639055;
+    floatType previousIsochoricRateMultiplierAnswer = 34.516501010605985;
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          { }, { },
@@ -686,13 +684,13 @@ BOOST_AUTO_TEST_CASE( test_residual_setRateMultipliers, * boost::unit_test::tole
 
     tardigradeHydra::linearViscoelasticity::residual R( &hydra, 9, parameters, ISVlb, ISVub );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( volumetricRateMultiplierAnswer, *R.get_volumetricRateMultiplier( ) ) )
+    BOOST_TEST( volumetricRateMultiplierAnswer == *R.get_volumetricRateMultiplier( ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( previousVolumetricRateMultiplierAnswer, *R.get_previousVolumetricRateMultiplier( ) ) )
+    BOOST_TEST( previousVolumetricRateMultiplierAnswer == *R.get_previousVolumetricRateMultiplier( ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( isochoricRateMultiplierAnswer, *R.get_isochoricRateMultiplier( ) ) )
+    BOOST_TEST( isochoricRateMultiplierAnswer == *R.get_isochoricRateMultiplier( ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( previousIsochoricRateMultiplierAnswer, *R.get_previousIsochoricRateMultiplier( ) ) )
+    BOOST_TEST( previousIsochoricRateMultiplierAnswer == *R.get_previousIsochoricRateMultiplier( ) );
 
 }
 
@@ -807,13 +805,13 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRateMultipliersdT, * boost::unit_test::t
 
     }
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( dVolumetricRateMultiplierdT, *R.get_dVolumetricRateMultiplierdT( ) ) )
+    BOOST_TEST( dVolumetricRateMultiplierdT == *R.get_dVolumetricRateMultiplierdT( ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( dPreviousVolumetricRateMultiplierdPreviousT, *R.get_dPreviousVolumetricRateMultiplierdPreviousT( ) ) )
+    BOOST_TEST( dPreviousVolumetricRateMultiplierdPreviousT == *R.get_dPreviousVolumetricRateMultiplierdPreviousT( ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( dIsochoricRateMultiplierdT, *R.get_dIsochoricRateMultiplierdT( ) ) )
+    BOOST_TEST( dIsochoricRateMultiplierdT == *R.get_dIsochoricRateMultiplierdT( ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeVectorTools::fuzzyEquals( dPreviousIsochoricRateMultiplierdPreviousT, *R.get_dPreviousIsochoricRateMultiplierdPreviousT( ) ) )
+    BOOST_TEST( dPreviousIsochoricRateMultiplierdPreviousT == *R.get_dPreviousIsochoricRateMultiplierdPreviousT( ) );
 
 }
 
