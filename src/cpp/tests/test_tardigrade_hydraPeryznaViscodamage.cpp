@@ -54,6 +54,50 @@ struct cout_redirect{
         std::streambuf * old;
 };
 
+bool tolerantCheck( const std::vector< double > &v1, const std::vector< double > &v2, double eps = 1e-6, double tol = 1e-9 ){
+
+    if ( v1.size( ) != v2.size( ) ){
+
+        return false;
+
+    }
+
+    BOOST_CHECK( v1.size( ) == v2.size( ) );
+
+    const unsigned int len = v1.size( );
+
+    for ( unsigned int i = 0; i < len; i++ ){
+
+        if ( std::fabs( v1[ i ] ) < tol ){
+
+            if ( std::fabs( v1[ i ] - v2[ i ] ) > eps ){
+
+                return false;
+
+            }
+
+            BOOST_CHECK( std::fabs( v1[ i ] - v2[ i ] ) <= eps );
+
+        }
+        else{
+
+            if ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) > eps ) ||
+                 ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) > eps ) ){
+
+                return false;
+
+            }
+
+            BOOST_TEST( v1[ i ] == v2[ i ] );
+
+        }
+
+    }
+
+    return true;
+
+}
+
 BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class stressMock : public tardigradeHydra::residualBase {
@@ -2016,7 +2060,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdCauchyStress ) == *R.get_dDamageDeformationGradientdCauchyStress( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdCauchyStress ), *R.get_dDamageDeformationGradientdCauchyStress( ) ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -2052,7 +2096,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdF ) == *R.get_dDamageDeformationGradientdF( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdF ), *R.get_dDamageDeformationGradientdF( ) ) );
 
     for ( unsigned int i = 0; i < 2*deformationGradient.size( ); i++ ){
 
@@ -2088,7 +2132,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdSubFs ) == *R.get_dDamageDeformationGradientdSubFs( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdSubFs ), *R.get_dDamageDeformationGradientdSubFs( ) ) );
 
     for ( unsigned int i = 0; i < 1; i++ ){
 
@@ -2124,7 +2168,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
     }
 
-    BOOST_TEST( dDamageDeformationGradientdT == *R.get_dDamageDeformationGradientdT( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( dDamageDeformationGradientdT, *R.get_dDamageDeformationGradientdT( ) ) );
 
     for ( unsigned int i = 0; i < 2; i++ ){
 
@@ -2160,7 +2204,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdStateVariables ) == *R.get_dDamageDeformationGradientdStateVariables( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdStateVariables ), *R.get_dDamageDeformationGradientdStateVariables( ) ) );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -2200,7 +2244,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousCauchyStress ) == *R.get_dDamageDeformationGradientdPreviousCauchyStress( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousCauchyStress ), *R.get_dDamageDeformationGradientdPreviousCauchyStress( ) ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -2236,7 +2280,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousF ) == *R.get_dDamageDeformationGradientdPreviousF( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousF ), *R.get_dDamageDeformationGradientdPreviousF( ) ) );
 
     for ( unsigned int i = 0; i < 18; i++ ){
 
@@ -2272,7 +2316,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousSubFs ) == *R.get_dDamageDeformationGradientdPreviousSubFs( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousSubFs ), *R.get_dDamageDeformationGradientdPreviousSubFs( ) ) );
 
     for ( unsigned int i = 0; i < 1; i++ ){
 
@@ -2308,7 +2352,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
     }
 
-    BOOST_TEST( dDamageDeformationGradientdPreviousT == *R.get_dDamageDeformationGradientdPreviousT( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( dDamageDeformationGradientdPreviousT, *R.get_dDamageDeformationGradientdPreviousT( ) ) );
 
     for ( unsigned int i = 0; i < 2; i++ ){
 
@@ -2344,7 +2388,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousStateVariables ) == *R.get_dDamageDeformationGradientdPreviousStateVariables( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dDamageDeformationGradientdPreviousStateVariables ), *R.get_dDamageDeformationGradientdPreviousStateVariables( ) ) );
 
 }
 
@@ -2682,7 +2726,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( jacobian ) == tardigradeVectorTools::appendVectors( *R.getJacobian( ) ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( jacobian ), *R.getJacobian( ) ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -2718,7 +2762,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dRdF ) == tardigradeVectorTools::appendVectors( *R.getdRdF( ) ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dRdF ), *R.getdRdF( ) ) );
 
     for ( unsigned int i = 0; i < 1; i++ ){
 
@@ -2754,6 +2798,6 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
 
     }
 
-    BOOST_TEST( dRdT == *R.getdRdT( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( dRdT, *R.getdRdT( ) ) );
 
 }
