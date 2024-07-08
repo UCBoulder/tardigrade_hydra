@@ -12,6 +12,9 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
+#define DEFAULT_TEST_TOLERANCE 1e-6
+#define CHECK_PER_ELEMENT boost::test_tools::per_element( )
+
 typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
 typedef tardigradeHydra::floatType floatType; //!< Redefinition of the floating point type
@@ -51,7 +54,7 @@ struct cout_redirect{
         std::streambuf * old;
 };
 
-BOOST_AUTO_TEST_CASE( test_sgn ){
+BOOST_AUTO_TEST_CASE( test_sgn, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     BOOST_CHECK( tardigradeHydra::peryznaJ2Viscoplasticity::sgn(  1.4 ) ==  1 );
 
@@ -61,7 +64,57 @@ BOOST_AUTO_TEST_CASE( test_sgn ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_get_yieldFunction ){
+bool tolerantCheck( const std::vector< double > &v1, const std::vector< double > &v2, double eps = 1e-6, double tol = 1e-9 ){
+
+    if ( v1.size( ) != v2.size( ) ){
+
+        return false;
+
+    }
+
+    BOOST_CHECK( v1.size( ) == v2.size( ) );
+
+    const unsigned int len = v1.size( );
+
+    for ( unsigned int i = 0; i < len; i++ ){
+
+        if ( ( std::fabs( v1[ i ] ) < tol ) || ( std::fabs( v2[ i ] ) < tol ) ){
+
+            if ( std::fabs( v1[ i ] - v2[ i ] ) > eps ){
+
+                return false;
+
+            }
+
+        }
+        else{
+
+            if ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) > eps ) ||
+                 ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) > eps ) ){
+
+                return false;
+
+            }
+
+        }
+
+    }
+
+    return true;
+
+}
+
+bool tolerantCheck( const double &v1, const double &v2, double eps = 1e-6, double tol = 1e-9 ){
+
+    std::vector< double > _v1 = { v1 };
+
+    std::vector< double > _v2 = { v2 };
+
+    return tolerantCheck( _v1, _v2, eps, tol );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_get_yieldFunction, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class stressMock : public tardigradeHydra::residualBase {
 
@@ -267,33 +320,33 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction ){
 
     R_grad2.get_dPreviousYieldFunctiondPreviousStateVariables( );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R_ngrad.get_yieldFunction( ) ) );
+    BOOST_TEST( answer == *R_ngrad.get_yieldFunction( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *R_ngrad.get_previousYieldFunction( ) ) );
+    BOOST_TEST( previousAnswer == *R_ngrad.get_previousYieldFunction( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( sign_term_answer, *R_ngrad.get_signTerm( ) ) );
+    BOOST_TEST( sign_term_answer == *R_ngrad.get_signTerm( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previous_sign_term_answer, *R_ngrad.get_previousSignTerm( ) ) );
+    BOOST_TEST( previous_sign_term_answer == *R_ngrad.get_previousSignTerm( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R_grad1.get_yieldFunction( ) ) );
+    BOOST_TEST( answer == *R_grad1.get_yieldFunction( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *R_grad1.get_previousYieldFunction( ) ) );
+    BOOST_TEST( previousAnswer == *R_grad1.get_previousYieldFunction( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( sign_term_answer, *R_grad1.get_signTerm( ) ) );
+    BOOST_TEST( sign_term_answer == *R_grad1.get_signTerm( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previous_sign_term_answer, *R_grad1.get_previousSignTerm( ) ) );
+    BOOST_TEST( previous_sign_term_answer == *R_grad1.get_previousSignTerm( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R_grad2.get_yieldFunction( ) ) );
+    BOOST_TEST( answer == *R_grad2.get_yieldFunction( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previousAnswer, *R_grad2.get_previousYieldFunction( ) ) );
+    BOOST_TEST( previousAnswer == *R_grad2.get_previousYieldFunction( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( sign_term_answer, *R_grad2.get_signTerm( ) ) );
+    BOOST_TEST( sign_term_answer == *R_grad2.get_signTerm( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previous_sign_term_answer, *R_grad2.get_previousSignTerm( ) ) );
+    BOOST_TEST( previous_sign_term_answer == *R_grad2.get_previousSignTerm( ) );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
+BOOST_AUTO_TEST_CASE( test_get_yieldFunction2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class stressMock : public tardigradeHydra::residualBase {
 
@@ -483,7 +536,7 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dYieldFunctiondCauchyStress( ), dYieldFunctiondCauchyStress ) );
+    BOOST_TEST( *R_grad.get_dYieldFunctiondCauchyStress( ) == dYieldFunctiondCauchyStress, CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -515,7 +568,7 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dYieldFunctiondF( ), dYieldFunctiondF ) );
+    BOOST_TEST( *R_grad.get_dYieldFunctiondF( ) == dYieldFunctiondF, CHECK_PER_ELEMENT );
 
     unsigned int offset = 9;
 
@@ -549,7 +602,7 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dYieldFunctiondSubFs( ), dYieldFunctiondSubFs ) );
+    BOOST_TEST( *R_grad.get_dYieldFunctiondSubFs( ) == dYieldFunctiondSubFs, CHECK_PER_ELEMENT );
 
     offset = 9+18+1;
 
@@ -583,7 +636,7 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dYieldFunctiondStateVariables( ), dYieldFunctiondStateVariables ) );
+    BOOST_TEST( *R_grad.get_dYieldFunctiondStateVariables( ) == dYieldFunctiondStateVariables, CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -619,7 +672,7 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dPreviousYieldFunctiondPreviousCauchyStress( ), dPreviousYieldFunctiondPreviousCauchyStress ) );
+    BOOST_TEST( *R_grad.get_dPreviousYieldFunctiondPreviousCauchyStress( ) == dPreviousYieldFunctiondPreviousCauchyStress, CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -651,7 +704,7 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dPreviousYieldFunctiondPreviousF( ), dPreviousYieldFunctiondPreviousF ) );
+    BOOST_TEST( *R_grad.get_dPreviousYieldFunctiondPreviousF( ) == dPreviousYieldFunctiondPreviousF, CHECK_PER_ELEMENT );
 
     offset = 0;
 
@@ -685,7 +738,7 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dPreviousYieldFunctiondPreviousSubFs( ), dPreviousYieldFunctiondPreviousSubFs ) );
+    BOOST_TEST( *R_grad.get_dPreviousYieldFunctiondPreviousSubFs( ) == dPreviousYieldFunctiondPreviousSubFs, CHECK_PER_ELEMENT );
 
     offset = 18+1;
 
@@ -719,11 +772,11 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( *R_grad.get_dPreviousYieldFunctiondPreviousStateVariables( ), dPreviousYieldFunctiondPreviousStateVariables ) );
+    BOOST_TEST( *R_grad.get_dPreviousYieldFunctiondPreviousStateVariables( ) == dPreviousYieldFunctiondPreviousStateVariables, CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_get_dragStress ){
+BOOST_AUTO_TEST_CASE( test_get_dragStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class stressMock : public tardigradeHydra::residualBase {
 
@@ -869,17 +922,17 @@ BOOST_AUTO_TEST_CASE( test_get_dragStress ){
 
     floatType answer = 1e1;
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.get_dragStress( ) ) );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R.get_previousDragStress( ) ) );
+    BOOST_TEST( answer == *R.get_dragStress( ) );
+    BOOST_TEST( answer == *R.get_previousDragStress( ) );
 
     R_grad1.get_dDragStressdStateVariables( );
     R_grad2.get_dPreviousDragStressdPreviousStateVariables( );
     
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R_grad1.get_dragStress( ) ) );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R_grad1.get_previousDragStress( ) ) );
+    BOOST_TEST( answer == *R_grad1.get_dragStress( ) );
+    BOOST_TEST( answer == *R_grad1.get_previousDragStress( ) );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R_grad2.get_dragStress( ) ) );
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R_grad2.get_previousDragStress( ) ) );
+    BOOST_TEST( answer == *R_grad2.get_dragStress( ) );
+    BOOST_TEST( answer == *R_grad2.get_previousDragStress( ) );
 
     floatType eps = 1e-6;
 
@@ -918,7 +971,7 @@ BOOST_AUTO_TEST_CASE( test_get_dragStress ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( J1, *R.get_dDragStressdStateVariables( ) ) );
+    BOOST_TEST( J1 == *R.get_dDragStressdStateVariables( ), CHECK_PER_ELEMENT );
 
     offset = 19;
 
@@ -952,11 +1005,11 @@ BOOST_AUTO_TEST_CASE( test_get_dragStress ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( J2, *R.get_dPreviousDragStressdPreviousStateVariables( ) ) );
+    BOOST_TEST( J2 == *R.get_dPreviousDragStressdPreviousStateVariables( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_get_hardeningFunction ){
+BOOST_AUTO_TEST_CASE( test_get_hardeningFunction, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class stressMock : public tardigradeHydra::residualBase {
 
@@ -1121,21 +1174,21 @@ BOOST_AUTO_TEST_CASE( test_get_hardeningFunction ){
     R_grad1.get_dHardeningFunctiondStateVariables( );
     R_grad2.get_dPreviousHardeningFunctiondPreviousStateVariables( );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R_ngrad.get_hardeningFunction( ) ) );
+    BOOST_TEST( answer == *R_ngrad.get_hardeningFunction( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previous_answer, *R_ngrad.get_previousHardeningFunction( ) ) );
+    BOOST_TEST( previous_answer == *R_ngrad.get_previousHardeningFunction( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R_grad1.get_hardeningFunction( ) ) );
+    BOOST_TEST( answer == *R_grad1.get_hardeningFunction( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previous_answer, *R_grad1.get_previousHardeningFunction( ) ) );
+    BOOST_TEST( previous_answer == *R_grad1.get_previousHardeningFunction( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( answer, *R_grad2.get_hardeningFunction( ) ) );
+    BOOST_TEST( answer == *R_grad2.get_hardeningFunction( ), CHECK_PER_ELEMENT );
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( previous_answer, *R_grad2.get_previousHardeningFunction( ) ) );
+    BOOST_TEST( previous_answer == *R_grad2.get_previousHardeningFunction( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_get_hardeningFunction2 ){
+BOOST_AUTO_TEST_CASE( test_get_hardeningFunction2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class stressMock : public tardigradeHydra::residualBase {
 
@@ -1312,7 +1365,7 @@ BOOST_AUTO_TEST_CASE( test_get_hardeningFunction2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( J1, *R_grad.get_dHardeningFunctiondStateVariables( ) ) );
+    BOOST_TEST( J1 == *R_grad.get_dHardeningFunctiondStateVariables( ), CHECK_PER_ELEMENT );
 
     offset = 19;
 
@@ -1348,11 +1401,11 @@ BOOST_AUTO_TEST_CASE( test_get_hardeningFunction2 ){
 
     }
 
-    BOOST_CHECK( tardigradeVectorTools::fuzzyEquals( J2, *R_grad.get_dPreviousHardeningFunctiondPreviousStateVariables( ) ) );
+    BOOST_TEST( J2 == *R_grad.get_dPreviousHardeningFunctiondPreviousStateVariables( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_get_jacobian ){
+BOOST_AUTO_TEST_CASE( test_get_jacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class stressMock : public tardigradeHydra::residualBase {
 
