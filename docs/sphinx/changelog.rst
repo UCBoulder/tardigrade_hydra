@@ -57,6 +57,7 @@ Internal Changes
 - Moved the Newton solve to its own function (:pull:`121`). By `Nathan Miller`_.
 - Moved the preconditioned Newton solve to its own function (:pull:`122`). By `Nathan Miller`_.
 - Changed the function calls for the Newton solve to a more general LHS and RHS form (:pull:`122`). By `Nathan Miller`_.
+- Removed all of the calls to fuzzyEquals for the tests (:pull:`123`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
