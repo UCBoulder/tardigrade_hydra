@@ -14,6 +14,9 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
+#define DEFAULT_TEST_TOLERANCE 1e-6
+#define CHECK_PER_ELEMENT boost::test_tools::per_element( )
+
 typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
 typedef tardigradeHydra::micromorphicLinearElasticity::floatType floatType; //!< Redefinition of the floating point type
@@ -64,7 +67,57 @@ namespace tardigradeHydra{
 
 }
 
-BOOST_AUTO_TEST_CASE( testLinearElasticity ){
+bool tolerantCheck( const std::vector< double > &v1, const std::vector< double > &v2, double eps = 1e-6, double tol = 1e-9 ){
+
+    if ( v1.size( ) != v2.size( ) ){
+
+        return false;
+
+    }
+
+    BOOST_CHECK( v1.size( ) == v2.size( ) );
+
+    const unsigned int len = v1.size( );
+
+    for ( unsigned int i = 0; i < len; i++ ){
+
+        if ( ( std::fabs( v1[ i ] ) < tol ) || ( std::fabs( v2[ i ] ) < tol ) ){
+
+            if ( std::fabs( v1[ i ] - v2[ i ] ) > eps ){
+
+                return false;
+
+            }
+
+        }
+        else{
+
+            if ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) > eps ) ||
+                 ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) > eps ) ){
+
+                return false;
+
+            }
+
+        }
+
+    }
+
+    return true;
+
+}
+
+bool tolerantCheck( const double &v1, const double &v2, double eps = 1e-6, double tol = 1e-9 ){
+
+    std::vector< double > _v1 = { v1 };
+
+    std::vector< double > _v2 = { v2 };
+
+    return tolerantCheck( _v1, _v2, eps, tol );
+
+}
+
+BOOST_AUTO_TEST_CASE( testLinearElasticity, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the micromorphic linear elasticity model where the 
      * stresses are pushed to the current configuration.
@@ -477,7 +530,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticity ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures ){
+BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the micromorphic linear elastic constitutive model from the 
      * derived deformation measures.
@@ -864,7 +917,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
+BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the deformation metrics when there are multiple configurations.
      *
@@ -1510,7 +1563,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReferenceDerivedMeasures2 ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testLinearElasticityReference ){
+BOOST_AUTO_TEST_CASE( testLinearElasticityReference, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the micromorphic linear elastic constitutive model.
      *
@@ -1911,7 +1964,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReference ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testMapStressesToCurrent ){
+BOOST_AUTO_TEST_CASE( testMapStressesToCurrent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test mapping the stresses from the reference configuration 
      * to the current configuration.
@@ -2388,7 +2441,7 @@ BOOST_AUTO_TEST_CASE( testMapStressesToCurrent ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testSetStresses ){
+BOOST_AUTO_TEST_CASE( testSetStresses, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test mapping the stresses from the reference configuration 
      * to the current configuration.
@@ -3427,7 +3480,7 @@ BOOST_AUTO_TEST_CASE( testSetStresses ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
+BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the deformation metrics.
      *
@@ -3856,7 +3909,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
+BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the deformation metrics when there are multiple configurations.
      *
@@ -4478,7 +4531,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2 ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm1 ){
+BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm1, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the linear elastic term 1
      *
@@ -4602,7 +4655,7 @@ BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm1 ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm2 ){
+BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of term 2 for linear elasticity.
      *
@@ -4755,7 +4808,7 @@ BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm2 ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testComputeReferenceHigherOrderStress ){
+BOOST_AUTO_TEST_CASE( testComputeReferenceHigherOrderStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the higher order stress in the reference configuration.
      *
@@ -4964,7 +5017,7 @@ BOOST_AUTO_TEST_CASE( testComputeReferenceHigherOrderStress ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm3 ){
+BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm3, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the third term for micromorphic linear elasticity.
      *
@@ -5059,7 +5112,7 @@ BOOST_AUTO_TEST_CASE( testComputeLinearElasticTerm3 ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testComputeInvRCGPsi ){
+BOOST_AUTO_TEST_CASE( testComputeInvRCGPsi, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the invRCG Psi product
      *
@@ -5147,7 +5200,7 @@ BOOST_AUTO_TEST_CASE( testComputeInvRCGPsi ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testComputeInvRCGGamma ){
+BOOST_AUTO_TEST_CASE( testComputeInvRCGGamma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the computation of the invRCG Gamma product
      *
@@ -5242,7 +5295,7 @@ BOOST_AUTO_TEST_CASE( testComputeInvRCGGamma ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testFormIsotropicA ){
+BOOST_AUTO_TEST_CASE( testFormIsotropicA, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the formation of the isotropic A stiffness tensor.
      *
@@ -5269,7 +5322,7 @@ BOOST_AUTO_TEST_CASE( testFormIsotropicA ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testFormIsotropicB ){
+BOOST_AUTO_TEST_CASE( testFormIsotropicB, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the formation of the isotropic B stiffness tensor.
      *
@@ -5299,7 +5352,7 @@ BOOST_AUTO_TEST_CASE( testFormIsotropicB ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testFormIsotropicC ){
+BOOST_AUTO_TEST_CASE( testFormIsotropicC, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the formation of the isotropic C stiffness tensor.
      *
@@ -5377,7 +5430,7 @@ BOOST_AUTO_TEST_CASE( testFormIsotropicC ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testFormIsotropicD ){
+BOOST_AUTO_TEST_CASE( testFormIsotropicD, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the formation of the isotropic D stiffness tensor.
      *
@@ -5404,7 +5457,7 @@ BOOST_AUTO_TEST_CASE( testFormIsotropicD ){
 
 }
 
-BOOST_AUTO_TEST_CASE( testAssembleFundamentalDeformationMeasures ){
+BOOST_AUTO_TEST_CASE( testAssembleFundamentalDeformationMeasures, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Assemble the fundamental deformation measures from the degrees of freedom.
      *
@@ -5629,7 +5682,7 @@ BOOST_AUTO_TEST_CASE( testAssembleFundamentalDeformationMeasures ){
     }
 }
 
-BOOST_AUTO_TEST_CASE( testExtractMaterialParameters ){
+BOOST_AUTO_TEST_CASE( testExtractMaterialParameters, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test the extraction of the material parameters.
      *
@@ -5696,7 +5749,7 @@ BOOST_AUTO_TEST_CASE( testExtractMaterialParameters ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setResidual ){
+BOOST_AUTO_TEST_CASE( test_setResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test mapping the stresses from the reference configuration 
      * to the current configuration.
@@ -5834,7 +5887,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setResidual2 ){
+BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test mapping the stresses from the reference configuration 
      * to the current configuration.
@@ -6118,7 +6171,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2 ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setStress ){
+BOOST_AUTO_TEST_CASE( test_setStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Test mapping the stresses from the reference configuration 
      * to the current configuration.
