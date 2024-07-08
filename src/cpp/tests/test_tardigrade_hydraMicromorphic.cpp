@@ -13,6 +13,9 @@
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
+#define DEFAULT_TEST_TOLERANCE 1e-6
+#define CHECK_PER_ELEMENT boost::test_tools::per_element( )
+
 typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
 typedef tardigradeHydra::floatType floatType; //!< Redefinition of the floating point type
@@ -32,7 +35,62 @@ struct cout_redirect{
         std::streambuf * old;
 };
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor ){
+bool tolerantCheck( const std::vector< double > &v1, const std::vector< double > &v2, double eps = 1e-6, double tol = 1e-9 ){
+
+    if ( v1.size( ) != v2.size( ) ){
+
+        return false;
+
+    }
+
+    BOOST_CHECK( v1.size( ) == v2.size( ) );
+
+    const unsigned int len = v1.size( );
+
+    for ( unsigned int i = 0; i < len; i++ ){
+
+        if ( ( std::fabs( v1[ i ] ) < tol ) || ( std::fabs( v2[ i ] ) < tol ) ){
+
+            if ( std::fabs( v1[ i ] - v2[ i ] ) > eps ){
+
+                return false;
+
+            }
+
+        }
+        else{
+
+            if ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) > eps ) ||
+                 ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) > eps ) ){
+
+                std::cout << "v1: " << v1[ i ] << "\n";
+                std::cout << "v2: " << v2[ i ] << "\n";
+                std::cout << "r1: " << std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) << "\n";
+                std::cout << "r2: " << std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) << "\n";
+
+                return false;
+
+            }
+
+        }
+
+    }
+
+    return true;
+
+}
+
+bool tolerantCheck( const double &v1, const double &v2, double eps = 1e-6, double tol = 1e-9 ){
+
+    std::vector< double > _v1 = { v1 };
+
+    std::vector< double > _v2 = { v2 };
+
+    return tolerantCheck( _v1, _v2, eps, tol );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -167,7 +225,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfiguration ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -291,7 +349,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigura
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreceedingMicroConfiguration ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreceedingMicroConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -409,7 +467,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreceedingMicroCo
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getUnknownVector ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getUnknownVector, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -625,7 +683,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getUnknownVector ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroConfiguration ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -743,7 +801,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroCon
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getMicroConfiguration ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getMicroConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -867,7 +925,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getMicroConfiguratio
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroConfiguration ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -991,7 +1049,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroC
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPreceedingMicroConfiguration ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPreceedingMicroConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -1109,7 +1167,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPreceedin
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowingMicroConfiguration ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowingMicroConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -1227,7 +1285,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowing
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousMicroConfiguration ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousMicroConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -1351,7 +1409,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousMicroCon
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigurationJacobian ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -1529,7 +1587,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfigura
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroConfigurationJacobian ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -1707,7 +1765,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPrecedingMicroCon
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroConfigurationJacobian ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -1885,7 +1943,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getFollowingMicroCon
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroConfigurationJacobian ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -2062,7 +2120,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousSubMicroC
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPrecedingMicroConfigurationJacobian ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPrecedingMicroConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -2240,7 +2298,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousPreceding
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowingMicroConfigurationJacobian ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowingMicroConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -2418,7 +2476,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousFollowing
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChi ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChi, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -2575,7 +2633,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChi ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousdChi1dChi ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousdChi1dChi, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -2732,7 +2790,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getPreviousdChi1dChi
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChin ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChin, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -2889,7 +2947,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_dChi1dChin ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousdChi1dChin ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousdChi1dChin, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -3046,7 +3104,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousdChi1dCh
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroConfigurations ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroConfigurations, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -3172,7 +3230,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroConfigurations_jacobians ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroConfigurations_jacobians, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -3513,7 +3571,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_gradientMicroCon
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradientMicroConfigurations ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradientMicroConfigurations, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -3639,7 +3697,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
 
 }
 
-BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradientMicroConfigurations_jacobians ){
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradientMicroConfigurations_jacobians, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
@@ -3980,7 +4038,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBaseMicromorphic ){
+BOOST_AUTO_TEST_CASE( test_residualBaseMicromorphic, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::residualBaseMicromorphic{
 
@@ -4083,7 +4141,7 @@ BOOST_AUTO_TEST_CASE( test_residualBaseMicromorphic ){
 
 }
 
-BOOST_AUTO_TEST_CASE( test_updateUnknownVector ){
+BOOST_AUTO_TEST_CASE( test_updateUnknownVector, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
 
