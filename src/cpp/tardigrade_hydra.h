@@ -866,6 +866,8 @@ namespace tardigradeHydra{
 
             void set_basedResidualNormdX( const floatVector &value ){ setNLStepData( value, _basedResidualNormdX ); }
 
+            virtual void setBaseQuantities( );
+
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
                 /*!
