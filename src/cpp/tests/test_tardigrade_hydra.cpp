@@ -3983,6 +3983,15 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                                                                      },
                                                                  };
 
+            std::vector< floatType > expectedBaseResidualNorms = { 14, 77, 245, 110 };
+
+            std::vector< floatVector > expectedBasedResidualNormdXs = {
+                                                                         {   2.97757248,  -1.95288068,  -3.03183756 },
+                                                                         { -16.10008822,  -6.7048463 ,  14.58211116 },
+                                                                         { -33.99029958,  28.301765  , -20.74369594 },
+                                                                         {  -4.96839724,  18.87890456,   2.15863168 }
+                                                                      };
+
             std::vector< std::vector< floatVector > > flatJacobian = {
                                                                          {
                                                                            {  0.99951474, -0.18854971, -0.59377647,  0.73798389,  0.50649978,
@@ -4111,6 +4120,10 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                 unsigned int LSIteration = tardigradeHydra::unit_test::hydraBaseTester::get_LSIteration( *this );
 
                 BOOST_TEST( expectedXVectors[ iteration ][ LSIteration ] == newUnknownVector, CHECK_PER_ELEMENT );
+
+                BOOST_TEST( expectedBaseResidualNorms[ iteration ] == *get_baseResidualNorm( ) );
+
+                BOOST_TEST( expectedBasedResidualNormdXs[ iteration ] == *get_basedResidualNormdX( ), CHECK_PER_ELEMENT );
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, newUnknownVector );
 

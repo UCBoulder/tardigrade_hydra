@@ -1650,6 +1650,17 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::setBaseQuantities( ){
+        /*!
+         * Set the base quantities required for gradient steps
+         */
+
+        set_baseResidualNorm( *get_residualNorm( ) );
+
+        set_basedResidualNormdX( *get_dResidualNormdX( ) );
+
+    }
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
@@ -1667,6 +1678,8 @@ namespace tardigradeHydra{
             floatVector X0 = *getUnknownVector( );
 
             solveNewtonUpdate( deltaX );
+
+            setBaseQuantities( );
 
             updateUnknownVector( X0 + *getLambda( ) * deltaX );
 
