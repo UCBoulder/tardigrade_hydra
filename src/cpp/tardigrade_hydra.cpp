@@ -1625,7 +1625,7 @@ namespace tardigradeHydra{
 
         }
 
-        if ( !checkGradientConvergence( X0 ) ){
+        if ( l >= maxiter ){
 
             throw convergence_error( "Failure in gradient step" );
 
