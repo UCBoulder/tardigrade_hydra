@@ -800,6 +800,8 @@ namespace tardigradeHydra{
 
             virtual void calculateFirstConfigurationJacobians( const floatVector &configurations, floatVector &dC1dC, floatVector &dC1dCn );
 
+            virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
+
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
                 /*!

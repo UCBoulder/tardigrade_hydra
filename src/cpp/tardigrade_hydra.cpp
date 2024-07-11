@@ -1517,6 +1517,26 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
+        /*!
+         * Perform an Armijo-type line search
+         *
+         * \param &X0: The base value of the unknown vector
+         * \param &delta: The proposed change in X
+         */
+
+        while ( !checkLSConvergence( ) && checkLSIteration( ) ){
+
+            updateLambda( );
+
+            incrementLSIteration( );
+
+            updateUnknownVector( X0 + *getLambda( ) * deltaX );
+
+        }
+
+    }
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
@@ -1537,15 +1557,7 @@ namespace tardigradeHydra{
 
             updateUnknownVector( X0 + *getLambda( ) * deltaX );
 
-            while ( !checkLSConvergence( ) && checkLSIteration( ) ){
-
-                updateLambda( );
-
-                incrementLSIteration( );
-
-                updateUnknownVector( X0 + *getLambda( ) * deltaX );
-
-            }
+            performArmijoTypeLineSearch( X0, deltaX );
 
             if ( !checkLSConvergence( ) ){
 
