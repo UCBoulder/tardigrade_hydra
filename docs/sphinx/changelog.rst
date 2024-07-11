@@ -12,6 +12,12 @@ Changelog
 New Features
 ============
 - Added the gradient of the residual norm (:pull:`125`). By `Nathan Miller`_.
+- Added a gradient step alternative to the Armijo-type line search (:pull:`126`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Moved the Armijo-type line search into a separate function (:pull:`126`). By `Nathan Miller`_.
+- Added data containers that will be cleared after each nonlinear iteration (:pull:`126`). By `Nathan Miller`_.
 
 ******************
 0.4.2 (07-11-2024)
