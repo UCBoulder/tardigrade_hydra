@@ -150,6 +150,10 @@ namespace tardigradeHydra{
                 //! The index of the scalar damage
                 unsigned int damageISVIndex = 1;
 
+            protected:
+
+                virtual void decomposeParameters( const floatVector &parameters ) override;
+
             private:
 
                 unsigned int _elasticConfigurationIndex;
@@ -178,25 +182,25 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamagedPreviousStateVariables,                    floatVector, setAllDamageJacobians                    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdCauchyStress,           floatMatrix, setDamageDeformationGradientJacobians    )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdCauchyStress,           floatVector, setDamageDeformationGradientJacobians    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdF,                      floatMatrix, setDamageDeformationGradientJacobians    )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdF,                      floatVector, setDamageDeformationGradientJacobians    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdSubFs,                  floatMatrix, setDamageDeformationGradientJacobians    )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdSubFs,                  floatVector, setDamageDeformationGradientJacobians    )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdT,                      floatVector, setDamageDeformationGradientJacobians    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdStateVariables,         floatMatrix, setDamageDeformationGradientJacobians    )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdStateVariables,         floatVector, setDamageDeformationGradientJacobians    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdPreviousCauchyStress,   floatMatrix, setAllDamageDeformationGradientJacobians )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdPreviousCauchyStress,   floatVector, setAllDamageDeformationGradientJacobians )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdPreviousF,              floatMatrix, setAllDamageDeformationGradientJacobians )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdPreviousF,              floatVector, setAllDamageDeformationGradientJacobians )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdPreviousSubFs,          floatMatrix, setAllDamageDeformationGradientJacobians )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdPreviousSubFs,          floatVector, setAllDamageDeformationGradientJacobians )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdPreviousT,              floatVector, setAllDamageDeformationGradientJacobians )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdPreviousStateVariables, floatMatrix, setAllDamageDeformationGradientJacobians )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDamageDeformationGradientdPreviousStateVariables, floatVector, setAllDamageDeformationGradientJacobians )
 
         };
 

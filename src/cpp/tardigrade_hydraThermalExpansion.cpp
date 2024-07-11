@@ -73,24 +73,30 @@ namespace tardigradeHydra{
              * Set the thermal deformation gradient
              */
 
-            const unsigned int *dim = hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
             floatVector thermalDeformationGradient;
 
-            floatMatrix dThermalGreenLagrangeStraindThermalDeformationGradient;
+            floatVector dThermalGreenLagrangeStraindThermalDeformationGradient;
 
-            floatVector eye( ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ) );
+            floatMatrix _dThermalGreenLagrangeStraindThermalDeformationGradient;
+
+            floatVector eye( sot_dim, 0 );
             tardigradeVectorTools::eye( eye );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( thermalDeformationGradient = tardigradeVectorTools::matrixSqrt( 2 * ( *get_thermalGreenLagrangeStrain( ) ) + eye, *hydra->getDimension( ), dThermalGreenLagrangeStraindThermalDeformationGradient ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( thermalDeformationGradient = tardigradeVectorTools::matrixSqrt( 2 * ( *get_thermalGreenLagrangeStrain( ) ) + eye, dim, _dThermalGreenLagrangeStraindThermalDeformationGradient ) );
+
+            dThermalGreenLagrangeStraindThermalDeformationGradient = tardigradeVectorTools::appendVectors( _dThermalGreenLagrangeStraindThermalDeformationGradient );
 
             set_thermalDeformationGradient( thermalDeformationGradient );
 
-            floatMatrix dThermalDeformationGradientdGreenLagrangeStrain;
+            floatVector dThermalDeformationGradientdGreenLagrangeStrain;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dThermalDeformationGradientdGreenLagrangeStrain = tardigradeVectorTools::inflate( 2 * tardigradeVectorTools::inverse( tardigradeVectorTools::appendVectors( dThermalGreenLagrangeStraindThermalDeformationGradient ), ( *dim ) * ( *dim ), ( *dim ) * ( *dim ) ), ( *dim ) * ( *dim ), ( *dim ) * ( *dim ) ) );
+            dThermalDeformationGradientdGreenLagrangeStrain = 2 * tardigradeVectorTools::inverse( dThermalGreenLagrangeStraindThermalDeformationGradient, sot_dim, sot_dim );
 
-            set_dThermalDeformationGradientdT( tardigradeVectorTools::dot( dThermalDeformationGradientdGreenLagrangeStrain, *get_dThermalGreenLagrangeStraindT( ) ) );
+            set_dThermalDeformationGradientdT( tardigradeVectorTools::matrixMultiply( dThermalDeformationGradientdGreenLagrangeStrain, *get_dThermalGreenLagrangeStraindT( ), sot_dim, sot_dim, sot_dim, 1 ) );
 
         }
 
@@ -119,7 +125,10 @@ namespace tardigradeHydra{
              * Defined as the residual's computed thermal deformation gradient minus the value stored in hydra's configurations.
              */
 
-            setResidual( *get_thermalDeformationGradient( ) - ( *hydra->get_configurations( ) )[ *getThermalConfigurationIndex( ) ] );
+            const unsigned int thermalConfigurationIndex = *getThermalConfigurationIndex( );
+
+            setResidual( *get_thermalDeformationGradient( ) - floatVector( hydra->get_configurations( )->begin( ) +   thermalConfigurationIndex * 9,
+                                                                           hydra->get_configurations( )->begin( ) + ( thermalConfigurationIndex + 1 ) * 9 ) );
 
         }
 
@@ -128,13 +137,15 @@ namespace tardigradeHydra{
              * Set the values of the jacobian
              */
 
-            const unsigned int *dim = hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+            const unsigned int num_unknowns = hydra->getNumUnknowns( );
+
+            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
 
             for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
 
-                jacobian[ i ][ ( *dim ) * ( *dim ) * ( *getThermalConfigurationIndex( ) ) + i ] = -1;
+                jacobian[ num_unknowns * i + sot_dim * ( *getThermalConfigurationIndex( ) ) + i ] = -1;
 
             }
 
@@ -156,7 +167,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            setdRdF( floatMatrix( *getNumEquations( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) ) );
+            setdRdF( floatVector( *getNumEquations( ) * hydra->getDeformationGradient( )->size( ), 0 ) );
 
         }
 
@@ -170,9 +181,11 @@ namespace tardigradeHydra{
              *     tardigradeConstitutiveTools::quadraticThermalExpansion.
              */
 
-            const unsigned int *dim = hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
 
-            unsigned int parametersPerTerm = ( *dim ) + ( ( *dim ) * ( *dim ) - ( *dim ) ) / 2;
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            unsigned int parametersPerTerm = dim + ( dim * dim - dim ) / 2;
 
             unsigned int expectedSize = 1 + 2 * parametersPerTerm;
 
@@ -192,17 +205,17 @@ namespace tardigradeHydra{
 
             unsigned int index = 0;
 
-            floatVector linearParameters( ( *dim ) * ( *dim ), 0 );
+            floatVector linearParameters( sot_dim, 0 );
 
-            floatVector quadraticParameters( ( *dim ) * ( *dim ), 0 );
+            floatVector quadraticParameters( sot_dim, 0 );
 
-            for ( unsigned int i = 0; i < ( *dim ); i++ ){
+            for ( unsigned int i = 0; i < dim; i++ ){
 
-                for ( unsigned int j = i; j < ( *dim ); j++ ){
+                for ( unsigned int j = i; j < dim; j++ ){
 
-                    linearParameters[ ( *dim ) * i + j ] = linearParameters[ ( *dim ) * j + i ] = parameters[ 1 + index ];
+                    linearParameters[ dim * i + j ] = linearParameters[ dim * j + i ] = parameters[ 1 + index ];
 
-                    quadraticParameters[ ( *dim ) * i + j ] = quadraticParameters[ ( *dim ) * j + i ] = parameters[ 1 + parametersPerTerm + index ];
+                    quadraticParameters[ dim * i + j ] = quadraticParameters[ dim * j + i ] = parameters[ 1 + parametersPerTerm + index ];
 
                     index++;
 

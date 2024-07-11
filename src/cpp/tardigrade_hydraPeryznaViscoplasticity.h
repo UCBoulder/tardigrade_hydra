@@ -89,7 +89,7 @@ namespace tardigradeHydra{
 
                     _integrationParameter = integrationParameter;
 
-                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameters( parameters ) );
+                    _parameters = parameters;
 
                 }
 
@@ -141,6 +141,8 @@ namespace tardigradeHydra{
                 virtual void setdYieldFunctiondF( );
 
                 virtual void setdYieldFunctiondSubFs( );
+
+                virtual void setdYieldFunctiondStateVariables( );
 
                 virtual void setPlasticThermalMultiplier( );
 
@@ -213,6 +215,8 @@ namespace tardigradeHydra{
                 virtual void setdPreviousYieldFunctiondPreviousF( );
 
                 virtual void setdPreviousYieldFunctiondPreviousSubFs( );
+
+                virtual void setdPreviousYieldFunctiondPreviousStateVariables( );
 
                 virtual void setPreviousPlasticThermalMultiplier( );
 
@@ -291,6 +295,8 @@ namespace tardigradeHydra{
                 virtual void setdYieldFunctiondF( const bool isPrevious );
 
                 virtual void setdYieldFunctiondSubFs( const bool isPrevious );
+
+                virtual void setdYieldFunctiondStateVariables( const bool isPrevious );
 
                 virtual void setPlasticThermalMultiplier( const bool isPrevious );
 
@@ -416,6 +422,20 @@ namespace tardigradeHydra{
 
                 virtual void decomposeParameters( const floatVector &parameters );
 
+                const floatVector * getParameters( ){ return &_parameters; }
+
+                virtual void setPeryznaParameters( ){ decomposeParameters( *getParameters( ) ); }
+
+                virtual void setDragStressParameters( ){ decomposeParameters( *getParameters( ) ); }
+
+                virtual void setThermalParameters( ){ decomposeParameters( *getParameters( ) ); }
+
+                virtual void setYieldParameters( ){ decomposeParameters( *getParameters( ) ); }
+
+                virtual void setFlowParameters( ){ decomposeParameters( *getParameters( ) ); }
+
+                virtual void setHardeningParameters( ){ decomposeParameters( *getParameters( ) ); }
+
             private:
 
                 unsigned int _plasticConfigurationIndex;
@@ -424,55 +444,39 @@ namespace tardigradeHydra{
 
                 floatType _integrationParameter;
 
-                //! Throw an error if the Peryzna parameters haven't been defined
-                void peryznaError( ){ throw std::runtime_error( "Peryzna parameters not defined but required" ); }
-
-                //! Throw an error if the drag stress parameters haven't been defined
-                void dragStressError( ){ throw std::runtime_error( "Drag stress parameters not defined but required" ); }
-
-                //! Throw an error if the thermal parameters haven't been defined
-                void thermalError( ){ throw std::runtime_error( "Thermal parameters not defined but required" ); }
-
-                //! Throw an error if the yield parameters haven't been defined
-                void yieldError( ){ throw std::runtime_error( "Yield parameters not defined but required" ); }
-
-                //! Throw an error if the flow parameters haven't been defined
-                void flowError( ){ throw std::runtime_error( "Flow parameters not defined but required" ); }
-
-                //! Throw an error if the hardening parameters haven't been defined
-                void hardeningError( ){ throw std::runtime_error( "Hardening parameters not defined but required" ); }
+                floatVector _parameters;
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, drivingStress,                                               floatVector, setDrivingStress                                               )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousDrivingStress,                                       floatVector, setPreviousDrivingStress                                       )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDrivingStressdCauchyStress,                                 floatMatrix, setdDrivingStressdCauchyStress                                 )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDrivingStressdCauchyStress,                                 floatVector, setdDrivingStressdCauchyStress                                 )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDrivingStressdF,                                            floatMatrix, setdDrivingStressdF                                            )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDrivingStressdF,                                            floatVector, setdDrivingStressdF                                            )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDrivingStressdSubFs,                                        floatMatrix, setdDrivingStressdSubFs                                        )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dDrivingStressdSubFs,                                        floatVector, setdDrivingStressdSubFs                                        )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousDrivingStressdPreviousCauchyStress,                 floatMatrix, setdPreviousDrivingStressdPreviousCauchyStress                 )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousDrivingStressdPreviousCauchyStress,                 floatVector, setdPreviousDrivingStressdPreviousCauchyStress                 )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousDrivingStressdPreviousF,                            floatMatrix, setdPreviousDrivingStressdPreviousF                            )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousDrivingStressdPreviousF,                            floatVector, setdPreviousDrivingStressdPreviousF                            )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousDrivingStressdPreviousSubFs,                        floatMatrix, setdPreviousDrivingStressdPreviousSubFs                        )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousDrivingStressdPreviousSubFs,                        floatVector, setdPreviousDrivingStressdPreviousSubFs                        )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, flowDirection,                                               floatVector, setFlowDirection                                               )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousFlowDirection,                                       floatVector, setPreviousFlowDirection                                       )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFlowDirectiondCauchyStress,                                 floatMatrix, setdFlowDirectiondCauchyStress                                 )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFlowDirectiondCauchyStress,                                 floatVector, setdFlowDirectiondCauchyStress                                 )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFlowDirectiondF,                                            floatMatrix, setdFlowDirectiondF                                            )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFlowDirectiondF,                                            floatVector, setdFlowDirectiondF                                            )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFlowDirectiondSubFs,                                        floatMatrix, setdFlowDirectiondSubFs                                        )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFlowDirectiondSubFs,                                        floatVector, setdFlowDirectiondSubFs                                        )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousFlowDirectiondPreviousCauchyStress,                 floatMatrix, setdPreviousFlowDirectiondPreviousCauchyStress                 )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousFlowDirectiondPreviousCauchyStress,                 floatVector, setdPreviousFlowDirectiondPreviousCauchyStress                 )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousFlowDirectiondPreviousF,                            floatMatrix, setdPreviousFlowDirectiondPreviousF                            )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousFlowDirectiondPreviousF,                            floatVector, setdPreviousFlowDirectiondPreviousF                            )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousFlowDirectiondPreviousSubFs,                        floatMatrix, setdPreviousFlowDirectiondPreviousSubFs                        )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousFlowDirectiondPreviousSubFs,                        floatVector, setdPreviousFlowDirectiondPreviousSubFs                        )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, yieldFunction,                                               floatType,   setYieldFunction                                               )
 
@@ -482,6 +486,8 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dYieldFunctiondSubFs,                                        floatVector, setdYieldFunctiondSubFs                                        )
 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dYieldFunctiondStateVariables,                               floatVector, setdYieldFunctiondStateVariables                               )
+
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousYieldFunction,                                       floatType,   setPreviousYieldFunction                                       )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousYieldFunctiondPreviousCauchyStress,                 floatVector, setdPreviousYieldFunctiondPreviousCauchyStress                 )
@@ -489,6 +495,8 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousYieldFunctiondPreviousF,                            floatVector, setdPreviousYieldFunctiondPreviousF                            )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousYieldFunctiondPreviousSubFs,                        floatVector, setdPreviousYieldFunctiondPreviousSubFs                        )
+
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousYieldFunctiondPreviousStateVariables,               floatVector, setdPreviousYieldFunctiondPreviousStateVariables               )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticThermalMultiplier,                                    floatType,   setPlasticThermalMultiplier                                    )
 
@@ -506,11 +514,11 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousDragStressdPreviousStateVariables,                  floatVector, setdPreviousDragStressdPreviousStateVariables                  )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, hardeningFunction,                                           floatType,   setHardeningFunction                                           )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, hardeningFunction,                                           floatVector, setHardeningFunction                                           )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHardeningFunctiondStateVariables,                           floatVector, setdHardeningFunctiondStateVariables                           )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousHardeningFunction,                                   floatType,   setPreviousHardeningFunction                                   )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousHardeningFunction,                                   floatVector, setPreviousHardeningFunction                                   )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousHardeningFunctiondPreviousStateVariables,           floatVector, setdPreviousHardeningFunctiondPreviousStateVariables           )
 
@@ -540,111 +548,111 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, velocityGradient,                                            floatVector, setVelocityGradient                                            )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVelocityGradientdCauchyStress,                              floatMatrix, setdVelocityGradientdCauchyStress                              )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVelocityGradientdCauchyStress,                              floatVector, setdVelocityGradientdCauchyStress                              )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVelocityGradientdF,                                         floatMatrix, setdVelocityGradientdF                                         )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVelocityGradientdF,                                         floatVector, setdVelocityGradientdF                                         )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVelocityGradientdSubFs,                                     floatMatrix, setdVelocityGradientdSubFs                                     )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVelocityGradientdSubFs,                                     floatVector, setdVelocityGradientdSubFs                                     )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVelocityGradientdT,                                         floatVector, setdVelocityGradientdT                                         )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVelocityGradientdStateVariables,                            floatMatrix, setdVelocityGradientdStateVariables                            )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dVelocityGradientdStateVariables,                            floatVector, setdVelocityGradientdStateVariables                            )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousVelocityGradient,                                    floatVector, setPreviousVelocityGradient                                    )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousVelocityGradientdPreviousCauchyStress,              floatMatrix, setdPreviousVelocityGradientdPreviousCauchyStress              )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousVelocityGradientdPreviousCauchyStress,              floatVector, setdPreviousVelocityGradientdPreviousCauchyStress              )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousVelocityGradientdPreviousF,                         floatMatrix, setdPreviousVelocityGradientdPreviousF                         )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousVelocityGradientdPreviousF,                         floatVector, setdPreviousVelocityGradientdPreviousF                         )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousVelocityGradientdPreviousSubFs,                     floatMatrix, setdPreviousVelocityGradientdPreviousSubFs                     )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousVelocityGradientdPreviousSubFs,                     floatVector, setdPreviousVelocityGradientdPreviousSubFs                     )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousVelocityGradientdPreviousT,                         floatVector, setdPreviousVelocityGradientdPreviousT                         )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousVelocityGradientdPreviousStateVariables,            floatMatrix, setdPreviousVelocityGradientdPreviousStateVariables            )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousVelocityGradientdPreviousStateVariables,            floatVector, setdPreviousVelocityGradientdPreviousStateVariables            )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, stateVariableEvolutionRates,                                 floatVector, setStateVariableEvolutionRates                                 )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dStateVariableEvolutionRatesdCauchyStress,                   floatMatrix, setdStateVariableEvolutionRatesdCauchyStress                   )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dStateVariableEvolutionRatesdCauchyStress,                   floatVector, setdStateVariableEvolutionRatesdCauchyStress                   )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dStateVariableEvolutionRatesdF,                              floatMatrix, setdStateVariableEvolutionRatesdF                              )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dStateVariableEvolutionRatesdF,                              floatVector, setdStateVariableEvolutionRatesdF                              )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dStateVariableEvolutionRatesdSubFs,                          floatMatrix, setdStateVariableEvolutionRatesdSubFs                          )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dStateVariableEvolutionRatesdSubFs,                          floatVector, setdStateVariableEvolutionRatesdSubFs                          )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dStateVariableEvolutionRatesdT,                              floatVector, setdStateVariableEvolutionRatesdT                              )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dStateVariableEvolutionRatesdStateVariables,                 floatMatrix, setdStateVariableEvolutionRatesdStateVariables                 )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dStateVariableEvolutionRatesdStateVariables,                 floatVector, setdStateVariableEvolutionRatesdStateVariables                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousStateVariableEvolutionRates,                         floatVector, setPreviousStateVariableEvolutionRates                         )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousStateVariableEvolutionRatesdPreviousCauchyStress,   floatMatrix, setdPreviousStateVariableEvolutionRatesdPreviousCauchyStress   )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousStateVariableEvolutionRatesdPreviousCauchyStress,   floatVector, setdPreviousStateVariableEvolutionRatesdPreviousCauchyStress   )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousStateVariableEvolutionRatesdPreviousF,              floatMatrix, setdPreviousStateVariableEvolutionRatesdPreviousF              )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousStateVariableEvolutionRatesdPreviousF,              floatVector, setdPreviousStateVariableEvolutionRatesdPreviousF              )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousStateVariableEvolutionRatesdPreviousSubFs,          floatMatrix, setdPreviousStateVariableEvolutionRatesdPreviousSubFs          )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousStateVariableEvolutionRatesdPreviousSubFs,          floatVector, setdPreviousStateVariableEvolutionRatesdPreviousSubFs          )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousStateVariableEvolutionRatesdPreviousT,              floatVector, setdPreviousStateVariableEvolutionRatesdPreviousT              )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousStateVariableEvolutionRatesdPreviousStateVariables, floatMatrix, setdPreviousStateVariableEvolutionRatesdPreviousStateVariables )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousStateVariableEvolutionRatesdPreviousStateVariables, floatVector, setdPreviousStateVariableEvolutionRatesdPreviousStateVariables )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticDeformationGradient,                                  floatVector, setPlasticDeformationGradient                                  )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdCauchyStress,                    floatMatrix, setdPlasticDeformationGradientdCauchyStress                    )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdCauchyStress,                    floatVector, setdPlasticDeformationGradientdCauchyStress                    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdF,                               floatMatrix, setdPlasticDeformationGradientdF                               )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdF,                               floatVector, setdPlasticDeformationGradientdF                               )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdSubFs,                           floatMatrix, setdPlasticDeformationGradientdSubFs                           )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdSubFs,                           floatVector, setdPlasticDeformationGradientdSubFs                           )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdT,                               floatVector, setdPlasticDeformationGradientdT                               )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdStateVariables,                  floatMatrix, setdPlasticDeformationGradientdStateVariables                  )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdStateVariables,                  floatVector, setdPlasticDeformationGradientdStateVariables                  )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdPreviousCauchyStress,            floatMatrix, setdPlasticDeformationGradientdPreviousCauchyStress            )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdPreviousCauchyStress,            floatVector, setdPlasticDeformationGradientdPreviousCauchyStress            )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdPreviousF,                       floatMatrix, setdPlasticDeformationGradientdPreviousF                       )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdPreviousF,                       floatVector, setdPlasticDeformationGradientdPreviousF                       )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdPreviousSubFs,                   floatMatrix, setdPlasticDeformationGradientdPreviousSubFs                   )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdPreviousSubFs,                   floatVector, setdPlasticDeformationGradientdPreviousSubFs                   )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdPreviousT,                       floatVector, setdPlasticDeformationGradientdPreviousT                       )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdPreviousStateVariables,          floatMatrix, setdPlasticDeformationGradientdPreviousStateVariables          )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticDeformationGradientdPreviousStateVariables,          floatVector, setdPlasticDeformationGradientdPreviousStateVariables          )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, plasticStateVariables,                                       floatVector, setPlasticStateVariables                                       )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdCauchyStress,                         floatMatrix, setdPlasticStateVariablesdCauchyStress                         )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdCauchyStress,                         floatVector, setdPlasticStateVariablesdCauchyStress                         )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdF,                                    floatMatrix, setdPlasticStateVariablesdF                                    )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdF,                                    floatVector, setdPlasticStateVariablesdF                                    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdSubFs,                                floatMatrix, setdPlasticStateVariablesdSubFs                                )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdSubFs,                                floatVector, setdPlasticStateVariablesdSubFs                                )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdT,                                    floatVector, setdPlasticStateVariablesdT                                    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdStateVariables,                       floatMatrix, setdPlasticStateVariablesdStateVariables                       )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdStateVariables,                       floatVector, setdPlasticStateVariablesdStateVariables                       )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdPreviousCauchyStress,                 floatMatrix, setdPlasticStateVariablesdPreviousCauchyStress                 )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdPreviousCauchyStress,                 floatVector, setdPlasticStateVariablesdPreviousCauchyStress                 )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdPreviousF,                            floatMatrix, setdPlasticStateVariablesdPreviousF                            )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdPreviousF,                            floatVector, setdPlasticStateVariablesdPreviousF                            )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdPreviousSubFs,                        floatMatrix, setdPlasticStateVariablesdPreviousSubFs                        )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdPreviousSubFs,                        floatVector, setdPlasticStateVariablesdPreviousSubFs                        )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdPreviousT,                            floatVector, setdPlasticStateVariablesdPreviousT                            )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdPreviousStateVariables,               floatMatrix, setdPlasticStateVariablesdPreviousStateVariables               )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPlasticStateVariablesdPreviousStateVariables,               floatVector, setdPlasticStateVariablesdPreviousStateVariables               )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, stateVariables,                                              floatVector, setStateVariables                                              )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousStateVariables,                                      floatVector, setPreviousStateVariables                                      )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, peryznaParameters,                                           floatVector, peryznaError                                                   )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, peryznaParameters,                                           floatVector, setPeryznaParameters                                           )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, dragStressParameters,                                        floatVector, dragStressError                                                )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, dragStressParameters,                                        floatVector, setDragStressParameters                                        )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, thermalParameters,                                           floatVector, thermalError                                                   )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, thermalParameters,                                           floatVector, setThermalParameters                                           )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, yieldParameters,                                             floatVector, yieldError                                                     )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, yieldParameters,                                             floatVector, setYieldParameters                                             )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, flowParameters,                                              floatVector, flowError                                                      )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, flowParameters,                                              floatVector, setFlowParameters                                              )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, hardeningParameters,                                         floatVector, hardeningError                                                 )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, hardeningParameters,                                         floatVector, setHardeningParameters                                         )
 
         };
 

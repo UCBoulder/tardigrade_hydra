@@ -16,7 +16,10 @@
 //!We will use the functions that depend on Eigen
 #define USE_EIGEN
 #include<tardigrade_vector_tools.h>
-#include<tardigrade_abaqus_tools.h>
+
+#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
+#include<libxsmm.h>
+#endif
 
 /*!
  * \brief Declares a named getter function
@@ -214,6 +217,10 @@ namespace tardigradeHydra{
     typedef std::vector< floatType > floatVector; //!< Define a vector of floats
     typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
 
+#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
+    typedef libxsmm_mmfunction<floatType> kernel_type; //!< The libxsmm kernel type
+#endif
+
     typedef void ( hydraBase::*hydraBaseFxn )( ); //!< Typedef for passing pointers to hydraBase functions
 
     /*!
@@ -399,6 +406,13 @@ namespace tardigradeHydra{
  
             }
 
+            virtual void setdRdAdditionalDOF( ){
+                /*!
+                 * The user-defined derivative of the residual w.r.t. the additional DOF
+                 */
+
+            }
+
             virtual void setAdditionalDerivatives( ){
                 /*!
                  * The user-defined derivative of the residual w.r.t. additional values
@@ -438,6 +452,26 @@ namespace tardigradeHydra{
                 setCurrentAdditionalStateVariables( floatVector( 0, 0 ) );
 
                 return;
+
+            }
+
+            virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
+                                                      std::vector< floatType > &values ){
+
+                /*!
+                 * Function which is called which allows the residual to suggest initial values for given
+                 * configurations. This is called when the unknown vector is being initialized. If more than
+                 * one residual attempts to set the initial vector the last residual will override all of the others.
+                 *
+                 * After the initial iterate has been suggested, the iteration data is cleared so that the residual
+                 * starts the iteration in a clean state.
+                 * 
+                 * \param &indices: The indices of the unknown vector to set
+                 * \param &values:  The values to be set in the unknown vector
+                 */
+
+                indices.clear( );
+                values.clear( );
 
             }
 
@@ -512,13 +546,15 @@ namespace tardigradeHydra{
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setResidual,                         getResidual,                        residual,                        floatVector, setResidual )
                                                                                                                                               
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setJacobian,                         getJacobian,                        jacobian,                        floatMatrix, setJacobian )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setJacobian,                         getJacobian,                        jacobian,                        floatVector, setJacobian )
                                                                                                                                               
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdF,                             getdRdF,                            dRdF,                            floatMatrix, setdRdF )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdF,                             getdRdF,                            dRdF,                            floatVector, setdRdF )
                                                                                                                                               
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdT,                             getdRdT,                            dRdT,                            floatVector, setdRdT )
                                                                                                                                               
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setAdditionalDerivatives,            getAdditionalDerivatives,           additionalDerivatives,           floatMatrix, setAdditionalDerivatives )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdAdditionalDOF,                 getdRdAdditionalDOF,                dRdAdditionalDOF,                floatVector, setdRdAdditionalDOF )
+                                                                                                                                              
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setAdditionalDerivatives,            getAdditionalDerivatives,           additionalDerivatives,           floatVector, setAdditionalDerivatives )
                                                                                                                                               
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setStress,                           getStress,                          stress,                          floatVector, setStress )
                                                                                                                                               
@@ -549,11 +585,13 @@ namespace tardigradeHydra{
             hydraBase( const floatType &time, const floatType &deltaTime,
                        const floatType &temperature, const floatType &previousTemperature,
                        const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
+                       const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
                        const floatVector &previousStateVariables, const floatVector &parameters,
                        const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                        const unsigned int dimension=3, const unsigned int configuration_unknown_count=9,
                        const floatType tolr=1e-9, const floatType tola=1e-9,
-                       const unsigned int maxIterations=20, const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4 );
+                       const unsigned int maxIterations=20, const unsigned int maxLSIterations=5, const floatType lsAlpha=1e-4,
+                       const bool use_preconditioner=false, const unsigned int preconditioner_type=0 );
 
             // User defined functions
 
@@ -581,6 +619,12 @@ namespace tardigradeHydra{
             //! Get a reference to the previous deformation gradient
             const floatVector* getPreviousDeformationGradient( ){ return &_previousDeformationGradient; }
 
+            //! Get a reference to the additional degrees of freedom
+            const floatVector* getAdditionalDOF( ){ return &_additionalDOF; }
+
+            //! Get a reference to the previous additional degrees of freedom
+            const floatVector* getPreviousAdditionalDOF( ){ return &_previousAdditionalDOF; }
+
             //! Get a reference to the previous values of the state variables
             const floatVector* getPreviousStateVariables( ){ return &_previousStateVariables; }
 
@@ -593,8 +637,20 @@ namespace tardigradeHydra{
             //! Get a reference to the number of state variables involved in the non-linear solve
             const unsigned int* getNumNonLinearSolveStateVariables( ){ return &_numNonLinearSolveStateVariables; }
 
+            //! Get a reference to the number of terms in the unknown vector
+            virtual const unsigned int getNumUnknowns( ){ return ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( ); }
+
             //! Get a reference to the dimension
-            const unsigned int* getDimension( ){ return &_dimension; }
+            constexpr unsigned int getDimension( ){ return _dimension; }
+
+            //! Get a reference to a second order tensor's dimension
+            constexpr unsigned int getSOTDimension( ){ return _dimension * _dimension; }
+
+            //! Get a reference to a third order tensor's dimension
+            constexpr unsigned int getTOTDimension( ){ return _dimension * _dimension * _dimension; }
+
+            //! Get a reference to a fourth order tensor's dimension
+            constexpr unsigned int getFOTDimension( ){ return _dimension * _dimension * _dimension * _dimension; }
 
             //! Get a reference to the relative tolerance
             const floatType* getRelativeTolerance( ){ return &_tolr; }
@@ -605,9 +661,18 @@ namespace tardigradeHydra{
             //! Get a reference to the line-search alpha
             const floatType* getLSAlpha( ){ return &_lsAlpha; }
 
-            floatVector getSubConfiguration( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            //! Get a reference to whether to use a preconditioner
+            const bool* getUsePreconditioner( ){ return &_use_preconditioner; }
 
-            floatMatrix getSubConfigurationJacobian( const floatMatrix &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            //! Get a reference to the preconditioner type
+            const unsigned int* getPreconditionerType( ){ return &_preconditioner_type; }
+
+            //! Get whether the preconditioner is diagonal or not
+            const bool* getPreconditionerIsDiagonal( ){ return &_preconditioner_is_diagonal; }
+
+            floatVector getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+
+            floatVector getSubConfigurationJacobian( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
@@ -625,17 +690,17 @@ namespace tardigradeHydra{
 
             floatVector getPreviousConfiguration( const unsigned int &index );
 
-            floatMatrix getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatVector getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatMatrix getPrecedingConfigurationJacobian( const unsigned int &index );
+            floatVector getPrecedingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getFollowingConfigurationJacobian( const unsigned int &index );
+            floatVector getFollowingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getPreviousSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            floatVector getPreviousSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatMatrix getPreviousPrecedingConfigurationJacobian( const unsigned int &index );
+            floatVector getPreviousPrecedingConfigurationJacobian( const unsigned int &index );
 
-            floatMatrix getPreviousFollowingConfigurationJacobian( const unsigned int &index );
+            floatVector getPreviousFollowingConfigurationJacobian( const unsigned int &index );
 
             const floatType* getLSResidualNorm( );
 
@@ -649,6 +714,12 @@ namespace tardigradeHydra{
 
             const floatVector* getFlatJacobian( );
 
+            virtual const floatVector* getFlatNonlinearLHS( );
+
+            virtual const floatVector* getNonlinearRHS( );
+
+            const floatVector* getFlatPreconditioner( );
+
             floatMatrix getJacobian( );
 
             const floatVector* getFlatdRdF( );
@@ -656,6 +727,10 @@ namespace tardigradeHydra{
             floatMatrix getdRdF( );
 
             const floatVector* getdRdT( );
+
+            const floatVector* getFlatdRdAdditionalDOF( );
+
+            floatMatrix getdRdAdditionalDOF( );
 
             const floatVector* getFlatAdditionalDerivatives( );
 
@@ -677,9 +752,13 @@ namespace tardigradeHydra{
 
             virtual void computeTangents( );
 
+            virtual void computedXdAdditionalDOF( );
+
             const floatVector *getFlatdXdF( );
 
             const floatVector *getFlatdXdT( );
+
+            const floatVector *getFlatdXdAdditionalDOF( );
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
@@ -693,7 +772,7 @@ namespace tardigradeHydra{
             // Utility functions
             virtual void computeConfigurations( const floatVector *data_vector, const unsigned int start_index,
                                                 const floatVector &total_transformation,
-                                                floatMatrix &configurations, floatMatrix &inverseConfigurations,
+                                                floatVector &configurations, floatVector &inverseConfigurations,
                                                 const bool add_eye=false );
 
             virtual void extractStress( );
@@ -704,16 +783,22 @@ namespace tardigradeHydra{
 
             virtual void formNonLinearProblem( );
 
+            virtual void formPreconditioner( );
+
+            virtual void formMaxRowPreconditioner( );
+
             virtual void initializeUnknownVector( );
 
             virtual void setTolerance( );
+
+            virtual void initializePreconditioner( );
 
             //! Update the line-search lambda parameter
             virtual void updateLambda( ){ _lambda *= 0.5; }
 
             virtual void updateUnknownVector( const floatVector &newUnknownVector );
 
-            virtual void calculateFirstConfigurationJacobians( const floatMatrix &configurations, floatMatrix &dC1dC, floatMatrix &dC1dCn );
+            virtual void calculateFirstConfigurationJacobians( const floatVector &configurations, floatVector &dC1dC, floatVector &dC1dCn );
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
@@ -787,6 +872,9 @@ namespace tardigradeHydra{
 
             }
 
+            std::string build_upper_index_out_of_range_error_string( const unsigned int upperIndex, const unsigned int num_configurations );
+            std::string build_lower_index_out_of_range_error_string( const unsigned int lowerIndex, const unsigned int upperIndex );
+
         private:
 
             // Friend classes
@@ -807,6 +895,10 @@ namespace tardigradeHydra{
             floatVector _deformationGradient; //!< The current deformation gradient
 
             floatVector _previousDeformationGradient; //!< The previous deformation gradient
+
+            floatVector _additionalDOF; //!< The current additional degrees of freedom
+
+            floatVector _previousAdditionalDOF; //!< The previous additional degrees of freedom
 
             floatVector _previousStateVariables; //!< The previous state variables
 
@@ -834,9 +926,19 @@ namespace tardigradeHydra{
 
             dataStorage< floatVector > _jacobian; //!< The jacobian matrix in row-major form for the global solve
 
+            dataStorage< floatVector > _preconditioner; //!< The pre-conditioner matrix in row-major form for the global solve
+
+            bool _use_preconditioner; //!< Flag for whether to pre-condition the Jacobian or not
+
+            unsigned int _preconditioner_type; //<! The type of preconditioner to use
+
+            bool _preconditioner_is_diagonal; //!< Flag for if the pre-conditioner only stores the diagonal elements
+
             dataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
 
             dataStorage< floatVector > _dRdT; //!< The gradient of the residual w.r.t. the temperature for the global solve
+
+            dataStorage< floatVector > _dRdAdditionalDOF; //!< The derivatives of the residual w.r.t. the additional degrees of freedom
 
             dataStorage< floatVector > _additionalDerivatives; //!< Additional derivatives of the residual
 
@@ -854,6 +956,8 @@ namespace tardigradeHydra{
 
             dataStorage< floatVector > _flatdXdT; //!< The total derivative of the unknown vector w.r.t. the temperature
 
+            dataStorage< floatVector > _flatdXdAdditionalDOF; //!< The total derivative of the unknown vector w.r.t. the additional DOF
+
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
             unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
@@ -865,6 +969,10 @@ namespace tardigradeHydra{
             void setPreviousFirstConfigurationJacobians( );
 
             void solveNonLinearProblem( );
+
+            void performPreconditionedSolve( floatVector &deltaX_tr );
+
+            void solveNewtonUpdate( floatVector &deltaX_tr );
 
             void setTolerance( const floatVector &tolerance );
 
@@ -884,13 +992,13 @@ namespace tardigradeHydra{
 
             void resetIterationData( );
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatMatrix, passThrough )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousConfigurations,               floatMatrix, passThrough )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousConfigurations,               floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, inverseConfigurations,                floatMatrix, passThrough )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, inverseConfigurations,                floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousInverseConfigurations,        floatMatrix, passThrough )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousInverseConfigurations,        floatVector, passThrough )
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, nonLinearSolveStateVariables,         floatVector, passThrough )
 
@@ -900,13 +1008,13 @@ namespace tardigradeHydra{
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousAdditionalStateVariables,     floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,          get_dF1dF,          dF1dF,          floatMatrix, setFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,          get_dF1dF,          dF1dF,          floatVector, setFirstConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dFn,         get_dF1dFn,         dF1dFn,         floatMatrix, setFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dFn,         get_dF1dFn,         dF1dFn,         floatVector, setFirstConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dF,  get_previousdF1dF,  previousdF1dF,  floatMatrix, setPreviousFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dF,  get_previousdF1dF,  previousdF1dF,  floatVector, setPreviousFirstConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn, floatMatrix, setPreviousFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn, floatVector, setPreviousFirstConfigurationJacobians )
 
     };
 

@@ -6,8 +6,66 @@ Changelog
 #########
 
 ******************
-0.4.2 (unreleased)
+0.5.0 (unreleased)
 ******************
+
+New Features
+============
+- Throw a custom convergence error class rather than a nested exception if a failure happens because of the line-search or the Newton loop iterations (:pull:`70`). By `Nathan Miller`_.
+- Added a pre-conditioner (jacobian scaling) to try and improve the stability of the Jacobian (:pull:`98`). By `Nathan Miller`_.
+- Added a J2 flow isotropic-kinematic hardening viscoplastic model (:pull:`102`). By `Nathan Miller`_.
+- Added a mass-change deformation gradient evolution model (:pull:`104`). By `Nathan Miller`_.
+- Added the calculation of the total derivative of the unknown vector w.r.t. the additional degrees of freedom (:pull:`104`). By `Nathan Miller`_.
+- Added storage for the derivative of the residual w.r.t. the additional dof (:pull:`104`). By `Nathan Miller`_.
+- Added the ability to initialize the unknown vector (:pull:`109`). By `Nathan Miller`_.
+- Added function that returns the size of the unknown vector (:pull:`109`). By `Nathan Miller`_.
+- Generalized the mass-change evolution residual to not be just the mass change rate (:pull:`113`). By `Nathan Miller`_.
+
+Breaking Changes
+================
+- Changed the micromorphic tools to use the vector Jacobian formulations and changed the micromorphic linear elasticity calculation to use vector Jacobian formulations (:pull:`81`). By `Nathan Miller`_.
+- Changed Drucker Prager plasticity to use the vector Jacobian formulations (:pull:`81`). By `Nathan Miller`_.
+- Changed hydra and hydraMicromorphic to use vector representations of the configurations and their jacobians (:pull:`82`). By `Nathan Miller`_.
+- Added a required input for additionalDOF and previousAdditionalDOF to hydraBase and hydraBaseMicromorphic (:pull:`103`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Removed extraneous semicolons (:pull:`69`). By `Nathan Miller`_.
+- Changed the Jacobians to use row-major vector fomulation rather than vector of vectors (:pull:`77`). By `Nathan Miller`_.
+- Changed the computation of the higher order yield surface to use row-major vector formation rather than vector of vectors (:pull:`78`). By `Nathan Miller`_.
+- Updated to use the row-major vector Jacobians for tardigrade_constitutive_tools (:pull:`86`). By `Nathan Miller`_.
+- Added definitions for common tensor sizes to the hydra base class (:pull:`87`). By `Nathan Miller`_.
+- Changed inverses to fixed size where possible (:pull:`88`). By `Nathan Miller`_.
+- Using constexpr instead of const when possible (:pull:`89`). By `Nathan Miller`_.
+- Improved the efficiency of hydraBase (:pull:`90`). By `Nathan Miller`_.
+- Improved the efficiency of hydraBaseMicromorphic (:pull:`91`). By `Nathan Miller`_.
+- Improved the efficiency of tardigradeHydraMicromorphicDruckerPrager (:pull:`92`). By `Nathan Miller`_.
+- Moved tardigrade_abaqus_tools.h from the header to the source file for tardigrade_hydra (:pull:`94`). By `Nathan Miller`_.
+- Changed fatal error for non-full rank internal Jacobians to convergence errors (:pull:`95`). By `Nathan Miller`_.
+- Changed additional fatal error for non-full rank internal Jacobians to convergence errors (:pull:`96`). By `Nathan Miller`_.
+- Removed all sayHello tests (:pull:`97`). By `Nathan Miller`_.
+- Improved performance of the linear elasticity subroutine (:pull:`99`). By `Nathan Miller`_.
+- Using new error_tools check for error function (:pull:`100`). By `Nathan Miller`_.
+- Changed Jacobian, dRdF, and dRdD to row-major vectors (:pull:`101`). By `Nathan Miller`_.
+- Replaced queries to getUnknownVector purely to get the size of the vector (:pull:`109`). By `Nathan Miller`_.
+- Added a better guess for the mass-change residual to improve convergence (:pull:`110`). By `Nathan Miller`_.
+- Replaced the trapezoidal evolveF with the exponential map version (:pull:`111`). By `Nathan Miller`_.
+- Rolled back exponential integrator for micromorphic (:pull:`114`). By `Nathan Miller`_.
+- Added test for a fully directional integration where we know the answer (:pull:`117`). By `Nathan Miller`_.
+- Added test for a fully spherical integration where we know the answer (:pull:`118`). By `Nathan Miller`_.
+- Added test for when the mass-change rate is zero (:pull:`119`). By `Nathan Miller`_.
+- Moved the Newton solve to its own function (:pull:`121`). By `Nathan Miller`_.
+- Moved the preconditioned Newton solve to its own function (:pull:`122`). By `Nathan Miller`_.
+- Changed the function calls for the Newton solve to a more general LHS and RHS form (:pull:`122`). By `Nathan Miller`_.
+- Removed all of the calls to fuzzyEquals for the tests (:pull:`123`). By `Nathan Miller`_.
+
+Bug Fixes
+=========
+- Corrected bug where the plastic state variable integration parameter was one minus the expected value (:pull:`71`). By `Nathan Miller`_.
+- Corrected issue where libxsmm is not being used but was still required to be installed (:pull:`93`). By `Nathan Miller`_.
+- Residuals setting initial guesses now force a reset of the current configurations (:pull:`110`). By `Nathan Miller`_.
+- Direction vectors of length zero are now handled correctly (:pull:`116`). By `Nathan Miller`_.
+- Removed extra whitespace in add_library from CMakeLists file (:pull:`120`). By `Nathan Miller`_.
 
 ******************
 0.4.1 (01-24-2024)

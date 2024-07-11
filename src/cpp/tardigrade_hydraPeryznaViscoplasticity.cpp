@@ -151,17 +151,21 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to compute this in the previous configuration
              */
 
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
             const floatVector *cauchyStress;
 
             floatVector precedingConfiguration;
 
             floatVector drivingStress;
 
-            floatMatrix precedingConfigurationJacobian;
+            floatVector precedingConfigurationJacobian;
 
-            const floatMatrix *dF1dF;
+            const floatVector *dF1dF;
 
-            const floatMatrix *dF1dSubFs;
+            const floatVector *dF1dSubFs;
 
             if ( isPrevious ){
 
@@ -190,38 +194,38 @@ namespace tardigradeHydra{
 
             }
 
-            floatMatrix dDrivingStressdCauchyStress;
+            floatVector dDrivingStressdCauchyStress;
 
-            floatMatrix dDrivingStressdPrecedingF;
+            floatVector dDrivingStressdPrecedingF;
 
             tardigradeConstitutiveTools::pullBackCauchyStress( *cauchyStress, precedingConfiguration, drivingStress,
                                                                dDrivingStressdCauchyStress, dDrivingStressdPrecedingF );
 
-            floatMatrix dDrivingStressdFn = tardigradeVectorTools::dot( dDrivingStressdPrecedingF, precedingConfigurationJacobian );
+            floatVector dDrivingStressdFn = tardigradeVectorTools::matrixMultiply( dDrivingStressdPrecedingF, precedingConfigurationJacobian, sot_dim, sot_dim, sot_dim, num_configs * sot_dim );
 
-            floatMatrix dDrivingStressdF( drivingStress.size( ), floatVector( precedingConfiguration.size( ), 0 ) );
+            floatVector dDrivingStressdF( sot_dim * sot_dim, 0 );
 
-            floatMatrix dDrivingStressdSubFs( drivingStress.size( ), floatVector( ( *dF1dSubFs )[ 0 ].size( ), 0 ) );
+            floatVector dDrivingStressdSubFs( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-            for ( unsigned int i = 0; i < ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ); i++ ){
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                for ( unsigned int j = 0; j < ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ); j++ ){
+                for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                    for ( unsigned int k = 0; k < ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ); k++ ){
+                    for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                        dDrivingStressdF[ i ][ j ] += dDrivingStressdFn[ i ][ k ] * ( *dF1dF )[ k ][ j ];
+                        dDrivingStressdF[ sot_dim * i + j ] += dDrivingStressdFn[ num_configs * sot_dim * i + k ] * ( *dF1dF )[ sot_dim * k + j ];
 
                     }
 
                 }
 
-                for ( unsigned int j = 0; j < ( *dF1dSubFs )[ 0 ].size( ); j++ ){
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){ //TODO: This order messes a bit with the cache. Investigate how to make it faster.
 
-                    dDrivingStressdSubFs[ i ][ j ] += dDrivingStressdFn[ i ][ j + precedingConfiguration.size( ) ];
+                    dDrivingStressdSubFs[ ( num_configs - 1 ) * sot_dim * i + j ] += dDrivingStressdFn[ num_configs * sot_dim * i + j + sot_dim ];
 
-                    for ( unsigned int k = 0; k < ( *hydra->getDimension( ) ) * ( *hydra->getDimension( ) ); k++ ){
+                    for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dDrivingStressdSubFs[ i ][ j ] += dDrivingStressdFn[ i ][ k ] * ( *dF1dSubFs )[ k ][ j ];
+                        dDrivingStressdSubFs[ ( num_configs - 1 ) * sot_dim * i + j ] += dDrivingStressdFn[  num_configs * sot_dim * i + k ] * ( *dF1dSubFs )[ ( num_configs - 1 ) * sot_dim * k + j ];
 
                     }
 
@@ -601,15 +605,19 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to compute the values in the previous configuration
              */
 
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
             const floatVector *drivingStress;
 
             const floatVector *flowParameters;
 
-            const floatMatrix *dDrivingStressdCauchyStress;
+            const floatVector *dDrivingStressdCauchyStress;
 
-            const floatMatrix *dDrivingStressdF;
+            const floatVector *dDrivingStressdF;
 
-            const floatMatrix *dDrivingStressdSubFs;
+            const floatVector *dDrivingStressdSubFs;
 
             floatType g;
 
@@ -642,15 +650,19 @@ namespace tardigradeHydra{
 
             floatVector flowDirection( drivingStress->size( ), 0 );
 
-            floatMatrix dFlowDirectiondDrivingStress;
+            floatMatrix _dFlowDirectiondDrivingStress;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( *drivingStress, ( *flowParameters )[ 1 ], ( *flowParameters )[ 0 ], g, dgdDrivingStress, flowDirection, dFlowDirectiondDrivingStress ) );
+            floatVector dFlowDirectiondDrivingStress;
 
-            floatMatrix dFlowDirectiondCauchyStress = tardigradeVectorTools::dot( dFlowDirectiondDrivingStress, *dDrivingStressdCauchyStress );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( *drivingStress, ( *flowParameters )[ 1 ], ( *flowParameters )[ 0 ], g, dgdDrivingStress, flowDirection, _dFlowDirectiondDrivingStress ) );
 
-            floatMatrix dFlowDirectiondF            = tardigradeVectorTools::dot( dFlowDirectiondDrivingStress, *dDrivingStressdF );
+            dFlowDirectiondDrivingStress = tardigradeVectorTools::appendVectors( _dFlowDirectiondDrivingStress );
 
-            floatMatrix dFlowDirectiondSubFs        = tardigradeVectorTools::dot( dFlowDirectiondDrivingStress, *dDrivingStressdSubFs );
+            floatVector dFlowDirectiondCauchyStress = tardigradeVectorTools::matrixMultiply( dFlowDirectiondDrivingStress, *dDrivingStressdCauchyStress, sot_dim, sot_dim, sot_dim, sot_dim );
+
+            floatVector dFlowDirectiondF            = tardigradeVectorTools::matrixMultiply( dFlowDirectiondDrivingStress, *dDrivingStressdF, sot_dim, sot_dim, sot_dim, sot_dim );
+
+            floatVector dFlowDirectiondSubFs        = tardigradeVectorTools::matrixMultiply( dFlowDirectiondDrivingStress, *dDrivingStressdSubFs, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
             if ( isPrevious ){
 
@@ -719,6 +731,17 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setdYieldFunctiondStateVariables( const bool isPrevious ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the state variables
+             * 
+             * \param isPrevious: Flag for if the calculation is for the previous value (true) or the current value (false)
+             */
+
+            setYieldFunctionDerivatives( isPrevious );
+
+        }
+
         void residual::setdYieldFunctiondCauchyStress( ){
             /*!
              * Set the value of the derivative of the yield function w.r.t. the Cauchy stress
@@ -743,6 +766,15 @@ namespace tardigradeHydra{
              */
 
             setdYieldFunctiondSubFs( false );
+
+        }
+
+        void residual::setdYieldFunctiondStateVariables( ){
+            /*!
+             * Set the value of the derivative of the yield function w.r.t. the state variables
+             */
+
+            setdYieldFunctiondStateVariables( false );
 
         }
 
@@ -779,6 +811,15 @@ namespace tardigradeHydra{
              */
 
             setdYieldFunctiondSubFs( true );
+
+        }
+
+        void residual::setdPreviousYieldFunctiondPreviousStateVariables( ){
+            /*!
+             * Set the value of the derivative of the previous yield function w.r.t. the previous state variables
+             */
+
+            setdYieldFunctiondStateVariables( true );
 
         }
 
@@ -830,13 +871,17 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether this is the previous timestep
              */
 
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
             const floatVector* drivingStress;
 
-            const floatMatrix* dDrivingStressdCauchyStress;
+            const floatVector* dDrivingStressdCauchyStress;
 
-            const floatMatrix* dDrivingStressdF;
+            const floatVector* dDrivingStressdF;
 
-            const floatMatrix* dDrivingStressdSubFs;
+            const floatVector* dDrivingStressdSubFs;
 
             const floatVector* yieldParameters;
 
@@ -871,11 +916,11 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( *drivingStress, ( *yieldParameters )[ 1 ], ( *yieldParameters )[ 0 ], yieldFunction, dYieldFunctiondDrivingStress ) );
 
-            floatVector dYieldFunctiondCauchyStress = tardigradeVectorTools::Tdot( *dDrivingStressdCauchyStress, dYieldFunctiondDrivingStress );
+            floatVector dYieldFunctiondCauchyStress = tardigradeVectorTools::matrixMultiply( dYieldFunctiondDrivingStress, *dDrivingStressdCauchyStress, 1, sot_dim, sot_dim, sot_dim );
  
-            floatVector dYieldFunctiondF = tardigradeVectorTools::Tdot( *dDrivingStressdF, dYieldFunctiondDrivingStress );
+            floatVector dYieldFunctiondF = tardigradeVectorTools::matrixMultiply( dYieldFunctiondDrivingStress, *dDrivingStressdF, 1, sot_dim, sot_dim, sot_dim );
 
-            floatVector dYieldFunctiondSubFs = tardigradeVectorTools::Tdot( *dDrivingStressdSubFs, dYieldFunctiondDrivingStress );
+            floatVector dYieldFunctiondSubFs = tardigradeVectorTools::matrixMultiply( dYieldFunctiondDrivingStress, *dDrivingStressdSubFs, 1, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
             if ( isPrevious ){
 
@@ -887,6 +932,8 @@ namespace tardigradeHydra{
 
                 set_dPreviousYieldFunctiondPreviousSubFs( dYieldFunctiondSubFs );
 
+                set_dPreviousYieldFunctiondPreviousStateVariables( floatVector( get_previousStateVariables( )->size( ), 0 ) );
+
             }
             else{
 
@@ -897,6 +944,8 @@ namespace tardigradeHydra{
                 set_dYieldFunctiondF( dYieldFunctiondF );
 
                 set_dYieldFunctiondSubFs( dYieldFunctiondSubFs );
+
+                set_dYieldFunctiondStateVariables( floatVector( get_stateVariables( )->size( ), 0 ) );
 
             }
 
@@ -1252,12 +1301,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousHardeningFunction( hardeningFunction );
+                set_previousHardeningFunction( { hardeningFunction } );
 
             }
             else{
 
-                set_hardeningFunction( hardeningFunction );
+                set_hardeningFunction( { hardeningFunction } );
 
             }
 
@@ -1296,14 +1345,14 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousHardeningFunction( hardeningFunction );
+                set_previousHardeningFunction( { hardeningFunction } );
 
                 set_dPreviousHardeningFunctiondPreviousStateVariables( dHardeningFunctiondStateVariables );
 
             }
             else{
 
-                set_hardeningFunction( hardeningFunction );
+                set_hardeningFunction( { hardeningFunction } );
 
                 set_dHardeningFunctiondStateVariables( dHardeningFunctiondStateVariables );
 
@@ -1571,6 +1620,8 @@ namespace tardigradeHydra{
 
             const floatVector *dYieldFunctiondSubFs;
 
+            const floatVector *dYieldFunctiondStateVariables;
+
             const floatVector *dDragStressdStateVariables;
 
             const floatType   *dPlasticThermalMultiplierdT;
@@ -1582,6 +1633,8 @@ namespace tardigradeHydra{
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = get_dPreviousYieldFunctiondPreviousF( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = get_dPreviousYieldFunctiondPreviousSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondStateVariables = get_dPreviousYieldFunctiondPreviousStateVariables( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = get_dPreviousDragStressdPreviousStateVariables( ) );
 
@@ -1601,6 +1654,8 @@ namespace tardigradeHydra{
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondF = get_dYieldFunctiondF( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondSubFs = get_dYieldFunctiondSubFs( ) );
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( dYieldFunctiondStateVariables = get_dYieldFunctiondStateVariables( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dDragStressdStateVariables = get_dDragStressdStateVariables( ) );
 
@@ -1632,7 +1687,9 @@ namespace tardigradeHydra{
 
             floatType   dPlasticMultiplierdT = dPlasticMultiplierdPlasticThermalMultiplier * ( *dPlasticThermalMultiplierdT );
 
-            floatVector dPlasticMultiplierdStateVariables = dPlasticMultiplierdDragStress * ( *dDragStressdStateVariables );
+            
+            floatVector dPlasticMultiplierdStateVariables = dPlasticMultiplierdYieldFunction * ( *dYieldFunctiondStateVariables )
+                                                          + dPlasticMultiplierdDragStress    * ( *dDragStressdStateVariables );
 
             if ( isPrevious ){
 
@@ -1890,6 +1947,10 @@ namespace tardigradeHydra{
              *     timestep.
              */
 
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
             const floatType *plasticMultiplier;
 
             const floatVector *dPlasticMultiplierdCauchyStress;
@@ -1904,11 +1965,11 @@ namespace tardigradeHydra{
 
             const floatVector *flowDirection;
 
-            const floatMatrix *dFlowDirectiondCauchyStress;
+            const floatVector *dFlowDirectiondCauchyStress;
 
-            const floatMatrix *dFlowDirectiondF;
+            const floatVector *dFlowDirectiondF;
 
-            const floatMatrix *dFlowDirectiondSubFs;
+            const floatVector *dFlowDirectiondSubFs;
 
             if ( isPrevious ){
 
@@ -1934,15 +1995,15 @@ namespace tardigradeHydra{
 
                 set_previousVelocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
 
-                set_dPreviousVelocityGradientdPreviousCauchyStress( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdCauchyStress ) + ( *plasticMultiplier ) * ( *dFlowDirectiondCauchyStress ) );
+                set_dPreviousVelocityGradientdPreviousCauchyStress( tardigradeVectorTools::matrixMultiply( *flowDirection, *dPlasticMultiplierdCauchyStress, sot_dim, 1, 1, sot_dim ) + ( *plasticMultiplier ) * ( *dFlowDirectiondCauchyStress ) );
 
-                set_dPreviousVelocityGradientdPreviousF( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdF ) + ( *plasticMultiplier ) * ( *dFlowDirectiondF ) );
+                set_dPreviousVelocityGradientdPreviousF( tardigradeVectorTools::matrixMultiply( *flowDirection, *dPlasticMultiplierdF, sot_dim, 1, 1, sot_dim ) + ( *plasticMultiplier ) * ( *dFlowDirectiondF ) );
 
-                set_dPreviousVelocityGradientdPreviousSubFs( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdSubFs ) + ( *plasticMultiplier ) * ( *dFlowDirectiondSubFs ) );
+                set_dPreviousVelocityGradientdPreviousSubFs( tardigradeVectorTools::matrixMultiply( *flowDirection, *dPlasticMultiplierdSubFs, sot_dim, 1, 1, ( num_configs - 1 ) * sot_dim ) + ( *plasticMultiplier ) * ( *dFlowDirectiondSubFs ) );
 
                 set_dPreviousVelocityGradientdPreviousT( ( *flowDirection ) * ( *dPlasticMultiplierdT ) );
 
-                set_dPreviousVelocityGradientdPreviousStateVariables( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdStateVariables ) );
+                set_dPreviousVelocityGradientdPreviousStateVariables( tardigradeVectorTools::matrixMultiply( *flowDirection, *dPlasticMultiplierdStateVariables, sot_dim, 1, 1, dPlasticMultiplierdStateVariables->size( ) ) );
 
             }
             else{
@@ -1969,15 +2030,15 @@ namespace tardigradeHydra{
 
                 set_velocityGradient( ( *plasticMultiplier ) * ( *flowDirection ) );
 
-                set_dVelocityGradientdCauchyStress( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdCauchyStress ) + ( *plasticMultiplier ) * ( *dFlowDirectiondCauchyStress ) );
+                set_dVelocityGradientdCauchyStress( tardigradeVectorTools::matrixMultiply( *flowDirection, *dPlasticMultiplierdCauchyStress, sot_dim, 1, 1, sot_dim ) + ( *plasticMultiplier ) * ( *dFlowDirectiondCauchyStress ) );
 
-                set_dVelocityGradientdF( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdF ) + ( *plasticMultiplier ) * ( *dFlowDirectiondF ) );
+                set_dVelocityGradientdF( tardigradeVectorTools::matrixMultiply( *flowDirection, *dPlasticMultiplierdF, sot_dim, 1, 1, sot_dim ) + ( *plasticMultiplier ) * ( *dFlowDirectiondF ) );
 
-                set_dVelocityGradientdSubFs( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdSubFs ) + ( *plasticMultiplier ) * ( *dFlowDirectiondSubFs ) );
+                set_dVelocityGradientdSubFs( tardigradeVectorTools::matrixMultiply( *flowDirection, *dPlasticMultiplierdSubFs, sot_dim, 1, 1, ( num_configs - 1 ) * sot_dim ) + ( *plasticMultiplier ) * ( *dFlowDirectiondSubFs ) );
 
                 set_dVelocityGradientdT( ( *flowDirection ) * ( *dPlasticMultiplierdT ) );
 
-                set_dVelocityGradientdStateVariables( tardigradeVectorTools::dyadic( *flowDirection, *dPlasticMultiplierdStateVariables ) );
+                set_dVelocityGradientdStateVariables( tardigradeVectorTools::matrixMultiply( *flowDirection, *dPlasticMultiplierdStateVariables, sot_dim, 1, 1, dPlasticMultiplierdStateVariables->size( ) ) );
 
             }
 
@@ -2156,7 +2217,7 @@ namespace tardigradeHydra{
 
             const floatType *plasticMultiplier;
 
-            const floatType *hardeningFunction;
+            const floatVector *hardeningFunction;
 
             if ( isPrevious ){
 
@@ -2173,7 +2234,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector stateVariableEvolutionRates = { ( *plasticMultiplier ) * ( *hardeningFunction ) };
+            floatVector stateVariableEvolutionRates = ( *plasticMultiplier ) * ( *hardeningFunction );
 
             if ( isPrevious ){
 
@@ -2196,9 +2257,17 @@ namespace tardigradeHydra{
              *     should be computed.
              */
 
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const unsigned int num_stateVariables = get_stateVariables( )->size( );
+
             const floatType *plasticMultiplier;
 
-            const floatType *hardeningFunction;
+            const floatVector *hardeningFunction;
 
             const floatVector *dPlasticMultiplierdCauchyStress;
 
@@ -2251,17 +2320,33 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector stateVariableEvolutionRates = { ( *plasticMultiplier ) * ( *hardeningFunction ) };
+            floatVector stateVariableEvolutionRates = ( *plasticMultiplier ) * ( *hardeningFunction );
 
-            floatMatrix dStateVariableEvolutionRatesdCauchyStress = { ( *dPlasticMultiplierdCauchyStress ) * ( *hardeningFunction ) };
+            floatVector dStateVariableEvolutionRatesdCauchyStress( num_stateVariables * sot_dim, 0 );
 
-            floatMatrix dStateVariableEvolutionRatesdF = { ( *dPlasticMultiplierdF ) * ( *hardeningFunction ) };
+            floatVector dStateVariableEvolutionRatesdF( num_stateVariables * sot_dim, 0 );
 
-            floatMatrix dStateVariableEvolutionRatesdSubFs = { ( *dPlasticMultiplierdSubFs ) * ( *hardeningFunction ) };
+            floatVector dStateVariableEvolutionRatesdSubFs( num_stateVariables * ( num_configs - 1 ) * sot_dim, 0 );
 
-            floatVector dStateVariableEvolutionRatesdT = { ( *dPlasticMultiplierdT ) * ( *hardeningFunction ) };
+            for ( unsigned int i = 0; i < num_stateVariables; i++ ){
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
+                    dStateVariableEvolutionRatesdCauchyStress[ sot_dim * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdCauchyStress )[ j ];
+                    dStateVariableEvolutionRatesdF[ sot_dim * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdF )[ j ];
+                }
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
+                    dStateVariableEvolutionRatesdSubFs[  ( num_configs - 1 ) * sot_dim * i + j ] += ( *dPlasticMultiplierdSubFs )[ j ] * ( *hardeningFunction )[ i ];
+                }
+            }
 
-            floatMatrix dStateVariableEvolutionRatesdStateVariables = { ( *dPlasticMultiplierdStateVariables ) * ( *hardeningFunction ) + ( *plasticMultiplier ) * ( *dHardeningFunctiondStateVariables ) };
+            floatVector dStateVariableEvolutionRatesdT = ( *dPlasticMultiplierdT ) * ( *hardeningFunction );
+
+            floatVector dStateVariableEvolutionRatesdStateVariables = ( *plasticMultiplier ) * ( *dHardeningFunctiondStateVariables );
+
+            for ( unsigned int i = 0; i < num_stateVariables; i++ ){
+                for ( unsigned int j = 0; j < num_stateVariables; j++ ){
+                    dStateVariableEvolutionRatesdStateVariables[ num_stateVariables * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdStateVariables )[ j ];
+                }
+            }
 
             if ( isPrevious ){
 
@@ -2420,6 +2505,14 @@ namespace tardigradeHydra{
              * \param setPreviousDerivatives: Flag for if the previous derivatives should be set
              */
 
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const unsigned int plastic_config_index = *getPlasticConfigurationIndex( );
+
+            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+
             const floatVector *velocityGradient;
 
             const floatVector *previousVelocityGradient;
@@ -2430,7 +2523,7 @@ namespace tardigradeHydra{
 
             floatVector plasticDeformationGradient;
 
-            floatMatrix dFdL;
+            floatVector dFdL;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_velocityGradient( ) );
 
@@ -2440,25 +2533,25 @@ namespace tardigradeHydra{
 
             if ( setPreviousDerivatives ){
 
-                floatMatrix ddFdPreviousF;
+                floatVector ddFdPreviousF;
 
-                floatMatrix dFdPreviousF;
+                floatVector dFdPreviousF;
 
-                floatMatrix dFdPreviousL;
+                floatVector dFdPreviousL;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp, plasticDeformationGradient, dFdL, ddFdPreviousF, dFdPreviousF, dFdPreviousL, 1 - ( *getIntegrationParameter( ) ), 1 ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp, plasticDeformationGradient, dFdL, ddFdPreviousF, dFdPreviousF, dFdPreviousL, 1 - ( *getIntegrationParameter( ) ), 1 ) );
 
-                set_dPlasticDeformationGradientdPreviousCauchyStress( tardigradeVectorTools::dot( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousCauchyStress( ) ) );
+                set_dPlasticDeformationGradientdPreviousCauchyStress( tardigradeVectorTools::matrixMultiply( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousCauchyStress( ), sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_dPlasticDeformationGradientdPreviousF( tardigradeVectorTools::dot( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousF( ) ) );
+                set_dPlasticDeformationGradientdPreviousF( tardigradeVectorTools::matrixMultiply( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousF( ), sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                floatMatrix dPlasticDeformationGradientdPreviousSubFs = tardigradeVectorTools::dot( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousSubFs( ) );
+                floatVector dPlasticDeformationGradientdPreviousSubFs = tardigradeVectorTools::matrixMultiply( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousSubFs( ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-                for ( unsigned int i = 0; i < dFdPreviousF.size( ); i++ ){
+                for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                    for ( unsigned int j = 0; j < dFdPreviousF[ i ].size( ); j++ ){
+                    for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                        dPlasticDeformationGradientdPreviousSubFs[ i ][ j + ( *getPlasticConfigurationIndex( ) - 1 ) * plasticDeformationGradient.size( ) ] += dFdPreviousF[ i ][ j ];
+                        dPlasticDeformationGradientdPreviousSubFs[ ( num_configs - 1 ) * sot_dim * i + j + ( plastic_config_index - 1 ) * sot_dim ] += dFdPreviousF[ sot_dim * i + j ];
 
                     }
 
@@ -2466,27 +2559,28 @@ namespace tardigradeHydra{
 
                 set_dPlasticDeformationGradientdPreviousSubFs( dPlasticDeformationGradientdPreviousSubFs );
 
-                set_dPlasticDeformationGradientdPreviousT( tardigradeVectorTools::dot( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousT( ) ) );
+                set_dPlasticDeformationGradientdPreviousT( tardigradeVectorTools::matrixMultiply( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousT( ), sot_dim, sot_dim, sot_dim, 1 ) );
 
-                set_dPlasticDeformationGradientdPreviousStateVariables( tardigradeVectorTools::dot( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousStateVariables( ) ) );
+                set_dPlasticDeformationGradientdPreviousStateVariables( tardigradeVectorTools::matrixMultiply( dFdPreviousL, *get_dPreviousVelocityGradientdPreviousStateVariables( ), sot_dim, sot_dim, sot_dim, num_isvs ) );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp, plasticDeformationGradient, dFdL, 1 - ( *getIntegrationParameter( ) ), 1 ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp, plasticDeformationGradient, dFdL, 1 - ( *getIntegrationParameter( ) ), 1 ) );
+
             }
 
             set_plasticDeformationGradient( plasticDeformationGradient );
 
-            set_dPlasticDeformationGradientdCauchyStress( tardigradeVectorTools::dot( dFdL, *get_dVelocityGradientdCauchyStress( ) ) );
+            set_dPlasticDeformationGradientdCauchyStress( tardigradeVectorTools::matrixMultiply( dFdL, *get_dVelocityGradientdCauchyStress( ), sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-            set_dPlasticDeformationGradientdF( tardigradeVectorTools::dot( dFdL, *get_dVelocityGradientdF( ) ) );
+            set_dPlasticDeformationGradientdF( tardigradeVectorTools::matrixMultiply( dFdL, *get_dVelocityGradientdF( ), sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-            set_dPlasticDeformationGradientdSubFs( tardigradeVectorTools::dot( dFdL, *get_dVelocityGradientdSubFs( ) ) );
+            set_dPlasticDeformationGradientdSubFs( tardigradeVectorTools::matrixMultiply( dFdL, *get_dVelocityGradientdSubFs( ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-            set_dPlasticDeformationGradientdT( tardigradeVectorTools::dot( dFdL, *get_dVelocityGradientdT( ) ) );
+            set_dPlasticDeformationGradientdT( tardigradeVectorTools::matrixMultiply( dFdL, *get_dVelocityGradientdT( ), sot_dim, sot_dim, sot_dim, 1 ) );
 
-            set_dPlasticDeformationGradientdStateVariables( tardigradeVectorTools::dot( dFdL, *get_dVelocityGradientdStateVariables( ) ) );
+            set_dPlasticDeformationGradientdStateVariables( tardigradeVectorTools::matrixMultiply( dFdL, *get_dVelocityGradientdStateVariables( ), sot_dim, sot_dim, sot_dim, num_isvs ) );
 
         }
 
@@ -2612,31 +2706,37 @@ namespace tardigradeHydra{
              * Set the plastic state variables
              */
 
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+
             const floatVector *stateVariableEvolutionRates;
 
             const floatVector *previousStateVariableEvolutionRates;
 
             const floatVector *previousStateVariables;
 
-            const floatMatrix *dStateVariableEvolutionRatesdCauchyStress;
+            const floatVector *dStateVariableEvolutionRatesdCauchyStress;
 
-            const floatMatrix *dStateVariableEvolutionRatesdF;
+            const floatVector *dStateVariableEvolutionRatesdF;
 
-            const floatMatrix *dStateVariableEvolutionRatesdSubFs;
+            const floatVector *dStateVariableEvolutionRatesdSubFs;
 
             const floatVector *dStateVariableEvolutionRatesdT;
 
-            const floatMatrix *dStateVariableEvolutionRatesdStateVariables;
+            const floatVector *dStateVariableEvolutionRatesdStateVariables;
 
-            const floatMatrix *dPreviousStateVariableEvolutionRatesdPreviousCauchyStress = NULL;
+            const floatVector *dPreviousStateVariableEvolutionRatesdPreviousCauchyStress = NULL;
 
-            const floatMatrix *dPreviousStateVariableEvolutionRatesdPreviousF = NULL;
+            const floatVector *dPreviousStateVariableEvolutionRatesdPreviousF = NULL;
 
-            const floatMatrix *dPreviousStateVariableEvolutionRatesdPreviousSubFs = NULL;
+            const floatVector *dPreviousStateVariableEvolutionRatesdPreviousSubFs = NULL;
 
             const floatVector *dPreviousStateVariableEvolutionRatesdPreviousT = NULL;
 
-            const floatMatrix *dPreviousStateVariableEvolutionRatesdPreviousStateVariables = NULL;
+            const floatVector *dPreviousStateVariableEvolutionRatesdPreviousStateVariables = NULL;
 
             floatVector deltaPlasticStateVariables;
 
@@ -2672,40 +2772,43 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariables = get_previousStateVariables( ) );
 
-            floatMatrix dXidXidot;
+            floatVector dXidXidot;
 
             if ( setPreviousDerivatives ){
 
-                floatMatrix dXidXidotp;
+                floatVector dXidXidotp;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, plasticStateVariables, dXidXidot, dXidXidotp, ( 1 - *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, plasticStateVariables, dXidXidot, dXidXidotp, ( 1 - *getIntegrationParameter( ) ) ) );
 
-                set_dPlasticStateVariablesdPreviousCauchyStress( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousCauchyStress ) );
+                floatVector isv_eye( num_isvs * num_isvs, 0 );
+                tardigradeVectorTools::eye( isv_eye );
 
-                set_dPlasticStateVariablesdPreviousF( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousF ) );
+                set_dPlasticStateVariablesdPreviousCauchyStress( tardigradeVectorTools::matrixMultiply( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousCauchyStress, num_isvs, num_isvs, num_isvs, sot_dim ) );
 
-                set_dPlasticStateVariablesdPreviousSubFs( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousSubFs ) );
+                set_dPlasticStateVariablesdPreviousF( tardigradeVectorTools::matrixMultiply( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousF, num_isvs, num_isvs, num_isvs, sot_dim ) );
 
-                set_dPlasticStateVariablesdPreviousT( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousT ) );
+                set_dPlasticStateVariablesdPreviousSubFs( tardigradeVectorTools::matrixMultiply( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousSubFs, num_isvs, num_isvs, num_isvs, ( num_configs - 1 ) * sot_dim ) );
 
-                set_dPlasticStateVariablesdPreviousStateVariables( tardigradeVectorTools::dot( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousStateVariables ) + tardigradeVectorTools::eye< floatType >( previousStateVariables->size( ) ) );
+                set_dPlasticStateVariablesdPreviousT( tardigradeVectorTools::matrixMultiply( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousT, num_isvs, num_isvs, num_isvs, 1 ) );
+
+                set_dPlasticStateVariablesdPreviousStateVariables( tardigradeVectorTools::matrixMultiply( dXidXidotp, *dPreviousStateVariableEvolutionRatesdPreviousStateVariables, num_isvs, num_isvs, num_isvs, num_isvs ) + isv_eye );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, plasticStateVariables, dXidXidot, ( 1 - *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, plasticStateVariables, dXidXidot, ( 1 - *getIntegrationParameter( ) ) ) );
 
             }
 
-            set_dPlasticStateVariablesdCauchyStress( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdCauchyStress ) );
+            set_dPlasticStateVariablesdCauchyStress( tardigradeVectorTools::matrixMultiply( dXidXidot, *dStateVariableEvolutionRatesdCauchyStress, num_isvs, num_isvs, num_isvs, sot_dim ) );
 
-            set_dPlasticStateVariablesdF( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdF ) );
+            set_dPlasticStateVariablesdF( tardigradeVectorTools::matrixMultiply( dXidXidot, *dStateVariableEvolutionRatesdF, num_isvs, num_isvs, num_isvs, sot_dim ) );
 
-            set_dPlasticStateVariablesdSubFs( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdSubFs ) );
+            set_dPlasticStateVariablesdSubFs( tardigradeVectorTools::matrixMultiply( dXidXidot, *dStateVariableEvolutionRatesdSubFs, num_isvs, num_isvs, num_isvs, ( num_configs - 1 ) * sot_dim ) );
 
-            set_dPlasticStateVariablesdT( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdT ) );
+            set_dPlasticStateVariablesdT( tardigradeVectorTools::matrixMultiply( dXidXidot, *dStateVariableEvolutionRatesdT, num_isvs, num_isvs, num_isvs, 1 ) );
 
-            set_dPlasticStateVariablesdStateVariables( tardigradeVectorTools::dot( dXidXidot, *dStateVariableEvolutionRatesdStateVariables ) );
+            set_dPlasticStateVariablesdStateVariables( tardigradeVectorTools::matrixMultiply( dXidXidot, *dStateVariableEvolutionRatesdStateVariables, num_isvs, num_isvs, num_isvs, num_isvs ) );
 
             set_plasticStateVariables( plasticStateVariables );
 
@@ -2789,19 +2892,25 @@ namespace tardigradeHydra{
              * and the difference between the computed state variable's and hydra's stored values.
              */
 
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
+
+            const unsigned int num_isvs = get_stateVariables( )->size( );
+
             floatVector residual( *getNumEquations( ), 0 );
 
             // Set the residual for the plastic deformation gradient
-            for ( unsigned int i = 0; i < get_plasticDeformationGradient( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
 
                 residual[ i ] = ( *get_plasticDeformationGradient( ) )[ i ] - hydra->getConfiguration( *getPlasticConfigurationIndex( ) )[ i ];
     
             }
 
             // Set the residual for the plastic state variables
-            for ( unsigned int i = 0; i < get_stateVariables( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < num_isvs; i++ ){
 
-                residual[ i + get_plasticDeformationGradient( )->size( ) ] = ( *get_plasticStateVariables( ) )[ i ] - ( *get_stateVariables( ) )[ i ];
+                residual[ i + sot_dim ] = ( *get_plasticStateVariables( ) )[ i ] - ( *get_stateVariables( ) )[ i ];
     
             }
 
@@ -2814,7 +2923,15 @@ namespace tardigradeHydra{
              * Set the value of the Jacobian
              */
 
-            floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+
+            const unsigned int num_unknowns = hydra->getNumUnknowns( );
+
+            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
 
             // Set the derivatives
             get_dPlasticDeformationGradientdCauchyStress( );
@@ -2822,62 +2939,63 @@ namespace tardigradeHydra{
             get_dPlasticStateVariablesdCauchyStress( );
 
             // Get the Jacobians of the plastic deformation gradient
-            for ( unsigned int i = 0; i < get_plasticDeformationGradient( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
                 unsigned int row = i;
 
                 // Set the Jacobian with respect to the Cauchy stress
-                for ( unsigned int j = 0; j < ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ); j++ ){
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
                     unsigned int col = j;
 
-                    jacobian[ row ][ col ] += ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ][ j ];
+                    jacobian[ num_unknowns * row + col ] += ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ sot_dim * i + j ];
 
                 }
 
                 // Set the Jacobian with respect to the sub-configurations
-                jacobian[ i ][ ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + i ] -= 1;
-                for ( unsigned int j = 0; j < ( *get_dPlasticDeformationGradientdSubFs( ) )[ i ].size( ); j++ ){
-                    unsigned int col = ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + j;
+                jacobian[ num_unknowns * i + sot_dim + i ] -= 1;
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
-                    jacobian[ row ][ col ] += ( *get_dPlasticDeformationGradientdSubFs( ) )[ i ][ j ];
+                    unsigned int col = sot_dim + j;
+
+                    jacobian[ num_unknowns * row + col ] += ( *get_dPlasticDeformationGradientdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
 
                 }
 
                 // Set the Jacobian with respect to the state variables
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
-                    unsigned int col = ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + ( *get_dPlasticDeformationGradientdSubFs( ) )[ i ].size( ) + *ind;
+                    unsigned int col = sot_dim + ( num_configs - 1 ) * sot_dim + *ind;
 
-                    jacobian[ row ][ col ] += ( *get_dPlasticDeformationGradientdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    jacobian[ num_unknowns * row + col ] += ( *get_dPlasticDeformationGradientdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
             }
 
             // Get the Jacobians of the plastic state variables
-            for ( unsigned int i = 0; i < get_plasticStateVariables( )->size( ); i++ ){
-                unsigned int row = get_plasticDeformationGradient( )->size( ) + i;
+            for ( unsigned int i = 0; i < num_isvs; i++ ){
+                unsigned int row = sot_dim + i;
 
                 // Set the Jacobian with respect to the Cauchy stress
-                for ( unsigned int j = 0; j < ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ].size( ); j++ ){
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
                     unsigned int col = j;
 
-                    jacobian[ row ][ col ] += ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ][ j ];
+                    jacobian[ num_unknowns * row + col ] += ( *get_dPlasticStateVariablesdCauchyStress( ) )[ sot_dim * i + j ];
 
                 }
 
                 // Set the Jacobian with respect to the other configurations
-                for ( unsigned int j = 0; j < ( *get_dPlasticStateVariablesdSubFs( ) )[ i ].size( ); j++ ){
-                    unsigned int col = ( *get_dPlasticDeformationGradientdCauchyStress( ) )[ i ].size( ) + j;
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
+                    unsigned int col = sot_dim + j;
 
-                    jacobian[ row ][ col ] += ( *get_dPlasticStateVariablesdSubFs( ) )[ i ][ j ];
+                    jacobian[ num_unknowns * row + col ] += ( *get_dPlasticStateVariablesdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
 
                 }
 
                 // Set the Jacobian with respect to the state variables
-                jacobian[ row ][ ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *get_dPlasticStateVariablesdSubFs( ) )[ i ].size( ) + ( *getStateVariableIndices( ) )[ i ] ] -= 1;
+                jacobian[ num_unknowns * row + sot_dim + ( num_configs - 1 ) * sot_dim + ( *getStateVariableIndices( ) )[ i ] ] -= 1;
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
-                    unsigned int col = ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *get_dPlasticStateVariablesdSubFs( ) )[ i ].size( ) + *ind;
+                    unsigned int col = sot_dim + ( num_configs - 1 ) * sot_dim + *ind;
 
-                    jacobian[ row ][ col ] += ( *get_dPlasticStateVariablesdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    jacobian[ num_unknowns * row + col ] += ( *get_dPlasticStateVariablesdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
@@ -2922,7 +3040,11 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient.
              */
 
-            floatMatrix dRdF( *getNumEquations( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+
+            floatVector dRdF( sot_dim * ( *getNumEquations( ) ), 0 );
 
             // Set the derivatives
             get_dPlasticDeformationGradientdF( );
@@ -2930,22 +3052,22 @@ namespace tardigradeHydra{
             get_dPlasticStateVariablesdF( );
 
             // Get the Jacobians of the plastic deformation gradient
-            for ( unsigned int i = 0; i < get_plasticDeformationGradient( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                for ( unsigned int j = 0; j < ( *get_dPlasticDeformationGradientdF( ) )[ i ].size( ); j++ ){
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                    dRdF[ i ][ j ] = ( *get_dPlasticDeformationGradientdF( ) )[ i ][ j ];
+                    dRdF[ sot_dim * i + j ] = ( *get_dPlasticDeformationGradientdF( ) )[ sot_dim * i + j ];
 
                 }
 
             }
 
             // Get the Jacobians of the plastic state variables
-            for ( unsigned int i = 0; i < get_plasticStateVariables( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < num_isvs; i++ ){
 
-                for ( unsigned int j = 0; j < ( *get_dPlasticStateVariablesdF( ) )[ i ].size( ); j++ ){
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                    dRdF[ i + get_plasticDeformationGradient( )->size( ) ][ j ] += ( *get_dPlasticStateVariablesdF( ) )[ i ][ j ];
+                    dRdF[ sot_dim * ( i + sot_dim ) + j ] += ( *get_dPlasticStateVariablesdF( ) )[ sot_dim * i + j ];
 
                 }
 
@@ -2998,17 +3120,9 @@ namespace tardigradeHydra{
              *     modulus.
              */
 
-            unsigned int expectedSize = 11;
+            constexpr unsigned int expectedSize = 11;
 
-            if ( parameters.size( ) != expectedSize ){
-
-                std::string message = "The parameters vector is not the correct length.\n";
-                message            += "  parameters: " + std::to_string( parameters.size( ) ) + "\n";
-                message            += "  required:   " + std::to_string( expectedSize ) + "\n";
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
-
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( parameters.size( ) == expectedSize, "The parameters vector is not the correct length.\n  parameters: " + std::to_string( parameters.size( ) ) + "\n  required:   " + std::to_string( expectedSize ) + "\n" );
 
             set_peryznaParameters( { parameters[ 0 ] } );
 

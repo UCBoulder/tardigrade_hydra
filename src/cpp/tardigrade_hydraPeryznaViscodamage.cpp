@@ -31,31 +31,37 @@ namespace tardigradeHydra{
              * \param withPrevious: Flag for whether to include the derivatives w.r.t. the previous values.
              */
 
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+
             if ( withPrevious ){
 
-                set_dDamagedPreviousCauchyStress( ( *get_dPlasticStateVariablesdPreviousCauchyStress( ) )[ damageISVIndex ] );
+                set_dDamagedPreviousCauchyStress( tardigradeVectorTools::getRow( *get_dPlasticStateVariablesdPreviousCauchyStress( ), num_isvs, sot_dim, damageISVIndex ) );
 
-                set_dDamagedPreviousF( ( *get_dPlasticStateVariablesdPreviousF( ) )[ damageISVIndex ] );
+                set_dDamagedPreviousF( tardigradeVectorTools::getRow( *get_dPlasticStateVariablesdPreviousF( ), num_isvs, sot_dim, damageISVIndex ) );
 
-                set_dDamagedPreviousSubFs( ( *get_dPlasticStateVariablesdPreviousSubFs( ) )[ damageISVIndex ] );
+                set_dDamagedPreviousSubFs( tardigradeVectorTools::getRow( *get_dPlasticStateVariablesdPreviousSubFs( ), num_isvs, ( num_configs - 1 ) * sot_dim, damageISVIndex ) );
 
                 set_dDamagedPreviousT( ( *get_dPlasticStateVariablesdPreviousT( ) )[ damageISVIndex ] );
 
-                set_dDamagedPreviousStateVariables( ( *get_dPlasticStateVariablesdPreviousStateVariables( ) )[ damageISVIndex ] );
+                set_dDamagedPreviousStateVariables( tardigradeVectorTools::getRow( *get_dPlasticStateVariablesdPreviousStateVariables( ), num_isvs, num_isvs, damageISVIndex ) );
 
             }
 
             set_damage( ( *get_plasticStateVariables( ) )[ damageISVIndex ] );
 
-            set_dDamagedCauchyStress( ( *get_dPlasticStateVariablesdCauchyStress( ) )[ damageISVIndex ] );
+            set_dDamagedCauchyStress( tardigradeVectorTools::getRow( *get_dPlasticStateVariablesdCauchyStress( ), num_isvs, sot_dim, damageISVIndex ) );
 
-            set_dDamagedF( ( *get_dPlasticStateVariablesdF( ) )[ damageISVIndex ] );
+            set_dDamagedF( tardigradeVectorTools::getRow( *get_dPlasticStateVariablesdF( ), num_isvs, sot_dim, damageISVIndex ) );
 
-            set_dDamagedSubFs( ( *get_dPlasticStateVariablesdSubFs( ) )[ damageISVIndex ] );
+            set_dDamagedSubFs( tardigradeVectorTools::getRow( *get_dPlasticStateVariablesdSubFs( ), num_isvs, ( num_configs - 1 ) * sot_dim, damageISVIndex ) );
 
             set_dDamagedT( ( *get_dPlasticStateVariablesdT( ) )[ damageISVIndex ] );
 
-            set_dDamagedStateVariables( ( *get_dPlasticStateVariablesdStateVariables( ) )[ damageISVIndex ] );
+            set_dDamagedStateVariables( tardigradeVectorTools::getRow( *get_dPlasticStateVariablesdStateVariables( ), num_isvs, num_isvs, damageISVIndex ) );
 
         }
 
@@ -97,10 +103,13 @@ namespace tardigradeHydra{
              * knowledge of the elastic configuration.
              */
 
-            const unsigned int *dim = hydra->getDimension( );
-    
+            const unsigned int dim = hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+            const unsigned int elastic_config_index = *getElasticConfigurationIndex( );
+
             // Get the elastic deformation gradient
-            floatVector Fe = ( *hydra->get_configurations( ) )[ *getElasticConfigurationIndex( ) ];
+            floatVector Fe = floatVector( hydra->get_configurations( )->begin( ) + sot_dim * elastic_config_index,
+                                          hydra->get_configurations( )->begin( ) + sot_dim * ( elastic_config_index + 1 ) );
     
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
@@ -111,12 +120,12 @@ namespace tardigradeHydra{
             floatVector Ed = ( *get_damage( ) ) / ( 1 - ( *get_damage( ) ) ) * Ee;
     
             // Compute the square root to solve for the damage deformation gradient
-            floatVector eye( ( *dim ) * ( *dim ) );
+            floatVector eye( sot_dim );
             tardigradeVectorTools::eye( eye );
     
             floatVector Fd;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( Fd = tardigradeVectorTools::matrixSqrt( 2.0 * Ed + eye, *dim ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( Fd = tardigradeVectorTools::matrixSqrt( 2.0 * Ed + eye, dim ) );
     
             set_damageDeformationGradient( Fd );
 
@@ -160,23 +169,32 @@ namespace tardigradeHydra{
              * \param withPrevious: Flag for whether to set the Jacobians w.r.t. the previous unknowns
              */
 
-            const unsigned int *dim = hydra->getDimension( );
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const unsigned int elastic_config_index = *getElasticConfigurationIndex( );
     
+            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+
             // Get the elastic deformation gradient
-            floatVector Fe = ( *hydra->get_configurations( ) )[ *getElasticConfigurationIndex( ) ];
+            floatVector Fe = floatVector( hydra->get_configurations( )->begin( ) + sot_dim * elastic_config_index,
+                                          hydra->get_configurations( )->begin( ) + sot_dim * ( elastic_config_index + 1 ) );
     
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
 
-            floatMatrix dEedFe;
-    
+            floatVector dEedFe;
+
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( Fe, Ee, dEedFe ) );
 
-            floatMatrix dFedF( Fe.size( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );;
+            floatVector dFedF( sot_dim * sot_dim, 0 );
 
-            floatMatrix dFedSubFs( Fe.size( ), floatVector( ( *hydra->getNumConfigurations( ) ) * hydra->getDeformationGradient( )->size( ), 0 ) ) ;
+            floatVector dFedSubFs( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-            if ( ( *getElasticConfigurationIndex( ) ) == 0 ){
+            if ( elastic_config_index == 0 ){
 
                 dFedF     = *hydra->get_dF1dF( );
 
@@ -185,9 +203,9 @@ namespace tardigradeHydra{
             }
             else{
 
-                for ( unsigned int i = 0; i < hydra->getDeformationGradient( )->size( ); i++ ){
+                for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                    dFedSubFs[ i ][ i + ( *getElasticConfigurationIndex( ) ) - 1 ] = 1;
+                    dFedSubFs[ ( num_configs - 1 ) * sot_dim * i + i + elastic_config_index - 1 ] = 1;
 
                 }
 
@@ -198,57 +216,59 @@ namespace tardigradeHydra{
 
             floatVector dEddD = 1 / ( 1 - ( *get_damage( ) ) ) * ( 1 + ( *get_damage( ) ) / ( 1 - ( *get_damage( ) ) ) ) * Ee;
 
-            floatMatrix dEddF = ( *get_damage( ) ) / ( 1 - ( *get_damage( ) ) ) * tardigradeVectorTools::dot( dEedFe, dFedF );
+            floatVector dEddF = ( *get_damage( ) ) / ( 1 - ( *get_damage( ) ) ) * tardigradeVectorTools::matrixMultiply( dEedFe, dFedF, sot_dim, sot_dim, sot_dim, sot_dim );
  
-            floatMatrix dEddSubFs = ( *get_damage( ) ) / ( 1 - ( *get_damage( ) ) ) * tardigradeVectorTools::dot( dEedFe, dFedSubFs );
+            floatVector dEddSubFs = ( *get_damage( ) ) / ( 1 - ( *get_damage( ) ) ) * tardigradeVectorTools::matrixMultiply( dEedFe, dFedSubFs, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
  
             // Compute the square root to solve for the damage deformation gradient
-            floatVector eye( ( *dim ) * ( *dim ) );
+            floatVector eye( sot_dim );
             tardigradeVectorTools::eye( eye );
     
             floatVector Fd;
 
-            floatMatrix dAdFe; //A = 2.0 * Ed + eye
+            floatMatrix _dAdFe; //A = 2.0 * Ed + eye
+                                //
+            floatVector dAdFe; //A = 2.0 * Ed + eye
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( Fd = tardigradeVectorTools::matrixSqrt( 2.0 * Ed + eye, *dim, dAdFe ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( Fd = tardigradeVectorTools::matrixSqrt( 2.0 * Ed + eye, dim, _dAdFe ) );
 
-            floatMatrix dFddEd;
+            dAdFe = tardigradeVectorTools::appendVectors( _dAdFe );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dFddEd = tardigradeVectorTools::inflate( 2 * tardigradeVectorTools::inverse( tardigradeVectorTools::appendVectors( dAdFe ),
-                                                                                                                       ( *dim ) * ( *dim ), ( *dim ) * ( *dim ) ),
-                                                                                   ( *dim ) * ( *dim ), ( * dim ) * ( *dim ) ) );
+            floatVector dFddEd;
 
-            floatVector dFddD = tardigradeVectorTools::dot( dFddEd, dEddD );
+            TARDIGRADE_ERROR_TOOLS_CATCH( dFddEd = 2 * tardigradeVectorTools::inverse( dAdFe, sot_dim, sot_dim ) );
 
-            floatMatrix dFddF = tardigradeVectorTools::dot( dFddEd, dEddF );
+            floatVector dFddD = tardigradeVectorTools::matrixMultiply( dFddEd, dEddD, sot_dim, sot_dim, sot_dim, 1 );
 
-            floatMatrix dFddSubFs = tardigradeVectorTools::dot( dFddEd, dEddSubFs );
+            floatVector dFddF = tardigradeVectorTools::matrixMultiply( dFddEd, dEddF, sot_dim, sot_dim, sot_dim, sot_dim );
+
+            floatVector dFddSubFs = tardigradeVectorTools::matrixMultiply( dFddEd, dEddSubFs, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
             if ( withPrevious ){
 
-                set_dDamageDeformationGradientdPreviousCauchyStress( tardigradeVectorTools::dyadic( dFddD, *get_dDamagedPreviousCauchyStress( ) ) );
+                set_dDamageDeformationGradientdPreviousCauchyStress( tardigradeVectorTools::matrixMultiply( dFddD, *get_dDamagedPreviousCauchyStress( ), sot_dim, 1, 1, sot_dim ) );
     
-                set_dDamageDeformationGradientdPreviousF( tardigradeVectorTools::dyadic( dFddD, *get_dDamagedPreviousF( ) ) );
+                set_dDamageDeformationGradientdPreviousF( tardigradeVectorTools::matrixMultiply( dFddD, *get_dDamagedPreviousF( ), sot_dim, 1, 1, sot_dim ) );
     
-                set_dDamageDeformationGradientdPreviousSubFs( tardigradeVectorTools::dyadic( dFddD, *get_dDamagedPreviousSubFs( ) ) );
+                set_dDamageDeformationGradientdPreviousSubFs( tardigradeVectorTools::matrixMultiply( dFddD, *get_dDamagedPreviousSubFs( ), sot_dim, 1, 1, ( num_configs - 1 ) * sot_dim ) );
     
                 set_dDamageDeformationGradientdPreviousT( dFddD * ( *get_dDamagedPreviousT( ) ) );
     
-                set_dDamageDeformationGradientdPreviousStateVariables( tardigradeVectorTools::dyadic( dFddD, *get_dDamagedPreviousStateVariables( ) ) );
+                set_dDamageDeformationGradientdPreviousStateVariables( tardigradeVectorTools::matrixMultiply( dFddD, *get_dDamagedPreviousStateVariables( ), sot_dim, 1, 1, num_isvs ) );
 
             }
 
             set_damageDeformationGradient( Fd );
 
-            set_dDamageDeformationGradientdCauchyStress( tardigradeVectorTools::dyadic( dFddD, *get_dDamagedCauchyStress( ) ) );
+            set_dDamageDeformationGradientdCauchyStress( tardigradeVectorTools::matrixMultiply( dFddD, *get_dDamagedCauchyStress( ), sot_dim, 1, 1, sot_dim ) );
 
-            set_dDamageDeformationGradientdF( tardigradeVectorTools::dyadic( dFddD, *get_dDamagedF( ) ) + dFddF );
+            set_dDamageDeformationGradientdF( tardigradeVectorTools::matrixMultiply( dFddD, *get_dDamagedF( ), sot_dim, 1, 1, sot_dim ) + dFddF );
 
-            set_dDamageDeformationGradientdSubFs( tardigradeVectorTools::dyadic( dFddD, *get_dDamagedSubFs( ) ) + dFddSubFs );
+            set_dDamageDeformationGradientdSubFs( tardigradeVectorTools::matrixMultiply( dFddD, *get_dDamagedSubFs( ), sot_dim, 1, 1, ( num_configs - 1 ) * sot_dim ) + dFddSubFs );
 
             set_dDamageDeformationGradientdT( dFddD * ( *get_dDamagedT( ) ) );
 
-            set_dDamageDeformationGradientdStateVariables( tardigradeVectorTools::dyadic( dFddD, *get_dDamagedStateVariables( ) ) );
+            set_dDamageDeformationGradientdStateVariables( tardigradeVectorTools::matrixMultiply( dFddD, *get_dDamagedStateVariables( ), sot_dim, 1, 1, num_isvs ) );
 
         }
 
@@ -287,9 +307,15 @@ namespace tardigradeHydra{
              * \param &isPrevious: Whether to compute the previous values or not
              */
 
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int sot_dim = dim * dim;
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
             floatVector evolutionRates;
 
-            floatMatrix tempJac( 2 );
+            floatVector tempJac;
 
             tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRateDerivatives( isPrevious );
 
@@ -300,20 +326,26 @@ namespace tardigradeHydra{
                 set_previousStateVariableEvolutionRates( evolutionRates );
 
                 // Set the derivatives w.r.t. the previous Cauchy stress
-                tempJac[ 0 ] = ( *get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( ) )[ 0 ];
-                tempJac[ 1 ] = *get_dPreviousPlasticMultiplierdPreviousCauchyStress( );
+                tempJac = *get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( );
+                for ( unsigned int i = 0; i < sot_dim; i++ ){
+                    tempJac[ sot_dim + i ] = ( *get_dPreviousPlasticMultiplierdPreviousCauchyStress( ) )[ i ];
+                }
 
                 set_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( tempJac );
 
                 // Set the derivatives w.r.t. the previous deformation gradient
-                tempJac[ 0 ] = ( *get_dPreviousStateVariableEvolutionRatesdPreviousF( ) )[ 0 ];
-                tempJac[ 1 ] = *get_dPreviousPlasticMultiplierdPreviousF( );
+                tempJac = *get_dPreviousStateVariableEvolutionRatesdPreviousF( );
+                for ( unsigned int i = 0; i < sot_dim; i++ ){
+                    tempJac[ sot_dim + i ] = ( *get_dPreviousPlasticMultiplierdPreviousF( ) )[ i ];
+                }
 
                 set_dPreviousStateVariableEvolutionRatesdPreviousF( tempJac );
 
                 // Set the derivatives w.r.t. the previous sub-deformation gradients
-                tempJac[ 0 ] = ( *get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( ) )[ 0 ];
-                tempJac[ 1 ] = *get_dPreviousPlasticMultiplierdPreviousSubFs( );
+                tempJac = *get_dPreviousStateVariableEvolutionRatesdPreviousSubFs( );
+                for ( unsigned int i = 0; i < ( num_configs - 1 ) * sot_dim; i++ ){
+                    tempJac[ ( num_configs - 1 ) * sot_dim + i ] = ( *get_dPreviousPlasticMultiplierdPreviousSubFs( ) )[ i ];
+                }
 
                 set_dPreviousStateVariableEvolutionRatesdPreviousSubFs( tempJac );
 
@@ -324,8 +356,8 @@ namespace tardigradeHydra{
                 set_dPreviousStateVariableEvolutionRatesdPreviousT( tempJacVec );
 
                 // Set the derivatives w.r.t. the previous state variables
-                tempJac[ 0 ] = { ( *get_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) )[ 0 ][ 0 ], 0. };
-                tempJac[ 1 ] = { ( *get_dPreviousPlasticMultiplierdPreviousStateVariables( ) )[ 0 ], 0. };
+                tempJac = { ( *get_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( ) )[ 0 ], 0.,
+                            ( *get_dPreviousPlasticMultiplierdPreviousStateVariables( ) )[ 0 ], 0. };
 
                 set_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( tempJac );
 
@@ -336,33 +368,39 @@ namespace tardigradeHydra{
 
                 set_stateVariableEvolutionRates( evolutionRates );
 
-                // Set the derivatives w.r.t. the previous Cauchy stress
-                tempJac[ 0 ] = ( *get_dStateVariableEvolutionRatesdCauchyStress( ) )[ 0 ];
-                tempJac[ 1 ] = *get_dPlasticMultiplierdCauchyStress( );
+                // Set the derivatives w.r.t. the Cauchy stress
+                tempJac = *get_dStateVariableEvolutionRatesdCauchyStress( );
+                for ( unsigned int i = 0; i < sot_dim; i++ ){
+                    tempJac[ sot_dim + i ] = ( *get_dPlasticMultiplierdCauchyStress( ) )[ i ];
+                }
 
                 set_dStateVariableEvolutionRatesdCauchyStress( tempJac );
 
-                // Set the derivatives w.r.t. the previous deformation gradient
-                tempJac[ 0 ] = ( *get_dStateVariableEvolutionRatesdF( ) )[ 0 ];
-                tempJac[ 1 ] = *get_dPlasticMultiplierdF( );
+                // Set the derivatives w.r.t. the deformation gradient
+                tempJac = *get_dStateVariableEvolutionRatesdF( );
+                for ( unsigned int i = 0; i < sot_dim; i++ ){
+                    tempJac[ sot_dim + i ] = ( *get_dPlasticMultiplierdF( ) )[ i ];
+                }
 
                 set_dStateVariableEvolutionRatesdF( tempJac );
 
-                // Set the derivatives w.r.t. the previous sub-deformation gradients
-                tempJac[ 0 ] = ( *get_dStateVariableEvolutionRatesdSubFs( ) )[ 0 ];
-                tempJac[ 1 ] = *get_dPlasticMultiplierdSubFs( );
+                // Set the derivatives w.r.t. the sub-deformation gradients
+                tempJac = *get_dStateVariableEvolutionRatesdSubFs( );
+                for ( unsigned int i = 0; i < ( num_configs - 1 ) * sot_dim; i++ ){
+                    tempJac[ ( num_configs - 1 ) * sot_dim + i ] = ( *get_dPlasticMultiplierdSubFs( ) )[ i ];
+                }
 
                 set_dStateVariableEvolutionRatesdSubFs( tempJac );
 
-                // Set the derivatives w.r.t. the previous temperature
+                // Set the derivatives w.r.t. the temperature
                 floatVector tempJacVec = tardigradeVectorTools::appendVectors( { *get_dStateVariableEvolutionRatesdT( ),
                                                                                { *get_dPlasticMultiplierdT( ) } } );
 
                 set_dStateVariableEvolutionRatesdT( tempJacVec );
 
-                // Set the derivatives w.r.t. the previous state variables
-                tempJac[ 0 ] = { ( *get_dStateVariableEvolutionRatesdStateVariables( ) )[ 0 ][ 0 ], 0. };
-                tempJac[ 1 ] = { ( *get_dPlasticMultiplierdStateVariables( ) )[ 0 ], 0. };
+                // Set the derivatives w.r.t. the state variables
+                tempJac = { ( *get_dStateVariableEvolutionRatesdStateVariables( ) )[ 0 ], 0.,
+                            ( *get_dPlasticMultiplierdStateVariables( ) )[ 0 ], 0. };
 
                 set_dStateVariableEvolutionRatesdStateVariables( tempJac );
 
@@ -398,66 +436,76 @@ namespace tardigradeHydra{
              * Set the Jacobian matrix
              */
 
-            floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const unsigned int damage_configuration_index = *getDamageConfigurationIndex( );
+
+            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+
+            const unsigned int num_unknowns = hydra->getNumUnknowns( );
+
+            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
 
             // Jacobians of the damage deformation gradient
-            for ( unsigned int i = 0; i < get_dDamageDeformationGradientdCauchyStress( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
                 unsigned int row = i;
 
                 // Jacobians w.r.t. the Cauchy stress
-                for ( unsigned int j = 0; j < ( *get_dDamageDeformationGradientdCauchyStress( ) )[ i ].size( ); j++ ){
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
                     unsigned int col = j;
 
-                    jacobian[ row ][ col ] -= ( *get_dDamageDeformationGradientdCauchyStress( ) )[ i ][ j ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdCauchyStress( ) )[ sot_dim * i + j ];
 
                 }
 
                 // Jacobians w.r.t. the sub configurations
-                jacobian[ row ][ hydra->getDeformationGradient( )->size( ) * ( *getDamageConfigurationIndex( ) ) + i ] += 1;
+                jacobian[ num_unknowns * row + sot_dim * damage_configuration_index + i ] += 1;
 
-                for ( unsigned int j = 0; j < ( *get_dDamageDeformationGradientdSubFs( ) )[ i ].size( ); j++ ){
-                    unsigned int col = ( *get_dDamageDeformationGradientdCauchyStress( ) )[ i ].size( ) + j;
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
+                    unsigned int col = sot_dim + j;
 
-                    jacobian[ row ][ col ] -= ( *get_dDamageDeformationGradientdSubFs( ) )[ i ][ j ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
 
                 }
 
                 // Jacobians w.r.t. the state variables
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
-                    unsigned int col = ( *get_dDamageDeformationGradientdCauchyStress( ) )[ i ].size( ) + ( *get_dDamageDeformationGradientdSubFs( ) )[ i ].size( ) + *ind;
+                    unsigned int col = sot_dim + ( num_configs - 1 ) * sot_dim + *ind;
 
-                    jacobian[ row ][ col ] -= ( *get_dDamageDeformationGradientdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
             }
 
             // Jacobians of the damage hardening state variables
-            for ( unsigned int i = 0; i < get_dPlasticStateVariablesdCauchyStress( )->size( ); i++ ){
-                unsigned int row = get_damageDeformationGradient( )->size( ) + i;
+            for ( unsigned int i = 0; i < num_isvs; i++ ){
+                unsigned int row = sot_dim + i;
 
                 // Jacobians w.r.t. the Cauchy stress
-                for ( unsigned int j = 0; j < ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ].size( ); j++ ){
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
                     unsigned int col = j;
 
-                    jacobian[ row ][ col ] -= ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ][ j ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdCauchyStress( ) )[ sot_dim * i + j ];
 
                 }
 
                 // Jacobians w.r.t. the sub configurations
-                for ( unsigned int j = 0; j < ( *get_dPlasticStateVariablesdSubFs( ) )[ i ].size( ); j++ ){
-                    unsigned int col = ( *get_dDamageDeformationGradientdCauchyStress( ) )[ i ].size( ) + j;
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
+                    unsigned int col = sot_dim + j;
 
-                    jacobian[ row ][ col ] -= ( *get_dPlasticStateVariablesdSubFs( ) )[ i ][ j ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
 
                 }
 
                 // Jacobians w.r.t. the state variables
-                jacobian[ row ][ ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *get_dPlasticStateVariablesdSubFs( ) )[ i ].size( ) + ( *getStateVariableIndices( ) )[ i ] ] += 1;
+                jacobian[ num_unknowns * row + sot_dim + ( num_configs - 1 ) * sot_dim + ( *getStateVariableIndices( ) )[ i ] ] += 1;
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
-                    unsigned int col = ( *get_dPlasticStateVariablesdCauchyStress( ) )[ i ].size( ) + ( *get_dPlasticStateVariablesdSubFs( ) )[ i ].size( ) + *ind;
+                    unsigned int col = sot_dim + ( num_configs - 1 ) * sot_dim + *ind;
 
-                    jacobian[ row ][ col ] -= ( *get_dPlasticStateVariablesdStateVariables( ) )[ i ][ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    jacobian[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
@@ -495,21 +543,37 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            floatMatrix dRdF( *getNumEquations( ), floatVector( hydra->getDeformationGradient( )->size( ), 0 ) );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            for ( unsigned int i = 0; i < get_dDamageDeformationGradientdF( )->size( ); i++ ){
+            floatVector dRdF( ( *getNumEquations( ) ) * sot_dim, 0 );
 
-                dRdF[ i ] = -( *get_dDamageDeformationGradientdF( ) )[ i ];
+            dRdF = tardigradeVectorTools::appendVectors( { *get_dDamageDeformationGradientdF( ),
+                                                           *get_dPlasticStateVariablesdF( ) } );
 
-            }
-
-            for ( unsigned int i = 0; i < get_dPlasticStateVariablesdF( )->size( ); i++ ){
-
-                dRdF[ get_damageDeformationGradient( )->size( ) + i ] = -( *get_dPlasticStateVariablesdF( ) )[ i ];
-
-            }
+            std::transform( dRdF.cbegin( ), dRdF.cend( ), dRdF.begin( ), std::negate<floatType>( ) );
 
             setdRdF( dRdF );
+
+        }
+
+        void residual::decomposeParameters( const floatVector &parameters ){
+            /*!
+             * Decompose the incoming parameter vector
+             * 
+             * \param &parameters: The incoming parameter vector
+             * 
+             * The form has the same interpretation as the base viscoplastic case
+             * except we have a different method of hardening for the damage state
+             * variable which we account for here.
+             */
+
+            tardigradeHydra::peryznaViscoplasticity::residual::decomposeParameters( parameters );
+
+            //Setting the contribution of damage to the calculation of the drag stress to zero
+            set_dragStressParameters( { parameters[ 1 ], parameters[  2 ], 0. } );
+
+            //Setting the contribution of damage to the hardening of the damage state variable to zero
+            set_hardeningParameters(  { parameters[ 9 ], parameters[ 10 ], 0. } );
 
         }
 

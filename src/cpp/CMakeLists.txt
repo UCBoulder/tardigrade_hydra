@@ -1,4 +1,4 @@
-add_library (${PROJECT_NAME} SHARED ${PROJECT_SOURCE_FILES})
+add_library(${PROJECT_NAME} SHARED ${PROJECT_SOURCE_FILES})
 set_target_properties(${PROJECT_NAME} PROPERTIES PUBLIC_HEADER ${PROJECT_NAME}.h)
 target_link_libraries(${PROJECT_NAME} tardigrade_constitutive_tools tardigrade_stress_tools tardigrade_micromorphic_tools ${PROJECT_LINK_LIBRARIES})
 target_compile_options(${PROJECT_NAME} PUBLIC)

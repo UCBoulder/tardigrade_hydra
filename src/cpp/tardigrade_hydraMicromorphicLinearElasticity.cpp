@@ -32,33 +32,19 @@ namespace tardigradeHydra{
              * :param const parameterVector &B: The B stiffness matrix.
              * :param const parameterVector &C: The C stiffness matrix.
              * :param const parameterVector &D: The D stiffness matrix.
-             * :param variableVector &CauchyStress: The Cauchy stress.
+             * :param variableVector &cauchyStress: The Cauchy stress.
              * :param variableVector &microStress: The symmetric micro-stress.
              * :param variableVector &higherOrderStress: The higher-order stress.
              */
     
             variableVector PK2Stress, referenceMicroStress, referenceHigherOrderStress;
-            errorOut error = linearElasticityReference( deformationGradient, microDeformation, gradientMicroDeformation,
-                                                        A, B, C, D,
-                                                        PK2Stress, referenceMicroStress, referenceHigherOrderStress );
+            TARDIGRADE_ERROR_TOOLS_CATCH( linearElasticityReference( deformationGradient, microDeformation, gradientMicroDeformation,
+                                                                     A, B, C, D,
+                                                                     PK2Stress, referenceMicroStress, referenceHigherOrderStress ) );
     
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticity",
-                                                 "Error in the computation of the stresses in the reference configuration" );
-                result->addNext( error );
-                return result;
-            }
-    
-            error = mapStressMeasuresToCurrent( deformationGradient, microDeformation, PK2Stress,
-                                                referenceMicroStress, referenceHigherOrderStress,
-                                                cauchyStress, microStress, higherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticity",
-                                                 "Error in mapping the reference stresses to the current configuration" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( mapStressMeasuresToCurrent( deformationGradient, microDeformation, PK2Stress,
+                                                                      referenceMicroStress, referenceHigherOrderStress,
+                                                                      cauchyStress, microStress, higherOrderStress ) );
     
             return NULL;
         }
@@ -69,92 +55,110 @@ namespace tardigradeHydra{
                                    const parameterVector &D,
                                    variableVector &cauchyStress, variableVector &microStress,
                                    variableVector &higherOrderStress,
-                                   variableMatrix &dCauchyStressdF, variableMatrix &dCauchyStressdChi, variableMatrix &dCauchyStressdGradChi,
-                                   variableMatrix &dMicroStressdF, variableMatrix &dMicroStressdChi, variableMatrix &dMicroStressdGradChi,
-                                   variableMatrix &dHigherOrderStressdF, variableMatrix &dHigherOrderStressdChi,
-                                   variableMatrix &dHigherOrderStressdGradChi ){
+                                   variableVector &dCauchyStressdF, variableVector &dCauchyStressdChi, variableVector &dCauchyStressdGradChi,
+                                   variableVector &dMicroStressdF, variableVector &dMicroStressdChi, variableVector &dMicroStressdGradChi,
+                                   variableVector &dHigherOrderStressdF, variableVector &dHigherOrderStressdChi,
+                                   variableVector &dHigherOrderStressdGradChi ){
             /*!
              * Compute the stress measures in the current configuration for micromorphic linear elasticity based off 
              * of a quadratic decomposition of the energy.
              *
              * Also compute the Jacobians
              *
-             * :param const variableVector &deformationGradient: The deformation gradient
-             * :param const variableVector &microDeformation: The micro-deformation
-             * :param const variableVector &gradientMicroDeformation: The spatial gradient of the micro-deformation
-             * :param const parameterVector &A: The A stiffness matrix.
-             * :param const parameterVector &B: The B stiffness matrix.
-             * :param const parameterVector &C: The C stiffness matrix.
-             * :param const parameterVector &D: The D stiffness matrix.
-             * :param variableVector &CauchyStress: The Cauchy stress.
-             * :param variableVector &microStress: The symmetric micro-stress.
-             * :param variableVector &higherOrderStress: The higher-order stress.
-             * :param variableMatrix &dCauchyStressdF: The Jacobian of the Cauchy stress w.r.t. the deformation gradient
-             * :param variableMatrix &dCauchyStressdChi: The Jacobian of the Cauchy stress w.r.t. the micro deformation.
-             * :param variableMatrix &dCauchyStressdGradChi: The Jacobian of the Cauchy stress w.r.t. the gradient of the 
-             *     micro-deformation.
-             * :param variableMatrix &dMicroStressdF: The Jacobian of the Micro stress w.r.t. the deformation gradient
-             * :param variableMatrix &dMicroStressdChi: The Jacobian of the Micro stress w.r.t. the micro deformation.
-             * :param variableMatrix &dMicroStressdGradChi: The Jacobian of the Micro stress w.r.t. the gradient of the 
-             *     micro-deformation.
-             * :param variableMatrix &dHigherOrderStressdF: The Jacobian of the Higher Order stress w.r.t. the deformation gradient
-             * :param variableMatrix &dHigherOrderStressdChi: The Jacobian of the Higher Order stress w.r.t. the micro deformation.
-             * :param variableMatrix &dHigherOrderStressdGradChi: The Jacobian of the Higher Order stress w.r.t. the gradient of the 
+             * \param &deformationGradient: The deformation gradient
+             * \param &microDeformation: The micro-deformation
+             * \param &gradientMicroDeformation: The spatial gradient of the micro-deformation
+             * \param &A: The A stiffness matrix.
+             * \param &B: The B stiffness matrix.
+             * \param &C: The C stiffness matrix.
+             * \param &D: The D stiffness matrix.
+             * \param &cauchyStress: The Cauchy stress.
+             * \param &microStress: The symmetric micro-stress.
+             * \param &higherOrderStress: The higher-order stress.
+             * \param &dCauchyStressdF: The Jacobian of the Cauchy stress w.r.t. the deformation gradient
+             * \param &dCauchyStressdChi: The Jacobian of the Cauchy stress w.r.t. the micro deformation.
+             * \param &dCauchyStressdGradChi: The Jacobian of the Cauchy stress w.r.t. the gradient of the 
+             * \   micro-deformation.
+             * \param &dMicroStressdF: The Jacobian of the Micro stress w.r.t. the deformation gradient
+             * \param &dMicroStressdChi: The Jacobian of the Micro stress w.r.t. the micro deformation.
+             * \param &dMicroStressdGradChi: The Jacobian of the Micro stress w.r.t. the gradient of the 
+             * \   micro-deformation.
+             * \param &dHigherOrderStressdF: The Jacobian of the Higher Order stress w.r.t. the deformation gradient
+             * \param &dHigherOrderStressdChi: The Jacobian of the Higher Order stress w.r.t. the micro deformation.
+             * \param &dHigherOrderStressdGradChi: The Jacobian of the Higher Order stress w.r.t. the gradient of the 
              *     micro-deformation.
              */
-    
+
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
+ 
             variableVector PK2Stress, referenceMicroStress, referenceHigherOrderStress;
     
-            variableMatrix dPK2StressdF, dPK2StressdChi, dPK2StressdGradChi;
-            variableMatrix dReferenceMicroStressdF, dReferenceMicroStressdChi, dReferenceMicroStressdGradChi;
-            variableMatrix dReferenceHigherOrderStressdF, dReferenceHigherOrderStressdGradChi;
+            variableVector dPK2StressdF, dPK2StressdChi, dPK2StressdGradChi;
+            variableVector dReferenceMicroStressdF, dReferenceMicroStressdChi, dReferenceMicroStressdGradChi;
+            variableVector dReferenceHigherOrderStressdF, dReferenceHigherOrderStressdGradChi;
     
-            errorOut error = linearElasticityReference( deformationGradient, microDeformation, gradientMicroDeformation,
-                                                        A, B, C, D,
-                                                        PK2Stress, referenceMicroStress, referenceHigherOrderStress,
-                                                        dPK2StressdF, dPK2StressdChi, dPK2StressdGradChi,
-                                                        dReferenceMicroStressdF, dReferenceMicroStressdChi, dReferenceMicroStressdGradChi,
-                                                        dReferenceHigherOrderStressdF, dReferenceHigherOrderStressdGradChi );
+            TARDIGRADE_ERROR_TOOLS_CATCH( linearElasticityReference( deformationGradient, microDeformation, gradientMicroDeformation,
+                                                                     A, B, C, D,
+                                                                     PK2Stress, referenceMicroStress, referenceHigherOrderStress,
+                                                                     dPK2StressdF, dPK2StressdChi, dPK2StressdGradChi,
+                                                                     dReferenceMicroStressdF, dReferenceMicroStressdChi, dReferenceMicroStressdGradChi,
+                                                                     dReferenceHigherOrderStressdF, dReferenceHigherOrderStressdGradChi ) );
     
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticity",
-                                                 "Error in the computation of the stresses in the reference configuration" );
-                result->addNext( error );
-                return result;
-            }
+            variableVector dCauchyStressdPK2Stress, dMicroStressdReferenceMicroStress, dHigherOrderStressdReferenceHigherOrderStress;
     
-            variableMatrix dCauchyStressdPK2Stress, dMicroStressdReferenceMicroStress, dHigherOrderStressdReferenceHigherOrderStress;
-    
-            error = mapStressMeasuresToCurrent( deformationGradient, microDeformation, PK2Stress,
-                                                referenceMicroStress, referenceHigherOrderStress,
-                                                cauchyStress, microStress, higherOrderStress,
-                                                dCauchyStressdF, dCauchyStressdPK2Stress,
-                                                dMicroStressdF, dMicroStressdReferenceMicroStress,
-                                                dHigherOrderStressdF, dHigherOrderStressdChi,
-                                                dHigherOrderStressdReferenceHigherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticity",
-                                                 "Error in mapping the reference stresses to the current configuration" );
-                result->addNext( error );
-                return result;
-            }
-    
+            TARDIGRADE_ERROR_TOOLS_CATCH( mapStressMeasuresToCurrent( deformationGradient, microDeformation, PK2Stress,
+                                                                      referenceMicroStress, referenceHigherOrderStress,
+                                                                      cauchyStress, microStress, higherOrderStress,
+                                                                      dCauchyStressdF, dCauchyStressdPK2Stress,
+                                                                      dMicroStressdF, dMicroStressdReferenceMicroStress,
+                                                                      dHigherOrderStressdF, dHigherOrderStressdChi,
+                                                                      dHigherOrderStressdReferenceHigherOrderStress ) );
+
+            // Size the target vectors
+            dCauchyStressdChi = floatVector( sot_dim * sot_dim, 0 );
+            dCauchyStressdGradChi = floatVector( sot_dim * tot_dim, 0 );
+            dMicroStressdChi = floatVector( sot_dim * sot_dim, 0 );
+            dMicroStressdGradChi = floatVector( sot_dim * tot_dim, 0 );
+            dHigherOrderStressdGradChi = floatVector( tot_dim * tot_dim, 0 );
+ 
+            // Set up the Eigen Maps
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dCauchyStressdF_map(               dCauchyStressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dCauchyStressdChi_map(             dCauchyStressdChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dCauchyStressdGradChi_map(         dCauchyStressdGradChi.data( ), sot_dim, tot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dCauchyStressdPK2Stress_map(       dCauchyStressdPK2Stress.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdF_map(                  dPK2StressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdChi_map(                dPK2StressdChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dPK2StressdGradChi_map(            dPK2StressdGradChi.data( ), sot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dMicroStressdF_map(                    dMicroStressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dMicroStressdChi_map(                  dMicroStressdChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dMicroStressdGradChi_map(              dMicroStressdGradChi.data( ), sot_dim, tot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dMicroStressdReferenceMicroStress_map( dMicroStressdReferenceMicroStress.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dReferenceMicroStressdF_map(           dReferenceMicroStressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dReferenceMicroStressdChi_map(         dReferenceMicroStressdChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dReferenceMicroStressdGradChi_map(     dReferenceMicroStressdGradChi.data( ), sot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > dHigherOrderStressdF_map(                          dHigherOrderStressdF.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > dHigherOrderStressdGradChi_map(                    dHigherOrderStressdGradChi.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > dHigherOrderStressdReferenceHigherOrderStress_map( dHigherOrderStressdReferenceHigherOrderStress.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > dReferenceHigherOrderStressdF_map(                 dReferenceHigherOrderStressdF.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > dReferenceHigherOrderStressdGradChi_map(           dReferenceHigherOrderStressdGradChi.data( ), tot_dim, sot_dim );
+
             //Assemble the jacobians of the Cauchy stress
-            dCauchyStressdF += tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdF );
-            dCauchyStressdChi = tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdChi );
-            dCauchyStressdGradChi = tardigradeVectorTools::dot( dCauchyStressdPK2Stress, dPK2StressdGradChi );
+            dCauchyStressdF_map = ( dCauchyStressdF_map + dCauchyStressdPK2Stress_map * dPK2StressdF_map ).eval( );
+            dCauchyStressdChi_map = ( dCauchyStressdPK2Stress_map * dPK2StressdChi_map ).eval( );
+            dCauchyStressdGradChi_map = ( dCauchyStressdPK2Stress_map * dPK2StressdGradChi_map ).eval( );
     
             //Assemble the jacobians of the symmetric micro-stress
-            dMicroStressdF += tardigradeVectorTools::dot( dMicroStressdReferenceMicroStress, dReferenceMicroStressdF );
-            dMicroStressdChi = tardigradeVectorTools::dot( dMicroStressdReferenceMicroStress, dReferenceMicroStressdChi );
-            dMicroStressdGradChi = tardigradeVectorTools::dot( dMicroStressdReferenceMicroStress, dReferenceMicroStressdGradChi );
+            dMicroStressdF_map = ( dMicroStressdF_map + dMicroStressdReferenceMicroStress_map * dReferenceMicroStressdF_map ).eval( );
+            dMicroStressdChi_map = ( dMicroStressdReferenceMicroStress_map * dReferenceMicroStressdChi_map ).eval( );
+            dMicroStressdGradChi_map = ( dMicroStressdReferenceMicroStress_map * dReferenceMicroStressdGradChi_map ).eval( );
     
             //Assemble the jacobians of the higher-order stress
-            dHigherOrderStressdF += tardigradeVectorTools::dot( dHigherOrderStressdReferenceHigherOrderStress,
-                                                      dReferenceHigherOrderStressdF );
-            dHigherOrderStressdGradChi = tardigradeVectorTools::dot( dHigherOrderStressdReferenceHigherOrderStress,
-                                                          dReferenceHigherOrderStressdGradChi );
+            dHigherOrderStressdF_map       = ( dHigherOrderStressdF_map + dHigherOrderStressdReferenceHigherOrderStress_map * dReferenceHigherOrderStressdF_map ).eval( );
+            dHigherOrderStressdGradChi_map = ( dHigherOrderStressdReferenceHigherOrderStress_map * dReferenceHigherOrderStressdGradChi_map ).eval( );
     
             return NULL;
         }
@@ -169,42 +173,28 @@ namespace tardigradeHydra{
              * Compute the stress measures in the reference configuration for micromorphic linear elasticity based off 
              * of a quadratic decomposition of the energy.
              *
-             * :param const variableVector &deformationGradient: The deformation gradient
-             * :param const variableVector &microDeformation: The micro-deformation
-             * :param const variableVector &gradientMicroDeformation: The spatial gradient of the micro-deformation
-             * :param const parameterVector &A: The A stiffness matrix.
-             * :param const parameterVector &B: The B stiffness matrix.
-             * :param const parameterVector &C: The C stiffness matrix.
-             * :param const parameterVector &D: The D stiffness matrix.
-             * :param variableVector &PK2Stress: The second Piola-Kirchoff stress.
-             * :param variableVector &referenceMicroStress: The symmetric micro-stress in the 
-             *     reference configuration.
-             * :param variableVector &referenceHigherOrderStress: The higher-order stress in the 
+             * \param &deformationGradient: The deformation gradient
+             * \param &microDeformation: The micro-deformation
+             * \param &gradientMicroDeformation: The spatial gradient of the micro-deformation
+             * \param &A: The A stiffness matrix.
+             * \param &B: The B stiffness matrix.
+             * \param &C: The C stiffness matrix.
+             * \param &D: The D stiffness matrix.
+             * \param &PK2Stress: The second Piola-Kirchoff stress.
+             * \param &referenceMicroStress: The symmetric micro-stress in the 
+             * \   reference configuration.
+             * \param &referenceHigherOrderStress: The higher-order stress in the 
              *     reference configuration.
              */
     
             //Compute the required deformation measures
             variableVector RCG, Psi, Gamma;
-            errorOut error = computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
-                                                         RCG, Psi, Gamma );
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
+                                                                      RCG, Psi, Gamma ) );
     
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReference",
-                                                 "Error in the computation of the deformation measures" );
-                result->addNext( error );
-                return result;
-            }
-    
-            error = linearElasticityReferenceDerivedMeasures( RCG, Psi, Gamma, A, B, C, D,
-                                                              PK2Stress, referenceMicroStress,
-                                                              referenceHigherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReference",
-                                                 "Error in the computation of the reference stresses" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( linearElasticityReferenceDerivedMeasures( RCG, Psi, Gamma, A, B, C, D,
+                                                                                    PK2Stress, referenceMicroStress,
+                                                                                    referenceHigherOrderStress ) );
     
             return NULL;
         }
@@ -215,91 +205,108 @@ namespace tardigradeHydra{
                                             const parameterVector &D,
                                             variableVector &PK2Stress, variableVector &referenceMicroStress,
                                             variableVector &referenceHigherOrderStress,
-                                            variableMatrix &dPK2StressdF, variableMatrix &dPK2StressdChi, variableMatrix &dPK2StressdGradChi,
-                                            variableMatrix &dReferenceMicroStressdF, variableMatrix &dReferenceMicroStressdChi,
-                                            variableMatrix &dReferenceMicroStressdGradChi, variableMatrix &dMdF, variableMatrix &dMdGradChi ){
+                                            variableVector &dPK2StressdF, variableVector &dPK2StressdChi, variableVector &dPK2StressdGradChi,
+                                            variableVector &dReferenceMicroStressdF, variableVector &dReferenceMicroStressdChi,
+                                            variableVector &dReferenceMicroStressdGradChi, variableVector &dMdF, variableVector &dMdGradChi ){
             /*!
              * Compute the stress measures in the reference configuration for micromorphic linear elasticity based off
              * of a quadratic decomposition of the energy.
              *
              * Also computes the Jacobians
              *
-             * :param const variableVector &deformationGradient: The deformation gradient
-             * :param const variableVector &microDeformation: The micro-deformation
-             * :param const variableVector &gradientMicroDeformation: The spatial gradient of the micro-deformation
-             * :param const parameterVector &A: The A stiffness matrix.
-             * :param const parameterVector &B: The B stiffness matrix.
-             * :param const parameterVector &C: The C stiffness matrix.
-             * :param const parameterVector &D: The D stiffness matrix.
-             * :param variableVector &PK2Stress: The second Piola-Kirchoff stress.
-             * :param variableVector &referenceMicroStress: The symmetric micro-stress in the 
-             *     reference configuration.
-             * :param variableVector &referenceHigherOrderStress: The higher-order stress in the 
-             *     reference configuration.
-             * :param variableMatrix &dPK2StressdF: The Jacobian of the PK2 stress w.r.t. the deformation gradient.
-             * :param variableMatrix &dPK2StressdChi: The Jacobian of the PK2 stress w.r.t. the micro deformation.
-             * :param variableMatrix &dPK2StressdGradChi: The Jacobian of the PK2 stress w.r.t. the gradient of the micro deformation.
-             * :param variableMatrix &dReferenceMicroStressdF: The Jacobian of the Micro stress w.r.t. the deformation gradient.
-             * :param variableMatrix &dReferenceMicroStressdChi: The Jacobian of the Micro stress w.r.t. the micro deformation.
-             * :param variableMatrix &dReferenceStressdGradChi: The Jacobian of the Micro stress w.r.t. the gradient of the micro deformation.
-             * :param variableMatrix &dMdF: The Jacobian of the higher order stress w.r.t. the deformation gradient.
-             * :param variableMatrix &dMdGradChi: The Jacobian of the higher order stress w.r.t. the gradient of the micro deformation.
+             * \param &deformationGradient: The deformation gradient
+             * \param &microDeformation: The micro-deformation
+             * \param &gradientMicroDeformation: The spatial gradient of the micro-deformation
+             * \param &A: The A stiffness matrix.
+             * \param &B: The B stiffness matrix.
+             * \param &C: The C stiffness matrix.
+             * \param &D: The D stiffness matrix.
+             * \param &PK2Stress: The second Piola-Kirchoff stress.
+             * \param &referenceMicroStress: The symmetric micro-stress in the 
+             * \   reference configuration.
+             * \param &referenceHigherOrderStress: The higher-order stress in the 
+             * \   reference configuration.
+             * \param &dPK2StressdF: The Jacobian of the PK2 stress w.r.t. the deformation gradient.
+             * \param &dPK2StressdChi: The Jacobian of the PK2 stress w.r.t. the micro deformation.
+             * \param &dPK2StressdGradChi: The Jacobian of the PK2 stress w.r.t. the gradient of the micro deformation.
+             * \param &dReferenceMicroStressdF: The Jacobian of the Micro stress w.r.t. the deformation gradient.
+             * \param &dReferenceMicroStressdChi: The Jacobian of the Micro stress w.r.t. the micro deformation.
+             * \param &dReferenceMicroStressdGradChi: The Jacobian of the Micro stress w.r.t. the gradient of the micro deformation.
+             * \param &dMdF: The Jacobian of the higher order stress w.r.t. the deformation gradient.
+             * \param &dMdGradChi: The Jacobian of the higher order stress w.r.t. the gradient of the micro deformation.
              */
     
             //Assume 3d
-            unsigned int dim = 3;
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
             //Compute the required deformation measures
             variableVector RCG, Psi, Gamma;
-            variableMatrix dRCGdF, dPsidF, dPsidChi, dGammadF, dGammadGradChi;
-            errorOut error = computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
-                                                         RCG, Psi, Gamma, dRCGdF, dPsidF, dPsidChi, dGammadF, dGammadGradChi );
+            variableVector dRCGdF, dPsidF, dPsidChi, dGammadF, dGammadGradChi;
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeDeformationMeasures( deformationGradient, microDeformation, gradientMicroDeformation,
+                                                                      RCG, Psi, Gamma, dRCGdF, dPsidF, dPsidChi, dGammadF, dGammadGradChi ) );
     
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReference (jacobian)",
-                                                 "Error in the computation of the deformation measures" );
-                result->addNext( error );
-                return result;
-            }
+            variableVector dPK2StressdRCG, dPK2StressdPsi, dPK2StressdGamma;
+            variableVector dReferenceMicroStressdRCG, dReferenceMicroStressdPsi, dReferenceMicroStressdGamma;
+            variableVector dMdGamma;
     
-            variableMatrix dPK2StressdRCG, dPK2StressdPsi, dPK2StressdGamma;
-            variableMatrix dReferenceMicroStressdRCG, dReferenceMicroStressdPsi, dReferenceMicroStressdGamma;
-            variableMatrix dMdGamma;
-    
-            error = linearElasticityReferenceDerivedMeasures( RCG, Psi, Gamma, A, B, C, D,
-                                                              PK2Stress, referenceMicroStress, referenceHigherOrderStress,
-                                                              dPK2StressdRCG, dPK2StressdPsi, dPK2StressdGamma,
-                                                              dReferenceMicroStressdRCG, dReferenceMicroStressdPsi,
-                                                              dReferenceMicroStressdGamma, dMdGamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReference (jacobian)",
-                                                 "Error in the computation of the deformation measures" );
-                result->addNext( error );
-                return result;
-            }
-    
-            dPK2StressdF = tardigradeVectorTools::dot( dPK2StressdRCG, dRCGdF )
-                         + tardigradeVectorTools::dot( dPK2StressdPsi, dPsidF )
-                         + tardigradeVectorTools::dot( dPK2StressdGamma, dGammadF );
-    
-            dPK2StressdChi = tardigradeVectorTools::dot( dPK2StressdPsi, dPsidChi );
-    
-            dPK2StressdGradChi = tardigradeVectorTools::dot( dPK2StressdGamma, dGammadGradChi );
-    
-            dReferenceMicroStressdF = tardigradeVectorTools::dot( dReferenceMicroStressdRCG, dRCGdF )
-                                    + tardigradeVectorTools::dot( dReferenceMicroStressdPsi, dPsidF )
-                                    + tardigradeVectorTools::dot( dReferenceMicroStressdGamma, dGammadF );
-    
-            dReferenceMicroStressdChi = tardigradeVectorTools::dot( dReferenceMicroStressdPsi, dPsidChi );
-    
-            dReferenceMicroStressdGradChi = tardigradeVectorTools::dot( dReferenceMicroStressdGamma, dGammadGradChi );
-    
-            dMdF = tardigradeVectorTools::dot( dMdGamma, dGammadF );
-            dMdGradChi = tardigradeVectorTools::dot( dMdGamma, dGammadGradChi );
+            TARDIGRADE_ERROR_TOOLS_CATCH( linearElasticityReferenceDerivedMeasures( RCG, Psi, Gamma, A, B, C, D,
+                                                                                    PK2Stress, referenceMicroStress, referenceHigherOrderStress,
+                                                                                    dPK2StressdRCG, dPK2StressdPsi, dPK2StressdGamma,
+                                                                                    dReferenceMicroStressdRCG, dReferenceMicroStressdPsi,
+                                                                                    dReferenceMicroStressdGamma, dMdGamma ) );
+   
+            // Size the arrays
+            dPK2StressdF       = floatVector( sot_dim * sot_dim, 0 );
+            dPK2StressdChi     = floatVector( sot_dim * sot_dim, 0 );
+            dPK2StressdGradChi = floatVector( sot_dim * tot_dim, 0 );
+
+            dReferenceMicroStressdF       = floatVector( sot_dim * sot_dim, 0 );
+            dReferenceMicroStressdChi     = floatVector( sot_dim * sot_dim, 0 );
+            dReferenceMicroStressdGradChi = floatVector( sot_dim * tot_dim, 0 );
+
+            dMdF       = floatVector( tot_dim * sot_dim, 0 );
+            dMdGradChi = floatVector( tot_dim * tot_dim, 0 );
+
+            // Form the Eigen maps
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdF_map(       dPK2StressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdChi_map(     dPK2StressdChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dPK2StressdGradChi_map( dPK2StressdGradChi.data( ), sot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdRCG_map(   dPK2StressdRCG.data( ),   sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPK2StressdPsi_map(   dPK2StressdPsi.data( ),   sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dPK2StressdGamma_map( dPK2StressdGamma.data( ), sot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dReferenceMicroStressdF_map(       dReferenceMicroStressdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dReferenceMicroStressdChi_map(     dReferenceMicroStressdChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dReferenceMicroStressdGradChi_map( dReferenceMicroStressdGradChi.data( ), sot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dReferenceMicroStressdRCG_map(   dReferenceMicroStressdRCG.data( ),   sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dReferenceMicroStressdPsi_map(   dReferenceMicroStressdPsi.data( ),   sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, tot_dim, Eigen::RowMajor > > dReferenceMicroStressdGamma_map( dReferenceMicroStressdGamma.data( ), sot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > dMdF_map(       dMdF.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > dMdGradChi_map( dMdGradChi.data( ), tot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > dMdGamma_map( dMdGamma.data( ), tot_dim, tot_dim );
+
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dRCGdF_map(   dRCGdF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPsidF_map(   dPsidF.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, sot_dim, sot_dim, Eigen::RowMajor > > dPsidChi_map( dPsidChi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > dGammadF_map( dGammadF.data( ), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > dGammadGradChi_map( dGammadGradChi.data( ), tot_dim, tot_dim );
+
+            dPK2StressdF_map       = ( dPK2StressdRCG_map * dRCGdF_map + dPK2StressdPsi_map * dPsidF_map + dPK2StressdGamma_map * dGammadF_map ).eval( );
+            dPK2StressdChi_map     = ( dPK2StressdPsi_map * dPsidChi_map ).eval( );
+            dPK2StressdGradChi_map = ( dPK2StressdGamma_map * dGammadGradChi_map ).eval( );
+
+            dReferenceMicroStressdF_map       = ( dReferenceMicroStressdRCG_map * dRCGdF_map + dReferenceMicroStressdPsi_map * dPsidF_map + dReferenceMicroStressdGamma_map * dGammadF_map ).eval( );
+            dReferenceMicroStressdChi_map     = ( dReferenceMicroStressdPsi_map * dPsidChi_map ).eval( );
+            dReferenceMicroStressdGradChi_map = ( dReferenceMicroStressdGamma_map * dGammadGradChi_map ).eval( );
+
+            dMdF_map       = ( dMdGamma_map * dGammadF_map ).eval( );
+            dMdGradChi_map = ( dMdGamma_map * dGammadGradChi_map ).eval( );
     
             return NULL;
         }
@@ -314,100 +321,61 @@ namespace tardigradeHydra{
              * Compute the stress measures in the reference configuration for micromorphic linear elasticity based off
              * of a quadratic decomposition of the energy.
              *
-             * :param const variableVector &rightCauchyGreenDeformation: The right Cauchy-Green deformation metric
-             * :param const variableVector &Psi: The micro-deformation measure Psi
-             * :param const variableVector &Gamma: The higher order deformation measure Gamma
-             * :param const parameterVector &A: The A stiffness matrix.
-             * :param const parameterVector &B: The B stiffness matrix.
-             * :param const parameterVector &C: The C stiffness matrix.
-             * :param const parameterVector &D: The D stiffness matrix.
-             * :param variableVector &PK2Stress: The second Piola-Kirchoff stress.
-             * :param variableVector &referenceMicroStress: The symmetric micro-stress in the 
+             * \param &rightCauchyGreenDeformation: The right Cauchy-Green deformation metric
+             * \param &Psi: The micro-deformation measure Psi
+             * \param &Gamma: The higher order deformation measure Gamma
+             * \param &A: The A stiffness matrix.
+             * \param &B: The B stiffness matrix.
+             * \param &C: The C stiffness matrix.
+             * \param &D: The D stiffness matrix.
+             * \param &PK2Stress: The second Piola-Kirchoff stress.
+             * \param &referenceMicroStress: The symmetric micro-stress in the 
              *     reference configuration.
-             * :param variableVector &referenceHigherOrderStress: The higher-order stress in the 
+             * \param &referenceHigherOrderStress: The higher-order stress in the 
              *     reference configuration.
              */
     
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
     
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
-    
-            variableVector invRCG = tardigradeVectorTools::inverse( rightCauchyGreenDeformation, dim, dim );
+            variableVector invRCG = rightCauchyGreenDeformation;
+            Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invRCG.data(), 3, 3 );
+            mat = mat.inverse( ).eval( );
     
             //Compute the strain measures
-            variableVector greenLagrangeStrain = 0.5 * ( rightCauchyGreenDeformation - eye );
-            variableVector microStrain   = Psi - eye;
-    
-            //Compute the higher order stress
-            errorOut error = computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMeasures",
-                                                 "Error in computation of higher-order stress" );
-                result->addNext( error );
-                return result;
+            variableVector greenLagrangeStrain = 0.5 * rightCauchyGreenDeformation;
+            variableVector microStrain   = Psi;
+            for ( unsigned int i = 0; i < dim; i++ ){
+                greenLagrangeStrain[ dim * i + i ] -= 0.5;
+                microStrain[dim * i + i ] -= 1;
             }
+ 
+            //Compute the higher order stress
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress ) );
     
             //Compute the first common term for the PK2 and symmetric micro-stress
             variableVector term1;
-            error = computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1 );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMeasures",
-                                                 "Error in computation of term 1" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1 ) );
     
             //Compute the second common term for the PK2 and symmetric micro-stress
             variableVector invRCGPsi;
-            error = computeInvRCGPsi( invRCG, Psi, invRCGPsi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMeasures",
-                                                 "Error in computation of invRCG Psi product" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGPsi( invRCG, Psi, invRCGPsi ) );
     
             variableVector term2;
-            error = computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invRCGPsi, B, D, term2 );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMesures",
-                                                 "Error in computation of term 2" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invRCGPsi, B, D, term2 ) );
     
             //Compute the third common term for the PK2 and symmetric micro-stress
             variableVector invRCGGamma;
-            error = computeInvRCGGamma( invRCG, Gamma, invRCGGamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMeasures",
-                                                 "Error in computation of invRCG Gamma product" );
-                result->addNext(error);
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGGamma( invRCG, Gamma, invRCGGamma ) );
     
             variableVector term3;
-            error = computeLinearElasticTerm3( invRCGGamma, referenceHigherOrderStress, term3 );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMeasures",
-                                                 "Error in computation of term 3" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm3( invRCGGamma, referenceHigherOrderStress, term3 ) );
     
             //Construct the PK2 and reference symmetric stresses
             PK2Stress            = term1 + term2 + term3;
     
             variableVector symmTerm2Term3;
-            error = tardigradeConstitutiveTools::computeSymmetricPart( term2 + term3, symmTerm2Term3 );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeSymmetricPart( term2 + term3, symmTerm2Term3 ) );
             referenceMicroStress = term1 + 2 * symmTerm2Term3;
     
             return NULL;
@@ -419,140 +387,103 @@ namespace tardigradeHydra{
                                                            const parameterVector &D,
                                                            variableVector &PK2Stress, variableVector &referenceMicroStress,
                                                            variableVector &referenceHigherOrderStress,
-                                                           variableMatrix &dPK2StressdRCG, variableMatrix &dPK2StressdPsi,
-                                                           variableMatrix &dPK2StressdGamma,
-                                                           variableMatrix &dReferenceMicroStressdRCG,
-                                                           variableMatrix &dReferenceMicroStressdPsi,
-                                                           variableMatrix &dReferenceMicroStressdGamma,
-                                                           variableMatrix &dMdGamma ){
+                                                           variableVector &dPK2StressdRCG, variableVector &dPK2StressdPsi,
+                                                           variableVector &dPK2StressdGamma,
+                                                           variableVector &dReferenceMicroStressdRCG,
+                                                           variableVector &dReferenceMicroStressdPsi,
+                                                           variableVector &dReferenceMicroStressdGamma,
+                                                           variableVector &dMdGamma ){
             /*!
              * Compute the stress measures in the reference configuration for micromorphic linear elasticity based off
              * of a quadratic decomposition of the energy.
              *
-             * :param const variableVector &rightCauchyGreenDeformation: The right Cauchy-Green deformation metric
-             * :param const variableVector &Psi: The micro-deformation measure Psi
-             * :param const variableVector &Gamma: The higher order deformation measure Gamma
-             * :param const parameterVector &A: The A stiffness matrix.
-             * :param const parameterVector &B: The B stiffness matrix.
-             * :param const parameterVector &C: The C stiffness matrix.
-             * :param const parameterVector &D: The D stiffness matrix.
-             * :param variableVector &PK2Stress: The second Piola-Kirchoff stress.
-             * :param variableVector &referenceMicroStress: The symmetric micro-stress in the 
+             * \param &rightCauchyGreenDeformation: The right Cauchy-Green deformation metric
+             * \param &Psi: The micro-deformation measure Psi
+             * \param &Gamma: The higher order deformation measure Gamma
+             * \param &A: The A stiffness matrix.
+             * \param &B: The B stiffness matrix.
+             * \param &C: The C stiffness matrix.
+             * \param &D: The D stiffness matrix.
+             * \param &PK2Stress: The second Piola-Kirchoff stress.
+             * \param &referenceMicroStress: The symmetric micro-stress in the 
              *     reference configuration.
-             * :param variableVector &referenceHigherOrderStress: The higher-order stress in the 
+             * \param &referenceHigherOrderStress: The higher-order stress in the 
              *     reference configuration.
-             * :param variableMatrix &dPK2StressdRCG: The Jacobian of the PK2 stress w.r.t. the right Cauchy-Green
+             * \param &dPK2StressdRCG: The Jacobian of the PK2 stress w.r.t. the right Cauchy-Green
              *     deformation metric.
-             * :param variableMatrix &dPK2StressdPsi: The Jacobian of the PK2 stress w.r.t. the micro deformation 
+             * \param &dPK2StressdPsi: The Jacobian of the PK2 stress w.r.t. the micro deformation 
              *     metric.
-             * :param variableMatrix &dPK2StressdGamma: The Jacobian of the PK2 stress w.r.t. the higher order 
+             * \param &dPK2StressdGamma: The Jacobian of the PK2 stress w.r.t. the higher order 
              *     deformation measure.
-             * :param variableMatrix &dReferenceMicroStressdRCG: The Jacobian of the reference micro stress w.r.t. the 
+             * \param &dReferenceMicroStressdRCG: The Jacobian of the reference micro stress w.r.t. the 
              *     right Cacuhy-Green deformation metric.
-             * :param variableMatrix &dReferenceMicroStressdPsi: The Jacobian of the reference micro stress w.r.t. the 
+             * \param &dReferenceMicroStressdPsi: The Jacobian of the reference micro stress w.r.t. the 
              *     micro deformation measure.
-             * :param variableMatrix &dReferenceMicroStrssdGamma: The Jacobian of the reference micro stress w.r.t. the 
+             * \param &dReferenceMicroStressdGamma: The Jacobian of the reference micro stress w.r.t. the 
              *     higher order deformation measure.
-             * :param variableMatrix &dMdGamma: The Jacobian of the reference higher order stress w.r.t. 
+             * \param &dMdGamma: The Jacobian of the reference higher order stress w.r.t. 
              *     the higher order deformation measure.
              */
-    
+
             //Assume 3d
-            unsigned int dim = 3;
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
-    
-            variableVector invRCG = tardigradeVectorTools::inverse( rightCauchyGreenDeformation, dim, dim );
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;   
+ 
+            variableVector invRCG = rightCauchyGreenDeformation;
+            Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invRCG.data(), 3, 3 );
+            mat = mat.inverse( ).eval( );
     
             //Compute the strain measures
-            variableVector greenLagrangeStrain = 0.5 * ( rightCauchyGreenDeformation - eye );
-            variableVector microStrain   = Psi - eye;
+            variableVector greenLagrangeStrain = 0.5 * rightCauchyGreenDeformation;
+            variableVector microStrain   = Psi;
+            for ( unsigned int i = 0; i < dim; i++ ){
+                greenLagrangeStrain[ dim * i + i ] -= 0.5;
+                microStrain[dim * i + i ] -= 1;
+            }
     
             //Compute the higher order stress
-            errorOut error = computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress, dMdGamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityRefereneDerivedMetrics (jacobian)",
-                                                 "Error in computation of higher-order stress" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress, dMdGamma ) );
     
             //Compute the first common term for the PK2 and symmetric micro-stress
             variableVector term1;
     
-            variableMatrix dTerm1dRCG, dTerm1dPsi;
-            error = computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1,
-                                               dTerm1dRCG, dTerm1dPsi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMetrics (jacobian)",
-                                                 "Error in computation of term 1" );
-                result->addNext( error );
-                return result;
-            }
+            variableVector dTerm1dRCG, dTerm1dPsi;
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1,
+                                                                     dTerm1dRCG, dTerm1dPsi ) );
     
             //Assemble term1 jacobians w.r.t. F and Chi
             dTerm1dRCG *= 0.5;
     
             //Compute the second common term for the PK2 and symmetric micro-stress
             variableVector invRCGPsi;
-            variableMatrix dInvRCGPsidRCG, dInvRCGPsidPsi;
+            variableVector dInvRCGPsidRCG, dInvRCGPsidPsi;
     
-            error = computeInvRCGPsi( invRCG, Psi, invRCGPsi, dInvRCGPsidRCG, dInvRCGPsidPsi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMetrics (jacobian)",
-                                                 "Error in computation of invRCG Psi product" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGPsi( invRCG, Psi, invRCGPsi, dInvRCGPsidRCG, dInvRCGPsidPsi ) );
     
             variableVector term2;
-            variableMatrix dTerm2dRCG, dTerm2dPsi, dTerm2dInvRCGPsi;
-            error = computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invRCGPsi, B, D, term2,
-                                               dTerm2dRCG, dTerm2dPsi, dTerm2dInvRCGPsi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMetrics (jacobian)",
-                                                 "Error in computation of term 2" );
-                result->addNext( error );
-                return result;
-            }
-    
+            variableVector dTerm2dRCG, dTerm2dPsi, dTerm2dInvRCGPsi;
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invRCGPsi, B, D, term2,
+                                                                     dTerm2dRCG, dTerm2dPsi, dTerm2dInvRCGPsi ) );
+
             dTerm2dRCG *= 0.5;
-            dTerm2dRCG += tardigradeVectorTools::dot( dTerm2dInvRCGPsi, dInvRCGPsidRCG );
+            dTerm2dRCG += tardigradeVectorTools::matrixMultiply( dTerm2dInvRCGPsi, dInvRCGPsidRCG, sot_dim, sot_dim, sot_dim, sot_dim );
     
-            dTerm2dPsi += tardigradeVectorTools::dot( dTerm2dInvRCGPsi, dInvRCGPsidPsi );
+            dTerm2dPsi += tardigradeVectorTools::matrixMultiply( dTerm2dInvRCGPsi, dInvRCGPsidPsi, sot_dim, sot_dim, sot_dim, sot_dim );
     
             //Compute the third common term for the PK2 and symmetric micro-stress
             variableVector invRCGGamma;
-            variableMatrix dInvRCGGammadRCG, dInvRCGGammadGamma;
+            variableVector dInvRCGGammadRCG, dInvRCGGammadGamma;
     
-            error = computeInvRCGGamma( invRCG, Gamma, invRCGGamma, dInvRCGGammadRCG, dInvRCGGammadGamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMetrics (jacobian)",
-                                                 "Error in computation of invRCG Gamma product" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGGamma( invRCG, Gamma, invRCGGamma, dInvRCGGammadRCG, dInvRCGGammadGamma ) );
     
             variableVector term3;
-            variableMatrix dTerm3dInvRCGGamma, dTerm3dM;
-            error = computeLinearElasticTerm3( invRCGGamma, referenceHigherOrderStress, term3, dTerm3dInvRCGGamma, dTerm3dM );
+            variableVector dTerm3dInvRCGGamma, dTerm3dM;
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm3( invRCGGamma, referenceHigherOrderStress, term3, dTerm3dInvRCGGamma, dTerm3dM ) );
     
-            if ( error ){
-                errorOut result = new errorNode( "linearElasticityReferenceDerivedMetrics (jacobian)",
-                                                 "Error in computation of term 3" );
-                result->addNext( error );
-                return result;
-            }
-    
-            variableMatrix dTerm3dRCG = tardigradeVectorTools::dot( dTerm3dInvRCGGamma, dInvRCGGammadRCG );
-            variableMatrix dTerm3dGamma = tardigradeVectorTools::dot( dTerm3dInvRCGGamma, dInvRCGGammadGamma )
-                                        + tardigradeVectorTools::dot( dTerm3dM, dMdGamma );
+            variableVector dTerm3dRCG = tardigradeVectorTools::matrixMultiply( dTerm3dInvRCGGamma, dInvRCGGammadRCG, sot_dim, tot_dim, tot_dim, sot_dim );
+            variableVector dTerm3dGamma = tardigradeVectorTools::matrixMultiply( dTerm3dInvRCGGamma, dInvRCGGammadGamma, sot_dim, tot_dim, tot_dim, tot_dim )
+                                        + tardigradeVectorTools::matrixMultiply( dTerm3dM, dMdGamma, sot_dim, tot_dim, tot_dim, tot_dim );
     
             //Construct the PK2 and reference symmetric stresses
             PK2Stress            = term1 + term2 + term3;
@@ -560,18 +491,19 @@ namespace tardigradeHydra{
             dPK2StressdRCG    = dTerm1dRCG + dTerm2dRCG + dTerm3dRCG;
             dPK2StressdPsi    = dTerm1dPsi + dTerm2dPsi;
             dPK2StressdGamma  = dTerm3dGamma;
-    
+
             variableVector symmTerm2Term3;
-            variableMatrix dSymmTerm2Term3dTerm2Term3;
-            error = tardigradeConstitutiveTools::computeSymmetricPart( term2 + term3, symmTerm2Term3, dSymmTerm2Term3dTerm2Term3 );
+            variableVector dSymmTerm2Term3dTerm2Term3;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeSymmetricPart( term2 + term3, symmTerm2Term3, dSymmTerm2Term3dTerm2Term3 ) );
             referenceMicroStress = term1 + 2 * symmTerm2Term3;
+
+            dReferenceMicroStressdRCG = dTerm1dRCG + 2 * ( tardigradeVectorTools::matrixMultiply( dSymmTerm2Term3dTerm2Term3, dTerm2dRCG, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                         + tardigradeVectorTools::matrixMultiply( dSymmTerm2Term3dTerm2Term3, dTerm3dRCG, sot_dim, sot_dim, sot_dim, sot_dim ) );
     
-            dReferenceMicroStressdRCG = dTerm1dRCG + 2 * ( tardigradeVectorTools::dot( dSymmTerm2Term3dTerm2Term3, dTerm2dRCG )
-                                                         + tardigradeVectorTools::dot( dSymmTerm2Term3dTerm2Term3, dTerm3dRCG ) );
-    
-            dReferenceMicroStressdPsi = dTerm1dPsi + 2 * tardigradeVectorTools::dot( dSymmTerm2Term3dTerm2Term3, dTerm2dPsi );
-            dReferenceMicroStressdGamma = 2 * tardigradeVectorTools::dot( dSymmTerm2Term3dTerm2Term3, dTerm3dGamma );
-    
+            dReferenceMicroStressdPsi = dTerm1dPsi + 2 * tardigradeVectorTools::matrixMultiply( dSymmTerm2Term3dTerm2Term3, dTerm2dPsi, sot_dim, sot_dim, sot_dim, sot_dim );
+            dReferenceMicroStressdGamma = 2 * tardigradeVectorTools::matrixMultiply( dSymmTerm2Term3dTerm2Term3, dTerm3dGamma, sot_dim, sot_dim, sot_dim, tot_dim );
+
             return NULL;
         }
 
@@ -583,50 +515,29 @@ namespace tardigradeHydra{
             /*!
              * Map the stress measures in the reference configuration to the current configuration.
              *
-             * :param const variableVector &deformationGradient: The deformation gradient between the 
+             * \param &deformationGradient: The deformation gradient between the 
              *     reference configuration and the current configuration.
-             * :param const variableVector &microDeformation: The micro-deformation map between the 
+             * \param &microDeformation: The micro-deformation map between the 
              *     reference configuration and the current configuration.
-             * :param const variableVector &PK2Stress: The Second Piola-Kirchoff stress.
-             * :param const variableVector &referenceMicroStress: The symmetric micro-stress in the 
+             * \param &PK2Stress: The Second Piola-Kirchoff stress.
+             * \param &referenceMicroStress: The symmetric micro-stress in the 
              *     reference configuration.
-             * :param const variableVector &referenceHigherOrderStress: The higher order stress in 
+             * \param &referenceHigherOrderStress: The higher order stress in 
              *     the reference configuration.
-             * :param variableVector &cauchyStress: The Cauchy stress (PK2 stress in the current configuration).
-             * :param variableVector &microStress: The symmetric micro-stress in the current configuration.
-             * :param variableVector &higherOrderStress: The higher order stress in the current configuration.
+             * \param &cauchyStress: The Cauchy stress (PK2 stress in the current configuration).
+             * \param &microStress: The symmetric micro-stress in the current configuration.
+             * \param &higherOrderStress: The higher order stress in the current configuration.
              */
     
             //Map the PK2 stress to the Cauchy stress
-            errorOut error = tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, deformationGradient, cauchyStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the PK2 stress to the Cauchy stress" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, deformationGradient, cauchyStress ) );
     
             //Map the symmetric micro stress to the current configuration
-            error = tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceMicroStress, deformationGradient, microStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the micro-stress to the current configuation" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceMicroStress, deformationGradient, microStress ) );
     
             //Map the higher order stress to the current configuration
-            error = tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, deformationGradient,
-                                                                     microDeformation, higherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the higher-order stress to the current configuation" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, deformationGradient,
+                                                                                                     microDeformation, higherOrderStress ) );
     
             return NULL;
         }
@@ -636,78 +547,57 @@ namespace tardigradeHydra{
                                              const variableVector &referenceHigherOrderStress,
                                              variableVector &cauchyStress, variableVector &microStress,
                                              variableVector &higherOrderStress,
-                                             variableMatrix &dCauchyStressdF, variableMatrix &dCauchyStressdPK2Stress,
-                                             variableMatrix &dMicroStressdF, variableMatrix &dMicroStressdReferenceMicroStress,
-                                             variableMatrix &dHigherOrderStressdF, variableMatrix &dHigherOrderStressdChi,
-                                             variableMatrix &dHigherOrderStressdReferenceHigherOrderStress ){
+                                             variableVector &dCauchyStressdF, variableVector &dCauchyStressdPK2Stress,
+                                             variableVector &dMicroStressdF, variableVector &dMicroStressdReferenceMicroStress,
+                                             variableVector &dHigherOrderStressdF, variableVector &dHigherOrderStressdChi,
+                                             variableVector &dHigherOrderStressdReferenceHigherOrderStress ){
             /*!
              * Map the stress measures in the reference configuration to the current configuration.
              *
              * Also computes the Jacobians
              *
-             * :param const variableVector &deformationGradient: The deformation gradient between the 
-             *     reference configuration and the current configuration.
-             * :param const variableVector &microDeformation: The micro-deformation map between the 
-             *     reference configuration and the current configuration.
-             * :param const variableVector &PK2Stress: The Second Piola-Kirchoff stress.
-             * :param const variableVector &referenceMicroStress: The symmetric micro-stress in the 
-             *     reference configuration.
-             * :param const variableVector &referenceHigherOrderStress: The higher order stress in 
-             *     the reference configuration.
-             * :param variableVector &cauchyStress: The Cauchy stress (PK2 stress in the current configuration).
-             * :param variableVector &microStress: The symmetric micro-stress in the current configuration.
-             * :param variableVector &higherOrderStress: The higher order stress in the current configuration.
-             * :param variableMatrix &dCauchyStressdF: The Jacobian of the Cauchy stress w.r.t. the 
-             *     deformation gradient.
-             * :param variableMatrix &dCauchyStressdPK2Stress: The Jacobian of the Cauchy stress w.r.t. the 
-             *     PK2 stress.
-             * :param variableMatrix &dMicroStressdF: The Jacobian of the micro stress w.r.t. the 
-             *     deformation gradient.
-             * :param variableMatrix &dMicroStressdReferenceMicroStress: The Jacobian of the micro-stress 
-             *     in the current configuration w.r.t. the micro-stress in the reference configuration.
-             * :param variableMatrix &dHigherOrderStressdF: The Jacobian of the higher-order stress w.r.t.
-             *     the deformation gradient.
-             * :param variableMatrix &dHigherOrderStressdChi: The Jacobian of the higher-order stress 
-             *     w.r.t. the micro-deformation.
-             * :param variableMatrix &dHigherOrderStressdReferenceHigherOrderStress: The Jacobian of the 
+             * \param &deformationGradient: The deformation gradient between the 
+             * \   reference configuration and the current configuration.
+             * \param &microDeformation: The micro-deformation map between the 
+             * \   reference configuration and the current configuration.
+             * \param &PK2Stress: The Second Piola-Kirchoff stress.
+             * \param &referenceMicroStress: The symmetric micro-stress in the 
+             * \   reference configuration.
+             * \param &referenceHigherOrderStress: The higher order stress in 
+             * \   the reference configuration.
+             * \param &cauchyStress: The Cauchy stress (PK2 stress in the current configuration).
+             * \param &microStress: The symmetric micro-stress in the current configuration.
+             * \param &higherOrderStress: The higher order stress in the current configuration.
+             * \param &dCauchyStressdF: The Jacobian of the Cauchy stress w.r.t. the 
+             * \   deformation gradient.
+             * \param &dCauchyStressdPK2Stress: The Jacobian of the Cauchy stress w.r.t. the 
+             * \   PK2 stress.
+             * \param &dMicroStressdF: The Jacobian of the micro stress w.r.t. the 
+             * \   deformation gradient.
+             * \param &dMicroStressdReferenceMicroStress: The Jacobian of the micro-stress 
+             * \   in the current configuration w.r.t. the micro-stress in the reference configuration.
+             * \param &dHigherOrderStressdF: The Jacobian of the higher-order stress w.r.t.
+             * \   the deformation gradient.
+             * \param &dHigherOrderStressdChi: The Jacobian of the higher-order stress 
+             * \   w.r.t. the micro-deformation.
+             * \param &dHigherOrderStressdReferenceHigherOrderStress: The Jacobian of the 
              *     higher-order stress w.r.t. the higher order stress in the reference configuration.
              */
     
             //Map the PK2 stress to the Cauchy stress
-            errorOut error = tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, deformationGradient, cauchyStress,
-                                                                      dCauchyStressdPK2Stress, dCauchyStressdF );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the PK2 stress to the Cauchy stress" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, deformationGradient, cauchyStress,
+                                                                                             dCauchyStressdPK2Stress, dCauchyStressdF ) );
     
             //Map the symmetric micro stress to the current configuration
-            error = tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceMicroStress, deformationGradient, microStress,
-                                                                        dMicroStressdReferenceMicroStress, dMicroStressdF );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the micro-stress to the current configuation" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceMicroStress, deformationGradient, microStress,
+                                                                                                        dMicroStressdReferenceMicroStress, dMicroStressdF ) );
     
             //Map the higher order stress to the current configuration
-            error = tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, deformationGradient,
-                                                                     microDeformation, higherOrderStress,
-                                                                     dHigherOrderStressdReferenceHigherOrderStress,
-                                                                     dHigherOrderStressdF,
-                                                                     dHigherOrderStressdChi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "mapStressMeasuresToCurrent",
-                                                 "Error in the map of the higher-order stress to the current configuation" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, deformationGradient,
+                                                                                                     microDeformation, higherOrderStress,
+                                                                                                     dHigherOrderStressdReferenceHigherOrderStress,
+                                                                                                     dHigherOrderStressdF,
+                                                                                                     dHigherOrderStressdChi ) );
     
             return NULL;
         }
@@ -723,40 +613,19 @@ namespace tardigradeHydra{
              * \Gamma_{IJK} &= F_{iI} \Chi_{iJ, K}
              * \end{align}\f$
              *
-             * :param const variableVector &deformationGradient: The deformation gradient
-             * :param const variableVector &microDeformation: The micro-deformation
-             * :param const variableVector &gradientMicroDeformation: The spatial gradient of the micro-deformation
-             * :param variableVector &rightCauchyGreen: The Right Cauchy-Green deformation tensor
-             * :param variableVector &Psi: The micro-deformation measure
-             * :param variableVector &Gamma: The gradient micro-deformation measure
+             * \param &deformationGradient: The deformation gradient
+             * \param &microDeformation: The micro-deformation
+             * \param &gradientMicroDeformation: The spatial gradient of the micro-deformation
+             * \param &rightCauchyGreen: The Right Cauchy-Green deformation tensor
+             * \param &Psi: The micro-deformation measure
+             * \param &Gamma: The gradient micro-deformation measure
              */
     
-            errorOut error = tardigradeConstitutiveTools::computeRightCauchyGreen( deformationGradient, rightCauchyGreen );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( deformationGradient, rightCauchyGreen ) );
     
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures",
-                                                 "Error in the computation of the right Cauchy-Green Deformation measure" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computePsi( deformationGradient, microDeformation, Psi ) );
     
-            error = tardigradeMicromorphicTools::computePsi( deformationGradient, microDeformation, Psi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures",
-                                                 "Error in the computation of Psi" );
-                result->addNext( error );
-                return result;
-            }
-    
-            error = tardigradeMicromorphicTools::computeGamma( deformationGradient, gradientMicroDeformation, Gamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures",
-                                                 "Error in the computation of Gamma" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeGamma( deformationGradient, gradientMicroDeformation, Gamma ) );
     
             return NULL;
     
@@ -765,8 +634,8 @@ namespace tardigradeHydra{
         errorOut computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
                                              const variableVector &gradientMicroDeformation,
                                              variableVector &rightCauchyGreen, variableVector &Psi, variableVector &Gamma,
-                                             variableMatrix &dCdF, variableMatrix &dPsidF, variableMatrix &dPsidChi,
-                                             variableMatrix &dGammadF, variableMatrix &dGammadGradChi ){
+                                             variableVector &dCdF, variableVector &dPsidF, variableVector &dPsidChi,
+                                             variableVector &dGammadF, variableVector &dGammadGradChi ){
             /*!
              * Compute the deformation measures
              * \f$\begin{align}
@@ -775,46 +644,25 @@ namespace tardigradeHydra{
              * \Gamma_{IJK} &= F_{iI} \Chi_{iJ, K}
              * \end{align}\f$
              *
-             * :param const variableVector &deformationGradient: The deformation gradient
-             * :param const variableVector &microDeformation: The micro-deformation
-             * :param const variableVector &gradientMicroDeformation: The spatial gradient of the micro-deformation
-             * :param variableVector &rightCauchyGreen: The Right Cauchy-Green deformation tensor
-             * :param variableVector &Psi: The micro-deformation measure
-             * :param variableVector &Gamma: The gradient micro-deformation measure
-             * :param variableMatrix &dCdF: The gradient of the right Cauchy green deformation tensor w.r.t. 
-             *     the deformation gradient.
-             * :param variableMatrix &dPsidF: The gradient of Psi w.r.t. the deformation gradient.
-             * :param variableMatrix &dPsidChi: The gradient of Psi w.r.t. the microDeformation.
-             * :param variableMatrix &dGammadF: The gradient of Gamma w.r.t. the deformation gradient.
-             * :param variableMatrix &dGammadGradChi: The gradient of Gamma w.r.t. the spatial gradient of Chi
+             * \param &deformationGradient: The deformation gradient
+             * \param &microDeformation: The micro-deformation
+             * \param &gradientMicroDeformation: The spatial gradient of the micro-deformation
+             * \param &rightCauchyGreen: The Right Cauchy-Green deformation tensor
+             * \param &Psi: The micro-deformation measure
+             * \param &Gamma: The gradient micro-deformation measure
+             * \param &dCdF: The gradient of the right Cauchy green deformation tensor w.r.t. 
+             *    the deformation gradient.
+             * \param &dPsidF: The gradient of Psi w.r.t. the deformation gradient.
+             * \param &dPsidChi: The gradient of Psi w.r.t. the microDeformation.
+             * \param &dGammadF: The gradient of Gamma w.r.t. the deformation gradient.
+             * \param &dGammadGradChi: The gradient of Gamma w.r.t. the spatial gradient of Chi
              */
     
-            errorOut error = tardigradeConstitutiveTools::computeRightCauchyGreen( deformationGradient, rightCauchyGreen, dCdF );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( deformationGradient, rightCauchyGreen, dCdF ) );
     
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures (jacobian)",
-                                                 "Error in the computation of the right Cauchy-Green Deformation measure" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computePsi( deformationGradient, microDeformation, Psi, dPsidF, dPsidChi ) );
     
-            error = tardigradeMicromorphicTools::computePsi( deformationGradient, microDeformation, Psi, dPsidF, dPsidChi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures (jacobian)",
-                                                 "Error in the computation of Psi" );
-                result->addNext( error );
-                return result;
-            }
-    
-            error = tardigradeMicromorphicTools::computeGamma( deformationGradient, gradientMicroDeformation, Gamma, dGammadF, dGammadGradChi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeDeformationMeasures (jacobian)",
-                                                 "Error in the computation of Gamma" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeGamma( deformationGradient, gradientMicroDeformation, Gamma, dGammadF, dGammadGradChi ) );
     
             return NULL;
         }
@@ -825,46 +673,33 @@ namespace tardigradeHydra{
              * Compute the first term for the linear elastic model
              * \f$ term1_{IJ} = A_{IJKL} E_{KL} + D_{IJKL} * \mathcal{E}_{KL} \f$
              *
-             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain.
-             * :param const variableVector &microStrain: The micro-strain
-             * :param const parameterVector &A: The A stiffness matrix
-             * :param const parameterVEctor &D: The D stiffness matrix
-             * :param variableVector &term1: The first term.
+             * \param &greenLagrangeStrain: The Green-Lagrange strain.
+             * \param &microStrain: The micro-strain
+             * \param &A: The A stiffness matrix
+             * \param &D: The D stiffness matrix
+             * \param &term1: The first term.
              */
     
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
+            constexpr unsigned int fot_dim = tot_dim * dim;
     
-            if ( greenLagrangeStrain.size() != dim * dim ){
-                return new errorNode( "computeLinearElasticTerm1",
-                                      "The green lagrange strain must have a length of 9" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( greenLagrangeStrain.size() == sot_dim, "The green lagrange strain must have a length of 9" );
     
-            if ( microStrain.size() != dim * dim ){
-                return new errorNode( "computeLinearElasticTerm1",
-                                      "The micro-strain must have a length of 9" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( microStrain.size() == sot_dim, "The micro-strain must have a length of 9" );
     
-            if ( A.size() != dim * dim * dim * dim ){
-                return new errorNode( "computeLinearElasticTerm1",
-                                      "A must have a size of 3**4" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( A.size() == fot_dim, "A must have a size of 3**4" );
     
-            if ( D.size() != dim * dim * dim * dim ){
-                return new errorNode( "computeLinearElasticTerm1",
-                                      "D must have a size of 3**4" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( D.size() == fot_dim, "D must have a size of 3**4" );
     
             //Compute the first common term for the PK2 and symmetric micro-stress
             term1 = variableVector( dim * dim, 0 );
-            for ( unsigned int I = 0; I < dim; I++ ){
-                for ( unsigned int J = 0; J < dim; J++ ){
-                    for ( unsigned int K = 0; K < dim; K++ ){
-                        for ( unsigned int L = 0; L < dim; L++ ){
-                            term1[ dim * I + J ] += A[ dim * dim * dim * I + dim * dim * J + dim * K + L ] * greenLagrangeStrain[ dim * K + L ]
-                                                  + D[ dim * dim * dim * I + dim * dim * J + dim * K + L ] * microStrain[ dim * K + L ];
-                        }
-                    }
+            for ( unsigned int IJ = 0; IJ < sot_dim; IJ++ ){
+                for ( unsigned int KL = 0; KL < sot_dim; KL++ ){
+                    term1[ IJ ] += A[ sot_dim * IJ + KL ] * greenLagrangeStrain[ KL ]
+                                 + D[ sot_dim * IJ + KL ] * microStrain[ KL ];
                 }
             }
     
@@ -873,7 +708,7 @@ namespace tardigradeHydra{
     
         errorOut computeLinearElasticTerm1( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
                                             const parameterVector &A, const parameterVector &D, variableVector &term1,
-                                            variableMatrix &dTerm1dGreenLagrangeStrain, variableMatrix &dTerm1dMicroStrain ){
+                                            variableVector &dTerm1dGreenLagrangeStrain, variableVector &dTerm1dMicroStrain ){
             /*!
              * Compute the first term for the linear elastic model
              * \f$ term1_{IJ} = A_{IJKL} E_{KL} + D_{IJKL} * \mathcal{E}_{KL} \f$
@@ -884,39 +719,20 @@ namespace tardigradeHydra{
              * \frac{\partial term^1_{IJ} }{ \mathcal{E}_{MN} } &= D_{IJMN}
              * \end{align}\f$
              *
-             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain.
-             * :param const variableVector &microStrain: The micro-strain
-             * :param const parameterVector &A: The A stiffness matrix
-             * :param const parameterVEctor &D: The D stiffness matrix
-             * :param variableVector &term1: The first term.
+             * \param &greenLagrangeStrain: The Green-Lagrange strain.
+             * \param &microStrain: The micro-strain
+             * \param &A: The A stiffness matrix
+             * \param &D: The D stiffness matrix
+             * \param &term1: The first term.
+             * \param &dTerm1dGreenLagrangeStrain: The derivative of the first term w.r.t. the Green-Lagrange strain
+             * \param &dTerm1dMicroStrain: The derivative of the first term w.r.t. the micro strain
              */
     
-            //Assume 3D
-            unsigned int dim = 3;
-    
-            errorOut error = computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1 );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeLinearElasticTerm1 (jacobian)",
-                                                 "Error in computation of linear elastic term1" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm1( greenLagrangeStrain, microStrain, A, D, term1 ) );
     
             //Compute the first common term for the PK2 and symmetric micro-stress
-            dTerm1dGreenLagrangeStrain = variableMatrix( term1.size(), variableVector( greenLagrangeStrain.size(), 0 ) );
-            dTerm1dMicroStrain = variableMatrix( term1.size(), variableVector( microStrain.size(), 0 ) );
-    
-            for ( unsigned int I = 0; I < dim; I++ ){
-                for ( unsigned int J = 0; J < dim; J++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            dTerm1dGreenLagrangeStrain[ dim * I + J ][ dim * M + N ] = A[ dim * dim * dim * I + dim * dim * J + dim * M + N ];
-                            dTerm1dMicroStrain[ dim * I + J ][ dim * M + N ] = D[ dim * dim * dim * I + dim * dim * J + dim * M + N ];
-                        }
-                    }
-                }
-            }
+            dTerm1dGreenLagrangeStrain = A;
+            dTerm1dMicroStrain = D;
     
             return NULL;
         }
@@ -929,43 +745,29 @@ namespace tardigradeHydra{
              *
              * \f$term^2_{IJ} = \left( B_{IQKL} \mathcal{E}_{KL} + E_{KL} D_{KLIQ} \right) C_{JR}^{-1} \Psi_{RQ}\f$
              *
-             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain \f$E_{IJ} = \frac{1}{2} \left( C_{IJ} - \delta_{IJ} \right)\f$
-             * :param const variableVector &microStrain: The micro-strain \f$\mathcal{E}_{IJ} = \Psi_{IJ} - \delta_{IJ}\f$
-             * :param const variableVector &invCPsi: The product \f$C_{JR}^{-1} \Psi_{RQ}\f$
-             * :param const variableVector &B: The B stiffness matrix
-             * :param const variableVector &D: The D stiffness matrix
-             * :param variableVector &term2: The second term.
+             * \param &greenLagrangeStrain: The Green-Lagrange strain \f$E_{IJ} = \frac{1}{2} \left( C_{IJ} - \delta_{IJ} \right)\f$
+             * \param &microStrain: The micro-strain \f$\mathcal{E}_{IJ} = \Psi_{IJ} - \delta_{IJ}\f$
+             * \param &invCPsi: The product \f$C_{JR}^{-1} \Psi_{RQ}\f$
+             * \param &B: The B stiffness matrix
+             * \param &D: The D stiffness matrix
+             * \param &term2: The second term.
              */
     
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
     
-            if ( greenLagrangeStrain.size() != dim * dim ){
-                return new errorNode( "computeLinearElasticTerm2",
-                                      "The green lagrange strain must have a length of 9" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( greenLagrangeStrain.size() == sot_dim, "The green lagrange strain must have a length of 9" );
     
-            if ( microStrain.size() != dim * dim ){
-                return new errorNode( "computeLinearElasticTerm2",
-                                      "The micro-strain must have a length of 9" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( microStrain.size() == sot_dim,  "The micro-strain must have a length of 9" );
     
-            if ( invCPsi.size() != dim * dim ){
-                return new errorNode( "computeLinearElasticTerm2",
-                                      "invCPsi must have a size of 9" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( invCPsi.size() == sot_dim, "invCPsi must have a size of 9" );
     
-            if ( B.size() != dim * dim * dim * dim ){
-                return new errorNode( "computeLinearElasticTerm2",
-                                      "B must have a size of 3**4" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( B.size() == sot_dim * sot_dim, "B must have a size of 3**4" );
     
-            if ( D.size() != dim * dim * dim * dim ){
-                return new errorNode( "computeLinearElasticTerm2",
-                                      "D must have a size of 3**4" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( D.size() == sot_dim * sot_dim, "D must have a size of 3**4" );
     
-            term2 = variableVector( greenLagrangeStrain.size(), 0 );
+            term2 = variableVector( sot_dim, 0 );
     
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
@@ -986,8 +788,8 @@ namespace tardigradeHydra{
     
        errorOut computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
                                             const variableVector &invCPsi, const parameterVector &B, const parameterVector &D,
-                                            variableVector &term2, variableMatrix &dTerm2dGreenLagrangeStrain,
-                                            variableMatrix &dTerm2dMicroStrain, variableMatrix &dTerm2dInvCPsi ){
+                                            variableVector &term2, variableVector &dTerm2dGreenLagrangeStrain,
+                                            variableVector &dTerm2dMicroStrain, variableVector &dTerm2dInvCPsi ){
             /*!
              * Compute the second term from the linear elastic constitutive model
              *
@@ -1000,46 +802,36 @@ namespace tardigradeHydra{
              * \frac{ \partial term^2_{IJ} }{ \partial C_{MO}^{-1} \Psi_{ON} } &= \left( B_{INKL} \mathcal{E}_{KL} + E_{KL} D_{KLIN} \right) \delta_{JM}
              * \end{align}\f$
              *
-             * :param const variableVector &greenLagrangeStrain: The Green-Lagrange strain \f$E_{IJ} = \frac{1}{2} \left( C_{IJ} - \delta_{IJ} \right)\f$
-             * :param const variableVector &microStrain: The micro-strain \f$\mathcal{E}_{IJ} = \Psi_{IJ} - \delta_{IJ}\f$
-             * :param const variableVector &invCPsi: The product \f$C_{JR}^{-1} \Psi_{RQ}\f$
-             * :param const variableVector &B: The B stiffness matrix
-             * :param const variableVector &D: The D stiffness matrix
-             * :param variableVector &term2: The second term.
-             * :param variableMatrix &dTerm2dGreenLagrangeStrain: The jacobian of term 2 w.r.t. the Green-Lagrange strain.
-             * :param variableMatrix &dTerm2dMicroStrain: The jacobian of term 2 w.r.t. the microStrain.
-             * :param variableMatrix &dTerm2dInvCPsi: The jacobian of term 2 w.r.t. \f$C_{JR}^{-1} \Psi_{RQ}\f$
+             * \param &greenLagrangeStrain: The Green-Lagrange strain \f$E_{IJ} = \frac{1}{2} \left( C_{IJ} - \delta_{IJ} \right)\f$
+             * \param &microStrain: The micro-strain \f$\mathcal{E}_{IJ} = \Psi_{IJ} - \delta_{IJ}\f$
+             * \param &invCPsi: The product \f$C_{JR}^{-1} \Psi_{RQ}\f$
+             * \param &B: The B stiffness matrix
+             * \param &D: The D stiffness matrix
+             * \param &term2: The second term.
+             * \param &dTerm2dGreenLagrangeStrain: The jacobian of term 2 w.r.t. the Green-Lagrange strain.
+             * \param &dTerm2dMicroStrain: The jacobian of term 2 w.r.t. the microStrain.
+             * \param &dTerm2dInvCPsi: The jacobian of term 2 w.r.t. \f$C_{JR}^{-1} \Psi_{RQ}\f$
              */
     
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
     
-            errorOut error = computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invCPsi, B, D, term2 );
-    
-            if ( error ){
-                errorOut result = new errorNode("computeLinearElasticTerm2 (jacobian)",
-                                                "Error in computation of term 2" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm2( greenLagrangeStrain, microStrain, invCPsi, B, D, term2 ) );
     
             //Compute the Jacobians
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
-            dTerm2dGreenLagrangeStrain = variableMatrix( term2.size(), variableVector( greenLagrangeStrain.size(), 0 ) );
-            dTerm2dMicroStrain         = variableMatrix( term2.size(), variableVector( microStrain.size(), 0 ) );
-            dTerm2dInvCPsi             = variableMatrix( term2.size(), variableVector( invCPsi.size(), 0 ) );
+            dTerm2dGreenLagrangeStrain = variableVector( sot_dim * sot_dim, 0 );
+            dTerm2dMicroStrain         = variableVector( sot_dim * sot_dim, 0 );
+            dTerm2dInvCPsi             = variableVector( sot_dim * sot_dim, 0 );
     
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
                     for ( unsigned int M = 0; M < dim; M++ ){
                         for ( unsigned int N = 0; N < dim; N++ ){
                             for ( unsigned int K = 0; K < dim; K++ ){
-                                dTerm2dGreenLagrangeStrain[ dim * I + J ][ dim * M + N ] += D[ dim * dim * dim * M + dim * dim * N + dim * I + K] * invCPsi[ dim * J + K ];
-                                dTerm2dMicroStrain[ dim * I + J ][ dim * M + N ] += B[ dim * dim * dim * I + dim * dim * K + dim * M + N] * invCPsi[ dim * J + K ];
-                                for ( unsigned int L = 0; L < dim; L++ ){
-                                    dTerm2dInvCPsi[ dim * I + J ][ dim * M + N ] += ( B[ dim * dim * dim * I + dim * dim * N + dim * K + L ] * microStrain[ dim * K + L ] + greenLagrangeStrain[ dim * K + L ] * D[ dim * dim * dim * K + dim * dim * L + dim * I + N ] ) * eye[ dim * J + M ];
-                                }
+                                dTerm2dGreenLagrangeStrain[ dim * sot_dim * I + sot_dim * J + dim * M + N ] += D[ dim * dim * dim * M + dim * dim * N + dim * I + K] * invCPsi[ dim * J + K ];
+                                dTerm2dMicroStrain[ dim * sot_dim * I + sot_dim * J + dim * M + N ] += B[ dim * dim * dim * I + dim * dim * K + dim * M + N] * invCPsi[ dim * J + K ];
+                                dTerm2dInvCPsi[ dim * sot_dim * I + sot_dim * J + dim * J + M ] += ( B[ dim * dim * dim * I + dim * dim * M + dim * N + K ] * microStrain[ dim * N + K ] + greenLagrangeStrain[ dim * N + K ] * D[ dim * dim * dim * N + dim * dim * K + dim * I + M ] );
                             }
                         }
                     }
@@ -1055,36 +847,28 @@ namespace tardigradeHydra{
              * Compute the higher order stress in the reference configuration.
              * \f$M_{IJK} = C_{JKILMN} Gamma_{LMN}\f$
              *
-             * :param const variableVector &Gamma: The micro-gradient deformation measure.
-             * :param const parameterVector &C: The C stiffness tensor.
-             * :param variableVector &referenceHigherOrderStress: The higher order stress in the reference 
+             * \param &Gamma: The micro-gradient deformation measure.
+             * \param &C: The C stiffness tensor.
+             * \param &referenceHigherOrderStress: The higher order stress in the reference 
              *     configuration.
              */
     
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
-            if ( Gamma.size() != dim * dim * dim ){
-                return new errorNode( "computeReferenceHigherOrderStress",
-                                      "Gamma must have a length of 27" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( Gamma.size() == tot_dim, "Gamma must have a length of 27" );
     
-            if ( C.size() != dim * dim * dim * dim * dim * dim ){
-                return new errorNode( "computeReferenceHigherOrderStress",
-                                      "The C stiffness tensor must have a length of 3**6.\nThe current size is " + std::to_string( C.size( ) ) );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( C.size() == tot_dim * tot_dim, "The C stiffness tensor must have a length of 3**6.\nThe current size is " + std::to_string( C.size( ) ) );
     
-            referenceHigherOrderStress = variableVector( dim * dim * dim, 0 );
+            referenceHigherOrderStress = variableVector( tot_dim, 0 );
     
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
                     for ( unsigned int K = 0; K < dim; K++ ){
-                        for ( unsigned int L = 0; L < dim; L++ ){
-                            for ( unsigned int M = 0; M < dim; M++ ){
-                                for ( unsigned int N = 0; N < dim; N++ ){
-                                    referenceHigherOrderStress[ dim * dim * I + dim * J + K ] += C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + dim * dim * L + dim * M + N ] * Gamma[ dim * dim * L + dim * M + N ];
-                                }
-                            }
+                        for ( unsigned int LMN = 0; LMN < tot_dim; LMN++ ){
+                                    referenceHigherOrderStress[ dim * dim * I + dim * J + K ] += C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + LMN ] * Gamma[ LMN ];
                         }
                     }
                 }
@@ -1094,45 +878,37 @@ namespace tardigradeHydra{
     
         errorOut computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
                                                     variableVector &referenceHigherOrderStress,
-                                                    variableMatrix &dReferenceHigherOrderStressdGamma ){
+                                                    variableVector &dReferenceHigherOrderStressdGamma ){
             /*!
              * Compute the higher order stress in the reference configuration.
-             * \f$M_{IJK} = C_{JKILMN} Gamma_{LMN}\f$
+             * \f$M_{IJK} = C_{JKILMN} \Gamma_{LMN}\f$
              *
              * Also compute the Jacobian
              * \f$\frac{ \partial M_{IJK} }{\partial \Gamma_{OPQ} } = C_{JKIOPQ}\f$
              *
-             * :param const variableVector &Gamma: The micro-gradient deformation measure.
-             * :param const parameterVector &C: The C stiffness tensor.
-             * :param variableVector &referenceHigherOrderStress: The higher order stress in the reference 
+             * \param &Gamma: The micro-gradient deformation measure.
+             * \param &C: The C stiffness tensor.
+             * \param &referenceHigherOrderStress: The higher order stress in the reference 
              *     configuration.
+             * \param &dReferenceHigherOrderStressdGamma: The derivative of the higher order stress in the reference configuration w.r.t. \f$ \bf{\Gamma} \f$
              */
     
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
-            errorOut error = computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeReferenceHigherOrderStress (jacobian)",
-                                                 "Error in computation of higher order stress" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeReferenceHigherOrderStress( Gamma, C, referenceHigherOrderStress ) );
     
             //Assemble the Jacobian
-            dReferenceHigherOrderStressdGamma = variableMatrix( dim * dim * dim, variableVector( dim * dim * dim, 0 ) );
+            dReferenceHigherOrderStressdGamma = variableVector( tot_dim * tot_dim, 0 );
     
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
                     for ( unsigned int K = 0; K < dim; K++ ){
-                        for ( unsigned int O = 0; O < dim; O++ ){
-                            for ( unsigned int P = 0; P < dim; P++ ){
-                                for ( unsigned int Q = 0; Q < dim; Q++ ){
-                                    dReferenceHigherOrderStressdGamma[ dim * dim * I + dim * J + K ][ dim * dim * O + dim * P + Q ] +=
-                                        C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + dim * dim * O + dim * P + Q ];
-                                }
-                            }
+                        for ( unsigned int OPQ = 0; OPQ < tot_dim; OPQ++ ){
+                            dReferenceHigherOrderStressdGamma[ dim * dim * tot_dim * I + dim * tot_dim * J + tot_dim * K + OPQ ] +=
+                                C[ dim * dim * dim * dim * dim * J + dim * dim * dim * dim * K + dim * dim * dim * I + OPQ ];
                         }
                     }
                 }
@@ -1147,32 +923,26 @@ namespace tardigradeHydra{
              * Compute the value of the third term in the micromorphic linear elasticity formulation.
              * \f$ term3_{IJ} = M_{IQR} C_{JS}^{-1} \Gamma_{SQR} \f$
              *
-             * :param const variableVector &invCGamma: \f$ C_{JS}^{-1} \Gamma_{SQR} \f$
-             * :param const variableVector &referenceHigherOrderStress: The higher order stress in the reference configuration.
-             * :param variableVector &term3: The third term in the linear elastic equation.
+             * \param &invCGamma: \f$ C_{JS}^{-1} \Gamma_{SQR} \f$
+             * \param &referenceHigherOrderStress: The higher order stress in the reference configuration.
+             * \param &term3: The third term in the linear elastic equation.
              */
     
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
-            if ( invCGamma.size() != dim * dim * dim ){
-                return new errorNode( "computeLinearElasticTerm3",
-                                      "invCGamma must have a size of 27" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( invCGamma.size() == tot_dim, "invCGamma must have a size of 27" );
     
-            if ( referenceHigherOrderStress.size() != dim * dim * dim ){
-                return new errorNode( "computeLinearElasticTerm3",
-                                      "The referenceHigherOrder stress must have a size of 27" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( referenceHigherOrderStress.size() == tot_dim, "The referenceHigherOrder stress must have a size of 27" );
     
-            term3 = variableVector( dim * dim, 0 );
+            term3 = variableVector( sot_dim, 0 );
     
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
-                    for ( unsigned int Q = 0; Q < dim; Q++ ){
-                        for ( unsigned int R = 0; R < dim; R++ ){
-                            term3[ dim * I + J ] += referenceHigherOrderStress[ dim * dim * I + dim * Q + R ] * invCGamma[ dim * dim * J + dim * Q + R ];
-                        }
+                    for ( unsigned int QR = 0; QR < sot_dim; QR++ ){
+                        term3[ dim * I + J ] += referenceHigherOrderStress[ dim * dim * I + QR ] * invCGamma[ dim * dim * J + QR ];
                     }
                 }
             }
@@ -1182,7 +952,7 @@ namespace tardigradeHydra{
 
         errorOut computeLinearElasticTerm3( const variableVector &invCGamma,
                                             const variableVector &referenceHigherOrderStress, variableVector &term3,
-                                            variableMatrix &dTerm3dInvCGamma, variableMatrix &dTerm3dReferenceHigherOrderStress ){
+                                            variableVector &dTerm3dInvCGamma, variableVector &dTerm3dReferenceHigherOrderStress ){
             /*!
              * Compute the value of the third term in the micromorphic linear elasticity formulation.
              * \f$ term3_{IJ} = M_{IQR} C_{JS}^{-1} \Gamma_{SQR} \f$
@@ -1193,38 +963,28 @@ namespace tardigradeHydra{
              * \frac{ \partial term3_{IJ} }{ \partial C_{TW}^{-1} \Gamma_{WUV} &= M_{IUV} \delta_{JT}
              * \end{align}\f$
              *
-             * :param const variableVector &invCGamma: \f$ C_{JS}^{-1} \Gamma_{SQR} \f$
-             * :param const variableVector &referenceHigherOrderStress: The higher order stress in the reference configuration.
-             * :param variableVector &term3: The third term in the linear elastic equation.
+             * \param &invCGamma: \f$ C_{JS}^{-1} \Gamma_{SQR} \f$
+             * \param &referenceHigherOrderStress: The higher order stress in the reference configuration.
+             * \param &term3: The third term in the linear elastic equation.
+             * \param &dTerm3dInvCGamma: The derivative of the third term w.r.t. \f$ C_{TW}^{-1} \Gamma_{WUV} \f$
+             * \param &dTerm3dReferenceHigherOrderStress: The derivative of the third term w.r.t. the reference higher order stress
              */
     
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
-            errorOut error = computeLinearElasticTerm3( invCGamma, referenceHigherOrderStress, term3 );
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm3( invCGamma, referenceHigherOrderStress, term3 ) );
     
-            if ( error ){
-                errorOut result = new errorNode( "computeLinearElasticTerm3 (jacobian)",
-                                                 "Error in computation of term 3" );
-                result->addNext( error );
-                return result;
-            }
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
-    
-            dTerm3dInvCGamma = variableMatrix( dim * dim, variableVector( dim * dim * dim, 0 ) );
-            dTerm3dReferenceHigherOrderStress = variableMatrix( dim * dim, variableVector( dim * dim * dim, 0 ) );
+            dTerm3dInvCGamma = variableVector( sot_dim * tot_dim, 0 );
+            dTerm3dReferenceHigherOrderStress = variableVector( sot_dim * tot_dim, 0 );
     
             for ( unsigned int I = 0; I < dim; I++ ){
                 for ( unsigned int J = 0; J < dim; J++ ){
-                    for ( unsigned int T = 0; T < dim; T++ ){
-                        for ( unsigned int U = 0; U < dim; U++ ){
-                            for ( unsigned int V = 0; V < dim; V++ ){
-                                dTerm3dInvCGamma[ dim * I + J ][ dim * dim * T + dim * U + V ] = referenceHigherOrderStress[ dim * dim * I + dim * U + V ] * eye[ dim * J + T ];
-                                dTerm3dReferenceHigherOrderStress[ dim * I + J ][ dim * dim * T + dim * U + V ] = eye[ dim * I + T ] * invCGamma[ dim * dim * J + dim * U + V ];
-                            }
-                        }
+                    for ( unsigned int TU = 0; TU < sot_dim; TU++ ){
+                            dTerm3dReferenceHigherOrderStress[ dim * tot_dim * I + tot_dim * J + dim * dim * I + TU ] += invCGamma[ dim * dim * J + TU ];
+                            dTerm3dInvCGamma[ dim * tot_dim * I + tot_dim * J + dim * dim * J + TU ] += referenceHigherOrderStress[ dim * dim * I + TU ];
                     }
                 }
             }
@@ -1235,21 +995,18 @@ namespace tardigradeHydra{
             /*!
              * Compute the product \f$ C_{IK}^{-1} \Psi_{KJ} \f$
              *
-             * :param const variableVector &invRCG: The inverse of the right cauchy green deformation tensor.
-             * :param const variableVector &Psi: The micro-deformation measure.
-             * :param variableVector &invRCGPsi: the product.
+             * \param &invRCG: The inverse of the right cauchy green deformation tensor.
+             * \param &Psi: The micro-deformation measure.
+             * \param &invRCGPsi: the product.
              */
     
             //Assume 3d
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
     
-            if ( invRCG.size() != dim * dim ){
-                return new errorNode( "computeInvRCGGamma", "invRCG has an improper dimension" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( invRCG.size() == sot_dim, "invRCG has an improper dimension" );
     
-            if ( Psi.size() != dim * dim ){
-                return new errorNode( "computeInvRCGGamma", "Psi has an improper dimension" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( Psi.size() == sot_dim, "Psi has an improper dimension" );
     
             invRCGPsi = tardigradeVectorTools::matrixMultiply( invRCG, Psi, dim, dim, dim, dim );
     
@@ -1257,7 +1014,7 @@ namespace tardigradeHydra{
         }
     
         errorOut computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi,
-                                   variableMatrix &dInvRCGPsidRCG, variableMatrix &dInvRCGPsidPsi ){
+                                   variableVector &dInvRCGPsidRCG, variableVector &dInvRCGPsidPsi ){
             /*!
              * Compute the product \f$ C_{IK}^{-1} \Psi_{KJ} \f$
              *
@@ -1267,38 +1024,30 @@ namespace tardigradeHydra{
              * \frac{ \partial C_{IO}^{-1} \Psi_{OJ} } { \partial \Psi_{KL} } &= C_{IK}^{-1} \delta_{JL}
              * \end{align}\f$
              *
-             * :param const variableVector &invRCG: The inverse of the right cauchy green deformation tensor.
-             * :param const variableVector &Psi: The micro-deformation measure.
-             * :param variableVector &invRCGPsi: the product.
-             * :param variableMatrix &dInvRCGPsidRCG: The Jacobian of the product w.r.t. the right cauchy green
+             * \param &invRCG: The inverse of the right cauchy green deformation tensor.
+             * \param &Psi: The micro-deformation measure.
+             * \param &invRCGPsi: the product.
+             * \param &dInvRCGPsidRCG: The Jacobian of the product w.r.t. the right cauchy green
              *     deformation tensor.
-             * :param variableMatrix &dInvRCGPsidPsi: The Jacobian of the product w.r.t. the micro-deformation measure.
+             * \param &dInvRCGPsidPsi: The Jacobian of the product w.r.t. the micro-deformation measure.
              */
     
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
     
-            errorOut error = computeInvRCGPsi( invRCG, Psi, invRCGPsi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeInvRCGPsi (jacobian)", "Error in computation of invRCG Psi product" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGPsi( invRCG, Psi, invRCGPsi ) );
     
             //Construct the jacobians
-            variableVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
-    
-            dInvRCGPsidRCG = variableMatrix( invRCGPsi.size(), variableVector( invRCG.size(), 0 ) );
-            dInvRCGPsidPsi = variableMatrix( invRCGPsi.size(), variableVector( Psi.size(), 0 ) );
+            dInvRCGPsidRCG = variableVector( sot_dim * sot_dim, 0 );
+            dInvRCGPsidPsi = variableVector( sot_dim * sot_dim, 0 );
     
             for ( unsigned int I = 0; I < 3; I++ ){
                 for ( unsigned int J = 0; J < 3; J++ ){
                     for ( unsigned int K = 0; K < 3; K++ ){
+                        dInvRCGPsidPsi[ dim * sot_dim * I + sot_dim * J + dim * K + J ] = invRCG[ dim * I + K ];
                         for ( unsigned int L = 0; L < 3; L++ ){
-                            dInvRCGPsidRCG[ dim * I + J ][ dim * K + L ] = -invRCG[ dim * I + K ] * invRCGPsi[ dim * L + J ];
-                            dInvRCGPsidPsi[ dim * I + J ][ dim * K + L ] = invRCG[ dim * I + K ] * eye[ dim * J + L ];
+                            dInvRCGPsidRCG[ dim * sot_dim * I + sot_dim * J + dim * K + L ] = -invRCG[ dim * I + K ] * invRCGPsi[ dim * L + J ];
                         }
                     }
                 }
@@ -1311,27 +1060,25 @@ namespace tardigradeHydra{
             /*!
              * Compute the product \f$ C_{IS}^{-1} \Gamma_{SQR} \f$
              *
-             * :param const variableVector &invRCG: The inverse of the right Cauchy Green deformation tensor.
-             * :param const variableVector &Gamma: The gradient of the micro-deformation deformation tensor.
-             * :param variableVector &invRCGGamma: The product.
+             * \param &invRCG: The inverse of the right Cauchy Green deformation tensor.
+             * \param &Gamma: The gradient of the micro-deformation deformation tensor.
+             * \param &invRCGGamma: The product.
              */
     
             //Assume 3d
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
-            if ( invRCG.size() != dim * dim ){
-                return new errorNode( "computeInvRCGGamma", "invRCG has an improper dimension" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( invRCG.size() == sot_dim, "invRCG has an improper dimension" );
     
-            if ( Gamma.size() != dim * dim * dim ){
-                return new errorNode( "computeInvRCGGamma", "Gamma has an improper dimension" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( Gamma.size() == tot_dim, "Gamma has an improper dimension" );
     
-            invRCGGamma = variableVector( dim * dim * dim, 0 );
+            invRCGGamma = variableVector( tot_dim, 0 );
             for ( unsigned int J = 0; J < dim; J++ ){
-                for ( unsigned int Q = 0; Q < dim; Q++ ){
-                    for ( unsigned int R = 0; R < dim; R++ ){
-                        for ( unsigned int S = 0; S < dim; S++ ){
+                for ( unsigned int S = 0; S < dim; S++ ){
+                    for ( unsigned int Q = 0; Q < dim; Q++ ){
+                        for ( unsigned int R = 0; R < dim; R++ ){
                             invRCGGamma[ dim * dim * J + dim * Q + R ] += invRCG[ dim * J + S ] * Gamma[ dim * dim * S + dim * Q + R ];
                         }
                     }
@@ -1342,7 +1089,7 @@ namespace tardigradeHydra{
         }
     
         errorOut computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma,
-                                     variableMatrix &dInvRCGGammadRCG, variableMatrix &dInvRCGGammadGamma ){
+                                     variableVector &dInvRCGGammadRCG, variableVector &dInvRCGGammadGamma ){
             /*!
              * Compute the product \f$ C_{IS}^{-1} \Gamma_{SQR} \f$
              *
@@ -1353,40 +1100,33 @@ namespace tardigradeHydra{
              * \frac{\partial C_{JS}^{-1} \Gamma_{SQR} }{ \partial \Gamma_{TUV} } &= C_{JT}^{-1} \delta_{QU} \delta_{RV}
              * \end{align}\f$
              *
-             * :param const variableVector &invRCG: The inverse of the right Cauchy Green deformation tensor.
-             * :param const variableVector &Gamma: The gradient of the micro-deformation deformation tensor.
-             * :param variableVector &invRCGGamma: The product.
+             * \param &invRCG: The inverse of the right Cauchy-Green deformation tensor.
+             * \param &Gamma: The gradient of the micro-deformation deformation tensor.
+             * \param &invRCGGamma: The product.
+             * \param &dInvRCGGammadRCG: The derivative of the product w.r.t. the right Cauchy-Green deformation tensor
+             * \param &dInvRCGGammadGamma: The derivative of the product w.r.t. \f$ \bf{\Gamma} \f$
              */
     
             //Assume 3d
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = sot_dim * dim;
     
-            errorOut error = computeInvRCGGamma( invRCG, Gamma, invRCGGamma );
-    
-            if ( error ){
-                errorOut result = new errorNode( "computeInvRCGGamma (jacobian)", "Error in computation of invRCG Gamma product" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeInvRCGGamma( invRCG, Gamma, invRCGGamma ) );
     
             //Assemble jacobians of invCGamma w.r.t. C and Gamma
-            variableVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
-    
-            dInvRCGGammadRCG = variableMatrix( dim * dim * dim, variableVector( dim * dim, 0 ) );
-            dInvRCGGammadGamma = variableMatrix( dim * dim * dim, variableVector( dim * dim * dim, 0 ) );
+            dInvRCGGammadRCG = variableVector( tot_dim * sot_dim, 0 );
+            dInvRCGGammadGamma = variableVector( tot_dim * tot_dim, 0 );
     
             for ( unsigned int J = 0; J < dim; J++ ){
                 for ( unsigned int Q = 0; Q < dim; Q++ ){
                     for ( unsigned int R = 0; R < dim; R++ ){
                         for ( unsigned int T = 0; T < dim; T++ ){
+                            dInvRCGGammadGamma[ dim * dim * tot_dim * J + dim * tot_dim * Q + tot_dim * R + dim * dim * T + dim * Q + R]
+                                = invRCG[ dim * J + T ];
                             for ( unsigned int U = 0; U < dim; U++ ){
-                                dInvRCGGammadRCG[ dim * dim * J + dim * Q + R ][ dim * T + U ]
+                                dInvRCGGammadRCG[ dim * dim * sot_dim * J + dim * sot_dim * Q + sot_dim * R + dim * T + U ]
                                     = -invRCG[ dim * J + T] * invRCGGamma[ dim * dim * U + dim * Q + R ];
-                                for ( unsigned int V = 0; V < dim; V++ ){
-                                    dInvRCGGammadGamma[ dim * dim * J + dim * Q + R ][ dim * dim * T + dim * U + V]
-                                        = invRCG[ dim * J + T ] * eye[ dim * Q + U ] * eye[ dim * R + V ];
-                                }
                             }
                         }
                     }
@@ -1403,28 +1143,21 @@ namespace tardigradeHydra{
              * A_{KLMN} &= \lambda \delta_{KL} \delta_{MN} + \mu \left( \delta_{KM} \delta_{LN} + \delta_{KN} \delta_{LM} \right)
              * \end{align}\f$
              *
-             * :param const parameterType &lambda: The micromorphic lambda parameter.
-             * :param const parameterType &mu: The micromorphic mu parameter.
-             * :param parameterVector &A: The isotropic A stiffness tensor.
+             * \param &lambda: The micromorphic lambda parameter.
+             * \param &mu: The micromorphic mu parameter.
+             * \param &A: The isotropic A stiffness tensor.
              */
     
             //Assume 3D
-            unsigned int dim = 3;
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constexpr unsigned int dim = 3;
     
             A = parameterVector( dim * dim * dim * dim, 0 );
     
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            A[ dim * dim * dim * K + dim * dim * L + dim * M + N ] = lambda * eye[ dim * K + L ] * eye[ dim * M + N ]
-                                                                                   + mu * ( eye[ dim * K + M ] * eye[ dim * L + N ]
-                                                                                          + eye[ dim * K + N ] * eye[ dim * L + M ] );
-                        }
-                    }
+                    A[ dim * dim * dim * K + dim * dim * K + dim * L + L ] += lambda;
+                    A[ dim * dim * dim * K + dim * dim * L + dim * K + L ] += mu;
+                    A[ dim * dim * dim * K + dim * dim * L + dim * L + K ] += mu;
                 }
             }
     
@@ -1440,33 +1173,26 @@ namespace tardigradeHydra{
              *          &- \sigma \left( \delta_{KM} \delta_{LN} + \delta_{KN} \delta_{LM} \right)
              * \end{align}\f$
              *
-             * :param const parameterType &eta: The micromorphic eta parameter.
-             * :param const parameterType &tau: The micromorphic tau parameter.
-             * :param const parameterType &kappa: The micromorphic kappa parameter.
-             * :param const parameterType &nu: The micromorphic nu parameter.
-             * :param const parameterType &sigma: The micromorphic sigma parameter
-             * :param parameterVector &B: The isotropic B stiffnes tensor.
+             * \param &eta: The micromorphic eta parameter.
+             * \param &tau: The micromorphic tau parameter.
+             * \param &kappa: The micromorphic kappa parameter.
+             * \param &nu: The micromorphic nu parameter.
+             * \param &sigma: The micromorphic sigma parameter
+             * \param &B: The isotropic B stiffnes tensor.
              */
     
             //Assume 3D
-            unsigned int dim = 3;
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constexpr unsigned int dim = 3;
     
             B = parameterVector( dim * dim * dim * dim, 0 );
     
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            B[ dim * dim * dim * K + dim * dim * L + dim * M + N ] = ( eta - tau ) * eye[ dim * K + L ] * eye[ dim * M + N ]
-                                                                                   + kappa * eye[ dim * K + M ] * eye[ dim * L + N ]
-                                                                                   + nu * eye[ dim * K + N ] * eye[ dim * L + M ]
-                                                                                   - sigma * ( eye[ dim * K + M ] * eye[ dim * L + N ]
-                                                                                             + eye[ dim * K + N ] * eye[ dim * L + M ] );
-                        }
-                    }
+                    B[ dim * dim * dim * K + dim * dim * K + dim * L + L ] += ( eta - tau );
+                    B[ dim * dim * dim * K + dim * dim * L + dim * K + L ] += kappa;
+                    B[ dim * dim * dim * K + dim * dim * L + dim * L + K ] += nu;
+                    B[ dim * dim * dim * K + dim * dim * L + dim * K + L ] -= sigma;;
+                    B[ dim * dim * dim * K + dim * dim * L + dim * L + K ] -= sigma;
                 }
             }
     
@@ -1490,47 +1216,50 @@ namespace tardigradeHydra{
              *            &+ \tau_{11} \delta_{KQ} \delta_{LP} \delta_{MN}
              * \end{align}\f$
              *
-             * :param const parameterVector &taus: The moduli (11 independent terms)
-             * :param parameterVector &C: The isotropic C stiffness tensor.
+             * \param &taus: The moduli (11 independent terms)
+             * \param &C: The isotropic C stiffness tensor.
              */
     
             //Assume 3D
-            unsigned int dim = 3;
+            constexpr unsigned int dim = 3;
     
-            if ( taus.size() != 11 ){
-                return new errorNode( "formIsotropicC", "11 moduli required to form C" );
-            }
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            TARDIGRADE_ERROR_TOOLS_CHECK( taus.size() == 11, "11 moduli required to form C" );
     
             C = parameterVector( dim * dim * dim * dim * dim * dim, 0 );
     
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
                     for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            for ( unsigned int P = 0; P < dim; P++ ){
-                                for ( unsigned int Q = 0; Q < dim; Q++ ){
-                                    C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M
-                                     + dim * dim * N + dim * P + Q ] = taus[0] * ( eye[ dim * K + L ] * eye[ dim * M + N ] * eye[ dim * P + Q ]
-                                                                                 + eye[ dim * K + Q ] * eye[ dim * L + M ] * eye[ dim * N + P ] )
-                                                                     + taus[1] * ( eye[ dim * K + L ] * eye[ dim * M + P ] * eye[ dim * N + Q ]
-                                                                                 + eye[ dim * K + M ] * eye[ dim * L + Q ] * eye[ dim * N + P ] )
-                                                                     + taus[2] * eye[ dim * K + L ] * eye[ dim * M + Q ] * eye[ dim * N + P]
-                                                                     + taus[3] * eye[ dim * K + N ] * eye[ dim * L + M ] * eye[ dim * P + Q]
-                                                                     + taus[4] * ( eye[ dim * K + M ] * eye[ dim * L + N ] * eye[ dim * P + Q ]
-                                                                                 + eye[ dim * K + P ] * eye[ dim * L + M ] * eye[ dim * N + Q ] )
-                                                                     + taus[5] * eye[ dim * K + M ] * eye[ dim * L + P ] * eye[ dim * N + Q ]
-                                                                     + taus[6] * eye[ dim * K + N ] * eye[ dim * L + P ] * eye[ dim * M + Q ]
-                                                                     + taus[7] * ( eye[ dim * K + P ] * eye[ dim * L + Q ] * eye[ dim * M + N ]
-                                                                                 + eye[ dim * K + Q ] * eye[ dim * L + N ] * eye[ dim * M + P ] )
-                                                                     + taus[8] * eye[ dim * K + N ] * eye[ dim * L + Q ] * eye[ dim * M + P ]
-                                                                     + taus[9] * eye[ dim * K + P ] * eye[ dim * L + N ] * eye[ dim * M + Q ]
-                                                                     + taus[10] * eye[ dim * K + Q ] * eye[ dim * L + P ] * eye[ dim * M + N ];
-                                }
-                            }
-                        }
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * L + dim * M + M ]
+                                                         += taus[0];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L + dim * dim * M + dim * M + K ]
+                                                         += taus[0];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * M + dim * L + M ]
+                                                         += taus[1];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K + dim * dim * M + dim * M + L ]
+                                                         += taus[1];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * K + dim * dim * dim * L + dim * dim * M + dim * M + L ]
+                                                         += taus[2];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L + dim * dim * K + dim * M + M ]
+                                                         += taus[3];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K + dim * dim * L + dim * M + M ]
+                                                         += taus[4];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * L + dim * dim * M + dim * K + M ]
+                                                         += taus[4];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * K + dim * dim * M + dim * L + M ]
+                                                         += taus[5];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * K + dim * L + M ]
+                                                         += taus[6];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * M + dim * K + L ]
+                                                         += taus[7];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * L + dim * M + K ]
+                                                         += taus[7];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * K + dim * M + L ]
+                                                         += taus[8];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * L + dim * K + M ]
+                                                         += taus[9];
+                        C[ dim * dim * dim * dim * dim * K + dim * dim * dim * dim * L + dim * dim * dim * M + dim * dim * M + dim * L + K ]
+                                                         += taus[10];
                     }
                 }
             }
@@ -1543,26 +1272,22 @@ namespace tardigradeHydra{
              * Form the isotropic tensor D.
              * \f$ D_{KLMN} = \tau \delta_{KL} \delta_{MN} + \sigma \left( \delta_{KM} \delta_{LN} + \delta_{KN} \delta_{LM} \right) \f$
              *
-             * :param const parameterType &tau: The micromorphic tau parameter.
-             * :param const parameterType &sigma: The micromorphic sigma parameter.
-             * :param parameterVector &D: The D stiffness tensor.
+             * \param &tau: The micromorphic tau parameter.
+             * \param &sigma: The micromorphic sigma parameter.
+             * \param &D: The D stiffness tensor.
              */
     
             //Assume 3D
-            unsigned int dim = 3;
-    
-            constantVector eye( dim * dim );
-            tardigradeVectorTools::eye( eye );
+            constexpr unsigned int dim = 3;
     
             D = parameterVector( dim * dim * dim * dim, 0 );
             for ( unsigned int K = 0; K < dim; K++ ){
                 for ( unsigned int L = 0; L < dim; L++ ){
-                    for ( unsigned int M = 0; M < dim; M++ ){
-                        for ( unsigned int N = 0; N < dim; N++ ){
-                            D[ dim * dim * dim * K + dim * dim * L + dim * M + N ] = tau * eye[ dim * K + L ] * eye[ dim * M + N ]
-                                + sigma * ( eye[ dim * K + M ] * eye[ dim * L + N ] + eye[ dim * K + N ] * eye[ dim * L + M ] );
-                        }
-                    }
+                    D[ dim * dim * dim * K + dim * dim * K + dim * L + L ] += tau;
+                    D[ dim * dim * dim * K + dim * dim * L + dim * K + L ]
+                        += sigma;
+                    D[ dim * dim * dim * K + dim * dim * L + dim * L + K ]
+                        += sigma;
                 }
             }
     
@@ -1576,60 +1301,39 @@ namespace tardigradeHydra{
             /*!
              * Assemble the fundamental deformation meaures from the degrees of freedom.
              *
-             * :param const double ( &grad_u )[ 3 ][ 3 ]: The macro displacement gradient w.r.t. the reference configuration.
-             * :param const double ( &phi )[ 9 ]: The micro displacement.
-             * :param const double ( &grad_phi )[ 9 ][ 3 ]: The gradient of the micro displacement w.r.t. the reference configuration.
-             * :param variableVector &deformationGradient: The deformation gradient
-             * :param variableVector &microDeformation: The micro deformation
-             * :param variableVector &gradientMicroDeformation: The gradient of the micro deformation.
+             * \param &grad_u: The macro displacement gradient w.r.t. the reference configuration.
+             * \param &phi: The micro displacement.
+             * \param &grad_phi: The gradient of the micro displacement w.r.t. the reference configuration.
+             * \param &deformationGradient: The deformation gradient
+             * \param &microDeformation: The micro deformation
+             * \param &gradientMicroDeformation: The gradient of the micro deformation.
              */
     
     
             //Extract the degrees of freedom
-            variableMatrix displacementGradient = { { grad_u[ 0 ][ 0 ], grad_u[ 0 ][ 1 ], grad_u[ 0 ][ 2 ] },
-                                                    { grad_u[ 1 ][ 0 ], grad_u[ 1 ][ 1 ], grad_u[ 1 ][ 2 ] },
-                                                    { grad_u[ 2 ][ 0 ], grad_u[ 2 ][ 1 ], grad_u[ 2 ][ 2 ] } };
+            variableVector displacementGradient = { grad_u[ 0 ][ 0 ], grad_u[ 0 ][ 1 ], grad_u[ 0 ][ 2 ],
+                                                    grad_u[ 1 ][ 0 ], grad_u[ 1 ][ 1 ], grad_u[ 1 ][ 2 ],
+                                                    grad_u[ 2 ][ 0 ], grad_u[ 2 ][ 1 ], grad_u[ 2 ][ 2 ] };
     
             variableVector microDisplacement = { phi[ 0 ], phi[ 1 ], phi[ 2 ],
                                                  phi[ 3 ], phi[ 4 ], phi[ 5 ],
                                                  phi[ 6 ], phi[ 7 ], phi[ 8 ] };
     
-            variableMatrix gradientMicroDisplacement = { { grad_phi[ 0 ][ 0 ], grad_phi[ 0 ][ 1 ], grad_phi[ 0 ][ 2 ] },
-                                                         { grad_phi[ 1 ][ 0 ], grad_phi[ 1 ][ 1 ], grad_phi[ 1 ][ 2 ] },
-                                                         { grad_phi[ 2 ][ 0 ], grad_phi[ 2 ][ 1 ], grad_phi[ 2 ][ 2 ] },
-                                                         { grad_phi[ 3 ][ 0 ], grad_phi[ 3 ][ 1 ], grad_phi[ 3 ][ 2 ] },
-                                                         { grad_phi[ 4 ][ 0 ], grad_phi[ 4 ][ 1 ], grad_phi[ 4 ][ 2 ] },
-                                                         { grad_phi[ 5 ][ 0 ], grad_phi[ 5 ][ 1 ], grad_phi[ 5 ][ 2 ] },
-                                                         { grad_phi[ 6 ][ 0 ], grad_phi[ 6 ][ 1 ], grad_phi[ 6 ][ 2 ] },
-                                                         { grad_phi[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ] },
-                                                         { grad_phi[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] } };
+            variableVector gradientMicroDisplacement = { grad_phi[ 0 ][ 0 ], grad_phi[ 0 ][ 1 ], grad_phi[ 0 ][ 2 ],
+                                                         grad_phi[ 1 ][ 0 ], grad_phi[ 1 ][ 1 ], grad_phi[ 1 ][ 2 ],
+                                                         grad_phi[ 2 ][ 0 ], grad_phi[ 2 ][ 1 ], grad_phi[ 2 ][ 2 ],
+                                                         grad_phi[ 3 ][ 0 ], grad_phi[ 3 ][ 1 ], grad_phi[ 3 ][ 2 ],
+                                                         grad_phi[ 4 ][ 0 ], grad_phi[ 4 ][ 1 ], grad_phi[ 4 ][ 2 ],
+                                                         grad_phi[ 5 ][ 0 ], grad_phi[ 5 ][ 1 ], grad_phi[ 5 ][ 2 ],
+                                                         grad_phi[ 6 ][ 0 ], grad_phi[ 6 ][ 1 ], grad_phi[ 6 ][ 2 ],
+                                                         grad_phi[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ],
+                                                         grad_phi[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] };
     
-            errorOut error = tardigradeMicromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient ) );
     
-            if ( error ){
-                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
-                                                 "Error in assembly of the deformation gradient" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation ) );
     
-            error = tardigradeMicromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation );
-    
-            if ( error ){
-                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
-                                                 "Error in assembly of the micro deformation" );
-                result->addNext( error );
-                return result;
-            }
-    
-            error = tardigradeMicromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation );
-    
-            if ( error ){
-                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures",
-                                                 "Error in assembly of the gradient of the micro deformation" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation ) );
     
             return NULL;
         }
@@ -1637,70 +1341,49 @@ namespace tardigradeHydra{
         errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
                                                          const double ( &grad_phi )[ 9 ][ 3 ],
                                                          variableVector &deformationGradient, variableVector &microDeformation,
-                                                         variableVector &gradientMicroDeformation, variableMatrix &dFdGradU,
-                                                         variableMatrix &dChidPhi, variableMatrix &dGradChidGradPhi ){
+                                                         variableVector &gradientMicroDeformation, variableVector &dFdGradU,
+                                                         variableVector &dChidPhi, variableVector &dGradChidGradPhi ){
             /*!
              * Assemble the fundamental deformation meaures from the degrees of freedom.
              *
-             * :param const double ( &grad_u )[ 3 ][ 3 ]: The macro displacement gradient w.r.t. the reference configuration.
-             * :param const double ( &phi )[ 9 ]: The micro displacement.
-             * :param const double ( &grad_phi )[ 9 ][ 3 ]: The gradient of the micro displacement w.r.t. the reference configuration.
-             * :param variableVector &deformationGradient: The deformation gradient
-             * :param variableVector &microDeformation: The micro deformation
-             * :param variableVector &gradientMicroDeformation: The gradient of the micro deformation.
-             * :param variableMatrix &dFdGradU: The Jacobian of the deformation gradient w.r.t. the gradient of the displacement
-             * :param variableMatrix &dChidPhi: The Jacobian of the micro deformation w.r.t. the micro displacement
-             * :param variableMatrix &dGradChidGradPhi: The Jacobian of the gradient of the micro deformation w.r.t.
+             * \param &grad_u: The macro displacement gradient w.r.t. the reference configuration.
+             * \param &phi: The micro displacement.
+             * \param &grad_phi: The gradient of the micro displacement w.r.t. the reference configuration.
+             * \param &deformationGradient: The deformation gradient
+             * \param &microDeformation: The micro deformation
+             * \param &gradientMicroDeformation: The gradient of the micro deformation.
+             * \param &dFdGradU: The Jacobian of the deformation gradient w.r.t. the gradient of the displacement
+             * \param &dChidPhi: The Jacobian of the micro deformation w.r.t. the micro displacement
+             * \param &dGradChidGradPhi: The Jacobian of the gradient of the micro deformation w.r.t.
              *      the gradient of the micro displacement
              */
     
     
             //Extract the degrees of freedom
-            variableMatrix displacementGradient = { { grad_u[ 0 ][ 0 ], grad_u[ 0 ][ 1 ], grad_u[ 0 ][ 2 ] },
-                                                    { grad_u[ 1 ][ 0 ], grad_u[ 1 ][ 1 ], grad_u[ 1 ][ 2 ] },
-                                                    { grad_u[ 2 ][ 0 ], grad_u[ 2 ][ 1 ], grad_u[ 2 ][ 2 ] } };
+            variableVector displacementGradient = { grad_u[ 0 ][ 0 ], grad_u[ 0 ][ 1 ], grad_u[ 0 ][ 2 ],
+                                                    grad_u[ 1 ][ 0 ], grad_u[ 1 ][ 1 ], grad_u[ 1 ][ 2 ],
+                                                    grad_u[ 2 ][ 0 ], grad_u[ 2 ][ 1 ], grad_u[ 2 ][ 2 ] };
     
             variableVector microDisplacement = { phi[ 0 ], phi[ 1 ], phi[ 2 ],
                                                  phi[ 3 ], phi[ 4 ], phi[ 5 ],
                                                  phi[ 6 ], phi[ 7 ], phi[ 8 ] };
     
-            variableMatrix gradientMicroDisplacement = { { grad_phi[ 0 ][ 0 ], grad_phi[ 0 ][ 1 ], grad_phi[ 0 ][ 2 ] },
-                                                         { grad_phi[ 1 ][ 0 ], grad_phi[ 1 ][ 1 ], grad_phi[ 1 ][ 2 ] },
-                                                         { grad_phi[ 2 ][ 0 ], grad_phi[ 2 ][ 1 ], grad_phi[ 2 ][ 2 ] },
-                                                         { grad_phi[ 3 ][ 0 ], grad_phi[ 3 ][ 1 ], grad_phi[ 3 ][ 2 ] },
-                                                         { grad_phi[ 4 ][ 0 ], grad_phi[ 4 ][ 1 ], grad_phi[ 4 ][ 2 ] },
-                                                         { grad_phi[ 5 ][ 0 ], grad_phi[ 5 ][ 1 ], grad_phi[ 5 ][ 2 ] },
-                                                         { grad_phi[ 6 ][ 0 ], grad_phi[ 6 ][ 1 ], grad_phi[ 6 ][ 2 ] },
-                                                         { grad_phi[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ] },
-                                                         { grad_phi[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] } };
+            variableVector gradientMicroDisplacement = { grad_phi[ 0 ][ 0 ], grad_phi[ 0 ][ 1 ], grad_phi[ 0 ][ 2 ],
+                                                         grad_phi[ 1 ][ 0 ], grad_phi[ 1 ][ 1 ], grad_phi[ 1 ][ 2 ],
+                                                         grad_phi[ 2 ][ 0 ], grad_phi[ 2 ][ 1 ], grad_phi[ 2 ][ 2 ],
+                                                         grad_phi[ 3 ][ 0 ], grad_phi[ 3 ][ 1 ], grad_phi[ 3 ][ 2 ],
+                                                         grad_phi[ 4 ][ 0 ], grad_phi[ 4 ][ 1 ], grad_phi[ 4 ][ 2 ],
+                                                         grad_phi[ 5 ][ 0 ], grad_phi[ 5 ][ 1 ], grad_phi[ 5 ][ 2 ],
+                                                         grad_phi[ 6 ][ 0 ], grad_phi[ 6 ][ 1 ], grad_phi[ 6 ][ 2 ],
+                                                         grad_phi[ 7 ][ 0 ], grad_phi[ 7 ][ 1 ], grad_phi[ 7 ][ 2 ],
+                                                         grad_phi[ 8 ][ 0 ], grad_phi[ 8 ][ 1 ], grad_phi[ 8 ][ 2 ] };
     
-            errorOut error = tardigradeMicromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient, dFdGradU );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::assembleDeformationGradient( displacementGradient, deformationGradient, dFdGradU ) );
     
-            if ( error ){
-                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures (jacobian)",
-                                                 "Error in assembly of the deformation gradient" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation, dChidPhi ) );
     
-            error = tardigradeMicromorphicTools::assembleMicroDeformation( microDisplacement, microDeformation, dChidPhi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures (jacobian)",
-                                                 "Error in assembly of the micro deformation" );
-                result->addNext( error );
-                return result;
-            }
-    
-            error = tardigradeMicromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation,
-                                                                         dGradChidGradPhi );
-    
-            if ( error ){
-                errorOut result = new errorNode( "assembleFundamentalDeformationMeasures (jacobian)",
-                                                 "Error in assembly of the gradient of the micro deformation" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::assembleGradientMicroDeformation( gradientMicroDisplacement, gradientMicroDeformation,
+                                                                                                         dGradChidGradPhi ) );
     
             return NULL;
         }
@@ -1718,10 +1401,7 @@ namespace tardigradeHydra{
              * :param parameterVector &Dmatrix: The D stiffness matrix.
              */
     
-            if ( fparams.size() == 0 ){
-                return new errorNode( "extractMaterialParameters",
-                                      "The material parameters vector has a length of 0" );
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( fparams.size() != 0, "The material parameters vector has a length of 0" );
     
             unsigned int start = 0;
             unsigned int span;
@@ -1731,16 +1411,8 @@ namespace tardigradeHydra{
             //Extract the material parameters
             for ( unsigned int i = 0; i < outputs.size(); i++ ){
                 span = ( unsigned int )std::floor( fparams[ start ]  + 0.5 ); //Extract the span of the parameter set
-    
-                if ( fparams.size() < start + 1 + span ){
-                    std::string outstr = "fparams is not long enough to contain all of the required parameters:\n";
-                    outstr +=            "    filling variable " + std::to_string( i ) + "\n";
-                    outstr +=            "    size =          "  + std::to_string( fparams.size() ) + "\n";
-                    outstr +=            "    required size = "  + std::to_string( start + 1 + span );
-    
-                    return new errorNode( "extractMaterialParameters",
-                                          outstr.c_str() );
-                }
+
+                TARDIGRADE_ERROR_TOOLS_CHECK( fparams.size( ) >= start + 1 + span, "fparams is not long enough to contain all of the required parameters:\n    filling variable " + std::to_string( i ) + "\n    size =          "  + std::to_string( fparams.size() ) + "\n    required size = "  + std::to_string( start + 1 + span ) + "\n" );
     
                 outputs[ i ] = parameterVector( fparams.begin() + start + 1, fparams.begin() + start + 1 + span );
     
@@ -1748,67 +1420,23 @@ namespace tardigradeHydra{
             }
     
             //Form the stiffness tensors
-            errorOut error;
-            if ( outputs[ 0 ].size() == 2 ){
-                error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicA( outputs[ 0 ][ 0 ], outputs[ 0 ][ 1 ], Amatrix );
-            }
-            else{
-                std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 0 ].size() ) + " ) for the A stiffness tensor";
-                return new errorNode( "extractMaterialParameters",
-                                      outstr.c_str() );
-            }
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( outputs[ 0 ].size( ) == 2, "Unrecognized number of parameters ( " + std::to_string( outputs[ 0 ].size() ) + " ) for the A stiffness tensor" );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::micromorphicLinearElasticity::formIsotropicA( outputs[ 0 ][ 0 ], outputs[ 0 ][ 1 ], Amatrix ) );
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( outputs[ 1 ].size() == 5, "Unrecognized number of parameters ( " + std::to_string( outputs[ 1 ].size() ) + " ) for the B stiffness tensor" );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::micromorphicLinearElasticity::formIsotropicB( outputs[ 1 ][ 0 ], outputs[ 1 ][ 1 ], outputs[ 1 ][ 2 ],
+                                                                                                         outputs[ 1 ][ 3 ], outputs[ 1 ][ 4 ], Bmatrix ) );
     
-            if ( error ){
-                errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the A stiffness tensor" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( outputs[ 2 ].size() == 11, "Unrecognized number of parameters ( " + std::to_string( outputs[ 2 ].size() ) + " ) for the C stiffness tensor" );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::micromorphicLinearElasticity::formIsotropicC( outputs[ 2 ], Cmatrix ) );
     
-            if ( outputs[ 1 ].size() == 5 ){
-                error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicB( outputs[ 1 ][ 0 ], outputs[ 1 ][ 1 ], outputs[ 1 ][ 2 ],
-                                                                                       outputs[ 1 ][ 3 ], outputs[ 1 ][ 4 ], Bmatrix );
-            }
-            else{
-                std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 1 ].size() ) + " ) for the B stiffness tensor";
-                return new errorNode( "extractMaterialParameters",
-                                      outstr.c_str() );
-            }
-    
-            if ( error ){
-                errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the B stiffness tensor" );
-                result->addNext( error );
-                return result;
-            }
-    
-            if ( outputs[ 2 ].size() == 11 ){
-                error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicC( outputs[ 2 ], Cmatrix );
-            }
-            else{
-                std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 2 ].size() ) + " ) for the C stiffness tensor";
-                return new errorNode( "extractMaterialParameters",
-                                      outstr.c_str() );
-            }
-    
-            if ( error ){
-                errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the C stiffness tensor" );
-                result->addNext( error );
-                return result;
-            }
-    
-            if ( outputs[ 3 ].size() == 2 ){
-                error = tardigradeHydra::micromorphicLinearElasticity::formIsotropicD( outputs[ 3 ][ 0 ], outputs[ 3 ][ 1 ], Dmatrix );
-            }
-            else{
-                std::string outstr = "Unrecognized number of parameters ( " + std::to_string( outputs[ 3 ].size() ) + " ) for the D stiffness tensor";
-                return new errorNode( "extractMaterialParameters",
-                                      outstr.c_str() );
-            }
-    
-            if ( error ){
-                errorOut result = new errorNode( "extractMaterialParameters", "Error in computation of the D stiffness tensor" );
-                result->addNext( error );
-                return result;
-            }
+            TARDIGRADE_ERROR_TOOLS_CHECK( outputs[ 3 ].size() == 2, "Unrecognized number of parameters ( " + std::to_string( outputs[ 3 ].size() ) + " ) for the D stiffness tensor" );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeHydra::micromorphicLinearElasticity::formIsotropicD( outputs[ 3 ][ 0 ], outputs[ 3 ][ 1 ], Dmatrix ) );
     
             return NULL;
 
@@ -1876,6 +1504,10 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
              */
 
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int tot_dim = hydra->getTOTDimension( );
+
             floatVector deformationGradient1;
 
             floatVector microDeformation1;
@@ -1884,20 +1516,26 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                deformationGradient1 = ( *hydra->get_previousConfigurations( ) )[ 0 ];
+                deformationGradient1 = floatVector( hydra->get_previousConfigurations( )->begin( ),
+                                                    hydra->get_previousConfigurations( )->begin( ) + sot_dim );
 
-                microDeformation1 = ( *hydra->get_previousMicroConfigurations( ) )[ 0 ];
+                microDeformation1 = floatVector( hydra->get_previousMicroConfigurations( )->begin( ),
+                                                 hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim );
 
-                gradientMicroDeformation1 = ( *hydra->get_previousGradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = floatVector( hydra->get_previousGradientMicroConfigurations( )->begin( ),
+                                                         hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim );
 
             }
             else{
 
-                deformationGradient1 = ( *hydra->get_configurations( ) )[ 0 ];
+                deformationGradient1 = floatVector( hydra->get_configurations( )->begin( ),
+                                                    hydra->get_configurations( )->begin( ) + sot_dim );
 
-                microDeformation1 = ( *hydra->get_microConfigurations( ) )[ 0 ];
+                microDeformation1 = floatVector( hydra->get_microConfigurations( )->begin( ),
+                                                 hydra->get_microConfigurations( )->begin( ) + sot_dim );
 
-                gradientMicroDeformation1 = ( *hydra->get_gradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = floatVector( hydra->get_gradientMicroConfigurations( )->begin( ),
+                                                         hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim );
 
             }
 
@@ -2342,7 +1980,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( false );
 
-        };
+        }
 
         void residual::setdSIGMAdF( ){
             /*!
@@ -2396,7 +2034,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( false );
 
-        };
+        }
 
         void residual::setdMdF( ){
             /*!
@@ -2450,7 +2088,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( false );
 
-        };
+        }
 
         void residual::setPreviousdPK2dF( ){
             /*!
@@ -2504,7 +2142,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( true );
 
-        };
+        }
 
         void residual::setPreviousdSIGMAdF( ){
             /*!
@@ -2558,7 +2196,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( true );
 
-        };
+        }
 
         void residual::setPreviousdMdF( ){
             /*!
@@ -2612,7 +2250,7 @@ namespace tardigradeHydra{
 
             setReferenceStressJacobians( true );
 
-        };
+        }
 
         void residual::setReferenceStressJacobians( const bool isPrevious ){
             /*!
@@ -2621,7 +2259,11 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for if the stresses to be calculated are the current (false) or previous (true)
              */
 
-            const unsigned int *dim = hydra->getDimension( );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int tot_dim = hydra->getTOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
 
             const variableVector *C;
 
@@ -2629,33 +2271,33 @@ namespace tardigradeHydra{
 
             const variableVector *Gamma;
 
-            const variableMatrix *dCdF;
+            const variableVector *dCdF;
 
-            const variableMatrix *dCdFn;
+            const variableVector *dCdFn;
 
-            const variableMatrix *dPsidF;
+            const variableVector *dPsidF;
 
-            const variableMatrix *dPsidFn;
+            const variableVector *dPsidFn;
 
-            const variableMatrix *dPsidChi;
+            const variableVector *dPsidChi;
 
-            const variableMatrix *dPsidChin;
+            const variableVector *dPsidChin;
 
-            const variableMatrix *dGammadF;
+            const variableVector *dGammadF;
 
-            const variableMatrix *dGammadFn;
+            const variableVector *dGammadFn;
 
-            const variableMatrix *dGammadChi;
+            const variableVector *dGammadChi;
 
-            const variableMatrix *dGammadChin;
+            const variableVector *dGammadChin;
 
-            const variableMatrix *dGammadGradChi;
+            const variableVector *dGammadGradChi;
 
-            const variableMatrix *dGammadGradChin;
+            const variableVector *dGammadGradChin;
 
-            variableMatrix dFFollowdFs;
+            variableVector dFFollowdFs;
 
-            variableMatrix dChiFollowdChis;
+            variableVector dChiFollowdChis;
 
             variableVector followingConfiguration;
 
@@ -2744,17 +2386,17 @@ namespace tardigradeHydra{
 
             }
 
-            variableMatrix dFFollowdFn( ( *dim ) * ( *dim ), variableVector( ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( ( *dim ) * ( *dim ) ), 0 ) );
+            variableVector dFFollowdFn( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-            variableMatrix dChiFollowdChin( ( *dim ) * ( *dim ), variableVector( ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( ( *dim ) * ( *dim ) ), 0 ) );
+            variableVector dChiFollowdChin( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-            for ( unsigned int i = 0; i < ( *dim ) * ( *dim ); i++ ){
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                for ( unsigned int j = 0; j < ( ( *hydra->getNumConfigurations( ) ) - 1 ) * ( ( *dim ) * ( *dim ) ); j++ ){
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
-                    dFFollowdFn[ i ][ j ]     = dFFollowdFs[ i ][ j + ( *dim ) * ( *dim ) ];
+                    dFFollowdFn[ ( num_configs - 1 ) * sot_dim * i + j ]     = dFFollowdFs[ num_configs * sot_dim * i + j + sot_dim ];
 
-                    dChiFollowdChin[ i ][ j ] = dChiFollowdChis[ i ][ j + ( *dim ) * ( *dim ) ];
+                    dChiFollowdChin[ ( num_configs - 1 ) * sot_dim * i + j ] = dChiFollowdChis[ num_configs * sot_dim * i + j + sot_dim ];
 
                 }
 
@@ -2766,19 +2408,19 @@ namespace tardigradeHydra{
 
             floatVector localReferenceHigherOrderStress;
 
-            floatMatrix dlocalPK2dC;
+            floatVector dlocalPK2dC;
 
-            floatMatrix dlocalPK2dPsi;
+            floatVector dlocalPK2dPsi;
 
-            floatMatrix dlocalPK2dGamma;
+            floatVector dlocalPK2dGamma;
 
-            floatMatrix dlocalSIGMAdC;
+            floatVector dlocalSIGMAdC;
 
-            floatMatrix dlocalSIGMAdPsi;
+            floatVector dlocalSIGMAdPsi;
 
-            floatMatrix dlocalSIGMAdGamma;
+            floatVector dlocalSIGMAdGamma;
 
-            floatMatrix dlocalMdGamma;
+            floatVector dlocalMdGamma;
 
             // Compute the stresses in the local configuration
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( linearElasticityReferenceDerivedMeasures( *C, *Psi, *Gamma, *getAMatrix( ), *getBMatrix( ), *getCMatrix( ), *getDMatrix( ),
@@ -2792,19 +2434,19 @@ namespace tardigradeHydra{
 
             floatVector referenceHigherOrderStress;
 
-            floatMatrix dPK2dlocalPK2;
+            floatVector dPK2dlocalPK2;
 
-            floatMatrix dPK2dFFollow;
+            floatVector dPK2dFFollow;
 
-            floatMatrix dSIGMAdlocalSIGMA;
+            floatVector dSIGMAdlocalSIGMA;
 
-            floatMatrix dSIGMAdFFollow;
+            floatVector dSIGMAdFFollow;
 
-            floatMatrix dMdlocalM;
+            floatVector dMdlocalM;
 
-            floatMatrix dMdFFollow;
+            floatVector dMdFFollow;
 
-            floatMatrix dMdChiFollow;
+            floatVector dMdChiFollow;
 
             // Pull the stresses back to the true reference configuration
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, PK2Stress, dPK2dlocalPK2, dPK2dFFollow ) );
@@ -2815,61 +2457,57 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
                                                                                                                referenceHigherOrderStress, dMdlocalM, dMdFFollow, dMdChiFollow ) );
 
-            floatMatrix dPK2dF = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot(     dlocalPK2dC,     *dCdF )
-                                                                          + tardigradeVectorTools::dot(   dlocalPK2dPsi,   *dPsidF )
-                                                                          + tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadF ) );
+            floatVector dPK2dF = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(     dlocalPK2dC,     *dCdF, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                     + tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidF, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                     + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadF, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
 
-            floatMatrix term1 = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot(     dlocalPK2dC,     *dCdFn )
-                                                                           + tardigradeVectorTools::dot(   dlocalPK2dPsi,   *dPsidFn )
-                                                                           + tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadFn ) );
-            floatMatrix term2 = tardigradeVectorTools::dot( dPK2dFFollow, dFFollowdFn );
-            floatMatrix dPK2dFn = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot(     dlocalPK2dC,     *dCdFn )
-                                                                           + tardigradeVectorTools::dot(   dlocalPK2dPsi,   *dPsidFn )
-                                                                           + tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadFn ) )
-                                + tardigradeVectorTools::dot( dPK2dFFollow, dFFollowdFn );
+            floatVector dPK2dFn = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(     dlocalPK2dC,     *dCdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                      + tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                      + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadFn, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                + tardigradeVectorTools::matrixMultiply( dPK2dFFollow, dFFollowdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatMatrix dPK2dChi = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot(   dlocalPK2dPsi,   *dPsidChi )
-                                                                            + tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadChi ) );
+            floatVector dPK2dChi = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidChi, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                       + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadChi, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
 
-            floatMatrix dPK2dChin = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot(   dlocalPK2dPsi,   *dPsidChin )
-                                                                             + tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadChin ) );
+            floatVector dPK2dChin = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                        + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatMatrix dPK2dGradChi = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadGradChi ) );
+            floatVector dPK2dGradChi = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadGradChi, sot_dim, tot_dim, tot_dim, tot_dim ), sot_dim, sot_dim, sot_dim, tot_dim );
 
-            floatMatrix dPK2dGradChin = tardigradeVectorTools::dot( dPK2dlocalPK2, tardigradeVectorTools::dot( dlocalPK2dGamma, *dGammadGradChin ) );
+            floatVector dPK2dGradChin = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadGradChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim );
 
-            floatMatrix dSIGMAdF = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot(     dlocalSIGMAdC,     *dCdF )
-                                                                                + tardigradeVectorTools::dot(   dlocalSIGMAdPsi,   *dPsidF )
-                                                                                + tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadF ) );
+            floatVector dSIGMAdF = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(     dlocalSIGMAdC,     *dCdF, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                           + tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidF, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                           + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadF, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
 
-            floatMatrix dSIGMAdFn = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot(     dlocalSIGMAdC,     *dCdFn )
-                                                                                 + tardigradeVectorTools::dot(   dlocalSIGMAdPsi,   *dPsidFn )
-                                                                                 + tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadFn ) )
-                                  + tardigradeVectorTools::dot( dSIGMAdFFollow, dFFollowdFn );
+            floatVector dSIGMAdFn = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(     dlocalSIGMAdC,     *dCdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                            + tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                            + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadFn, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                  + tardigradeVectorTools::matrixMultiply( dSIGMAdFFollow, dFFollowdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatMatrix dSIGMAdChi = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot(   dlocalSIGMAdPsi,   *dPsidChi )
-                                                                                  + tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadChi ) );
+            floatVector dSIGMAdChi = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidChi, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                             + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadChi, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
 
-            floatMatrix dSIGMAdChin = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot(   dlocalSIGMAdPsi,   *dPsidChin )
-                                                                                   + tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadChin ) );
+            floatVector dSIGMAdChin = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                              + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatMatrix dSIGMAdGradChi = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadGradChi ) );
+            floatVector dSIGMAdGradChi = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadGradChi, sot_dim, tot_dim, tot_dim, tot_dim ), sot_dim, sot_dim, sot_dim, tot_dim );
 
-            floatMatrix dSIGMAdGradChin = tardigradeVectorTools::dot( dSIGMAdlocalSIGMA, tardigradeVectorTools::dot( dlocalSIGMAdGamma, *dGammadGradChin ) );
+            floatVector dSIGMAdGradChin = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadGradChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim );
 
-            floatMatrix dMdF = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadF ) );
+            floatVector dMdF = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadF, tot_dim, tot_dim, tot_dim, sot_dim ), tot_dim, tot_dim, tot_dim, sot_dim );
 
-            floatMatrix dMdFn = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadFn ) )
-                              + tardigradeVectorTools::dot( dMdFFollow, dFFollowdFn );
+            floatVector dMdFn = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadFn, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), tot_dim, tot_dim, tot_dim, ( num_configs -1 ) * sot_dim )
+                              + tardigradeVectorTools::matrixMultiply( dMdFFollow, dFFollowdFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatMatrix dMdChi = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadChi ) );
+            floatVector dMdChi = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadChi, tot_dim, tot_dim, tot_dim, sot_dim ), tot_dim, tot_dim, tot_dim, sot_dim );
 
-            floatMatrix dMdChin = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadChin ) )
-                                + tardigradeVectorTools::dot( dMdChiFollow, dChiFollowdChin );
+            floatVector dMdChin = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )
+                                + tardigradeVectorTools::matrixMultiply( dMdChiFollow, dChiFollowdChin, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatMatrix dMdGradChi = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadGradChi ) );
+            floatVector dMdGradChi = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadGradChi, tot_dim, tot_dim, tot_dim, tot_dim ), tot_dim, tot_dim, tot_dim, tot_dim );
 
-            floatMatrix dMdGradChin = tardigradeVectorTools::dot( dMdlocalM, tardigradeVectorTools::dot( dlocalMdGamma, *dGammadGradChin ) );
+            floatVector dMdGradChin = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ), tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim );
 
             if ( isPrevious ){
 
@@ -3423,6 +3061,12 @@ namespace tardigradeHydra{
              * \param isPrevious: A flag for whether to compute the previous (true) or current (false) stresses and their Jacobians
              */
 
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int tot_dim = hydra->getTOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
             const floatVector *PK2Stress;
 
             const floatVector *referenceSymmetricMicroStress;
@@ -3433,41 +3077,41 @@ namespace tardigradeHydra{
 
             const floatVector *microDeformation;
 
-            const floatMatrix *dPK2dF;
+            const floatVector *dPK2dF;
 
-            const floatMatrix *dPK2dFn;
+            const floatVector *dPK2dFn;
 
-            const floatMatrix *dPK2dChi;
+            const floatVector *dPK2dChi;
 
-            const floatMatrix *dPK2dChin;
+            const floatVector *dPK2dChin;
 
-            const floatMatrix *dPK2dGradChi;
+            const floatVector *dPK2dGradChi;
 
-            const floatMatrix *dPK2dGradChin;
+            const floatVector *dPK2dGradChin;
 
-            const floatMatrix *dSIGMAdF;
+            const floatVector *dSIGMAdF;
 
-            const floatMatrix *dSIGMAdFn;
+            const floatVector *dSIGMAdFn;
 
-            const floatMatrix *dSIGMAdChi;
+            const floatVector *dSIGMAdChi;
 
-            const floatMatrix *dSIGMAdChin;
+            const floatVector *dSIGMAdChin;
 
-            const floatMatrix *dSIGMAdGradChi;
+            const floatVector *dSIGMAdGradChi;
 
-            const floatMatrix *dSIGMAdGradChin;
+            const floatVector *dSIGMAdGradChin;
 
-            const floatMatrix *dMdF;
+            const floatVector *dMdF;
 
-            const floatMatrix *dMdFn;
+            const floatVector *dMdFn;
 
-            const floatMatrix *dMdChi;
+            const floatVector *dMdChi;
 
-            const floatMatrix *dMdChin;
+            const floatVector *dMdChin;
 
-            const floatMatrix *dMdGradChi;
+            const floatVector *dMdGradChi;
 
-            const floatMatrix *dMdGradChin;
+            const floatVector *dMdGradChin;
 
             if ( isPrevious ){
 
@@ -3574,19 +3218,19 @@ namespace tardigradeHydra{
 
             floatVector higherOrderStress;
 
-            floatMatrix dCauchyStressdF;
+            floatVector dCauchyStressdF;
 
-            floatMatrix dCauchyStressdPK2Stress;
+            floatVector dCauchyStressdPK2Stress;
 
-            floatMatrix dMicroStressdF;
+            floatVector dMicroStressdF;
 
-            floatMatrix dMicroStressdSIGMA;
+            floatVector dMicroStressdSIGMA;
 
-            floatMatrix dHigherOrderStressdF;
+            floatVector dHigherOrderStressdF;
 
-            floatMatrix dHigherOrderStressdChi;
+            floatVector dHigherOrderStressdChi;
 
-            floatMatrix dHigherOrderStressdM;
+            floatVector dHigherOrderStressdM;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( mapStressMeasuresToCurrent( *deformationGradient, *microDeformation, *PK2Stress, *referenceSymmetricMicroStress,
                                                                                    *referenceHigherOrderStress, cauchyStress, symmetricMicroStress, higherOrderStress,
@@ -3596,41 +3240,41 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousdCauchyStressdF(                       tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dF          ) + dCauchyStressdF        );
+                set_previousdCauchyStressdF(                       tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dF         , sot_dim, sot_dim, sot_dim, sot_dim ) + dCauchyStressdF        );
 
-                set_previousdCauchyStressdFn(                      tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dFn         )                          );
+                set_previousdCauchyStressdFn(                      tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dFn        , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_previousdCauchyStressdChi(                     tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dChi        )                          );
+                set_previousdCauchyStressdChi(                     tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dChi       , sot_dim, sot_dim, sot_dim, sot_dim )                          );
 
-                set_previousdCauchyStressdChin(                    tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dChin       )                          );
+                set_previousdCauchyStressdChin(                    tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dChin      , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_previousdCauchyStressdGradChi(                 tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dGradChi    )                          );
+                set_previousdCauchyStressdGradChi(                 tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dGradChi   , sot_dim, sot_dim, sot_dim, tot_dim )                          );
 
-                set_previousdCauchyStressdGradChin(                tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dGradChin   )                          );
+                set_previousdCauchyStressdGradChin(                tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dGradChin  , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim )    );
 
-                set_previousdSymmetricMicroStressdF(               tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdF        ) + dMicroStressdF         );
+                set_previousdSymmetricMicroStressdF(               tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdF       , sot_dim, sot_dim, sot_dim, sot_dim ) + dMicroStressdF         );
 
-                set_previousdSymmetricMicroStressdFn(              tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdFn       )                          );
+                set_previousdSymmetricMicroStressdFn(              tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdFn      , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_previousdSymmetricMicroStressdChi(             tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdChi      )                          );
+                set_previousdSymmetricMicroStressdChi(             tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdChi     , sot_dim, sot_dim, sot_dim, sot_dim )                          );
 
-                set_previousdSymmetricMicroStressdChin(            tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdChin     )                          );
+                set_previousdSymmetricMicroStressdChin(            tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdChin    , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_previousdSymmetricMicroStressdGradChi(         tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdGradChi  )                          );
+                set_previousdSymmetricMicroStressdGradChi(         tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdGradChi , sot_dim, sot_dim, sot_dim, tot_dim )                          );
 
-                set_previousdSymmetricMicroStressdGradChin(        tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdGradChin )                          );
+                set_previousdSymmetricMicroStressdGradChin(        tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdGradChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim )    );
 
-                set_previousdHigherOrderStressdF(                  tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdF            ) + dHigherOrderStressdF   );
+                set_previousdHigherOrderStressdF(                  tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdF           , tot_dim, tot_dim, tot_dim, sot_dim ) + dHigherOrderStressdF   );
 
-                set_previousdHigherOrderStressdFn(                 tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdFn           )                          );
+                set_previousdHigherOrderStressdFn(                 tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdFn          , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_previousdHigherOrderStressdChi(                tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdChi          ) + dHigherOrderStressdChi );
+                set_previousdHigherOrderStressdChi(                tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdChi         , tot_dim, tot_dim, tot_dim, sot_dim ) + dHigherOrderStressdChi );
 
-                set_previousdHigherOrderStressdChin(               tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdChin         )                          );
+                set_previousdHigherOrderStressdChin(               tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdChin        , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_previousdHigherOrderStressdGradChi(            tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdGradChi      )                          );
+                set_previousdHigherOrderStressdGradChi(            tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdGradChi     , tot_dim, tot_dim, tot_dim, tot_dim )                          );
 
-                set_previousdHigherOrderStressdGradChin(           tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdGradChin     )                          );
+                set_previousdHigherOrderStressdGradChin(           tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdGradChin    , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim )    );
 
                 set_previousCauchyStress( cauchyStress );
 
@@ -3641,41 +3285,41 @@ namespace tardigradeHydra{
             }
             else{
 
-                set_dCauchyStressdF(                       tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dF          ) + dCauchyStressdF        );
+                set_dCauchyStressdF(                       tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dF         , sot_dim, sot_dim, sot_dim, sot_dim ) + dCauchyStressdF        );
 
-                set_dCauchyStressdFn(                      tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dFn         )                          );
+                set_dCauchyStressdFn(                      tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dFn        , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_dCauchyStressdChi(                     tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dChi        )                          );
+                set_dCauchyStressdChi(                     tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dChi       , sot_dim, sot_dim, sot_dim, sot_dim )                          );
 
-                set_dCauchyStressdChin(                    tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dChin       )                          );
+                set_dCauchyStressdChin(                    tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dChin      , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_dCauchyStressdGradChi(                 tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dGradChi    )                          );
+                set_dCauchyStressdGradChi(                 tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dGradChi   , sot_dim, sot_dim, sot_dim, tot_dim )                          );
 
-                set_dCauchyStressdGradChin(                tardigradeVectorTools::dot( dCauchyStressdPK2Stress, *dPK2dGradChin   )                          );
+                set_dCauchyStressdGradChin(                tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dGradChin  , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim )    );
 
-                set_dSymmetricMicroStressdF(               tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdF        ) + dMicroStressdF         );
+                set_dSymmetricMicroStressdF(               tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdF       , sot_dim, sot_dim, sot_dim, sot_dim ) + dMicroStressdF         );
 
-                set_dSymmetricMicroStressdFn(              tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdFn       )                          );
+                set_dSymmetricMicroStressdFn(              tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdFn      , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_dSymmetricMicroStressdChi(             tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdChi      )                          );
+                set_dSymmetricMicroStressdChi(             tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdChi     , sot_dim, sot_dim, sot_dim, sot_dim )                          );
 
-                set_dSymmetricMicroStressdChin(            tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdChin     )                          );
+                set_dSymmetricMicroStressdChin(            tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdChin    , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_dSymmetricMicroStressdGradChi(         tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdGradChi  )                          );
+                set_dSymmetricMicroStressdGradChi(         tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdGradChi , sot_dim, sot_dim, sot_dim, tot_dim )                          );
 
-                set_dSymmetricMicroStressdGradChin(        tardigradeVectorTools::dot( dMicroStressdSIGMA,      *dSIGMAdGradChin )                          );
+                set_dSymmetricMicroStressdGradChin(        tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdGradChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim )    );
 
-                set_dHigherOrderStressdF(                  tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdF            ) + dHigherOrderStressdF   );
+                set_dHigherOrderStressdF(                  tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdF           , tot_dim, tot_dim, tot_dim, sot_dim ) + dHigherOrderStressdF   );
 
-                set_dHigherOrderStressdFn(                 tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdFn           )                          );
+                set_dHigherOrderStressdFn(                 tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdFn          , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_dHigherOrderStressdChi(                tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdChi          ) + dHigherOrderStressdChi );
+                set_dHigherOrderStressdChi(                tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdChi         , tot_dim, tot_dim, tot_dim, sot_dim ) + dHigherOrderStressdChi );
 
-                set_dHigherOrderStressdChin(               tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdChin         )                          );
+                set_dHigherOrderStressdChin(               tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdChin        , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )    );
 
-                set_dHigherOrderStressdGradChi(            tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdGradChi      )                          );
+                set_dHigherOrderStressdGradChi(            tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdGradChi     , tot_dim, tot_dim, tot_dim, tot_dim )                          );
 
-                set_dHigherOrderStressdGradChin(           tardigradeVectorTools::dot( dHigherOrderStressdM,    *dMdGradChin     )                          );
+                set_dHigherOrderStressdGradChin(           tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdGradChin    , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim )    );
 
                 set_cauchyStress( cauchyStress );
 
@@ -3696,37 +3340,46 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
              */
 
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int tot_dim = hydra->getTOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
             floatVector deformationGradient1;
 
             floatVector microDeformation1;
 
             floatVector gradientMicroDeformation1;
 
-            const floatMatrix *dF1dF;
+            const floatVector *dF1dF;
 
-            const floatMatrix *dF1dFn;
+            const floatVector *dF1dFn;
 
-            const floatMatrix *dChi1dChi;
+            const floatVector *dChi1dChi;
 
-            const floatMatrix *dChi1dChin;
+            const floatVector *dChi1dChin;
 
-            const floatMatrix *dGradChi1dFn;
+            const floatVector *dGradChi1dFn;
 
-            const floatMatrix *dGradChi1dChi;
+            const floatVector *dGradChi1dChi;
 
-            const floatMatrix *dGradChi1dChin;
+            const floatVector *dGradChi1dChin;
 
-            const floatMatrix *dGradChi1dGradChi;
+            const floatVector *dGradChi1dGradChi;
 
-            const floatMatrix *dGradChi1dGradChin;
+            const floatVector *dGradChi1dGradChin;
 
             if ( isPrevious ){
 
-                deformationGradient1 = ( *hydra->get_previousConfigurations( ) )[ 0 ];
+                deformationGradient1 = floatVector( hydra->get_previousConfigurations( )->begin( ),
+                                                    hydra->get_previousConfigurations( )->begin( ) + sot_dim );
 
-                microDeformation1 = ( *hydra->get_previousMicroConfigurations( ) )[ 0 ];
+                microDeformation1 = floatVector( hydra->get_previousMicroConfigurations( )->begin( ),
+                                                 hydra->get_previousMicroConfigurations( )->begin( ) + sot_dim );
 
-                gradientMicroDeformation1 = ( *hydra->get_previousGradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = floatVector( hydra->get_previousGradientMicroConfigurations( )->begin( ),
+                                                         hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim );
 
                 dF1dF              = hydra->get_previousdF1dF( );
 
@@ -3749,11 +3402,14 @@ namespace tardigradeHydra{
             }
             else{
 
-                deformationGradient1 = ( *hydra->get_configurations( ) )[ 0 ];
+                deformationGradient1 = floatVector( hydra->get_configurations( )->begin( ),
+                                                    hydra->get_configurations( )->begin( ) + sot_dim );
 
-                microDeformation1 = ( *hydra->get_microConfigurations( ) )[ 0 ];
+                microDeformation1 = floatVector( hydra->get_microConfigurations( )->begin( ),
+                                                 hydra->get_microConfigurations( )->begin( ) + sot_dim );
 
-                gradientMicroDeformation1 = ( *hydra->get_gradientMicroConfigurations( ) )[ 0 ];
+                gradientMicroDeformation1 = floatVector( hydra->get_gradientMicroConfigurations( )->begin( ),
+                                                         hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim );
 
                 dF1dF              = hydra->get_dF1dF( );
 
@@ -3781,15 +3437,15 @@ namespace tardigradeHydra{
 
             floatVector Gamma;
 
-            floatMatrix dCdF1;
+            floatVector dCdF1;
 
-            floatMatrix dPsidF1;
+            floatVector dPsidF1;
 
-            floatMatrix dPsidChi1;
+            floatVector dPsidChi1;
 
-            floatMatrix dGammadF1;
+            floatVector dGammadF1;
 
-            floatMatrix dGammadGradChi1;
+            floatVector dGammadGradChi1;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( computeDeformationMeasures( deformationGradient1, microDeformation1, gradientMicroDeformation1,
                                                                                    rightCauchyGreen, Psi, Gamma,
@@ -3803,29 +3459,30 @@ namespace tardigradeHydra{
 
                 set_previousGamma( Gamma );
 
-                set_previousdRightCauchyGreendF( tardigradeVectorTools::dot( dCdF1, *dF1dF ) );
+                set_previousdRightCauchyGreendF( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_previousdRightCauchyGreendFn( tardigradeVectorTools::dot( dCdF1, *dF1dFn ) );
+                set_previousdRightCauchyGreendFn( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_previousdPsidF( tardigradeVectorTools::dot( dPsidF1, *dF1dF ) );
+                set_previousdPsidF( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_previousdPsidFn( tardigradeVectorTools::dot( dPsidF1, *dF1dFn ) );
+                set_previousdPsidFn( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_previousdPsidChi( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChi ) );
+                set_previousdPsidChi( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChi, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_previousdPsidChin( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChin ) );
+                set_previousdPsidChin( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_previousdGammadF( tardigradeVectorTools::dot( dGammadF1, *dF1dF ) );
+                set_previousdGammadF( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dF, tot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_previousdGammadFn( tardigradeVectorTools::dot( dGammadF1, *dF1dFn ) + tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dFn ) );
+                set_previousdGammadFn( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                     + tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dFn, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_previousdGammadChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChi ) );
+                set_previousdGammadChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChi, tot_dim, tot_dim, tot_dim, sot_dim ) );
 
-                set_previousdGammadChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChin ) );
+                set_previousdGammadChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim  ) );
 
-                set_previousdGammadGradChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChi ) );
+                set_previousdGammadGradChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChi, tot_dim, tot_dim, tot_dim, tot_dim ) );
 
-                set_previousdGammadGradChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChin ) );
+                set_previousdGammadGradChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ) );
 
             }
             else{
@@ -3836,29 +3493,30 @@ namespace tardigradeHydra{
 
                 set_gamma( Gamma );
 
-                set_dRightCauchyGreendF( tardigradeVectorTools::dot( dCdF1, *dF1dF ) );
+                set_dRightCauchyGreendF( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_dRightCauchyGreendFn( tardigradeVectorTools::dot( dCdF1, *dF1dFn ) );
+                set_dRightCauchyGreendFn( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_dPsidF( tardigradeVectorTools::dot( dPsidF1, *dF1dF ) );
+                set_dPsidF( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_dPsidFn( tardigradeVectorTools::dot( dPsidF1, *dF1dFn ) );
+                set_dPsidFn( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_dPsidChi( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChi ) );
+                set_dPsidChi( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChi, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_dPsidChin( tardigradeVectorTools::dot( dPsidChi1, *dChi1dChin ) );
+                set_dPsidChin( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_dGammadF( tardigradeVectorTools::dot( dGammadF1, *dF1dF ) );
+                set_dGammadF( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dF, tot_dim, sot_dim, sot_dim, sot_dim ) );
 
-                set_dGammadFn( tardigradeVectorTools::dot( dGammadF1, *dF1dFn ) + tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dFn ) );
+                set_dGammadFn( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                             + tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dFn, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ) );
 
-                set_dGammadChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChi ) );
+                set_dGammadChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChi, tot_dim, tot_dim, tot_dim, sot_dim ) );
 
-                set_dGammadChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dChin ) );
+                set_dGammadChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim  ) );
 
-                set_dGammadGradChi( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChi ) );
+                set_dGammadGradChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChi, tot_dim, tot_dim, tot_dim, tot_dim ) );
 
-                set_dGammadGradChin( tardigradeVectorTools::dot( dGammadGradChi1, *dGradChi1dGradChin ) );
+                set_dGammadGradChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ) );
 
             }
 
@@ -3881,51 +3539,61 @@ namespace tardigradeHydra{
              * Set the Jacobian w.r.t. the unknown vector
              */
 
-            floatMatrix jacobian( *getNumEquations( ), floatVector( hydra->getUnknownVector( )->size( ), 0 ) );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int tot_dim = hydra->getTOTDimension( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const unsigned int num_unknowns = hydra->getNumUnknowns( );
+
+            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
 
             //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
-            const floatMatrix *dS1dFn       = get_dPK2dFn( );
+            const floatVector *dS1dFn       = get_dPK2dFn( );
 
-            const floatMatrix *dS1dChin     = get_dPK2dChin( );
+            const floatVector *dS1dChin     = get_dPK2dChin( );
 
-            const floatMatrix *dS1dGradChin = get_dPK2dGradChin( );
+            const floatVector *dS1dGradChin = get_dPK2dGradChin( );
 
-            const floatMatrix *dS2dFn       = get_dSIGMAdFn( );
+            const floatVector *dS2dFn       = get_dSIGMAdFn( );
 
-            const floatMatrix *dS2dChin     = get_dSIGMAdChin( );
+            const floatVector *dS2dChin     = get_dSIGMAdChin( );
 
-            const floatMatrix *dS2dGradChin = get_dSIGMAdGradChin( );
+            const floatVector *dS2dGradChin = get_dSIGMAdGradChin( );
 
-            const floatMatrix *dS3dFn       = get_dMdFn( );
+            const floatVector *dS3dFn       = get_dMdFn( );
 
-            const floatMatrix *dS3dChin     = get_dMdChin( );
+            const floatVector *dS3dChin     = get_dMdChin( );
 
-            const floatMatrix *dS3dGradChin = get_dMdGradChin( );
+            const floatVector *dS3dGradChin = get_dMdGradChin( );
 
-            std::vector< std::vector< const floatMatrix * > > stressReferences = { { dS1dFn, dS1dChin, dS1dGradChin },
+            std::vector< std::vector< const floatVector * > > stressReferences = { { dS1dFn, dS1dChin, dS1dGradChin },
                                                                                    { dS2dFn, dS2dChin, dS2dGradChin },
                                                                                    { dS3dFn, dS3dChin, dS3dGradChin } };
+
+            const std::array< unsigned int, 3 > dims = { sot_dim, sot_dim, tot_dim };
 
             unsigned int row = 0;
             for ( auto S = stressReferences.begin( ); S != stressReferences.end( ); S++ ){
 
                 // Loop through the stress Jacobians
 
-                for ( unsigned int i = 0; i < ( *S )[ 0 ]->size( ); i++ ){
+                for ( unsigned int i = 0; i < dims[ ( unsigned int )( S - stressReferences.begin( ) ) ]; i++ ){
 
                     unsigned int col = 0;
 
                     // Jacobians w.r.t. the stress
-                    jacobian[ row ][ row ] += 1;
+                    jacobian[ num_unknowns * row + row ] += 1;
 
                     // Jacobians w.r.t. the sub configurations
                     col = *hydra->getConfigurationUnknownCount( );
 
                     for ( auto Sn = S->begin( ); Sn != S->end( ); Sn++ ){
 
-                        for ( unsigned int j = 0; j < ( **Sn )[ i ].size( ); j++ ){
+                        for ( unsigned int j = 0; j < ( num_configs - 1 ) * dims[ ( unsigned int )( Sn - S->begin( ) ) ]; j++ ){
 
-                            jacobian[ row ][ col ] -= ( **Sn )[ i ][ j ];
+                            jacobian[ num_unknowns * row + col ] -= ( **Sn )[ ( num_configs - 1 ) * dims[ ( unsigned int ) ( Sn - S->begin( ) ) ] * i + j ];
 
                             col++;
 
@@ -3948,37 +3616,47 @@ namespace tardigradeHydra{
              * Set the Jacobian w.r.t. the deformation
              */
 
-            floatMatrix dRdD( *getNumEquations( ), floatVector( *hydra->getConfigurationUnknownCount( ), 0 ) );
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int tot_dim = hydra->getTOTDimension( );
+
+            const unsigned int num_equations = *getNumEquations( );
+
+            const unsigned int num_configurationUnknowns = *hydra->getConfigurationUnknownCount( );
+
+            floatVector dRdD( num_equations * num_configurationUnknowns, 0 );
 
             //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
-            const floatMatrix *dS1dF       = get_dPK2dF( );
+            const floatVector *dS1dF       = get_dPK2dF( );
 
-            const floatMatrix *dS1dChi     = get_dPK2dChi( );
+            const floatVector *dS1dChi     = get_dPK2dChi( );
 
-            const floatMatrix *dS1dGradChi = get_dPK2dGradChi( );
+            const floatVector *dS1dGradChi = get_dPK2dGradChi( );
 
-            const floatMatrix *dS2dF       = get_dSIGMAdF( );
+            const floatVector *dS2dF       = get_dSIGMAdF( );
 
-            const floatMatrix *dS2dChi     = get_dSIGMAdChi( );
+            const floatVector *dS2dChi     = get_dSIGMAdChi( );
 
-            const floatMatrix *dS2dGradChi = get_dSIGMAdGradChi( );
+            const floatVector *dS2dGradChi = get_dSIGMAdGradChi( );
 
-            const floatMatrix *dS3dF       = get_dMdF( );
+            const floatVector *dS3dF       = get_dMdF( );
 
-            const floatMatrix *dS3dChi     = get_dMdChi( );
+            const floatVector *dS3dChi     = get_dMdChi( );
 
-            const floatMatrix *dS3dGradChi = get_dMdGradChi( );
+            const floatVector *dS3dGradChi = get_dMdGradChi( );
 
-            std::vector< std::vector< const floatMatrix * > > stressReferences = { { dS1dF, dS1dChi, dS1dGradChi },
+            std::vector< std::vector< const floatVector * > > stressReferences = { { dS1dF, dS1dChi, dS1dGradChi },
                                                                                    { dS2dF, dS2dChi, dS2dGradChi },
                                                                                    { dS3dF, dS3dChi, dS3dGradChi } };
+
+            const std::array< unsigned int, 3 > dims = { sot_dim, sot_dim, tot_dim };
 
             unsigned int row = 0;
             for ( auto S = stressReferences.begin( ); S != stressReferences.end( ); S++ ){
 
                 // Loop through the stress Jacobians
 
-                for ( unsigned int i = 0; i < ( *S )[ 0 ]->size( ); i++ ){
+                for ( unsigned int i = 0; i < dims[ ( unsigned int )( S - stressReferences.begin( ) ) ]; i++ ){
 
                     unsigned int col = 0;
 
@@ -3986,9 +3664,9 @@ namespace tardigradeHydra{
 
                     for ( auto Sn = S->begin( ); Sn != S->end( ); Sn++ ){
 
-                        for ( unsigned int j = 0; j < ( **Sn )[ i ].size( ); j++ ){
+                        for ( unsigned int j = 0; j < dims[ ( unsigned int )( Sn - S->begin( ) ) ]; j++ ){
 
-                            dRdD[ row ][ col ] -= ( **Sn )[ i ][ j ];
+                            dRdD[ num_configurationUnknowns * row + col ] -= ( **Sn )[ dims[ ( unsigned int )( Sn - S->begin( ) ) ] * i + j ];
 
                             col++;
 
