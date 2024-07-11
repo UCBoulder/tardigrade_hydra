@@ -1535,6 +1535,12 @@ namespace tardigradeHydra{
 
         }
 
+        if ( !checkLSConvergence( ) ){
+
+            throw convergence_error( "Failure in line search" );
+
+        }
+
     }
 
     void hydraBase::solveNonLinearProblem( ){
@@ -1558,12 +1564,6 @@ namespace tardigradeHydra{
             updateUnknownVector( X0 + *getLambda( ) * deltaX );
 
             performArmijoTypeLineSearch( X0, deltaX );
-
-            if ( !checkLSConvergence( ) ){
-
-                throw convergence_error( "Failure in line search" );
-
-            }
 
             resetLSIteration( );
 
