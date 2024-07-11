@@ -810,6 +810,9 @@ namespace tardigradeHydra{
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
 
+            //! Add data to the vector of values which will be cleared after each non-linear step
+            void addNLStepData( dataBase *data ){ _nlStepData.push_back( data ); }
+
         protected:
 
             // Setters that the user may need to access but not override
@@ -859,14 +862,15 @@ namespace tardigradeHydra{
 
             dataStorage< floatVector > _basedResidualNormdX;
 
-            void set_baseResidualNorm( const floatType &value ){ setIterationData( value, _baseResidualNorm ); }
+            void set_baseResidualNorm( const floatType &value ){ setNLStepData( value, _baseResidualNorm ); }
 
-            void set_basedResidualNormdX( const floatVector &value ){ setIterationData( value, _basedResidualNormdX ); }
+            void set_basedResidualNormdX( const floatVector &value ){ setNLStepData( value, _basedResidualNormdX ); }
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
                 /*!
-                 * Template function for adding iteration data
+                 * Template function for adding iteration data. These values are cleared
+                 * every time the unknown vector is updated.
                  *
                  * \param &data: The data to be added
                  * \param &storage: The storage to add the data to
@@ -877,6 +881,24 @@ namespace tardigradeHydra{
                 storage.first = true;
 
                 addIterationData( &storage );
+
+            }
+
+            template<class T>
+            void setNLStepData( const T &data, dataStorage<T> &storage ){
+                /*!
+                 * Template function for adding nonlinear step data. These values are cleared
+                 * every time the nonlinear step is advanced.
+                 *
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
+
+                storage.second = data;
+
+                storage.first = true;
+
+                addNLStepData( &storage );
 
             }
 
@@ -989,6 +1011,8 @@ namespace tardigradeHydra{
 
             std::vector< dataBase* > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration
 
+            std::vector< dataBase* > _nlStepData; //!< A vector of pointers to data which should be cleared after each nonlinear step
+
             dataStorage< std::vector< residualBase* > > _residualClasses; //!< A vector of classes which compute the terms in the residual equation
 
             dataStorage< floatVector > _residual; //!< The residual vector for the global solve
@@ -1064,6 +1088,8 @@ namespace tardigradeHydra{
             bool checkLSIteration( ){ return _LSIteration < _maxLSIterations; }
 
             void resetIterationData( );
+
+            void resetNLStepData( );
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 

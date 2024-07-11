@@ -737,6 +737,21 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::resetNLStepData( ){
+        /*!
+         * Reset the nonlinear step data to the new base state
+         */
+
+        for ( auto d = _nlStepData.begin( ); d != _nlStepData.end( ); d++ ){
+
+            ( *d )->clear( );
+
+        }
+
+        _nlStepData.clear( );
+
+    }
+
     void hydraBase::setResidualClasses( ){
         /*!
          * Set the vectors for the residuals.
@@ -1541,6 +1556,8 @@ namespace tardigradeHydra{
 
         }
 
+        resetLSIteration( );
+
     }
 
     const floatType *hydraBase::get_baseResidualNorm( ){
@@ -1655,10 +1672,11 @@ namespace tardigradeHydra{
 
             performArmijoTypeLineSearch( X0, deltaX );
 
-            resetLSIteration( );
-
             // Increment the iteration count
             incrementIteration( );
+
+            // Reset the nonlinear step data
+            resetNLStepData( );
 
         }
 
