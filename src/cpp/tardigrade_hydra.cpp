@@ -1603,15 +1603,13 @@ namespace tardigradeHydra{
          * \param &X0: The base value of the unknown vector
          */
 
-        unsigned int l = 0;
-
         const floatVector *dResidualNormdX = get_basedResidualNormdX( );
 
-        unsigned int niter                 = 0;
+        unsigned int l                     = 0;
 
         const unsigned int maxiter         = *getMaxGradientIterations( );
 
-        while( niter < maxiter ){
+        while( l < maxiter ){
             
             floatType t = std::pow( *getGradientBeta( ), l );
 
@@ -1623,7 +1621,7 @@ namespace tardigradeHydra{
 
             }
 
-            niter++;
+            l++;
 
         }
 
