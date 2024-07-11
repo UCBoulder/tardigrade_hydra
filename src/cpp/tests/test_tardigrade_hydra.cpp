@@ -230,6 +230,24 @@ namespace tardigradeHydra{
 
                 }
 
+                static void checkGradientSigma( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._gradientSigma == hydra.getGradientSigma( ) );
+
+                }
+
+                static void checkGradientBeta( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._gradientBeta == hydra.getGradientBeta( ) );
+
+                }
+
+                static void checkMaxGradientIterations( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._maxGradientIterations == hydra.getMaxGradientIterations( ) );
+
+                }
+
                 static void checkUsePreconditioner( hydraBase &hydra ){
 
                     BOOST_CHECK( &hydra._use_preconditioner == hydra.getUsePreconditioner( ) );
@@ -722,6 +740,60 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getLSAlpha, * boost::unit_test::tolerance( 
     tardigradeHydra::hydraBase hydra;
 
     tardigradeHydra::unit_test::hydraBaseTester::checkLSAlpha( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_getGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkGradientSigma( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_getGradientBeta, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkGradientBeta( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_getMaxGradientIterations, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkMaxGradientIterations( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    hydra.setGradientSigma( 123.4 );
+
+    BOOST_TEST( 123.4 == *hydra.getGradientSigma( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientBeta, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    hydra.setGradientBeta( 123.4 );
+
+    BOOST_TEST( 123.4 == *hydra.getGradientBeta( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setMaxGradientIterations, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    hydra.setMaxGradientIterations( 123 );
+
+    BOOST_TEST( 123 == *hydra.getMaxGradientIterations( ) );
 
 }
 
