@@ -1784,6 +1784,50 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::setResidualNorm( ){
+        /*!
+         * Set the norm of the residual vector
+         */
+
+        floatType residualNorm = 0;
+
+        const unsigned int xsize = getNumUnknowns( );
+
+        const floatVector *residual = getResidual( );
+
+        for ( unsigned int i = 0; i < xsize; i++ ){
+
+            residualNorm += ( *residual )[ i ] * ( *residual )[ i ];
+
+        }
+
+        set_residualNorm( residualNorm );
+
+    }
+
+    void hydraBase::setdResidualNormdX( ){
+        /*!
+         * Set the derivative of the residual norm w.r.t. the unknown vector
+         */
+
+        const unsigned int xsize = getNumUnknowns( );
+
+        floatVector dResidualNormdX( xsize, 0 );
+
+        const floatVector *residual = getResidual( );
+
+        const floatVector *jacobian = getFlatJacobian( );
+
+        for ( unsigned int i = 0; i < xsize; i++ ){
+            for ( unsigned int j = 0; j < xsize; j++ ){
+                dResidualNormdX[ j ] += 2 * ( *jacobian )[ xsize * i + j ] * ( *residual )[ i ];
+            }
+        }
+
+        set_dResidualNormdX( dResidualNormdX );
+
+    }
+
     errorOut dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,
                                  floatType &SCD,                  floatType &RPL,             floatVector &ddsddt,       floatVector &drplde,       floatType &DRPLDT,
                                  const floatVector &strain,       const floatVector &dstrain, const floatVector &time,   const floatType &DTIME,    const floatType &TEMP,

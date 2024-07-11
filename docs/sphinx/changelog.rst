@@ -11,6 +11,18 @@ Changelog
 
 New Features
 ============
+- Added the gradient of the residual norm (:pull:`125`). By `Nathan Miller`_.
+
+******************
+0.4.2 (07-11-2024)
+******************
+
+Release
+=======
+- Released version (:pull:`124`). By `Nathan Miller`_.
+
+New Features
+============
 - Throw a custom convergence error class rather than a nested exception if a failure happens because of the line-search or the Newton loop iterations (:pull:`70`). By `Nathan Miller`_.
 - Added a pre-conditioner (jacobian scaling) to try and improve the stability of the Jacobian (:pull:`98`). By `Nathan Miller`_.
 - Added a J2 flow isotropic-kinematic hardening viscoplastic model (:pull:`102`). By `Nathan Miller`_.
