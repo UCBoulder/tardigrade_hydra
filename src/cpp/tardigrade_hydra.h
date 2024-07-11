@@ -670,6 +670,51 @@ namespace tardigradeHydra{
             //! Get whether the preconditioner is diagonal or not
             const bool* getPreconditionerIsDiagonal( ){ return &_preconditioner_is_diagonal; }
 
+            //!< Get a reference to the gradient descent sigma parameter
+            const floatType* getGradientSigma( ){ return &_gradientSigma; }
+
+            //!< Get a reference to the gradient descent beta parameter
+            const floatType* getGradientBeta( ){ return &_gradientBeta; }
+
+            //!< Get a reference to the max allowable number of gradient iterations
+            const unsigned int* getMaxGradientIterations( ){ return &_maxGradientIterations; }
+
+            //!< Set the gradient descent sigma parameter
+            void setGradientSigma( const floatType &value ){
+               /*!
+                * Set the value of the sigma parameter for gradient descent steps
+                *
+                * \param &value: The value of the parameter
+                */
+               
+                _gradientSigma = value;
+            
+            }
+
+            //!< Set the gradient descent beta parameter
+            void setGradientBeta( const floatType &value ){
+               /*!
+                * Set the value of the beta parameter for gradient descent steps
+                *
+                * \param &value: The value of the parameter
+                */
+                
+                _gradientBeta = value;
+            
+            }
+
+            //!< Set the max allowable number of gradient iterations
+            void setMaxGradientIterations( const unsigned int &value ){
+               /*!
+                * Set the value of the maximum number of iterations for gradient descent steps
+                *
+                * \param &value: The value of the parameter
+                */
+                
+                _maxGradientIterations = value;
+           
+            }
+
             floatVector getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getSubConfigurationJacobian( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
@@ -744,6 +789,8 @@ namespace tardigradeHydra{
 
             virtual bool checkLSConvergence( );
 
+            virtual bool checkGradientConvergence( const floatVector &X0 );
+
             const floatVector* getStress( );
 
             const floatVector* getPreviousStress( );
@@ -801,6 +848,20 @@ namespace tardigradeHydra{
             virtual void calculateFirstConfigurationJacobians( const floatVector &configurations, floatVector &dC1dC, floatVector &dC1dCn );
 
             virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
+
+            virtual void performGradientStep( const floatVector &X0 );
+
+            const floatType *get_baseResidualNorm( );
+
+            const floatVector *get_basedResidualNormdX( );
+
+            dataStorage< floatType > _baseResidualNorm;
+
+            dataStorage< floatVector > _basedResidualNormdX;
+
+            void set_baseResidualNorm( const floatType &value ){ setIterationData( value, _baseResidualNorm ); }
+
+            void set_basedResidualNormdX( const floatVector &value ){ setIterationData( value, _basedResidualNormdX ); }
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
@@ -922,6 +983,8 @@ namespace tardigradeHydra{
 
             unsigned int _maxLSIterations; //!< The maximum number of line-search iterations
 
+            unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
+
             floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
 
             std::vector< dataBase* > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration
@@ -939,6 +1002,10 @@ namespace tardigradeHydra{
             unsigned int _preconditioner_type; //<! The type of preconditioner to use
 
             bool _preconditioner_is_diagonal; //!< Flag for if the pre-conditioner only stores the diagonal elements
+
+            floatType _gradientSigma = 1e-4; //!< The sigma parameter for the gradient descent step
+
+            floatType _gradientBeta  = 0.9; //!< The beta parameter for the gradient descent step
 
             dataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
 

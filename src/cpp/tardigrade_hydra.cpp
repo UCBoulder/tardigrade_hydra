@@ -1543,6 +1543,98 @@ namespace tardigradeHydra{
 
     }
 
+    const floatType *hydraBase::get_baseResidualNorm( ){
+        /*!
+         * Get the base value for the residual norm.
+         */
+
+        if ( !_baseResidualNorm.first ){
+
+            throw std::runtime_error( "The base residual norm must be set with set_baseResidualNorm before it can be called" );
+
+        }
+
+        return &_baseResidualNorm.second;
+
+    }
+
+    const floatVector *hydraBase::get_basedResidualNormdX( ){
+        /*!
+         * Get the base value for the derivative of the residual norm w.r.t. the unknown vector
+         */
+
+        if ( !_basedResidualNormdX.first ){
+
+            throw std::runtime_error( "The base residual norm must be set with set_dbaseResidualNormdX before it can be called" );
+
+        }
+
+        return &_basedResidualNormdX.second;
+
+    }
+
+    bool hydraBase::checkGradientConvergence( const floatVector &X0 ){
+        /*!
+         * Check the convergence of a gradient step
+         *
+         * \param &X0: The initial value of the unknown vector
+         */
+
+        const unsigned int xsize = getNumUnknowns( );
+
+        floatVector dx = ( *getUnknownVector( ) ) - X0;
+
+        floatType RHS = *get_baseResidualNorm( );
+
+        for ( unsigned int i = 0; i < xsize; i++ ){
+
+            RHS += ( *getGradientSigma( ) ) * ( *get_basedResidualNormdX( ) )[ i ] * dx[ i ];
+
+        }
+
+        return ( *get_residualNorm( ) ) < RHS;
+
+    }
+
+    void hydraBase::performGradientStep( const floatVector &X0 ){
+        /*!
+         * Perform a gradient descent step
+         *
+         * \param &X0: The base value of the unknown vector
+         */
+
+        unsigned int l = 0;
+
+        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
+
+        unsigned int niter                 = 0;
+
+        const unsigned int maxiter         = *getMaxGradientIterations( );
+
+        while( niter < maxiter ){
+            
+            floatType t = std::pow( *getGradientBeta( ), l );
+
+            updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
+
+            if ( checkGradientConvergence( X0 ) ){
+
+                break;
+
+            }
+
+            niter++;
+
+        }
+
+        if ( !checkGradientConvergence( X0 ) ){
+
+            throw convergence_error( "Failure in gradient step" );
+
+        }
+
+    }
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
