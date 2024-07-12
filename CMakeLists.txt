@@ -140,11 +140,14 @@ foreach(package ${upstream_packages})
     else()
         # Find related, but external, projects using FetchContent and building locally
         message(WARNING "Did not find an installed ${package} package. Attempting local build with FetchContent.")
-        # TODO: Decide how to handle main/dev build differences. bash env variables for GIT TAG?
+        if(NOT DEFINED ${package_upper}_FETCHCONTENT_VERSION)
+            set(${package_upper}_FETCHCONTENT_VERSION "origin/dev")
+        endif()
+        message("${package_upper} is being built with version ${${package_upper}_FETCHCONTENT_VERSION}")
         FetchContent_Declare(
             ${package}
             GIT_REPOSITORY https://github.com/UCBoulder/${package}.git
-            GIT_TAG        origin/dev
+            GIT_TAG        ${${package_upper}_FETCHCONTENT_VERSION}
         )
         FetchContent_MakeAvailable(${package})
         set(LOCAL_BUILD_INCLUDE_DIRECTORIES ${LOCAL_BUILD_INCLUDE_DIRECTORIES} ${${package}_SOURCE_DIR}/${CPP_SRC_PATH})

@@ -20,6 +20,7 @@ Internal Changes
 - Moved the Armijo-type line search into a separate function (:pull:`126`). By `Nathan Miller`_.
 - Added data containers that will be cleared after each nonlinear iteration (:pull:`126`). By `Nathan Miller`_.
 - Added setting required data for gradient descent steps (:pull:`127`). by `Nathan Miller`_.
+- Allow for the version number to be specified when doing a FetchContent build (:pull:`129`). By `Nathan Miller`_.
 
 ******************
 0.4.2 (07-11-2024)
