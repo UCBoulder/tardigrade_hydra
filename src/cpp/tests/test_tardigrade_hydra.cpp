@@ -384,6 +384,12 @@ namespace tardigradeHydra{
 
                 }
 
+                static unsigned int get_gradientIteration( hydraBase &hydra ){
+
+                    return hydra._gradientIteration;
+
+                }
+
                 static void solveNewtonUpdate( hydraBase &hydra, floatVector &deltaX ){
 
                     hydra.solveNewtonUpdate( deltaX );
@@ -4071,19 +4077,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                                                                              },
                                                                              { 
                                                                                { 18.95259726, -5.57445709, 28.79822658 },
-                                                                               { 18.05132518, -7.56450202, 32.16855437 }
+                                                                               { 33.25014131, -2.84970064, 20.95677101 },
+                                                                               { 31.64013249, -3.52018527, 22.41498213 }
                                                                              },
                                                                              { 
-                                                                               { 31.01502518, -5.8216338 , 36.92596115 }
+                                                                               { 44.6038325 , -1.77731706, 27.17238891 }
                                                                              },
                                                                              { 
-                                                                               { 407.30865444,  77.76786468,  70.0478993  },
-                                                                               { 219.16183981,  35.97311544,  53.48693023 },
-                                                                               { 125.0884325 ,  15.07574082,  45.20644569 }
+                                                                               { 420.89746176,  81.81218142,  60.29432705 },
+                                                                               { 232.75064713,  40.01743218,  43.73335798 },
+                                                                               { 138.67723982,  19.12005756,  35.45287345 }
                                                                              },
                                                                          };
 
         virtual const unsigned int getNumUnknowns( ) override{ return initialUnknownVector.size( ); }
+
+        unsigned int in_gradient_convergence = 0;
 
         private:
 
@@ -4099,7 +4108,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             }
 
-            virtual bool checkConvergence( ){
+            virtual bool checkConvergence( ) override{
 
                 unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
@@ -4113,7 +4122,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             }
 
-            virtual bool checkLSConvergence( ){
+            virtual bool checkLSConvergence( ) override{
 
                 unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
@@ -4131,17 +4140,63 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             }
 
-            virtual void formNonLinearProblem( ){
+            virtual bool checkDescentDirection( const floatVector &dx ) override{
+
+                unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
+
+                if ( iteration == 1 ){
+
+                    return false;
+
+                }
+
+                return true;
+
+            }
+
+            virtual void performGradientStep( const floatVector &X0 ) override{
+
+                in_gradient_convergence = 1;
+
+                tardigradeHydra::hydraBase::performGradientStep( X0 );
+
+            }
+
+            virtual bool checkGradientConvergence( const floatVector &X0 ) override{
+
+                unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
+
+                unsigned int gradientIteration = tardigradeHydra::unit_test::hydraBaseTester::get_gradientIteration( *this );
+
+                in_gradient_convergence = 1;
+
+                getResidual( );
+
+                if ( gradientIteration < residual[ iteration ].size( ) - 1 ){
+
+                    return false;
+
+                }
+
+                in_gradient_convergence = 0;
+
+                return true;
+
+            }
+
+            virtual void formNonLinearProblem( ) override{
 
                 unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
                 unsigned int LSIteration = tardigradeHydra::unit_test::hydraBaseTester::get_LSIteration( *this );
 
+                unsigned int gradIteration = tardigradeHydra::unit_test::hydraBaseTester::get_gradientIteration( *this );
+
                 unsigned int iterationOffset = 0;
 
                 unsigned int LSoffset = 0;
 
-                if ( LSIteration < residual[ iteration ].size( ) - 1 ){
+                if ( ( LSIteration < residual[ iteration ].size( ) - 1 ) && ( gradIteration < residual[ iteration ].size( ) - 2 ) ){
 
                     LSoffset += 1;
 
@@ -4150,16 +4205,17 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                     iterationOffset += 1;
                     LSIteration = 0;
+                    gradIteration = 0;
 
                 }
 
-                tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual[ iteration + iterationOffset ][ LSIteration + LSoffset ] );
+                tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual[ iteration + iterationOffset ][ LSIteration + LSoffset + gradIteration ] );
 
-                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, flatJacobian[ iteration + iterationOffset ][ LSIteration + LSoffset ] );
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, flatJacobian[ iteration + iterationOffset ][ LSIteration + LSoffset + gradIteration ] );
 
             }
 
-            virtual void updateUnknownVector( const floatVector &newUnknownVector ){
+            virtual void updateUnknownVector( const floatVector &newUnknownVector ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::resetIterationData( *this );
 
@@ -4167,13 +4223,19 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                 unsigned int LSIteration = tardigradeHydra::unit_test::hydraBaseTester::get_LSIteration( *this );
 
-                BOOST_TEST( expectedXVectors[ iteration ][ LSIteration ] == newUnknownVector, CHECK_PER_ELEMENT );
+                unsigned int gradIteration = tardigradeHydra::unit_test::hydraBaseTester::get_gradientIteration( *this );
+
+                unsigned int subIteration = LSIteration + gradIteration + in_gradient_convergence;
+
+                BOOST_TEST( expectedXVectors[ iteration ][ subIteration ] == newUnknownVector, CHECK_PER_ELEMENT );
 
                 BOOST_TEST( expectedBaseResidualNorms[ iteration ] == *get_baseResidualNorm( ) );
 
                 BOOST_TEST( expectedBasedResidualNormdXs[ iteration ] == *get_basedResidualNormdX( ), CHECK_PER_ELEMENT );
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, newUnknownVector );
+
+                in_gradient_convergence = 0;
 
             }
 
@@ -4218,12 +4280,24 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra );
 
+    BOOST_TEST( hydra.getNumNewton( ) == 2 );
+
+    BOOST_TEST( hydra.getNumLS( ) == 1 );
+
+    BOOST_TEST( hydra.getNumGrad( ) == 1 );
+
     hydraBaseMock hydra_pre( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                              { }, { },
                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension,
                              9, 1e-9, 1e-9, 20, 5, 1e-4, true, 0 );
 
     tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra_pre );
+
+    BOOST_TEST( hydra_pre.getNumNewton( ) == 2 );
+
+    BOOST_TEST( hydra_pre.getNumLS( ) == 1 );
+
+    BOOST_TEST( hydra_pre.getNumGrad( ) == 1 );
 
 }
 

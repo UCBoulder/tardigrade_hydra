@@ -1556,6 +1556,8 @@ namespace tardigradeHydra{
 
         }
 
+        incrementNumLS( );
+
         resetLSIteration( );
 
     }
@@ -1626,7 +1628,7 @@ namespace tardigradeHydra{
 
         const unsigned int maxiter         = *getMaxGradientIterations( );
 
-        while( l < maxiter ){
+        while( checkGradientIteration( ) ){
             
             floatType t = std::pow( *getGradientBeta( ), l );
 
@@ -1640,6 +1642,8 @@ namespace tardigradeHydra{
 
             l++;
 
+            incrementGradientIteration( );
+
         }
 
         if ( l >= maxiter ){
@@ -1647,6 +1651,10 @@ namespace tardigradeHydra{
             throw convergence_error( "Failure in gradient step" );
 
         }
+
+        incrementNumGrad( );
+
+        resetGradientIteration( );
 
     }
 
@@ -1698,6 +1706,8 @@ namespace tardigradeHydra{
 
         resetLSIteration( );
 
+        resetGradientIteration( );
+
         while( !checkConvergence( ) && checkIteration( ) ){
 
             floatVector X0 = *getUnknownVector( );
@@ -1708,7 +1718,28 @@ namespace tardigradeHydra{
 
             updateUnknownVector( X0 + *getLambda( ) * deltaX );
 
-            performArmijoTypeLineSearch( X0, deltaX );
+            // Refine the estimate if the new point has a higher residual
+            if ( !checkLSConvergence( ) ){
+
+                if ( checkDescentDirection( deltaX ) ){
+
+                    // Perform an Armijo type line search when the search direction is aligned with the gradient
+                    performArmijoTypeLineSearch( X0, deltaX );
+
+                }
+                else{
+
+                    // Perform gradient descent if the search direction is not aligned with the gradient
+                    performGradientStep( X0 );
+
+                }
+
+            }
+            else{
+
+                incrementNumNewton( );
+
+            }
 
             // Increment the iteration count
             incrementIteration( );
@@ -1730,6 +1761,13 @@ namespace tardigradeHydra{
         /*!
          * Solve the non-linear problem and update the variables
          */
+
+        // Reset the counters for the number of steps being performed
+        resetNumNewton( );
+
+        resetNumLS( );
+
+        resetNumGrad( );
 
         try{
 
