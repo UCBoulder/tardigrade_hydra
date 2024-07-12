@@ -260,6 +260,18 @@ namespace tardigradeHydra{
 
                 }
 
+                static void checkLMMu( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._lm_mu == hydra.getLMMu( ) );
+
+                }
+
+                static void checkMuk( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._mu_k == hydra.getMuk( ) );
+
+                }
+
                 static void checkUsePreconditioner( hydraBase &hydra ){
 
                     BOOST_CHECK( &hydra._use_preconditioner == hydra.getUsePreconditioner( ) );
@@ -801,6 +813,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getGradientP, * boost::unit_test::tolerance
 
 }
 
+BOOST_AUTO_TEST_CASE( test_hydraBase_getLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkLMMu( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_getMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkMuk( hydra );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
@@ -848,6 +876,26 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientP, * boost::unit_test::tolerance
     hydra.setGradientP( 123.4 );
 
     BOOST_TEST( 123.4 == *hydra.getGradientP( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    hydra.setLMMu( 123.4 );
+
+    BOOST_TEST( 123.4 == *hydra.getLMMu( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    hydra.setMuk( 123.4 );
+
+    BOOST_TEST( 123.4 == *hydra.getMuk( ) );
 
 }
 
@@ -4046,6 +4094,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                                                                          {  -4.96839724,  18.87890456,   2.15863168 }
                                                                       };
 
+            std::vector< floatType > expectedMuk = { 7e-8, 7e-8, 7e-8, 7e-8 };
+
             std::vector< std::vector< floatVector > > flatJacobian = {
                                                                          {
                                                                            {  0.99951474, -0.18854971, -0.59377647,  0.73798389,  0.50649978,
@@ -4232,6 +4282,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                 BOOST_TEST( expectedBaseResidualNorms[ iteration ] == *get_baseResidualNorm( ) );
 
                 BOOST_TEST( expectedBasedResidualNormdXs[ iteration ] == *get_basedResidualNormdX( ), CHECK_PER_ELEMENT );
+
+                BOOST_TEST( expectedMuk[ iteration ] == *getMuk( ) );
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, newUnknownVector );
 

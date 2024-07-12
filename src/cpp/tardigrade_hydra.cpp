@@ -1692,6 +1692,17 @@ namespace tardigradeHydra{
 
         set_basedResidualNormdX( *get_dResidualNormdX( ) );
 
+        if ( _mu_k < 0 ){
+
+            setMuk( 0.5 * ( *getLMMu( ) ) * ( *get_baseResidualNorm( ) ) );
+
+        }
+        else{
+
+            setMuk( std::fmin( _mu_k, ( *get_baseResidualNorm( ) ) ) );
+
+        }
+
     }
 
     void hydraBase::solveNonLinearProblem( ){
