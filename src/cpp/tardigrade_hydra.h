@@ -679,6 +679,12 @@ namespace tardigradeHydra{
             //!< Get a reference to the max allowable number of gradient iterations
             const unsigned int* getMaxGradientIterations( ){ return &_maxGradientIterations; }
 
+            //!< Get a reference to the gradient descent rho parameter
+            const floatType* getGradientRho( ){ return &_gradientRho; }
+
+            //!< Get a reference to the gradient descent p parameter
+            const floatType* getGradientP( ){ return &_gradientP; }
+
             //!< Set the gradient descent sigma parameter
             void setGradientSigma( const floatType &value ){
                /*!
@@ -686,9 +692,9 @@ namespace tardigradeHydra{
                 *
                 * \param &value: The value of the parameter
                 */
-               
+
                 _gradientSigma = value;
-            
+
             }
 
             //!< Set the gradient descent beta parameter
@@ -698,9 +704,9 @@ namespace tardigradeHydra{
                 *
                 * \param &value: The value of the parameter
                 */
-                
+ 
                 _gradientBeta = value;
-            
+
             }
 
             //!< Set the max allowable number of gradient iterations
@@ -710,9 +716,33 @@ namespace tardigradeHydra{
                 *
                 * \param &value: The value of the parameter
                 */
-                
+
                 _maxGradientIterations = value;
-           
+
+            }
+
+            //!< Set the gradient descent rho parameter
+            void setGradientRho( const floatType &value ){
+               /*!
+                * Set the value of the rho parameter for gradient descent steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _gradientRho = value;
+
+            }
+
+            //!< Set the gradient descent p parameter
+            void setGradientP( const floatType &value ){
+               /*!
+                * Set the value of the p parameter for gradient descent steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _gradientP = value;
+
             }
 
             floatVector getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
@@ -790,6 +820,8 @@ namespace tardigradeHydra{
             virtual bool checkLSConvergence( );
 
             virtual bool checkGradientConvergence( const floatVector &X0 );
+
+            virtual bool checkDescentDirection( const floatVector &dx );
 
             const floatVector* getStress( );
 
@@ -1032,6 +1064,10 @@ namespace tardigradeHydra{
             floatType _gradientSigma = 1e-4; //!< The sigma parameter for the gradient descent step
 
             floatType _gradientBeta  = 0.9; //!< The beta parameter for the gradient descent step
+
+            floatType _gradientRho   = 1e-8; //!< The rho parameter for the gradient descent step
+
+            floatType _gradientP     = 2.1; //!< The p parameter for the gradient descent step
 
             dataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
 
