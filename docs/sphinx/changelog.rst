@@ -14,6 +14,7 @@ New Features
 - Added the gradient of the residual norm (:pull:`125`). By `Nathan Miller`_.
 - Added a gradient step alternative to the Armijo-type line search (:pull:`126`). By `Nathan Miller`_.
 - Added a test for whether the proposed direction is a descent direction (:pull:`128`). By `Nathan Miller`_.
+- Added an automatic switch to gradient descent if the line search algorithm is not in a minimization direction (:pull:`130`). By `Nathan Miller`_.
 
 Internal Changes
 ================
