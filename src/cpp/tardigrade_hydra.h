@@ -845,6 +845,12 @@ namespace tardigradeHydra{
             //! Add data to the vector of values which will be cleared after each non-linear step
             void addNLStepData( dataBase *data ){ _nlStepData.push_back( data ); }
 
+            unsigned int getNumNewton( ){ /*! Get the number of newton steps performed */  return _NUM_NEWTON; }
+
+            unsigned int getNumLS( ){ /*! Get the number of line search steps performed */ return _NUM_LS; }
+
+            unsigned int getNumGrad( ){ /*! Get the number of gradient descent steps performed */  return _NUM_GRAD; }
+
         protected:
 
             // Setters that the user may need to access but not override
@@ -899,6 +905,18 @@ namespace tardigradeHydra{
             void set_basedResidualNormdX( const floatVector &value ){ setNLStepData( value, _basedResidualNormdX ); }
 
             virtual void setBaseQuantities( );
+
+            void resetNumNewton( ){ /*! Reset the number of newton steps */ _NUM_NEWTON = 0; }
+
+            void resetNumLS( ){ /*! Reset the number of line search steps */ _NUM_LS = 0; }
+
+            void resetNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD = 0; }
+
+            void incrementNumNewton( ){ /*! Reset the number of newton steps */ _NUM_NEWTON++; }
+
+            void incrementNumLS( ){ /*! Reset the number of line search steps */ _NUM_LS++; }
+
+            void incrementNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD++; }
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
@@ -1041,6 +1059,12 @@ namespace tardigradeHydra{
 
             unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
 
+            unsigned int _NUM_NEWTON = 0; //!< The number of Newton steps performed
+
+            unsigned int _NUM_LS = 0; //!< The number of line search steps performed
+
+            unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
+
             floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
 
             std::vector< dataBase* > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration
@@ -1097,6 +1121,8 @@ namespace tardigradeHydra{
 
             unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
 
+            unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
+
             floatType _lambda = 1;
 
             void setFirstConfigurationJacobians( );
@@ -1115,15 +1141,21 @@ namespace tardigradeHydra{
 
             void incrementLSIteration( ){ _LSIteration++; }
 
+            void incrementGradientIteration( ){ _gradientIteration++; }
+
             void resetLSIteration( ){ _LSIteration = 0; _lambda = 1.0;
                                       _lsResidualNorm.second = tardigradeVectorTools::l2norm( *getResidual( ) );
                                       _lsResidualNorm.first = true; }
+
+            void resetGradientIteration( ){ _gradientIteration = 0; }
 
             const floatType* getLambda( ){ return &_lambda; }
 
             bool checkIteration( ){ return _iteration < _maxIterations; }
 
             bool checkLSIteration( ){ return _LSIteration < _maxLSIterations; }
+
+            bool checkGradientIteration( ){ return _gradientIteration < _maxGradientIterations; }
 
             void resetIterationData( );
 
