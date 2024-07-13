@@ -260,6 +260,24 @@ namespace tardigradeHydra{
 
                 }
 
+                static void checkLMMu( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._lm_mu == hydra.getLMMu( ) );
+
+                }
+
+                static void checkMuk( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._mu_k == hydra.getMuk( ) );
+
+                }
+
+                static void checkUseLevenbergMarquardt( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._use_LM_step == hydra.getUseLevenbergMarquardt( ) );
+
+                }
+
                 static void checkUsePreconditioner( hydraBase &hydra ){
 
                     BOOST_CHECK( &hydra._use_preconditioner == hydra.getUsePreconditioner( ) );
@@ -801,6 +819,30 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getGradientP, * boost::unit_test::tolerance
 
 }
 
+BOOST_AUTO_TEST_CASE( test_hydraBase_getLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkLMMu( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_getMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkMuk( hydra );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_getUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkUseLevenbergMarquardt( hydra );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
@@ -848,6 +890,36 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientP, * boost::unit_test::tolerance
     hydra.setGradientP( 123.4 );
 
     BOOST_TEST( 123.4 == *hydra.getGradientP( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    hydra.setLMMu( 123.4 );
+
+    BOOST_TEST( 123.4 == *hydra.getLMMu( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    hydra.setMuk( 123.4 );
+
+    BOOST_TEST( 123.4 == *hydra.getMuk( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    hydra.setUseLevenbergMarquardt( true );
+
+    BOOST_TEST( true == *hydra.getUseLevenbergMarquardt( ) );
 
 }
 
@@ -4046,6 +4118,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                                                                          {  -4.96839724,  18.87890456,   2.15863168 }
                                                                       };
 
+            std::vector< floatType > expectedMuk = { 7e-8, 7e-8, 7e-8, 7e-8 };
+
             std::vector< std::vector< floatVector > > flatJacobian = {
                                                                          {
                                                                            {  0.99951474, -0.18854971, -0.59377647,  0.73798389,  0.50649978,
@@ -4232,6 +4306,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                 BOOST_TEST( expectedBaseResidualNorms[ iteration ] == *get_baseResidualNorm( ) );
 
                 BOOST_TEST( expectedBasedResidualNormdXs[ iteration ] == *get_basedResidualNormdX( ), CHECK_PER_ELEMENT );
+
+                BOOST_TEST( expectedMuk[ iteration ] == *getMuk( ) );
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, newUnknownVector );
 
@@ -5247,5 +5323,219 @@ BOOST_AUTO_TEST_CASE( test_checkDescentDirection, * boost::unit_test::tolerance(
     dx = -hydra.dResidualNormdX;
 
     BOOST_TEST( hydra.runCheckDescentDirection( dx ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_getNonlinearLMTerms, * boost::unit_test::tolerance( 1e-5 ) ){
+    /*!
+     * Test checking the gradient convergence
+     */
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+                                           0.54506801, 0.34276383, 0.30412079 }; 
+
+    floatVector parameters = { 1, 2, 3, 4, 5 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            floatVector residual = { 1, 2, 3, 4, 5 };
+
+            floatVector jacobian = { -0.15378708,  0.9615284 ,  0.36965948, -0.0381362 , -0.21576496,
+                                     -0.31364397,  0.45809941, -0.12285551, -0.88064421, -0.20391149,
+                                      0.47599081, -0.63501654, -0.64909649,  0.06310275,  0.06365517,
+                                      0.26880192,  0.69886359,  0.44891065,  0.22204702,  0.44488677,
+                                     -0.35408217, -0.27642269, -0.54347354, -0.41257191,  0.26195225 };
+
+            floatType mu_k = 1.34;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            virtual void formNonLinearProblem( ) override{
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
+
+                setMuk( mu_k );
+
+            }
+
+            virtual void decomposeUnknownVector( ) override{ return; }
+            virtual const unsigned int getNumUnknowns( ) override{ return 5; }
+
+    };
+
+    floatVector answerRHS = { -0.04830576,  1.38601851, -2.74506611, -2.78478784,  2.6566859 };
+
+    floatVector answerLHS = {  1.88621891, -0.30808058, -0.01417759,  0.51788095,  0.15427055,
+                              -0.30808058,  3.44245776,  1.17530079, -0.21093811, -0.10279234,
+                              -0.01417759,  1.17530079,  2.40995212,  0.377036  , -0.03867597,
+                               0.51788095, -0.21093811,  0.377036  ,  2.34049101,  0.18253039,
+                               0.15427055, -0.10279234, -0.03867597,  0.18253039,  1.69872961 };
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    floatVector unknownVector = { 0.39293837, -0.42772133, -0.54629709,  0.10262954,  0.43893794 };
+
+    tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
+
+    hydra.setUseLevenbergMarquardt( false );
+
+    BOOST_TEST( hydra.residual == *hydra.getNonlinearRHS( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( hydra.jacobian == *hydra.getFlatNonlinearLHS( ), CHECK_PER_ELEMENT );
+
+    hydra.setUseLevenbergMarquardt( true );
+
+    BOOST_TEST( answerRHS == *hydra.getNonlinearRHS( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( answerLHS == *hydra.getFlatNonlinearLHS( ), CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-5 ) ){
+    /*!
+     * Test checking the gradient convergence
+     */
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+                                           0.54506801, 0.34276383, 0.30412079 }; 
+
+    floatVector parameters = { 1, 2, 3, 4, 5 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            floatVector residual = { 1, 2, 3, 4, 5 };
+
+            floatVector jacobian = { -0.15378708,  0.9615284 ,  0.36965948, -0.0381362 , -0.21576496,
+                                     -0.31364397,  0.45809941, -0.12285551, -0.88064421, -0.20391149,
+                                      0.47599081, -0.63501654, -0.64909649,  0.06310275,  0.06365517,
+                                      0.26880192,  0.69886359,  0.44891065,  0.22204702,  0.44488677,
+                                     -0.35408217, -0.27642269, -0.54347354, -0.41257191,  0.26195225 };
+
+            floatType mu_k = 1.34;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            floatType rnorm = 10.3;
+
+            floatVector dRNormdX = { 1, 2, 3 };
+
+            void runSetBaseQuantities( ){ setBaseQuantities( ); }
+
+            const floatType *getBaseResidualNorm( ){ return get_baseResidualNorm( ); }
+
+            const floatVector *getBasedResidualNormdX( ){ return get_basedResidualNormdX( ); }
+
+            virtual void setResidualNorm( ) override{
+
+                set_residualNorm( rnorm );
+
+            }
+
+            virtual void setdResidualNormdX( ) override{
+
+                set_dResidualNormdX( dRNormdX );;
+
+            }
+
+            virtual void formNonLinearProblem( ) override{
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
+
+                setMuk( mu_k );
+
+            }
+
+            virtual void decomposeUnknownVector( ) override{ return; }
+            virtual const unsigned int getNumUnknowns( ) override{ return 5; }
+
+    };
+
+    floatType answer1 = 0.5 * 1e-8 * 10.3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.runSetBaseQuantities( );
+
+    BOOST_TEST( answer1 == *hydra.getMuk( ) );
+
+    BOOST_TEST( hydra.rnorm == *hydra.getBaseResidualNorm( ) );
+
+    BOOST_TEST( hydra.dRNormdX == *hydra.getBasedResidualNormdX( ) );
+
+    hydra.rnorm = 1e-9;
+
+    hydra.setResidualNorm( );
+
+    hydra.runSetBaseQuantities( );
+
+    BOOST_TEST( hydra.rnorm == *hydra.getMuk( ) );
 
 }

@@ -685,6 +685,15 @@ namespace tardigradeHydra{
             //!< Get a reference to the gradient descent p parameter
             const floatType* getGradientP( ){ return &_gradientP; }
 
+            //!< Get a reference to the Levenberg-Marquardt mu parameter
+            const floatType* getLMMu( ){ return &_lm_mu; }
+
+            //!< Get a reference to the current value of mu_k
+            const floatType* getMuk( ){ return &_mu_k; }
+
+            //!< Get a reference to the current value of mu_k
+            const bool* getUseLevenbergMarquardt( ){ return &_use_LM_step; }
+
             //!< Set the gradient descent sigma parameter
             void setGradientSigma( const floatType &value ){
                /*!
@@ -742,6 +751,42 @@ namespace tardigradeHydra{
                 */
  
                 _gradientP = value;
+
+            }
+
+            //!< Set the Levenberg-Marquardt mu parameter
+            void setLMMu( const floatType &value ){
+               /*!
+                * Set the value of the mu parameter for Levenberg-Marquardt steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _lm_mu = value;
+
+            }
+
+            //!< Set the Levenberg-Marquardt mu_k
+            void setMuk( const floatType &value ){
+               /*!
+                * Set the value of the mu_k parameter for Levenberg-Marquardt steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _mu_k = value;
+
+            }
+
+            //!< Set whether to attempt a Levenberg-Marquardt step
+            void setUseLevenbergMarquardt( const bool &value ){
+                /*!
+                 * Set whether to attempt a Levenberg-Marquardt step
+                 * 
+                 * \param &value: The value of the parameter
+                 */
+
+                _use_LM_step = value;
 
             }
 
@@ -1065,6 +1110,10 @@ namespace tardigradeHydra{
 
             unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
 
+            bool _use_LM_step = false; //!< Flag for whether to attempt a Levenberg-Marquardt step
+
+            floatType _mu_k = -1; //!< The Levenberg-Marquardt scaling parameter
+
             floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
 
             std::vector< dataBase* > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration
@@ -1076,6 +1125,10 @@ namespace tardigradeHydra{
             dataStorage< floatVector > _residual; //!< The residual vector for the global solve
 
             dataStorage< floatVector > _jacobian; //!< The jacobian matrix in row-major form for the global solve
+
+            dataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
+
+            dataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
             dataStorage< floatVector > _preconditioner; //!< The pre-conditioner matrix in row-major form for the global solve
 
@@ -1092,6 +1145,8 @@ namespace tardigradeHydra{
             floatType _gradientRho   = 1e-8; //!< The rho parameter for the gradient descent step
 
             floatType _gradientP     = 2.1; //!< The p parameter for the gradient descent step
+
+            floatType _lm_mu         = 1e-8; //!< The mu parameter for Levenberg-Marquardt iterations
 
             dataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
 

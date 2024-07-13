@@ -1057,6 +1057,36 @@ namespace tardigradeHydra{
          * Get the RHS vector for the non-linear problem
          */
 
+        if ( _use_LM_step ){
+
+            if ( !_nonlinearRHS.first ){
+
+                const unsigned int xsize = getNumUnknowns( );
+
+                _nonlinearRHS.first = true;
+
+                _nonlinearRHS.second = floatVector( xsize, 0 );
+
+                const floatVector *residual = getResidual( );
+
+                const floatVector *jacobian = getFlatJacobian( );
+
+                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Jmap( jacobian->data( ), xsize, xsize );
+
+                Eigen::Map< const Eigen::Matrix< floatType, -1,  1 > > Rmap( residual->data( ), xsize );
+
+                Eigen::Map< Eigen::Matrix< floatType, -1,  1 > > RHSmap( _nonlinearRHS.second.data( ), xsize );
+
+                RHSmap = ( Jmap.transpose( ) * Rmap ).eval( );
+
+                addIterationData( &_nonlinearRHS );
+
+            }
+
+            return &_nonlinearRHS.second;
+
+        }
+
         return getResidual( );
 
     }
@@ -1065,6 +1095,36 @@ namespace tardigradeHydra{
         /*!
          * Get the flat LHS matrix for the non-linear problem
          */
+
+        if ( _use_LM_step ){
+
+            if ( !_flatNonlinearLHS.first ){
+
+                const unsigned int xsize = getNumUnknowns( );
+
+                _flatNonlinearLHS.first = true;
+
+                _flatNonlinearLHS.second = floatVector( xsize * xsize, 0 );
+
+                const floatVector * jacobian = getFlatJacobian( );
+
+                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Jmap( jacobian->data( ), xsize, xsize );
+
+                Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > LHSmap( _flatNonlinearLHS.second.data( ), xsize, xsize );
+
+                LHSmap = ( Jmap.transpose( ) * Jmap ).eval( );
+
+                for ( unsigned int i = 0; i < xsize; i++ ){
+                    _flatNonlinearLHS.second[ xsize * i + i ] += *getMuk( );
+                }
+
+                addIterationData( &_flatNonlinearLHS );
+
+            }
+
+            return &_flatNonlinearLHS.second;
+
+        }
 
         return getFlatJacobian( );
 
@@ -1691,6 +1751,17 @@ namespace tardigradeHydra{
         set_baseResidualNorm( *get_residualNorm( ) );
 
         set_basedResidualNormdX( *get_dResidualNormdX( ) );
+
+        if ( _mu_k < 0 ){
+
+            setMuk( 0.5 * ( *getLMMu( ) ) * ( *get_baseResidualNorm( ) ) );
+
+        }
+        else{
+
+            setMuk( std::fmin( _mu_k, ( *get_baseResidualNorm( ) ) ) );
+
+        }
 
     }
 
