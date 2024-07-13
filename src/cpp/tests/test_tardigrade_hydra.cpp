@@ -272,6 +272,12 @@ namespace tardigradeHydra{
 
                 }
 
+                static void checkUseLevenbergMarquardt( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._use_LM_step == hydra.getUseLevenbergMarquardt( ) );
+
+                }
+
                 static void checkUsePreconditioner( hydraBase &hydra ){
 
                     BOOST_CHECK( &hydra._use_preconditioner == hydra.getUsePreconditioner( ) );
@@ -829,6 +835,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getMuk, * boost::unit_test::tolerance( DEFA
 
 }
 
+BOOST_AUTO_TEST_CASE( test_hydraBase_getUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkUseLevenbergMarquardt( hydra );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
@@ -896,6 +910,16 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setMuk, * boost::unit_test::tolerance( DEFA
     hydra.setMuk( 123.4 );
 
     BOOST_TEST( 123.4 == *hydra.getMuk( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    hydra.setUseLevenbergMarquardt( true );
+
+    BOOST_TEST( true == *hydra.getUseLevenbergMarquardt( ) );
 
 }
 
