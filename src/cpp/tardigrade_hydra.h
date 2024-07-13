@@ -545,21 +545,21 @@ namespace tardigradeHydra{
             unsigned int _numEquations; //!< The number of residual equations
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setResidual,                         getResidual,                        residual,                        floatVector, setResidual )
-                                                                                                                                              
+
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setJacobian,                         getJacobian,                        jacobian,                        floatVector, setJacobian )
-                                                                                                                                              
+
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdF,                             getdRdF,                            dRdF,                            floatVector, setdRdF )
-                                                                                                                                              
+
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdT,                             getdRdT,                            dRdT,                            floatVector, setdRdT )
-                                                                                                                                              
+
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setdRdAdditionalDOF,                 getdRdAdditionalDOF,                dRdAdditionalDOF,                floatVector, setdRdAdditionalDOF )
-                                                                                                                                              
+
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setAdditionalDerivatives,            getAdditionalDerivatives,           additionalDerivatives,           floatVector, setAdditionalDerivatives )
-                                                                                                                                              
+
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setStress,                           getStress,                          stress,                          floatVector, setStress )
-                                                                                                                                              
+
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setPreviousStress,                   getPreviousStress,                  previousStress,                  floatVector, setPreviousStress )
-                                                                                                                                              
+
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setCurrentAdditionalStateVariables,  getCurrentAdditionalStateVariables, currentAdditionalStateVariables, floatVector, setCurrentAdditionalStateVariables )
 
     };
@@ -670,6 +670,126 @@ namespace tardigradeHydra{
             //! Get whether the preconditioner is diagonal or not
             const bool* getPreconditionerIsDiagonal( ){ return &_preconditioner_is_diagonal; }
 
+            //!< Get a reference to the gradient descent sigma parameter
+            const floatType* getGradientSigma( ){ return &_gradientSigma; }
+
+            //!< Get a reference to the gradient descent beta parameter
+            const floatType* getGradientBeta( ){ return &_gradientBeta; }
+
+            //!< Get a reference to the max allowable number of gradient iterations
+            const unsigned int* getMaxGradientIterations( ){ return &_maxGradientIterations; }
+
+            //!< Get a reference to the gradient descent rho parameter
+            const floatType* getGradientRho( ){ return &_gradientRho; }
+
+            //!< Get a reference to the gradient descent p parameter
+            const floatType* getGradientP( ){ return &_gradientP; }
+
+            //!< Get a reference to the Levenberg-Marquardt mu parameter
+            const floatType* getLMMu( ){ return &_lm_mu; }
+
+            //!< Get a reference to the current value of mu_k
+            const floatType* getMuk( ){ return &_mu_k; }
+
+            //!< Get a reference to the current value of mu_k
+            const bool* getUseLevenbergMarquardt( ){ return &_use_LM_step; }
+
+            //!< Set the gradient descent sigma parameter
+            void setGradientSigma( const floatType &value ){
+               /*!
+                * Set the value of the sigma parameter for gradient descent steps
+                *
+                * \param &value: The value of the parameter
+                */
+
+                _gradientSigma = value;
+
+            }
+
+            //!< Set the gradient descent beta parameter
+            void setGradientBeta( const floatType &value ){
+               /*!
+                * Set the value of the beta parameter for gradient descent steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _gradientBeta = value;
+
+            }
+
+            //!< Set the max allowable number of gradient iterations
+            void setMaxGradientIterations( const unsigned int &value ){
+               /*!
+                * Set the value of the maximum number of iterations for gradient descent steps
+                *
+                * \param &value: The value of the parameter
+                */
+
+                _maxGradientIterations = value;
+
+            }
+
+            //!< Set the gradient descent rho parameter
+            void setGradientRho( const floatType &value ){
+               /*!
+                * Set the value of the rho parameter for gradient descent steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _gradientRho = value;
+
+            }
+
+            //!< Set the gradient descent p parameter
+            void setGradientP( const floatType &value ){
+               /*!
+                * Set the value of the p parameter for gradient descent steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _gradientP = value;
+
+            }
+
+            //!< Set the Levenberg-Marquardt mu parameter
+            void setLMMu( const floatType &value ){
+               /*!
+                * Set the value of the mu parameter for Levenberg-Marquardt steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _lm_mu = value;
+
+            }
+
+            //!< Set the Levenberg-Marquardt mu_k
+            void setMuk( const floatType &value ){
+               /*!
+                * Set the value of the mu_k parameter for Levenberg-Marquardt steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _mu_k = value;
+
+            }
+
+            //!< Set whether to attempt a Levenberg-Marquardt step
+            void setUseLevenbergMarquardt( const bool &value ){
+                /*!
+                 * Set whether to attempt a Levenberg-Marquardt step
+                 * 
+                 * \param &value: The value of the parameter
+                 */
+
+                _use_LM_step = value;
+
+            }
+
             floatVector getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
             floatVector getSubConfigurationJacobian( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
@@ -744,6 +864,10 @@ namespace tardigradeHydra{
 
             virtual bool checkLSConvergence( );
 
+            virtual bool checkGradientConvergence( const floatVector &X0 );
+
+            virtual bool checkDescentDirection( const floatVector &dx );
+
             const floatVector* getStress( );
 
             const floatVector* getPreviousStress( );
@@ -762,6 +886,15 @@ namespace tardigradeHydra{
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
+
+            //! Add data to the vector of values which will be cleared after each non-linear step
+            void addNLStepData( dataBase *data ){ _nlStepData.push_back( data ); }
+
+            unsigned int getNumNewton( ){ /*! Get the number of newton steps performed */  return _NUM_NEWTON; }
+
+            unsigned int getNumLS( ){ /*! Get the number of line search steps performed */ return _NUM_LS; }
+
+            unsigned int getNumGrad( ){ /*! Get the number of gradient descent steps performed */  return _NUM_GRAD; }
 
         protected:
 
@@ -800,10 +933,41 @@ namespace tardigradeHydra{
 
             virtual void calculateFirstConfigurationJacobians( const floatVector &configurations, floatVector &dC1dC, floatVector &dC1dCn );
 
+            virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
+
+            virtual void performGradientStep( const floatVector &X0 );
+
+            const floatType *get_baseResidualNorm( );
+
+            const floatVector *get_basedResidualNormdX( );
+
+            dataStorage< floatType > _baseResidualNorm;
+
+            dataStorage< floatVector > _basedResidualNormdX;
+
+            void set_baseResidualNorm( const floatType &value ){ setNLStepData( value, _baseResidualNorm ); }
+
+            void set_basedResidualNormdX( const floatVector &value ){ setNLStepData( value, _basedResidualNormdX ); }
+
+            virtual void setBaseQuantities( );
+
+            void resetNumNewton( ){ /*! Reset the number of newton steps */ _NUM_NEWTON = 0; }
+
+            void resetNumLS( ){ /*! Reset the number of line search steps */ _NUM_LS = 0; }
+
+            void resetNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD = 0; }
+
+            void incrementNumNewton( ){ /*! Reset the number of newton steps */ _NUM_NEWTON++; }
+
+            void incrementNumLS( ){ /*! Reset the number of line search steps */ _NUM_LS++; }
+
+            void incrementNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD++; }
+
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
                 /*!
-                 * Template function for adding iteration data
+                 * Template function for adding iteration data. These values are cleared
+                 * every time the unknown vector is updated.
                  *
                  * \param &data: The data to be added
                  * \param &storage: The storage to add the data to
@@ -814,6 +978,24 @@ namespace tardigradeHydra{
                 storage.first = true;
 
                 addIterationData( &storage );
+
+            }
+
+            template<class T>
+            void setNLStepData( const T &data, dataStorage<T> &storage ){
+                /*!
+                 * Template function for adding nonlinear step data. These values are cleared
+                 * every time the nonlinear step is advanced.
+                 *
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
+
+                storage.second = data;
+
+                storage.first = true;
+
+                addNLStepData( &storage );
 
             }
 
@@ -872,6 +1054,10 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void setResidualNorm( );
+
+            virtual void setdResidualNormdX( );
+
             std::string build_upper_index_out_of_range_error_string( const unsigned int upperIndex, const unsigned int num_configurations );
             std::string build_lower_index_out_of_range_error_string( const unsigned int lowerIndex, const unsigned int upperIndex );
 
@@ -916,15 +1102,33 @@ namespace tardigradeHydra{
 
             unsigned int _maxLSIterations; //!< The maximum number of line-search iterations
 
+            unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
+
+            unsigned int _NUM_NEWTON = 0; //!< The number of Newton steps performed
+
+            unsigned int _NUM_LS = 0; //!< The number of line search steps performed
+
+            unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
+
+            bool _use_LM_step = false; //!< Flag for whether to attempt a Levenberg-Marquardt step
+
+            floatType _mu_k = -1; //!< The Levenberg-Marquardt scaling parameter
+
             floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
 
             std::vector< dataBase* > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration
+
+            std::vector< dataBase* > _nlStepData; //!< A vector of pointers to data which should be cleared after each nonlinear step
 
             dataStorage< std::vector< residualBase* > > _residualClasses; //!< A vector of classes which compute the terms in the residual equation
 
             dataStorage< floatVector > _residual; //!< The residual vector for the global solve
 
             dataStorage< floatVector > _jacobian; //!< The jacobian matrix in row-major form for the global solve
+
+            dataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
+
+            dataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
             dataStorage< floatVector > _preconditioner; //!< The pre-conditioner matrix in row-major form for the global solve
 
@@ -933,6 +1137,16 @@ namespace tardigradeHydra{
             unsigned int _preconditioner_type; //<! The type of preconditioner to use
 
             bool _preconditioner_is_diagonal; //!< Flag for if the pre-conditioner only stores the diagonal elements
+
+            floatType _gradientSigma = 1e-4; //!< The sigma parameter for the gradient descent step
+
+            floatType _gradientBeta  = 0.9; //!< The beta parameter for the gradient descent step
+
+            floatType _gradientRho   = 1e-8; //!< The rho parameter for the gradient descent step
+
+            floatType _gradientP     = 2.1; //!< The p parameter for the gradient descent step
+
+            floatType _lm_mu         = 1e-8; //!< The mu parameter for Levenberg-Marquardt iterations
 
             dataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
 
@@ -962,6 +1176,8 @@ namespace tardigradeHydra{
 
             unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
 
+            unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
+
             floatType _lambda = 1;
 
             void setFirstConfigurationJacobians( );
@@ -980,9 +1196,13 @@ namespace tardigradeHydra{
 
             void incrementLSIteration( ){ _LSIteration++; }
 
+            void incrementGradientIteration( ){ _gradientIteration++; }
+
             void resetLSIteration( ){ _LSIteration = 0; _lambda = 1.0;
                                       _lsResidualNorm.second = tardigradeVectorTools::l2norm( *getResidual( ) );
                                       _lsResidualNorm.first = true; }
+
+            void resetGradientIteration( ){ _gradientIteration = 0; }
 
             const floatType* getLambda( ){ return &_lambda; }
 
@@ -990,7 +1210,11 @@ namespace tardigradeHydra{
 
             bool checkLSIteration( ){ return _LSIteration < _maxLSIterations; }
 
+            bool checkGradientIteration( ){ return _gradientIteration < _maxGradientIterations; }
+
             void resetIterationData( );
+
+            void resetNLStepData( );
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 
@@ -1007,6 +1231,10 @@ namespace tardigradeHydra{
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, additionalStateVariables,             floatVector, passThrough )
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousAdditionalStateVariables,     floatVector, passThrough )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, residualNorm,       floatType,          setResidualNorm )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,          get_dF1dF,          dF1dF,          floatVector, setFirstConfigurationJacobians )
 

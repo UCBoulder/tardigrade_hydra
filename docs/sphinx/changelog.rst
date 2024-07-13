@@ -11,6 +11,30 @@ Changelog
 
 New Features
 ============
+- Added the gradient of the residual norm (:pull:`125`). By `Nathan Miller`_.
+- Added a gradient step alternative to the Armijo-type line search (:pull:`126`). By `Nathan Miller`_.
+- Added a test for whether the proposed direction is a descent direction (:pull:`128`). By `Nathan Miller`_.
+- Added an automatic switch to gradient descent if the line search algorithm is not in a minimization direction (:pull:`130`). By `Nathan Miller`_.
+- Added the adaptive Levenberg-Marquardt regularization parameter (:pull:`131`). By `Nathan Miller`_.
+- Added Levenberg-Marquardt steps (:pull:`131`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Moved the Armijo-type line search into a separate function (:pull:`126`). By `Nathan Miller`_.
+- Added data containers that will be cleared after each nonlinear iteration (:pull:`126`). By `Nathan Miller`_.
+- Added setting required data for gradient descent steps (:pull:`127`). by `Nathan Miller`_.
+- Allow for the version number to be specified when doing a FetchContent build (:pull:`129`). By `Nathan Miller`_.
+
+******************
+0.4.2 (07-11-2024)
+******************
+
+Release
+=======
+- Released version (:pull:`124`). By `Nathan Miller`_.
+
+New Features
+============
 - Throw a custom convergence error class rather than a nested exception if a failure happens because of the line-search or the Newton loop iterations (:pull:`70`). By `Nathan Miller`_.
 - Added a pre-conditioner (jacobian scaling) to try and improve the stability of the Jacobian (:pull:`98`). By `Nathan Miller`_.
 - Added a J2 flow isotropic-kinematic hardening viscoplastic model (:pull:`102`). By `Nathan Miller`_.

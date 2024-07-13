@@ -737,6 +737,21 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::resetNLStepData( ){
+        /*!
+         * Reset the nonlinear step data to the new base state
+         */
+
+        for ( auto d = _nlStepData.begin( ); d != _nlStepData.end( ); d++ ){
+
+            ( *d )->clear( );
+
+        }
+
+        _nlStepData.clear( );
+
+    }
+
     void hydraBase::setResidualClasses( ){
         /*!
          * Set the vectors for the residuals.
@@ -1042,6 +1057,36 @@ namespace tardigradeHydra{
          * Get the RHS vector for the non-linear problem
          */
 
+        if ( _use_LM_step ){
+
+            if ( !_nonlinearRHS.first ){
+
+                const unsigned int xsize = getNumUnknowns( );
+
+                _nonlinearRHS.first = true;
+
+                _nonlinearRHS.second = floatVector( xsize, 0 );
+
+                const floatVector *residual = getResidual( );
+
+                const floatVector *jacobian = getFlatJacobian( );
+
+                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Jmap( jacobian->data( ), xsize, xsize );
+
+                Eigen::Map< const Eigen::Matrix< floatType, -1,  1 > > Rmap( residual->data( ), xsize );
+
+                Eigen::Map< Eigen::Matrix< floatType, -1,  1 > > RHSmap( _nonlinearRHS.second.data( ), xsize );
+
+                RHSmap = ( Jmap.transpose( ) * Rmap ).eval( );
+
+                addIterationData( &_nonlinearRHS );
+
+            }
+
+            return &_nonlinearRHS.second;
+
+        }
+
         return getResidual( );
 
     }
@@ -1050,6 +1095,36 @@ namespace tardigradeHydra{
         /*!
          * Get the flat LHS matrix for the non-linear problem
          */
+
+        if ( _use_LM_step ){
+
+            if ( !_flatNonlinearLHS.first ){
+
+                const unsigned int xsize = getNumUnknowns( );
+
+                _flatNonlinearLHS.first = true;
+
+                _flatNonlinearLHS.second = floatVector( xsize * xsize, 0 );
+
+                const floatVector * jacobian = getFlatJacobian( );
+
+                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Jmap( jacobian->data( ), xsize, xsize );
+
+                Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > LHSmap( _flatNonlinearLHS.second.data( ), xsize, xsize );
+
+                LHSmap = ( Jmap.transpose( ) * Jmap ).eval( );
+
+                for ( unsigned int i = 0; i < xsize; i++ ){
+                    _flatNonlinearLHS.second[ xsize * i + i ] += *getMuk( );
+                }
+
+                addIterationData( &_flatNonlinearLHS );
+
+            }
+
+            return &_flatNonlinearLHS.second;
+
+        }
 
         return getFlatJacobian( );
 
@@ -1517,6 +1592,179 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
+        /*!
+         * Perform an Armijo-type line search
+         *
+         * \param &X0: The base value of the unknown vector
+         * \param &delta: The proposed change in X
+         */
+
+        while ( !checkLSConvergence( ) && checkLSIteration( ) ){
+
+            updateLambda( );
+
+            incrementLSIteration( );
+
+            updateUnknownVector( X0 + *getLambda( ) * deltaX );
+
+        }
+
+        if ( !checkLSConvergence( ) ){
+
+            throw convergence_error( "Failure in line search" );
+
+        }
+
+        incrementNumLS( );
+
+        resetLSIteration( );
+
+    }
+
+    const floatType *hydraBase::get_baseResidualNorm( ){
+        /*!
+         * Get the base value for the residual norm.
+         */
+
+        if ( !_baseResidualNorm.first ){
+
+            throw std::runtime_error( "The base residual norm must be set with set_baseResidualNorm before it can be called" );
+
+        }
+
+        return &_baseResidualNorm.second;
+
+    }
+
+    const floatVector *hydraBase::get_basedResidualNormdX( ){
+        /*!
+         * Get the base value for the derivative of the residual norm w.r.t. the unknown vector
+         */
+
+        if ( !_basedResidualNormdX.first ){
+
+            throw std::runtime_error( "The base residual norm must be set with set_dbaseResidualNormdX before it can be called" );
+
+        }
+
+        return &_basedResidualNormdX.second;
+
+    }
+
+    bool hydraBase::checkGradientConvergence( const floatVector &X0 ){
+        /*!
+         * Check the convergence of a gradient step
+         *
+         * \param &X0: The initial value of the unknown vector
+         */
+
+        const unsigned int xsize = getNumUnknowns( );
+
+        floatVector dx = ( *getUnknownVector( ) ) - X0;
+
+        floatType RHS = *get_baseResidualNorm( );
+
+        for ( unsigned int i = 0; i < xsize; i++ ){
+
+            RHS += ( *getGradientSigma( ) ) * ( *get_basedResidualNormdX( ) )[ i ] * dx[ i ];
+
+        }
+
+        return ( *get_residualNorm( ) ) < RHS;
+
+    }
+
+    void hydraBase::performGradientStep( const floatVector &X0 ){
+        /*!
+         * Perform a gradient descent step
+         *
+         * \param &X0: The base value of the unknown vector
+         */
+
+        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
+
+        unsigned int l                     = 0;
+
+        const unsigned int maxiter         = *getMaxGradientIterations( );
+
+        while( checkGradientIteration( ) ){
+            
+            floatType t = std::pow( *getGradientBeta( ), l );
+
+            updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
+
+            if ( checkGradientConvergence( X0 ) ){
+
+                break;
+
+            }
+
+            l++;
+
+            incrementGradientIteration( );
+
+        }
+
+        if ( l >= maxiter ){
+
+            throw convergence_error( "Failure in gradient step" );
+
+        }
+
+        incrementNumGrad( );
+
+        resetGradientIteration( );
+
+    }
+
+    bool hydraBase::checkDescentDirection( const floatVector &dx ){
+        /*!
+         * Check if the search direction is a descent direction of the Jacobian
+         * 
+         * \param &dx: The proposed change in x
+         */
+
+        const unsigned int xsize = getNumUnknowns( );
+
+        const floatType RHS = -( *getGradientRho( ) ) * std::pow( tardigradeVectorTools::l2norm( dx ), *getGradientP( ) );
+
+        floatType LHS = 0;
+
+        const floatVector *dResidualNormdX = get_dResidualNormdX( );
+
+        for ( unsigned int i = 0; i < xsize; i++ ){
+
+            LHS += ( *dResidualNormdX )[ i ] * dx[ i ];
+
+        }
+
+        return LHS <= RHS;
+
+    }
+
+    void hydraBase::setBaseQuantities( ){
+        /*!
+         * Set the base quantities required for gradient steps
+         */
+
+        set_baseResidualNorm( *get_residualNorm( ) );
+
+        set_basedResidualNormdX( *get_dResidualNormdX( ) );
+
+        if ( _mu_k < 0 ){
+
+            setMuk( 0.5 * ( *getLMMu( ) ) * ( *get_baseResidualNorm( ) ) );
+
+        }
+        else{
+
+            setMuk( std::fmin( _mu_k, ( *get_baseResidualNorm( ) ) ) );
+
+        }
+
+    }
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
@@ -1529,34 +1777,46 @@ namespace tardigradeHydra{
 
         resetLSIteration( );
 
+        resetGradientIteration( );
+
         while( !checkConvergence( ) && checkIteration( ) ){
 
             floatVector X0 = *getUnknownVector( );
 
             solveNewtonUpdate( deltaX );
 
+            setBaseQuantities( );
+
             updateUnknownVector( X0 + *getLambda( ) * deltaX );
 
-            while ( !checkLSConvergence( ) && checkLSIteration( ) ){
-
-                updateLambda( );
-
-                incrementLSIteration( );
-
-                updateUnknownVector( X0 + *getLambda( ) * deltaX );
-
-            }
-
+            // Refine the estimate if the new point has a higher residual
             if ( !checkLSConvergence( ) ){
 
-                throw convergence_error( "Failure in line search" );
+                if ( checkDescentDirection( deltaX ) ){
+
+                    // Perform an Armijo type line search when the search direction is aligned with the gradient
+                    performArmijoTypeLineSearch( X0, deltaX );
+
+                }
+                else{
+
+                    // Perform gradient descent if the search direction is not aligned with the gradient
+                    performGradientStep( X0 );
+
+                }
 
             }
+            else{
 
-            resetLSIteration( );
+                incrementNumNewton( );
+
+            }
 
             // Increment the iteration count
             incrementIteration( );
+
+            // Reset the nonlinear step data
+            resetNLStepData( );
 
         }
 
@@ -1572,6 +1832,13 @@ namespace tardigradeHydra{
         /*!
          * Solve the non-linear problem and update the variables
          */
+
+        // Reset the counters for the number of steps being performed
+        resetNumNewton( );
+
+        resetNumLS( );
+
+        resetNumGrad( );
 
         try{
 
@@ -1781,6 +2048,50 @@ namespace tardigradeHydra{
             throw std::runtime_error( "Preconditioner type " + std::to_string( _preconditioner_type ) + " is not recognized." );
 
         }
+
+    }
+
+    void hydraBase::setResidualNorm( ){
+        /*!
+         * Set the norm of the residual vector
+         */
+
+        floatType residualNorm = 0;
+
+        const unsigned int xsize = getNumUnknowns( );
+
+        const floatVector *residual = getResidual( );
+
+        for ( unsigned int i = 0; i < xsize; i++ ){
+
+            residualNorm += ( *residual )[ i ] * ( *residual )[ i ];
+
+        }
+
+        set_residualNorm( residualNorm );
+
+    }
+
+    void hydraBase::setdResidualNormdX( ){
+        /*!
+         * Set the derivative of the residual norm w.r.t. the unknown vector
+         */
+
+        const unsigned int xsize = getNumUnknowns( );
+
+        floatVector dResidualNormdX( xsize, 0 );
+
+        const floatVector *residual = getResidual( );
+
+        const floatVector *jacobian = getFlatJacobian( );
+
+        for ( unsigned int i = 0; i < xsize; i++ ){
+            for ( unsigned int j = 0; j < xsize; j++ ){
+                dResidualNormdX[ j ] += 2 * ( *jacobian )[ xsize * i + j ] * ( *residual )[ i ];
+            }
+        }
+
+        set_dResidualNormdX( dResidualNormdX );
 
     }
 
