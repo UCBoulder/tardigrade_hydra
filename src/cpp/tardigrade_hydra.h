@@ -1126,9 +1126,9 @@ namespace tardigradeHydra{
 
             dataStorage< floatVector > _jacobian; //!< The jacobian matrix in row-major form for the global solve
 
-            dataStorage< floatVector > _RHSVector; //!< The right hand side vector for the Newton solve
+            dataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
 
-            dataStorage< floatVector > _LHSMatrix; //!< The left hand side vector for the Newton solve
+            dataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
             dataStorage< floatVector > _preconditioner; //!< The pre-conditioner matrix in row-major form for the global solve
 
