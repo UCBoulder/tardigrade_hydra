@@ -1502,11 +1502,30 @@ namespace tardigradeHydra{
          * \param &newUnknownVector: The new unknown vector
          */
 
+        // Project the trial unknown vector to the allowable space
+        floatVector trialX = newUnknownVector;
+        floatVector Xp;
+
+        if ( !_X.first ){
+
+            Xp = trialX;
+
+        }
+        else{
+
+            Xp = *getUnknownVector( );
+
+        }
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+            ( *residual_ptr )->projectSuggestedX( trialX, Xp );
+        }
+
         // Reset all of the iteration data
         resetIterationData( );
 
         // Set the unknown vector
-        setX( newUnknownVector );
+        setX( trialX );
 
         // Decompose the unknown vector and update the state
         TARDIGRADE_ERROR_TOOLS_CATCH( decomposeUnknownVector( ) );

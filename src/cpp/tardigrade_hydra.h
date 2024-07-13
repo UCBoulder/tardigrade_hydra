@@ -475,6 +475,21 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void projectSuggestedX( std::vector< floatType > &trialX,
+                                            const std::vector< floatType > &Xp ){
+                /*!
+                 * Project the suggested unknown vector to the allowable space
+                 * 
+                 * Called whenever hydra calls updateUnknownVector. It is assumed that the
+                 * initial value as suggested by `residual::suggestInitialIterationValues` is
+                 * in the allowable space.
+                 * 
+                 * \param &trialX: The trial value of X
+                 * \param &Xp: The previously accepted value of X
+                 */
+
+            }
+
             // Getter functions
 
             //! Get the number of equations the residual defined
