@@ -3061,7 +3061,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariables, * boost::unit_test::tole
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::residualBase( this, 4 );
+                remainder = tardigradeHydra::residualBase( this, 3 );
 
                 residuals[ 0 ] = &elasticity;
 

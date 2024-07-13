@@ -5539,3 +5539,116 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
     BOOST_TEST( hydra.rnorm == *hydra.getMuk( ) );
 
 }
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_updateUnknownVector, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class residualMock : public tardigradeHydra::residualBase{
+
+        public:
+
+            bool project_called = false;
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            virtual void projectSuggestedX( std::vector< double > &trialX,
+                                            const std::vector< double > &Xp ) override{
+
+                project_called = true;
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            residualMock r1;
+
+            residualMock r2;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            floatVector unknownVector = {   1,  1,  1,  1,  1,  1,  1,  1,  1 };
+
+            virtual void runUpdateUnknownVector( floatVector &trialX ){
+
+                updateUnknownVector( trialX );
+
+            }
+
+            virtual bool checkProject( ){
+
+            return r1.project_called && r2.project_called;
+
+            }
+
+            virtual void setResidualClasses( ){
+
+                r1 = residualMock( this, 9 );
+
+                r2 = residualMock( this, 9 );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                residuals[ 0 ] = &r1;
+
+                residuals[ 1 ] = &r2;
+
+                setResidualClasses( residuals );
+
+            }
+
+        private:
+
+            virtual void initializeUnknownVector( ){
+
+                tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( *this, unknownVector );
+
+            }
+
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 1.05, 0, 0,
+                                        0.00, 1, 0,
+                                        0.00, 1, 1};
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    floatVector parameters = { 123.4, 56.7 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    floatVector unknownVector = {   1,  1,  1,  1,  1,  1,  1,  1,  1,
+                                    2,  2,  2,  2,  2,  2,  2,  2,  2 };
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.runUpdateUnknownVector( unknownVector );
+
+    BOOST_TEST( *hydra.getUnknownVector( ) == unknownVector );
+
+    BOOST_TEST( hydra.checkProject( ) );
+
+}
