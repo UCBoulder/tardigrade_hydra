@@ -709,6 +709,9 @@ namespace tardigradeHydra{
             //!< Get a reference to the current value of mu_k
             const bool* getUseLevenbergMarquardt( ){ return &_use_LM_step; }
 
+            //!< Get a reference to the flag for whether to throw an error if the LHS matrix is rank-deficient
+            const bool* getRankDeficientError( ){ return &_rank_deficient_error; }
+
             //!< Set the gradient descent sigma parameter
             void setGradientSigma( const floatType &value ){
                /*!
@@ -802,6 +805,18 @@ namespace tardigradeHydra{
                  */
 
                 _use_LM_step = value;
+
+            }
+
+            //!< Set whether rank deficiency is a reason to throw an error
+            void setRankDeficientError( const bool &value ){
+                /*!
+                 * Set whether a rank-deficient LHS will cause an error
+                 * 
+                 * \param &value: The value of the parameter
+                 */
+
+                _rank_deficient_error = value;
 
             }
 
@@ -1126,6 +1141,8 @@ namespace tardigradeHydra{
             unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
 
             bool _use_LM_step = false; //!< Flag for whether to attempt a Levenberg-Marquardt step
+
+            bool _rank_deficient_error = true; //!< Flag for whether a rank-deficient LHS will throw a convergence error
 
             floatType _mu_k = -1; //!< The Levenberg-Marquardt scaling parameter
 
