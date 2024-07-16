@@ -9,11 +9,21 @@ Changelog
 0.5.0 (unreleased)
 ******************
 
+******************
+0.4.4 (07-12-2024)
+******************
+
+Release
+=======
+- Released version (:pull:`137`). By `Nathan Miller`_.
+
 New Features
 ============
 - Added projection operators to the residualBase (:pull:`133`). By `Nathan Miller`_.
 - Allow the user to turn off rank-deficient errors (:pull:`134`). By `Nathan Miller`_.
 - Added a Levenberg-Marquardt solve in the case of a convergence failure (:pull:`135`). By `Nathan Miller`_.
+- Added the ability to turn on or off applying projections (:pull:`136`). By `Nathan Miller`_.
+- Added a projection for the micromorphic Drucker-Prager plasticity (:pull:`136`). By `Nathan Miller`_.
 
 ******************
 0.4.3 (07-12-2024)
