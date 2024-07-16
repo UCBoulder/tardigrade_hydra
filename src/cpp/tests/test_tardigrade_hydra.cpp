@@ -278,6 +278,12 @@ namespace tardigradeHydra{
 
                 }
 
+                static void checkUseGradientDescent( hydraBase &hydra ){
+
+                    BOOST_CHECK( &hydra._use_gradient_descent == hydra.getUseGradientDescent( ) );
+
+                }
+
                 static void checkRankDeficientError( hydraBase &hydra ){
 
                     BOOST_CHECK( &hydra._rank_deficient_error == hydra.getRankDeficientError( ) );
@@ -849,6 +855,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getUseLevenbergMarquardt, * boost::unit_tes
 
 }
 
+BOOST_AUTO_TEST_CASE( test_hydraBase_getUseGradientDescent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    tardigradeHydra::unit_test::hydraBaseTester::checkUseGradientDescent( hydra );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_hydraBase_getRankDeficientError, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
@@ -934,6 +948,18 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setUseLevenbergMarquardt, * boost::unit_tes
     hydra.setUseLevenbergMarquardt( true );
 
     BOOST_TEST( true == *hydra.getUseLevenbergMarquardt( ) );
+
+    BOOST_TEST( true == *hydra.getUseGradientDescent( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setUseGradientDescent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::hydraBase hydra;
+
+    hydra.setUseGradientDescent( true );
+
+    BOOST_TEST( true == *hydra.getUseGradientDescent( ) );
 
 }
 
@@ -4380,6 +4406,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    hydra.setUseGradientDescent( true );
+
     tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra );
 
     BOOST_TEST( hydra.getNumNewton( ) == 2 );
@@ -4392,6 +4420,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                              { }, { },
                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension,
                              9, 1e-9, 1e-9, 20, 5, 1e-4, true, 0 );
+
+    hydra_pre.setUseGradientDescent( true );
 
     tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra_pre );
 
@@ -5740,7 +5770,16 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate, * boost::unit_test::tolerance( DE
 
             unsigned int num_calls = 0;
 
+            void setInitialX( ){ _initialX = _mockInitialX; }
+
         protected:
+
+            floatVector _mockInitialX = {   1,  1,  1,  1,  1,  1,  1,  1,  1,
+                                            2,  2,  2,  2,  2,  2,  2,  2,  2 };
+
+            virtual void updateUnknownVector( const floatVector &newX ) override{
+                BOOST_TEST( _initialX == newX, CHECK_PER_ELEMENT );
+            }
 
             virtual void solveNonLinearProblem( ) override{
 
@@ -5779,9 +5818,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate, * boost::unit_test::tolerance( DE
     unsigned int numNonLinearSolveStateVariables = 0;
 
     unsigned int dimension = 3;
-
-    floatVector unknownVector = {   1,  1,  1,  1,  1,  1,  1,  1,  1,
-                                    2,  2,  2,  2,  2,  2,  2,  2,  2 };
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          { }, { },
