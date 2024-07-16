@@ -1794,6 +1794,8 @@ namespace tardigradeHydra{
         // Form the initial unknown vector
         TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
 
+        _initialX = *getUnknownVector( );
+
         floatVector deltaX( getNumUnknowns( ), 0 );
 
         resetLSIteration( );
@@ -1813,7 +1815,7 @@ namespace tardigradeHydra{
             // Refine the estimate if the new point has a higher residual
             if ( !checkLSConvergence( ) ){
 
-                if ( checkDescentDirection( deltaX ) ){
+                if ( checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
 
                     // Perform an Armijo type line search when the search direction is aligned with the gradient
                     performArmijoTypeLineSearch( X0, deltaX );
@@ -1879,6 +1881,7 @@ namespace tardigradeHydra{
             }
 
             resetIterations( );
+            updateUnknownVector( _initialX );
 
             try{
 

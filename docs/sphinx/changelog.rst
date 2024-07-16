@@ -15,7 +15,7 @@ Changelog
 
 Release
 =======
-- Released version (:pull:`139`). By `Nathan Miller`_.
+- Released version (:pull:`140`). By `Nathan Miller`_.
 
 New Features
 ============
@@ -29,6 +29,7 @@ Internal Changes
 ================
 - Set whether to use the projection to default to false (:pull:`137`). By `Nathan Miller`_.
 - Automatically turn on the projectors when Levenberg-Marquardt is enabled (:pull:`138`). By `Nathan Miller`_.
+- Set hydra to reset the unknown vector to the initial unknown after a failed solve (:pull:`139`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
