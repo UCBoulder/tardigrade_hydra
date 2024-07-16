@@ -13,6 +13,7 @@ New Features
 ============
 - Added projection operators to the residualBase (:pull:`133`). By `Nathan Miller`_.
 - Allow the user to turn off rank-deficient errors (:pull:`134`). By `Nathan Miller`_.
+- Added a Levenberg-Marquardt solve in the case of a convergence failure (:pull:`135`). By `Nathan Miller`_.
 
 ******************
 0.4.3 (07-12-2024)
