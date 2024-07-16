@@ -15,7 +15,7 @@ Changelog
 
 Release
 =======
-- Released version (:pull:`140`). By `Nathan Miller`_.
+- Released version (:pull:`141`). By `Nathan Miller`_.
 
 New Features
 ============
@@ -34,6 +34,7 @@ Internal Changes
 Bug Fixes
 =========
 - Reset the iteration number when a re-attempt at a solve is performed (:pull:`138`). By `Nathan Miller`_.
+- Fixed the use of the gradient descent flag for the nonlinear solve (:pull:`140`). By `Nathan Miller`_.
 
 ******************
 0.4.3 (07-12-2024)
