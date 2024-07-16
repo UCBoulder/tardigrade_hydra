@@ -1794,6 +1794,8 @@ namespace tardigradeHydra{
         // Form the initial unknown vector
         TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
 
+        _initialX = *getUnknownVector( );
+
         floatVector deltaX( getNumUnknowns( ), 0 );
 
         resetLSIteration( );
@@ -1879,6 +1881,7 @@ namespace tardigradeHydra{
             }
 
             resetIterations( );
+            updateUnknownVector( _initialX );
 
             try{
 
