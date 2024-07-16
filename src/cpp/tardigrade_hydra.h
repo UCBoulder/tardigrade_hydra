@@ -490,6 +490,20 @@ namespace tardigradeHydra{
 
             }
 
+            void setUseProjection( const bool &value ){
+                /*!
+                 * Set whether to use the projection or not
+                 * 
+                 * \param &value: The value of the parameter
+                 */
+
+                _useProjection = value;
+
+            }
+
+            //!< Get the flag for whether to use the projection or not
+            const bool *getUseProjection( ){ return &_useProjection; }
+
             // Getter functions
 
             //! Get the number of equations the residual defined
@@ -558,6 +572,8 @@ namespace tardigradeHydra{
         private:
 
             unsigned int _numEquations; //!< The number of residual equations
+
+            bool _useProjection = true; //!< Flag for whether to use the projection or not
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setResidual,                         getResidual,                        residual,                        floatVector, setResidual )
 

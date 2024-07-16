@@ -1518,7 +1518,9 @@ namespace tardigradeHydra{
         }
 
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
-            ( *residual_ptr )->projectSuggestedX( trialX, Xp );
+            if ( *( *residual_ptr )->getUseProjection( ) ){
+                ( *residual_ptr )->projectSuggestedX( trialX, Xp );
+            }
         }
 
         // Reset all of the iteration data
