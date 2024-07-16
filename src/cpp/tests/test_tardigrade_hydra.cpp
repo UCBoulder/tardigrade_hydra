@@ -2422,6 +2422,8 @@ BOOST_AUTO_TEST_CASE( test_residualBase_checkDefaults, * boost::unit_test::toler
 
     BOOST_CHECK_NO_THROW( residual.setAdditionalDerivatives( ) );
 
+    BOOST_CHECK( *residual.getUseProjection( ) );
+
 }
 
 BOOST_AUTO_TEST_CASE( test_residualBase_setResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
@@ -5603,9 +5605,23 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_updateUnknownVector, * boost::unit_test::to
 
             }
 
+            bool _use_projection = true;
+
             virtual bool checkProject( ){
 
             return r1.project_called && r2.project_called;
+
+            }
+
+            virtual bool checkProjectOff( ){
+
+            return !r1.project_called && !r2.project_called;
+
+            }
+
+            virtual void turnOffProjection( ){
+
+                _use_projection = false;
 
             }
 
@@ -5616,6 +5632,10 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_updateUnknownVector, * boost::unit_test::to
                 r2 = residualMock( this, 9 );
 
                 std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                r1.setUseProjection( _use_projection );
+
+                r2.setUseProjection( _use_projection );
 
                 residuals[ 0 ] = &r1;
 
@@ -5674,6 +5694,18 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_updateUnknownVector, * boost::unit_test::to
     BOOST_TEST( *hydra.getUnknownVector( ) == unknownVector );
 
     BOOST_TEST( hydra.checkProject( ) );
+
+    hydraBaseMock hydra2( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                          { }, { },
+                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra2.turnOffProjection( );
+
+    hydra2.runUpdateUnknownVector( unknownVector );
+
+    BOOST_TEST( *hydra2.getUnknownVector( ) == unknownVector );
+
+    BOOST_TEST( hydra2.checkProjectOff( ) );
 
 }
 
@@ -5755,8 +5787,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate, * boost::unit_test::tolerance( DE
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-//    try{hydra.evaluate();}catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e);}
-//
     BOOST_CHECK_THROW( hydra.evaluate( ), tardigradeHydra::convergence_error );
 
     BOOST_TEST( *hydra.getUseLevenbergMarquardt( ) );

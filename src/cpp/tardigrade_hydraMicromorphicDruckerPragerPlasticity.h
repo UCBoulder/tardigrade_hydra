@@ -443,6 +443,51 @@ namespace tardigradeHydra{
                 //!Return the value of the barrier modulus to prevent the plastic multipliers from becoming negative
                 const floatType *getPlasticMultiplierBarrierModulus( ){ return &_plasticMultiplierBarrierModulus; }
 
+                virtual void projectSuggestedX( std::vector< floatType > &trialX,
+                                                const std::vector< floatType > &Xp ) override;
+
+                //!Get the maximum allowable value for the norm of the change in macro plastic deformation for a single nonlinear increment
+                const floatType* getMaxMacroPlasticDeltaNorm( ){ return &_maxMacroPlasticDeltaNorm; }
+
+                //!Get the maximum allowable value for the norm of the change in micro plastic deformation for a single nonlinear increment
+                const floatType* getMaxMicroPlasticDeltaNorm( ){ return &_maxMicroPlasticDeltaNorm; }
+
+                //!Get the maximum allowable value for the norm of the change in micro gradient plastic deformation for a single nonlinear increment
+                const floatType* getMaxMicroGradientPlasticDeltaNorm( ){ return &_maxMicroGradientPlasticDeltaNorm; }
+
+                void setMaxMacroPlasticDeltaNorm( const floatType &value ){
+                    /*!
+                     * Set the maximum allowable value for the norm of the change in macro plastic deformation for a single nonlinear increment
+                     *
+                     * \param &value: The parameter value
+                     */
+
+                    _maxMacroPlasticDeltaNorm = value;
+
+                }
+
+                void setMaxMicroPlasticDeltaNorm( const floatType &value ){
+                    /*!
+                     * Set the maximum allowable value for the norm of the change in micro plastic deformation for a single nonlinear increment
+                     *
+                     * \param &value: The parameter value
+                     */
+
+                    _maxMicroPlasticDeltaNorm = value;
+
+                }
+
+                void setMaxMicroGradientPlasticDeltaNorm( const floatType &value ){
+                    /*!
+                     * Set the maximum allowable value for the norm of the change in micro gradient plastic deformation for a single nonlinear increment
+                     *
+                     * \param &value: The parameter value
+                     */
+
+                    _maxMicroGradientPlasticDeltaNorm = value;
+
+                }
+
             protected:
 
                 bool _useWeakenedMacaulay; //!< Flag for whether to use the weak Macaulay brackets or not
@@ -998,6 +1043,12 @@ namespace tardigradeHydra{
                 std::vector< unsigned int > _stateVariableIndices; //! The indices of the state variables in the global solve
 
                 floatType _integrationParameter; //! The integration parameter (0 is explicit, 1 is implicit)
+
+                floatType _maxMacroPlasticDeltaNorm = 1.; //!< The maximum allowable value of the norm of the change in macro plasticity for a given nonlinear iteration
+
+                floatType _maxMicroPlasticDeltaNorm = 1.; //!< The maximum allowable value of the norm of the change in micro plasticity for a given nonlinear iteration
+
+                floatType _maxMicroGradientPlasticDeltaNorm = 1.; //!< The maximum allowable value of the norm of the change in micro gradient plasticity for a given nonlinear iteration
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroHardeningParameters,                             floatVector, unexpectedError                                         )
 

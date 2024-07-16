@@ -8720,6 +8720,95 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::projectSuggestedX( std::vector< floatType > &trialX,
+                                          const std::vector< floatType > &Xp ){
+            /*!
+             * Project the suggested unknown vector to the allowable space
+             *
+             * Called whenever hydra calls updateUnknownVector. It is assumed that the
+             * initial value as suggested by `residual::suggestInitialIterationValues` is
+             * in the allowable space.
+             *
+             * \param &trialX: The trial value of X
+             * \param &Xp: The previously accepted value of X
+             */
+
+            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+
+            const unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+
+            const unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+
+            const unsigned int numConfigurations         = *hydra->getNumConfigurations( );
+
+            const unsigned int numConfigurationUnknowns  = *hydra->getConfigurationUnknownCount( );
+
+            const std::vector< unsigned int > *stateVariableIndices = getStateVariableIndices( );
+
+            const floatVector dx = trialX - Xp;
+
+            const unsigned int plasticDeformationStart = numConfigurationUnknowns * plasticConfigurationIndex;
+
+            const unsigned int plasticDeformationStop  = numConfigurationUnknowns * ( plasticConfigurationIndex + 1 );
+
+            floatVector deltaPlasticDeformations( dx.begin( ) + plasticDeformationStart,
+                                                  dx.begin( ) + plasticDeformationStop );
+
+            // Check the macro plastic deformation
+            floatType norm = tardigradeVectorTools::l2norm( floatVector( deltaPlasticDeformations.begin( ),
+                                                                         deltaPlasticDeformations.begin( ) + numSecondOrderTensor ) );
+
+            if ( norm > *getMaxMacroPlasticDeltaNorm( ) ){
+
+                for ( unsigned int i = 0; i < numSecondOrderTensor; i++ ){
+
+                    trialX[ plasticDeformationStart + i ] = Xp[ i + plasticDeformationStart ] + dx[ i + plasticDeformationStart ] / norm;
+
+                }
+
+            }
+
+            // Check the micro plastic deformation
+            norm = tardigradeVectorTools::l2norm( floatVector( deltaPlasticDeformations.begin( ) + numSecondOrderTensor,
+                                                               deltaPlasticDeformations.begin( ) + 2 * numSecondOrderTensor ) );
+
+            if ( norm > *getMaxMicroPlasticDeltaNorm( ) ){
+
+                for ( unsigned int i = 0; i < numSecondOrderTensor; i++ ){
+
+                    trialX[ plasticDeformationStart + i + numSecondOrderTensor ] = Xp[ plasticDeformationStart + i + numSecondOrderTensor ] + dx[ plasticDeformationStart + i + numSecondOrderTensor ] / norm;
+
+                }
+
+            }
+
+            // Check the micro gradient plastic deformation
+            norm = tardigradeVectorTools::l2norm( floatVector( deltaPlasticDeformations.begin( ) + 2 * numSecondOrderTensor,
+                                                               deltaPlasticDeformations.begin( ) + 2 * numSecondOrderTensor + numThirdOrderTensor ) );
+
+            if ( norm > *getMaxMicroGradientPlasticDeltaNorm( ) ){
+
+                for ( unsigned int i = 0; i < numThirdOrderTensor; i++ ){
+
+                    trialX[ plasticDeformationStart + i + 2 * numSecondOrderTensor ] = Xp[ plasticDeformationStart + i + 2 * numSecondOrderTensor ] + dx[ plasticDeformationStart + i + 2 * numSecondOrderTensor ] / norm;
+
+                }
+
+            }
+
+            // Check the plastic multipliers and state variables to ensure positive values
+            for ( auto v = stateVariableIndices->begin( ); v != stateVariableIndices->end( ); v++ ){
+
+                if ( trialX[ numConfigurations * numConfigurationUnknowns + ( *v ) ] < 0 ){
+
+                    trialX[ numConfigurations * numConfigurationUnknowns + ( *v ) ] = 0;
+
+                }
+
+            }
+
+        }
+
     }
 
 }
