@@ -15,7 +15,7 @@ Changelog
 
 Release
 =======
-- Released version (:pull:`137`). By `Nathan Miller`_.
+- Released version (:pull:`138`). By `Nathan Miller`_.
 
 New Features
 ============
@@ -24,6 +24,10 @@ New Features
 - Added a Levenberg-Marquardt solve in the case of a convergence failure (:pull:`135`). By `Nathan Miller`_.
 - Added the ability to turn on or off applying projections (:pull:`136`). By `Nathan Miller`_.
 - Added a projection for the micromorphic Drucker-Prager plasticity (:pull:`136`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Set whether to use the projection to default to false (:pull:`137`). By `Nathan Miller`_.
 
 ******************
 0.4.3 (07-12-2024)
