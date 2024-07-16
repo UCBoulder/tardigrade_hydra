@@ -948,6 +948,8 @@ namespace tardigradeHydra{
 
             virtual void formPreconditioner( );
 
+            virtual void solveNonLinearProblem( );
+
             virtual void formMaxRowPreconditioner( );
 
             virtual void initializeUnknownVector( );
@@ -1215,8 +1217,6 @@ namespace tardigradeHydra{
             void setFirstConfigurationJacobians( );
 
             void setPreviousFirstConfigurationJacobians( );
-
-            void solveNonLinearProblem( );
 
             void performPreconditionedSolve( floatVector &deltaX_tr );
 
