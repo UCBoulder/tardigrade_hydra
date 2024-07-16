@@ -15,7 +15,7 @@ Changelog
 
 Release
 =======
-- Released version (:pull:`138`). By `Nathan Miller`_.
+- Released version (:pull:`139`). By `Nathan Miller`_.
 
 New Features
 ============
@@ -28,6 +28,11 @@ New Features
 Internal Changes
 ================
 - Set whether to use the projection to default to false (:pull:`137`). By `Nathan Miller`_.
+- Automatically turn on the projectors when Levenberg-Marquardt is enabled (:pull:`138`). By `Nathan Miller`_.
+
+Bug Fixes
+=========
+- Reset the iteration number when a re-attempt at a solve is performed (:pull:`138`). By `Nathan Miller`_.
 
 ******************
 0.4.3 (07-12-2024)

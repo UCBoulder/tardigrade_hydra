@@ -1011,6 +1011,8 @@ namespace tardigradeHydra{
 
             void incrementNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD++; }
 
+            void resetIterations( ){ /*! Reset the number of iterations */ _iteration = 0; }
+
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
                 /*!

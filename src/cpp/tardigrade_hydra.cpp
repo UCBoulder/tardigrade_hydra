@@ -1873,6 +1873,13 @@ namespace tardigradeHydra{
 
             setUseLevenbergMarquardt( true );
 
+            // Turn on projection
+            for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+                ( *residual_ptr )->setUseProjection( true );
+            }
+
+            resetIterations( );
+
             try{
 
                 solveNonLinearProblem( );
