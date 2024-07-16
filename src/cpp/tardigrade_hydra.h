@@ -475,6 +475,35 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void projectSuggestedX( std::vector< floatType > &trialX,
+                                            const std::vector< floatType > &Xp ){
+                /*!
+                 * Project the suggested unknown vector to the allowable space
+                 * 
+                 * Called whenever hydra calls updateUnknownVector. It is assumed that the
+                 * initial value as suggested by `residual::suggestInitialIterationValues` is
+                 * in the allowable space.
+                 * 
+                 * \param &trialX: The trial value of X
+                 * \param &Xp: The previously accepted value of X
+                 */
+
+            }
+
+            void setUseProjection( const bool &value ){
+                /*!
+                 * Set whether to use the projection or not
+                 * 
+                 * \param &value: The value of the parameter
+                 */
+
+                _useProjection = value;
+
+            }
+
+            //!< Get the flag for whether to use the projection or not
+            const bool *getUseProjection( ){ return &_useProjection; }
+
             // Getter functions
 
             //! Get the number of equations the residual defined
@@ -543,6 +572,8 @@ namespace tardigradeHydra{
         private:
 
             unsigned int _numEquations; //!< The number of residual equations
+
+            bool _useProjection = false; //!< Flag for whether to use the projection or not
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setResidual,                         getResidual,                        residual,                        floatVector, setResidual )
 
@@ -691,8 +722,14 @@ namespace tardigradeHydra{
             //!< Get a reference to the current value of mu_k
             const floatType* getMuk( ){ return &_mu_k; }
 
-            //!< Get a reference to the current value of mu_k
+            //!< Get a reference to whether the Newton step should be a LevenbergMarquardt step
             const bool* getUseLevenbergMarquardt( ){ return &_use_LM_step; }
+
+            //!< Get a reference to whether Gradient descent is allowed
+            const bool* getUseGradientDescent( ){ return &_use_gradient_descent; }
+
+            //!< Get a reference to the flag for whether to throw an error if the LHS matrix is rank-deficient
+            const bool* getRankDeficientError( ){ return &_rank_deficient_error; }
 
             //!< Set the gradient descent sigma parameter
             void setGradientSigma( const floatType &value ){
@@ -786,7 +823,33 @@ namespace tardigradeHydra{
                  * \param &value: The value of the parameter
                  */
 
+                setUseGradientDescent( value );
+
                 _use_LM_step = value;
+
+            }
+
+            //!< Set whether to use gradient descent
+            void setUseGradientDescent( const bool &value ){
+                /*!
+                 * Set whether to attempt a gradient descent step
+                 * 
+                 * \param &value: The value of the parameter
+                 */
+
+                _use_gradient_descent = value;
+
+            }
+
+            //!< Set whether rank deficiency is a reason to throw an error
+            void setRankDeficientError( const bool &value ){
+                /*!
+                 * Set whether a rank-deficient LHS will cause an error
+                 * 
+                 * \param &value: The value of the parameter
+                 */
+
+                _rank_deficient_error = value;
 
             }
 
@@ -918,6 +981,8 @@ namespace tardigradeHydra{
 
             virtual void formPreconditioner( );
 
+            virtual void solveNonLinearProblem( );
+
             virtual void formMaxRowPreconditioner( );
 
             virtual void initializeUnknownVector( );
@@ -962,6 +1027,8 @@ namespace tardigradeHydra{
             void incrementNumLS( ){ /*! Reset the number of line search steps */ _NUM_LS++; }
 
             void incrementNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD++; }
+
+            void resetIterations( ){ /*! Reset the number of iterations */ _iteration = 0; }
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
@@ -1061,6 +1128,8 @@ namespace tardigradeHydra{
             std::string build_upper_index_out_of_range_error_string( const unsigned int upperIndex, const unsigned int num_configurations );
             std::string build_lower_index_out_of_range_error_string( const unsigned int lowerIndex, const unsigned int upperIndex );
 
+            floatVector _initialX;
+
         private:
 
             // Friend classes
@@ -1111,6 +1180,10 @@ namespace tardigradeHydra{
             unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
 
             bool _use_LM_step = false; //!< Flag for whether to attempt a Levenberg-Marquardt step
+
+            bool _use_gradient_descent = false; //!< Flag for whether to attempt a gradient descent step
+
+            bool _rank_deficient_error = true; //!< Flag for whether a rank-deficient LHS will throw a convergence error
 
             floatType _mu_k = -1; //!< The Levenberg-Marquardt scaling parameter
 
@@ -1183,8 +1256,6 @@ namespace tardigradeHydra{
             void setFirstConfigurationJacobians( );
 
             void setPreviousFirstConfigurationJacobians( );
-
-            void solveNonLinearProblem( );
 
             void performPreconditionedSolve( floatVector &deltaX_tr );
 

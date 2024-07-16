@@ -9,6 +9,41 @@ Changelog
 0.5.0 (unreleased)
 ******************
 
+******************
+0.4.4 (07-12-2024)
+******************
+
+Release
+=======
+- Released version (:pull:`141`). By `Nathan Miller`_.
+
+New Features
+============
+- Added projection operators to the residualBase (:pull:`133`). By `Nathan Miller`_.
+- Allow the user to turn off rank-deficient errors (:pull:`134`). By `Nathan Miller`_.
+- Added a Levenberg-Marquardt solve in the case of a convergence failure (:pull:`135`). By `Nathan Miller`_.
+- Added the ability to turn on or off applying projections (:pull:`136`). By `Nathan Miller`_.
+- Added a projection for the micromorphic Drucker-Prager plasticity (:pull:`136`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Set whether to use the projection to default to false (:pull:`137`). By `Nathan Miller`_.
+- Automatically turn on the projectors when Levenberg-Marquardt is enabled (:pull:`138`). By `Nathan Miller`_.
+- Set hydra to reset the unknown vector to the initial unknown after a failed solve (:pull:`139`). By `Nathan Miller`_.
+
+Bug Fixes
+=========
+- Reset the iteration number when a re-attempt at a solve is performed (:pull:`138`). By `Nathan Miller`_.
+- Fixed the use of the gradient descent flag for the nonlinear solve (:pull:`140`). By `Nathan Miller`_.
+
+******************
+0.4.3 (07-12-2024)
+******************
+
+Release
+=======
+- Released version (:pull:`132`). By `Nathan Miller`_.
+
 New Features
 ============
 - Added the gradient of the residual norm (:pull:`125`). By `Nathan Miller`_.

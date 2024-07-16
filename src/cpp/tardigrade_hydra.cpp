@@ -1502,11 +1502,32 @@ namespace tardigradeHydra{
          * \param &newUnknownVector: The new unknown vector
          */
 
+        // Project the trial unknown vector to the allowable space
+        floatVector trialX = newUnknownVector;
+        floatVector Xp;
+
+        if ( !_X.first ){
+
+            Xp = trialX;
+
+        }
+        else{
+
+            Xp = *getUnknownVector( );
+
+        }
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+            if ( *( *residual_ptr )->getUseProjection( ) ){
+                ( *residual_ptr )->projectSuggestedX( trialX, Xp );
+            }
+        }
+
         // Reset all of the iteration data
         resetIterationData( );
 
         // Set the unknown vector
-        setX( newUnknownVector );
+        setX( trialX );
 
         // Decompose the unknown vector and update the state
         TARDIGRADE_ERROR_TOOLS_CATCH( decomposeUnknownVector( ) );
@@ -1549,7 +1570,7 @@ namespace tardigradeHydra{
 
         unsigned int rank = linearSolver.rank( );
 
-        if ( rank != getResidual( )->size( ) ){
+        if ( *getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
             TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 
@@ -1582,7 +1603,7 @@ namespace tardigradeHydra{
 
             unsigned int rank = linearSolver.rank( );
 
-            if ( rank != getResidual( )->size( ) ){
+            if ( *getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 
@@ -1773,6 +1794,8 @@ namespace tardigradeHydra{
         // Form the initial unknown vector
         TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
 
+        _initialX = *getUnknownVector( );
+
         floatVector deltaX( getNumUnknowns( ), 0 );
 
         resetLSIteration( );
@@ -1792,7 +1815,7 @@ namespace tardigradeHydra{
             // Refine the estimate if the new point has a higher residual
             if ( !checkLSConvergence( ) ){
 
-                if ( checkDescentDirection( deltaX ) ){
+                if ( checkDescentDirection( deltaX ) || !( *getUseGradientDescent( ) ) ){
 
                     // Perform an Armijo type line search when the search direction is aligned with the gradient
                     performArmijoTypeLineSearch( X0, deltaX );
@@ -1847,7 +1870,34 @@ namespace tardigradeHydra{
         }
         catch( const convergence_error &e ){
 
-            throw;
+            //Try a Levenberg-Marquardt solve if there is a convergence error
+            setRankDeficientError( false );
+
+            setUseLevenbergMarquardt( true );
+
+            // Turn on projection
+            for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+                ( *residual_ptr )->setUseProjection( true );
+            }
+
+            resetIterations( );
+            updateUnknownVector( _initialX );
+
+            try{
+
+                solveNonLinearProblem( );
+
+            }
+            catch( const convergence_error &e ){
+
+                throw;
+
+            }
+            catch( std::exception &e ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+
+            }
 
         }
         catch( std::exception &e ){
@@ -1921,7 +1971,7 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CATCH(
 
-            if ( rank != getResidual( )->size( ) ){
+            if ( *getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
                 throw convergence_error( "The Jacobian is not full rank" );
 

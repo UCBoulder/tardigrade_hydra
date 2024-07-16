@@ -1567,6 +1567,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn3, * boost::unit_test::to
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
+            tardigradeHydra::residualBase additional;
+
             unsigned int elasticitySize = 9;
 
             using tardigradeHydra::hydraBase::hydraBase;
@@ -1577,9 +1579,13 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn3, * boost::unit_test::to
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 1 );
+                additional = tardigradeHydra::residualBase( this, 18 );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
 
                 residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &additional;
 
                 setResidualClasses( residuals );
 
@@ -1854,7 +1860,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setJacobian, * boost::unit_test::tolerance( 
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                remainder = tardigradeHydra::residualBase( this, 18 );
+                remainder = tardigradeHydra::residualBase( this, 21 );
 
                 std::vector< tardigradeHydra::residualBase* > residuals( 2 );
 
@@ -1967,7 +1973,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdT, * boost::unit_test::tolerance( DEFA
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                remainder = tardigradeHydra::residualBase( this, 18 );
+                remainder = tardigradeHydra::residualBase( this, 21 );
 
                 std::vector< tardigradeHydra::residualBase* > residuals( 2 );
 
@@ -2076,7 +2082,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdF, * boost::unit_test::tolerance( DEFA
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                remainder = tardigradeHydra::residualBase( this, 18 );
+                remainder = tardigradeHydra::residualBase( this, 21 );
 
                 std::vector< tardigradeHydra::residualBase* > residuals( 2 );
 
