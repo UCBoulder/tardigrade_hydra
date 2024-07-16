@@ -2422,7 +2422,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_checkDefaults, * boost::unit_test::toler
 
     BOOST_CHECK_NO_THROW( residual.setAdditionalDerivatives( ) );
 
-    BOOST_CHECK( *residual.getUseProjection( ) );
+    BOOST_CHECK( !( *residual.getUseProjection( ) ) );
 
 }
 

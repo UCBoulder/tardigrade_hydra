@@ -573,7 +573,7 @@ namespace tardigradeHydra{
 
             unsigned int _numEquations; //!< The number of residual equations
 
-            bool _useProjection = true; //!< Flag for whether to use the projection or not
+            bool _useProjection = false; //!< Flag for whether to use the projection or not
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setResidual,                         getResidual,                        residual,                        floatVector, setResidual )
 
