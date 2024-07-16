@@ -1568,7 +1568,7 @@ namespace tardigradeHydra{
 
         unsigned int rank = linearSolver.rank( );
 
-        if ( rank != getResidual( )->size( ) ){
+        if ( *getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
             TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 
@@ -1601,7 +1601,7 @@ namespace tardigradeHydra{
 
             unsigned int rank = linearSolver.rank( );
 
-            if ( rank != getResidual( )->size( ) ){
+            if ( *getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 
@@ -1940,7 +1940,7 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CATCH(
 
-            if ( rank != getResidual( )->size( ) ){
+            if ( *getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
                 throw convergence_error( "The Jacobian is not full rank" );
 
