@@ -1866,7 +1866,26 @@ namespace tardigradeHydra{
         }
         catch( const convergence_error &e ){
 
-            throw;
+            //Try a Levenberg-Marquardt solve if there is a convergence error
+            setRankDeficientError( false );
+
+            setUseLevenbergMarquardt( true );
+
+            try{
+
+                solveNonLinearProblem( );
+
+            }
+            catch( const convergence_error &e ){
+
+                throw;
+
+            }
+            catch( std::exception &e ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+
+            }
 
         }
         catch( std::exception &e ){
