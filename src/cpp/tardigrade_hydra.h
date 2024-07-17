@@ -218,6 +218,7 @@ namespace tardigradeHydra{
     typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
 
     //Define tensors of known size
+    typedef std::vector< floatType > dimVector; //!< Dimension vector
     typedef std::vector< floatType > secondOrderTensor; //!< Second order tensors
     typedef std::vector< floatType > thirdOrderTensor; //!< Third order tensors
     typedef std::vector< floatType > fourthOrderTensor; //!< Fourth order tensors
