@@ -67,8 +67,8 @@ namespace tardigradeHydra{
     
         }
 
-        void computeSecondOrderDruckerPragerYieldEquation( const variableVector &stressMeasure, const variableType &cohesion,
-                                                               const variableVector &precedingDeformationGradient,
+        void computeSecondOrderDruckerPragerYieldEquation( const secondOrderTensor &stressMeasure, const variableType &cohesion,
+                                                               const secondOrderTensor &precedingDeformationGradient,
                                                                const parameterType &frictionAngle, const parameterType &beta,
                                                                variableType &yieldValue ){
             /*!
@@ -102,7 +102,7 @@ namespace tardigradeHydra{
 
             //Compute the decomposition of the stress
             variableType pressure;
-            variableVector deviatoricReferenceStress;
+            secondOrderTensor deviatoricReferenceStress;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( stressMeasure,
                                                                                                                                     rightCauchyGreen, deviatoricReferenceStress, pressure ) );
@@ -115,11 +115,11 @@ namespace tardigradeHydra{
 
         }
 
-        void computeSecondOrderDruckerPragerYieldEquation( const variableVector &referenceStressMeasure, const variableType &cohesion,
-                                                           const variableVector &precedingDeformationGradient,
+        void computeSecondOrderDruckerPragerYieldEquation( const secondOrderTensor &referenceStressMeasure, const variableType &cohesion,
+                                                           const secondOrderTensor &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
-                                                           variableVector &dFdPrecedingF, double tol ){
+                                                           variableType &yieldValue, secondOrderTensor &dFdStress, variableType &dFdc,
+                                                           secondOrderTensor &dFdPrecedingF, double tol ){
             /*!
              * Compute the second-order Drucker Prager Yield equation
              *
@@ -165,17 +165,17 @@ namespace tardigradeHydra{
  
             //Compute the decomposition of the stress
             variableType pressure;
-            variableVector deviatoricReferenceStress;
+            secondOrderTensor deviatoricReferenceStress;
     
-            variableVector dDevStressdStress, dDevStressdRCG;
-            variableVector dPressuredStress, dPressuredRCG;
+            fourthOrderTensor dDevStressdStress, dDevStressdRCG;
+            secondOrderTensor dPressuredStress, dPressuredRCG;
     
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
                                                        rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                                                        dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
    
-            variableVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim );
-            variableVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG, dRCGdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
+            fourthOrderTensor dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim );
+            secondOrderTensor dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG, dRCGdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
  
             //Compute the l2norm of the deviatoric stress
             variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
@@ -184,7 +184,7 @@ namespace tardigradeHydra{
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
     
             //Evaluate the jacobians
-            variableVector devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
+            secondOrderTensor devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
     
             dFdStress  = BAngle * dPressuredStress;
             dFdStress += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdStress, 1, sot_dim, sot_dim, sot_dim );
@@ -195,12 +195,12 @@ namespace tardigradeHydra{
             dFdPrecedingF += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
         }
 
-        void computeSecondOrderDruckerPragerYieldEquation( const variableVector &stressMeasure, const variableType &cohesion,
-                                                           const variableVector &precedingDeformationGradient,
+        void computeSecondOrderDruckerPragerYieldEquation( const secondOrderTensor &stressMeasure, const variableType &cohesion,
+                                                           const secondOrderTensor &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableType &yieldValue, variableVector &dFdStress, variableType &dFdc,
-                                                           variableVector &dFdPrecedingF, variableVector &d2FdStress2,
-                                                           variableVector &d2FdStressdPrecedingF, double tol ){
+                                                           variableType &yieldValue, secondOrderTensor &dFdStress, variableType &dFdc,
+                                                           secondOrderTensor &dFdPrecedingF, fourthOrderTensor &d2FdStress2,
+                                                           fourthOrderTensor &d2FdStressdPrecedingF, double tol ){
             /*!
              * Compute the second-order Drucker Prager Yield equation
              *
@@ -254,23 +254,24 @@ namespace tardigradeHydra{
 
             //Compute the decomposition of the stress
             variableType pressure;
-            variableVector deviatoricReferenceStress;
+            secondOrderTensor deviatoricReferenceStress;
 
-            variableVector dDevStressdStress, dDevStressdRCG;
-            variableVector dPressuredStress, dPressuredRCG;
+            fourthOrderTensor dDevStressdStress, dDevStressdRCG;
+            secondOrderTensor dPressuredStress, dPressuredRCG;
 
-            variableVector d2DevStressdStressdRCG, d2PressuredStressdRCG;
+            sixthOrderTensor d2DevStressdStressdRCG;
+            fourthOrderTensor d2PressuredStressdRCG;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( stressMeasure,
                                                        rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                                                        dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
 
-            variableVector dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim );
-            variableVector dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG, dRCGdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
+            fourthOrderTensor dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim );
+            secondOrderTensor dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG, dRCGdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
 
-            variableVector d2DevStressdStressdPrecedingF( sot_dim * sot_dim * sot_dim, 0 );
+            sixthOrderTensor d2DevStressdStressdPrecedingF( sot_dim * sot_dim * sot_dim, 0 );
 
-            variableVector d2PressuredStressdPrecedingF( sot_dim * sot_dim, 0 );
+            fourthOrderTensor d2PressuredStressdPrecedingF( sot_dim * sot_dim, 0 );
 
             for ( unsigned int I = 0; I < deviatoricReferenceStress.size( ); I++ ){
 
@@ -301,7 +302,7 @@ namespace tardigradeHydra{
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
 
             //Evaluate the jacobians
-            variableVector devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
+            secondOrderTensor devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
 
             dFdStress = BAngle * dPressuredStress;
             dFdStress += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdStress, 1, sot_dim, sot_dim, sot_dim );
@@ -312,7 +313,7 @@ namespace tardigradeHydra{
             dFdPrecedingF += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
 
             //Evaluate the second-order jacobians
-            variableVector dDevStressDirectiondDevStress( sot_dim * sot_dim, 0 );
+            fourthOrderTensor dDevStressDirectiondDevStress( sot_dim * sot_dim, 0 );
             for ( unsigned int i = 0; i < sot_dim; i++ ){ dDevStressDirectiondDevStress[ sot_dim * i + i ] = 1. / ( normDevStress + tol ); }
             dDevStressDirectiondDevStress -= tardigradeVectorTools::matrixMultiply( devStressDirection, devStressDirection, sot_dim, 1, 1, sot_dim ) / ( normDevStress + tol );
 
@@ -329,11 +330,11 @@ namespace tardigradeHydra{
 
         }
 
-        void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
-                                                               const variableVector &cohesion,
-                                                               const variableVector &precedingDeformationGradient,
+        void computeHigherOrderDruckerPragerYieldEquation( const thirdOrderTensor &stressMeasure,
+                                                               const dimVector &cohesion,
+                                                               const secondOrderTensor &precedingDeformationGradient,
                                                                const parameterType &frictionAngle, const parameterType &beta,
-                                                               variableVector &yieldValue ){
+                                                               dimVector &yieldValue ){
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
@@ -363,14 +364,14 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen ) );
 
             //Compute the decomposition of the stress
-            variableVector pressure;
-            variableVector deviatoricReferenceStress;
+            dimVector pressure;
+            thirdOrderTensor deviatoricReferenceStress;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
                                  rightCauchyGreen, deviatoricReferenceStress, pressure ) );
 
             //Compute the l2norm of the deviatoric stress
-            variableVector normDevStress;
+            dimVector normDevStress;
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress ) );
 
             //Evaluate the yield equation
@@ -378,12 +379,12 @@ namespace tardigradeHydra{
 
         }
 
-        void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
-                                                               const variableVector &cohesion,
-                                                               const variableVector &precedingDeformationGradient,
+        void computeHigherOrderDruckerPragerYieldEquation( const thirdOrderTensor &stressMeasure,
+                                                               const dimVector &cohesion,
+                                                               const secondOrderTensor &precedingDeformationGradient,
                                                                const parameterType &frictionAngle, const parameterType &beta,
-                                                               variableVector &yieldValue, variableVector &dFdStress, variableVector &dFdc,
-                                                               variableVector &dFdPrecedingF ){
+                                                               dimVector &yieldValue, fourthOrderTensor &dFdStress, secondOrderTensor &dFdc,
+                                                               thirdOrderTensor &dFdPrecedingF ){
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
@@ -424,11 +425,13 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
 
             //Compute the decomposition of the stress
-            variableVector pressure;
-            variableVector deviatoricReferenceStress;
+            dimVector pressure;
+            thirdOrderTensor deviatoricReferenceStress;
 
-            variableVector dDevStressdStress, dDevStressdRCG;
-            variableVector dPressuredStress, dPressuredRCG;
+            sixthOrderTensor  dDevStressdStress;
+            fifthOrderTensor  dDevStressdRCG;
+            fourthOrderTensor dPressuredStress;
+            thirdOrderTensor  dPressuredRCG;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
                                                        rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
@@ -449,8 +452,8 @@ namespace tardigradeHydra{
             dPressuredPrecedingF_mat = ( dPressuredRCG_mat * dRCGdPrecedingF_mat ).eval( );
 
             //Compute the l2norm of the deviatoric stress
-            variableVector normDevStress;
-            variableVector dNormDevStressdDevStress;
+            dimVector normDevStress;
+            fourthOrderTensor dNormDevStressdDevStress;
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress, dNormDevStressdDevStress ) );
 
             //Evaluate the yield equation
@@ -466,7 +469,7 @@ namespace tardigradeHydra{
 
             dFdStress_mat  = ( dFdStress_mat + dNormDevStressdDevStress_mat * dDevStressdStress_mat ).eval( );
 
-            dFdc = variableVector( cohesion.size( ) * cohesion.size( ), 0 );
+            dFdc = secondOrderTensor( cohesion.size( ) * cohesion.size( ), 0 );
             for ( unsigned int i = 0; i < dim; i++ ){ dFdc[ dim * i + i ] = -AAngle; }
 
             dFdPrecedingF  = BAngle * dPressuredPrecedingF;
@@ -477,13 +480,13 @@ namespace tardigradeHydra{
 
         }
 
-        void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
-                                                           const variableVector &cohesion,
-                                                           const variableVector &precedingDeformationGradient,
+        void computeHigherOrderDruckerPragerYieldEquation( const thirdOrderTensor &stressMeasure,
+                                                           const dimVector &cohesion,
+                                                           const secondOrderTensor &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableVector &yieldValue, variableVector &dFdStress, variableVector &dFdc,
-                                                           variableVector &dFdPrecedingF, variableVector &d2FdStress2,
-                                                           variableVector &d2FdStressdPrecedingF ){
+                                                           dimVector &yieldValue, fourthOrderTensor &dFdStress, secondOrderTensor &dFdc,
+                                                           thirdOrderTensor &dFdPrecedingF, seventhOrderTensor &d2FdStress2,
+                                                           sixthOrderTensor &d2FdStressdPrecedingF ){
             /*!
              * Compute the higher-order Drucker Prager Yield equation
              *
@@ -530,13 +533,16 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
 
             //Compute the decomposition of the stress
-            variableVector pressure;
-            variableVector deviatoricReferenceStress;
+            dimVector pressure;
+            thirdOrderTensor deviatoricReferenceStress;
 
-            variableVector dDevStressdStress, dDevStressdRCG;
-            variableVector dPressuredStress, dPressuredRCG;
+            sixthOrderTensor dDevStressdStress;
+            fifthOrderTensor dDevStressdRCG;
+            fourthOrderTensor dPressuredStress;
+            thirdOrderTensor dPressuredRCG;
 
-            variableVector d2DevStressdStressdRCG, d2PressuredStressdRCG;
+            seventhOrderTensor d2DevStressdStressdRCG;
+            fifthOrderTensor d2PressuredStressdRCG;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
                                                        rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
@@ -556,9 +562,9 @@ namespace tardigradeHydra{
             dDevStressdPrecedingF_mat = ( dDevStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
             dPressuredPrecedingF_mat = ( dPressuredRCG_mat * dRCGdPrecedingF_mat ).eval( );
 
-            variableVector d2DevStressdStressdPrecedingF( siot_dim * sot_dim, 0 );
+            eighthOrderTensor d2DevStressdStressdPrecedingF( siot_dim * sot_dim, 0 );
 
-            variableVector d2PressuredStressdPrecedingF( dim * tot_dim * sot_dim, 0 );
+            sixthOrderTensor d2PressuredStressdPrecedingF( dim * tot_dim * sot_dim, 0 );
 
             Eigen::Map< Eigen::Matrix< floatType, siot_dim, sot_dim, Eigen::RowMajor > > d2DevStressdStressdRCG_mat( d2DevStressdStressdRCG.data( ), siot_dim, sot_dim );
             Eigen::Map< Eigen::Matrix< floatType, siot_dim, sot_dim, Eigen::RowMajor > > d2DevStressdStressdPrecedingF_mat( d2DevStressdStressdPrecedingF.data( ), siot_dim, sot_dim );
@@ -570,9 +576,9 @@ namespace tardigradeHydra{
             d2PressuredStressdPrecedingF_mat = ( d2PressuredStressdRCG_mat * dRCGdPrecedingF_mat ).eval( );
 
             //Compute the l2norm of the deviatoric stress
-            variableVector normDevStress;
-            variableVector dNormDevStressdDevStress;
-            variableVector d2NormDevStressdDevStress2;
+            thirdOrderTensor normDevStress;
+            fourthOrderTensor dNormDevStressdDevStress;
+            seventhOrderTensor d2NormDevStressdDevStress2;
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress,
                                                                                                                   dNormDevStressdDevStress,
                                                                                                                   d2NormDevStressdDevStress2 ) )
@@ -590,7 +596,7 @@ namespace tardigradeHydra{
 
             dFdStress_mat  = ( dFdStress_mat + dNormDevStressdDevStress_mat * dDevStressdStress_mat ).eval( );
     
-            dFdc = variableVector( cohesion.size( ) * cohesion.size( ), 0 );
+            dFdc = secondOrderTensor( cohesion.size( ) * cohesion.size( ), 0 );
             for ( unsigned int i = 0; i < dim; i++ ){ dFdc[ dim * i + i ] = -AAngle; }
     
             dFdPrecedingF  = BAngle * dPressuredPrecedingF;
@@ -600,8 +606,8 @@ namespace tardigradeHydra{
             dFdPrecedingF_mat = ( dFdPrecedingF_mat + dNormDevStressdDevStress_mat * dDevStressdPrecedingF_mat ).eval( );
     
             //Construct the second-order jacobians
-            d2FdStress2 = variableVector( dim * tot_dim * tot_dim, 0 );
-            d2FdStressdPrecedingF = variableVector( dim * tot_dim * sot_dim, 0 );
+            d2FdStress2 = seventhOrderTensor( dim * tot_dim * tot_dim, 0 );
+            d2FdStressdPrecedingF = sixthOrderTensor( dim * tot_dim * sot_dim, 0 );
 
             floatVector temp_siot1( dim * tot_dim * sot_dim, 0 );
             floatVector temp_seot1( dim * tot_dim * tot_dim, 0 );
@@ -661,10 +667,10 @@ namespace tardigradeHydra{
         }
 
         void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
-                                                  const variableVector &inverseElasticRightCauchyGreen,
-                                                  const variableVector &macroFlowDirection,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMacroVelocityGradient ){
+                                                  const secondOrderTensor &inverseElasticRightCauchyGreen,
+                                                  const secondOrderTensor &macroFlowDirection,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMacroVelocityGradient ){
             /*!
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
@@ -688,7 +694,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CHECK( microFlowDirection.size() == dim * dim, "The micro flow direction tensor must be 3D" );
 
             //Compute the macro-scale velocity gradient
-            plasticMacroVelocityGradient = variableVector( dim * dim, 0 );
+            plasticMacroVelocityGradient = secondOrderTensor( dim * dim, 0 );
 
             for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
 
@@ -710,12 +716,12 @@ namespace tardigradeHydra{
         }
 
         void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
-                                                  const variableVector &inverseElasticRightCauchyGreen,
-                                                  const variableVector &macroFlowDirection,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMacroVelocityGradient,
-                                                  variableVector &dPlasticMacroLdMacroGamma,
-                                                  variableVector &dPlasticMacroLdMicroGamma ){
+                                                  const secondOrderTensor &inverseElasticRightCauchyGreen,
+                                                  const secondOrderTensor &macroFlowDirection,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMacroVelocityGradient,
+                                                  secondOrderTensor &dPlasticMacroLdMacroGamma,
+                                                  secondOrderTensor &dPlasticMacroLdMicroGamma ){
             /*!
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
@@ -741,8 +747,8 @@ namespace tardigradeHydra{
                                                      macroFlowDirection, microFlowDirection, plasticMacroVelocityGradient )
             )
 
-            dPlasticMacroLdMacroGamma = variableVector( dim * dim, 0 );
-            dPlasticMacroLdMicroGamma = variableVector( dim * dim, 0 );
+            dPlasticMacroLdMacroGamma = secondOrderTensor( dim * dim, 0 );
+            dPlasticMacroLdMicroGamma = secondOrderTensor( dim * dim, 0 );
 
             for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
 
@@ -765,15 +771,15 @@ namespace tardigradeHydra{
         }
 
         void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
-                                                  const variableVector &inverseElasticRightCauchyGreen,
-                                                  const variableVector &macroFlowDirection,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMacroVelocityGradient,
-                                                  variableVector &dPlasticMacroLdMacroGamma,
-                                                  variableVector &dPlasticMacroLdMicroGamma,
-                                                  variableVector &dPlasticMacroLdElasticRCG,
-                                                  variableVector &dPlasticMacroLdMacroFlowDirection,
-                                                  variableVector &dPlasticMacroLdMicroFlowDirection ){
+                                                  const secondOrderTensor &inverseElasticRightCauchyGreen,
+                                                  const secondOrderTensor &macroFlowDirection,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMacroVelocityGradient,
+                                                  secondOrderTensor &dPlasticMacroLdMacroGamma,
+                                                  secondOrderTensor &dPlasticMacroLdMicroGamma,
+                                                  fourthOrderTensor &dPlasticMacroLdElasticRCG,
+                                                  fourthOrderTensor &dPlasticMacroLdMacroFlowDirection,
+                                                  fourthOrderTensor &dPlasticMacroLdMicroFlowDirection ){
             /*!
              * Compute the plastic macro velocity gradient in the intermediate configuration.
              *
@@ -807,9 +813,9 @@ namespace tardigradeHydra{
                                                      dPlasticMacroLdMacroGamma, dPlasticMacroLdMicroGamma );
             )
 
-            dPlasticMacroLdElasticRCG = variableVector( sot_dim * sot_dim, 0 );
-            dPlasticMacroLdMacroFlowDirection = variableVector( sot_dim * sot_dim, 0 );
-            dPlasticMacroLdMicroFlowDirection = variableVector( sot_dim * sot_dim, 0 );
+            dPlasticMacroLdElasticRCG = fourthOrderTensor( sot_dim * sot_dim, 0 );
+            dPlasticMacroLdMacroFlowDirection = fourthOrderTensor( sot_dim * sot_dim, 0 );
+            dPlasticMacroLdMicroFlowDirection = fourthOrderTensor( sot_dim * sot_dim, 0 );
 
             for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
 
@@ -839,10 +845,10 @@ namespace tardigradeHydra{
 
         }
 
-        void computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
-                                                  const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMicroVelocityGradient ){
+        void computePlasticMicroVelocityGradient( const variableType &microGamma, const secondOrderTensor &elasticMicroRightCauchyGreen,
+                                                  const secondOrderTensor &elasticPsi, const secondOrderTensor &inverseElasticPsi,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMicroVelocityGradient ){
             /*!
              * Compute the plastic micro velocity gradient
              *
@@ -871,11 +877,11 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( microFlowDirection.size() == dim * dim, "The micro flow direction of the elastic micro plastic flow direction is not 3D" );
 
-            plasticMicroVelocityGradient = variableVector( sot_dim, 0 );
+            plasticMicroVelocityGradient = secondOrderTensor( sot_dim, 0 );
 
             //NOTE: I'm making the second inverse elastic Psi be the transpose of what was done previously.
             //      I think the way it was is a bug since it isn't consistent with the form in my dissertation.
-            variableVector temp_sot( sot_dim, 0 );
+            secondOrderTensor temp_sot( sot_dim, 0 );
 
             for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
 
@@ -927,11 +933,11 @@ namespace tardigradeHydra{
 
         }
 
-        void computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
-                                                  const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMicroVelocityGradient,
-                                                  variableVector &dPlasticMicroLdMicroGamma ){
+        void computePlasticMicroVelocityGradient( const variableType &microGamma, const secondOrderTensor &elasticMicroRightCauchyGreen,
+                                                  const secondOrderTensor &elasticPsi, const secondOrderTensor &inverseElasticPsi,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMicroVelocityGradient,
+                                                  secondOrderTensor &dPlasticMicroLdMicroGamma ){
             /*!
              * Compute the plastic micro velocity gradient
              *
@@ -962,10 +968,10 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( microFlowDirection.size() == dim * dim, "The micro flow direction of the elastic micro plastic flow direction is not 3D" );
 
-            plasticMicroVelocityGradient = variableVector( dim * dim, 0 );
-            dPlasticMicroLdMicroGamma = variableVector( dim * dim, 0 );
+            plasticMicroVelocityGradient = secondOrderTensor( dim * dim, 0 );
+            dPlasticMicroLdMicroGamma = secondOrderTensor( dim * dim, 0 );
 
-            variableVector temp_sot( sot_dim, 0 );
+            secondOrderTensor temp_sot( sot_dim, 0 );
 
             for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
 
@@ -1019,14 +1025,14 @@ namespace tardigradeHydra{
 
         }
 
-        void computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
-                                                  const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMicroVelocityGradient,
-                                                  variableVector &dPlasticMicroLdMicroGamma,
-                                                  variableVector &dPlasticMicroLdElasticMicroRCG,
-                                                  variableVector &dPlasticMicroLdElasticPsi,
-                                                  variableVector &dPlasticMicroLdMicroFlowDirection ){
+        void computePlasticMicroVelocityGradient( const variableType &microGamma, const secondOrderTensor &elasticMicroRightCauchyGreen,
+                                                  const secondOrderTensor &elasticPsi, const secondOrderTensor &inverseElasticPsi,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMicroVelocityGradient,
+                                                  secondOrderTensor &dPlasticMicroLdMicroGamma,
+                                                  fourthOrderTensor &dPlasticMicroLdElasticMicroRCG,
+                                                  fourthOrderTensor &dPlasticMicroLdElasticPsi,
+                                                  fourthOrderTensor &dPlasticMicroLdMicroFlowDirection ){
             /*!
              * Compute the plastic micro velocity gradient
              *
@@ -1065,17 +1071,17 @@ namespace tardigradeHydra{
             )
 
             //Assemble the Jacobians
-            dPlasticMicroLdElasticMicroRCG = variableVector( sot_dim * sot_dim, 0 );
+            dPlasticMicroLdElasticMicroRCG = fourthOrderTensor( sot_dim * sot_dim, 0 );
 
-            dPlasticMicroLdElasticPsi = variableVector( sot_dim * sot_dim, 0 );
+            dPlasticMicroLdElasticPsi = fourthOrderTensor( sot_dim * sot_dim, 0 );
 
-            dPlasticMicroLdMicroFlowDirection = variableVector( sot_dim * sot_dim, 0 );
+            dPlasticMicroLdMicroFlowDirection = fourthOrderTensor( sot_dim * sot_dim, 0 );
 
-            variableVector temp_sot1( sot_dim, 0 );
+            secondOrderTensor temp_sot1( sot_dim, 0 );
 
-            variableVector temp_sot1a( sot_dim, 0 );
+            secondOrderTensor temp_sot1a( sot_dim, 0 );
 
-            variableVector temp_sot1b( sot_dim, 0 );
+            secondOrderTensor temp_sot1b( sot_dim, 0 );
 
             for ( unsigned int Ob = 0; Ob < dim; Ob++ ){
 
@@ -1107,7 +1113,7 @@ namespace tardigradeHydra{
 
             }
 
-            variableVector temp_fot1( fot_dim, 0 );
+            fourthOrderTensor temp_fot1( fot_dim, 0 );
 
             for ( unsigned int Bb = 0; Bb < dim; Bb++ ){
 
@@ -1137,11 +1143,11 @@ namespace tardigradeHydra{
 
         }
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient ){
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient ){
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
@@ -1158,7 +1164,7 @@ namespace tardigradeHydra{
              * \param &plasticMicroGradientVelocityGradient: The plastic micro gradient velocity gradient.
              */
 
-            variableVector skewTerm;
+            thirdOrderTensor skewTerm;
             return computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
                                                                 elasticGamma, microGradientFlowDirection,
                                                                 plasticMicroVelocityGradient, plasticMicroGradientVelocityGradient,
@@ -1166,12 +1172,12 @@ namespace tardigradeHydra{
 
         }
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient,
-                                                          variableVector &skewTerm ){
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
+                                                          thirdOrderTensor &skewTerm ){
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
@@ -1207,9 +1213,9 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CHECK( plasticMicroVelocityGradient.size() == sot_dim, "The plastic micro velocity gradient must be 3D" );
 
             //Assemble the 'skew' term
-            skewTerm = variableVector( tot_dim, 0 );
-            variableVector temp_sot( tot_dim, 0 );
-            variableVector temp_tot( tot_dim, 0 );
+            skewTerm = thirdOrderTensor( tot_dim, 0 );
+            secondOrderTensor temp_sot( sot_dim, 0 );
+            thirdOrderTensor temp_tot( tot_dim, 0 );
 
             for ( unsigned int Db = 0; Db < dim; Db++ ){
 
@@ -1252,7 +1258,7 @@ namespace tardigradeHydra{
 
             }
 
-            plasticMicroGradientVelocityGradient = variableVector( dim * dim * dim, 0 );
+            plasticMicroGradientVelocityGradient = thirdOrderTensor( dim * dim * dim, 0 );
 
             std::fill( temp_tot.begin( ), temp_tot.end( ), 0 );
 
@@ -1297,13 +1303,13 @@ namespace tardigradeHydra{
 
         }
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          variableVector &dPlasticMicroGradientLdPlasticMicroL ){
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
+                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          fifthOrderTensor &dPlasticMicroGradientLdPlasticMicroL ){
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
@@ -1324,7 +1330,7 @@ namespace tardigradeHydra{
              *     velocity gradient w.r.t. the platic micro velocity gradient.
              */
 
-            variableVector skewTerm;
+            thirdOrderTensor skewTerm;
             return computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi, elasticGamma,
                                                                 microGradientFlowDirection, plasticMicroVelocityGradient,
                                                                 plasticMicroGradientVelocityGradient, skewTerm,
@@ -1332,14 +1338,14 @@ namespace tardigradeHydra{
                                                                 dPlasticMicroGradientLdPlasticMicroL );
         }
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient,
-                                                          variableVector &skewTerm,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          variableVector &dPlasticMicroGradientLdPlasticMicroL ){
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
+                                                          thirdOrderTensor &skewTerm,
+                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          fifthOrderTensor &dPlasticMicroGradientLdPlasticMicroL ){
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
@@ -1375,8 +1381,8 @@ namespace tardigradeHydra{
 
             )
 
-            dPlasticMicroGradientLdPlasticMicroL = variableVector( tot_dim * sot_dim, 0 );
-            dPlasticMicroGradientLdMicroGradientGamma = variableVector( tot_dim * dim, 0 );
+            dPlasticMicroGradientLdPlasticMicroL = fifthOrderTensor( tot_dim * sot_dim, 0 );
+            dPlasticMicroGradientLdMicroGradientGamma = fourthOrderTensor( tot_dim * dim, 0 );
 
             for ( unsigned int Lb = 0; Lb < dim; Lb++ ){
 
@@ -1410,16 +1416,16 @@ namespace tardigradeHydra{
 
         }
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          variableVector &dPlasticMicroGradientLdPlasticMicroL,
-                                                          variableVector &dPlasticMicroGradientLdElasticPsi,
-                                                          variableVector &dPlasticMicroGradientLdElasticGamma,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientFlowDirection ){
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor  &plasticMicroGradientVelocityGradient,
+                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          fifthOrderTensor  &dPlasticMicroGradientLdPlasticMicroL,
+                                                          fifthOrderTensor  &dPlasticMicroGradientLdElasticPsi,
+                                                          sixthOrderTensor  &dPlasticMicroGradientLdElasticGamma,
+                                                          sixthOrderTensor  &dPlasticMicroGradientLdMicroGradientFlowDirection ){
             /*!
              * Compute the plastic micro gradient velocity gradient.
              *
@@ -1451,7 +1457,7 @@ namespace tardigradeHydra{
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            variableVector skewTerm;
+            thirdOrderTensor skewTerm;
             TARDIGRADE_ERROR_TOOLS_CATCH(
 
                 computePlasticMicroGradientVelocityGradient( microGradientGamma, elasticPsi, inverseElasticPsi,
@@ -1463,11 +1469,11 @@ namespace tardigradeHydra{
 
             )
 
-            dPlasticMicroGradientLdElasticPsi = variableVector( tot_dim * sot_dim, 0 );
+            dPlasticMicroGradientLdElasticPsi   = fifthOrderTensor( tot_dim * sot_dim, 0 );
 
-            dPlasticMicroGradientLdElasticGamma = variableVector( tot_dim * tot_dim, 0 );
+            dPlasticMicroGradientLdElasticGamma = sixthOrderTensor( tot_dim * tot_dim, 0 );
 
-            dPlasticMicroGradientLdMicroGradientFlowDirection = variableVector( tot_dim * dim * tot_dim, 0 );
+            dPlasticMicroGradientLdMicroGradientFlowDirection = seventhOrderTensor( tot_dim * dim * tot_dim, 0 );
 
             floatVector temp_sot1( sot_dim, 0 );
 
@@ -1556,16 +1562,16 @@ namespace tardigradeHydra{
         }
 
         void evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const variableVector &currentPlasticMicroDeformation,
-                                        const variableVector &currentPlasticMacroVelocityGradient,
-                                        const variableVector &currentPlasticMicroVelocityGradient,
-                                        const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousPlasticMicroDeformation,
-                                        const variableVector &previousPlasticMicroGradient,
-                                        const variableVector &previousPlasticMacroVelocityGradient,
-                                        const variableVector &previousPlasticMicroVelocityGradient,
-                                        const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                        variableVector &currentPlasticMicroGradient,
+                                        const secondOrderTensor &currentPlasticMicroDeformation,
+                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroDeformation,
+                                        const thirdOrderTensor  &previousPlasticMicroGradient,
+                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+                                        thirdOrderTensor        &currentPlasticMicroGradient,
                                         const parameterType alpha ){
             /*!
              * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
@@ -1591,7 +1597,7 @@ namespace tardigradeHydra{
              * \param alpha: The integration parameter (0 is explicit, 1 is implicit).
              */
 
-            variableVector LHS;
+            sixthOrderTensor LHS;
 
             evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
                                        currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
@@ -1602,17 +1608,17 @@ namespace tardigradeHydra{
         }
 
         void evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const variableVector &currentPlasticMicroDeformation,
-                                        const variableVector &currentPlasticMacroVelocityGradient,
-                                        const variableVector &currentPlasticMicroVelocityGradient,
-                                        const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousPlasticMicroDeformation,
-                                        const variableVector &previousPlasticMicroGradient,
-                                        const variableVector &previousPlasticMacroVelocityGradient,
-                                        const variableVector &previousPlasticMicroVelocityGradient,
-                                        const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                        variableVector &currentPlasticMicroGradient,
-                                        variableVector &LHS,
+                                        const secondOrderTensor &currentPlasticMicroDeformation,
+                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroDeformation,
+                                        const secondOrderTensor &previousPlasticMicroGradient,
+                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+                                        thirdOrderTensor &currentPlasticMicroGradient,
+                                        sixthOrderTensor &LHS,
                                         const parameterType alpha ){
             /*!
              * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
@@ -1664,9 +1670,9 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CHECK( previousPlasticMicroGradientVelocityGradient.size() == tot_dim, "The previous plastic micro gradient velocity gradient must be 3D" );
 
             //Assemble the A term ( forcing term ) and the fourth order A term
-            variableVector DtAtilde( tot_dim, 0 );
-            variableVector previousFourthA( fot_dim, 0 );
-            variableVector currentFourthA( fot_dim, 0 );
+            thirdOrderTensor DtAtilde( tot_dim, 0 );
+            fourthOrderTensor previousFourthA( fot_dim, 0 );
+            fourthOrderTensor currentFourthA( fot_dim, 0 );
 
             for ( unsigned int Db = 0; Db < dim; Db++ ){
 
@@ -1703,9 +1709,9 @@ namespace tardigradeHydra{
             }
 
             //Assemble the right-hand side and left-hand side term
-            variableVector RHS = DtAtilde;
+            thirdOrderTensor RHS = DtAtilde;
             RHS += previousPlasticMicroGradient;
-            LHS = variableVector( tot_dim * tot_dim, 0 );
+            LHS = sixthOrderTensor( tot_dim * tot_dim, 0 );
             for ( unsigned int i = 0; i < tot_dim; i++ ){ LHS[ tot_dim * i + i ] = 1; }
 
             for ( unsigned int Db = 0; Db < dim; Db++ ){
@@ -1733,20 +1739,20 @@ namespace tardigradeHydra{
         }
 
         void evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const variableVector &currentPlasticMicroDeformation,
-                                        const variableVector &currentPlasticMacroVelocityGradient,
-                                        const variableVector &currentPlasticMicroVelocityGradient,
-                                        const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousPlasticMicroDeformation,
-                                        const variableVector &previousPlasticMicroGradient,
-                                        const variableVector &previousPlasticMacroVelocityGradient,
-                                        const variableVector &previousPlasticMicroVelocityGradient,
-                                        const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                        variableVector &currentPlasticMicroGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroDeformation,
+                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroDeformation,
+                                        const thirdOrderTensor  &previousPlasticMicroGradient,
+                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+                                        thirdOrderTensor        &currentPlasticMicroGradient,
+                                        fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+                                        fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+                                        fifthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+                                        sixthOrderTensor        &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
                                         const parameterType alpha ){
             /*!
              * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
@@ -1787,7 +1793,7 @@ namespace tardigradeHydra{
             constexpr unsigned int fot_dim = tot_dim * dim;
 
             //Compute the new currentPlasticMicroGradient
-            variableVector LHS;
+            sixthOrderTensor LHS;
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
                                            currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
@@ -1799,14 +1805,14 @@ namespace tardigradeHydra{
 
             //Compute the negative partial derivatives w.r.t. currentFourthA and the current part of DtAtilde
             //We do this in vector form so that we can interface with Eigen easier
-            variableVector negdRdCurrentDtAtilde( dim * dim * dim * dim * dim * dim, 0 );
-            variableVector negdRdCurrentFourthA( dim * dim * dim * dim * dim * dim * dim, 0 );
+            sixthOrderTensor   negdRdCurrentDtAtilde( dim * dim * dim * dim * dim * dim, 0 );
+            seventhOrderTensor negdRdCurrentFourthA( dim * dim * dim * dim * dim * dim * dim, 0 );
 
             //Also assemble jacobians of the A terms
-            variableVector dCurrentDTAtildedPlasticMicroDeformation( tot_dim * sot_dim, 0 );
-            variableVector dCurrentDTAtildedPlasticMicroGradientVelocityGradient( tot_dim * tot_dim, 0 );
-            variableVector dCurrentFourthAdMacroVelocityGradient( fot_dim * sot_dim, 0 );
-            variableVector dCurrentFourthAdMicroVelocityGradient( fot_dim * sot_dim, 0 );
+            fifthOrderTensor dCurrentDTAtildedPlasticMicroDeformation( tot_dim * sot_dim, 0 );
+            sixthOrderTensor dCurrentDTAtildedPlasticMicroGradientVelocityGradient( tot_dim * tot_dim, 0 );
+            sixthOrderTensor dCurrentFourthAdMacroVelocityGradient( fot_dim * sot_dim, 0 );
+            sixthOrderTensor dCurrentFourthAdMicroVelocityGradient( fot_dim * sot_dim, 0 );
 
             for ( unsigned int Db = 0; Db < dim; Db++ ){
                 for ( unsigned int B = 0; B < dim; B++ ){
@@ -1835,8 +1841,8 @@ namespace tardigradeHydra{
             }
 
             //Solve for the Jacobians
-            variableVector dCurrentPlasticMicroGradientdCurrentDTAtilde( dim * dim * dim * dim * dim * dim );
-            variableVector dCurrentPlasticMicroGradientdCurrentFourthA( dim * dim * dim * dim * dim * dim * dim );
+            sixthOrderTensor dCurrentPlasticMicroGradientdCurrentDTAtilde( dim * dim * dim * dim * dim * dim );
+            seventhOrderTensor dCurrentPlasticMicroGradientdCurrentFourthA( dim * dim * dim * dim * dim * dim * dim );
 
             Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > LHSMat( LHS.data(), tot_dim, tot_dim );
             Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > nDRDCDA( negdRdCurrentDtAtilde.data(), tot_dim, tot_dim );
@@ -1866,25 +1872,25 @@ namespace tardigradeHydra{
         }
 
         void evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const variableVector &currentPlasticMicroDeformation,
-                                        const variableVector &currentPlasticMacroVelocityGradient,
-                                        const variableVector &currentPlasticMicroVelocityGradient,
-                                        const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousPlasticMicroDeformation,
-                                        const variableVector &previousPlasticMicroGradient,
-                                        const variableVector &previousPlasticMacroVelocityGradient,
-                                        const variableVector &previousPlasticMicroVelocityGradient,
-                                        const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                        variableVector &currentPlasticMicroGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation,
-                                        variableVector &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroDeformation,
+                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroDeformation,
+                                        const thirdOrderTensor  &previousPlasticMicroGradient,
+                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+                                        thirdOrderTensor &currentPlasticMicroGradient,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient,
+                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient,
+                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient,
+                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient,
                                         const parameterType alpha ){
             /*!
              * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
@@ -1936,7 +1942,7 @@ namespace tardigradeHydra{
             constexpr unsigned int fot_dim = tot_dim * dim;
 
             //Compute the new currentPlasticMicroGradient
-            variableVector LHS;
+            sixthOrderTensor LHS;
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
                                            currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
@@ -1948,21 +1954,21 @@ namespace tardigradeHydra{
 
             //Compute the negative partial derivatives w.r.t. currentFourthA and the current part of DtAtilde
             //We do this in vector form so that we can interface with Eigen easier
-            variableVector negdRdCurrentDtAtilde( tot_dim * tot_dim, 0 );
-            variableVector negdRdCurrentFourthA( tot_dim * fot_dim, 0 );
+            sixthOrderTensor   negdRdCurrentDtAtilde( tot_dim * tot_dim, 0 );
+            seventhOrderTensor negdRdCurrentFourthA( tot_dim * fot_dim, 0 );
 
             //Also assemble jacobians of the A terms
-            variableVector dCurrentDTAtildedPlasticMicroDeformation( tot_dim * sot_dim, 0 );
-            variableVector dCurrentDTAtildedPlasticMicroGradientVelocityGradient( tot_dim * tot_dim, 0 );
-            variableVector dCurrentFourthAdMacroVelocityGradient( fot_dim * sot_dim, 0 );
-            variableVector dCurrentFourthAdMicroVelocityGradient( fot_dim * sot_dim, 0 );
+            fifthOrderTensor dCurrentDTAtildedPlasticMicroDeformation( tot_dim * sot_dim, 0 );
+            sixthOrderTensor dCurrentDTAtildedPlasticMicroGradientVelocityGradient( tot_dim * tot_dim, 0 );
+            sixthOrderTensor dCurrentFourthAdMacroVelocityGradient( fot_dim * sot_dim, 0 );
+            sixthOrderTensor dCurrentFourthAdMicroVelocityGradient( fot_dim * sot_dim, 0 );
 
-            variableVector dPreviousDTAtildedPlasticMicroDeformation( tot_dim * sot_dim, 0 );
-            variableVector dPreviousDTAtildedPlasticMicroGradientVelocityGradient( tot_dim * tot_dim, 0 );
+            fifthOrderTensor dPreviousDTAtildedPlasticMicroDeformation( tot_dim * sot_dim, 0 );
+            sixthOrderTensor dPreviousDTAtildedPlasticMicroGradientVelocityGradient( tot_dim * tot_dim, 0 );
 
-            variableVector dRHSdPreviousPlasticMicroGradient( tot_dim * tot_dim, 0 );
-            variableVector dRHSdPreviousPlasticMacroVelocityGradient( tot_dim * sot_dim, 0 );
-            variableVector dRHSdPreviousPlasticMicroVelocityGradient( tot_dim * sot_dim, 0 );
+            sixthOrderTensor dRHSdPreviousPlasticMicroGradient( tot_dim * tot_dim, 0 );
+            fifthOrderTensor dRHSdPreviousPlasticMacroVelocityGradient( tot_dim * sot_dim, 0 );
+            fifthOrderTensor dRHSdPreviousPlasticMicroVelocityGradient( tot_dim * sot_dim, 0 );
 
             for ( unsigned int Db = 0; Db < dim; Db++ ){
                 for ( unsigned int B = 0; B < dim; B++ ){
@@ -2065,18 +2071,18 @@ namespace tardigradeHydra{
         }
 
         void evolvePlasticDeformation( const variableType &Dt,
-                                       const variableVector &currentPlasticMacroVelocityGradient,
-                                       const variableVector &currentPlasticMicroVelocityGradient,
-                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                       const variableVector &previousPlasticDeformationGradient,
-                                       const variableVector &previousPlasticMicroDeformation,
-                                       const variableVector &previousPlasticMicroGradient,
-                                       const variableVector &previousPlasticMacroVelocityGradient,
-                                       const variableVector &previousPlasticMicroVelocityGradient,
-                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                       variableVector &currentPlasticDeformationGradient,
-                                       variableVector &currentPlasticMicroDeformation,
-                                       variableVector &currentPlasticMicroGradient,
+                                       const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+                                       const secondOrderTensor &previousPlasticDeformationGradient,
+                                       const secondOrderTensor &previousPlasticMicroDeformation,
+                                       const thirdOrderTensor  &previousPlasticMicroGradient,
+                                       const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+                                       secondOrderTensor &currentPlasticDeformationGradient,
+                                       secondOrderTensor &currentPlasticMicroDeformation,
+                                       thirdOrderTensor  &currentPlasticMicroGradient,
                                        const parameterType alphaMacro,
                                        const parameterType alphaMicro,
                                        const parameterType alphaMicroGradient ){
@@ -2138,23 +2144,23 @@ namespace tardigradeHydra{
         }
 
         void evolvePlasticDeformation( const variableType &Dt,
-                                       const variableVector &currentPlasticMacroVelocityGradient,
-                                       const variableVector &currentPlasticMicroVelocityGradient,
-                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                       const variableVector &previousPlasticDeformationGradient,
-                                       const variableVector &previousPlasticMicroDeformation,
-                                       const variableVector &previousPlasticMicroGradient,
-                                       const variableVector &previousPlasticMacroVelocityGradient,
-                                       const variableVector &previousPlasticMicroVelocityGradient,
-                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                       variableVector &currentPlasticDeformationGradient,
-                                       variableVector &currentPlasticMicroDeformation,
-                                       variableVector &currentPlasticMicroGradient,
-                                       variableVector &dPlasticFdPlasticMacroL,
-                                       variableVector &dPlasticMicroDeformationdPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMacroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMicroGradientL,
+                                       const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+                                       const secondOrderTensor &previousPlasticDeformationGradient,
+                                       const secondOrderTensor &previousPlasticMicroDeformation,
+                                       const thirdOrderTensor  &previousPlasticMicroGradient,
+                                       const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+                                       secondOrderTensor &currentPlasticDeformationGradient,
+                                       secondOrderTensor &currentPlasticMicroDeformation,
+                                       thirdOrderTensor  &currentPlasticMicroGradient,
+                                       fourthOrderTensor &dPlasticFdPlasticMacroL,
+                                       fourthOrderTensor &dPlasticMicroDeformationdPlasticMicroL,
+                                       fifthOrderTensor  &dPlasticMicroGradientdPlasticMacroL,
+                                       fifthOrderTensor  &dPlasticMicroGradientdPlasticMicroL,
+                                       sixthOrderTensor  &dPlasticMicroGradientdPlasticMicroGradientL,
                                        const parameterType alphaMacro,
                                        const parameterType alphaMicro,
                                        const parameterType alphaMicroGradient ){
@@ -2218,7 +2224,7 @@ namespace tardigradeHydra{
 //                                                                    dPlasticMicroDeformationdPlasticMicroL, alphaMicro );
             )
 
-            variableVector dPlasticMicroGradientdPlasticMicroDeformation;
+            fifthOrderTensor dPlasticMicroGradientdPlasticMicroDeformation;
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
                                            currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
@@ -2236,32 +2242,32 @@ namespace tardigradeHydra{
         }
 
         void evolvePlasticDeformation( const variableType &Dt,
-                                       const variableVector &currentPlasticMacroVelocityGradient,
-                                       const variableVector &currentPlasticMicroVelocityGradient,
-                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                       const variableVector &previousPlasticDeformationGradient,
-                                       const variableVector &previousPlasticMicroDeformation,
-                                       const variableVector &previousPlasticMicroGradient,
-                                       const variableVector &previousPlasticMacroVelocityGradient,
-                                       const variableVector &previousPlasticMicroVelocityGradient,
-                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                       variableVector &currentPlasticDeformationGradient,
-                                       variableVector &currentPlasticMicroDeformation,
-                                       variableVector &currentPlasticMicroGradient,
-                                       variableVector &dPlasticFdPlasticMacroL,
-                                       variableVector &dPlasticMicroDeformationdPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMacroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMicroGradientL,
-                                       variableVector &dPlasticFdPreviousPlasticF,
-                                       variableVector &dPlasticFdPreviousPlasticMacroL,
-                                       variableVector &dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
-                                       variableVector &dPlasticMicroDeformationdPreviousPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPreviousPlasticMicroDeformation,
-                                       variableVector &dPlasticMicroGradientdPreviousPlasticMicroGradient,
-                                       variableVector &dPlasticMicroGradientdPreviousPlasticMacroL,
-                                       variableVector &dPlasticMicroGradientdPreviousPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPreviousPlasticMicroGradientL,
+                                       const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor  &currentPlasticMicroGradientVelocityGradient,
+                                       const secondOrderTensor &previousPlasticDeformationGradient,
+                                       const secondOrderTensor &previousPlasticMicroDeformation,
+                                       const thirdOrderTensor  &previousPlasticMicroGradient,
+                                       const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor  &previousPlasticMicroGradientVelocityGradient,
+                                       secondOrderTensor &currentPlasticDeformationGradient,
+                                       secondOrderTensor &currentPlasticMicroDeformation,
+                                       thirdOrderTensor  &currentPlasticMicroGradient,
+                                       fourthOrderTensor &dPlasticFdPlasticMacroL,
+                                       fourthOrderTensor &dPlasticMicroDeformationdPlasticMicroL,
+                                       fifthOrderTensor  &dPlasticMicroGradientdPlasticMacroL,
+                                       fifthOrderTensor  &dPlasticMicroGradientdPlasticMicroL,
+                                       sixthOrderTensor  &dPlasticMicroGradientdPlasticMicroGradientL,
+                                       fourthOrderTensor &dPlasticFdPreviousPlasticF,
+                                       fourthOrderTensor &dPlasticFdPreviousPlasticMacroL,
+                                       fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
+                                       fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                       fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                                       fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroGradient,
+                                       fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMacroL,
+                                       fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroL,
+                                       sixthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroGradientL,
                                        const parameterType alphaMacro,
                                        const parameterType alphaMicro,
                                        const parameterType alphaMicroGradient ){
@@ -2345,7 +2351,7 @@ namespace tardigradeHydra{
 //                                                                    dPlasticMicroDeformationdPreviousPlasticMicroL, alphaMicro );
             )
 
-            variableVector dPlasticMicroGradientdPlasticMicroDeformation;
+            fifthOrderTensor dPlasticMicroGradientdPlasticMicroDeformation;
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
                                            currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,

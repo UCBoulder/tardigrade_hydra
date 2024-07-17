@@ -73,297 +73,300 @@ namespace tardigradeHydra{
         typedef std::vector< constantType > constantVector; //!< Define a vector of constants
         typedef std::vector< std::vector< constantType > > constantMatrix; //!< Define a matrix of constants
 
+        typedef std::vector< floatType > seventhOrderTensor; //!< A seventh order tensor
+        typedef std::vector< floatType > eighthOrderTensor; //!< A eighth order tensor
+
         void computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parameterType &beta,
                                                      parameterType &A, parameterType &B );
 
-        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,
-                                                           const floatType     &cohesion,
-                                                           const floatVector   &precedingDeformationGradient,
+        void computeSecondOrderDruckerPragerYieldEquation( const secondOrderTensor &stressMeasure,
+                                                           const floatType         &cohesion,
+                                                           const secondOrderTensor &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
                                                            floatType &yieldValue );
 
-        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,
-                                                           const floatType     &cohesion,
-                                                           const floatVector   &precedingDeformationGradient,
+        void computeSecondOrderDruckerPragerYieldEquation( const secondOrderTensor &stressMeasure,
+                                                           const floatType         &cohesion,
+                                                           const secondOrderTensor &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
-                                                           floatVector &dFdPrecedingF, double tol = 1e-9 );
+                                                           floatType &yieldValue, secondOrderTensor &dFdStress, floatType &dFdc,
+                                                           secondOrderTensor &dFdPrecedingF, double tol = 1e-9 );
 
-        void computeSecondOrderDruckerPragerYieldEquation( const floatVector   &stressMeasure,
-                                                           const floatType     &cohesion,
-                                                           const floatVector   &precedingDeformationGradient,
+        void computeSecondOrderDruckerPragerYieldEquation( const secondOrderTensor &stressMeasure,
+                                                           const floatType         &cohesion,
+                                                           const secondOrderTensor &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           floatType &yieldValue, floatVector &dFdStress, floatType &dFdc,
-                                                           floatVector &dFdPrecedingF, floatVector &d2FdStress2,
-                                                           floatVector &d2FdStressdPrecedingF, double tol = 1e-9 );
+                                                           floatType &yieldValue, secondOrderTensor &dFdStress, floatType &dFdc,
+                                                           secondOrderTensor &dFdPrecedingF, fourthOrderTensor &d2FdStress2,
+                                                           fourthOrderTensor &d2FdStressdPrecedingF, double tol = 1e-9 );
 
-        void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
-                                                           const variableVector &cohesion,
-                                                           const variableVector &precedingDeformationGradient,
+        void computeHigherOrderDruckerPragerYieldEquation( const thirdOrderTensor  &stressMeasure,
+                                                           const dimVector         &cohesion,
+                                                           const secondOrderTensor &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableVector &yieldValue );
+                                                           dimVector &yieldValue );
     
-        void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
-                                                           const variableVector &cohesion,
-                                                           const variableVector &precedingDeformationGradient,
+        void computeHigherOrderDruckerPragerYieldEquation( const thirdOrderTensor  &stressMeasure,
+                                                           const dimVector         &cohesion,
+                                                           const secondOrderTensor &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableVector &yieldValue, variableVector &dFdStress, variableVector &dFdc,
-                                                           variableVector &dFdPrecedingF );
+                                                           dimVector &yieldValue, fourthOrderTensor &dFdStress, dimVector &dFdc,
+                                                           thirdOrderTensor &dFdPrecedingF );
     
-        void computeHigherOrderDruckerPragerYieldEquation( const variableVector &stressMeasure,
-                                                           const variableVector &cohesion,
-                                                           const variableVector &precedingDeformationGradient,
+        void computeHigherOrderDruckerPragerYieldEquation( const thirdOrderTensor  &stressMeasure,
+                                                           const dimVector         &cohesion,
+                                                           const secondOrderTensor &precedingDeformationGradient,
                                                            const parameterType &frictionAngle, const parameterType &beta,
-                                                           variableVector &yieldValue, variableVector &dFdStress, variableVector &dFdc,
-                                                           variableVector &dFdPrecedingF, variableVector &d2FdStress2,
-                                                           variableVector &d2FdStressdPrecedingF );
+                                                           dimVector &yieldValue, thirdOrderTensor &dFdStress, dimVector &dFdc,
+                                                           thirdOrderTensor &dFdPrecedingF, seventhOrderTensor &d2FdStress2,
+                                                           sixthOrderTensor &d2FdStressdPrecedingF );
 
         void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
-                                                  const variableVector &inverseElasticRightCauchyGreen,
-                                                  const variableVector &macroFlowDirection,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMacroVelocityGradient );
+                                                  const secondOrderTensor &inverseElasticRightCauchyGreen,
+                                                  const secondOrderTensor &macroFlowDirection,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMacroVelocityGradient );
 
         void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
-                                                  const variableVector &inverseElasticRightCauchyGreen,
-                                                  const variableVector &macroFlowDirection,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMacroVelocityGradient,
-                                                  variableVector &dPlasticMacroLdMacroGamma,
-                                                  variableVector &dPlasticMacroLdMicroGamma );
+                                                  const secondOrderTensor &inverseElasticRightCauchyGreen,
+                                                  const secondOrderTensor &macroFlowDirection,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMacroVelocityGradient,
+                                                  secondOrderTensor &dPlasticMacroLdMacroGamma,
+                                                  secondOrderTensor &dPlasticMacroLdMicroGamma );
 
         void computePlasticMacroVelocityGradient( const variableType &macroGamma, const variableType &microGamma,
-                                                  const variableVector &inverseElasticRightCauchyGreen,
-                                                  const variableVector &macroFlowDirection,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMacroVelocityGradient,
-                                                  variableVector &dPlasticMacroLdMacroGamma,
-                                                  variableVector &dPlasticMacroLdMicroGamma,
-                                                  variableVector &dPlasticMacroLdElasticRCG,
-                                                  variableVector &dPlasticMacroLdMacroFlowDirection,
-                                                  variableVector &dPlasticMacroLdMicroFlowDirection );
+                                                  const secondOrderTensor &inverseElasticRightCauchyGreen,
+                                                  const secondOrderTensor &macroFlowDirection,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMacroVelocityGradient,
+                                                  secondOrderTensor &dPlasticMacroLdMacroGamma,
+                                                  secondOrderTensor &dPlasticMacroLdMicroGamma,
+                                                  fourthOrderTensor &dPlasticMacroLdElasticRCG,
+                                                  fourthOrderTensor &dPlasticMacroLdMacroFlowDirection,
+                                                  fourthOrderTensor &dPlasticMacroLdMicroFlowDirection );
 
-        void computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
-                                                  const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMicroVelocityGradient );
+        void computePlasticMicroVelocityGradient( const variableType &microGamma, const secondOrderTensor &elasticMicroRightCauchyGreen,
+                                                  const secondOrderTensor &elasticPsi, const secondOrderTensor &inverseElasticPsi,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMicroVelocityGradient );
 
-        void computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
-                                                  const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMicroVelocityGradient,
-                                                  variableVector &dPlasticMicroLdMicroGamma );
+        void computePlasticMicroVelocityGradient( const variableType &microGamma, const secondOrderTensor &elasticMicroRightCauchyGreen,
+                                                  const secondOrderTensor &elasticPsi, const secondOrderTensor &inverseElasticPsi,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMicroVelocityGradient,
+                                                  secondOrderTensor &dPlasticMicroLdMicroGamma );
 
-        void computePlasticMicroVelocityGradient( const variableType &microGamma, const variableVector &elasticMicroRightCauchyGreen,
-                                                  const variableVector &elasticPsi, const variableVector &inverseElasticPsi,
-                                                  const variableVector &microFlowDirection,
-                                                  variableVector &plasticMicroVelocityGradient,
-                                                  variableVector &dPlasticMicroLdMicroGamma,
-                                                  variableVector &dPlasticMicroLdElasticMicroRCG,
-                                                  variableVector &dPlasticMicroLdElasticPsi,
-                                                  variableVector &dPlasticMicroLdMicroFlowDirection );
+        void computePlasticMicroVelocityGradient( const variableType &microGamma, const secondOrderTensor &elasticMicroRightCauchyGreen,
+                                                  const secondOrderTensor &elasticPsi, const secondOrderTensor &inverseElasticPsi,
+                                                  const secondOrderTensor &microFlowDirection,
+                                                  secondOrderTensor &plasticMicroVelocityGradient,
+                                                  secondOrderTensor &dPlasticMicroLdMicroGamma,
+                                                  fourthOrderTensor &dPlasticMicroLdElasticMicroRCG,
+                                                  fourthOrderTensor &dPlasticMicroLdElasticPsi,
+                                                  fourthOrderTensor &dPlasticMicroLdMicroFlowDirection );
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient );
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient );
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient,
-                                                          variableVector &skewTerm );
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
+                                                          thirdOrderTensor &skewTerm );
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          variableVector &dPlasticMicroGradientLdPlasticMicroL );
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
+                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          fifthOrderTensor &dPlasticMicroGradientLdPlasticMicroL );
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient,
-                                                          variableVector &skewTerm,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          variableVector &dPlasticMicroGradientLdPlasticMicroL );
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
+                                                          thirdOrderTensor &skewTerm,
+                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          fifthOrderTensor &dPlasticMicroGradientLdPlasticMicroL );
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          variableVector &dPlasticMicroGradientLdPlasticMicroL,
-                                                          variableVector &dPlasticMicroGradientLdElasticPsi,
-                                                          variableVector &dPlasticMicroGradientLdElasticGamma,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientFlowDirection );
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
+                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          fifthOrderTensor &dPlasticMicroGradientLdPlasticMicroL,
+                                                          fifthOrderTensor &dPlasticMicroGradientLdElasticPsi,
+                                                          sixthOrderTensor &dPlasticMicroGradientLdElasticGamma,
+                                                          sixthOrderTensor &dPlasticMicroGradientLdMicroGradientFlowDirection );
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          variableVector &dPlasticMicroGradientLdPlasticMicroL );
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
+                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          fifthOrderTensor &dPlasticMicroGradientLdPlasticMicroL );
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient,
-                                                          variableVector &skewTerm,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          variableVector &dPlasticMicroGradientLdPlasticMicroL );
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
+                                                          thirdOrderTensor &skewTerm,
+                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          fifthOrderTensor &dPlasticMicroGradientLdPlasticMicroL );
 
-        void computePlasticMicroGradientVelocityGradient( const variableVector &microGradientGamma, const variableVector &elasticPsi,
-                                                          const variableVector &inverseElasticPsi, const variableVector &elasticGamma,
-                                                          const variableVector &microGradientFlowDirection,
-                                                          const variableVector &plasticMicroVelocityGradient,
-                                                          variableVector &plasticMicroGradientVelocityGradient,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientGamma,
-                                                          variableVector &dPlasticMicroGradientLdPlasticMicroL,
-                                                          variableVector &dPlasticMicroGradientLdElasticPsi,
-                                                          variableVector &dPlasticMicroGradientLdElasticGamma,
-                                                          variableVector &dPlasticMicroGradientLdMicroGradientFlowDirection );
+        void computePlasticMicroGradientVelocityGradient( const dimVector &microGradientGamma, const secondOrderTensor &elasticPsi,
+                                                          const secondOrderTensor &inverseElasticPsi, const thirdOrderTensor &elasticGamma,
+                                                          const thirdOrderTensor &microGradientFlowDirection,
+                                                          const secondOrderTensor &plasticMicroVelocityGradient,
+                                                          thirdOrderTensor &plasticMicroGradientVelocityGradient,
+                                                          fourthOrderTensor &dPlasticMicroGradientLdMicroGradientGamma,
+                                                          fifthOrderTensor &dPlasticMicroGradientLdPlasticMicroL,
+                                                          fifthOrderTensor &dPlasticMicroGradientLdElasticPsi,
+                                                          sixthOrderTensor &dPlasticMicroGradientLdElasticGamma,
+                                                          sixthOrderTensor &dPlasticMicroGradientLdMicroGradientFlowDirection );
 
         void evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const variableVector &currentPlasticMicroDeformation,
-                                        const variableVector &currentPlasticMacroVelocityGradient,
-                                        const variableVector &currentPlasticMicroVelocityGradient,
-                                        const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousPlasticMicroDeformation,
-                                        const variableVector &previousPlasticMicroGradient,
-                                        const variableVector &previousPlasticMacroVelocityGradient,
-                                        const variableVector &previousPlasticMicroVelocityGradient,
-                                        const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                        variableVector &currentPlasticMicroGradient,
+                                        const secondOrderTensor &currentPlasticMicroDeformation,
+                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor &currentPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroDeformation,
+                                        const thirdOrderTensor &previousPlasticMicroGradient,
+                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor &previousPlasticMicroGradientVelocityGradient,
+                                        thirdOrderTensor &currentPlasticMicroGradient,
                                         const parameterType alpha = 0.5 );
 
         void evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const variableVector &currentPlasticMicroDeformation,
-                                        const variableVector &currentPlasticMacroVelocityGradient,
-                                        const variableVector &currentPlasticMicroVelocityGradient,
-                                        const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousPlasticMicroDeformation,
-                                        const variableVector &previousPlasticMicroGradient,
-                                        const variableVector &previousPlasticMacroVelocityGradient,
-                                        const variableVector &previousPlasticMicroVelocityGradient,
-                                        const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                        variableVector &currentPlasticMicroGradient,
-                                        variableVector &LHS,
+                                        const secondOrderTensor &currentPlasticMicroDeformation,
+                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor &currentPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroDeformation,
+                                        const thirdOrderTensor &previousPlasticMicroGradient,
+                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor &previousPlasticMicroGradientVelocityGradient,
+                                        thirdOrderTensor &currentPlasticMicroGradient,
+                                        sixthOrderTensor &LHS,
                                         const parameterType alpha = 0.5 );
 
         void evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const variableVector &currentPlasticMicroDeformation,
-                                        const variableVector &currentPlasticMacroVelocityGradient,
-                                        const variableVector &currentPlasticMicroVelocityGradient,
-                                        const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousPlasticMicroDeformation,
-                                        const variableVector &previousPlasticMicroGradient,
-                                        const variableVector &previousPlasticMacroVelocityGradient,
-                                        const variableVector &previousPlasticMicroVelocityGradient,
-                                        const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                        variableVector &currentPlasticMicroGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroDeformation,
+                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor &currentPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroDeformation,
+                                        const thirdOrderTensor &previousPlasticMicroGradient,
+                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor &previousPlasticMicroGradientVelocityGradient,
+                                        thirdOrderTensor &currentPlasticMicroGradient,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
                                         const parameterType alpha = 0.5 );
 
         void evolvePlasticMicroGradChi( const variableType &Dt,
-                                        const variableVector &currentPlasticMicroDeformation,
-                                        const variableVector &currentPlasticMacroVelocityGradient,
-                                        const variableVector &currentPlasticMicroVelocityGradient,
-                                        const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                        const variableVector &previousPlasticMicroDeformation,
-                                        const variableVector &previousPlasticMicroGradient,
-                                        const variableVector &previousPlasticMacroVelocityGradient,
-                                        const variableVector &previousPlasticMicroVelocityGradient,
-                                        const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                        variableVector &currentPlasticMicroGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation,
-                                        variableVector &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient,
-                                        variableVector &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroDeformation,
+                                        const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor &currentPlasticMicroGradientVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroDeformation,
+                                        const thirdOrderTensor &previousPlasticMicroGradient,
+                                        const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                        const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                        const thirdOrderTensor &previousPlasticMicroGradientVelocityGradient,
+                                        thirdOrderTensor &currentPlasticMicroGradient,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroDeformation,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient,
+                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient,
+                                        fifthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient,
+                                        sixthOrderTensor &dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient,
                                         const parameterType alpha = 0.5 );
 
         void evolvePlasticDeformation( const variableType &Dt,
-                                       const variableVector &currentPlasticMacroVelocityGradient,
-                                       const variableVector &currentPlasticMicroVelocityGradient,
-                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                       const variableVector &previousPlasticDeformationGradient,
-                                       const variableVector &previousPlasticMicroDeformation,
-                                       const variableVector &previousPlasticMicroGradient,
-                                       const variableVector &previousPlasticMacroVelocityGradient,
-                                       const variableVector &previousPlasticMicroVelocityGradient,
-                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                       variableVector &currentPlasticDeformationGradient,
-                                       variableVector &currentPlasticMicroDeformation,
-                                       variableVector &currentPlasticMicroGradient,
+                                       const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor &currentPlasticMicroGradientVelocityGradient,
+                                       const secondOrderTensor &previousPlasticDeformationGradient,
+                                       const secondOrderTensor &previousPlasticMicroDeformation,
+                                       const thirdOrderTensor &previousPlasticMicroGradient,
+                                       const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor &previousPlasticMicroGradientVelocityGradient,
+                                       secondOrderTensor &currentPlasticDeformationGradient,
+                                       secondOrderTensor &currentPlasticMicroDeformation,
+                                       thirdOrderTensor &currentPlasticMicroGradient,
                                        const parameterType alphaMacro = 0.5,
                                        const parameterType alphaMicro = 0.5,
                                        const parameterType alphaMicroGradient = 0.5 );
 
         void evolvePlasticDeformation( const variableType &Dt,
-                                       const variableVector &currentPlasticMacroVelocityGradient,
-                                       const variableVector &currentPlasticMicroVelocityGradient,
-                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                       const variableVector &previousPlasticDeformationGradient,
-                                       const variableVector &previousPlasticMicroDeformation,
-                                       const variableVector &previousPlasticMicroGradient,
-                                       const variableVector &previousPlasticMacroVelocityGradient,
-                                       const variableVector &previousPlasticMicroVelocityGradient,
-                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                       variableVector &currentPlasticDeformationGradient,
-                                       variableVector &currentPlasticMicroDeformation,
-                                       variableVector &currentPlasticMicroGradient,
-                                       variableVector &dPlasticFdPlasticMacroL,
-                                       variableVector &dPlasticMicroDeformationdPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMacroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMicroGradientL,
+                                       const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor &currentPlasticMicroGradientVelocityGradient,
+                                       const secondOrderTensor &previousPlasticDeformationGradient,
+                                       const secondOrderTensor &previousPlasticMicroDeformation,
+                                       const thirdOrderTensor &previousPlasticMicroGradient,
+                                       const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor &previousPlasticMicroGradientVelocityGradient,
+                                       secondOrderTensor &currentPlasticDeformationGradient,
+                                       secondOrderTensor &currentPlasticMicroDeformation,
+                                       thirdOrderTensor &currentPlasticMicroGradient,
+                                       fourthOrderTensor &dPlasticFdPlasticMacroL,
+                                       fourthOrderTensor &dPlasticMicroDeformationdPlasticMicroL,
+                                       fifthOrderTensor &dPlasticMicroGradientdPlasticMacroL,
+                                       fifthOrderTensor &dPlasticMicroGradientdPlasticMicroL,
+                                       sixthOrderTensor &dPlasticMicroGradientdPlasticMicroGradientL,
                                        const parameterType alphaMacro = 0.5,
                                        const parameterType alphaMicro = 0.5,
                                        const parameterType alphaMicroGradient = 0.5 );
 
         void evolvePlasticDeformation( const variableType &Dt,
-                                       const variableVector &currentPlasticMacroVelocityGradient,
-                                       const variableVector &currentPlasticMicroVelocityGradient,
-                                       const variableVector &currentPlasticMicroGradientVelocityGradient,
-                                       const variableVector &previousPlasticDeformationGradient,
-                                       const variableVector &previousPlasticMicroDeformation,
-                                       const variableVector &previousPlasticMicroGradient,
-                                       const variableVector &previousPlasticMacroVelocityGradient,
-                                       const variableVector &previousPlasticMicroVelocityGradient,
-                                       const variableVector &previousPlasticMicroGradientVelocityGradient,
-                                       variableVector &currentPlasticDeformationGradient,
-                                       variableVector &currentPlasticMicroDeformation,
-                                       variableVector &currentPlasticMicroGradient,
-                                       variableVector &dPlasticFdPlasticMacroL,
-                                       variableVector &dPlasticMicroDeformationdPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMacroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPlasticMicroGradientL,
-                                       variableVector &dPlasticFdPreviousPlasticF,
-                                       variableVector &dPlasticFdPreviousPlasticMacroL,
-                                       variableVector &dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
-                                       variableVector &dPlasticMicroDeformationdPreviousPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPreviousPlasticMicroDeformation,
-                                       variableVector &dPlasticMicroGradientdPreviousPlasticMicroGradient,
-                                       variableVector &dPlasticMicroGradientdPreviousPlasticMacroL,
-                                       variableVector &dPlasticMicroGradientdPreviousPlasticMicroL,
-                                       variableVector &dPlasticMicroGradientdPreviousPlasticMicroGradientL,
+                                       const secondOrderTensor &currentPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &currentPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor &currentPlasticMicroGradientVelocityGradient,
+                                       const secondOrderTensor &previousPlasticDeformationGradient,
+                                       const secondOrderTensor &previousPlasticMicroDeformation,
+                                       const thirdOrderTensor &previousPlasticMicroGradient,
+                                       const secondOrderTensor &previousPlasticMacroVelocityGradient,
+                                       const secondOrderTensor &previousPlasticMicroVelocityGradient,
+                                       const thirdOrderTensor &previousPlasticMicroGradientVelocityGradient,
+                                       secondOrderTensor &currentPlasticDeformationGradient,
+                                       secondOrderTensor &currentPlasticMicroDeformation,
+                                       thirdOrderTensor &currentPlasticMicroGradient,
+                                       fourthOrderTensor &dPlasticFdPlasticMacroL,
+                                       fourthOrderTensor &dPlasticMicroDeformationdPlasticMicroL,
+                                       fifthOrderTensor &dPlasticMicroGradientdPlasticMacroL,
+                                       fifthOrderTensor &dPlasticMicroGradientdPlasticMicroL,
+                                       sixthOrderTensor &dPlasticMicroGradientdPlasticMicroGradientL,
+                                       fourthOrderTensor &dPlasticFdPreviousPlasticF,
+                                       fourthOrderTensor &dPlasticFdPreviousPlasticMacroL,
+                                       fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
+                                       fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                       fifthOrderTensor &dPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                                       sixthOrderTensor &dPlasticMicroGradientdPreviousPlasticMicroGradient,
+                                       fifthOrderTensor &dPlasticMicroGradientdPreviousPlasticMacroL,
+                                       fifthOrderTensor &dPlasticMicroGradientdPreviousPlasticMicroL,
+                                       sixthOrderTensor &dPlasticMicroGradientdPreviousPlasticMicroGradientL,
                                        const parameterType alphaMacro = 0.5,
                                        const parameterType alphaMicro = 0.5,
                                        const parameterType alphaMicroGradient = 0.5 );
@@ -1050,29 +1053,29 @@ namespace tardigradeHydra{
 
                 floatType _maxMicroGradientPlasticDeltaNorm = 1.; //!< The maximum allowable value of the norm of the change in micro gradient plasticity for a given nonlinear iteration
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroHardeningParameters,                             floatVector, unexpectedError                                         )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroHardeningParameters,                             floatVector,       unexpectedError                                         )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microHardeningParameters,                             floatVector, unexpectedError                                         )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microHardeningParameters,                             floatVector,       unexpectedError                                         )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microGradientHardeningParameters,                     floatVector, unexpectedError                                         )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microGradientHardeningParameters,                     floatVector,       unexpectedError                                         )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroFlowParameters,                                  floatVector, unexpectedError                                         )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroFlowParameters,                                  floatVector,       unexpectedError                                         )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microFlowParameters,                                  floatVector, unexpectedError                                         )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microFlowParameters,                                  floatVector,       unexpectedError                                         )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microGradientFlowParameters,                          floatVector, unexpectedError                                         )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microGradientFlowParameters,                          floatVector,       unexpectedError                                         )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroYieldParameters,                                 floatVector, unexpectedError                                         )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroYieldParameters,                                 floatVector,       unexpectedError                                         )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microYieldParameters,                                 floatVector, unexpectedError                                         )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microYieldParameters,                                 floatVector,       unexpectedError                                         )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microGradientYieldParameters,                         floatVector, unexpectedError                                         )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, microGradientYieldParameters,                         floatVector,       unexpectedError                                         )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, macroDrivingStress,                                   floatVector, setMacroDrivingStress                                   )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, macroDrivingStress,                                   secondOrderTensor, setMacroDrivingStress                                   )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, symmetricMicroDrivingStress,                          floatVector, setSymmetricMicroDrivingStress                          )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, symmetricMicroDrivingStress,                          secondOrderTensor, setSymmetricMicroDrivingStress                          )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, higherOrderDrivingStress,                             floatVector, setHigherOrderDrivingStress                             )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, higherOrderDrivingStress,                             thirdOrderTensor,  setHigherOrderDrivingStress                             )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMacroDrivingStressdMacroStress,                      floatVector, setdMacroDrivingStressdMacroStress                      )
 
