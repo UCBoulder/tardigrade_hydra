@@ -61,7 +61,7 @@ namespace tardigradeHydra{
         typedef double floatType; //!< Define the float values type.
         typedef std::vector< floatType > floatVector; //!< Define a vector of floats
         typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats 
-    
+
         /*!
          * A residual class for a linear-elastic material model where the stress is computed
          * in the reference configuration and pushed forward to the current configuration.
@@ -209,59 +209,59 @@ namespace tardigradeHydra{
         
                 floatType _mu;
         
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Fe,                              floatVector, setFe                              )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Fe,                              secondOrderTensor, setFe                              )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFedF,                           floatVector, setdFedF                           )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFedF,                           fourthOrderTensor, setdFedF                           )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFedFn,                          floatVector, setdFedFn                          )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dFedFn,                          floatVector,       setdFedFn                          )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousFe,                      floatVector, setPreviousFe                      )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousFe,                      secondOrderTensor, setPreviousFe                      )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdFedF,                   floatVector, setPreviousdFedF                   )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdFedF,                   fourthOrderTensor, setPreviousdFedF                   )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdFedFn,                  floatVector, setPreviousdFedFn                  )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdFedFn,                  floatVector,       setPreviousdFedFn                  )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Ee,                              floatVector, setEe                              )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, Ee,                              secondOrderTensor, setEe                              )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dEedFe,                          floatVector, setdEedFe                          )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dEedFe,                          fourthOrderTensor, setdEedFe                          )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousEe,                      floatVector, setPreviousEe                      )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousEe,                      secondOrderTensor, setPreviousEe                      )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdEedFe,                  floatVector, setPreviousdEedFe                  )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdEedFe,                  fourthOrderTensor, setPreviousdEedFe                  )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2Stress,                       floatVector, setPK2Stress                       )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, PK2Stress,                       secondOrderTensor, setPK2Stress                       )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdEe,                   floatVector, setdPK2StressdEe                   )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdEe,                   fourthOrderTensor, setdPK2StressdEe                   )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdFe,                   floatVector, setdPK2StressdFe                   )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdFe,                   fourthOrderTensor, setdPK2StressdFe                   )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdPreviousFe,           floatVector, setdPK2StressdPreviousFe           )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPK2StressdPreviousFe,           fourthOrderTensor, setdPK2StressdPreviousFe           )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPK2Stress,               floatVector, setPreviousPK2Stress               )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousPK2Stress,               secondOrderTensor, setPreviousPK2Stress               )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdEe,           floatVector, setPreviousdPK2StressdEe           )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdEe,           fourthOrderTensor, setPreviousdPK2StressdEe           )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdFe,           floatVector, setPreviousdPK2StressdFe           )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdPK2StressdFe,           fourthOrderTensor, setPreviousdPK2StressdFe           )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, cauchyStress,                    floatVector, setCauchyStress                    )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, cauchyStress,                    secondOrderTensor, setCauchyStress                    )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPK2Stress,         floatVector, setdCauchyStressdPK2Stress         )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPK2Stress,         fourthOrderTensor, setdCauchyStressdPK2Stress         )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdF,                 floatVector, setdCauchyStressdF                 )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdF,                 fourthOrderTensor, setdCauchyStressdF                 )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdFn,                floatVector, setdCauchyStressdFn                )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdFn,                floatVector,       setdCauchyStressdFn                )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPreviousF,         floatVector, setdCauchyStressdPreviousF         )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPreviousF,         fourthOrderTensor, setdCauchyStressdPreviousF         )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPreviousFn,        floatVector, setdCauchyStressdPreviousFn        )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dCauchyStressdPreviousFn,        floatVector,       setdCauchyStressdPreviousFn        )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousCauchyStress,            floatVector, setPreviousCauchyStress            )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousCauchyStress,            secondOrderTensor, setPreviousCauchyStress            )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdPK2Stress, floatVector, setPreviousdCauchyStressdPK2Stress )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdPK2Stress, fourthOrderTensor, setPreviousdCauchyStressdPK2Stress )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdF,         floatVector, setPreviousdCauchyStressdF         )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdF,         fourthOrderTensor, setPreviousdCauchyStressdF         )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdFn,        floatVector, setPreviousdCauchyStressdFn        )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdCauchyStressdFn,        floatVector,       setPreviousdCauchyStressdFn        )
 
         };
 
