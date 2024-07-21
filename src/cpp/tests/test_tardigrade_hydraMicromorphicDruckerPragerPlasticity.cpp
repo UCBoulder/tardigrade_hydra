@@ -117,6 +117,16 @@ bool tolerantCheck( const double &v1, const double &v2, double eps = 1e-6, doubl
 
 }
 
+BOOST_AUTO_TEST_CASE( test_sgn, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    BOOST_CHECK( tardigradeHydra::micromorphicDruckerPragerPlasticity::sgn(  1.4 ) ==  1 );
+
+    BOOST_CHECK( tardigradeHydra::micromorphicDruckerPragerPlasticity::sgn( -1.4 ) == -1 );
+
+    BOOST_CHECK( tardigradeHydra::micromorphicDruckerPragerPlasticity::sgn(  0   ) ==  0 );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_maxDeltaPlasticDeformation, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     // Form a hydra class and residual class
