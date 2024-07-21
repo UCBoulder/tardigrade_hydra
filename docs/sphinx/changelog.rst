@@ -40,6 +40,10 @@ Bug Fixes
 - Corrected bug when forming an Eigen::Map (pull:`164`). By `Nathan Miller`_.
 - Corrected bug where the cohesions can go negative (pull:`165`). By `Nathan Miller`_.
 
+Bug Fixes
+=========
+- Changed the residual of the micromorphic state variables to hopefully prevent negative plastic multipliers (:pull:`154`). By `Nathan Miller`_.
+
 ******************
 0.4.4 (07-12-2024)
 ******************
