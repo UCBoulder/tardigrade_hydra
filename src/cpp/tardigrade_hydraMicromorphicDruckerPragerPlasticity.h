@@ -76,6 +76,10 @@ namespace tardigradeHydra{
         typedef std::vector< floatType > seventhOrderTensor; //!< A seventh order tensor
         typedef std::vector< floatType > eighthOrderTensor; //!< A eighth order tensor
 
+        template <typename T> int sgn(T val){
+            return (T(0) < val) - (val < T(0));
+        }
+
         void computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parameterType &beta,
                                                      parameterType &A, parameterType &B );
 
