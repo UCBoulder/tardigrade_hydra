@@ -1921,6 +1921,8 @@ namespace tardigradeHydra{
 
         resetNumGrad( );
 
+        setRankDeficientError( false );
+
         try{
 
             solveNonLinearProblem( );
@@ -1940,6 +1942,8 @@ namespace tardigradeHydra{
 
             resetIterations( );
             updateUnknownVector( _initialX );
+
+            setUseLevenbergMarquardt( false );
 
             try{
 
