@@ -212,6 +212,8 @@ namespace tardigradeHydra{
 
                 }
 
+                static unsigned int getIterationDataSize( hydraBase &hydra ){ return hydra._iterationData.size( ); }
+
                 static void checkRelativeTolerance( hydraBase &hydra ){
 
                     BOOST_CHECK( &hydra._tolr == hydra.getRelativeTolerance( ) );
@@ -5830,5 +5832,119 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate, * boost::unit_test::tolerance( DE
     BOOST_TEST( !( *hydra.getRankDeficientError( ) ) );
 
     BOOST_TEST( hydra.num_calls == 2 );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_setDataStorage, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class residualMock : public tardigradeHydra::residualBase{
+
+        public:
+
+            bool project_called = false;
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            tardigradeHydra::dataStorage< floatType > myScalarData;
+
+            tardigradeHydra::dataStorage< floatVector > myVectorData;
+
+            virtual void projectSuggestedX( std::vector< double > &trialX,
+                                            const std::vector< double > &Xp ) override{
+
+                project_called = true;
+
+            }
+
+    };
+
+    tardigradeHydra::hydraBase hydra;
+
+    residualMock residual( &hydra, 1 );
+
+    BOOST_TEST( !residual.myScalarData.first );
+
+    BOOST_TEST( !residual.myVectorData.first );
+
+    floatVector vectorAnswer = { 123.4, 234.5, 345.6 };
+
+    {
+
+        tardigradeHydra::setDataStorage< floatType > setFloatType( &residual.myScalarData, &residual );
+
+        *setFloatType.value = 123.4;
+
+        tardigradeHydra::setDataStorage< floatVector > setVectorType( &residual.myVectorData, &residual );
+
+        *setVectorType.value = { 123.4, 234.5, 345.6 };
+
+    }
+
+    BOOST_TEST( residual.myScalarData.first );
+
+    BOOST_TEST( residual.myScalarData.second == 123.4 );
+
+    BOOST_TEST( residual.myVectorData.first );
+
+    BOOST_TEST( residual.myVectorData.second == vectorAnswer, CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeHydra::unit_test::hydraBaseTester::getIterationDataSize( hydra ) == 0 );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_setDataStorage2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class residualMock : public tardigradeHydra::residualBase{
+
+        public:
+
+            bool project_called = false;
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            tardigradeHydra::dataStorage< floatType > myScalarData;
+
+            tardigradeHydra::dataStorage< floatVector > myVectorData;
+
+            virtual void projectSuggestedX( std::vector< double > &trialX,
+                                            const std::vector< double > &Xp ) override{
+
+                project_called = true;
+
+            }
+
+    };
+
+    tardigradeHydra::hydraBase hydra;
+
+    residualMock residual( &hydra, 1 );
+
+    BOOST_TEST( !residual.myScalarData.first );
+
+    BOOST_TEST( !residual.myVectorData.first );
+
+    floatVector vectorAnswer = { 123.4, 234.5, 345.6 };
+
+    {
+
+        tardigradeHydra::setDataStorage< floatType > setFloatType( &residual.myScalarData, &residual, true );
+
+        *setFloatType.value = 123.4;
+
+        tardigradeHydra::setDataStorage< floatVector > setVectorType( &residual.myVectorData, &residual, true );
+
+        *setVectorType.value = { 123.4, 234.5, 345.6 };
+
+    }
+
+    BOOST_TEST( residual.myScalarData.first );
+
+    BOOST_TEST( residual.myScalarData.second == 123.4 );
+
+    BOOST_TEST( residual.myVectorData.first );
+
+    BOOST_TEST( residual.myVectorData.second == vectorAnswer, CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeHydra::unit_test::hydraBaseTester::getIterationDataSize( hydra ) == 2 );
 
 }
