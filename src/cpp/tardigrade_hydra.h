@@ -1323,6 +1323,45 @@ namespace tardigradeHydra{
 
     };
 
+    /*!
+     * A custom object that handles setting dataStorage objects in place
+     * When the destructor is run the dataStorage is assumed to be set.
+     */
+    template< typename T >
+    class setDataStorage {
+
+      public:
+
+          setDataStorage( dataStorage< T > *ds, residualBase * rp, bool is_iteration_data = false ) : _ds( ds ), _rp( rp ), _is_iteration_data( is_iteration_data ){
+
+              value = &_ds->second;
+
+          }
+
+          ~setDataStorage( ){
+
+              _ds->first = true;
+
+              if ( _is_iteration_data ){
+
+                  _rp->addIterationData( _ds );
+
+              }
+
+          }
+
+          T * value;
+
+      private:
+
+          dataStorage< T > *_ds;
+
+          residualBase *_rp;
+
+          const bool _is_iteration_data;
+
+    };
+
     /// Say hello
     /// @param message The message to print
     errorOut sayHello(std::string message);
