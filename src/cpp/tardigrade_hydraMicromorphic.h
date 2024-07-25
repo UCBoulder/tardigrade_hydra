@@ -14,6 +14,10 @@
 
 namespace tardigradeHydra{
 
+    //Define tensors of known size
+    typedef std::vector< floatType > fifthOrderTensor; //!< Fifth order tensors
+    typedef std::vector< floatType > sixthOrderTensor; //!< Sixth order tensors
+
     //! The base class for hydra framework micromorphic material models
     class hydraBaseMicromorphic : public hydraBase{
 
@@ -23,10 +27,10 @@ namespace tardigradeHydra{
 
             hydraBaseMicromorphic( const floatType &time, const floatType &deltaTime,
                                    const floatType &temperature, const floatType &previousTemperature,
-                                   const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
-                                   const floatVector &microDeformation, const floatVector &previousMicroDeformation,
-                                   const floatVector &gradientMicroDeformation, const floatVector &previousGradientMicroDeformation,
-                                   const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
+                                   const secondOrderTensor &deformationGradient,      const secondOrderTensor &previousDeformationGradient,
+                                   const secondOrderTensor &microDeformation,         const secondOrderTensor &previousMicroDeformation,
+                                   const thirdOrderTensor  &gradientMicroDeformation, const thirdOrderTensor  &previousGradientMicroDeformation,
+                                   const floatVector &additionalDOF,          const floatVector &previousAdditionalDOF,
                                    const floatVector &previousStateVariables, const floatVector &parameters,
                                    const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
                                    const unsigned int dimension=3, const unsigned int configuration_unknown_count=45,
@@ -35,32 +39,32 @@ namespace tardigradeHydra{
                                    const bool use_preconditioner=false, const unsigned int preconditioner_type=0 );
 
             //! Get the current micro-deformation tensor
-            const floatVector *getMicroDeformation( ){ return &_microDeformation; }
+            const secondOrderTensor *getMicroDeformation( ){ return &_microDeformation; }
 
             //! Get the previous micro-deformation tensor
-            const floatVector *getPreviousMicroDeformation( ){ return &_previousMicroDeformation; }
+            const secondOrderTensor *getPreviousMicroDeformation( ){ return &_previousMicroDeformation; }
 
             //! Get the current spatial gradient w.r.t. the reference configuration of the micro-deformation tensor
-            const floatVector *getGradientMicroDeformation( ){ return &_gradientMicroDeformation; }
+            const thirdOrderTensor *getGradientMicroDeformation( ){ return &_gradientMicroDeformation; }
 
             //! Get the previous spatial gradient w.r.t. the reference configuration of the micro-deformation tensor
-            const floatVector *getPreviousGradientMicroDeformation( ){ return &_previousGradientMicroDeformation; }
+            const thirdOrderTensor *getPreviousGradientMicroDeformation( ){ return &_previousGradientMicroDeformation; }
 
-            floatVector getSubMicroConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            secondOrderTensor getSubMicroConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatVector getPrecedingMicroConfiguration( const unsigned int &index );
+            secondOrderTensor getPrecedingMicroConfiguration( const unsigned int &index );
 
-            floatVector getFollowingMicroConfiguration( const unsigned int &index );
+            secondOrderTensor getFollowingMicroConfiguration( const unsigned int &index );
 
-            floatVector getMicroConfiguration( const unsigned int &index );
+            secondOrderTensor getMicroConfiguration( const unsigned int &index );
 
-            floatVector getPreviousSubMicroConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            secondOrderTensor getPreviousSubMicroConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatVector getPreviousPrecedingMicroConfiguration( const unsigned int &index );
+            secondOrderTensor getPreviousPrecedingMicroConfiguration( const unsigned int &index );
 
-            floatVector getPreviousFollowingMicroConfiguration( const unsigned int &index );
+            secondOrderTensor getPreviousFollowingMicroConfiguration( const unsigned int &index );
 
-            floatVector getPreviousMicroConfiguration( const unsigned int &index );
+            secondOrderTensor getPreviousMicroConfiguration( const unsigned int &index );
 
             floatVector getSubMicroConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
@@ -99,13 +103,13 @@ namespace tardigradeHydra{
 
         private:
 
-            floatVector _microDeformation; //!< The current micro-deformation
+            secondOrderTensor _microDeformation; //!< The current micro-deformation
 
-            floatVector _previousMicroDeformation; //!< The previous micro-deformation
+            secondOrderTensor _previousMicroDeformation; //!< The previous micro-deformation
 
-            floatVector _gradientMicroDeformation; //!< The spatial gradient of the micro-deformation w.r.t. the reference coordinates
+            thirdOrderTensor  _gradientMicroDeformation; //!< The spatial gradient of the micro-deformation w.r.t. the reference coordinates
 
-            floatVector _previousGradientMicroDeformation; //!< The previous spatial gradient of the micro-deformation w.r.t. the reference coordinates
+            thirdOrderTensor  _previousGradientMicroDeformation; //!< The previous spatial gradient of the micro-deformation w.r.t. the reference coordinates
 
             void setFirstMicroConfigurationJacobians( );
 
@@ -126,46 +130,46 @@ namespace tardigradeHydra{
                                                              const floatVector &gradientMicroConfiguration, const floatVector &gradientMicroConfigurations,
                                                              const floatVector &dChi1dChi, const floatVector &dChi1dChin,
                                                              floatVector &dGradChi1dCn,
-                                                             floatVector &dGradChi1dChi,     floatVector &dGradChi1dChin,
-                                                             floatVector &dGradChi1dGradChi, floatVector &dGradChi1dGradChin );
+                                                             fifthOrderTensor &dGradChi1dChi,     floatVector &dGradChi1dChin,
+                                                             sixthOrderTensor &dGradChi1dGradChi, floatVector &dGradChi1dGradChin );
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microConfigurations,                 floatVector, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, microConfigurations,                 floatVector,       unexpectedError )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, inverseMicroConfigurations,          floatVector, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, inverseMicroConfigurations,          floatVector,       unexpectedError )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, gradientMicroConfigurations,         floatVector, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, gradientMicroConfigurations,         floatVector,       unexpectedError )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroConfigurations,         floatVector, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMicroConfigurations,         floatVector,       unexpectedError )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousInverseMicroConfigurations,  floatVector, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousInverseMicroConfigurations,  floatVector,       unexpectedError )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousGradientMicroConfigurations, floatVector, unexpectedError )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousGradientMicroConfigurations, floatVector,       unexpectedError )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dChi1dChi,                           floatVector, setFirstMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dChi1dChi,                           fourthOrderTensor, setFirstMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dChi1dChin,                          floatVector, setFirstMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dChi1dChin,                          floatVector,       setFirstMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdChi1dChi,                   floatVector, setPreviousFirstMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdChi1dChi,                   fourthOrderTensor, setPreviousFirstMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdChi1dChin,                  floatVector, setPreviousFirstMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousdChi1dChin,                  floatVector,       setPreviousFirstMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dFn,                        floatVector, setFirstGradientMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dFn,                        floatVector,       setFirstGradientMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dChi,                       floatVector, setFirstGradientMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dChi,                       fifthOrderTensor, setFirstGradientMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dChin,                      floatVector, setFirstGradientMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dChin,                      floatVector,      setFirstGradientMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dGradChi,                   floatVector, setFirstGradientMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dGradChi,                   sixthOrderTensor, setFirstGradientMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dGradChin,                  floatVector, setFirstGradientMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dGradChi1dGradChin,                  floatVector,      setFirstGradientMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dFn,                 floatVector, setPreviousFirstGradientMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dFn,                 floatVector,      setPreviousFirstGradientMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dChi,                floatVector, setPreviousFirstGradientMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dChi,                fifthOrderTensor, setPreviousFirstGradientMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dChin,               floatVector, setPreviousFirstGradientMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dChin,               floatVector,      setPreviousFirstGradientMicroConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dGradChi,            floatVector, setPreviousFirstGradientMicroConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dGradChi,            sixthOrderTensor, setPreviousFirstGradientMicroConfigurationJacobians )
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousdGradChi1dGradChin,           floatVector, setPreviousFirstGradientMicroConfigurationJacobians )
 

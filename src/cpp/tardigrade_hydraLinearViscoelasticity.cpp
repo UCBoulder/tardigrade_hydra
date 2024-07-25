@@ -198,7 +198,7 @@ namespace tardigradeHydra{
 
             floatType Je;
 
-            floatVector Fehat;
+            secondOrderTensor Fehat;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( *get_Fe( ), Je, Fehat ) );
 
@@ -215,7 +215,7 @@ namespace tardigradeHydra{
 
             floatType previousJe;
 
-            floatVector previousFehat;
+            secondOrderTensor previousFehat;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( *get_previousFe( ), previousJe, previousFehat ) );
 
@@ -225,7 +225,7 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::decomposeDeformation( const floatVector &F, floatType &J, floatVector &Fhat ){
+        void residual::decomposeDeformation( const secondOrderTensor &F, floatType &J, secondOrderTensor &Fhat ){
             /*!
              * Decompose a deformation into volumetric and isochoric parts where
              * 
@@ -254,7 +254,7 @@ namespace tardigradeHydra{
 
             const unsigned int dim = hydra->getDimension( );
 
-            const floatVector *Fe;
+            const secondOrderTensor *Fe;
 
             if ( isPrevious ){
 
@@ -267,7 +267,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector dJedFe = tardigradeVectorTools::computeDDetADA( *Fe, dim, dim );
+            secondOrderTensor dJedFe = tardigradeVectorTools::computeDDetADA( *Fe, dim, dim );
 
             if ( isPrevious ){
 
@@ -334,9 +334,9 @@ namespace tardigradeHydra{
 
             const floatType   *Je;
 
-            const floatVector *Fe;
+            const secondOrderTensor *Fe;
 
-            const floatVector *dJedFe;
+            const secondOrderTensor *dJedFe;
 
             if ( isPrevious ){
 
@@ -357,7 +357,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector dFehatdFe( sot_dim * sot_dim, 0 );
+            fourthOrderTensor dFehatdFe( sot_dim * sot_dim, 0 );
             tardigradeVectorTools::eye< floatType >( dFehatdFe );
             dFehatdFe *= std::pow( ( *Je ), -1. / 3 );
 
@@ -669,7 +669,7 @@ namespace tardigradeHydra{
 
             const floatType *Je;
 
-            const floatVector *dJedFe;
+            const secondOrderTensor *dJedFe;
 
             const floatType *previousJe = get_previousJe( );
 
@@ -988,11 +988,11 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = dim * dim;
 
-            const floatVector *Fehat;
+            const secondOrderTensor *Fehat;
 
-            const floatVector *previousFehat = get_previousFehat( );
+            const secondOrderTensor *previousFehat = get_previousFehat( );
 
-            const floatVector *dFehatdFe;
+            const fourthOrderTensor *dFehatdFe;
 
             floatType time;
 
@@ -1033,13 +1033,13 @@ namespace tardigradeHydra{
 
             // Compute the strain measures
 
-            floatVector isochoricStrain, previousIsochoricStrain;
-            floatVector dEehatdFehat, previousdEehatdFehat;
+            secondOrderTensor isochoricStrain, previousIsochoricStrain;
+            fourthOrderTensor dEehatdFehat, previousdEehatdFehat;
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fehat, isochoricStrain, dEehatdFehat ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *previousFehat, previousIsochoricStrain, previousdEehatdFehat ) );
 
-            floatVector dEehatdFe = tardigradeVectorTools::matrixMultiply( dEehatdFehat, *dFehatdFe, sot_dim, sot_dim, sot_dim, sot_dim );
+            fourthOrderTensor dEehatdFe = tardigradeVectorTools::matrixMultiply( dEehatdFehat, *dFehatdFe, sot_dim, sot_dim, sot_dim, sot_dim );
 
             // Get the previous state variable values
 
@@ -1050,23 +1050,23 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( decomposeStateVariableVector( previousVolumetricStateVariables,
                                                              previousIsochoricStateVariables ) );
 
-            floatVector PK2IsochoricStress;
+            secondOrderTensor PK2IsochoricStress;
 
-            floatVector deltaPK2IsochoricStress;
+            secondOrderTensor deltaPK2IsochoricStress;
 
             floatVector currentIsochoricStateVariables;
 
             floatMatrix _dPK2IsochoricStressdEe;
 
-            floatVector dPK2IsochoricStressdEe;
+            fourthOrderTensor dPK2IsochoricStressdEe;
 
-            floatVector dPK2IsochoricStressdRateMultiplier;
+            secondOrderTensor dPK2IsochoricStressdRateMultiplier;
 
             floatMatrix _dPK2IsochoricStressdPreviousEe;
 
-            floatVector dPK2IsochoricStressdPreviousEe;
+            fourthOrderTensor dPK2IsochoricStressdPreviousEe;
 
-            floatVector dPK2IsochoricStressdPreviousRateMultiplier;
+            secondOrderTensor dPK2IsochoricStressdPreviousRateMultiplier;
 
             floatMatrix _dPK2IsochoricStressdPreviousIsochoricISVs;
 
@@ -1135,7 +1135,7 @@ namespace tardigradeHydra{
 
                 set_dPK2IsochoricStressdT( dPK2IsochoricStressdRateMultiplier * ( *dIsochoricRateMultiplierdT ) );
 
-                floatVector previousdEehatdFe = tardigradeVectorTools::matrixMultiply( previousdEehatdFehat, *get_previousdFehatdFe( ), sot_dim, sot_dim, sot_dim, sot_dim );
+                fourthOrderTensor previousdEehatdFe = tardigradeVectorTools::matrixMultiply( previousdEehatdFehat, *get_previousdFehatdFe( ), sot_dim, sot_dim, sot_dim, sot_dim );
 
                 set_dPK2IsochoricStressdPreviousFe( tardigradeVectorTools::matrixMultiply( dPK2IsochoricStressdPreviousEe, previousdEehatdFe, sot_dim, sot_dim, sot_dim, sot_dim ) );
 
@@ -1337,10 +1337,10 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for if to compute the current (false) or previous (true) PK2 stress
              */
 
-            floatVector eye( hydra->getSOTDimension( ), 0 );
+            secondOrderTensor eye( hydra->getSOTDimension( ), 0 );
             tardigradeVectorTools::eye( eye );
 
-            const floatVector *isochoric;
+            const secondOrderTensor *isochoric;
 
             const floatType *mean;
 
@@ -1359,7 +1359,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector PK2Stress = ( *isochoric ) + ( *mean ) * eye;
+            secondOrderTensor PK2Stress = ( *isochoric ) + ( *mean ) * eye;
 
             if ( isPrevious ){
 
@@ -1402,12 +1402,12 @@ namespace tardigradeHydra{
             const unsigned int dim = hydra->getDimension( );
             const unsigned int sot_dim = dim * dim;
 
-            floatVector eye( sot_dim, 0 );
+            secondOrderTensor eye( sot_dim, 0 );
             tardigradeVectorTools::eye( eye );
 
-            const floatVector *dIsodFe;
+            const fourthOrderTensor *dIsodFe;
 
-            const floatVector *dMeandFe;
+            const secondOrderTensor *dMeandFe;
 
             if ( isPrevious ){
 
@@ -1424,7 +1424,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector dPK2StressdFe = *dIsodFe + tardigradeVectorTools::matrixMultiply( eye, *dMeandFe, sot_dim, 1, 1, sot_dim );
+            fourthOrderTensor dPK2StressdFe = *dIsodFe + tardigradeVectorTools::matrixMultiply( eye, *dMeandFe, sot_dim, 1, 1, sot_dim );
 
             if ( isPrevious ){
 
@@ -1455,10 +1455,10 @@ namespace tardigradeHydra{
              * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the temperature
              */
 
-            floatVector eye( hydra->getSOTDimension( ), 0 );
+            secondOrderTensor eye( hydra->getSOTDimension( ), 0 );
             tardigradeVectorTools::eye( eye );
 
-            floatVector dPK2StressdT = *get_dPK2IsochoricStressdT( ) + *get_dPK2MeanStressdT( ) * eye;
+            secondOrderTensor dPK2StressdT = *get_dPK2IsochoricStressdT( ) + *get_dPK2MeanStressdT( ) * eye;
 
             set_dPK2StressdT( dPK2StressdT );
 
@@ -1469,10 +1469,10 @@ namespace tardigradeHydra{
              * Set the derivative of the second Piola-Kirchhoff stress w.r.t. the previous temperature
              */
 
-            floatVector eye( hydra->getSOTDimension( ), 0 );
+            secondOrderTensor eye( hydra->getSOTDimension( ), 0 );
             tardigradeVectorTools::eye( eye );
 
-            floatVector dPK2StressdPreviousT = *get_dPK2IsochoricStressdPreviousT( ) + *get_dPK2MeanStressdPreviousT( ) * eye;
+            secondOrderTensor dPK2StressdPreviousT = *get_dPK2IsochoricStressdPreviousT( ) + *get_dPK2MeanStressdPreviousT( ) * eye;
 
             set_dPK2StressdPreviousT( dPK2StressdPreviousT );
 
@@ -1483,10 +1483,10 @@ namespace tardigradeHydra{
              * Set the prevoius derivative of the second Piola-Kirchhoff stress w.r.t. the temperature
              */
 
-            floatVector eye( hydra->getSOTDimension( ), 0 );
+            secondOrderTensor eye( hydra->getSOTDimension( ), 0 );
             tardigradeVectorTools::eye( eye );
 
-            floatVector dPK2StressdT = *get_previousdPK2IsochoricStressdT( ) + *get_previousdPK2MeanStressdT( ) * eye;
+            secondOrderTensor dPK2StressdT = *get_previousdPK2IsochoricStressdT( ) + *get_previousdPK2MeanStressdT( ) * eye;
 
             set_previousdPK2StressdT( dPK2StressdT );
 
@@ -1500,7 +1500,7 @@ namespace tardigradeHydra{
             const unsigned int sot_dim = hydra->getSOTDimension( );
             const unsigned int num_isvs = get_dPK2MeanStressdPreviousISVs( )->size( ); 
 
-            floatVector eye( sot_dim, 0 );
+            secondOrderTensor eye( sot_dim, 0 );
             tardigradeVectorTools::eye( eye );
 
             floatVector dPK2StressdPreviousISVs = *get_dPK2IsochoricStressdPreviousISVs( ) + tardigradeVectorTools::matrixMultiply( eye, *get_dPK2MeanStressdPreviousISVs( ), sot_dim, 1, 1, num_isvs );
@@ -1516,7 +1516,7 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            floatVector dCauchyStressdT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdT( ), sot_dim, sot_dim, sot_dim, 1 );
+            secondOrderTensor dCauchyStressdT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdT( ), sot_dim, sot_dim, sot_dim, 1 );
 
             set_dCauchyStressdT( dCauchyStressdT );
 
@@ -1529,7 +1529,7 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            floatVector dCauchyStressdPreviousT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdPreviousT( ), sot_dim, sot_dim, sot_dim, 1 );
+            secondOrderTensor dCauchyStressdPreviousT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdPreviousT( ), sot_dim, sot_dim, sot_dim, 1 );
 
             set_dCauchyStressdPreviousT( dCauchyStressdPreviousT );
 
@@ -1557,7 +1557,7 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            floatVector previousdCauchyStressdT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_previousdPK2StressdT( ), sot_dim, sot_dim, sot_dim, 1 );
+            secondOrderTensor previousdCauchyStressdT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_previousdPK2StressdT( ), sot_dim, sot_dim, sot_dim, 1 );
 
             set_previousdCauchyStressdT( previousdCauchyStressdT );
 

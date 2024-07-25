@@ -27,8 +27,8 @@ namespace tardigradeHydra{
 
             set_massChangeRate( ( *hydra->getAdditionalDOF( ) )[ 1 ] );
 
-            set_directionVector( floatVector( hydra->getAdditionalDOF( )->begin( ) + 2,
-                                                     hydra->getAdditionalDOF( )->begin( ) + 5 ) );
+            set_directionVector( dimVector( hydra->getAdditionalDOF( )->begin( ) + 2,
+                                            hydra->getAdditionalDOF( )->begin( ) + 5 ) );
 
             set_previousDensity( ( *hydra->getPreviousAdditionalDOF( ) )[ 0 ] );
 
@@ -196,7 +196,7 @@ namespace tardigradeHydra{
 
             const unsigned int dim = hydra->getDimension( );
 
-            const floatVector *directionVector;
+            const dimVector *directionVector;
 
             if ( isPrevious ){
 
@@ -211,7 +211,7 @@ namespace tardigradeHydra{
 
             floatType normDirectionVector = tardigradeVectorTools::l2norm( *directionVector );
 
-            floatVector unitDirectionVector( dim, 0 );
+            dimVector unitDirectionVector( dim, 0 );
 
             if ( std::isfinite( 1. / normDirectionVector ) ){
 
@@ -261,7 +261,7 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = dim * dim;
 
-            const floatVector *directionVector;
+            const dimVector *directionVector;
 
             if ( isPrevious ){
 
@@ -276,9 +276,9 @@ namespace tardigradeHydra{
 
             floatType normDirectionVector = tardigradeVectorTools::l2norm( *directionVector );
 
-            floatVector unitDirectionVector( dim, 0 );
+            dimVector unitDirectionVector( dim, 0 );
 
-            floatVector dUnitDirectionVectordDirectionVector( sot_dim, 0 );
+            secondOrderTensor dUnitDirectionVectordDirectionVector( sot_dim, 0 );
 
             if ( std::isfinite( 1. / normDirectionVector ) ){
 
@@ -353,7 +353,7 @@ namespace tardigradeHydra{
 
             const floatType *velocityGradientTrace = get_massChangeVelocityGradientTrace( );
 
-            const floatVector *unitDirectionVector;
+            const dimVector *unitDirectionVector;
 
             if ( isPrevious ){
 
@@ -370,7 +370,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector velocityGradient( sot_dim, 0 );
+            secondOrderTensor velocityGradient( sot_dim, 0 );
 
             floatType a = ( *velocityGradientTrace ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
 
@@ -437,9 +437,9 @@ namespace tardigradeHydra{
 
             const floatType *dVelocityGradientTracedMassChangeRate;
 
-            const floatVector *unitDirectionVector;
+            const dimVector *unitDirectionVector;
 
-            const floatVector *dUnitDirectionVectordDirectionVector;
+            const secondOrderTensor *dUnitDirectionVectordDirectionVector;
 
             if ( isPrevious ){
 
@@ -468,13 +468,13 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector velocityGradient( sot_dim, 0 );
+            secondOrderTensor velocityGradient( sot_dim, 0 );
 
-            floatVector dVelocityGradientdDensity( sot_dim, 0 );
+            secondOrderTensor dVelocityGradientdDensity( sot_dim, 0 );
 
-            floatVector dVelocityGradientdMassChangeRate( sot_dim, 0 );
+            secondOrderTensor dVelocityGradientdMassChangeRate( sot_dim, 0 );
 
-            floatVector dVelocityGradientdDirectionVector( tot_dim, 0 );
+            thirdOrderTensor  dVelocityGradientdDirectionVector( tot_dim, 0 );
 
             floatType a = ( *velocityGradientTrace ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
 
@@ -661,7 +661,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            const floatVector *dF1dF;
+            const fourthOrderTensor *dF1dF;
 
             const floatVector *dF1dFn;
 
@@ -690,7 +690,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector dpFdF( sot_dim * sot_dim, 0 );
+            fourthOrderTensor dpFdF( sot_dim * sot_dim, 0 );
 
             floatVector dpFdFn( sot_dim * sot_dim * ( num_configs - 1 ), 0 );
 
@@ -802,9 +802,9 @@ namespace tardigradeHydra{
              * \param &isPrevious: Flag for whether this is being computed for the current or previous timestep
              */
 
-            const floatVector *velocityGradient;
+            const secondOrderTensor *velocityGradient;
 
-            const floatVector *precedingDeformationGradient;
+            const secondOrderTensor *precedingDeformationGradient;
 
             if ( isPrevious ){
 
@@ -821,7 +821,7 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector intermediateVelocityGradient;
+            secondOrderTensor intermediateVelocityGradient;
 
             tardigradeConstitutiveTools::pullBackVelocityGradient( *velocityGradient, *precedingDeformationGradient, intermediateVelocityGradient );
 
@@ -853,17 +853,17 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            const floatVector *velocityGradient;
+            const secondOrderTensor *velocityGradient;
 
-            const floatVector *precedingDeformationGradient;
+            const secondOrderTensor *precedingDeformationGradient;
 
-            const floatVector *dLdRho;
+            const secondOrderTensor *dLdRho;
 
-            const floatVector *dLdC;
+            const secondOrderTensor *dLdC;
 
-            const floatVector *dLdGradC;
+            const thirdOrderTensor *dLdGradC;
 
-            const floatVector *dPFdF;
+            const fourthOrderTensor *dPFdF;
 
             const floatVector *dPFdFn;
 
@@ -902,19 +902,19 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector intermediateVelocityGradient;
+            secondOrderTensor intermediateVelocityGradient;
 
-            floatVector dILdL, dILdPF;
+            fourthOrderTensor dILdL, dILdPF;
 
             tardigradeConstitutiveTools::pullBackVelocityGradient( *velocityGradient, *precedingDeformationGradient, intermediateVelocityGradient, dILdL, dILdPF );
 
-            floatVector dILdRho( sot_dim, 0 );
+            secondOrderTensor dILdRho( sot_dim, 0 );
 
-            floatVector dILdC( sot_dim, 0 );
+            secondOrderTensor dILdC( sot_dim, 0 );
 
-            floatVector dILdGradC( tot_dim, 0 );
+            thirdOrderTensor  dILdGradC( tot_dim, 0 );
 
-            floatVector dILdF( sot_dim * sot_dim, 0 );
+            fourthOrderTensor dILdF( sot_dim * sot_dim, 0 );
 
             floatVector dILdFn( ( num_configs - 1 ) * sot_dim * sot_dim, 0 );
 
@@ -1094,13 +1094,13 @@ namespace tardigradeHydra{
              * Set the mass-change deformation gradient
              */
 
-            const floatVector *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
+            const secondOrderTensor *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
 
-            const floatVector *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
+            const secondOrderTensor *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
 
-            const floatVector previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
+            const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
 
-            floatVector massChangeDeformationGradient;
+            secondOrderTensor massChangeDeformationGradient;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                               *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
@@ -1126,41 +1126,41 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            const floatVector *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
+            const secondOrderTensor *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
 
-            const floatVector *dLdRho   = get_dMassChangeIntermediateVelocityGradientdDensity( );
+            const secondOrderTensor *dLdRho   = get_dMassChangeIntermediateVelocityGradientdDensity( );
 
-            const floatVector *dLdC     = get_dMassChangeIntermediateVelocityGradientdMassChangeRate( );
+            const secondOrderTensor *dLdC     = get_dMassChangeIntermediateVelocityGradientdMassChangeRate( );
 
-            const floatVector *dLdGradC = get_dMassChangeIntermediateVelocityGradientdDirectionVector( );
+            const thirdOrderTensor  *dLdGradC = get_dMassChangeIntermediateVelocityGradientdDirectionVector( );
 
-            const floatVector *dLdF     = get_dMassChangeIntermediateVelocityGradientdDeformationGradient( );
+            const fourthOrderTensor *dLdF     = get_dMassChangeIntermediateVelocityGradientdDeformationGradient( );
 
             const floatVector *dLdFn    = get_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( );
 
-            const floatVector *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
+            const secondOrderTensor *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
 
-            const floatVector previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
+            const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
 
-            floatVector massChangeDeformationGradient;
+            secondOrderTensor massChangeDeformationGradient;
 
-            floatVector dFmdL;
+            fourthOrderTensor dFmdL;
 
             if ( computePrevious ){
 
-                const floatVector *dLpdRho   = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity( );
+                const secondOrderTensor *dLpdRho   = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity( );
 
-                const floatVector *dLpdC     = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate( );
+                const secondOrderTensor *dLpdC     = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate( );
 
-                const floatVector *dLpdGradC = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector( );
+                const thirdOrderTensor  *dLpdGradC = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector( );
 
-                const floatVector *dLpdF     = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( );
+                const fourthOrderTensor *dLpdF     = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( );
 
                 const floatVector *dLpdFn    = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( );
 
-                floatVector dFmdFp;
+                fourthOrderTensor dFmdFp;
 
-                floatVector dFmdLp;
+                fourthOrderTensor dFmdLp;
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                                   *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
@@ -1168,13 +1168,13 @@ namespace tardigradeHydra{
                                                                                                   dFmdL, dFmdFp, dFmdLp,
                                                                                                   *getIntegrationParameter( ) ) )
 
-                floatVector dFmdPreviousRho( sot_dim, 0 );
+                secondOrderTensor dFmdPreviousRho( sot_dim, 0 );
 
-                floatVector dFmdPreviousC( sot_dim, 0 );
+                secondOrderTensor dFmdPreviousC( sot_dim, 0 );
 
-                floatVector dFmdPreviousGradC( tot_dim, 0 );
+                thirdOrderTensor  dFmdPreviousGradC( tot_dim, 0 );
 
-                floatVector dFmdPreviousF( sot_dim * sot_dim, 0 );
+                fourthOrderTensor dFmdPreviousF( sot_dim * sot_dim, 0 );
 
                 floatVector dFmdPreviousFn( ( num_configs - 1 ) * sot_dim * sot_dim, 0 );
 
@@ -1232,13 +1232,13 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector dFmdRho( sot_dim, 0 );
+            secondOrderTensor dFmdRho( sot_dim, 0 );
 
-            floatVector dFmdC( sot_dim, 0 );
+            secondOrderTensor dFmdC( sot_dim, 0 );
 
-            floatVector dFmdGradC( tot_dim, 0 );
+            thirdOrderTensor  dFmdGradC( tot_dim, 0 );
 
-            floatVector dFmdF( sot_dim * sot_dim, 0 );
+            fourthOrderTensor dFmdF( sot_dim * sot_dim, 0 );
 
             floatVector dFmdFn( ( num_configs - 1 ) * sot_dim * sot_dim, 0 );
 
@@ -1385,8 +1385,8 @@ namespace tardigradeHydra{
 
             const unsigned int massChangeConfigurationIndex = *getMassChangeConfigurationIndex( );
 
-            setResidual( *get_massChangeDeformationGradient( ) - floatVector( hydra->get_configurations( )->begin( ) +   massChangeConfigurationIndex * 9,
-                                                                              hydra->get_configurations( )->begin( ) + ( massChangeConfigurationIndex + 1 ) * 9 ) );
+            setResidual( *get_massChangeDeformationGradient( ) - secondOrderTensor( hydra->get_configurations( )->begin( ) +   massChangeConfigurationIndex * 9,
+                                                                                    hydra->get_configurations( )->begin( ) + ( massChangeConfigurationIndex + 1 ) * 9 ) );
 
         }
 
@@ -1430,7 +1430,7 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            setdRdT( floatVector( sot_dim, 0 ) );
+            setdRdT( secondOrderTensor( sot_dim, 0 ) );
 
         }
 
@@ -1456,11 +1456,11 @@ namespace tardigradeHydra{
 
             const unsigned int num_additional_dof = hydra->getAdditionalDOF( )->size( );
 
-            const floatVector *dMassChangeDeformationdDensity = get_dMassChangeDeformationGradientdDensity( );
+            const secondOrderTensor *dMassChangeDeformationdDensity = get_dMassChangeDeformationGradientdDensity( );
 
-            const floatVector *dMassChangeDeformationdMassChangeRate = get_dMassChangeDeformationGradientdMassChangeRate( );
+            const secondOrderTensor *dMassChangeDeformationdMassChangeRate = get_dMassChangeDeformationGradientdMassChangeRate( );
 
-            const floatVector *dMassChangeDeformationdDirectionVector = get_dMassChangeDeformationGradientdDirectionVector( );
+            const thirdOrderTensor  *dMassChangeDeformationdDirectionVector = get_dMassChangeDeformationGradientdDirectionVector( );
 
             floatVector dRdAdditionalDOF( num_equations * num_additional_dof, 0 );
 
@@ -1510,7 +1510,7 @@ namespace tardigradeHydra{
 
             const unsigned int configuration = *getMassChangeConfigurationIndex( );
 
-            const floatVector *massChangeDeformationGradient = get_massChangeDeformationGradient( );
+            const secondOrderTensor *massChangeDeformationGradient = get_massChangeDeformationGradient( );
 
             indices = std::vector< unsigned int >( sot_dim, sot_dim * configuration );
 

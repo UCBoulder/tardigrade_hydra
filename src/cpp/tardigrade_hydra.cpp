@@ -36,7 +36,7 @@ namespace tardigradeHydra{
 
     hydraBase::hydraBase( const floatType &time, const floatType &deltaTime,
                           const floatType &temperature, const floatType &previousTemperature,
-                          const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
+                          const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,
                           const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
                           const floatVector &previousStateVariables, const floatVector &parameters,
                           const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
@@ -155,7 +155,7 @@ namespace tardigradeHydra{
         kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0 );
 
         // Initialize the first configuration with the total deformation gradient
-        floatVector temp( sot_dim, 0 );
+        secondOrderTensor temp( sot_dim, 0 );
 #else
         Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat2( NULL, 3, 3 );
 #endif
@@ -361,7 +361,7 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK( lowerIndex <= upperIndex, build_lower_index_out_of_range_error_string( lowerIndex, upperIndex ) )
 
-        floatVector Fsc( sot_dim, 0 );
+        secondOrderTensor Fsc( sot_dim, 0 );
         for ( unsigned int i = 0; i < 3; i++ ){ Fsc[ dim * i + i ] = 1.; }
 
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
@@ -416,7 +416,7 @@ namespace tardigradeHydra{
 
         for ( unsigned int index = lowerIndex; index < upperIndex; index++ ){
 
-            floatVector Fm, FpT;
+            secondOrderTensor Fm, FpT;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( Fm = getSubConfiguration( configurations, lowerIndex, index ) );
 
@@ -448,7 +448,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatVector hydraBase::getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+    secondOrderTensor hydraBase::getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
          * Get a sub-configuration \f$\bf{F}^{sc}\f$ defined as
          *
@@ -462,7 +462,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatVector hydraBase::getPrecedingConfiguration( const unsigned int &index ){
+    secondOrderTensor hydraBase::getPrecedingConfiguration( const unsigned int &index ){
         /*!
          * Get the sub-configuration preceding but not including the index
          * 
@@ -473,7 +473,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatVector hydraBase::getFollowingConfiguration( const unsigned int &index ){
+    secondOrderTensor hydraBase::getFollowingConfiguration( const unsigned int &index ){
         /*!
          * Get the sub-configuration following but not including the index
          * 
@@ -484,7 +484,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatVector hydraBase::getConfiguration( const unsigned int &index ){
+    secondOrderTensor hydraBase::getConfiguration( const unsigned int &index ){
         /*!
          * Get the configuration indicated by the provided index
          * 
@@ -495,7 +495,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatVector hydraBase::getPreviousSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
+    secondOrderTensor hydraBase::getPreviousSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex ){
         /*!
          * Get a previous sub-configuration \f$\bf{F}^{sc}\f$ defined as
          *
@@ -509,7 +509,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatVector hydraBase::getPreviousPrecedingConfiguration( const unsigned int &index ){
+    secondOrderTensor hydraBase::getPreviousPrecedingConfiguration( const unsigned int &index ){
         /*!
          * Get the previous sub-configuration preceding but not including the index
          * 
@@ -520,7 +520,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatVector hydraBase::getPreviousFollowingConfiguration( const unsigned int &index ){
+    secondOrderTensor hydraBase::getPreviousFollowingConfiguration( const unsigned int &index ){
         /*!
          * Get the previous sub-configuration following but not including the index
          * 
@@ -531,7 +531,7 @@ namespace tardigradeHydra{
 
     }
 
-    floatVector hydraBase::getPreviousConfiguration( const unsigned int &index ){
+    secondOrderTensor hydraBase::getPreviousConfiguration( const unsigned int &index ){
         /*!
          * Get the previous configuration indicated by the provided index
          * 
@@ -622,7 +622,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::calculateFirstConfigurationJacobians( const floatVector &configurations, floatVector &dC1dC, floatVector &dC1dCn ){
+    void hydraBase::calculateFirstConfigurationJacobians( const floatVector &configurations, fourthOrderTensor &dC1dC, floatVector &dC1dCn ){
         /*!
          * Get the Jacobian of the first configuration w.r.t. the total mapping and the remaining configurations.
          * 
@@ -637,20 +637,17 @@ namespace tardigradeHydra{
         const unsigned int sot_dim = getSOTDimension( );
         const unsigned int num_configs = *getNumConfigurations( );
 
-        dC1dC  = floatVector( sot_dim * sot_dim, 0 );
+        dC1dC  = secondOrderTensor( sot_dim * sot_dim, 0 );
 
         dC1dCn = floatVector( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
-        floatVector eye( sot_dim, 0 );
-        for ( unsigned int i = 0; i < dim; i++ ){ eye[ dim * i + i ] = 1; }
+        secondOrderTensor fullConfiguration = getSubConfiguration( configurations, 0, num_configs );
 
-        floatVector fullConfiguration = getSubConfiguration( configurations, 0, num_configs );
-
-        floatVector invCsc = getSubConfiguration( configurations, 1, num_configs );
+        secondOrderTensor invCsc = getSubConfiguration( configurations, 1, num_configs );
         Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > mat( invCsc.data( ), dim, dim );
         mat = mat.inverse( ).eval( );
 
-        floatVector dInvCscdCsc = tardigradeVectorTools::computeFlatDInvADA( invCsc, dim, dim );
+        fourthOrderTensor dInvCscdCsc = tardigradeVectorTools::computeFlatDInvADA( invCsc, dim, dim );
 
         floatVector dInvCscdCs = tardigradeVectorTools::matrixMultiply( dInvCscdCsc, getSubConfigurationJacobian( configurations, 1, num_configs ), sot_dim, sot_dim, sot_dim, num_configs * sot_dim );
 
@@ -693,7 +690,7 @@ namespace tardigradeHydra{
          * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining sub-configurations
          */
 
-        floatVector dF1dF;
+        secondOrderTensor dF1dF;
 
         floatVector dF1dFn;
 
@@ -710,7 +707,7 @@ namespace tardigradeHydra{
          * Set the Jacobians of the previous first configuration w.r.t. the total configuration and the remaining sub-configurations
          */
 
-        floatVector dF1dF;
+        secondOrderTensor dF1dF;
 
         floatVector dF1dFn;
 
@@ -1333,7 +1330,7 @@ namespace tardigradeHydra{
 
         for ( unsigned int i = 1; i < num_local_configs; i++ ){
 
-            Xmat[ i ] = floatVector( configurations->begin( ) + sot_dim * i, configurations->begin( ) + sot_dim * ( i + 1 ) );
+            Xmat[ i ] = secondOrderTensor( configurations->begin( ) + sot_dim * i, configurations->begin( ) + sot_dim * ( i + 1 ) );
 
         }
 

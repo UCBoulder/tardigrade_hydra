@@ -217,6 +217,12 @@ namespace tardigradeHydra{
     typedef std::vector< floatType > floatVector; //!< Define a vector of floats
     typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
 
+    //Define tensors of known size
+    typedef std::vector< floatType > dimVector; //!< Dimension vector
+    typedef std::vector< floatType > secondOrderTensor; //!< Second order tensors
+    typedef std::vector< floatType > thirdOrderTensor; //!< Third order tensors
+    typedef std::vector< floatType > fourthOrderTensor; //!< Fourth order tensors
+
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
     typedef libxsmm_mmfunction<floatType> kernel_type; //!< The libxsmm kernel type
 #endif
@@ -615,7 +621,7 @@ namespace tardigradeHydra{
             //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
             hydraBase( const floatType &time, const floatType &deltaTime,
                        const floatType &temperature, const floatType &previousTemperature,
-                       const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
+                       const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,
                        const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
                        const floatVector &previousStateVariables, const floatVector &parameters,
                        const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
@@ -645,10 +651,10 @@ namespace tardigradeHydra{
             const floatType* getPreviousTemperature( ){ return &_previousTemperature; };
 
             //! Get a reference to the deformation gradient
-            const floatVector* getDeformationGradient( ){ return &_deformationGradient; }
+            const secondOrderTensor* getDeformationGradient( ){ return &_deformationGradient; }
 
             //! Get a reference to the previous deformation gradient
-            const floatVector* getPreviousDeformationGradient( ){ return &_previousDeformationGradient; }
+            const secondOrderTensor* getPreviousDeformationGradient( ){ return &_previousDeformationGradient; }
 
             //! Get a reference to the additional degrees of freedom
             const floatVector* getAdditionalDOF( ){ return &_additionalDOF; }
@@ -853,25 +859,25 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            secondOrderTensor getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatVector getSubConfigurationJacobian( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            secondOrderTensor getSubConfigurationJacobian( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatVector getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            secondOrderTensor getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatVector getPrecedingConfiguration( const unsigned int &index );
+            secondOrderTensor getPrecedingConfiguration( const unsigned int &index );
 
-            floatVector getFollowingConfiguration( const unsigned int &index );
+            secondOrderTensor getFollowingConfiguration( const unsigned int &index );
 
-            floatVector getConfiguration( const unsigned int &index );
+            secondOrderTensor getConfiguration( const unsigned int &index );
 
-            floatVector getPreviousSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            secondOrderTensor getPreviousSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatVector getPreviousPrecedingConfiguration( const unsigned int &index );
+            secondOrderTensor getPreviousPrecedingConfiguration( const unsigned int &index );
 
-            floatVector getPreviousFollowingConfiguration( const unsigned int &index );
+            secondOrderTensor getPreviousFollowingConfiguration( const unsigned int &index );
 
-            floatVector getPreviousConfiguration( const unsigned int &index );
+            secondOrderTensor getPreviousConfiguration( const unsigned int &index );
 
             floatVector getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
@@ -996,7 +1002,7 @@ namespace tardigradeHydra{
 
             virtual void updateUnknownVector( const floatVector &newUnknownVector );
 
-            virtual void calculateFirstConfigurationJacobians( const floatVector &configurations, floatVector &dC1dC, floatVector &dC1dCn );
+            virtual void calculateFirstConfigurationJacobians( const floatVector &configurations, fourthOrderTensor &dC1dC, floatVector &dC1dCn );
 
             virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
 
@@ -1147,9 +1153,9 @@ namespace tardigradeHydra{
 
             floatType _previousTemperature; //!< The previous temperature
 
-            floatVector _deformationGradient; //!< The current deformation gradient
+            secondOrderTensor _deformationGradient; //!< The current deformation gradient
 
-            floatVector _previousDeformationGradient; //!< The previous deformation gradient
+            secondOrderTensor _previousDeformationGradient; //!< The previous deformation gradient
 
             floatVector _additionalDOF; //!< The current additional degrees of freedom
 
@@ -1307,11 +1313,11 @@ namespace tardigradeHydra{
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,          get_dF1dF,          dF1dF,          floatVector, setFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,          get_dF1dF,          dF1dF,          secondOrderTensor, setFirstConfigurationJacobians )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dFn,         get_dF1dFn,         dF1dFn,         floatVector, setFirstConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dF,  get_previousdF1dF,  previousdF1dF,  floatVector, setPreviousFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dF,  get_previousdF1dF,  previousdF1dF,  secondOrderTensor, setPreviousFirstConfigurationJacobians )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn, floatVector, setPreviousFirstConfigurationJacobians )
 
