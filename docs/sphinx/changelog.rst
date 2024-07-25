@@ -9,6 +9,10 @@ Changelog
 0.5.0 (unreleased)
 ******************
 
+Internal Changes
+================
+- Working towards removing floatVector in favor of specific sizes (:pull:`141`). By `Nathan Miller`_.
+
 ******************
 0.4.4 (07-12-2024)
 ******************
