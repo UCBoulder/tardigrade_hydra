@@ -1332,7 +1332,7 @@ namespace tardigradeHydra{
 
       public:
 
-          setDataStorageBase( dataStorage< T > *ds, residualBase * rp, bool is_iteration_data = false ) : _ds( ds ), _rp( rp ), _is_iteration_data( is_iteration_data ){
+          setDataStorageBase( dataStorage< T > *ds ) : _ds( ds ){
 
               value = &_ds->second;
 
@@ -1342,23 +1342,34 @@ namespace tardigradeHydra{
 
               _ds->first = true;
 
-              if ( _is_iteration_data ){
-
-                  _rp->addIterationData( _ds );
-
-              }
-
           }
 
           T * value;
 
-      private:
+      protected:
 
           dataStorage< T > *_ds;
 
-          residualBase *_rp;
+    };
 
-          const bool _is_iteration_data;
+    template< typename T >
+    class setDataStorageIteration : public setDataStorageBase< T > {
+
+      public:
+
+          setDataStorageIteration( dataStorage< T > *ds, residualBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
+
+          }
+
+          ~setDataStorageIteration( ){
+
+              _rp->addIterationData( this->_ds );
+
+          }
+
+      protected:
+
+          residualBase *_rp;
 
     };
 
