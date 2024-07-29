@@ -1328,17 +1328,17 @@ namespace tardigradeHydra{
      * When the destructor is run the dataStorage is assumed to be set.
      */
     template< typename T >
-    class setDataStorage {
+    class setDataStorageBase {
 
       public:
 
-          setDataStorage( dataStorage< T > *ds, residualBase * rp, bool is_iteration_data = false ) : _ds( ds ), _rp( rp ), _is_iteration_data( is_iteration_data ){
+          setDataStorageBase( dataStorage< T > *ds, residualBase * rp, bool is_iteration_data = false ) : _ds( ds ), _rp( rp ), _is_iteration_data( is_iteration_data ){
 
               value = &_ds->second;
 
           }
 
-          ~setDataStorage( ){
+          ~setDataStorageBase( ){
 
               _ds->first = true;
 

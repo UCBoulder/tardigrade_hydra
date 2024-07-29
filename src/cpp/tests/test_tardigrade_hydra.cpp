@@ -5835,7 +5835,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate, * boost::unit_test::tolerance( DE
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setDataStorage, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_setDataStorageBase, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::residualBase{
 
@@ -5870,11 +5870,11 @@ BOOST_AUTO_TEST_CASE( test_setDataStorage, * boost::unit_test::tolerance( DEFAUL
 
     {
 
-        tardigradeHydra::setDataStorage< floatType > setFloatType( &residual.myScalarData, &residual );
+        tardigradeHydra::setDataStorageBase< floatType > setFloatType( &residual.myScalarData, &residual );
 
         *setFloatType.value = 123.4;
 
-        tardigradeHydra::setDataStorage< floatVector > setVectorType( &residual.myVectorData, &residual );
+        tardigradeHydra::setDataStorageBase< floatVector > setVectorType( &residual.myVectorData, &residual );
 
         *setVectorType.value = { 123.4, 234.5, 345.6 };
 
@@ -5892,7 +5892,7 @@ BOOST_AUTO_TEST_CASE( test_setDataStorage, * boost::unit_test::tolerance( DEFAUL
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setDataStorage2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_setDataStorageBase2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::residualBase{
 
@@ -5927,11 +5927,11 @@ BOOST_AUTO_TEST_CASE( test_setDataStorage2, * boost::unit_test::tolerance( DEFAU
 
     {
 
-        tardigradeHydra::setDataStorage< floatType > setFloatType( &residual.myScalarData, &residual, true );
+        tardigradeHydra::setDataStorageBase< floatType > setFloatType( &residual.myScalarData, &residual, true );
 
         *setFloatType.value = 123.4;
 
-        tardigradeHydra::setDataStorage< floatVector > setVectorType( &residual.myVectorData, &residual, true );
+        tardigradeHydra::setDataStorageBase< floatVector > setVectorType( &residual.myVectorData, &residual, true );
 
         *setVectorType.value = { 123.4, 234.5, 345.6 };
 
