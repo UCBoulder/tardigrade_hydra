@@ -471,19 +471,33 @@ namespace tardigradeHydra{
 
       public:
 
+          setDataStorageBase( ) : _ds( NULL ){ }
+
           setDataStorageBase( dataStorage< T > *ds ) : _ds( ds ){
 
-              value = &_ds->second;
+              if ( _ds ){
+
+                  value = &_ds->second;
+
+              }
 
           }
 
           ~setDataStorageBase( ){
 
-              _ds->first = true;
+              if ( _ds ){
+
+                  _ds->first = true;
+
+              }
 
           }
 
           T * value;
+
+          void zero( ){ _ds->zero( ); }
+
+          void zero( const unsigned int size ){ _ds->zero( size ); }
 
       protected:
 
