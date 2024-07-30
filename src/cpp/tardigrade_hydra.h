@@ -202,6 +202,8 @@ namespace tardigradeHydra{
     // forward class definitions
     class hydraBase;
 
+    class residualBase;
+
     template<typename T>
     class setDataStorageBase;
 
@@ -320,7 +322,49 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void zero( ){
+                /*!
+                 * The function to set the current values to zero
+                 */
+
+                std::fill( std::begin( second ), std::end( second ), 0 );
+
+            }
+
+            virtual void zero( const unsigned int size ){
+                /*!
+                 * The function to resize second and set the current values to zero
+                 *
+                 * \param size: The size to resize the vector to
+                 */
+
+                second.resize( size );
+
+                zero( );
+
+            }
+
     };
+
+    template <>
+    inline void dataStorage< std::vector< residualBase* > >::zero( ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        throw std::runtime_error( "Zeroing the residualBase pointer vector is not allowed" );
+
+    }
+
+    template <>
+    inline void dataStorage< std::vector< residualBase* > >::zero( const unsigned int size ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        throw std::runtime_error( "Zeroing the residualBase pointer vector is not allowed" );
+
+    }
 
     template <>
     inline void dataStorage< int >::clear( ){
@@ -331,6 +375,26 @@ namespace tardigradeHydra{
         first = false;
 
         second = 0;
+
+    }
+
+    template <>
+    inline void dataStorage< int >::zero( ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        second = 0;
+
+    }
+
+    template <>
+    inline void dataStorage< int >::zero( const unsigned int size ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        throw std::runtime_error( "A scalar value cannot have a size!");
 
     }
 
@@ -347,6 +411,26 @@ namespace tardigradeHydra{
     }
 
     template <>
+    inline void dataStorage< unsigned int >::zero( ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        second = 0;
+
+    }
+
+    template <>
+    inline void dataStorage< unsigned int >::zero( const unsigned int size ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        throw std::runtime_error( "A scalar value cannot have a size!");
+
+    }
+
+    template <>
     inline void dataStorage< floatType >::clear( ){
                 /*!
                  * The function to erase the current values stored by setting first to false and second to zero
@@ -355,6 +439,26 @@ namespace tardigradeHydra{
         first = false;
 
         second = 0;
+
+    }
+
+    template <>
+    inline void dataStorage< floatType >::zero( ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        second = 0;
+
+    }
+
+    template <>
+    inline void dataStorage< floatType >::zero( const unsigned int size ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        throw std::runtime_error( "A scalar value cannot have a size!");
 
     }
 
@@ -367,19 +471,33 @@ namespace tardigradeHydra{
 
       public:
 
+          setDataStorageBase( ) : _ds( NULL ){ }
+
           setDataStorageBase( dataStorage< T > *ds ) : _ds( ds ){
 
-              value = &_ds->second;
+              if ( _ds ){
+
+                  value = &_ds->second;
+
+              }
 
           }
 
           ~setDataStorageBase( ){
 
-              _ds->first = true;
+              if ( _ds ){
+
+                  _ds->first = true;
+
+              }
 
           }
 
           T * value;
+
+          void zero( ){ _ds->zero( ); }
+
+          void zero( const unsigned int size ){ _ds->zero( size ); }
 
       protected:
 
