@@ -22,6 +22,31 @@
 #endif
 
 /*!
+ * \brief Declares a named setDataStorage getter function
+ * \param getname: The name of the getter function
+ * \param varname: The name of the variable
+ * \param classtype: The type of the class to be defined
+ * \param vartype: The ctype of the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(getname,varname,classtype,vartype,...) \
+    const classtype< vartype > getname( ){                                                          \
+        /*!                                                                                         \
+         * Get an object derived from setDataStorageBase to set values                              \
+         */                                                                                         \
+        return classtype< vartype >( &_##varname, ##__VA_ARGS__ );                                  \
+    }
+
+/*!
+ * \brief Declares a setDataStorage getter function
+ * \param getname: The name of the getter function
+ * \param varname: The name of the variable
+ * \param classtype: The type of the class to be defined
+ * \param vartype: The ctype of the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(varname,classtype,vartype,...) \
+    TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(get_setDataStorage_##varname,varname,classtype,vartype, ##__VA_ARGS__)
+
+/*!
  * \brief Declares a named getter function
  * \param getname: The name of the getter function
  * \param varname: The name of the variable
