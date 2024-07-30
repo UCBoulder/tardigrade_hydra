@@ -45,14 +45,18 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousFe( secondOrderTensor( hydra->get_previousConfigurations( )->begin( ),
-                                                   hydra->get_previousConfigurations( )->begin( ) + sot_dim ) );
+                auto previousFe = get_setDataStorage_previousFe( );
+
+                *previousFe.value = secondOrderTensor( hydra->get_previousConfigurations( )->begin( ),
+                                                       hydra->get_previousConfigurations( )->begin( ) + sot_dim );
 
             }
             else{
 
-                set_Fe( secondOrderTensor( hydra->get_configurations( )->begin( ),
-                                           hydra->get_configurations( )->begin( ) + sot_dim ) );
+                auto Fe = get_setDataStorage_Fe( );
+                
+                *Fe.value = secondOrderTensor( hydra->get_configurations( )->begin( ),
+                                               hydra->get_configurations( )->begin( ) + sot_dim );
 
             }
 
@@ -83,16 +87,24 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousdFedF( *hydra->get_previousdF1dF( ) );
+                auto previousdFedF = get_setDataStorage_previousdFedF( );
 
-                set_previousdFedFn( *hydra->get_previousdF1dFn( ) );
+                auto previousdFedFn = get_setDataStorage_previousdFedFn( );
+
+                *previousdFedF.value  = *hydra->get_previousdF1dF( );
+
+                *previousdFedFn.value = *hydra->get_previousdF1dFn( );
 
             }
             else{
 
-                set_dFedF(  *hydra->get_dF1dF( ) );
+                auto dFedF = get_setDataStorage_dFedF( );
 
-                set_dFedFn( *hydra->get_dF1dFn( ) );
+                auto dFedFn = get_setDataStorage_dFedFn( );
+
+                *dFedF.value  = *hydra->get_dF1dF( );
+
+                *dFedFn.value = *hydra->get_dF1dFn( );
 
             }
 
@@ -142,37 +154,31 @@ namespace tardigradeHydra{
              */
 
             const secondOrderTensor *Fe;
-    
+   
+            setDataStorageBase< secondOrderTensor > Ee;
+
+            setDataStorageBase< fourthOrderTensor > dEedFe;
+
             if ( isPrevious ){
 
                 Fe = get_previousFe( );
+
+                Ee = get_setDataStorage_previousEe( );
+
+                dEedFe = get_setDataStorage_previousdEedFe( );
 
             }
             else{
 
                 Fe = get_Fe( );
 
-            }
+                Ee = get_setDataStorage_Ee( );
 
-            secondOrderTensor Ee;
-   
-            fourthOrderTensor dEedFe;
-
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fe, Ee, dEedFe ) );
-
-            if ( isPrevious ){
-    
-                set_previousEe( Ee );
-    
-                set_previousdEedFe( dEedFe );
-            }
-            else{
-
-                set_Ee( Ee );
-    
-                set_dEedFe( dEedFe );
+                dEedFe = get_setDataStorage_dEedFe( );
 
             }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fe, *Ee.value, *dEedFe.value ) );
 
         }
  
@@ -222,9 +228,10 @@ namespace tardigradeHydra{
              * 
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) PK2 stress
              */
-    
-            secondOrderTensor eye( get_Ee( )->size( ), 0 );
-            tardigradeVectorTools::eye( eye );
+   
+            constexpr unsigned int dim = 3;
+
+            setDataStorageBase< secondOrderTensor > PK2Stress;
 
             const secondOrderTensor *Ee;
 
@@ -232,25 +239,23 @@ namespace tardigradeHydra{
 
                 Ee = get_previousEe( );
 
+                PK2Stress = get_setDataStorage_previousPK2Stress( );
+
             }
             else{
 
                 Ee = get_Ee( );
 
-            }
-            secondOrderTensor PK2Stress = ( *getLambda( ) ) * tardigradeVectorTools::trace( *Ee ) * eye + 2 * ( *getMu( ) ) * ( *Ee );
-
-            if ( isPrevious ){
-
-                set_previousPK2Stress( PK2Stress );
+                PK2Stress = get_setDataStorage_PK2Stress( );
 
             }
-            else{
- 
-                set_PK2Stress( PK2Stress );
 
-            }
-    
+            *PK2Stress.value = 2 * ( *getMu( ) ) * ( *Ee );
+
+            floatType trace_Ee = tardigradeVectorTools::trace( *Ee );            
+
+            for ( unsigned int i = 0; i < dim; i++ ){ ( *PK2Stress.value )[ dim * i + i ] += ( *getLambda( ) ) * trace_Ee; }
+
         }
     
         void residual::setPK2Stress( ){
@@ -277,22 +282,24 @@ namespace tardigradeHydra{
              * 
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) value
              */
-   
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+  
+            const unsigned int dim     = hydra->getDimension( ); 
             const unsigned int fot_dim = hydra->getFOTDimension( );
- 
-            secondOrderTensor eye( sot_dim, 0 );
-            tardigradeVectorTools::eye( eye );
-    
-            fourthOrderTensor EYE( fot_dim, 0 );
-            tardigradeVectorTools::eye( EYE );
-    
-            fourthOrderTensor dPK2StressdEe = ( *getLambda( ) ) * tardigradeVectorTools::matrixMultiply( eye, eye, sot_dim, 1, 1, sot_dim ) + 2 * ( *getMu( ) ) * EYE;
-   
-            set_dPK2StressdEe( dPK2StressdEe );
 
-            set_previousdPK2StressdEe( dPK2StressdEe );
-    
+            auto dPK2StressdEe = get_setDataStorage_dPK2StressdEe( );
+
+            auto previousdPK2StressdEe = get_setDataStorage_previousdPK2StressdEe( );
+
+            dPK2StressdEe.zero( fot_dim );
+            for ( unsigned int i = 0; i < dim; i++ ){
+                for ( unsigned int j = 0; j < dim; j++ ){
+                    ( *dPK2StressdEe.value )[ dim * dim * ( dim * i + j ) + ( dim * i + j ) ] += 2 * ( *getMu( ) );
+                    ( *dPK2StressdEe.value )[ dim * dim * dim * i + dim * dim * i + dim * j + j ] += ( *getLambda( ) );
+                }
+            }
+
+            *previousdPK2StressdEe.value = *dPK2StressdEe.value;
+
         }
     
         void residual::setdPK2StressdEe( ){
