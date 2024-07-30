@@ -369,11 +369,25 @@ namespace tardigradeHydra{
              * deformation gradient
              */
 
+             auto previousdPK2StressdFe = get_setDataStorage_previousdPK2StressdFe( );
+
+             previousdPK2StressdFe.zero( hydra->getFOTDimension( ) );
+
              const unsigned int sot_dim = hydra->getSOTDimension( );
 
-             fourthOrderTensor previousdPK2StressdFe = tardigradeVectorTools::matrixMultiply( *get_previousdPK2StressdEe( ), *get_previousdEedFe( ), sot_dim, sot_dim, sot_dim, sot_dim );
+             for ( unsigned int I = 0; I < sot_dim; I++ ){
 
-             set_previousdPK2StressdFe( previousdPK2StressdFe );
+                 for ( unsigned int J = 0; J < sot_dim; J++ ){
+
+                     for ( unsigned int K = 0; K < sot_dim; K++ ){
+
+                         ( *previousdPK2StressdFe.value )[ sot_dim * I + K ] += ( *get_previousdPK2StressdEe( ) )[ sot_dim * I + J ] * ( *get_previousdEedFe( ) )[ sot_dim * J + K ];
+
+                     }
+
+                 }
+
+             }
 
         }
 
