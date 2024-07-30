@@ -9,9 +9,14 @@ Changelog
 0.5.0 (unreleased)
 ******************
 
+New Features
+============
+- Added a data storage set object that will automatically set an object when the destructor is called (:pull:`143`). By `Nathan Miller`_.
+- Added a setDataStorage to the macros for data storage definitions (:pull:`144`). By `Nathan Miller`_.
+
 Internal Changes
 ================
-- Working towards removing floatVector in favor of specific sizes (:pull:`141`). By `Nathan Miller`_.
+- Working towards removing floatVector in favor of specific sizes (:pull:`142`). By `Nathan Miller`_.
 
 ******************
 0.4.4 (07-12-2024)
