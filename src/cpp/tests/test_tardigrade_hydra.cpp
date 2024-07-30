@@ -5870,11 +5870,11 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageBase, * boost::unit_test::tolerance( DE
 
     {
 
-        tardigradeHydra::setDataStorageBase< floatType > setFloatType( &residual.myScalarData, &residual );
+        tardigradeHydra::setDataStorageBase< floatType > setFloatType( &residual.myScalarData );
 
         *setFloatType.value = 123.4;
 
-        tardigradeHydra::setDataStorageBase< floatVector > setVectorType( &residual.myVectorData, &residual );
+        tardigradeHydra::setDataStorageBase< floatVector > setVectorType( &residual.myVectorData );
 
         *setVectorType.value = { 123.4, 234.5, 345.6 };
 
@@ -5892,7 +5892,7 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageBase, * boost::unit_test::tolerance( DE
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setDataStorageBase2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_setDataStorageIteration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::residualBase{
 
@@ -5927,11 +5927,11 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageBase2, * boost::unit_test::tolerance( D
 
     {
 
-        tardigradeHydra::setDataStorageBase< floatType > setFloatType( &residual.myScalarData, &residual, true );
+        tardigradeHydra::setDataStorageIteration< floatType > setFloatType( &residual.myScalarData, &residual );
 
         *setFloatType.value = 123.4;
 
-        tardigradeHydra::setDataStorageBase< floatVector > setVectorType( &residual.myVectorData, &residual, true );
+        tardigradeHydra::setDataStorageIteration< floatVector > setVectorType( &residual.myVectorData, &residual );
 
         *setVectorType.value = { 123.4, 234.5, 345.6 };
 
@@ -5946,5 +5946,13 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageBase2, * boost::unit_test::tolerance( D
     BOOST_TEST( residual.myVectorData.second == vectorAnswer, CHECK_PER_ELEMENT );
 
     BOOST_TEST( tardigradeHydra::unit_test::hydraBaseTester::getIterationDataSize( hydra ) == 2 );
+
+    tardigradeHydra::unit_test::hydraBaseTester::resetIterationData( hydra );
+
+    BOOST_TEST( tardigradeHydra::unit_test::hydraBaseTester::getIterationDataSize( hydra ) == 0 );
+
+    BOOST_TEST( !residual.myScalarData.first );
+
+    BOOST_TEST( !residual.myVectorData.first );
 
 }
