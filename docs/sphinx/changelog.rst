@@ -12,6 +12,7 @@ Changelog
 New Features
 ============
 - Added a data storage set object that will automatically set an object when the destructor is called (:pull:`143`). By `Nathan Miller`_.
+- Added a setDataStorage to the macros for data storage definitions (:pull:`144`). By `Nathan Miller`_.
 
 Internal Changes
 ================
