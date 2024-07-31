@@ -567,7 +567,9 @@ namespace tardigradeHydra{
 
             setCauchyStress( false );
 
-            setStress( *get_cauchyStress( ) );
+            auto stress = get_setDataStorage_stress( );
+
+            *stress.value = *get_cauchyStress( );
 
         }
     
@@ -580,7 +582,9 @@ namespace tardigradeHydra{
 
             setCauchyStress( true );
 
-            setPreviousStress( *get_previousCauchyStress( ) );
+            auto previousStress = get_setDataStorage_previousStress( );
+
+            *previousStress.value = *get_previousCauchyStress( );
 
         }
     
@@ -663,10 +667,12 @@ namespace tardigradeHydra{
             /*!
              * Set the residual value
              */
-    
-            const secondOrderTensor *cauchyStress = getStress( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( *cauchyStress - *hydra->getStress( ) ) );
+            auto residual = get_setDataStorage_residual( );
+
+            const secondOrderTensor *stress = getStress( );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( *residual.value = *stress - *hydra->getStress( ) );
     
         }
     
@@ -686,25 +692,25 @@ namespace tardigradeHydra{
             const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
             // Form the Jacobian
-            floatVector jacobian = floatVector( sot_dim * num_unknowns, 0 );
+            auto jacobian = get_setDataStorage_jacobian( );
+
+            jacobian.zero( sot_dim * num_unknowns );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
                 for ( unsigned int j = 0; j < dim; j++ ){
 
-                    jacobian[ num_unknowns * dim * i + num_unknowns * j + dim * i + j ] = -1;
+                    ( *jacobian.value )[ num_unknowns * dim * i + num_unknowns * j + dim * i + j ] = -1;
 
                     for ( unsigned int I = 0; I < num_unknown_config_vars; I++ ){
 
-                        jacobian[ num_unknowns * dim * i + num_unknowns * j + getStress( )->size( ) + I ] = ( *get_dCauchyStressdFn( ) )[ dim * num_unknown_config_vars * i + num_unknown_config_vars * j + I ];
+                        ( *jacobian.value )[ num_unknowns * dim * i + num_unknowns * j + getStress( )->size( ) + I ] = ( *get_dCauchyStressdFn( ) )[ dim * num_unknown_config_vars * i + num_unknown_config_vars * j + I ];
 
                     }
 
                 }
 
             }
-
-            setJacobian( jacobian );
 
         }
 
@@ -713,7 +719,9 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            setdRdT( floatVector( *getNumEquations( ), 0 ) );
+            auto dRdT = get_setDataStorage_dRdT( );
+
+            dRdT.zero( *getNumEquations( ) );
 
         }
 
@@ -722,7 +730,9 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            setdRdF( *get_dCauchyStressdF( ) );
+            auto dRdF = get_setDataStorage_dRdF( );
+
+            *dRdF.value = *get_dCauchyStressdF( );
 
         }
 
