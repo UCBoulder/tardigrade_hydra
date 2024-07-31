@@ -398,7 +398,13 @@ namespace tardigradeHydra{
              * \param isPrevious: Whether to compute the current (false) or previous (true) Cauchy stress
              */
 
-            unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
+
+            constexpr unsigned int sot_dim = dim * dim;
+
+            constexpr unsigned int tot_dim = sot_dim * dim;
+
+            constexpr unsigned int fot_dim = tot_dim * dim;
 
             unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -464,20 +470,39 @@ namespace tardigradeHydra{
             }
 
             // Compute the Second Piola-Kirchhoff stress and it's gradients
-            fourthOrderTensor dPK2StressdF = tardigradeVectorTools::matrixMultiply( *dPK2StressdFe, *dFedF, sot_dim, sot_dim, sot_dim, sot_dim );
-    
-            floatVector dPK2StressdFn = tardigradeVectorTools::matrixMultiply( *dPK2StressdFe, *dFedFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
-    
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2StressdFe( dPK2StressdFe->data( ), sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dFedF( dFedF->data( ), sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dFedFn( dFedFn->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            fourthOrderTensor dPK2StressdF( fot_dim, 0 );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2StressdF( dPK2StressdF.data( ), sot_dim, sot_dim );
+
+            floatVector dPK2StressdFn( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
+
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dPK2StressdFn( dPK2StressdFn.data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            map_dPK2StressdF = ( map_dPK2StressdFe * map_dFedF ).eval( );
+  
+            map_dPK2StressdFn = ( map_dPK2StressdFe * map_dFedFn ).eval( );  
+
             // Map the PK2 stress to the current configuration
             fourthOrderTensor dCauchyStressdFe;
  
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::pushForwardPK2Stress( *PK2Stress, *Fe, *cauchyStress.value, *dCauchyStressdPK2Stress.value, dCauchyStressdFe ) );
-    
-            *dCauchyStressdF.value  = tardigradeVectorTools::matrixMultiply( *dCauchyStressdPK2Stress.value, dPK2StressdF, sot_dim, sot_dim, sot_dim, sot_dim )
-                                    + tardigradeVectorTools::matrixMultiply( dCauchyStressdFe, *dFedF, sot_dim, sot_dim, sot_dim, sot_dim );
-    
-            *dCauchyStressdFn.value = tardigradeVectorTools::matrixMultiply( *dCauchyStressdPK2Stress.value, dPK2StressdFn, sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) )
-                                    + tardigradeVectorTools::matrixMultiply( dCauchyStressdFe, *dFedFn, sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdPK2Stress( dCauchyStressdPK2Stress.value->data( ), sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdFe( dCauchyStressdFe.data( ), sot_dim, sot_dim );
+
+            dCauchyStressdF.zero( fot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdF( dCauchyStressdF.value->data( ), sot_dim, sot_dim );
+            map_dCauchyStressdF = ( map_dCauchyStressdPK2Stress * map_dPK2StressdF + map_dCauchyStressdFe * map_dFedF ).eval( );
+
+            dCauchyStressdFn.zero( sot_dim * ( num_configs - 1 ) * sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dCauchyStressdFn( dCauchyStressdFn.value->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+            map_dCauchyStressdFn = ( map_dCauchyStressdPK2Stress * map_dPK2StressdFn + map_dCauchyStressdFe * map_dFedFn ).eval( );
 
             if ( !isPrevious ){
 
@@ -485,13 +510,31 @@ namespace tardigradeHydra{
 
                 auto dCauchyStressdPreviousFn = get_setDataStorage_dCauchyStressdPreviousFn( );
 
-                fourthOrderTensor dPK2StressdPreviousF  = tardigradeVectorTools::matrixMultiply( *get_dPK2StressdPreviousFe( ), *get_previousdFedF( ), sot_dim, sot_dim, sot_dim, sot_dim );
+                Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2StressdPreviousFe( get_dPK2StressdPreviousFe( )->data( ), sot_dim, sot_dim );
 
-                floatVector dPK2StressdPreviousFn = tardigradeVectorTools::matrixMultiply( *get_dPK2StressdPreviousFe( ), *get_previousdFedFn( ), sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) );
+                Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_previousdFedF( get_previousdFedF( )->data( ), sot_dim, sot_dim );
 
-                *dCauchyStressdPreviousF.value = tardigradeVectorTools::matrixMultiply( *dCauchyStressdPK2Stress.value, dPK2StressdPreviousF, sot_dim, sot_dim, sot_dim, sot_dim );
+                Eigen::Map< const Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_previousdFedFn( get_previousdFedFn( )->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
 
-                *dCauchyStressdPreviousFn.value = tardigradeVectorTools::matrixMultiply( *dCauchyStressdPK2Stress.value, dPK2StressdPreviousFn, sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) );
+                fourthOrderTensor dPK2StressdPreviousF( fot_dim, 0 );
+                Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2StressdPreviousF( dPK2StressdPreviousF.data( ), sot_dim, sot_dim );
+
+                floatVector dPK2StressdPreviousFn( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
+                Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dPK2StressdPreviousFn( dPK2StressdPreviousFn.data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+
+                map_dPK2StressdPreviousF  = ( map_dPK2StressdPreviousFe * map_previousdFedF  ).eval( );
+
+                map_dPK2StressdPreviousFn = ( map_dPK2StressdPreviousFe * map_previousdFedFn ).eval( );
+
+                dCauchyStressdPreviousF.zero( fot_dim );
+                Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdPreviousF( dCauchyStressdPreviousF.value->data( ), sot_dim, sot_dim );
+
+                dCauchyStressdPreviousFn.zero( sot_dim * ( num_configs - 1 ) * sot_dim );
+                Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dCauchyStressdPreviousFn( dCauchyStressdPreviousFn.value->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+
+                map_dCauchyStressdPreviousF  = ( map_dCauchyStressdPK2Stress * map_dPK2StressdPreviousF  ).eval( );
+
+                map_dCauchyStressdPreviousFn = ( map_dCauchyStressdPK2Stress * map_dPK2StressdPreviousFn ).eval( );
 
             }
 

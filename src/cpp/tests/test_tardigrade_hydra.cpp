@@ -1038,8 +1038,19 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector, * boost::unit
 
     for ( unsigned int i = 0; i < 4; i++ ){
 
-        inverseConfigurationsAnswer[ i ]         = tardigradeVectorTools::inverse( configurationsAnswer[ i ], 3, 3 );
-        previousInverseConfigurationsAnswer[ i ] = tardigradeVectorTools::inverse( previousConfigurationsAnswer[ i ], 3, 3 );
+        Eigen::Map< const Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > map_configuration( configurationsAnswer[ i ].data( ), 3, 3 );
+
+        inverseConfigurationsAnswer[ i ] = floatVector( 9, 0 );
+        Eigen::Map< Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > map_inverseConfiguration( inverseConfigurationsAnswer[ i ].data( ), 3, 3 );
+
+        map_inverseConfiguration = map_configuration.inverse( ).eval( );
+
+        Eigen::Map< const Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > map_previousConfiguration( previousConfigurationsAnswer[ i ].data( ), 3, 3 );
+
+        previousInverseConfigurationsAnswer[ i ] = floatVector( 9, 0 );
+        Eigen::Map< Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > map_previousInverseConfiguration( previousInverseConfigurationsAnswer[ i ].data( ), 3, 3 );
+
+        map_previousInverseConfiguration = map_previousConfiguration.inverse( ).eval( );
 
     }
 

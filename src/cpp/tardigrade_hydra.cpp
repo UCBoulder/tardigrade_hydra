@@ -652,8 +652,8 @@ namespace tardigradeHydra{
          * whre \f$C^n = C^2, C^3, \cdots \f$
          */
 
-        const unsigned int dim = getDimension( );
-        const unsigned int sot_dim = getSOTDimension( );
+        constexpr unsigned int dim = 3;
+        constexpr unsigned int sot_dim = dim * dim;
         const unsigned int num_configs = *getNumConfigurations( );
 
         dC1dC  = secondOrderTensor( sot_dim * sot_dim, 0 );
@@ -667,8 +667,17 @@ namespace tardigradeHydra{
         mat = mat.inverse( ).eval( );
 
         fourthOrderTensor dInvCscdCsc = tardigradeVectorTools::computeFlatDInvADA( invCsc, dim, dim );
+        Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dInvCscdCsc( dInvCscdCsc.data( ), sot_dim, sot_dim );
 
-        floatVector dInvCscdCs = tardigradeVectorTools::matrixMultiply( dInvCscdCsc, getSubConfigurationJacobian( configurations, 1, num_configs ), sot_dim, sot_dim, sot_dim, num_configs * sot_dim );
+        floatVector dCscdCs = getSubConfigurationJacobian( configurations, 1, num_configs );
+        Eigen::Map< const Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dCscdCs( dCscdCs.data( ), sot_dim, num_configs * sot_dim );
+
+        floatVector dInvCscdCs( sot_dim * num_configs * sot_dim, 0 );
+        Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dInvCscdCs( dInvCscdCs.data( ), sot_dim, num_configs * sot_dim ); 
+
+        map_dInvCscdCs = ( map_dInvCscdCsc * map_dCscdCs ).eval( );
+
+//        floatVector dInvCscdCs = tardigradeVectorTools::matrixMultiply( dInvCscdCsc, getSubConfigurationJacobian( configurations, 1, num_configs ), sot_dim, sot_dim, sot_dim, num_configs * sot_dim );
 
         // Compute the gradients
         for ( unsigned int i = 0; i < dim; i++ ){

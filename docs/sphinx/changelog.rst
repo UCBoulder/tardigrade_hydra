@@ -19,6 +19,7 @@ Internal Changes
 - Working towards removing floatVector in favor of specific sizes (:pull:`142`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for linear elasticity (:pull:`145`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for the classical base classes (:pull:`146`). By `Nathan Miller`_.
+- Removed malloc causing operations in tardigrade_hydra and tardigrade_hydraLinearElasticity (:pull:`147`). By `Nathan Miller`_.
 
 ******************
 0.4.4 (07-12-2024)
