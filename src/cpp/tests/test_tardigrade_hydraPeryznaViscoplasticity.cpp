@@ -3057,7 +3057,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariables, * boost::unit_test::tole
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
-                viscoPlasticity = residualMock( this, 9, 1, stateVariableIndices, viscoPlasticParameters );
+                viscoPlasticity = residualMock( this, 11, 1, stateVariableIndices, viscoPlasticParameters );
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
@@ -3110,7 +3110,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariables, * boost::unit_test::tole
 
     unsigned int numConfigurations = 3;
 
-    unsigned int numNonLinearSolveStateVariables = 3;
+    unsigned int numNonLinearSolveStateVariables = 5;
 
     unsigned int dimension = 3;
 

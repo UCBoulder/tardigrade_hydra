@@ -29,7 +29,7 @@
  * \param vartype: The ctype of the variable
  */
 #define TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(getname,varname,classtype,vartype,...) \
-    const classtype< vartype > getname( ){                                                          \
+    classtype< vartype > getname( ){                                                          \
         /*!                                                                                         \
          * Get an object derived from setDataStorageBase to set values                              \
          */                                                                                         \
@@ -1400,6 +1400,11 @@ namespace tardigradeHydra{
                     setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){ }
 
             };
+
+            virtual tardigradeHydra::hydraBase::setDataStorageConstant<floatVector> get_setDataStorage_tolerance( );
+
+            virtual tardigradeHydra::hydraBase::setDataStorageIteration<secondOrderTensor> get_setDataStorage_stress( );
+
 
         private:
 
