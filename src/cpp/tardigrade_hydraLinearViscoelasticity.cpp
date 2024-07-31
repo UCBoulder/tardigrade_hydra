@@ -1568,7 +1568,9 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature.
              */
 
-            setdRdT( *get_dCauchyStressdT( ) );
+            auto dRdT = get_setDataStorage_dRdT( );
+
+            *dRdT.value = *get_dCauchyStressdT( );
 
         }
 
@@ -1582,6 +1584,7 @@ namespace tardigradeHydra{
              */
 
             tardigradeHydra::residualBase::setdRdT( dRdT );
+
         }
 
     }
