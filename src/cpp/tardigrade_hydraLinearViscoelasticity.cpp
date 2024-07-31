@@ -1540,13 +1540,23 @@ namespace tardigradeHydra{
              * Set the derivative of the Cauchy stress w.r.t. the previous internal state variables
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
+
+            constexpr unsigned int sot_dim = dim * dim;
 
             const unsigned int num_isvs = get_dPK2StressdPreviousISVs( )->size( ) / sot_dim;
 
-            floatVector dCauchyStressdPreviousISVs = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdPreviousISVs( ), sot_dim, sot_dim, sot_dim, num_isvs );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdPK2Stress( get_dCauchyStressdPK2Stress( )->data( ), sot_dim, sot_dim );
 
-            set_dCauchyStressdPreviousISVs( dCauchyStressdPreviousISVs );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dPK2StressdPreviousISVs( get_dPK2StressdPreviousISVs( )->data( ), sot_dim, num_isvs );
+
+            auto dCauchyStressdPreviousISVs = get_setDataStorage_dCauchyStressdPreviousISVs( );
+
+            dCauchyStressdPreviousISVs.zero( sot_dim * num_isvs );
+
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dCauchyStressdPreviousISVs( dCauchyStressdPreviousISVs.value->data( ), sot_dim, num_isvs );
+
+            map_dCauchyStressdPreviousISVs = ( map_dCauchyStressdPK2Stress * map_dPK2StressdPreviousISVs ).eval( );
 
         }
 
@@ -1555,11 +1565,21 @@ namespace tardigradeHydra{
              * Set previous the derivative of the Cauchy stress w.r.t. the temperature
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
 
-            secondOrderTensor previousdCauchyStressdT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_previousdPK2StressdT( ), sot_dim, sot_dim, sot_dim, 1 );
+            constexpr unsigned int sot_dim = dim * dim;
 
-            set_previousdCauchyStressdT( previousdCauchyStressdT );
+            auto previousdCauchyStressdT = get_setDataStorage_previousdCauchyStressdT( );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdPK2Stress( get_dCauchyStressdPK2Stress( )->data( ), sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Vector< floatType, sot_dim > > map_previousdPK2StressdT( get_previousdPK2StressdT( )->data( ), sot_dim );
+
+            previousdCauchyStressdT.zero( sot_dim );
+
+            Eigen::Map< Eigen::Vector< floatType, sot_dim > > map_previousdCauchyStressdT( previousdCauchyStressdT.value->data( ), sot_dim );
+
+            map_previousdCauchyStressdT = ( map_dCauchyStressdPK2Stress * map_previousdPK2StressdT ).eval( );
 
         }
 
