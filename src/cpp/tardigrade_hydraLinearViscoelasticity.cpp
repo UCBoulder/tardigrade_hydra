@@ -1483,12 +1483,18 @@ namespace tardigradeHydra{
              * Set the prevoius derivative of the second Piola-Kirchhoff stress w.r.t. the temperature
              */
 
-            secondOrderTensor eye( hydra->getSOTDimension( ), 0 );
-            tardigradeVectorTools::eye( eye );
+            constexpr unsigned int dim = 3;
 
-            secondOrderTensor dPK2StressdT = *get_previousdPK2IsochoricStressdT( ) + *get_previousdPK2MeanStressdT( ) * eye;
+            auto previousdPK2StressdT = get_setDataStorage_previousdPK2StressdT( );
 
-            set_previousdPK2StressdT( dPK2StressdT );
+            *previousdPK2StressdT.value = *get_previousdPK2IsochoricStressdT( );
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                ( *previousdPK2StressdT.value )[ dim * i + i ]
+                    += ( *get_previousdPK2MeanStressdT( ) );
+
+            }
 
         }
 
@@ -1505,7 +1511,7 @@ namespace tardigradeHydra{
 
             *dPK2StressdPreviousISVs.value = *get_dPK2IsochoricStressdPreviousISVs( );
 
-            for ( unsigned int i = 0; i < 3; i++ ){
+            for ( unsigned int i = 0; i < dim; i++ ){
 
                 for ( unsigned int j = 0; j < num_isvs; j++ ){
 
