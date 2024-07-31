@@ -220,19 +220,22 @@ namespace tardigradeHydra{
         extractStress( );
 
         // Set the configurations
-        floatVector configurations;
+        auto configurations = get_setDataStorage_configurations( );
 
-        floatVector inverseConfigurations;
+        auto inverseConfigurations = get_setDataStorage_inverseConfigurations( );
 
-        computeConfigurations( unknownVector, getStress( )->size( ), *getDeformationGradient( ), configurations, inverseConfigurations );
-
-        set_configurations( configurations );
-
-        set_inverseConfigurations( inverseConfigurations );
+        computeConfigurations( unknownVector, getStress( )->size( ), *getDeformationGradient( ), *configurations.value, *inverseConfigurations.value );
 
         // Extract the remaining state variables required for the non-linear solve
-        set_nonLinearSolveStateVariables( floatVector( unknownVector->begin( ) + ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ),
-                                                       unknownVector->end( ) ) );
+        auto nonLinearSolveStateVariables = get_setDataStorage_nonLinearSolveStateVariables( );
+
+        const unsigned int *nNLISV = getNumNonLinearSolveStateVariables( );
+
+        nonLinearSolveStateVariables.zero( *nNLISV );
+
+        std::copy( std::begin( *unknownVector ) + ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ),
+                   std::end(   *unknownVector ),
+                   std::begin( *nonLinearSolveStateVariables.value ) );
 
     }
 
@@ -271,40 +274,44 @@ namespace tardigradeHydra{
 
         }
 
-        floatVector configurations;
+        auto configurations = get_setDataStorage_configurations( );
 
-        floatVector previousConfigurations;
+        auto previousConfigurations = get_setDataStorage_previousConfigurations( );
 
-        floatVector inverseConfigurations;
+        auto inverseConfigurations = get_setDataStorage_inverseConfigurations( );
 
-        floatVector previousInverseConfigurations;
+        auto previousInverseConfigurations = get_setDataStorage_previousInverseConfigurations( );
 
         // Compute the configurations
-        computeConfigurations( getPreviousStateVariables( ), 0, *getDeformationGradient( ), configurations, inverseConfigurations, true );
+        computeConfigurations( getPreviousStateVariables( ), 0, *getDeformationGradient( ), *configurations.value, *inverseConfigurations.value, true );
 
-        computeConfigurations( getPreviousStateVariables( ), 0, *getPreviousDeformationGradient( ), previousConfigurations, previousInverseConfigurations, true );
-
-        // Set the configurations
-
-        set_configurations( configurations );
-
-        set_inverseConfigurations( inverseConfigurations );
-
-        set_previousConfigurations( previousConfigurations );
-
-        set_previousInverseConfigurations( previousInverseConfigurations );
+        computeConfigurations( getPreviousStateVariables( ), 0, *getPreviousDeformationGradient( ), *previousConfigurations.value, *previousInverseConfigurations.value, true );
 
         // Extract the remaining state variables required for the non-linear solve
-        set_previousNonLinearSolveStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ),
-                                                               getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV ) );
+        auto nonLinearSolveStateVariables         = get_setDataStorage_nonLinearSolveStateVariables( );
+        auto previousNonLinearSolveStateVariables = get_setDataStorage_previousNonLinearSolveStateVariables( );
 
-        set_nonLinearSolveStateVariables( *get_previousNonLinearSolveStateVariables( ) );
+        previousNonLinearSolveStateVariables.zero( *nNLISV );
+
+        std::copy( std::begin( *getPreviousStateVariables( ) ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ),
+                   std::begin( *getPreviousStateVariables( ) ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV,
+                   std::begin( *previousNonLinearSolveStateVariables.value ) );
+
+        *nonLinearSolveStateVariables.value = *previousNonLinearSolveStateVariables.value;
 
         // Extract the additional state variables
-        set_previousAdditionalStateVariables( floatVector( getPreviousStateVariables( )->begin( ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV,
-                                                           getPreviousStateVariables( )->end( ) ) );
+        auto additionalStateVariables         = get_setDataStorage_additionalStateVariables( );
+        auto previousAdditionalStateVariables = get_setDataStorage_previousAdditionalStateVariables( );
 
-        set_additionalStateVariables( *get_previousAdditionalStateVariables( ) );
+        unsigned int nAISV = ( unsigned int )( std::end( *getPreviousStateVariables( ) ) - ( std::begin( *getPreviousStateVariables( ) ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV ) );
+
+        previousAdditionalStateVariables.zero( nAISV );
+
+        std::copy( std::begin( *getPreviousStateVariables( ) ) + ( ( *nConfig ) - 1 ) * ( *getConfigurationUnknownCount( ) ) + *nNLISV,
+                   std::end(   *getPreviousStateVariables( ) ),
+                   std::begin( *previousAdditionalStateVariables.value ) );
+
+        *additionalStateVariables.value = *previousAdditionalStateVariables.value;
 
     }
 
@@ -690,15 +697,11 @@ namespace tardigradeHydra{
          * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining sub-configurations
          */
 
-        secondOrderTensor dF1dF;
+        auto dF1dF = get_setDataStorage_dF1dF( );
 
-        floatVector dF1dFn;
+        auto dF1dFn = get_setDataStorage_dF1dFn( );
 
-        calculateFirstConfigurationJacobians( *get_configurations( ), dF1dF, dF1dFn );
-
-        set_dF1dF( dF1dF );
-
-        set_dF1dFn( dF1dFn );
+        calculateFirstConfigurationJacobians( *get_configurations( ), *dF1dF.value, *dF1dFn.value );
 
     }
 
@@ -707,15 +710,11 @@ namespace tardigradeHydra{
          * Set the Jacobians of the previous first configuration w.r.t. the total configuration and the remaining sub-configurations
          */
 
-        secondOrderTensor dF1dF;
+        auto dF1dF = get_setDataStorage_previousdF1dF( );
 
-        floatVector dF1dFn;
+        auto dF1dFn = get_setDataStorage_previousdF1dFn( );
 
-        calculateFirstConfigurationJacobians( *get_previousConfigurations( ), dF1dF, dF1dFn );
-
-        set_previousdF1dF( dF1dF );
-
-        set_previousdF1dFn( dF1dFn );
+        calculateFirstConfigurationJacobians( *get_previousConfigurations( ), *dF1dF.value, *dF1dFn.value );
 
     }
 
@@ -1324,19 +1323,13 @@ namespace tardigradeHydra{
 
         const floatVector *nonLinearSolveStateVariables = get_nonLinearSolveStateVariables( );
 
-        floatMatrix Xmat( 1 + num_local_configs );
+        floatVector X( getNumUnknowns( ), 0 );
 
-        Xmat[ 0 ] = *cauchyStress;
+        std::copy( std::begin( *cauchyStress ), std::end( *cauchyStress ), std::begin( X ) );
 
-        for ( unsigned int i = 1; i < num_local_configs; i++ ){
+        std::copy( std::begin( *configurations ) + sot_dim, std::end( *configurations ), std::begin( X ) + sot_dim );
 
-            Xmat[ i ] = secondOrderTensor( configurations->begin( ) + sot_dim * i, configurations->begin( ) + sot_dim * ( i + 1 ) );
-
-        }
-
-        Xmat[ Xmat.size( ) - 1 ] = *nonLinearSolveStateVariables;
-
-        floatVector X = tardigradeVectorTools::appendVectors( Xmat );
+        std::copy( std::begin( *nonLinearSolveStateVariables ), std::end( *nonLinearSolveStateVariables ), std::begin( X ) + num_local_configs * sot_dim );
 
         bool resetRequired = false;
 
@@ -1395,11 +1388,11 @@ namespace tardigradeHydra{
          * \f$ tol = tolr * ( |R_0| + |X| ) + tola \f$
          */
 
-        floatVector tolerance = tardigradeVectorTools::abs( *getResidual( ) ) + tardigradeVectorTools::abs( *getUnknownVector( ) );
+        auto tolerance = get_setDataStorage_tolerance( );
 
-        tolerance = *getRelativeTolerance( ) * tolerance + *getAbsoluteTolerance( );
+        *tolerance.value = tardigradeVectorTools::abs( *getResidual( ) ) + tardigradeVectorTools::abs( *getUnknownVector( ) );
 
-        setTolerance( tolerance );
+        *tolerance.value = *getRelativeTolerance( ) * ( *tolerance.value ) + *getAbsoluteTolerance( );
 
     }
 
@@ -1411,6 +1404,15 @@ namespace tardigradeHydra{
          */
 
         setConstantData( tolerance, _tolerance );
+
+    }
+
+    hydraBase::setDataStorageConstant<floatVector> hydraBase::get_setDataStorage_tolerance( ){
+        /*!
+         * Return a setDataStorageConstant setter for the tolerance
+         */
+
+        return setDataStorageConstant<floatVector>( &_tolerance );
 
     }
 
