@@ -2103,7 +2103,9 @@ namespace tardigradeHydra{
          * Set the norm of the residual vector
          */
 
-        floatType residualNorm = 0;
+        auto residualNorm = get_setDataStorage_residualNorm( );
+
+        residualNorm.zero( );
 
         const unsigned int xsize = getNumUnknowns( );
 
@@ -2111,11 +2113,9 @@ namespace tardigradeHydra{
 
         for ( unsigned int i = 0; i < xsize; i++ ){
 
-            residualNorm += ( *residual )[ i ] * ( *residual )[ i ];
+            *residualNorm.value += ( *residual )[ i ] * ( *residual )[ i ];
 
         }
-
-        set_residualNorm( residualNorm );
 
     }
 
@@ -2126,7 +2126,9 @@ namespace tardigradeHydra{
 
         const unsigned int xsize = getNumUnknowns( );
 
-        floatVector dResidualNormdX( xsize, 0 );
+        auto dResidualNormdX = get_setDataStorage_dResidualNormdX( );
+
+        dResidualNormdX.zero( xsize );
 
         const floatVector *residual = getResidual( );
 
@@ -2134,11 +2136,9 @@ namespace tardigradeHydra{
 
         for ( unsigned int i = 0; i < xsize; i++ ){
             for ( unsigned int j = 0; j < xsize; j++ ){
-                dResidualNormdX[ j ] += 2 * ( *jacobian )[ xsize * i + j ] * ( *residual )[ i ];
+                ( *dResidualNormdX.value )[ j ] += 2 * ( *jacobian )[ xsize * i + j ] * ( *residual )[ i ];
             }
         }
-
-        set_dResidualNormdX( dResidualNormdX );
 
     }
 
