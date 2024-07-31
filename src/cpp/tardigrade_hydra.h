@@ -1403,6 +1403,9 @@ namespace tardigradeHydra{
 
             virtual tardigradeHydra::hydraBase::setDataStorageConstant<floatVector> get_setDataStorage_tolerance( );
 
+            virtual tardigradeHydra::hydraBase::setDataStorageIteration<secondOrderTensor> get_setDataStorage_stress( );
+
+
         private:
 
             // Friend classes

@@ -111,6 +111,15 @@ namespace tardigradeHydra{
 
     }
 
+    hydraBase::setDataStorageIteration<secondOrderTensor> hydraBase::get_setDataStorage_stress( ){
+        /*!
+         * Get a setDataStorage object for the stress
+         */
+
+        return hydraBase::setDataStorageIteration<secondOrderTensor>( &_stress, this );
+
+    }
+
     void hydraBase::extractStress( ){
         /*!
          * Extract the stresses out of the unknown vector
@@ -118,8 +127,11 @@ namespace tardigradeHydra{
 
         const floatVector *unknownVector = getUnknownVector( );
 
-        setStress( floatVector( unknownVector->begin( ),
-                                unknownVector->begin( ) + *getConfigurationUnknownCount( ) ) );
+        auto stress = get_setDataStorage_stress( );
+
+        stress.zero( *getConfigurationUnknownCount( ) );
+
+        std::copy( std::begin( *unknownVector ), std::begin( *unknownVector ) + *getConfigurationUnknownCount( ), std::begin( *stress.value ) );
 
     }
 
