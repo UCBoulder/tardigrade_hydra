@@ -1497,15 +1497,24 @@ namespace tardigradeHydra{
              * Set the prevoius derivative of the second Piola-Kirchhoff stress w.r.t. the previous ISVs
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
+
             const unsigned int num_isvs = get_dPK2MeanStressdPreviousISVs( )->size( ); 
 
-            secondOrderTensor eye( sot_dim, 0 );
-            tardigradeVectorTools::eye( eye );
+            auto dPK2StressdPreviousISVs = get_setDataStorage_dPK2StressdPreviousISVs( );
 
-            floatVector dPK2StressdPreviousISVs = *get_dPK2IsochoricStressdPreviousISVs( ) + tardigradeVectorTools::matrixMultiply( eye, *get_dPK2MeanStressdPreviousISVs( ), sot_dim, 1, 1, num_isvs );
+            *dPK2StressdPreviousISVs.value = *get_dPK2IsochoricStressdPreviousISVs( );
 
-            set_dPK2StressdPreviousISVs( dPK2StressdPreviousISVs );
+            for ( unsigned int i = 0; i < 3; i++ ){
+
+                for ( unsigned int j = 0; j < num_isvs; j++ ){
+
+                    ( *dPK2StressdPreviousISVs.value )[ dim * num_isvs * i + num_isvs* i + j ]
+                        += ( *get_dPK2MeanStressdPreviousISVs( ) )[ j ];
+
+                }
+
+            }
 
         }
 
@@ -1514,11 +1523,21 @@ namespace tardigradeHydra{
              * Set the derivative of the Cauchy stress w.r.t. the temperature
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
 
-            secondOrderTensor dCauchyStressdT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdT( ), sot_dim, sot_dim, sot_dim, 1 );
+            constexpr unsigned int sot_dim = dim * dim;
 
-            set_dCauchyStressdT( dCauchyStressdT );
+            auto dCauchyStressdT = get_setDataStorage_dCauchyStressdT( );
+
+            dCauchyStressdT.zero( sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdPK2Stress( get_dCauchyStressdPK2Stress( )->data( ), sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Vector< floatType, sot_dim > > map_dPK2StressdT( get_dPK2StressdT( )->data( ), sot_dim );
+
+            Eigen::Map< Eigen::Vector< floatType, sot_dim > > map_dCauchyStressdT( dCauchyStressdT.value->data( ), sot_dim );
+
+            map_dCauchyStressdT = ( map_dCauchyStressdPK2Stress * map_dPK2StressdT ).eval( );
 
         }
 
@@ -1527,11 +1546,21 @@ namespace tardigradeHydra{
              * Set the derivative of the Cauchy stress w.r.t. the previous temperature
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
 
-            secondOrderTensor dCauchyStressdPreviousT = tardigradeVectorTools::matrixMultiply( *get_dCauchyStressdPK2Stress( ), *get_dPK2StressdPreviousT( ), sot_dim, sot_dim, sot_dim, 1 );
+            constexpr unsigned int sot_dim = dim * dim;
 
-            set_dCauchyStressdPreviousT( dCauchyStressdPreviousT );
+            auto dCauchyStressdPreviousT = get_setDataStorage_dCauchyStressdPreviousT( );
+
+            dCauchyStressdPreviousT.zero( sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdPK2Stress( get_dCauchyStressdPK2Stress( )->data( ), sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Vector< floatType, sot_dim > > map_dPK2StressdPreviousT( get_dPK2StressdPreviousT( )->data( ), sot_dim );
+
+            Eigen::Map< Eigen::Vector< floatType, sot_dim > > map_dCauchyStressdPreviousT( dCauchyStressdPreviousT.value->data( ), sot_dim );
+
+            map_dCauchyStressdPreviousT = ( map_dCauchyStressdPK2Stress * map_dPK2StressdPreviousT ).eval( );
 
         }
 
