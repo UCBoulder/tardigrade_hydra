@@ -677,8 +677,6 @@ namespace tardigradeHydra{
 
         map_dInvCscdCs = ( map_dInvCscdCsc * map_dCscdCs ).eval( );
 
-//        floatVector dInvCscdCs = tardigradeVectorTools::matrixMultiply( dInvCscdCsc, getSubConfigurationJacobian( configurations, 1, num_configs ), sot_dim, sot_dim, sot_dim, num_configs * sot_dim );
-
         // Compute the gradients
         for ( unsigned int i = 0; i < dim; i++ ){
 
