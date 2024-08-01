@@ -1053,7 +1053,13 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *previousFehat, previousIsochoricStrain, previousdEehatdFehat ) );
 
-            fourthOrderTensor dEehatdFe = tardigradeVectorTools::matrixMultiply( dEehatdFehat, *dFehatdFe, sot_dim, sot_dim, sot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dEehatdFehat( dEehatdFehat.data( ), sot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dFehatdFe(    dFehatdFe->data( ),   sot_dim, sot_dim );
+
+            fourthOrderTensor dEehatdFe( sot_dim * sot_dim, 0 );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dEehatdFe( dEehatdFe.data( ), sot_dim, sot_dim );
+
+            map_dEehatdFe = ( map_dEehatdFehat * map_dFehatdFe ).eval( );
 
             // Get the previous state variable values
 
@@ -1129,8 +1135,6 @@ namespace tardigradeHydra{
             dISVsdPreviousIsochoricISVs               = tardigradeVectorTools::appendVectors( _dISVsdPreviousIsochoricISVs );
 
             Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2IsochoricStressdEe( dPK2IsochoricStressdEe.data( ), sot_dim, sot_dim );
-
-            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dEehatdFe( dEehatdFe.data( ), sot_dim, sot_dim );
 
             dPK2IsochoricStressdFe.zero( sot_dim * sot_dim );
             Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2IsochoricStressdFe( dPK2IsochoricStressdFe.value->data( ), sot_dim, sot_dim );
