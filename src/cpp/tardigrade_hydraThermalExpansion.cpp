@@ -56,15 +56,11 @@ namespace tardigradeHydra{
              * \f$ E^{\theta}_{IJ} = \frac{1}{2} \left( F_{iI}^{\theta} F_{iJ}^{\theta} - \delta_{IJ} \right) \f$
              */
 
-            floatVector thermalGreenLagrangeStrain;
+            auto thermalGreenLagrangeStrain = get_setDataStorage_thermalGreenLagrangeStrain( );
 
-            floatVector dThermalGreenLagrangeStraindT;
+            auto dThermalGreenLagrangeStraindT = get_setDataStorage_dThermalGreenLagrangeStraindT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::quadraticThermalExpansion( *hydra->getTemperature( ), *getReferenceTemperature( ), *getLinearParameters( ), *getQuadraticParameters( ), thermalGreenLagrangeStrain, dThermalGreenLagrangeStraindT ) );
-
-            set_thermalGreenLagrangeStrain( thermalGreenLagrangeStrain );
-
-            set_dThermalGreenLagrangeStraindT( dThermalGreenLagrangeStraindT );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::quadraticThermalExpansion( *hydra->getTemperature( ), *getReferenceTemperature( ), *getLinearParameters( ), *getQuadraticParameters( ), *thermalGreenLagrangeStrain.value, *dThermalGreenLagrangeStraindT.value ) );
 
         }
 
