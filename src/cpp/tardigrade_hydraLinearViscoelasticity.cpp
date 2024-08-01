@@ -196,15 +196,11 @@ namespace tardigradeHydra{
              * Decompose the elastic deformation into volumetric and isochoric parts
              */
 
-            floatType Je;
+            auto Je = get_setDataStorage_Je( );
 
-            secondOrderTensor Fehat;
+            auto Fehat = get_setDataStorage_Fehat( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( *get_Fe( ), Je, Fehat ) );
-
-            set_Je( Je );
-
-            set_Fehat( Fehat );
+            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( *get_Fe( ), *Je.value, *Fehat.value ) );
 
         }
 
@@ -213,15 +209,11 @@ namespace tardigradeHydra{
              * Decompose the previous elastic deformation into volumetric and isochoric parts
              */
 
-            floatType previousJe;
+            auto previousJe = get_setDataStorage_previousJe( );
 
-            secondOrderTensor previousFehat;
+            auto previousFehat = get_setDataStorage_previousFehat( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( *get_previousFe( ), previousJe, previousFehat ) );
-
-            set_previousJe( previousJe );
-
-            set_previousFehat( previousFehat );
+            TARDIGRADE_ERROR_TOOLS_CATCH( decomposeDeformation( *get_previousFe( ), *previousJe.value, *previousFehat.value ) );
 
         }
 
@@ -256,29 +248,24 @@ namespace tardigradeHydra{
 
             const secondOrderTensor *Fe;
 
+            setDataStorageBase< secondOrderTensor > dJedFe;
+
             if ( isPrevious ){
 
                 Fe = get_previousFe( );
+
+                dJedFe = get_setDataStorage_previousdJedFe( );
 
             }
             else{
 
                 Fe = get_Fe( );
 
-            }
-
-            secondOrderTensor dJedFe = tardigradeVectorTools::computeDDetADA( *Fe, dim, dim );
-
-            if ( isPrevious ){
-
-                set_previousdJedFe( dJedFe );
+                dJedFe = get_setDataStorage_dJedFe( );
 
             }
-            else{
 
-                set_dJedFe( dJedFe );
-
-            }
+            *dJedFe.value = tardigradeVectorTools::computeDDetADA( *Fe, dim, dim );
 
         }
 
@@ -330,13 +317,16 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for if the derivative is of the current (false) or previous (true) value
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
 
             const floatType   *Je;
 
             const secondOrderTensor *Fe;
 
             const secondOrderTensor *dJedFe;
+
+            setDataStorageBase< fourthOrderTensor > dFehatdFe;
 
             if ( isPrevious ){
 
@@ -345,6 +335,8 @@ namespace tardigradeHydra{
                 Fe     = get_previousFe( );
 
                 dJedFe = get_previousdJedFe( );
+
+                dFehatdFe = get_setDataStorage_previousdFehatdFe( );
 
             }
             else{
@@ -355,24 +347,22 @@ namespace tardigradeHydra{
 
                 dJedFe = get_dJedFe( );
 
-            }
-
-            fourthOrderTensor dFehatdFe( sot_dim * sot_dim, 0 );
-            tardigradeVectorTools::eye< floatType >( dFehatdFe );
-            dFehatdFe *= std::pow( ( *Je ), -1. / 3 );
-
-            dFehatdFe -= tardigradeVectorTools::matrixMultiply( *Fe, *dJedFe, sot_dim, 1, 1, sot_dim ) * std::pow( ( *Je ), -4. / 3 ) / 3.;
-
-            if ( isPrevious ){
-
-                set_previousdFehatdFe( dFehatdFe );
+                dFehatdFe = get_setDataStorage_dFehatdFe( );
 
             }
-            else{
 
-                set_dFehatdFe( dFehatdFe );
-
+            dFehatdFe.zero( sot_dim * sot_dim );
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+                ( *dFehatdFe.value )[ sot_dim * i + i ] = std::pow( ( *Je ), -1. / 3 );
             }
+
+            Eigen::Map< const Eigen::Vector< floatType, sot_dim > > map_Fe( Fe->data( ), sot_dim );
+
+            Eigen::Map< const Eigen::Vector< floatType, sot_dim > > map_dJedFe( dJedFe->data( ), sot_dim );
+
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dFehatdFe( dFehatdFe.value->data( ), sot_dim, sot_dim );
+
+            map_dFehatdFe -= ( map_Fe * map_dJedFe.transpose( ) * std::pow( ( *Je ), -4. / 3 ) / 3 ).eval( );
 
         }
 
@@ -468,12 +458,10 @@ namespace tardigradeHydra{
              * Set the value of the volumetric rate multiplier
              */
 
-            floatType rateMultiplier;
+            auto rateMultiplier = get_setDataStorage_volumetricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getTemperature( ) },
-                                                                                  *getVolumetricTemperatureParameters( ) ) );
-
-            set_volumetricRateMultiplier( rateMultiplier );
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getTemperature( ) },
+                                                                                           *getVolumetricTemperatureParameters( ) ) );
 
         }
 
@@ -482,12 +470,10 @@ namespace tardigradeHydra{
              * Set the previous value of the volumetric rate multiplier
              */
 
-            floatType rateMultiplier;
+            auto rateMultiplier = get_setDataStorage_previousVolumetricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
-                                                                                  *getVolumetricTemperatureParameters( ) ) );
-
-            set_previousVolumetricRateMultiplier( rateMultiplier );
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
+                                                                                           *getVolumetricTemperatureParameters( ) ) );
 
         }
 
@@ -496,12 +482,10 @@ namespace tardigradeHydra{
              * Set the value of the isochoric rate multiplier
              */
 
-            floatType rateMultiplier;
+            auto rateMultiplier = get_setDataStorage_isochoricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getTemperature( ) },
-                                                                                  *getIsochoricTemperatureParameters( ) ) );
-
-            set_isochoricRateMultiplier( rateMultiplier );
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getTemperature( ) },
+                                                                                           *getIsochoricTemperatureParameters( ) ) );
 
         }
 
@@ -510,12 +494,10 @@ namespace tardigradeHydra{
              * Set the previous value of the isochoric rate multiplier
              */
 
-            floatType rateMultiplier;
+            auto rateMultiplier = get_setDataStorage_previousIsochoricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( rateMultiplier = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
-                                                                                  *getIsochoricTemperatureParameters( ) ) );
-
-            set_previousIsochoricRateMultiplier( rateMultiplier );
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
+                                                                                           *getIsochoricTemperatureParameters( ) ) );
 
         }
 
@@ -525,12 +507,10 @@ namespace tardigradeHydra{
              * with respect to the temperature
              */
 
-            floatType dRateMultiplierdT;
+            auto dRateMultiplierdT = get_setDataStorage_dVolumetricRateMultiplierdT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
-                                                                                                *getVolumetricTemperatureParameters( ) )[ 0 ] );
-
-            set_dVolumetricRateMultiplierdT( dRateMultiplierdT );
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
+                                                                                                         *getVolumetricTemperatureParameters( ) )[ 0 ] );
 
         }
 
@@ -540,12 +520,10 @@ namespace tardigradeHydra{
              * with respect to the temperature
              */
 
-            floatType dRateMultiplierdT;
+            auto dRateMultiplierdT = get_setDataStorage_dPreviousVolumetricRateMultiplierdPreviousT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
-                                                                                       *getVolumetricTemperatureParameters( ) )[ 0 ] );
-
-            set_dPreviousVolumetricRateMultiplierdPreviousT( dRateMultiplierdT );
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
+                                                                                                         *getVolumetricTemperatureParameters( ) )[ 0 ] );
 
         }
 
@@ -555,12 +533,10 @@ namespace tardigradeHydra{
              * with respect to the temperature
              */
 
-            floatType dRateMultiplierdT;
+            auto dRateMultiplierdT = get_setDataStorage_dIsochoricRateMultiplierdT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
-                                                                                       *getIsochoricTemperatureParameters( ) )[ 0 ] );
-
-            set_dIsochoricRateMultiplierdT( dRateMultiplierdT );
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
+                                                                                                         *getIsochoricTemperatureParameters( ) )[ 0 ] );
 
         }
 
@@ -569,12 +545,10 @@ namespace tardigradeHydra{
              * Set the previous value of the isochoric rate multiplier
              */
 
-            floatType dRateMultiplierdT;
+            auto dRateMultiplierdT = get_setDataStorage_dPreviousIsochoricRateMultiplierdPreviousT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( dRateMultiplierdT = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
-                                                                                       *getIsochoricTemperatureParameters( ) )[ 0 ] );
-
-            set_dPreviousIsochoricRateMultiplierdPreviousT( dRateMultiplierdT );
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
+                                                                                                         *getIsochoricTemperatureParameters( ) )[ 0 ] );
 
         }
 
@@ -665,7 +639,8 @@ namespace tardigradeHydra{
              * \param &isPrevious: Flag for if the previous (true) or current (false) stress should be calculated
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
 
             const floatType *Je;
 
@@ -683,6 +658,12 @@ namespace tardigradeHydra{
 
             const floatType *previousVolumetricRateMultiplier = get_previousVolumetricRateMultiplier( );
 
+            setDataStorageBase< floatType > PK2MeanStress;
+
+            setDataStorageBase< secondOrderTensor > dPK2MeanStressdFe;
+
+            setDataStorageBase< floatType > dPK2MeanStressdT;
+
             if ( isPrevious ){
 
                 time                        = previousTime;
@@ -694,6 +675,12 @@ namespace tardigradeHydra{
                 volumetricRateMultiplier    = get_previousVolumetricRateMultiplier( );
 
                 dVolumetricRateMultiplierdT = get_dPreviousVolumetricRateMultiplierdPreviousT( );
+
+                PK2MeanStress               = get_setDataStorage_previousPK2MeanStress( );
+
+                dPK2MeanStressdFe           = get_setDataStorage_previousdPK2MeanStressdFe( );
+
+                dPK2MeanStressdT            = get_setDataStorage_previousdPK2MeanStressdT( );
 
             }
             else{
@@ -707,6 +694,13 @@ namespace tardigradeHydra{
                 volumetricRateMultiplier = get_volumetricRateMultiplier( );
 
                 dVolumetricRateMultiplierdT = get_dVolumetricRateMultiplierdT( );
+
+                PK2MeanStress               = get_setDataStorage_PK2MeanStress( );
+
+                dPK2MeanStressdFe           = get_setDataStorage_dPK2MeanStressdFe( );
+
+                dPK2MeanStressdT            = get_setDataStorage_dPK2MeanStressdT( );
+
             }
 
             // Compute the strain measures
@@ -724,7 +718,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( decomposeStateVariableVector( previousVolumetricStateVariables,
                                                                         previousIsochoricStateVariables ) );
 
-            floatVector PK2MeanStress;
+            floatVector _PK2MeanStress;
 
             floatVector deltaPK2MeanStress;
 
@@ -771,7 +765,7 @@ namespace tardigradeHydra{
                                                                                                      previousVolumetricStateVariables,
                                                                                                      getVolumetricViscoelasticParameters( ),
                                                                                                      *getIntegrationAlpha( ), deltaPK2MeanStress,
-                                                                                                     PK2MeanStress, currentVolumetricStateVariables,
+                                                                                                     _PK2MeanStress, currentVolumetricStateVariables,
                                                                                                      _dPK2MeanStressdJe, dPK2MeanStressdRateModifier,
                                                                                                      _dPK2MeanStressdPreviousJe, dPK2MeanStressdPreviousRateModifier,
                                                                                                      _dPK2MeanStressdPreviousVolumetricISVs,
@@ -779,7 +773,11 @@ namespace tardigradeHydra{
                                                                                                      _dISVsdPreviousJe, dISVsdPreviousRateModifier,
                                                                                                      _dISVsdPreviousVolumetricISVs ) );
 
-            dPK2MeanStressdJe                     = tardigradeVectorTools::appendVectors( _dPK2MeanStressdJe );
+            *PK2MeanStress.value                  = _PK2MeanStress[ 0 ];
+
+            *dPK2MeanStressdFe.value              = _dPK2MeanStressdJe[ 0 ][ 0 ] * ( *dJedFe );
+
+            *dPK2MeanStressdT.value               = dPK2MeanStressdRateModifier[ 0 ] * ( *dVolumetricRateMultiplierdT );
 
             dPK2MeanStressdPreviousJe             = tardigradeVectorTools::appendVectors( _dPK2MeanStressdPreviousJe );
 
@@ -791,61 +789,59 @@ namespace tardigradeHydra{
 
             dISVsdPreviousVolumetricISVs          = tardigradeVectorTools::appendVectors( _dISVsdPreviousVolumetricISVs );
 
-            if( isPrevious ){
+            if( !isPrevious ){
 
-                set_previousPK2MeanStress( PK2MeanStress[ 0 ] );
-    
-                set_previousdPK2MeanStressdFe( dPK2MeanStressdJe[ 0 ] * ( *dJedFe ) );
-    
-                set_previousdPK2MeanStressdT( dPK2MeanStressdRateModifier[ 0 ] * ( *dVolumetricRateMultiplierdT ) );
-
-            }
-            else{
-
-                set_PK2MeanStress( PK2MeanStress[ 0 ] );
-    
                 set_volumetricViscoelasticStateVariables( currentVolumetricStateVariables );
-    
-                set_dPK2MeanStressdFe( dPK2MeanStressdJe[ 0 ] * ( *dJedFe ) );
-
-                set_dPK2MeanStressdT( dPK2MeanStressdRateModifier[ 0 ] * ( *dVolumetricRateMultiplierdT ) );
 
                 set_dPK2MeanStressdPreviousFe( dPK2MeanStressdPreviousJe[ 0 ] * ( *get_previousdJedFe( ) ) );
 
                 set_dPK2MeanStressdPreviousT( dPK2MeanStressdPreviousRateModifier[ 0 ] * ( *get_dPreviousVolumetricRateMultiplierdPreviousT( ) ) );
 
-
-                floatVector dPK2MeanStressdPreviousISVs( previousVolumetricStateVariables.size( ) + previousIsochoricStateVariables.size( ), 0 );
-
                 const unsigned int vol_isvs_size = previousVolumetricStateVariables.size( );
 
                 const unsigned int iso_isvs_size = previousIsochoricStateVariables.size( );
 
-                floatVector dVolumetricISVsdPreviousISVs( vol_isvs_size * ( vol_isvs_size + iso_isvs_size ), 0 );
+                auto dPK2MeanStressdPreviousISVs = get_setDataStorage_dPK2MeanStressdPreviousISVs( );
+                dPK2MeanStressdPreviousISVs.zero( vol_isvs_size + iso_isvs_size );
+
+                auto dVolumetricISVsdPreviousISVs = get_setDataStorage_dVolumetricISVsdPreviousISVs( );
+                dVolumetricISVsdPreviousISVs.zero( vol_isvs_size * ( vol_isvs_size + iso_isvs_size ) );
 
                 for ( unsigned int i = 0; i < vol_isvs_size; i++ ){
 
-                    dPK2MeanStressdPreviousISVs[ i ] = dPK2MeanStressdPreviousVolumetricISVs[ i ];
+                    ( *dPK2MeanStressdPreviousISVs.value )[ i ] = dPK2MeanStressdPreviousVolumetricISVs[ i ];
 
                     for ( unsigned int j = 0; j < vol_isvs_size; j++ ){
 
-                        dVolumetricISVsdPreviousISVs[ ( vol_isvs_size + iso_isvs_size ) * i + j ] = dISVsdPreviousVolumetricISVs[ ( vol_isvs_size ) * i + j ];
+                        ( *dVolumetricISVsdPreviousISVs.value )[ ( vol_isvs_size + iso_isvs_size ) * i + j ] = dISVsdPreviousVolumetricISVs[ ( vol_isvs_size ) * i + j ];
 
                     }
 
                 }
 
-                set_dPK2MeanStressdPreviousISVs( dPK2MeanStressdPreviousISVs );
+                Eigen::Map< const Eigen::Vector< floatType, -1 > > map_dISVsdJe( dISVsdJe.data( ), dISVsdJe.size( ) );
+                Eigen::Map< const Eigen::Vector< floatType, sot_dim > > map_dJedFe( dJedFe->data( ), sot_dim );
 
-                set_dVolumetricISVsdFe( tardigradeVectorTools::matrixMultiply( dISVsdJe,  *dJedFe, dISVsdJe.size( ), 1, 1, sot_dim ) );
+                auto dVolumetricISVsdFe = get_setDataStorage_dVolumetricISVsdFe( );
+                dVolumetricISVsdFe.zero( dISVsdJe.size( ) * sot_dim );
+                Eigen::Map< Eigen::Matrix< floatType, -1, sot_dim, Eigen::RowMajor > > map_dVolumetricISVsdFe( dVolumetricISVsdFe.value->data( ), dISVsdJe.size( ), sot_dim );
 
-                set_dVolumetricISVsdT( dISVsdRateModifier * ( *dVolumetricRateMultiplierdT ) );
+                map_dVolumetricISVsdFe = ( map_dISVsdJe * map_dJedFe.transpose( ) ).eval( );
 
-                set_dVolumetricISVsdPreviousFe( tardigradeVectorTools::matrixMultiply( dISVsdPreviousJe, *get_previousdJedFe( ), dISVsdPreviousJe.size( ), 1, 1, sot_dim ) );
+                auto dVolumetricISVsdT = get_setDataStorage_dVolumetricISVsdT( );
+                *dVolumetricISVsdT.value = dISVsdRateModifier * ( *dVolumetricRateMultiplierdT );
 
-                set_dVolumetricISVsdPreviousT( dISVsdPreviousRateModifier * ( *get_dPreviousVolumetricRateMultiplierdPreviousT( ) ) );
+                Eigen::Map< const Eigen::Vector< floatType, -1 > > map_dISVsdPreviousJe( dISVsdPreviousJe.data( ), dISVsdPreviousJe.size( ) );
+                Eigen::Map< const Eigen::Vector< floatType, sot_dim > > map_previousdJedFe( get_previousdJedFe( )->data( ), sot_dim );
 
-                set_dVolumetricISVsdPreviousISVs( dVolumetricISVsdPreviousISVs );
+                auto dVolumetricISVsdPreviousFe = get_setDataStorage_dVolumetricISVsdPreviousFe( );
+                dVolumetricISVsdPreviousFe.zero( dISVsdPreviousJe.size( ) * sot_dim );
+                Eigen::Map< Eigen::Matrix< floatType, -1, sot_dim, Eigen::RowMajor > > map_dVolumetricISVsdPreviousFe( dVolumetricISVsdPreviousFe.value->data( ), dISVsdPreviousJe.size( ), sot_dim );
+
+                map_dVolumetricISVsdPreviousFe = ( map_dISVsdPreviousJe * map_previousdJedFe.transpose( ) ).eval( );
+
+                auto dVolumetricISVsdPreviousT = get_setDataStorage_dVolumetricISVsdPreviousT( );
+                *dVolumetricISVsdPreviousT.value = dISVsdPreviousRateModifier * ( *get_dPreviousVolumetricRateMultiplierdPreviousT( ) );
 
             }
 
@@ -1147,25 +1143,45 @@ namespace tardigradeHydra{
 
                 set_isochoricViscoelasticStateVariables( currentIsochoricStateVariables );
 
-                fourthOrderTensor previousdEehatdFe = tardigradeVectorTools::matrixMultiply( previousdEehatdFehat, *get_previousdFehatdFe( ), sot_dim, sot_dim, sot_dim, sot_dim );
+                Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_previousdEehatdFehat( previousdEehatdFehat.data( ), sot_dim, sot_dim );
 
-                set_dPK2IsochoricStressdPreviousFe( tardigradeVectorTools::matrixMultiply( dPK2IsochoricStressdPreviousEe, previousdEehatdFe, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_previousdFehatdFe( get_previousdFehatdFe( )->data( ), sot_dim, sot_dim );
 
-                set_dPK2IsochoricStressdPreviousT( dPK2IsochoricStressdPreviousRateMultiplier * ( *get_dPreviousIsochoricRateMultiplierdPreviousT( ) ) );
+                fourthOrderTensor previousdEehatdFe( sot_dim * sot_dim, 0 );
+
+                Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_previousdEehatdFe( previousdEehatdFe.data( ), sot_dim, sot_dim );
+
+                map_previousdEehatdFe = ( map_previousdEehatdFehat * map_previousdFehatdFe ).eval( );
+
+                auto dPK2IsochoricStressdPreviousFe = get_setDataStorage_dPK2IsochoricStressdPreviousFe( );
+
+                dPK2IsochoricStressdPreviousFe.zero( sot_dim * sot_dim );
+
+                Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2IsochoricStressdPreviousEe( dPK2IsochoricStressdPreviousEe.data( ), sot_dim, sot_dim );
+
+                Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2IsochoricStressdPreviousFe( dPK2IsochoricStressdPreviousFe.value->data( ), sot_dim, sot_dim );
+
+                map_dPK2IsochoricStressdPreviousFe = ( map_dPK2IsochoricStressdPreviousEe * map_previousdEehatdFe ).eval( );
+
+                auto dPK2IsochoricStressdPreviousT = get_setDataStorage_dPK2IsochoricStressdPreviousT( );
+
+                *dPK2IsochoricStressdPreviousT.value = dPK2IsochoricStressdPreviousRateMultiplier * ( *get_dPreviousIsochoricRateMultiplierdPreviousT( ) );
 
                 const unsigned int vol_isvs_size = previousVolumetricStateVariables.size( );
 
                 const unsigned int iso_isvs_size = previousIsochoricStateVariables.size( );
 
-                floatVector dPK2IsochoricStressdPreviousISVs( sot_dim * ( vol_isvs_size + iso_isvs_size ), 0 );
+                auto dPK2IsochoricStressdPreviousISVs = get_setDataStorage_dPK2IsochoricStressdPreviousISVs( );
+                dPK2IsochoricStressdPreviousISVs.zero( sot_dim * ( vol_isvs_size + iso_isvs_size ) );
 
-                floatVector dIsochoricISVsdPreviousISVs( iso_isvs_size * ( vol_isvs_size + iso_isvs_size ), 0 );
+                auto dIsochoricISVsdPreviousISVs = get_setDataStorage_dIsochoricISVsdPreviousISVs( );
+                dIsochoricISVsdPreviousISVs.zero( iso_isvs_size * ( vol_isvs_size + iso_isvs_size ) );
 
                 for ( unsigned int i = 0; i < sot_dim; i++ ){
 
                     for ( unsigned int j = 0; j < iso_isvs_size; j++ ){
 
-                        dPK2IsochoricStressdPreviousISVs[ ( vol_isvs_size + iso_isvs_size ) * i + j + vol_isvs_size ] = dPK2IsochoricStressdPreviousIsochoricISVs[ iso_isvs_size * i + j ];
+                        ( *dPK2IsochoricStressdPreviousISVs.value )[ ( vol_isvs_size + iso_isvs_size ) * i + j + vol_isvs_size ] = dPK2IsochoricStressdPreviousIsochoricISVs[ iso_isvs_size * i + j ];
 
                     }
 
@@ -1175,23 +1191,33 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < iso_isvs_size; j++ ){
 
-                        dIsochoricISVsdPreviousISVs[ ( vol_isvs_size + iso_isvs_size ) * i + j + vol_isvs_size ] = dISVsdPreviousIsochoricISVs[ iso_isvs_size * i + j ];
+                        ( *dIsochoricISVsdPreviousISVs.value )[ ( vol_isvs_size + iso_isvs_size ) * i + j + vol_isvs_size ] = dISVsdPreviousIsochoricISVs[ iso_isvs_size * i + j ];
 
                     }
 
                 }
 
-                set_dPK2IsochoricStressdPreviousISVs( dPK2IsochoricStressdPreviousISVs );
+                Eigen::Map< const Eigen::Matrix< floatType, -1, sot_dim, Eigen::RowMajor > > map_dISVsdEe( dISVsdEe.data( ), iso_isvs_size, sot_dim );
 
-                set_dIsochoricISVsdFe( tardigradeVectorTools::matrixMultiply( dISVsdEe, dEehatdFe, iso_isvs_size, sot_dim, sot_dim, sot_dim ) );
+                auto dIsochoricISVsdFe = get_setDataStorage_dIsochoricISVsdFe( );
+                dIsochoricISVsdFe.zero( iso_isvs_size * sot_dim );
+                Eigen::Map< Eigen::Matrix< floatType, -1, sot_dim, Eigen::RowMajor > > map_dIsochoricISVsdFe( dIsochoricISVsdFe.value->data( ), iso_isvs_size, sot_dim );
 
-                set_dIsochoricISVsdT( dISVsdRateMultiplier * ( *dIsochoricRateMultiplierdT ) );
+                map_dIsochoricISVsdFe = ( map_dISVsdEe * map_dEehatdFe ).eval( );
 
-                set_dIsochoricISVsdPreviousFe( tardigradeVectorTools::matrixMultiply( dISVsdPreviousEe, previousdEehatdFe, iso_isvs_size, sot_dim, sot_dim, sot_dim ) );
+                auto dIsochoricISVsdT = get_setDataStorage_dIsochoricISVsdT( );
+                *dIsochoricISVsdT.value = dISVsdRateMultiplier * ( *dIsochoricRateMultiplierdT );
 
-                set_dIsochoricISVsdPreviousT( dISVsdPreviousRateMultiplier * ( *get_dPreviousIsochoricRateMultiplierdPreviousT( ) ) );
+                Eigen::Map< const Eigen::Matrix< floatType, -1, sot_dim, Eigen::RowMajor > > map_dISVsdPreviousEe( dISVsdPreviousEe.data( ), iso_isvs_size, sot_dim );
 
-                set_dIsochoricISVsdPreviousISVs( dIsochoricISVsdPreviousISVs );
+                auto dIsochoricISVsdPreviousFe = get_setDataStorage_dIsochoricISVsdPreviousFe( );
+                dIsochoricISVsdPreviousFe.zero( iso_isvs_size * sot_dim );
+                Eigen::Map< Eigen::Matrix< floatType, -1, sot_dim, Eigen::RowMajor > > map_dIsochoricISVsdPreviousFe( dIsochoricISVsdPreviousFe.value->data( ), iso_isvs_size, sot_dim );
+
+                map_dIsochoricISVsdPreviousFe = ( map_dISVsdPreviousEe * map_previousdEehatdFe ).eval( );
+
+                auto dIsochoricISVsdPreviousT = get_setDataStorage_dIsochoricISVsdPreviousT( );
+                *dIsochoricISVsdPreviousT.value = dISVsdPreviousRateMultiplier * ( *get_dPreviousIsochoricRateMultiplierdPreviousT( ) );
 
             }
 
