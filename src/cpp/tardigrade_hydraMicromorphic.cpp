@@ -626,8 +626,8 @@ namespace tardigradeHydra{
 
             if ( index == ( num_configs - 1 ) ){ break; }
 
-            std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot1.begin( ) );
-            std::fill( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), 0 );
+//            std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot1.begin( ) );
+            std::fill( temp_tot1.begin( ), temp_tot1.end( ), 0 );
 
             secondOrderTensor chiFollow  = getSubConfiguration( microConfigurations, index + 1, *getNumConfigurations( ) );
 
@@ -639,8 +639,8 @@ namespace tardigradeHydra{
 
                         for ( unsigned int k = 0; k < dim; k++ ){
 
-                                    gradientChi1Reference[ dim * dim * i + dim * I + J ]
-                                        += chiFollow[ dim * k + I ] * temp_tot1[ dim * dim * i + dim * k + J ];
+                                    temp_tot1[ dim * dim * i + dim * I + J ]
+                                        += chiFollow[ dim * k + I ] * gradientChi1Reference[ dim * dim * i + dim * k + J ];
 
                         }
 
@@ -650,7 +650,7 @@ namespace tardigradeHydra{
 
             }
 
-            std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot1.begin( ) );
+//            std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot1.begin( ) );
             std::fill( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), 0 );
 
             secondOrderTensor FFollow = getSubConfiguration( configurations, index + 1, *getNumConfigurations( ) );
