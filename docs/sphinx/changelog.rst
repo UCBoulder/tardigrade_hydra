@@ -22,6 +22,7 @@ Internal Changes
 - Removed malloc causing operations in tardigrade_hydra and tardigrade_hydraLinearElasticity (:pull:`147`). By `Nathan Miller`_.
 - Removed additional set_varname like functions in linear elasticity (:pull:`148`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for linear viscoelasticity (:pull:`149`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for thermal expansion (:pull:`150`). By `Nathan Miller`_.
 
 ******************
 0.4.4 (07-12-2024)

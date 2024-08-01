@@ -56,15 +56,11 @@ namespace tardigradeHydra{
              * \f$ E^{\theta}_{IJ} = \frac{1}{2} \left( F_{iI}^{\theta} F_{iJ}^{\theta} - \delta_{IJ} \right) \f$
              */
 
-            floatVector thermalGreenLagrangeStrain;
+            auto thermalGreenLagrangeStrain = get_setDataStorage_thermalGreenLagrangeStrain( );
 
-            floatVector dThermalGreenLagrangeStraindT;
+            auto dThermalGreenLagrangeStraindT = get_setDataStorage_dThermalGreenLagrangeStraindT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::quadraticThermalExpansion( *hydra->getTemperature( ), *getReferenceTemperature( ), *getLinearParameters( ), *getQuadraticParameters( ), thermalGreenLagrangeStrain, dThermalGreenLagrangeStraindT ) );
-
-            set_thermalGreenLagrangeStrain( thermalGreenLagrangeStrain );
-
-            set_dThermalGreenLagrangeStraindT( dThermalGreenLagrangeStraindT );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::quadraticThermalExpansion( *hydra->getTemperature( ), *getReferenceTemperature( ), *getLinearParameters( ), *getQuadraticParameters( ), *thermalGreenLagrangeStrain.value, *dThermalGreenLagrangeStraindT.value ) );
 
         }
 
@@ -73,30 +69,43 @@ namespace tardigradeHydra{
              * Set the thermal deformation gradient
              */
 
-            const unsigned int dim = hydra->getDimension( );
+            constexpr unsigned int dim = 3;
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int sot_dim = dim * dim;
 
-            floatVector thermalDeformationGradient;
+            constexpr unsigned int tot_dim = sot_dim * dim;
+
+            constexpr unsigned int fot_dim = tot_dim * dim;
+
+            auto thermalDeformationGradient = get_setDataStorage_thermalDeformationGradient( );
+
+            auto dThermalDeformationGradientdT = get_setDataStorage_dThermalDeformationGradientdT( );
 
             floatVector dThermalGreenLagrangeStraindThermalDeformationGradient;
 
             floatMatrix _dThermalGreenLagrangeStraindThermalDeformationGradient;
 
-            floatVector eye( sot_dim, 0 );
-            tardigradeVectorTools::eye( eye );
+            floatVector A = 2 * ( *get_thermalGreenLagrangeStrain( ) );
+            for ( unsigned int i = 0; i < dim; i++ ){ A[ dim * i + i ] += 1; }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( thermalDeformationGradient = tardigradeVectorTools::matrixSqrt( 2 * ( *get_thermalGreenLagrangeStrain( ) ) + eye, dim, _dThermalGreenLagrangeStraindThermalDeformationGradient ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( *thermalDeformationGradient.value = tardigradeVectorTools::matrixSqrt( A, dim, _dThermalGreenLagrangeStraindThermalDeformationGradient ) );
 
             dThermalGreenLagrangeStraindThermalDeformationGradient = tardigradeVectorTools::appendVectors( _dThermalGreenLagrangeStraindThermalDeformationGradient );
 
-            set_thermalDeformationGradient( thermalDeformationGradient );
+            floatVector dThermalDeformationGradientdGreenLagrangeStrain( fot_dim, 0 );
 
-            floatVector dThermalDeformationGradientdGreenLagrangeStrain;
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dThermalGreenLagrangeStraindThermalDeformationGradient( dThermalGreenLagrangeStraindThermalDeformationGradient.data( ), sot_dim, sot_dim );
 
-            dThermalDeformationGradientdGreenLagrangeStrain = 2 * tardigradeVectorTools::inverse( dThermalGreenLagrangeStraindThermalDeformationGradient, sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dThermalDeformationGradientdGreenLagrangeStrain( dThermalDeformationGradientdGreenLagrangeStrain.data( ), sot_dim, sot_dim );
 
-            set_dThermalDeformationGradientdT( tardigradeVectorTools::matrixMultiply( dThermalDeformationGradientdGreenLagrangeStrain, *get_dThermalGreenLagrangeStraindT( ), sot_dim, sot_dim, sot_dim, 1 ) );
+            map_dThermalDeformationGradientdGreenLagrangeStrain = 2 * ( map_dThermalGreenLagrangeStraindThermalDeformationGradient.inverse( ) ).eval( );
+
+            Eigen::Map< const Eigen::Vector< floatType, sot_dim > > map_dThermalGreenLagrangeStraindT( get_dThermalGreenLagrangeStraindT( )->data( ), sot_dim );
+
+            dThermalDeformationGradientdT.zero( sot_dim );
+            Eigen::Map< Eigen::Vector< floatType, sot_dim > > map_dThermalDeformationGradientdT( dThermalDeformationGradientdT.value->data( ), sot_dim );
+
+            map_dThermalDeformationGradientdT = ( map_dThermalDeformationGradientdGreenLagrangeStrain * map_dThermalGreenLagrangeStraindT ).eval( );
 
         }
 
@@ -127,8 +136,9 @@ namespace tardigradeHydra{
 
             const unsigned int thermalConfigurationIndex = *getThermalConfigurationIndex( );
 
-            setResidual( *get_thermalDeformationGradient( ) - floatVector( hydra->get_configurations( )->begin( ) +   thermalConfigurationIndex * 9,
-                                                                           hydra->get_configurations( )->begin( ) + ( thermalConfigurationIndex + 1 ) * 9 ) );
+            auto residual = get_setDataStorage_residual( );
+            *residual.value = *get_thermalDeformationGradient( ) - floatVector( hydra->get_configurations( )->begin( ) +   thermalConfigurationIndex * 9,
+                                                                                hydra->get_configurations( )->begin( ) + ( thermalConfigurationIndex + 1 ) * 9 );
 
         }
 
@@ -141,15 +151,14 @@ namespace tardigradeHydra{
 
             const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
-            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
+            auto jacobian = get_setDataStorage_jacobian( );
+            jacobian.zero( *getNumEquations( ) * num_unknowns );
 
             for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
 
-                jacobian[ num_unknowns * i + sot_dim * ( *getThermalConfigurationIndex( ) ) + i ] = -1;
+                ( *jacobian.value )[ num_unknowns * i + sot_dim * ( *getThermalConfigurationIndex( ) ) + i ] = -1;
 
             }
-
-            setJacobian( jacobian );
 
         }
 
@@ -158,7 +167,8 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            setdRdT( *get_dThermalDeformationGradientdT( ) );
+            auto dRdT = get_setDataStorage_dRdT( );
+            *dRdT.value = *get_dThermalDeformationGradientdT( );
 
         }
 
@@ -167,7 +177,8 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            setdRdF( floatVector( *getNumEquations( ) * hydra->getDeformationGradient( )->size( ), 0 ) );
+            auto dRdF = get_setDataStorage_dRdF( );
+            dRdF.zero( *getNumEquations( ) * hydra->getDeformationGradient( )->size( ) );
 
         }
 
