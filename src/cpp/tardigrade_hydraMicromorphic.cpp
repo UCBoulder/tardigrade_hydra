@@ -73,7 +73,6 @@ namespace tardigradeHydra{
 
         const unsigned int sot_dim = getSOTDimension( );
         const unsigned int tot_dim = getTOTDimension( );
-        const unsigned int num_configs = *getNumConfigurations( );
 
         const floatVector *stress;
         TARDIGRADE_ERROR_TOOLS_CATCH( stress = getStress( ) );
@@ -86,41 +85,32 @@ namespace tardigradeHydra{
 
         const floatVector *nonLinearSolveStateVariables = get_nonLinearSolveStateVariables( );
 
-        floatMatrix Xmat( 5 );
+        floatVector X( getNumUnknowns( ), 0 );
 
-        Xmat[ 0 ] = *stress;
+        unsigned int offset = 0;
 
-        // Add the initial values of the macro configurations
-        floatMatrix tmp( num_configs - 1 );
-        for ( unsigned int i = 1; i < num_configs; i++ ){
+        std::copy( std::begin( *stress ), std::end( *stress ), std::begin( X ) );
 
-            tmp[ i - 1 ] = secondOrderTensor( configurations->begin( ) + sot_dim * i,
-                                              configurations->begin( ) + sot_dim * ( i + 1 ) );
+        offset += stress->size( );
 
-        }
-        Xmat[ 1 ] = tardigradeVectorTools::appendVectors( tmp );
+        // Set the initial values of the macro configurations
+        std::copy( std::begin( *configurations ) + sot_dim, std::end( *configurations ), std::begin( X ) + offset );
 
-        // Add the initial values of the micro configurations
-        for ( unsigned int i = 1; i < num_configs; i++ ){
+        offset += configurations->size( ) - sot_dim;
 
-            tmp[ i - 1 ] = secondOrderTensor( microConfigurations->begin( ) + sot_dim * i,
-                                              microConfigurations->begin( ) + sot_dim * ( i + 1 ) );
+        // Set the values of the micro configurations
+        std::copy( std::begin( *microConfigurations ) + sot_dim, std::end( *microConfigurations ), std::begin( X ) + offset );
 
-        }
-        Xmat[ 2 ] = tardigradeVectorTools::appendVectors( tmp );
+        offset += microConfigurations->size( ) - sot_dim;
 
-        // Add the initial values of the micro-gradient configurations
-        for ( unsigned int i = 1; i < num_configs; i++ ){
+        // Set the values of the micro-gradient configurations
+        std::copy( std::begin( *gradientMicroConfigurations ) + tot_dim, std::end( *gradientMicroConfigurations ), std::begin( X ) + offset );
 
-            tmp[ i - 1 ] = thirdOrderTensor( gradientMicroConfigurations->begin( ) + tot_dim * i,
-                                             gradientMicroConfigurations->begin( ) + tot_dim * ( i + 1 ) );
+        offset += gradientMicroConfigurations->size( ) - tot_dim;
 
-        }
-        Xmat[ 3 ] = tardigradeVectorTools::appendVectors( tmp );
+        std::copy( std::begin( *nonLinearSolveStateVariables ), std::end( *nonLinearSolveStateVariables ), std::begin( X ) + offset );
 
-        Xmat[ Xmat.size( ) - 1 ] = *nonLinearSolveStateVariables;
-
-        setX( tardigradeVectorTools::appendVectors( Xmat ) );
+        setX( X );
 
     }
 
