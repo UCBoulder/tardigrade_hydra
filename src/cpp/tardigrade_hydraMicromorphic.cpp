@@ -224,28 +224,20 @@ namespace tardigradeHydra{
 
         unsigned int start_index = getStress( )->size( ) + ( num_configs - 1 ) * sot_dim;
 
-        floatVector microConfigurations;
+        auto microConfigurations         = get_setDataStorage_microConfigurations( );
 
-        floatVector inverseMicroConfigurations;
+        auto inverseMicroConfigurations  = get_setDataStorage_inverseMicroConfigurations( );
 
-        floatVector gradientMicroConfigurations;
+        auto gradientMicroConfigurations = get_setDataStorage_gradientMicroConfigurations( );
 
         // Compute the micro-configurations
 
-        computeConfigurations( getUnknownVector( ), start_index, *getMicroDeformation( ), microConfigurations, inverseMicroConfigurations );
+        computeConfigurations( getUnknownVector( ), start_index, *getMicroDeformation( ), *microConfigurations.value, *inverseMicroConfigurations.value );
 
         start_index += ( num_configs - 1 ) * sot_dim;
 
-        computeGradientMicroConfigurations( getUnknownVector( ), start_index, *get_configurations( ), microConfigurations,
-                                            *getGradientMicroDeformation( ), gradientMicroConfigurations );
-
-        // Set the configurations
-
-        set_microConfigurations( microConfigurations );
-
-        set_inverseMicroConfigurations( inverseMicroConfigurations );
-
-        set_gradientMicroConfigurations( gradientMicroConfigurations );
+        computeGradientMicroConfigurations( getUnknownVector( ), start_index, *get_configurations( ), *microConfigurations.value,
+                                            *getGradientMicroDeformation( ), *gradientMicroConfigurations.value );
 
     }
 
@@ -259,45 +251,31 @@ namespace tardigradeHydra{
 
         unsigned int start_index = ( num_configs - 1 ) * sot_dim;
 
-        floatVector microConfigurations;
+        auto microConfigurations = get_setDataStorage_microConfigurations( );
 
-        floatVector inverseMicroConfigurations;
+        auto inverseMicroConfigurations  = get_setDataStorage_inverseMicroConfigurations( );
 
-        floatVector gradientMicroConfigurations;
+        auto gradientMicroConfigurations = get_setDataStorage_gradientMicroConfigurations( );
 
-        floatVector previousMicroConfigurations;
+        auto previousMicroConfigurations = get_setDataStorage_previousMicroConfigurations( );
 
-        floatVector previousInverseMicroConfigurations;
+        auto previousInverseMicroConfigurations  = get_setDataStorage_previousInverseMicroConfigurations( );
 
-        floatVector previousGradientMicroConfigurations;
+        auto previousGradientMicroConfigurations = get_setDataStorage_previousGradientMicroConfigurations( );
 
         // Compute the micro-configurations
 
-        computeConfigurations( getPreviousStateVariables( ), start_index, *getMicroDeformation( ), microConfigurations, inverseMicroConfigurations, true );
+        computeConfigurations( getPreviousStateVariables( ), start_index, *getMicroDeformation( ), *microConfigurations.value, *inverseMicroConfigurations.value, true );
 
-        computeConfigurations( getPreviousStateVariables( ), start_index, *getPreviousMicroDeformation( ), previousMicroConfigurations, previousInverseMicroConfigurations, true );
+        computeConfigurations( getPreviousStateVariables( ), start_index, *getPreviousMicroDeformation( ), *previousMicroConfigurations.value, *previousInverseMicroConfigurations.value, true );
 
         start_index += ( num_configs - 1 ) * sot_dim;
 
-        computeGradientMicroConfigurations( getPreviousStateVariables( ), start_index, *get_configurations( ), microConfigurations,
-                                            *getGradientMicroDeformation( ), gradientMicroConfigurations );
+        computeGradientMicroConfigurations( getPreviousStateVariables( ), start_index, *get_configurations( ), *microConfigurations.value,
+                                            *getGradientMicroDeformation( ), *gradientMicroConfigurations.value );
 
-        computeGradientMicroConfigurations( getPreviousStateVariables( ), start_index, *get_previousConfigurations( ), previousMicroConfigurations,
-                                            *getPreviousGradientMicroDeformation( ), previousGradientMicroConfigurations );
-
-        // Set the configurations
-
-        set_microConfigurations( microConfigurations );
-
-        set_inverseMicroConfigurations( inverseMicroConfigurations );
-
-        set_gradientMicroConfigurations( gradientMicroConfigurations );
-
-        set_previousMicroConfigurations( previousMicroConfigurations );
-
-        set_previousInverseMicroConfigurations( previousInverseMicroConfigurations );
-
-        set_previousGradientMicroConfigurations( previousGradientMicroConfigurations );
+        computeGradientMicroConfigurations( getPreviousStateVariables( ), start_index, *get_previousConfigurations( ), *previousMicroConfigurations.value,
+                                            *getPreviousGradientMicroDeformation( ), *previousGradientMicroConfigurations.value );
 
     }
 
