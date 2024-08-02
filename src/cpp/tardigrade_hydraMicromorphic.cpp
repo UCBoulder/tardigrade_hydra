@@ -478,15 +478,11 @@ namespace tardigradeHydra{
          * Set the Jacobians of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        fourthOrderTensor dChi1dChi;
+        auto dChi1dChi  = get_setDataStorage_dChi1dChi( ); 
 
-        floatVector dChi1dChin;
+        auto dChi1dChin = get_setDataStorage_dChi1dChin( );
 
-        calculateFirstConfigurationJacobians( *get_microConfigurations( ), dChi1dChi, dChi1dChin );
-
-        set_dChi1dChi( dChi1dChi );
-
-        set_dChi1dChin( dChi1dChin );
+        calculateFirstConfigurationJacobians( *get_microConfigurations( ), *dChi1dChi.value, *dChi1dChin.value );
 
     }
 
@@ -495,15 +491,11 @@ namespace tardigradeHydra{
          * Set the Jacobians of the previous first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        secondOrderTensor previousdChi1dChi;
+        auto previousdChi1dChi  = get_setDataStorage_previousdChi1dChi( );
 
-        floatVector previousdChi1dChin;
+        auto previousdChi1dChin = get_setDataStorage_previousdChi1dChin( );
 
-        calculateFirstConfigurationJacobians( *get_previousMicroConfigurations( ), previousdChi1dChi, previousdChi1dChin );
-
-        set_previousdChi1dChi( previousdChi1dChi );
-
-        set_previousdChi1dChin( previousdChi1dChin );
+        calculateFirstConfigurationJacobians( *get_previousMicroConfigurations( ), *previousdChi1dChi.value, *previousdChi1dChin.value );
 
     }
 
@@ -512,30 +504,21 @@ namespace tardigradeHydra{
          * Set the Jacobians of the gradient of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        floatVector dGradChi1dCn;
+        auto dGradChi1dFn       = get_setDataStorage_dGradChi1dFn( );
 
-        fifthOrderTensor dGradChi1dChi;
+        auto dGradChi1dChi      = get_setDataStorage_dGradChi1dChi( );
 
-        floatVector dGradChi1dChin;
+        auto dGradChi1dChin     = get_setDataStorage_dGradChi1dChin( );
 
-        sixthOrderTensor dGradChi1dGradChi;
+        auto dGradChi1dGradChi  = get_setDataStorage_dGradChi1dGradChi( );
 
-        floatVector dGradChi1dGradChin;
+        auto dGradChi1dGradChin = get_setDataStorage_dGradChi1dGradChin( );
 
         calculateFirstConfigurationGradChiJacobian( *get_configurations( ), *get_microConfigurations( ),
                                                     *getGradientMicroDeformation( ), *get_gradientMicroConfigurations( ),
                                                     *get_dChi1dChi( ), *get_dChi1dChin( ),
-                                                    dGradChi1dCn, dGradChi1dChi, dGradChi1dChin, dGradChi1dGradChi, dGradChi1dGradChin );
-
-        set_dGradChi1dFn( dGradChi1dCn );
-
-        set_dGradChi1dChi( dGradChi1dChi );
-
-        set_dGradChi1dChin( dGradChi1dChin );
-
-        set_dGradChi1dGradChi( dGradChi1dGradChi );
-
-        set_dGradChi1dGradChin( dGradChi1dGradChin );
+                                                    *dGradChi1dFn.value, *dGradChi1dChi.value, *dGradChi1dChin.value,
+                                                    *dGradChi1dGradChi.value, *dGradChi1dGradChin.value );
 
     }
 
@@ -544,30 +527,21 @@ namespace tardigradeHydra{
          * Set the Jacobians of the previous gradient of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        floatVector previousdGradChi1dCn;
+        auto previousdGradChi1dFn       = get_setDataStorage_previousdGradChi1dFn( );
 
-        fifthOrderTensor previousdGradChi1dChi;
+        auto previousdGradChi1dChi      = get_setDataStorage_previousdGradChi1dChi( );
 
-        floatVector previousdGradChi1dChin;
+        auto previousdGradChi1dChin     = get_setDataStorage_previousdGradChi1dChin( );
 
-        sixthOrderTensor previousdGradChi1dGradChi;
+        auto previousdGradChi1dGradChi  = get_setDataStorage_previousdGradChi1dGradChi( );
 
-        floatVector previousdGradChi1dGradChin;
+        auto previousdGradChi1dGradChin = get_setDataStorage_previousdGradChi1dGradChin( );
 
         calculateFirstConfigurationGradChiJacobian( *get_previousConfigurations( ), *get_previousMicroConfigurations( ),
                                                     *getPreviousGradientMicroDeformation( ), *get_previousGradientMicroConfigurations( ),
                                                     *get_previousdChi1dChi( ), *get_previousdChi1dChin( ),
-                                                    previousdGradChi1dCn, previousdGradChi1dChi, previousdGradChi1dChin, previousdGradChi1dGradChi, previousdGradChi1dGradChin );
-
-        set_previousdGradChi1dFn( previousdGradChi1dCn );
-
-        set_previousdGradChi1dChi( previousdGradChi1dChi );
-
-        set_previousdGradChi1dChin( previousdGradChi1dChin );
-
-        set_previousdGradChi1dGradChi( previousdGradChi1dGradChi );
-
-        set_previousdGradChi1dGradChin( previousdGradChi1dGradChin );
+                                                    *previousdGradChi1dFn.value, *previousdGradChi1dChi.value, *previousdGradChi1dChin.value,
+                                                    *previousdGradChi1dGradChi.value, *previousdGradChi1dGradChin.value );
 
     }
 
