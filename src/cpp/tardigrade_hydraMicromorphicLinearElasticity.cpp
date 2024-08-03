@@ -2259,9 +2259,17 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for if the stresses to be calculated are the current (false) or previous (true)
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            constexpr unsigned int sot_dim = dim * dim;
+
+            constexpr unsigned int tot_dim = sot_dim * dim;
+
+            constexpr unsigned int fot_dim = tot_dim * dim;
+
+            constexpr unsigned int fiot_dim = fot_dim * dim;
+
+            constexpr unsigned int siot_dim = fiot_dim * dim;
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -2303,6 +2311,48 @@ namespace tardigradeHydra{
 
             variableVector followingMicroConfiguration;
 
+            setDataStorageBase< secondOrderTensor > PK2Stress;
+
+            setDataStorageBase< secondOrderTensor > referenceSymmetricMicroStress;
+
+            setDataStorageBase< thirdOrderTensor  > referenceHigherOrderStress;
+
+            setDataStorageBase< fourthOrderTensor > dPK2dF;
+
+            setDataStorageBase< floatVector >       dPK2dFn;
+
+            setDataStorageBase< fourthOrderTensor > dPK2dChi;
+
+            setDataStorageBase< floatVector >       dPK2dChin;
+
+            setDataStorageBase< fifthOrderTensor >  dPK2dGradChi;
+
+            setDataStorageBase< floatVector >       dPK2dGradChin;
+
+            setDataStorageBase< fourthOrderTensor > dSIGMAdF;
+
+            setDataStorageBase< floatVector >       dSIGMAdFn;
+
+            setDataStorageBase< fourthOrderTensor > dSIGMAdChi;
+
+            setDataStorageBase< floatVector >       dSIGMAdChin;
+
+            setDataStorageBase< fifthOrderTensor >  dSIGMAdGradChi;
+
+            setDataStorageBase< floatVector >       dSIGMAdGradChin;
+
+            setDataStorageBase< fifthOrderTensor >  dMdF;
+
+            setDataStorageBase< floatVector >       dMdFn;
+
+            setDataStorageBase< fifthOrderTensor >  dMdChi;
+
+            setDataStorageBase< floatVector >       dMdChin;
+
+            setDataStorageBase< sixthOrderTensor >  dMdGradChi;
+
+            setDataStorageBase< floatVector >       dMdGradChin;
+
             if ( isPrevious ){
 
                 dCdF            = get_previousdRightCauchyGreendF( );
@@ -2342,6 +2392,48 @@ namespace tardigradeHydra{
                 followingConfiguration = hydra->getPreviousFollowingConfiguration( 0 );
 
                 followingMicroConfiguration = hydra->getPreviousFollowingMicroConfiguration( 0 );
+
+                PK2Stress                     = get_setDataStorage_previousPK2Stress( );
+
+                referenceSymmetricMicroStress = get_setDataStorage_previousReferenceSymmetricMicroStress( );
+
+                referenceHigherOrderStress    = get_setDataStorage_previousReferenceHigherOrderStress( );
+
+                dPK2dF                        = get_setDataStorage_previousdPK2dF( );
+
+                dPK2dFn                       = get_setDataStorage_previousdPK2dFn( );
+
+                dPK2dChi                      = get_setDataStorage_previousdPK2dChi( );
+
+                dPK2dChin                     = get_setDataStorage_previousdPK2dChin( );
+
+                dPK2dGradChi                  = get_setDataStorage_previousdPK2dGradChi( );
+
+                dPK2dGradChin                 = get_setDataStorage_previousdPK2dGradChin( );
+
+                dSIGMAdF                      = get_setDataStorage_previousdSIGMAdF( );
+
+                dSIGMAdFn                     = get_setDataStorage_previousdSIGMAdFn( );
+
+                dSIGMAdChi                    = get_setDataStorage_previousdSIGMAdChi( );
+
+                dSIGMAdChin                   = get_setDataStorage_previousdSIGMAdChin( );
+
+                dSIGMAdGradChi                = get_setDataStorage_previousdSIGMAdGradChi( );
+
+                dSIGMAdGradChin               = get_setDataStorage_previousdSIGMAdGradChin( );
+
+                dMdF                          = get_setDataStorage_previousdMdF( );
+
+                dMdFn                         = get_setDataStorage_previousdMdFn( );
+
+                dMdChi                        = get_setDataStorage_previousdMdChi( );
+
+                dMdChin                       = get_setDataStorage_previousdMdChin( );
+
+                dMdGradChi                    = get_setDataStorage_previousdMdGradChi( );
+
+                dMdGradChin                   = get_setDataStorage_previousdMdGradChin( );
 
             }
             else{
@@ -2383,6 +2475,48 @@ namespace tardigradeHydra{
                 followingConfiguration = hydra->getFollowingConfiguration( 0 );
     
                 followingMicroConfiguration = hydra->getFollowingMicroConfiguration( 0 );
+
+                PK2Stress                     = get_setDataStorage_PK2Stress( );
+
+                referenceSymmetricMicroStress = get_setDataStorage_referenceSymmetricMicroStress( );
+
+                referenceHigherOrderStress    = get_setDataStorage_referenceHigherOrderStress( );
+
+                dPK2dF                        = get_setDataStorage_dPK2dF( );
+
+                dPK2dFn                       = get_setDataStorage_dPK2dFn( );
+
+                dPK2dChi                      = get_setDataStorage_dPK2dChi( );
+
+                dPK2dChin                     = get_setDataStorage_dPK2dChin( );
+
+                dPK2dGradChi                  = get_setDataStorage_dPK2dGradChi( );
+
+                dPK2dGradChin                 = get_setDataStorage_dPK2dGradChin( );
+
+                dSIGMAdF                      = get_setDataStorage_dSIGMAdF( );
+
+                dSIGMAdFn                     = get_setDataStorage_dSIGMAdFn( );
+
+                dSIGMAdChi                    = get_setDataStorage_dSIGMAdChi( );
+
+                dSIGMAdChin                   = get_setDataStorage_dSIGMAdChin( );
+
+                dSIGMAdGradChi                = get_setDataStorage_dSIGMAdGradChi( );
+
+                dSIGMAdGradChin               = get_setDataStorage_dSIGMAdGradChin( );
+
+                dMdF                          = get_setDataStorage_dMdF( );
+
+                dMdFn                         = get_setDataStorage_dMdFn( );
+
+                dMdChi                        = get_setDataStorage_dMdChi( );
+
+                dMdChin                       = get_setDataStorage_dMdChin( );
+
+                dMdGradChi                    = get_setDataStorage_dMdGradChi( );
+
+                dMdGradChin                   = get_setDataStorage_dMdGradChin( );
 
             }
 
@@ -2428,12 +2562,6 @@ namespace tardigradeHydra{
                                                                                                  dlocalPK2dC, dlocalPK2dPsi, dlocalPK2dGamma, dlocalSIGMAdC, dlocalSIGMAdPsi, dlocalSIGMAdGamma,
                                                                                                  dlocalMdGamma ) );
 
-            floatVector PK2Stress;
-
-            floatVector referenceSymmetricMicroStress;
-
-            floatVector referenceHigherOrderStress;
-
             floatVector dPK2dlocalPK2;
 
             floatVector dPK2dFFollow;
@@ -2449,156 +2577,65 @@ namespace tardigradeHydra{
             floatVector dMdChiFollow;
 
             // Pull the stresses back to the true reference configuration
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, PK2Stress, dPK2dlocalPK2, dPK2dFFollow ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, *PK2Stress.value, dPK2dlocalPK2, dPK2dFFollow ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, followingConfiguration, referenceSymmetricMicroStress,
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, followingConfiguration, *referenceSymmetricMicroStress.value,
                                                                                                          dSIGMAdlocalSIGMA, dSIGMAdFFollow ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
-                                                                                                               referenceHigherOrderStress, dMdlocalM, dMdFFollow, dMdChiFollow ) );
+                                                                                                               *referenceHigherOrderStress.value, dMdlocalM, dMdFFollow, dMdChiFollow ) );
 
-            floatVector dPK2dF = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(     dlocalPK2dC,     *dCdF, sot_dim, sot_dim, sot_dim, sot_dim )
-                                                                                     + tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidF, sot_dim, sot_dim, sot_dim, sot_dim )
-                                                                                     + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadF, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
+            *dPK2dF.value = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(     dlocalPK2dC,     *dCdF, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                + tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidF, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadF, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
 
-            floatVector dPK2dFn = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(     dlocalPK2dC,     *dCdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                                                                      + tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                                                                      + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadFn, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+            *dPK2dFn.value = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(     dlocalPK2dC,     *dCdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                 + tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                 + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadFn, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
                                 + tardigradeVectorTools::matrixMultiply( dPK2dFFollow, dFFollowdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatVector dPK2dChi = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidChi, sot_dim, sot_dim, sot_dim, sot_dim )
-                                                                                       + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadChi, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
+            *dPK2dChi.value = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidChi, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                  + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadChi, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
 
-            floatVector dPK2dChin = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                                                                        + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            *dPK2dChin.value = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply(   dlocalPK2dPsi,   *dPsidChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                   + tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatVector dPK2dGradChi = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadGradChi, sot_dim, tot_dim, tot_dim, tot_dim ), sot_dim, sot_dim, sot_dim, tot_dim );
+            *dPK2dGradChi.value = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadGradChi, sot_dim, tot_dim, tot_dim, tot_dim ), sot_dim, sot_dim, sot_dim, tot_dim );
 
-            floatVector dPK2dGradChin = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadGradChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim );
+            *dPK2dGradChin.value = tardigradeVectorTools::matrixMultiply( dPK2dlocalPK2, tardigradeVectorTools::matrixMultiply( dlocalPK2dGamma, *dGammadGradChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim );
 
-            floatVector dSIGMAdF = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(     dlocalSIGMAdC,     *dCdF, sot_dim, sot_dim, sot_dim, sot_dim )
-                                                                                           + tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidF, sot_dim, sot_dim, sot_dim, sot_dim )
-                                                                                           + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadF, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
+            *dSIGMAdF.value = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(     dlocalSIGMAdC,     *dCdF, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                      + tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidF, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                      + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadF, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
 
-            floatVector dSIGMAdFn = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(     dlocalSIGMAdC,     *dCdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                                                                            + tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                                                                            + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadFn, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+            *dSIGMAdFn.value = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(     dlocalSIGMAdC,     *dCdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                       + tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                       + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadFn, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
                                   + tardigradeVectorTools::matrixMultiply( dSIGMAdFFollow, dFFollowdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatVector dSIGMAdChi = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidChi, sot_dim, sot_dim, sot_dim, sot_dim )
-                                                                                             + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadChi, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
+            *dSIGMAdChi.value = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidChi, sot_dim, sot_dim, sot_dim, sot_dim )
+                                                                                        + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadChi, sot_dim, tot_dim, tot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim );
 
-            floatVector dSIGMAdChin = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                                                                              + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            *dSIGMAdChin.value = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply(   dlocalSIGMAdPsi,   *dPsidChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
+                                                                                         + tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatVector dSIGMAdGradChi = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadGradChi, sot_dim, tot_dim, tot_dim, tot_dim ), sot_dim, sot_dim, sot_dim, tot_dim );
+            *dSIGMAdGradChi.value = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadGradChi, sot_dim, tot_dim, tot_dim, tot_dim ), sot_dim, sot_dim, sot_dim, tot_dim );
 
-            floatVector dSIGMAdGradChin = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadGradChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim );
+            *dSIGMAdGradChin.value = tardigradeVectorTools::matrixMultiply( dSIGMAdlocalSIGMA, tardigradeVectorTools::matrixMultiply( dlocalSIGMAdGamma, *dGammadGradChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ), sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim );
 
-            floatVector dMdF = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadF, tot_dim, tot_dim, tot_dim, sot_dim ), tot_dim, tot_dim, tot_dim, sot_dim );
+            *dMdF.value = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadF, tot_dim, tot_dim, tot_dim, sot_dim ), tot_dim, tot_dim, tot_dim, sot_dim );
 
-            floatVector dMdFn = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadFn, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), tot_dim, tot_dim, tot_dim, ( num_configs -1 ) * sot_dim )
-                              + tardigradeVectorTools::matrixMultiply( dMdFFollow, dFFollowdFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            *dMdFn.value = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadFn, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), tot_dim, tot_dim, tot_dim, ( num_configs -1 ) * sot_dim )
+                         + tardigradeVectorTools::matrixMultiply( dMdFFollow, dFFollowdFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatVector dMdChi = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadChi, tot_dim, tot_dim, tot_dim, sot_dim ), tot_dim, tot_dim, tot_dim, sot_dim );
+            *dMdChi.value = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadChi, tot_dim, tot_dim, tot_dim, sot_dim ), tot_dim, tot_dim, tot_dim, sot_dim );
 
-            floatVector dMdChin = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )
-                                + tardigradeVectorTools::matrixMultiply( dMdChiFollow, dChiFollowdChin, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            *dMdChin.value = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ), tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )
+                           + tardigradeVectorTools::matrixMultiply( dMdChiFollow, dChiFollowdChin, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            floatVector dMdGradChi = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadGradChi, tot_dim, tot_dim, tot_dim, tot_dim ), tot_dim, tot_dim, tot_dim, tot_dim );
+            *dMdGradChi.value = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadGradChi, tot_dim, tot_dim, tot_dim, tot_dim ), tot_dim, tot_dim, tot_dim, tot_dim );
 
-            floatVector dMdGradChin = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ), tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim );
-
-            if ( isPrevious ){
-
-                set_previousPK2Stress( PK2Stress );
-
-                set_previousReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
-
-                set_previousReferenceHigherOrderStress( referenceHigherOrderStress );
-
-                set_previousdPK2dF( dPK2dF );
-
-                set_previousdPK2dFn( dPK2dFn );
-
-                set_previousdPK2dChi( dPK2dChi );
-
-                set_previousdPK2dChin( dPK2dChin );
-
-                set_previousdPK2dGradChi( dPK2dGradChi );
-
-                set_previousdPK2dGradChin( dPK2dGradChin );
-
-                set_previousdSIGMAdF( dSIGMAdF );
-
-                set_previousdSIGMAdFn( dSIGMAdFn );
-
-                set_previousdSIGMAdChi( dSIGMAdChi );
-
-                set_previousdSIGMAdChin( dSIGMAdChin );
-
-                set_previousdSIGMAdGradChi( dSIGMAdGradChi );
-
-                set_previousdSIGMAdGradChin( dSIGMAdGradChin );
-
-                set_previousdMdF( dMdF );
-
-                set_previousdMdFn( dMdFn );
-
-                set_previousdMdChi( dMdChi );
-
-                set_previousdMdChin( dMdChin );
-
-                set_previousdMdGradChi( dMdGradChi );
-
-                set_previousdMdGradChin( dMdGradChin );
-
-            }
-            else{
-
-                set_PK2Stress( PK2Stress );
-
-                set_referenceSymmetricMicroStress( referenceSymmetricMicroStress );
-
-                set_referenceHigherOrderStress( referenceHigherOrderStress );
-
-                set_dPK2dF( dPK2dF );
-
-                set_dPK2dFn( dPK2dFn );
-
-                set_dPK2dChi( dPK2dChi );
-
-                set_dPK2dChin( dPK2dChin );
-
-                set_dPK2dGradChi( dPK2dGradChi );
-
-                set_dPK2dGradChin( dPK2dGradChin );
-
-                set_dSIGMAdF( dSIGMAdF );
-
-                set_dSIGMAdFn( dSIGMAdFn );
-
-                set_dSIGMAdChi( dSIGMAdChi );
-
-                set_dSIGMAdChin( dSIGMAdChin );
-
-                set_dSIGMAdGradChi( dSIGMAdGradChi );
-
-                set_dSIGMAdGradChin( dSIGMAdGradChin );
-
-                set_dMdF( dMdF );
-
-                set_dMdFn( dMdFn );
-
-                set_dMdChi( dMdChi );
-
-                set_dMdChin( dMdChin );
-
-                set_dMdGradChi( dMdGradChi );
-
-                set_dMdGradChin( dMdGradChin );
-
-            }
+            *dMdGradChin.value = tardigradeVectorTools::matrixMultiply( dMdlocalM, tardigradeVectorTools::matrixMultiply( dlocalMdGamma, *dGammadGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ), tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim );
 
         }
 
@@ -2673,6 +2710,12 @@ namespace tardigradeHydra{
 
             const floatVector *microDeformation;
 
+            setDataStorageBase< secondOrderTensor > cauchyStress;
+
+            setDataStorageBase< secondOrderTensor > symmetricMicroStress;
+
+            setDataStorageBase< thirdOrderTensor >  higherOrderStress;
+
             if ( isPrevious ){
 
                 PK2Stress = get_previousPK2Stress( );
@@ -2684,6 +2727,12 @@ namespace tardigradeHydra{
                 deformationGradient = hydra->getPreviousDeformationGradient( );
 
                 microDeformation = hydra->getPreviousMicroDeformation( );
+
+                cauchyStress         = get_setDataStorage_previousCauchyStress( );
+
+                symmetricMicroStress = get_setDataStorage_previousSymmetricMicroStress( );
+
+                higherOrderStress    = get_setDataStorage_previousHigherOrderStress( );
 
             }
             else{
@@ -2698,35 +2747,16 @@ namespace tardigradeHydra{
 
                 microDeformation = hydra->getMicroDeformation( );
 
+                cauchyStress         = get_setDataStorage_cauchyStress( );
+
+                symmetricMicroStress = get_setDataStorage_symmetricMicroStress( );
+
+                higherOrderStress    = get_setDataStorage_higherOrderStress( );
+
             }
-
-            floatVector cauchyStress;
-
-            floatVector symmetricMicroStress;
-
-            floatVector higherOrderStress;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( mapStressMeasuresToCurrent( *deformationGradient, *microDeformation, *PK2Stress, *referenceSymmetricMicroStress,
-                                                                                   *referenceHigherOrderStress, cauchyStress, symmetricMicroStress, higherOrderStress )  );
-
-            if ( isPrevious ){
-
-                set_previousCauchyStress( cauchyStress );
-
-                set_previousSymmetricMicroStress( symmetricMicroStress );
-
-                set_previousHigherOrderStress( higherOrderStress );
-
-            }
-            else{
-
-                set_cauchyStress( cauchyStress );
-
-                set_symmetricMicroStress( symmetricMicroStress );
-
-                set_higherOrderStress( higherOrderStress );
-
-            }
+                                                                                   *referenceHigherOrderStress, *cauchyStress.value, *symmetricMicroStress.value, *higherOrderStress.value )  );
 
         }
 
