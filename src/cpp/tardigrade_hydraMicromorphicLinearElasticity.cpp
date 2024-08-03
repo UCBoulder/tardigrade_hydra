@@ -2520,6 +2520,30 @@ namespace tardigradeHydra{
 
             }
 
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCdF(            dCdF->data( ),        sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dCdFn(           dCdFn->data( ),       sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPsidF(          dPsidF->data( ),      sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPsidFn(         dPsidFn->data( ),     sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPsidChi(        dPsidChi->data( ),    sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPsidChin(       dPsidChin->data( ),   sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dGammadF(        dGammadF->data( ),    tot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dGammadFn(       dGammadFn->data( ),   tot_dim, sot_dim * ( num_configs - 1 ) );
+
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dGammadChi(      dGammadChi->data( ),  tot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dGammadChin(     dGammadChin->data( ), tot_dim, sot_dim * ( num_configs - 1 ) );
+
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dGammadGradChi(  dGammadGradChi->data( ),  tot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dGammadGradChin( dGammadGradChin->data( ), tot_dim, tot_dim * ( num_configs - 1 ) );
+
             variableVector dFFollowdFn( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
 
             variableVector dChiFollowdChin( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
@@ -2535,6 +2559,10 @@ namespace tardigradeHydra{
                 }
 
             }
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dFFollowdFn(     dFFollowdFn.data( ),     sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dChiFollowdChin( dChiFollowdChin.data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
 
             secondOrderTensor localPK2Stress;
 
@@ -2562,23 +2590,55 @@ namespace tardigradeHydra{
                                                                                                  dLocalPK2dC, dLocalPK2dPsi, dLocalPK2dGamma, dLocalSIGMAdC, dLocalSIGMAdPsi, dLocalSIGMAdGamma,
                                                                                                  dLocalMdGamma ) );
 
-            fourthOrderTensor dLocalPK2dF = tardigradeVectorTools::matrixMultiply(     dLocalPK2dC,     *dCdF, sot_dim, sot_dim, sot_dim, sot_dim )
-                                          + tardigradeVectorTools::matrixMultiply(   dLocalPK2dPsi,   *dPsidF, sot_dim, sot_dim, sot_dim, sot_dim )
-                                          + tardigradeVectorTools::matrixMultiply( dLocalPK2dGamma, *dGammadF, sot_dim, tot_dim, tot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dLocalPK2dC(       dLocalPK2dC.data( ),       sot_dim, sot_dim );
 
-            floatVector dLocalPK2dFn = tardigradeVectorTools::matrixMultiply( dLocalPK2dC,     *dCdFn,     sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                     + tardigradeVectorTools::matrixMultiply( dLocalPK2dPsi,   *dPsidFn,   sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                     + tardigradeVectorTools::matrixMultiply( dLocalPK2dGamma, *dGammadFn, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dLocalPK2dPsi(     dLocalPK2dPsi.data( ),     sot_dim, sot_dim );
 
-            fourthOrderTensor dLocalPK2dChi = tardigradeVectorTools::matrixMultiply( dLocalPK2dPsi,   *dPsidChi,   sot_dim, sot_dim, sot_dim, sot_dim )
-                                            + tardigradeVectorTools::matrixMultiply( dLocalPK2dGamma, *dGammadChi, sot_dim, tot_dim, tot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dLocalPK2dGamma(   dLocalPK2dGamma.data( ),   sot_dim, tot_dim );
 
-            floatVector dLocalPK2dChin = tardigradeVectorTools::matrixMultiply( dLocalPK2dPsi,   *dPsidChin,   sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                       + tardigradeVectorTools::matrixMultiply( dLocalPK2dGamma, *dGammadChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dLocalSIGMAdC(     dLocalSIGMAdC.data( ),     sot_dim, sot_dim );
 
-            fifthOrderTensor dLocalPK2dGradChi = tardigradeVectorTools::matrixMultiply( dLocalPK2dGamma, *dGammadGradChi, sot_dim, tot_dim, tot_dim, tot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dLocalSIGMAdPsi(   dLocalSIGMAdPsi.data( ),   sot_dim, sot_dim );
 
-            floatVector dLocalPK2dGradChin = tardigradeVectorTools::matrixMultiply( dLocalPK2dGamma, *dGammadGradChin, sot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dLocalSIGMAdGamma( dLocalSIGMAdGamma.data( ), sot_dim, tot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dLocalMdGamma(     dLocalMdGamma.data( ),     tot_dim, tot_dim );
+
+            fourthOrderTensor dLocalPK2dF( fot_dim, 0 );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dLocalPK2dF( dLocalPK2dF.data( ), sot_dim, sot_dim );
+
+            map_dLocalPK2dF  = ( map_dLocalPK2dC * map_dCdF ).eval( );
+            map_dLocalPK2dF += ( map_dLocalPK2dPsi * map_dPsidF ).eval( );
+            map_dLocalPK2dF += ( map_dLocalPK2dGamma * map_dGammadF ).eval( );
+
+            floatVector dLocalPK2dFn( fot_dim * ( num_configs - 1 ), 0 );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dLocalPK2dFn( dLocalPK2dFn.data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            map_dLocalPK2dFn  = ( map_dLocalPK2dC * map_dCdFn ).eval( );
+            map_dLocalPK2dFn += ( map_dLocalPK2dPsi * map_dPsidFn ).eval( );
+            map_dLocalPK2dFn += ( map_dLocalPK2dGamma * map_dGammadFn ).eval( );
+
+            fourthOrderTensor dLocalPK2dChi( fot_dim, 0 );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dLocalPK2dChi( dLocalPK2dChi.data( ), sot_dim, sot_dim );
+
+            map_dLocalPK2dChi  = ( map_dLocalPK2dPsi * map_dPsidChi ).eval( );
+            map_dLocalPK2dChi += ( map_dLocalPK2dGamma * map_dGammadChi ).eval( );
+
+            floatVector dLocalPK2dChin( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dLocalPK2dChin( dLocalPK2dChin.data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            map_dLocalPK2dChin  = ( map_dLocalPK2dPsi * map_dPsidChin ).eval( );
+            map_dLocalPK2dChin += ( map_dLocalPK2dGamma * map_dGammadChin ).eval( );
+
+            fifthOrderTensor dLocalPK2dGradChi( fiot_dim, 0 );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dLocalPK2dGradChi( dLocalPK2dGradChi.data( ), sot_dim, tot_dim );
+
+            map_dLocalPK2dGradChi = ( map_dLocalPK2dGamma * map_dGammadGradChi ).eval( );
+
+            floatVector dLocalPK2dGradChin( fiot_dim * ( num_configs - 1 ), 0 );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dLocalPK2dGradChin( dLocalPK2dGradChin.data( ), sot_dim, tot_dim * ( num_configs - 1 ) );
+
+            map_dLocalPK2dGradChin = ( map_dLocalPK2dGamma * map_dGammadGradChin ).eval( );
 
             fourthOrderTensor dLocalSIGMAdF = tardigradeVectorTools::matrixMultiply( dLocalSIGMAdC,     *dCdF,     sot_dim, sot_dim, sot_dim, sot_dim )
                                             + tardigradeVectorTools::matrixMultiply( dLocalSIGMAdPsi,   *dPsidF,   sot_dim, sot_dim, sot_dim, sot_dim )
