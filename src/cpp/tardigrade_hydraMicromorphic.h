@@ -234,6 +234,17 @@ namespace tardigradeHydra{
 
             }
 
+            tardigradeHydra::residualBase::setDataStorageIteration< floatVector > get_setDataStorage_dRdD( ){
+                /*!
+                 * Get the setting term for dRdD
+                 * 
+                 * Pass-through to get_setDataStorage_dRdF just changing the naming convention
+                 */
+
+                return residualBase::get_setDataStorage_dRdF( );
+
+            }
+
     };
 
 }
