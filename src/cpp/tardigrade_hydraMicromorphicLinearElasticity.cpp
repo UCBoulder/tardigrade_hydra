@@ -3340,9 +3340,17 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether the measures to be calculated are in the current or previous configuration
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            constexpr unsigned int sot_dim = dim * dim;
+
+            constexpr unsigned int tot_dim = sot_dim * dim;
+
+            constexpr unsigned int fot_dim = tot_dim * dim;
+
+            constexpr unsigned int fiot_dim = fot_dim * dim;
+
+            constexpr unsigned int siot_dim = fiot_dim * dim;
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -3369,6 +3377,36 @@ namespace tardigradeHydra{
             const floatVector *dGradChi1dGradChi;
 
             const floatVector *dGradChi1dGradChin;
+
+            setDataStorageBase< secondOrderTensor > rightCauchyGreen;
+
+            setDataStorageBase< secondOrderTensor > Psi;
+
+            setDataStorageBase< thirdOrderTensor >  Gamma;
+
+            setDataStorageBase< fourthOrderTensor > dRightCauchyGreendF;
+
+            setDataStorageBase< floatVector > dRightCauchyGreendFn;
+
+            setDataStorageBase< fourthOrderTensor > dPsidF;
+
+            setDataStorageBase< floatVector > dPsidFn;
+
+            setDataStorageBase< fourthOrderTensor > dPsidChi;
+
+            setDataStorageBase< floatVector > dPsidChin;
+
+            setDataStorageBase< fifthOrderTensor > dGammadF;
+
+            setDataStorageBase< floatVector > dGammadFn;
+
+            setDataStorageBase< fifthOrderTensor > dGammadChi;
+
+            setDataStorageBase< floatVector > dGammadChin;
+
+            setDataStorageBase< sixthOrderTensor > dGammadGradChi;
+
+            setDataStorageBase< floatVector > dGammadGradChin;
 
             if ( isPrevious ){
 
@@ -3398,6 +3436,36 @@ namespace tardigradeHydra{
                 dGradChi1dGradChi  = hydra->get_previousdGradChi1dGradChi( );
 
                 dGradChi1dGradChin = hydra->get_previousdGradChi1dGradChin( );
+
+                rightCauchyGreen   = get_setDataStorage_previousRightCauchyGreen( );
+
+                Psi                = get_setDataStorage_previousPsi( );
+
+                Gamma              = get_setDataStorage_previousGamma( );
+
+                dRightCauchyGreendF = get_setDataStorage_previousdRightCauchyGreendF( );
+
+                dRightCauchyGreendFn = get_setDataStorage_previousdRightCauchyGreendFn( );
+
+                dPsidF               = get_setDataStorage_previousdPsidF( );
+
+                dPsidFn              = get_setDataStorage_previousdPsidFn( );
+
+                dPsidChi             = get_setDataStorage_previousdPsidChi( );
+
+                dPsidChin            = get_setDataStorage_previousdPsidChin( );
+
+                dGammadF             = get_setDataStorage_previousdGammadF( );
+
+                dGammadFn            = get_setDataStorage_previousdGammadFn( );
+
+                dGammadChi           = get_setDataStorage_previousdGammadChi( );
+
+                dGammadChin          = get_setDataStorage_previousdGammadChin( );
+
+                dGammadGradChi       = get_setDataStorage_previousdGammadGradChi( );
+
+                dGammadGradChin      = get_setDataStorage_previousdGammadGradChin( );
 
             }
             else{
@@ -3429,13 +3497,37 @@ namespace tardigradeHydra{
 
                 dGradChi1dGradChin = hydra->get_dGradChi1dGradChin( );
 
+                rightCauchyGreen   = get_setDataStorage_rightCauchyGreen( );
+
+                Psi                = get_setDataStorage_psi( );
+
+                Gamma              = get_setDataStorage_gamma( );
+
+                dRightCauchyGreendF = get_setDataStorage_dRightCauchyGreendF( );
+
+                dRightCauchyGreendFn = get_setDataStorage_dRightCauchyGreendFn( );
+
+                dPsidF               = get_setDataStorage_dPsidF( );
+
+                dPsidFn              = get_setDataStorage_dPsidFn( );
+
+                dPsidChi             = get_setDataStorage_dPsidChi( );
+
+                dPsidChin            = get_setDataStorage_dPsidChin( );
+
+                dGammadF             = get_setDataStorage_dGammadF( );
+
+                dGammadFn            = get_setDataStorage_dGammadFn( );
+
+                dGammadChi           = get_setDataStorage_dGammadChi( );
+
+                dGammadChin          = get_setDataStorage_dGammadChin( );
+
+                dGammadGradChi       = get_setDataStorage_dGammadGradChi( );
+
+                dGammadGradChin      = get_setDataStorage_dGammadGradChin( );
+
             }
-
-            floatVector rightCauchyGreen;
-
-            floatVector Psi;
-
-            floatVector Gamma;
 
             floatVector dCdF1;
 
@@ -3448,75 +3540,97 @@ namespace tardigradeHydra{
             floatVector dGammadGradChi1;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( computeDeformationMeasures( deformationGradient1, microDeformation1, gradientMicroDeformation1,
-                                                                                   rightCauchyGreen, Psi, Gamma,
+                                                                                   *rightCauchyGreen.value, *Psi.value, *Gamma.value,
                                                                                    dCdF1, dPsidF1, dPsidChi1, dGammadF1, dGammadGradChi1 ) );
 
-            if ( isPrevious ){
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCdF1( dCdF1.data( ), sot_dim, sot_dim );
 
-                set_previousRightCauchyGreen( rightCauchyGreen );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPsidF1( dPsidF1.data( ), sot_dim, sot_dim );
 
-                set_previousPsi( Psi );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPsidChi1( dPsidChi1.data( ), sot_dim, sot_dim );
 
-                set_previousGamma( Gamma );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dGammadF1( dGammadF1.data( ), tot_dim, sot_dim );
 
-                set_previousdRightCauchyGreendF( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dGammadGradChi1( dGammadGradChi1.data( ), tot_dim, tot_dim );
 
-                set_previousdRightCauchyGreendFn( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dF1dF( dF1dF->data( ), sot_dim, sot_dim );
 
-                set_previousdPsidF( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dF1dFn( dF1dFn->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
 
-                set_previousdPsidFn( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dChi1dChi( dChi1dChi->data( ), sot_dim, sot_dim );
 
-                set_previousdPsidChi( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChi, sot_dim, sot_dim, sot_dim, sot_dim ) );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dChi1dChin( dChi1dChin->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
 
-                set_previousdPsidChin( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dGradChi1dFn( dGradChi1dFn->data( ), tot_dim, ( num_configs - 1 ) * sot_dim );
 
-                set_previousdGammadF( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dF, tot_dim, sot_dim, sot_dim, sot_dim ) );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dGradChi1dChi( dGradChi1dChi->data( ), tot_dim, sot_dim );
 
-                set_previousdGammadFn( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                     + tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dFn, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ) );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dGradChi1dChin( dGradChi1dChin->data( ), tot_dim, ( num_configs - 1 ) * sot_dim );
 
-                set_previousdGammadChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChi, tot_dim, tot_dim, tot_dim, sot_dim ) );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dGradChi1dGradChi( dGradChi1dGradChi->data( ), tot_dim, tot_dim );
 
-                set_previousdGammadChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim  ) );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dGradChi1dGradChin( dGradChi1dGradChin->data( ), tot_dim, ( num_configs - 1 ) * tot_dim );
 
-                set_previousdGammadGradChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChi, tot_dim, tot_dim, tot_dim, tot_dim ) );
+            dRightCauchyGreendF.zero( fot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dRightCauchyGreendF( dRightCauchyGreendF.value->data( ), sot_dim, sot_dim );
 
-                set_previousdGammadGradChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ) );
+            map_dRightCauchyGreendF = ( map_dCdF1 * map_dF1dF ).eval( );
 
-            }
-            else{
+            dRightCauchyGreendFn.zero( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dRightCauchyGreendFn( dRightCauchyGreendFn.value->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
 
-                set_rightCauchyGreen( rightCauchyGreen );
+            map_dRightCauchyGreendFn = ( map_dCdF1 * map_dF1dFn ).eval( );
 
-                set_psi( Psi );
+            dPsidF.zero( fot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPsidF( dPsidF.value->data( ), sot_dim, sot_dim );
 
-                set_gamma( Gamma );
+            map_dPsidF = ( map_dPsidF1 * map_dF1dF ).eval( );
 
-                set_dRightCauchyGreendF( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+            dPsidFn.zero( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPsidFn( dPsidFn.value->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
 
-                set_dRightCauchyGreendFn( tardigradeVectorTools::matrixMultiply( dCdF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+            map_dPsidFn = ( map_dPsidF1 * map_dF1dFn ).eval( );
 
-                set_dPsidF( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+            dPsidChi.zero( fot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPsidChi( dPsidChi.value->data( ), sot_dim, sot_dim );
 
-                set_dPsidFn( tardigradeVectorTools::matrixMultiply( dPsidF1, *dF1dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+            map_dPsidChi = ( map_dPsidChi1 * map_dChi1dChi ).eval( );
 
-                set_dPsidChi( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChi, sot_dim, sot_dim, sot_dim, sot_dim ) );
+            dPsidChin.zero( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPsidChin( dPsidChin.value->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
 
-                set_dPsidChin( tardigradeVectorTools::matrixMultiply( dPsidChi1, *dChi1dChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+            map_dPsidChin = ( map_dPsidChi1 * map_dChi1dChin ).eval( );
 
-                set_dGammadF( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dF, tot_dim, sot_dim, sot_dim, sot_dim ) );
+            dGammadF.zero( fiot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dGammadF( dGammadF.value->data( ), tot_dim, sot_dim );
 
-                set_dGammadFn( tardigradeVectorTools::matrixMultiply( dGammadF1, *dF1dFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                             + tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dFn, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim ) );
+            map_dGammadF = ( map_dGammadF1 * map_dF1dF ).eval( );
 
-                set_dGammadChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChi, tot_dim, tot_dim, tot_dim, sot_dim ) );
+            dGammadFn.zero( fiot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dGammadFn( dGammadFn.value->data( ), tot_dim, ( num_configs - 1 ) * sot_dim );
 
-                set_dGammadChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim  ) );
+            map_dGammadFn  = ( map_dGammadF1 * map_dF1dFn ).eval( );
+            map_dGammadFn += ( map_dGammadGradChi1 * map_dGradChi1dFn ).eval( );
 
-                set_dGammadGradChi( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChi, tot_dim, tot_dim, tot_dim, tot_dim ) );
+            dGammadChi.zero( fiot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dGammadChi( dGammadChi.value->data( ), tot_dim, sot_dim );
 
-                set_dGammadGradChin( tardigradeVectorTools::matrixMultiply( dGammadGradChi1, *dGradChi1dGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim ) );
+            map_dGammadChi = ( map_dGammadGradChi1 * map_dGradChi1dChi ).eval( );
+
+            dGammadChin.zero( fiot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dGammadChin( dGammadChin.value->data( ), tot_dim, ( num_configs - 1 ) * sot_dim );
+
+            map_dGammadChin  = ( map_dGammadGradChi1 * map_dGradChi1dChin ).eval( );
+
+            dGammadGradChi.zero( siot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dGammadGradChi( dGammadGradChi.value->data( ), tot_dim, tot_dim );
+
+            map_dGammadGradChi = ( map_dGammadGradChi1 * map_dGradChi1dGradChi ).eval( );
+
+            dGammadGradChin.zero( siot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dGammadGradChin( dGammadGradChin.value->data( ), tot_dim, ( num_configs - 1 ) * tot_dim );
+
+            map_dGammadGradChin  = ( map_dGammadGradChi1 * map_dGradChi1dGradChin ).eval( );
 
             }
 
@@ -3527,10 +3641,12 @@ namespace tardigradeHydra{
              * Set the residual w.r.t. the unknown vector
              */
 
+            auto residual = get_setDataStorage_residual( );
+
             const floatVector *stress = hydra->getStress( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( *stress 
-                                                       - tardigradeVectorTools::appendVectors( { *get_PK2Stress( ), *get_referenceSymmetricMicroStress( ), *get_referenceHigherOrderStress( ) } ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( *residual.value = *stress
+                                                          - tardigradeVectorTools::appendVectors( { *get_PK2Stress( ), *get_referenceSymmetricMicroStress( ), *get_referenceHigherOrderStress( ) } ) );
 
         }
 
@@ -3547,7 +3663,8 @@ namespace tardigradeHydra{
 
             const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
-            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
+            auto jacobian = get_setDataStorage_jacobian( );
+            jacobian.zero( *getNumEquations( ) * num_unknowns );
 
             //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
             const floatVector *dS1dFn       = get_dPK2dFn( );
@@ -3584,7 +3701,7 @@ namespace tardigradeHydra{
                     unsigned int col = 0;
 
                     // Jacobians w.r.t. the stress
-                    jacobian[ num_unknowns * row + row ] += 1;
+                    ( *jacobian.value )[ num_unknowns * row + row ] += 1;
 
                     // Jacobians w.r.t. the sub configurations
                     col = *hydra->getConfigurationUnknownCount( );
@@ -3593,7 +3710,7 @@ namespace tardigradeHydra{
 
                         for ( unsigned int j = 0; j < ( num_configs - 1 ) * dims[ ( unsigned int )( Sn - S->begin( ) ) ]; j++ ){
 
-                            jacobian[ num_unknowns * row + col ] -= ( **Sn )[ ( num_configs - 1 ) * dims[ ( unsigned int ) ( Sn - S->begin( ) ) ] * i + j ];
+                            ( *jacobian.value )[ num_unknowns * row + col ] -= ( **Sn )[ ( num_configs - 1 ) * dims[ ( unsigned int ) ( Sn - S->begin( ) ) ] * i + j ];
 
                             col++;
 
@@ -3606,8 +3723,6 @@ namespace tardigradeHydra{
                 }
 
             }
-
-            setJacobian( jacobian );
 
         }
 
@@ -3624,7 +3739,9 @@ namespace tardigradeHydra{
 
             const unsigned int num_configurationUnknowns = *hydra->getConfigurationUnknownCount( );
 
-            floatVector dRdD( num_equations * num_configurationUnknowns, 0 );
+            auto dRdD = get_setDataStorage_dRdD( );
+
+            dRdD.zero( num_equations * num_configurationUnknowns );
 
             //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
             const floatVector *dS1dF       = get_dPK2dF( );
@@ -3666,7 +3783,7 @@ namespace tardigradeHydra{
 
                         for ( unsigned int j = 0; j < dims[ ( unsigned int )( Sn - S->begin( ) ) ]; j++ ){
 
-                            dRdD[ num_configurationUnknowns * row + col ] -= ( **Sn )[ dims[ ( unsigned int )( Sn - S->begin( ) ) ] * i + j ];
+                            ( *dRdD.value )[ num_configurationUnknowns * row + col ] -= ( **Sn )[ dims[ ( unsigned int )( Sn - S->begin( ) ) ] * i + j ];
 
                             col++;
 
@@ -3680,8 +3797,6 @@ namespace tardigradeHydra{
 
             }
 
-            setdRdD( dRdD );
-
         }
 
         void residual::setStress( ){
@@ -3689,7 +3804,21 @@ namespace tardigradeHydra{
              * Set the stresses
              */
 
-            setStress( tardigradeVectorTools::appendVectors( { *get_PK2Stress( ), *get_referenceSymmetricMicroStress( ), *get_referenceHigherOrderStress( ) } ) );
+            constexpr unsigned int dim = 3;
+
+            constexpr unsigned int sot_dim = dim * dim;
+
+            constexpr unsigned int tot_dim = sot_dim * dim;
+
+            auto stress = get_setDataStorage_stress( );
+
+            stress.zero( 2 * sot_dim + tot_dim );
+
+            std::copy( std::begin( *get_PK2Stress( ) ), std::end( *get_PK2Stress( ) ), std::begin( *stress.value ) );
+
+            std::copy( std::begin( *get_referenceSymmetricMicroStress( ) ), std::end( *get_referenceSymmetricMicroStress( ) ), std::begin( *stress.value ) + sot_dim );
+
+            std::copy( std::begin( *get_referenceHigherOrderStress( ) ), std::end( *get_referenceHigherOrderStress( ) ), std::begin( *stress.value ) + 2 * sot_dim );
 
         }
 
@@ -3698,7 +3827,21 @@ namespace tardigradeHydra{
              * Set the previous stresses
              */
 
-            setPreviousStress( tardigradeVectorTools::appendVectors( { *get_previousPK2Stress( ), *get_previousReferenceSymmetricMicroStress( ), *get_previousReferenceHigherOrderStress( ) } ) );
+            constexpr unsigned int dim = 3;
+
+            constexpr unsigned int sot_dim = dim * dim;
+
+            constexpr unsigned int tot_dim = sot_dim * dim;
+
+            auto previousStress = get_setDataStorage_previousStress( );
+
+            previousStress.zero( 2 * sot_dim + tot_dim );
+
+            std::copy( std::begin( *get_previousPK2Stress( ) ), std::end( *get_previousPK2Stress( ) ), std::begin( *previousStress.value ) );
+
+            std::copy( std::begin( *get_previousReferenceSymmetricMicroStress( ) ), std::end( *get_previousReferenceSymmetricMicroStress( ) ), std::begin( *previousStress.value ) + sot_dim );
+
+            std::copy( std::begin( *get_previousReferenceHigherOrderStress( ) ), std::end( *get_previousReferenceHigherOrderStress( ) ), std::begin( *previousStress.value ) + 2 * sot_dim );
 
         }
 
@@ -3707,7 +3850,8 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            setdRdT( floatVector( *getNumEquations( ), 0 ) );
+            auto dRdT = get_setDataStorage_dRdT( );
+            dRdT.zero( *getNumEquations( ) );
 
         }
 
