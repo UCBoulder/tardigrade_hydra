@@ -3061,57 +3061,107 @@ namespace tardigradeHydra{
              * \param isPrevious: A flag for whether to compute the previous (true) or current (false) stresses and their Jacobians
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            constexpr unsigned int sot_dim = dim * dim;
+
+            constexpr unsigned int tot_dim = sot_dim * dim;
+
+            constexpr unsigned int fot_dim = tot_dim * dim;
+
+            constexpr unsigned int fiot_dim = fot_dim * dim;
+
+            constexpr unsigned int siot_dim = fiot_dim * dim;
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            const floatVector *PK2Stress;
+            const secondOrderTensor *PK2Stress;
 
-            const floatVector *referenceSymmetricMicroStress;
+            const secondOrderTensor *referenceSymmetricMicroStress;
 
-            const floatVector *referenceHigherOrderStress;
+            const thirdOrderTensor  *referenceHigherOrderStress;
 
-            const floatVector *deformationGradient;
+            const secondOrderTensor *deformationGradient;
 
-            const floatVector *microDeformation;
+            const secondOrderTensor *microDeformation;
 
-            const floatVector *dPK2dF;
+            const fourthOrderTensor *dPK2dF;
 
             const floatVector *dPK2dFn;
 
-            const floatVector *dPK2dChi;
+            const fourthOrderTensor *dPK2dChi;
 
             const floatVector *dPK2dChin;
 
-            const floatVector *dPK2dGradChi;
+            const fifthOrderTensor *dPK2dGradChi;
 
             const floatVector *dPK2dGradChin;
 
-            const floatVector *dSIGMAdF;
+            const fourthOrderTensor *dSIGMAdF;
 
             const floatVector *dSIGMAdFn;
 
-            const floatVector *dSIGMAdChi;
+            const fourthOrderTensor *dSIGMAdChi;
 
             const floatVector *dSIGMAdChin;
 
-            const floatVector *dSIGMAdGradChi;
+            const fifthOrderTensor *dSIGMAdGradChi;
 
             const floatVector *dSIGMAdGradChin;
 
-            const floatVector *dMdF;
+            const fifthOrderTensor *dMdF;
 
             const floatVector *dMdFn;
 
-            const floatVector *dMdChi;
+            const fifthOrderTensor *dMdChi;
 
             const floatVector *dMdChin;
 
-            const floatVector *dMdGradChi;
+            const sixthOrderTensor *dMdGradChi;
 
             const floatVector *dMdGradChin;
+
+            setDataStorageBase< secondOrderTensor > cauchyStress;
+
+            setDataStorageBase< secondOrderTensor > symmetricMicroStress;
+
+            setDataStorageBase< thirdOrderTensor >  higherOrderStress;
+
+            setDataStorageBase< fourthOrderTensor > dCauchyStressdF;
+
+            setDataStorageBase< floatVector >       dCauchyStressdFn;
+
+            setDataStorageBase< fourthOrderTensor > dCauchyStressdChi;
+
+            setDataStorageBase< floatVector >       dCauchyStressdChin;
+
+            setDataStorageBase< fifthOrderTensor >  dCauchyStressdGradChi;
+
+            setDataStorageBase< floatVector >       dCauchyStressdGradChin;
+
+            setDataStorageBase< fourthOrderTensor > dMicroStressdF;
+
+            setDataStorageBase< floatVector >       dMicroStressdFn;
+
+            setDataStorageBase< fourthOrderTensor > dMicroStressdChi;
+
+            setDataStorageBase< floatVector >       dMicroStressdChin;
+
+            setDataStorageBase< fifthOrderTensor >  dMicroStressdGradChi;
+
+            setDataStorageBase< floatVector >       dMicroStressdGradChin;
+
+            setDataStorageBase< fifthOrderTensor >  dHigherOrderStressdF;
+
+            setDataStorageBase< floatVector >       dHigherOrderStressdFn;
+
+            setDataStorageBase< fifthOrderTensor >  dHigherOrderStressdChi;
+
+            setDataStorageBase< floatVector >       dHigherOrderStressdChin;
+
+            setDataStorageBase< sixthOrderTensor >  dHigherOrderStressdGradChi;
+
+            setDataStorageBase< floatVector >       dHigherOrderStressdGradChin;
 
             if ( isPrevious ){
 
@@ -3160,6 +3210,48 @@ namespace tardigradeHydra{
                 deformationGradient = hydra->getPreviousDeformationGradient( );
 
                 microDeformation = hydra->getPreviousMicroDeformation( );
+
+                cauchyStress                = get_setDataStorage_previousCauchyStress( );
+
+                symmetricMicroStress        = get_setDataStorage_previousSymmetricMicroStress( );
+
+                higherOrderStress           = get_setDataStorage_previousHigherOrderStress( );
+
+                dCauchyStressdF             = get_setDataStorage_previousdCauchyStressdF( );
+
+                dCauchyStressdFn            = get_setDataStorage_previousdCauchyStressdFn( );
+
+                dCauchyStressdChi           = get_setDataStorage_previousdCauchyStressdChi( );
+
+                dCauchyStressdChin          = get_setDataStorage_previousdCauchyStressdChin( );
+
+                dCauchyStressdGradChi       = get_setDataStorage_previousdCauchyStressdGradChi( );
+
+                dCauchyStressdGradChin      = get_setDataStorage_previousdCauchyStressdGradChin( );
+
+                dMicroStressdF              = get_setDataStorage_previousdSymmetricMicroStressdF( );
+
+                dMicroStressdFn             = get_setDataStorage_previousdSymmetricMicroStressdFn( );
+
+                dMicroStressdChi            = get_setDataStorage_previousdSymmetricMicroStressdChi( );
+
+                dMicroStressdChin           = get_setDataStorage_previousdSymmetricMicroStressdChin( );
+
+                dMicroStressdGradChi        = get_setDataStorage_previousdSymmetricMicroStressdGradChi( );
+
+                dMicroStressdGradChin       = get_setDataStorage_previousdSymmetricMicroStressdGradChin( );
+
+                dHigherOrderStressdF        = get_setDataStorage_previousdHigherOrderStressdF( );
+
+                dHigherOrderStressdFn       = get_setDataStorage_previousdHigherOrderStressdFn( );
+
+                dHigherOrderStressdChi      = get_setDataStorage_previousdHigherOrderStressdChi( );
+
+                dHigherOrderStressdChin     = get_setDataStorage_previousdHigherOrderStressdChin( );
+
+                dHigherOrderStressdGradChi  = get_setDataStorage_previousdHigherOrderStressdGradChi( );
+
+                dHigherOrderStressdGradChin = get_setDataStorage_previousdHigherOrderStressdGradChin( );
 
             }
             else{
@@ -3210,124 +3302,193 @@ namespace tardigradeHydra{
 
                 microDeformation = hydra->getMicroDeformation( );
 
+                cauchyStress                = get_setDataStorage_cauchyStress( );
+
+                symmetricMicroStress        = get_setDataStorage_symmetricMicroStress( );
+
+                higherOrderStress           = get_setDataStorage_higherOrderStress( );
+
+                dCauchyStressdF             = get_setDataStorage_dCauchyStressdF( );
+
+                dCauchyStressdFn            = get_setDataStorage_dCauchyStressdFn( );
+
+                dCauchyStressdChi           = get_setDataStorage_dCauchyStressdChi( );
+
+                dCauchyStressdChin          = get_setDataStorage_dCauchyStressdChin( );
+
+                dCauchyStressdGradChi       = get_setDataStorage_dCauchyStressdGradChi( );
+
+                dCauchyStressdGradChin      = get_setDataStorage_dCauchyStressdGradChin( );
+
+                dMicroStressdF              = get_setDataStorage_dSymmetricMicroStressdF( );
+
+                dMicroStressdFn             = get_setDataStorage_dSymmetricMicroStressdFn( );
+
+                dMicroStressdChi            = get_setDataStorage_dSymmetricMicroStressdChi( );
+
+                dMicroStressdChin           = get_setDataStorage_dSymmetricMicroStressdChin( );
+
+                dMicroStressdGradChi        = get_setDataStorage_dSymmetricMicroStressdGradChi( );
+
+                dMicroStressdGradChin       = get_setDataStorage_dSymmetricMicroStressdGradChin( );
+
+                dHigherOrderStressdF        = get_setDataStorage_dHigherOrderStressdF( );
+
+                dHigherOrderStressdFn       = get_setDataStorage_dHigherOrderStressdFn( );
+
+                dHigherOrderStressdChi      = get_setDataStorage_dHigherOrderStressdChi( );
+
+                dHigherOrderStressdChin     = get_setDataStorage_dHigherOrderStressdChin( );
+
+                dHigherOrderStressdGradChi  = get_setDataStorage_dHigherOrderStressdGradChi( );
+
+                dHigherOrderStressdGradChin = get_setDataStorage_dHigherOrderStressdGradChin( );
+
             }
 
-            floatVector cauchyStress;
+            fourthOrderTensor dCauchyStressdPK2Stress;
 
-            floatVector symmetricMicroStress;
+            fourthOrderTensor dMicroStressdSIGMA;
 
-            floatVector higherOrderStress;
-
-            floatVector dCauchyStressdF;
-
-            floatVector dCauchyStressdPK2Stress;
-
-            floatVector dMicroStressdF;
-
-            floatVector dMicroStressdSIGMA;
-
-            floatVector dHigherOrderStressdF;
-
-            floatVector dHigherOrderStressdChi;
-
-            floatVector dHigherOrderStressdM;
+            sixthOrderTensor dHigherOrderStressdM;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( mapStressMeasuresToCurrent( *deformationGradient, *microDeformation, *PK2Stress, *referenceSymmetricMicroStress,
-                                                                                   *referenceHigherOrderStress, cauchyStress, symmetricMicroStress, higherOrderStress,
-                                                                                    dCauchyStressdF, dCauchyStressdPK2Stress,
-                                                                                    dMicroStressdF,  dMicroStressdSIGMA,
-                                                                                    dHigherOrderStressdF, dHigherOrderStressdChi, dHigherOrderStressdM )  );
+                                                                                   *referenceHigherOrderStress, *cauchyStress.value, *symmetricMicroStress.value, *higherOrderStress.value,
+                                                                                   *dCauchyStressdF.value, dCauchyStressdPK2Stress,
+                                                                                   *dMicroStressdF.value,  dMicroStressdSIGMA,
+                                                                                   *dHigherOrderStressdF.value, *dHigherOrderStressdChi.value, dHigherOrderStressdM )  );
 
-            if ( isPrevious ){
+            Eigen::Map<       Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdF(         dCauchyStressdF.value->data( ),  sot_dim, sot_dim );
 
-                set_previousdCauchyStressdF(                       tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dF         , sot_dim, sot_dim, sot_dim, sot_dim ) + dCauchyStressdF        );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdPK2Stress( dCauchyStressdPK2Stress.data( ), sot_dim, sot_dim );
 
-                set_previousdCauchyStressdFn(                      tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dFn        , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
+            Eigen::Map<       Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dMicroStressdF(          dMicroStressdF.value->data( ),   sot_dim, sot_dim );
 
-                set_previousdCauchyStressdChi(                     tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dChi       , sot_dim, sot_dim, sot_dim, sot_dim )                          );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dMicroStressdSIGMA(      dMicroStressdSIGMA.data( ),      sot_dim, sot_dim );
 
-                set_previousdCauchyStressdChin(                    tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dChin      , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
+            Eigen::Map<       Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dHigherOrderStressdF(    dHigherOrderStressdF.value->data( ),    tot_dim, sot_dim );
 
-                set_previousdCauchyStressdGradChi(                 tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dGradChi   , sot_dim, sot_dim, sot_dim, tot_dim )                          );
+            Eigen::Map<       Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dHigherOrderStressdChi(  dHigherOrderStressdChi.value->data( ),  tot_dim, sot_dim );
 
-                set_previousdCauchyStressdGradChin(                tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dGradChin  , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim )    );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dHigherOrderStressdM(    dHigherOrderStressdM.data( ),    tot_dim, tot_dim );
 
-                set_previousdSymmetricMicroStressdF(               tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdF       , sot_dim, sot_dim, sot_dim, sot_dim ) + dMicroStressdF         );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2dF(          dPK2dF->data( ),          sot_dim, sot_dim );
 
-                set_previousdSymmetricMicroStressdFn(              tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdFn      , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPK2dFn(         dPK2dFn->data( ),         sot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_previousdSymmetricMicroStressdChi(             tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdChi     , sot_dim, sot_dim, sot_dim, sot_dim )                          );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2dChi(        dPK2dChi->data( ),        sot_dim, sot_dim );
 
-                set_previousdSymmetricMicroStressdChin(            tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdChin    , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPK2dChin(       dPK2dChin->data( ),       sot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_previousdSymmetricMicroStressdGradChi(         tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdGradChi , sot_dim, sot_dim, sot_dim, tot_dim )                          );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dPK2dGradChi(    dPK2dGradChi->data( ),    sot_dim, tot_dim );
 
-                set_previousdSymmetricMicroStressdGradChin(        tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdGradChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim )    );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPK2dGradChin(   dPK2dGradChin->data( ),   sot_dim, tot_dim * ( num_configs - 1 ) );
 
-                set_previousdHigherOrderStressdF(                  tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdF           , tot_dim, tot_dim, tot_dim, sot_dim ) + dHigherOrderStressdF   );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dSIGMAdF(        dSIGMAdF->data( ),        sot_dim, sot_dim );
 
-                set_previousdHigherOrderStressdFn(                 tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdFn          , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )    );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dSIGMAdFn(       dSIGMAdFn->data( ),       sot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_previousdHigherOrderStressdChi(                tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdChi         , tot_dim, tot_dim, tot_dim, sot_dim ) + dHigherOrderStressdChi );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dSIGMAdChi(      dSIGMAdChi->data( ),      sot_dim, sot_dim );
 
-                set_previousdHigherOrderStressdChin(               tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdChin        , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )    );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dSIGMAdChin(     dSIGMAdChin->data( ),     sot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_previousdHigherOrderStressdGradChi(            tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdGradChi     , tot_dim, tot_dim, tot_dim, tot_dim )                          );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dSIGMAdGradChi(  dSIGMAdGradChi->data( ),  sot_dim, tot_dim );
 
-                set_previousdHigherOrderStressdGradChin(           tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdGradChin    , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim )    );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dSIGMAdGradChin( dSIGMAdGradChin->data( ), sot_dim, tot_dim * ( num_configs - 1 ) );
 
-                set_previousCauchyStress( cauchyStress );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dMdF(            dMdF->data( ),            tot_dim, sot_dim );
 
-                set_previousSymmetricMicroStress( symmetricMicroStress );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dMdFn(           dMdFn->data( ),           tot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_previousHigherOrderStress( higherOrderStress );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dMdChi(          dMdChi->data( ),          tot_dim, sot_dim );
 
-            }
-            else{
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dMdChin(         dMdChin->data( ),         tot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_dCauchyStressdF(                       tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dF         , sot_dim, sot_dim, sot_dim, sot_dim ) + dCauchyStressdF        );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dMdGradChi(      dMdGradChi->data( ),      tot_dim, tot_dim );
 
-                set_dCauchyStressdFn(                      tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dFn        , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dMdGradChin(     dMdGradChin->data( ),     tot_dim, tot_dim * ( num_configs - 1 ) );
 
-                set_dCauchyStressdChi(                     tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dChi       , sot_dim, sot_dim, sot_dim, sot_dim )                          );
+            dCauchyStressdFn.zero( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dCauchyStressdFn( dCauchyStressdFn.value->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_dCauchyStressdChin(                    tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dChin      , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
+            dCauchyStressdChi.zero( fot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdChi( dCauchyStressdChi.value->data( ), sot_dim, sot_dim );
 
-                set_dCauchyStressdGradChi(                 tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dGradChi   , sot_dim, sot_dim, sot_dim, tot_dim )                          );
+            dCauchyStressdChin.zero( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dCauchyStressdChin( dCauchyStressdChin.value->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_dCauchyStressdGradChin(                tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, *dPK2dGradChin  , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim )    );
+            dCauchyStressdGradChi.zero( fiot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dCauchyStressdGradChi( dCauchyStressdGradChi.value->data( ),   sot_dim, tot_dim );
 
-                set_dSymmetricMicroStressdF(               tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdF       , sot_dim, sot_dim, sot_dim, sot_dim ) + dMicroStressdF         );
+            dCauchyStressdGradChin.zero( fiot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dCauchyStressdGradChin( dCauchyStressdGradChin.value->data( ), sot_dim, tot_dim * ( num_configs - 1 ) );
 
-                set_dSymmetricMicroStressdFn(              tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdFn      , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
+            dMicroStressdFn.zero( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dMicroStressdFn( dMicroStressdFn.value->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_dSymmetricMicroStressdChi(             tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdChi     , sot_dim, sot_dim, sot_dim, sot_dim )                          );
+            dMicroStressdChi.zero( fot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dMicroStressdChi( dMicroStressdChi.value->data( ), sot_dim, sot_dim );
 
-                set_dSymmetricMicroStressdChin(            tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdChin    , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )    );
+            dMicroStressdChin.zero( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dMicroStressdChin( dMicroStressdChin.value->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_dSymmetricMicroStressdGradChi(         tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdGradChi , sot_dim, sot_dim, sot_dim, tot_dim )                          );
+            dMicroStressdGradChi.zero( fiot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dMicroStressdGradChi( dMicroStressdGradChi.value->data( ), sot_dim, tot_dim );
 
-                set_dSymmetricMicroStressdGradChin(        tardigradeVectorTools::matrixMultiply( dMicroStressdSIGMA,      *dSIGMAdGradChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim )    );
+            dMicroStressdGradChin.zero( fiot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dMicroStressdGradChin( dMicroStressdGradChin.value->data( ), sot_dim, tot_dim * ( num_configs - 1 ) );
 
-                set_dHigherOrderStressdF(                  tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdF           , tot_dim, tot_dim, tot_dim, sot_dim ) + dHigherOrderStressdF   );
+            dHigherOrderStressdFn.zero( fiot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dHigherOrderStressdFn( dHigherOrderStressdFn.value->data( ), tot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_dHigherOrderStressdFn(                 tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdFn          , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )    );
+            dHigherOrderStressdChin.zero( fiot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dHigherOrderStressdChin( dHigherOrderStressdChin.value->data( ), tot_dim, sot_dim * ( num_configs - 1 ) );
 
-                set_dHigherOrderStressdChi(                tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdChi         , tot_dim, tot_dim, tot_dim, sot_dim ) + dHigherOrderStressdChi );
+            dHigherOrderStressdGradChi.zero( siot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dHigherOrderStressdGradChi( dHigherOrderStressdGradChi.value->data( ), tot_dim, tot_dim );
 
-                set_dHigherOrderStressdChin(               tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdChin        , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )    );
+            dHigherOrderStressdGradChin.zero( siot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dHigherOrderStressdGradChin( dHigherOrderStressdGradChin.value->data( ), tot_dim, tot_dim * ( num_configs - 1 ) );
 
-                set_dHigherOrderStressdGradChi(            tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdGradChi     , tot_dim, tot_dim, tot_dim, tot_dim )                          );
 
-                set_dHigherOrderStressdGradChin(           tardigradeVectorTools::matrixMultiply( dHigherOrderStressdM,    *dMdGradChin    , tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim )    );
 
-                set_cauchyStress( cauchyStress );
+            map_dCauchyStressdF += ( map_dCauchyStressdPK2Stress * map_dPK2dF ).eval( );
 
-                set_symmetricMicroStress( symmetricMicroStress );
+            map_dCauchyStressdFn = ( map_dCauchyStressdPK2Stress * map_dPK2dFn ).eval( );
 
-                set_higherOrderStress( higherOrderStress );
+            map_dCauchyStressdChi  = ( map_dCauchyStressdPK2Stress * map_dPK2dChi ).eval( );
 
-            }
+            map_dCauchyStressdChin = ( map_dCauchyStressdPK2Stress * map_dPK2dChin ).eval( );
+
+            map_dCauchyStressdGradChi  = ( map_dCauchyStressdPK2Stress * map_dPK2dGradChi ).eval( );
+
+            map_dCauchyStressdGradChin = ( map_dCauchyStressdPK2Stress * map_dPK2dGradChin ).eval( );
+
+
+            map_dMicroStressdF += ( map_dMicroStressdSIGMA * map_dSIGMAdF ).eval( );
+
+            map_dMicroStressdFn = ( map_dMicroStressdSIGMA * map_dSIGMAdFn ).eval( );
+
+            map_dMicroStressdChi  = ( map_dMicroStressdSIGMA * map_dSIGMAdChi ).eval( );
+
+            map_dMicroStressdChin = ( map_dMicroStressdSIGMA * map_dSIGMAdChin ).eval( );
+
+            map_dMicroStressdGradChi  = ( map_dMicroStressdSIGMA * map_dSIGMAdGradChi ).eval( );
+
+            map_dMicroStressdGradChin = ( map_dMicroStressdSIGMA * map_dSIGMAdGradChin ).eval( );
+
+
+            map_dHigherOrderStressdF += ( map_dHigherOrderStressdM * map_dMdF ).eval( );
+
+            map_dHigherOrderStressdFn = ( map_dHigherOrderStressdM * map_dMdFn ).eval( );
+
+            map_dHigherOrderStressdChi += ( map_dHigherOrderStressdM * map_dMdChi ).eval( );
+
+            map_dHigherOrderStressdChin = ( map_dHigherOrderStressdM * map_dMdChin ).eval( );
+
+            map_dHigherOrderStressdGradChi  = ( map_dHigherOrderStressdM * map_dMdGradChi ).eval( );
+
+            map_dHigherOrderStressdGradChin = ( map_dHigherOrderStressdM * map_dMdGradChin ).eval( );
 
         }
 
@@ -3631,8 +3792,6 @@ namespace tardigradeHydra{
             Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dGammadGradChin( dGammadGradChin.value->data( ), tot_dim, ( num_configs - 1 ) * tot_dim );
 
             map_dGammadGradChin  = ( map_dGammadGradChi1 * map_dGradChi1dGradChin ).eval( );
-
-            }
 
         }
 
