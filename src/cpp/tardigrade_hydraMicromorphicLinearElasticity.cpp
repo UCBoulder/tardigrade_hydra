@@ -429,6 +429,8 @@ namespace tardigradeHydra{
             constexpr unsigned int dim = 3;
             constexpr unsigned int sot_dim = dim * dim;
             constexpr unsigned int tot_dim = sot_dim * dim;   
+            constexpr unsigned int fot_dim = tot_dim * dim;
+            constexpr unsigned int fiot_dim = fot_dim * dim;
  
             variableVector invRCG = rightCauchyGreenDeformation;
             Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( invRCG.data(), 3, 3 );
@@ -467,9 +469,15 @@ namespace tardigradeHydra{
                                                                      dTerm2dRCG, dTerm2dPsi, dTerm2dInvRCGPsi ) );
 
             dTerm2dRCG *= 0.5;
-            dTerm2dRCG += tardigradeVectorTools::matrixMultiply( dTerm2dInvRCGPsi, dInvRCGPsidRCG, sot_dim, sot_dim, sot_dim, sot_dim );
-    
-            dTerm2dPsi += tardigradeVectorTools::matrixMultiply( dTerm2dInvRCGPsi, dInvRCGPsidPsi, sot_dim, sot_dim, sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dTerm2dInvRCGPsi( dTerm2dInvRCGPsi.data( ), sot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dInvRCGPsidRCG( dInvRCGPsidRCG.data( ), sot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dInvRCGPsidPsi( dInvRCGPsidPsi.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dTerm2dRCG( dTerm2dRCG.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dTerm2dPsi( dTerm2dPsi.data( ), sot_dim, sot_dim );
+
+            map_dTerm2dRCG += ( map_dTerm2dInvRCGPsi * map_dInvRCGPsidRCG ).eval( );
+            map_dTerm2dPsi += ( map_dTerm2dInvRCGPsi * map_dInvRCGPsidPsi ).eval( );
     
             //Compute the third common term for the PK2 and symmetric micro-stress
             variableVector invRCGGamma;
@@ -480,10 +488,23 @@ namespace tardigradeHydra{
             variableVector term3;
             variableVector dTerm3dInvRCGGamma, dTerm3dM;
             TARDIGRADE_ERROR_TOOLS_CATCH( computeLinearElasticTerm3( invRCGGamma, referenceHigherOrderStress, term3, dTerm3dInvRCGGamma, dTerm3dM ) );
-    
-            variableVector dTerm3dRCG = tardigradeVectorTools::matrixMultiply( dTerm3dInvRCGGamma, dInvRCGGammadRCG, sot_dim, tot_dim, tot_dim, sot_dim );
-            variableVector dTerm3dGamma = tardigradeVectorTools::matrixMultiply( dTerm3dInvRCGGamma, dInvRCGGammadGamma, sot_dim, tot_dim, tot_dim, tot_dim )
-                                        + tardigradeVectorTools::matrixMultiply( dTerm3dM, dMdGamma, sot_dim, tot_dim, tot_dim, tot_dim );
+   
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dTerm3dInvRCGGamma( dTerm3dInvRCGGamma.data( ), sot_dim, tot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dInvRCGGammadRCG( dInvRCGGammadRCG.data( ), tot_dim, sot_dim );
+
+            fourthOrderTensor dTerm3dRCG( fot_dim, 0 );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dTerm3dRCG( dTerm3dRCG.data( ), sot_dim, sot_dim );
+
+            map_dTerm3dRCG = ( map_dTerm3dInvRCGGamma * map_dInvRCGGammadRCG ).eval( );
+
+            fifthOrderTensor dTerm3dGamma( fiot_dim, 0 );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dInvRCGGammadGamma( dInvRCGGammadGamma.data( ), tot_dim, tot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dTerm3dM( dTerm3dM.data( ), sot_dim, tot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dMdGamma( dMdGamma.data( ), tot_dim, tot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dTerm3dGamma( dTerm3dGamma.data( ), sot_dim, tot_dim );
+
+            map_dTerm3dGamma  = ( map_dTerm3dInvRCGGamma * map_dInvRCGGammadGamma ).eval( );
+            map_dTerm3dGamma += ( map_dTerm3dM * map_dMdGamma ).eval( );
     
             //Construct the PK2 and reference symmetric stresses
             PK2Stress            = term1 + term2 + term3;
@@ -498,11 +519,22 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeSymmetricPart( term2 + term3, symmTerm2Term3, dSymmTerm2Term3dTerm2Term3 ) );
             referenceMicroStress = term1 + 2 * symmTerm2Term3;
 
-            dReferenceMicroStressdRCG = dTerm1dRCG + 2 * ( tardigradeVectorTools::matrixMultiply( dSymmTerm2Term3dTerm2Term3, dTerm2dRCG, sot_dim, sot_dim, sot_dim, sot_dim )
-                                                         + tardigradeVectorTools::matrixMultiply( dSymmTerm2Term3dTerm2Term3, dTerm3dRCG, sot_dim, sot_dim, sot_dim, sot_dim ) );
-    
-            dReferenceMicroStressdPsi = dTerm1dPsi + 2 * tardigradeVectorTools::matrixMultiply( dSymmTerm2Term3dTerm2Term3, dTerm2dPsi, sot_dim, sot_dim, sot_dim, sot_dim );
-            dReferenceMicroStressdGamma = 2 * tardigradeVectorTools::matrixMultiply( dSymmTerm2Term3dTerm2Term3, dTerm3dGamma, sot_dim, sot_dim, sot_dim, tot_dim );
+            dReferenceMicroStressdRCG = dTerm1dRCG;
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dSymmTerm2Term3dTerm2Term3( dSymmTerm2Term3dTerm2Term3.data( ), sot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dReferenceMicroStressdRCG( dReferenceMicroStressdRCG.data( ), sot_dim, sot_dim );
+
+            map_dReferenceMicroStressdRCG += ( 2 * map_dSymmTerm2Term3dTerm2Term3 * map_dTerm2dRCG ).eval( );
+            map_dReferenceMicroStressdRCG += ( 2 * map_dSymmTerm2Term3dTerm2Term3 * map_dTerm3dRCG ).eval( );
+
+            dReferenceMicroStressdPsi = dTerm1dPsi;
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dReferenceMicroStressdPsi( dReferenceMicroStressdPsi.data( ), sot_dim, sot_dim );
+
+            map_dReferenceMicroStressdPsi += ( 2 * map_dSymmTerm2Term3dTerm2Term3 * map_dTerm2dPsi ).eval( );
+
+            dReferenceMicroStressdGamma = fifthOrderTensor( fiot_dim, 0 );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dReferenceMicroStressdGamma( dReferenceMicroStressdGamma.data( ), sot_dim, tot_dim );
+
+            map_dReferenceMicroStressdGamma = ( 2 * map_dSymmTerm2Term3dTerm2Term3 * map_dTerm3dGamma ).eval( );
 
             return NULL;
         }
