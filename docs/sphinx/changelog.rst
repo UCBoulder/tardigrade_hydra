@@ -24,6 +24,7 @@ Internal Changes
 - Removed set_varname and replaced with setDataStorage for linear viscoelasticity (:pull:`149`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for thermal expansion (:pull:`150`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for hydra micromorphic (:pull:`151`). By `Nathan Miller`_.
+- Corrected calling the Jacobian with every call to the residual (:pull:`153`). By `Nathan Miller`_.
 
 ******************
 0.4.4 (07-12-2024)
