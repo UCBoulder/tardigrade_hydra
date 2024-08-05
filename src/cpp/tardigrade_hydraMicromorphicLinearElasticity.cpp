@@ -1514,6 +1514,12 @@ namespace tardigradeHydra{
 
             floatVector gradientMicroDeformation1;
 
+            setDataStorageBase< secondOrderTensor > rightCauchyGreen;
+
+            setDataStorageBase< secondOrderTensor > Psi;
+
+            setDataStorageBase< thirdOrderTensor > Gamma;
+
             if ( isPrevious ){
 
                 deformationGradient1 = floatVector( hydra->get_previousConfigurations( )->begin( ),
@@ -1524,6 +1530,12 @@ namespace tardigradeHydra{
 
                 gradientMicroDeformation1 = floatVector( hydra->get_previousGradientMicroConfigurations( )->begin( ),
                                                          hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim );
+
+                rightCauchyGreen = get_setDataStorage_previousRightCauchyGreen( );
+
+                Psi              = get_setDataStorage_previousPsi( );
+
+                Gamma            = get_setDataStorage_previousGamma( );
 
             }
             else{
@@ -1537,35 +1549,16 @@ namespace tardigradeHydra{
                 gradientMicroDeformation1 = floatVector( hydra->get_gradientMicroConfigurations( )->begin( ),
                                                          hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim );
 
+                rightCauchyGreen = get_setDataStorage_rightCauchyGreen( );
+
+                Psi              = get_setDataStorage_psi( );
+
+                Gamma            = get_setDataStorage_gamma( );
+
             }
-
-            floatVector rightCauchyGreen;
-
-            floatVector Psi;
-
-            floatVector Gamma;
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( computeDeformationMeasures( deformationGradient1, microDeformation1, gradientMicroDeformation1,
-                                                                                   rightCauchyGreen, Psi, Gamma ) );
-
-            if ( isPrevious ){
-
-                set_previousRightCauchyGreen( rightCauchyGreen );
-
-                set_previousPsi( Psi );
-
-                set_previousGamma( Gamma );
-
-            }
-            else{
-
-                set_rightCauchyGreen( rightCauchyGreen );
-
-                set_psi( Psi );
-
-                set_gamma( Gamma );
-
-            }
+                                                                                   *rightCauchyGreen.value, *Psi.value, *Gamma.value ) );
 
         }
 
@@ -1856,6 +1849,12 @@ namespace tardigradeHydra{
 
             variableVector followingMicroConfiguration;
 
+            setDataStorageBase< secondOrderTensor > PK2Stress;
+
+            setDataStorageBase< secondOrderTensor > referenceSymmetricMicroStress;
+
+            setDataStorageBase< thirdOrderTensor > referenceHigherOrderStress;
+
             if ( isPrevious ){
 
                 C     = get_previousRightCauchyGreen( );
@@ -1867,6 +1866,12 @@ namespace tardigradeHydra{
                 followingConfiguration = hydra->getPreviousFollowingConfiguration( 0 );
 
                 followingMicroConfiguration = hydra->getPreviousFollowingMicroConfiguration( 0 );
+
+                PK2Stress = get_setDataStorage_previousPK2Stress( );
+
+                referenceSymmetricMicroStress = get_setDataStorage_previousReferenceSymmetricMicroStress( );
+
+                referenceHigherOrderStress = get_setDataStorage_previousReferenceHigherOrderStress( );
 
             }
             else{
@@ -1881,6 +1886,12 @@ namespace tardigradeHydra{
     
                 followingMicroConfiguration = hydra->getFollowingMicroConfiguration( 0 );
 
+                PK2Stress = get_setDataStorage_PK2Stress( );
+
+                referenceSymmetricMicroStress = get_setDataStorage_referenceSymmetricMicroStress( );
+
+                referenceHigherOrderStress = get_setDataStorage_referenceHigherOrderStress( );
+
             }
 
             floatVector localPK2Stress;
@@ -1893,38 +1904,13 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( linearElasticityReferenceDerivedMeasures( *C, *Psi, *Gamma, *getAMatrix( ), *getBMatrix( ), *getCMatrix( ), *getDMatrix( ),
                                                                                                  localPK2Stress, localReferenceSymmetricMicroStress, localReferenceHigherOrderStress ) );
 
-            floatVector PK2Stress;
-
-            floatVector referenceSymmetricMicroStress;
-
-            floatVector referenceHigherOrderStress;
-
             // Pull the stresses back to the true reference configuration
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, PK2Stress ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, *PK2Stress.value ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, followingConfiguration, referenceSymmetricMicroStress ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, followingConfiguration, *referenceSymmetricMicroStress.value ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
-                                                                                                               referenceHigherOrderStress ) );
-
-            if ( isPrevious ){
-
-                set_previousPK2Stress( PK2Stress );
-
-                set_previousReferenceSymmetricMicroStress( referenceSymmetricMicroStress );
-
-                set_previousReferenceHigherOrderStress( referenceHigherOrderStress );
-
-            }
-            else{
-
-                set_PK2Stress( PK2Stress );
-
-                set_referenceSymmetricMicroStress( referenceSymmetricMicroStress );
-
-                set_referenceHigherOrderStress( referenceHigherOrderStress );
-
-            }
+                                                                                                               *referenceHigherOrderStress.value ) );
 
         }
 
@@ -2729,45 +2715,113 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
                                                                                                                *referenceHigherOrderStress.value, dMdLocalM, dMdFFollow, dMdChiFollow ) );
 
-            *dPK2dF.value = tardigradeVectorTools::matrixMultiply( dPK2dLocalPK2, dLocalPK2dF, sot_dim, sot_dim, sot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2dLocalPK2( dPK2dLocalPK2.data( ), sot_dim, sot_dim );
 
-            *dPK2dFn.value  = tardigradeVectorTools::matrixMultiply( dPK2dLocalPK2, dLocalPK2dFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
-            *dPK2dFn.value += tardigradeVectorTools::matrixMultiply( dPK2dFFollow,  dFFollowdFn,  sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2dFFollow( dPK2dFFollow.data( ), sot_dim, sot_dim );
 
-            *dPK2dChi.value = tardigradeVectorTools::matrixMultiply( dPK2dLocalPK2, dLocalPK2dChi, sot_dim, sot_dim, sot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dSIGMAdLocalSIGMA( dSIGMAdLocalSIGMA.data( ), sot_dim, sot_dim );
 
-            *dPK2dChin.value = tardigradeVectorTools::matrixMultiply( dPK2dLocalPK2, dLocalPK2dChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dSIGMAdFFollow( dSIGMAdFFollow.data( ), sot_dim, sot_dim );
 
-            *dPK2dGradChi.value = tardigradeVectorTools::matrixMultiply( dPK2dLocalPK2, dLocalPK2dGradChi, sot_dim, sot_dim, sot_dim, tot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dMdLocalM( dMdLocalM.data( ), tot_dim, tot_dim );
 
-            *dPK2dGradChin.value = tardigradeVectorTools::matrixMultiply( dPK2dLocalPK2, dLocalPK2dGradChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dMdFFollow( dMdFFollow.data( ), tot_dim, sot_dim );
 
-            *dSIGMAdF.value = tardigradeVectorTools::matrixMultiply( dSIGMAdLocalSIGMA, dLocalSIGMAdF, sot_dim, sot_dim, sot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dMdChiFollow( dMdChiFollow.data( ), tot_dim, sot_dim );
 
-            *dSIGMAdFn.value  = tardigradeVectorTools::matrixMultiply( dSIGMAdLocalSIGMA, dLocalSIGMAdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
-            *dSIGMAdFn.value += tardigradeVectorTools::matrixMultiply( dSIGMAdFFollow,    dFFollowdFn,    sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            dPK2dF.zero( fot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2dF( dPK2dF.value->data( ), sot_dim, sot_dim );
 
-            *dSIGMAdChi.value = tardigradeVectorTools::matrixMultiply( dSIGMAdLocalSIGMA, dLocalSIGMAdChi, sot_dim, sot_dim, sot_dim, sot_dim );
+            map_dPK2dF = ( map_dPK2dLocalPK2 * map_dLocalPK2dF ).eval( );
 
-            *dSIGMAdChin.value = tardigradeVectorTools::matrixMultiply( dSIGMAdLocalSIGMA, dLocalSIGMAdChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            dPK2dFn.zero( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPK2dFn( dPK2dFn.value->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            *dSIGMAdGradChi.value = tardigradeVectorTools::matrixMultiply( dSIGMAdLocalSIGMA, dLocalSIGMAdGradChi, sot_dim, sot_dim, sot_dim, tot_dim );
+            map_dPK2dFn  = ( map_dPK2dLocalPK2 * map_dLocalPK2dFn ).eval( );
+            map_dPK2dFn += ( map_dPK2dFFollow * map_dFFollowdFn ).eval( );
 
-            *dSIGMAdGradChin.value = tardigradeVectorTools::matrixMultiply( dSIGMAdLocalSIGMA, dLocalSIGMAdGradChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * tot_dim );
+            dPK2dChi.zero( fot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2dChi( dPK2dChi.value->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            *dMdF.value = tardigradeVectorTools::matrixMultiply( dMdLocalM, dLocalMdF, tot_dim, tot_dim, tot_dim, sot_dim );
+            map_dPK2dChi = ( map_dPK2dLocalPK2 * map_dLocalPK2dChi ).eval( );
 
-            *dMdFn.value  = tardigradeVectorTools::matrixMultiply( dMdLocalM,  dLocalMdFn,  tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim );
-            *dMdFn.value += tardigradeVectorTools::matrixMultiply( dMdFFollow, dFFollowdFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            dPK2dChin.zero( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPK2dChin( dPK2dChin.value->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
 
-            *dMdChi.value = tardigradeVectorTools::matrixMultiply( dMdLocalM, dLocalMdChi, tot_dim, tot_dim, tot_dim, sot_dim );
+            map_dPK2dChin = ( map_dPK2dLocalPK2 * map_dLocalPK2dChin ).eval( );
 
-            *dMdChin.value  = tardigradeVectorTools::matrixMultiply( dMdLocalM,    dLocalMdChin,    tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim );
-            *dMdChin.value += tardigradeVectorTools::matrixMultiply( dMdChiFollow, dChiFollowdChin, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            dPK2dGradChi.zero( fiot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dPK2dGradChi( dPK2dGradChi.value->data( ), sot_dim, tot_dim );
 
-            *dMdGradChi.value = tardigradeVectorTools::matrixMultiply( dMdLocalM, dLocalMdGradChi, tot_dim, tot_dim, tot_dim, tot_dim );
+            map_dPK2dGradChi = ( map_dPK2dLocalPK2 * map_dLocalPK2dGradChi ).eval( );
 
-            *dMdGradChin.value = tardigradeVectorTools::matrixMultiply( dMdLocalM, dLocalMdGradChin, tot_dim, tot_dim, tot_dim, ( num_configs - 1 ) * tot_dim );
+            dPK2dGradChin.zero( fiot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPK2dGradChin( dPK2dGradChin.value->data( ), sot_dim, ( num_configs - 1 ) * tot_dim );
+
+            map_dPK2dGradChin = ( map_dPK2dLocalPK2 * map_dLocalPK2dGradChin ).eval( );
+
+            dSIGMAdF.zero( fot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dSIGMAdF( dSIGMAdF.value->data( ), sot_dim, sot_dim );
+
+            map_dSIGMAdF = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdF ).eval( );
+
+            dSIGMAdFn.zero( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dSIGMAdFn( dSIGMAdFn.value->data( ), sot_dim, sot_dim );
+
+            map_dSIGMAdFn  = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdFn ).eval( );
+            map_dSIGMAdFn += ( map_dSIGMAdFFollow * map_dFFollowdFn ).eval( );
+
+            dSIGMAdChi.zero( fot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dSIGMAdChi( dSIGMAdChi.value->data( ), sot_dim, sot_dim );
+
+            map_dSIGMAdChi = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdChi ).eval( );
+
+            dSIGMAdChin.zero( fot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dSIGMAdChin( dSIGMAdChin.value->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
+
+            map_dSIGMAdChin = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdChin ).eval( );
+
+            dSIGMAdGradChi.zero( fiot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dSIGMAdGradChi( dSIGMAdGradChi.value->data( ), sot_dim, tot_dim );
+
+            map_dSIGMAdGradChi = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdGradChi ).eval( );
+
+            dSIGMAdGradChin.zero( fiot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dSIGMAdGradChin( dSIGMAdGradChin.value->data( ), sot_dim, ( num_configs - 1 ) * tot_dim );
+
+            map_dSIGMAdGradChin = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdGradChin ).eval( );
+
+            dMdF.zero( fiot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dMdF( dMdF.value->data( ), tot_dim, sot_dim );
+
+            map_dMdF = ( map_dMdLocalM * map_dLocalMdF ).eval( );
+
+            dMdFn.zero( fiot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dMdFn( dMdFn.value->data( ), tot_dim, ( num_configs - 1 ) * sot_dim );
+
+            map_dMdFn  = ( map_dMdLocalM * map_dLocalMdFn );
+            map_dMdFn += ( map_dMdFFollow * map_dFFollowdFn );
+
+            dMdChi.zero( fiot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dMdChi( dMdChi.value->data( ), tot_dim, sot_dim );
+
+            map_dMdChi = ( map_dMdLocalM * map_dLocalMdChi ).eval( );
+
+            dMdChin.zero( fiot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dMdChin( dMdChin.value->data( ), tot_dim, ( num_configs - 1 ) * sot_dim );
+
+            map_dMdChin  = ( map_dMdLocalM * map_dLocalMdChin ).eval( );
+            map_dMdChin += ( map_dMdChiFollow * map_dChiFollowdChin ).eval( );
+
+            dMdGradChi.zero( siot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dMdGradChi( dMdGradChi.value->data( ), tot_dim, tot_dim );
+
+            map_dMdGradChi = ( map_dMdLocalM * map_dLocalMdGradChi ).eval( );
+
+            dMdGradChin.zero( siot_dim * ( num_configs - 1 ) );
+            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dMdGradChin( dMdGradChin.value->data( ), tot_dim, ( num_configs - 1 ) * tot_dim );
+
+            map_dMdGradChin = ( map_dMdLocalM * map_dLocalMdGradChin ).eval( );
 
         }
 
