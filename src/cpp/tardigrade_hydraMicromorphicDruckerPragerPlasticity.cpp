@@ -7823,7 +7823,8 @@ namespace tardigradeHydra{
 
             const dimVector *microGradientYield = get_microGradientYield( );
 
-            floatVector residual( get_plasticStateVariables( )->size( ), 0 );
+            auto residual = get_setDataStorage_stateVariableResiduals( );
+            residual.zero( get_plasticStateVariables( )->size( ) );
 
             floatType macroMac  = tardigradeConstitutiveTools::mac( *macroYield );
             tardigradeConstitutiveTools::mac( -( *macroYield ) );
@@ -7875,15 +7876,15 @@ namespace tardigradeHydra{
             }
 
             // Set the terms associated with the yield surface
-            residual[ 0 ] = macroMac + ( *plasticMultipliers )[ 0 ] * ( *macroYield ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMacroGamma;
+            ( *residual.value )[ 0 ] = macroMac + ( *plasticMultipliers )[ 0 ] * ( *macroYield ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMacroGamma;
 
-            residual[ 1 ] = microMac + ( *plasticMultipliers )[ 1 ] * ( *microYield ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGamma;
+            ( *residual.value )[ 1 ] = microMac + ( *plasticMultipliers )[ 1 ] * ( *microYield ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGamma;
 
             for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
 
                 unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
 
-                residual[ index + 2 ]
+                ( *residual.value )[ index + 2 ]
                     = microGradientMac[ index ] + ( *plasticMultipliers )[ index + 2 ] * ( *y ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGradientGamma[ index ];
 
             }
@@ -7891,11 +7892,9 @@ namespace tardigradeHydra{
             // Set the terms associated with the strain-like ISV evolution
             for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
 
-                residual[ numPlasticMultipliers + i ] = ( *updatedPlasticStrainLikeISVs )[ i ] - ( *plasticStrainLikeISVs )[ i ];
+                ( *residual.value )[ numPlasticMultipliers + i ] = ( *updatedPlasticStrainLikeISVs )[ i ] - ( *plasticStrainLikeISVs )[ i ];
 
             }
-
-            set_stateVariableResiduals( residual );
 
         }
 
