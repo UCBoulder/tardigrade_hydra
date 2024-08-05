@@ -1039,8 +1039,14 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CHECK( invRCG.size() == sot_dim, "invRCG has an improper dimension" );
     
             TARDIGRADE_ERROR_TOOLS_CHECK( Psi.size() == sot_dim, "Psi has an improper dimension" );
-    
-            invRCGPsi = tardigradeVectorTools::matrixMultiply( invRCG, Psi, dim, dim, dim, dim );
+   
+            Eigen::Map< const Eigen::Matrix< floatType, dim, dim, Eigen::RowMajor > > map_invRCG( invRCG.data( ), dim, dim );
+            Eigen::Map< const Eigen::Matrix< floatType, dim, dim, Eigen::RowMajor > > map_Psi( Psi.data( ), dim, dim );
+
+            invRCGPsi = secondOrderTensor( sot_dim, 0 );
+            Eigen::Map< Eigen::Matrix< floatType, dim, dim, Eigen::RowMajor > > map_invRCGPsi( invRCGPsi.data( ), dim, dim );
+
+            map_invRCGPsi = ( map_invRCG * map_Psi ).eval( );
     
             return NULL;
         }
