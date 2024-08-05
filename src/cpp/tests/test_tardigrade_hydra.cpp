@@ -310,9 +310,15 @@ namespace tardigradeHydra{
 
                 }
 
-                static void formNonLinearProblem( hydraBase &hydra ){
+                static void formNonLinearResidual( hydraBase &hydra ){
 
-                    BOOST_CHECK_NO_THROW( hydra.formNonLinearProblem( ) );
+                    BOOST_CHECK_NO_THROW( hydra.formNonLinearResidual( ) );
+
+                }
+
+                static void formNonLinearDerivatives( hydraBase &hydra ){
+
+                    BOOST_CHECK_NO_THROW( hydra.formNonLinearDerivatives( ) );
 
                 }
 
@@ -3118,7 +3124,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
                                                                                       tardigradeVectorTools::inflate( *hydraGet.r2.getAdditionalDerivatives( ),  2, 4 ),
                                                                                       tardigradeVectorTools::inflate( *hydraGet.r3.getAdditionalDerivatives( ),  3, 4 ) } );
 
-    tardigradeHydra::unit_test::hydraBaseTester::formNonLinearProblem( hydra );
+    tardigradeHydra::unit_test::hydraBaseTester::formNonLinearResidual( hydra );
+
+    tardigradeHydra::unit_test::hydraBaseTester::formNonLinearDerivatives( hydra );
 
     BOOST_TEST( residualAnswer == *hydra.getResidual( ), CHECK_PER_ELEMENT );
 
@@ -4154,6 +4162,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             floatVector initialUnknownVector = { 1, 2, 3 };
 
+            std::vector< bool > isGradient = { 0, 1, 0, 0 };
+
             std::vector< unsigned int > numLSIterations = { 1, 2, 1, 3 };
 
             std::vector< std::vector< floatVector > > residual = {
@@ -4229,9 +4239,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                                                                              },
                                                                          };
 
-        virtual const unsigned int getNumUnknowns( ) override{ return initialUnknownVector.size( ); }
+            virtual const unsigned int getNumUnknowns( ) override{ return initialUnknownVector.size( ); }
 
-        unsigned int in_gradient_convergence = 0;
+            unsigned int in_gradient_convergence = 0;
+
+            unsigned int num_derivative_calls = 0;
+
+            unsigned int num_residual_calls = 0;
 
         private:
 
@@ -4248,6 +4262,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
             }
 
             virtual bool checkConvergence( ) override{
+
+                getResidual( );
 
                 unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
@@ -4323,7 +4339,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             }
 
-            virtual void formNonLinearProblem( ) override{
+            virtual void formNonLinearResidual( ) override{
 
                 unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
@@ -4335,7 +4351,12 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                 unsigned int LSoffset = 0;
 
-                if ( ( LSIteration < residual[ iteration ].size( ) - 1 ) && ( gradIteration < residual[ iteration ].size( ) - 2 ) ){
+                if ( !isGradient[ iteration ] && ( LSIteration < residual[ iteration ].size( ) - 1 ) ){
+
+                    LSoffset += 1;
+
+                }
+                else if ( isGradient[ iteration ] && ( gradIteration < residual[ iteration ].size( ) - 2 ) ){
 
                     LSoffset += 1;
 
@@ -4350,7 +4371,17 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual[ iteration + iterationOffset ][ LSIteration + LSoffset + gradIteration ] );
 
-                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, flatJacobian[ iteration + iterationOffset ][ LSIteration + LSoffset + gradIteration ] );
+                num_residual_calls++;
+
+            }
+
+            virtual void formNonLinearDerivatives( ) override{
+
+                unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, flatJacobian[ iteration ][ 0 ] );
+
+                num_derivative_calls++;
 
             }
 
@@ -4429,6 +4460,10 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     BOOST_TEST( hydra.getNumGrad( ) == 1 );
 
+    BOOST_TEST( hydra.num_residual_calls == 8 ); //8 because we initialize the residual
+
+    BOOST_TEST( hydra.num_derivative_calls == 3 ); //3 because we initialize the jacobian
+
     hydraBaseMock hydra_pre( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                              { }, { },
                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension,
@@ -4443,6 +4478,10 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
     BOOST_TEST( hydra_pre.getNumLS( ) == 1 );
 
     BOOST_TEST( hydra_pre.getNumGrad( ) == 1 );
+
+    BOOST_TEST( hydra.num_residual_calls == 8 ); //8 because we initialize the residual
+
+    BOOST_TEST( hydra.num_derivative_calls == 3 ); //3 because we initialize the jacobian
 
 }
 
@@ -4650,11 +4689,15 @@ BOOST_AUTO_TEST_CASE( test_computeTangents, * boost::unit_test::tolerance( 2e-6 
 
             floatVector dRdT = { 0.151, 0.399, 0.241, 0.343, 0.513, 0.667, 0.106, 0.131 };
 
-            virtual void formNonLinearProblem( ) override{
+            virtual void formNonLinearResidual( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, residual );
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
+
+            }
+
+            virtual void formNonLinearDerivatives( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
 
@@ -4771,11 +4814,15 @@ BOOST_AUTO_TEST_CASE( test_computeFlatdXdAdditionalDOF, * boost::unit_test::tole
                                              -0.81579012, -0.13259765, -0.13827447, -0.0126298 , -0.14833942,
                                              -0.37547755, -0.14729739,  0.78677833,  0.88832004,  0.00367335 };
 
-            virtual void formNonLinearProblem( ) override{
+            virtual void formNonLinearResidual( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, residual );
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
+
+            }
+
+            virtual void formNonLinearDerivatives( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
 
@@ -5019,7 +5066,7 @@ BOOST_AUTO_TEST_CASE( test_setResidualNorm, * boost::unit_test::tolerance( DEFAU
 
             using tardigradeHydra::hydraBase::hydraBase;
 
-            virtual void formNonLinearProblem( ) override{
+            virtual void formNonLinearResidual( ) override{
 
                 floatVector residual( 5, 0 );
 
@@ -5032,6 +5079,10 @@ BOOST_AUTO_TEST_CASE( test_setResidualNorm, * boost::unit_test::tolerance( DEFAU
                 }
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
+
+            }
+
+            virtual void formNonLinearDerivatives( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
 
@@ -5153,7 +5204,7 @@ BOOST_AUTO_TEST_CASE( test_checkGradientConvergence, * boost::unit_test::toleran
 
             }
 
-            virtual void formNonLinearProblem( ) override{
+            virtual void formNonLinearResidual( ) override{
 
                 floatVector residual( 5, 0 );
 
@@ -5166,6 +5217,10 @@ BOOST_AUTO_TEST_CASE( test_checkGradientConvergence, * boost::unit_test::toleran
                 }
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
+
+            }
+
+            virtual void formNonLinearDerivatives( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
 
@@ -5269,9 +5324,23 @@ BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1
 
             }
 
-            virtual void formNonLinearProblem( ) override{
+            virtual void formNonLinearResidual( ) override{
 
                 floatVector residual( 5, 0 );
+
+                const floatVector *X = getUnknownVector( );
+
+                for ( unsigned int i = 0; i < 5; i++ ){
+                    for ( unsigned int j = 0; j < 5; j++ ){
+                        residual[ i ] += A[ 5 * i + j ] * ( ( *X )[ j ] * ( *X )[ j ] );
+                    }
+                }
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
+
+            }
+
+            virtual void formNonLinearDerivatives( ) override{
 
                 floatVector jacobian( 25, 0 );
 
@@ -5279,12 +5348,9 @@ BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1
 
                 for ( unsigned int i = 0; i < 5; i++ ){
                     for ( unsigned int j = 0; j < 5; j++ ){
-                        residual[ i ] += A[ 5 * i + j ] * ( ( *X )[ j ] * ( *X )[ j ] );
                         jacobian[ 5 * i + j ] += 2 * A[ 5 * i + j ] * ( *X )[ j ];
                     }
                 }
-
-                tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
 
@@ -5449,9 +5515,13 @@ BOOST_AUTO_TEST_CASE( test_getNonlinearLMTerms, * boost::unit_test::tolerance( 1
 
             using tardigradeHydra::hydraBase::hydraBase;
 
-            virtual void formNonLinearProblem( ) override{
+            virtual void formNonLinearResidual( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
+
+            }
+
+            virtual void formNonLinearDerivatives( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
 
@@ -5570,9 +5640,13 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
 
             }
 
-            virtual void formNonLinearProblem( ) override{
+            virtual void formNonLinearResidual( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
+
+            }
+
+            virtual void formNonLinearDerivatives( ) override{
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
 
