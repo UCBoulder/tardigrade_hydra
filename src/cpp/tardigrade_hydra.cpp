@@ -838,9 +838,9 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::formNonLinearProblem( ){
+    void hydraBase::formNonLinearResidual( ){
         /*!
-         * Form the residual, jacobian, and gradient matrices
+         * Form the residual
          */
 
         const unsigned int configurationUnknownCount = *getConfigurationUnknownCount( );
@@ -863,8 +863,6 @@ namespace tardigradeHydra{
 
         unsigned int offset = 0;
 
-        unsigned int numAdditionalDerivatives = 0;
-
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
 
             residualBase *residual = ( *residual_ptr );
@@ -873,6 +871,60 @@ namespace tardigradeHydra{
 
             const floatVector* localResidual;
             TARDIGRADE_ERROR_TOOLS_CATCH( localResidual = residual->getResidual( ) );
+
+            // Check the contributions to make sure they are consistent sizes
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( localResidual->size( ) == *residual->getNumEquations( ),
+                  "The residual for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
+                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                + "  actual:   " + std::to_string( localResidual->size( ) ) + "\n"
+            )
+
+            // Store the values in the global quantities
+
+            // Copy over the values of the local vector to the global structures
+            std::copy( localResidual->begin( ), localResidual->end( ), _residual.second.begin( ) + offset );
+
+            offset += *residual->getNumEquations( );
+
+        }
+
+        _residual.first = true;
+
+        addIterationData( &_residual );
+
+    }
+
+    void hydraBase::formNonLinearDerivatives( ){
+        /*!
+         * Form the jacobian and gradient matrices
+         */
+
+        const unsigned int configurationUnknownCount = *getConfigurationUnknownCount( );
+
+        const unsigned int residualSize = ( *getNumConfigurations( ) ) * configurationUnknownCount + *getNumNonLinearSolveStateVariables( );
+
+        const unsigned int numAdditionalDOF = getAdditionalDOF( )->size( );
+
+        _jacobian.second = floatVector( residualSize * residualSize, 0 );
+
+        _dRdF.second = floatVector( residualSize * configurationUnknownCount, 0 );
+
+        _dRdT.second = floatVector( residualSize, 0 );
+
+        _dRdAdditionalDOF.second = floatVector( residualSize * numAdditionalDOF, 0 );
+
+        _additionalDerivatives.second.clear( );
+
+        unsigned int offset = 0;
+
+        unsigned int numAdditionalDerivatives = 0;
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+            residualBase *residual = ( *residual_ptr );
+
+            // Extract the terms
 
             const floatVector* localJacobian;
             TARDIGRADE_ERROR_TOOLS_CATCH( localJacobian = residual->getJacobian( ) );
@@ -890,12 +942,6 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( localAdditionalDerivatives = residual->getAdditionalDerivatives( ) );
 
             // Check the contributions to make sure they are consistent sizes
-
-            TARDIGRADE_ERROR_TOOLS_CHECK( localResidual->size( ) == *residual->getNumEquations( ),
-                  "The residual for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
-                + "  actual:   " + std::to_string( localResidual->size( ) ) + "\n"
-            )
 
             TARDIGRADE_ERROR_TOOLS_CHECK( localJacobian->size( ) == *residual->getNumEquations( ) * residualSize,
                   "The jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
@@ -929,11 +975,11 @@ namespace tardigradeHydra{
 
             if ( localAdditionalDerivatives->size( ) != 0 ){
 
-                if ( ( *localAdditionalDerivatives ).size( ) != localResidual->size( ) * numAdditionalDerivatives ){
+                if ( ( *localAdditionalDerivatives ).size( ) != *residual->getNumEquations( ) * numAdditionalDerivatives ){
     
                     if ( numAdditionalDerivatives == 0 ){
     
-                        numAdditionalDerivatives = ( *localAdditionalDerivatives ).size( ) / localResidual->size( );
+                        numAdditionalDerivatives = ( *localAdditionalDerivatives ).size( ) / ( *residual->getNumEquations( ) );
     
                         _additionalDerivatives.second = floatVector( residualSize * numAdditionalDerivatives, 0 );
     
@@ -955,8 +1001,6 @@ namespace tardigradeHydra{
             // Store the values in the global quantities
 
             // Copy over the values of the local vector to the global structures
-            std::copy( localResidual->begin( ), localResidual->end( ), _residual.second.begin( ) + offset );
-
             std::copy( localJacobian->begin( ), localJacobian->end( ), _jacobian.second.begin( ) + residualSize * offset );
 
             std::copy( localdRdF->begin( ), localdRdF->end( ), _dRdF.second.begin( ) + configurationUnknownCount * offset );
@@ -969,8 +1013,6 @@ namespace tardigradeHydra{
 
         }
 
-        _residual.first = true;
-
         _jacobian.first = true;
 
         _dRdF.first = true;
@@ -980,8 +1022,6 @@ namespace tardigradeHydra{
         _dRdAdditionalDOF.first = true;
 
         _additionalDerivatives.first = true;
-
-        addIterationData( &_residual );
 
         addIterationData( &_jacobian );
 
@@ -1044,7 +1084,7 @@ namespace tardigradeHydra{
 
         if ( !_residual.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearResidual( ) );
 
         }
 
@@ -1059,7 +1099,7 @@ namespace tardigradeHydra{
 
         if ( !_jacobian.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearDerivatives( ) );
 
         }
 
@@ -1176,7 +1216,7 @@ namespace tardigradeHydra{
 
         if ( !_dRdF.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearDerivatives( ) );
 
         }
 
@@ -1199,7 +1239,7 @@ namespace tardigradeHydra{
 
         if ( !_dRdAdditionalDOF.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearDerivatives( ) );
 
         }
 
@@ -1222,7 +1262,7 @@ namespace tardigradeHydra{
 
         if ( !_dRdT.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearDerivatives( ) );
 
         }
 
@@ -1237,7 +1277,7 @@ namespace tardigradeHydra{
 
         if ( !_additionalDerivatives.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearProblem( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( formNonLinearDerivatives( ) );
 
         }
 
@@ -1728,7 +1768,7 @@ namespace tardigradeHydra{
         const unsigned int maxiter         = *getMaxGradientIterations( );
 
         while( checkGradientIteration( ) ){
-            
+
             floatType t = std::pow( *getGradientBeta( ), l );
 
             updateUnknownVector( X0 - t * ( *dResidualNormdX ) );

@@ -1209,7 +1209,9 @@ namespace tardigradeHydra{
 
             virtual void decomposeStateVariableVector( );
 
-            virtual void formNonLinearProblem( );
+            virtual void formNonLinearResidual( );
+
+            virtual void formNonLinearDerivatives( );
 
             virtual void formPreconditioner( );
 
