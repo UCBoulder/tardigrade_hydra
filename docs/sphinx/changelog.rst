@@ -27,6 +27,10 @@ Internal Changes
 - Corrected calling the Jacobian with every call to the residual (:pull:`153`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for hydra micromoprhic linear elasticity (:pull:`155`). By `Nathan Miller`_.
 
+Bug Fixes
+=========
+- Corrected issue where the wrong Jacobian was being used in checkDescentDirection (:pull:`156`). By `Nathan Miller`_.
+
 ******************
 0.4.4 (07-12-2024)
 ******************
