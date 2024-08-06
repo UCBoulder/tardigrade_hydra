@@ -561,6 +561,24 @@ namespace tardigradeHydra{
 
           void zero( const unsigned int size ){ _ds->zero( size ); }
 
+          template< typename X, unsigned int R, unsigned int C >
+          Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > zeroMap( ){
+              /*!
+               * Create a zeroed Eigen::Map of the quantity
+               */
+              zero( R * C );
+              return Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > ( value->data( ), R, C );
+          }
+
+          template< typename X, unsigned int R >
+          Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > zeroMap( const unsigned int C ){
+              /*!
+               * Create a zeroed Eigen::Map of the quantity with dynamic columns
+               */
+              zero( R * C );
+              return Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > ( value->data( ), R, C );
+          }
+
       protected:
 
           dataStorage< T > *_ds;
