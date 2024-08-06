@@ -1810,7 +1810,7 @@ namespace tardigradeHydra{
 
         floatType LHS = 0;
 
-        const floatVector *dResidualNormdX = get_dResidualNormdX( );
+        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
 
         for ( unsigned int i = 0; i < xsize; i++ ){
 
