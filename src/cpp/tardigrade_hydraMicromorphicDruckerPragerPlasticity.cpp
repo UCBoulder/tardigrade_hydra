@@ -7500,50 +7500,40 @@ namespace tardigradeHydra{
                 auto map_previousdPlasticMicroVelocityGradientdStateVariables             = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_previousdPlasticMicroVelocityGradientdStateVariables( )->data( ), num_isvs );
                 auto map_previousdPlasticGradientMicroVelocityGradientdMicroStress        = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( get_previousdPlasticGradientMicroVelocityGradientdMicroStress( )->data( ) );
                 auto map_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress  = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( get_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress( )->data( ) );
+                auto map_previousdPlasticGradientMicroVelocityGradientdF                  = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( get_previousdPlasticGradientMicroVelocityGradientdF( )->data( ) );
 
                 auto dUpdatedPlasticDeformationGradientdPreviousMacroStress = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousMacroStress( );
                 auto map_dUpdatedPlasticDeformationGradientdPreviousMacroStress = dUpdatedPlasticDeformationGradientdPreviousMacroStress.zeroMap< floatType, sot_dim, sot_dim >( );
-//                auto map_dUpdatedPlasticDeformationGradientdPreviousMacroStress = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dUpdatedPlasticDeformationGradientdPreviousMacroStress.value->data( ) );
 
                 auto dUpdatedPlasticDeformationGradientdPreviousMicroStress = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousMicroStress( );
                 auto map_dUpdatedPlasticDeformationGradientdPreviousMicroStress = dUpdatedPlasticDeformationGradientdPreviousMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
-//                auto map_dUpdatedPlasticDeformationGradientdPreviousMicroStress = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dUpdatedPlasticDeformationGradientdPreviousMicroStress.value->data( ) );
 
                 auto dUpdatedPlasticDeformationGradientdPreviousF = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousF( );
                 auto map_dUpdatedPlasticDeformationGradientdPreviousF = dUpdatedPlasticDeformationGradientdPreviousF.zeroMap< floatType, sot_dim, sot_dim >( );
-//                auto map_dUpdatedPlasticDeformationGradientdPreviousF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dUpdatedPlasticDeformationGradientdPreviousF.value->data( ) );
 
                 auto dUpdatedPlasticFdPreviousFn = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousFn( );
                 auto map_dUpdatedPlasticFdPreviousFn = dUpdatedPlasticFdPreviousFn.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
-//                auto map_dUpdatedPlasticFdPreviousFn = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dUpdatedPlasticFdPreviousFn.value->data( ), sot_dim * ( num_configs - 1 ) );
 
                 auto dUpdatedPlasticDeformationGradientdPreviousStateVariables = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousStateVariables( );
                 auto map_dUpdatedPlasticDeformationGradientdPreviousStateVariables = dUpdatedPlasticDeformationGradientdPreviousStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
-//                auto map_dUpdatedPlasticDeformationGradientdPreviousStateVariables = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dUpdatedPlasticDeformationGradientdPreviousStateVariables.value->data( ), num_isvs );
 
                 auto dUpdatedPlasticMicroDeformationdPreviousMicroStress = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousMicroStress( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousMicroStress = dUpdatedPlasticMicroDeformationdPreviousMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
-//                auto map_dUpdatedPlasticMicroDeformationdPreviousMicroStress = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dUpdatedPlasticMicroDeformationdPreviousMicroStress.value->data( ) );
 
                 auto dUpdatedPlasticMicroDeformationdPreviousF = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousF( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousF = dUpdatedPlasticMicroDeformationdPreviousF.zeroMap< floatType, sot_dim, sot_dim >( );
-//                auto map_dUpdatedPlasticMicroDeformationdPreviousF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dUpdatedPlasticMicroDeformationdPreviousF.value->data( ) );
 
                 auto dUpdatedPlasticMicroDeformationdPreviousFn = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousFn( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousFn = dUpdatedPlasticMicroDeformationdPreviousFn.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
-//                auto map_dUpdatedPlasticMicroDeformationdPreviousFn = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dUpdatedPlasticMicroDeformationdPreviousFn.value->data( ), sot_dim * ( num_configs - 1 ) );
 
                 auto dUpdatedPlasticMicroDeformationdPreviousChi = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousChi( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousChi = dUpdatedPlasticMicroDeformationdPreviousChi.zeroMap< floatType, sot_dim >( sot_dim );
-//                auto map_dUpdatedPlasticMicroDeformationdPreviousChi = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dUpdatedPlasticMicroDeformationdPreviousChi.value->data( ) );
 
                 auto dUpdatedPlasticMicroDeformationdPreviousChin = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousChin( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousChin = dUpdatedPlasticMicroDeformationdPreviousChin.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
-//                auto map_dUpdatedPlasticMicroDeformationdPreviousChin = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dUpdatedPlasticMicroDeformationdPreviousChin.value->data( ), sot_dim * ( num_configs - 1 ) );
 
                 auto dUpdatedPlasticMicroDeformationdPreviousStateVariables = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousStateVariables( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousStateVariables = dUpdatedPlasticMicroDeformationdPreviousStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
-//                auto map_dUpdatedPlasticMicroDeformationdPreviousStateVariables = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dUpdatedPlasticMicroDeformationdPreviousStateVariables.value->data( ), num_isvs );
 
                 auto dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress = dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress.zeroMap< floatType, tot_dim, sot_dim >( );
@@ -7553,6 +7543,9 @@ namespace tardigradeHydra{
 
                 auto dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress = dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress.zeroMap< floatType, tot_dim, tot_dim >( );
+
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousF = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousF( );
+                auto map_dUpdatedPlasticGradientMicroDeformationdPreviousF = dUpdatedPlasticGradientMicroDeformationdPreviousF.zeroMap< floatType, tot_dim, sot_dim >( );
 
                 map_dUpdatedPlasticDeformationGradientdPreviousMacroStress = ( map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdMacroStress ).eval( );
 
@@ -7607,19 +7600,10 @@ namespace tardigradeHydra{
                 map_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress += ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdMicroStress ).eval( );
 
                 map_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress = ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress ).eval( );
-//                set_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( tardigradeVectorTools::matrixMultiply( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
-//                                                                                                                              *get_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress( ),
-//                                                                                                                              tot_dim, tot_dim, tot_dim, tot_dim ) );
 
-                set_dUpdatedPlasticGradientMicroDeformationdPreviousF(   tardigradeVectorTools::matrixMultiply( dPlasticGradientMicroDeformationdPreviousPlasticMacroL,
-                                                                                                                *get_previousdPlasticMacroVelocityGradientdF( ),
-                                                                                                                 tot_dim, sot_dim, sot_dim, sot_dim )
-                                                                       + tardigradeVectorTools::matrixMultiply( dPlasticGradientMicroDeformationdPreviousPlasticMicroL,
-                                                                                                                *get_previousdPlasticMicroVelocityGradientdF( ),
-                                                                                                                tot_dim, sot_dim, sot_dim, sot_dim )
-                                                                       + tardigradeVectorTools::matrixMultiply( dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
-                                                                                                                *get_previousdPlasticGradientMicroVelocityGradientdF( ),
-                                                                                                                tot_dim, tot_dim, tot_dim, sot_dim ) );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousF  = ( map_dPlasticGradientMicroDeformationdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdF );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousF += ( map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdF );
+                map_dUpdatedPlasticGradientMicroDeformationdPreviousF += ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdF );
 
                 set_dUpdatedPlasticGradientMicroDeformationdPreviousFn(   tardigradeVectorTools::matrixMultiply( dPlasticGradientMicroDeformationdPreviousPlasticMacroL,
                                                                                                                  *get_previousdPlasticMacroVelocityGradientdFn( ),
