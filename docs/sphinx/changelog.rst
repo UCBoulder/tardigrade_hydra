@@ -30,10 +30,7 @@ Internal Changes
 Bug Fixes
 =========
 - Corrected issue where the wrong Jacobian was being used in checkDescentDirection (:pull:`156`). By `Nathan Miller`_.
-
-Bug Fixes
-=========
-- Changed the residual of the micromorphic state variables to hopefully prevent negative plastic multipliers (:pull:`154`). By `Nathan Miller`_.
+- Changed the residual of the micromorphic state variables to hopefully prevent negative plastic multipliers (:pull:`157`). By `Nathan Miller`_.
 
 ******************
 0.4.4 (07-12-2024)
