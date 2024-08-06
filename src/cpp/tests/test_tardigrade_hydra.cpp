@@ -5431,7 +5431,7 @@ BOOST_AUTO_TEST_CASE( test_checkDescentDirection, * boost::unit_test::tolerance(
 
                 set_residualNorm( residualNorm );
 
-                set_dResidualNormdX( dResidualNormdX );
+                set_basedResidualNormdX( dResidualNormdX );
 
             }
 
