@@ -4985,9 +4985,11 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to get the jacobians of the current (false) or previous (true) yield functions
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            constexpr unsigned int sot_dim = dim * dim;
+
+            constexpr unsigned int tot_dim = sot_dim * dim;
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -5043,6 +5045,12 @@ namespace tardigradeHydra{
 
             const floatVector *microGradientYieldParameters = get_microGradientYieldParameters( );
 
+            setDataStorageBase< floatType > macroYield;
+
+            setDataStorageBase< floatType > microYield;
+
+            setDataStorageBase< dimVector > microGradientYield;
+
             if ( isPrevious ){
 
                 precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
@@ -5090,6 +5098,12 @@ namespace tardigradeHydra{
                 microCohesion              = get_previousMicroCohesion( );
 
                 microGradientCohesion      = get_previousMicroGradientCohesion( );
+
+                macroYield                 = get_setDataStorage_previousMacroYield( );
+
+                microYield                 = get_setDataStorage_previousMicroYield( );
+
+                microGradientYield         = get_setDataStorage_previousMicroGradientYield( );
 
             }
             else{
@@ -5140,13 +5154,13 @@ namespace tardigradeHydra{
 
                 microGradientCohesion      = get_microGradientCohesion( );
 
+                macroYield                 = get_setDataStorage_macroYield( );
+
+                microYield                 = get_setDataStorage_microYield( );
+
+                microGradientYield         = get_setDataStorage_microGradientYield( );
+
             }
-
-            floatType   macroYield;
-
-            floatType   microYield;
-
-            dimVector microGradientYield;
 
             secondOrderTensor dMacroYielddDrivingStress;
 
@@ -5168,15 +5182,15 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *macroDrivingStress, *macroCohesion, *precedingDeformationGradient,
                                                                                         ( *macroYieldParameters )[ 0 ], ( *macroYieldParameters )[ 1 ],
-                                                                                        macroYield, dMacroYielddDrivingStress, dMacroYielddCohesion, dMacroYielddPrecedingF ) );
+                                                                                        *macroYield.value, dMacroYielddDrivingStress, dMacroYielddCohesion, dMacroYielddPrecedingF ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *microDrivingStress, *microCohesion, *precedingDeformationGradient,
                                                                                         ( *microYieldParameters )[ 0 ], ( *microYieldParameters )[ 1 ],
-                                                                                        microYield, dMicroYielddDrivingStress, dMicroYielddCohesion, dMicroYielddPrecedingF ) );
+                                                                                        *microYield.value, dMicroYielddDrivingStress, dMicroYielddCohesion, dMicroYielddPrecedingF ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
                                                                                         ( *microGradientYieldParameters )[ 0 ], ( *microGradientYieldParameters )[ 1 ],
-                                                                                        microGradientYield, dMicroGradientYielddDrivingStress, dMicroGradientYielddCohesion,
+                                                                                        *microGradientYield.value, dMicroGradientYielddDrivingStress, dMicroGradientYielddCohesion,
                                                                                         dMicroGradientYielddPrecedingF ) );
 
             secondOrderTensor dMacroYielddStress = tardigradeVectorTools::matrixMultiply( dMacroYielddDrivingStress, *dMacroDrivingStressdStress, 1, sot_dim, sot_dim, sot_dim );
@@ -5204,7 +5218,7 @@ namespace tardigradeHydra{
             floatVector dMicroGradientYielddStateVariables = tardigradeVectorTools::matrixMultiply( dMicroGradientYielddCohesion, *dMicroGradientCohesiondStateVariables, 3, 3, 3, dMicroGradientCohesiondStateVariables->size( ) / 3 );
 
             thirdOrderTensor dMicroGradientYielddF = tardigradeVectorTools::matrixMultiply( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdF, 3, tot_dim, tot_dim, sot_dim )
-                                              + tardigradeVectorTools::matrixMultiply( dMicroGradientYielddPrecedingF, *dPrecedingFdF, 3, sot_dim, sot_dim, sot_dim );
+                                                   + tardigradeVectorTools::matrixMultiply( dMicroGradientYielddPrecedingF, *dPrecedingFdF, 3, sot_dim, sot_dim, sot_dim );
 
             floatVector dMicroGradientYielddFn = tardigradeVectorTools::matrixMultiply( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdFn, 3, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )
                                                + tardigradeVectorTools::matrixMultiply( dMicroGradientYielddPrecedingF, *dPrecedingFdFn, 3, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
@@ -5214,12 +5228,6 @@ namespace tardigradeHydra{
             floatVector dMicroGradientYielddChin = tardigradeVectorTools::matrixMultiply( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdChin, 3, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim );
 
             if ( isPrevious ){
-
-                set_previousMacroYield( macroYield );
-
-                set_previousMicroYield( microYield );
-
-                set_previousMicroGradientYield( microGradientYield );
 
                 set_previousdMacroYielddStress( dMacroYielddStress );
 
@@ -5251,12 +5259,6 @@ namespace tardigradeHydra{
 
             }
             else{
-
-                set_macroYield( macroYield );
-
-                set_microYield( microYield );
-
-                set_microGradientYield( microGradientYield );
 
                 set_dMacroYielddStress( dMacroYielddStress );
 
@@ -5381,6 +5383,10 @@ namespace tardigradeHydra{
 
             const floatVector *dF1dFn;
 
+            setDataStorageBase< fourthOrderTensor > dPrecedingFdF;
+
+            setDataStorageBase< floatVector > dPrecedingFdFn;
+
             if ( isPrevious ){
 
                 set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
@@ -5390,6 +5396,10 @@ namespace tardigradeHydra{
                 dF1dF  = hydra->get_previousdF1dF( );
 
                 dF1dFn = hydra->get_previousdF1dFn( );
+
+                dPrecedingFdF  = get_setDataStorage_previousdPrecedingDeformationGradientdF( );
+
+                dPrecedingFdFn = get_setDataStorage_previousdPrecedingDeformationGradientdFn( );
 
             }
             else{
@@ -5402,13 +5412,17 @@ namespace tardigradeHydra{
 
                 dF1dFn = hydra->get_dF1dFn( );
 
+                dPrecedingFdF  = get_setDataStorage_dPrecedingDeformationGradientdF( );
+
+                dPrecedingFdFn = get_setDataStorage_dPrecedingDeformationGradientdFn( );
+
             }
 
             // Construct the derivatives of the preceding F
 
-            fourthOrderTensor dPrecedingFdF( sot_dim * sot_dim, 0 );
+            dPrecedingFdF.zero( sot_dim * sot_dim );
 
-            floatVector dPrecedingFdFn( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
+            dPrecedingFdFn.zero( sot_dim * ( num_configs - 1 ) * sot_dim );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
@@ -5416,7 +5430,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                        dPrecedingFdF[ sot_dim * i + j ] += dPrecedingFdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dF )[ sot_dim * k + j ];
+                        ( *dPrecedingFdF.value )[ sot_dim * i + j ] += dPrecedingFdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dF )[ sot_dim * k + j ];
 
                     }
 
@@ -5424,30 +5438,15 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){ //TODO: See if this can be sped up by accessing the cache better
 
-                    dPrecedingFdFn[ ( num_configs - 1 ) * sot_dim * i + j ] = dPrecedingFdSubFs[ num_configs * sot_dim * i + sot_dim + j ];
+                    ( *dPrecedingFdFn.value )[ ( num_configs - 1 ) * sot_dim * i + j ] = dPrecedingFdSubFs[ num_configs * sot_dim * i + sot_dim + j ];
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dPrecedingFdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dPrecedingFdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dFn )[ ( num_configs - 1 ) * sot_dim * k + j ];
+                        ( *dPrecedingFdFn.value )[ ( num_configs - 1 ) * sot_dim * i + j ] += dPrecedingFdSubFs[ num_configs * sot_dim * i + k ] * ( *dF1dFn )[ ( num_configs - 1 ) * sot_dim * k + j ];
 
                     }
 
                 }
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousdPrecedingDeformationGradientdF( dPrecedingFdF );
-
-                set_previousdPrecedingDeformationGradientdFn( dPrecedingFdFn );
-
-            }
-            else{
-
-                set_dPrecedingDeformationGradientdF( dPrecedingFdF );
-
-                set_dPrecedingDeformationGradientdFn( dPrecedingFdFn );
 
             }
 
@@ -5544,6 +5543,10 @@ namespace tardigradeHydra{
 
             const floatVector *dChi1dChin;
 
+            setDataStorageBase< fourthOrderTensor > dPrecedingChidChi;
+
+            setDataStorageBase< floatVector >       dPrecedingChidChin;
+
             if ( isPrevious ){
 
                 set_previousPrecedingMicroDeformation( hydra->getPreviousPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
@@ -5553,6 +5556,10 @@ namespace tardigradeHydra{
                 dChi1dChi  = hydra->get_previousdChi1dChi( );
 
                 dChi1dChin = hydra->get_previousdChi1dChin( );
+
+                dPrecedingChidChi  = get_setDataStorage_previousdPrecedingMicroDeformationdChi( );
+
+                dPrecedingChidChin = get_setDataStorage_previousdPrecedingMicroDeformationdChin( );
 
             }
             else{
@@ -5565,13 +5572,16 @@ namespace tardigradeHydra{
 
                 dChi1dChin = hydra->get_dChi1dChin( );
 
+                dPrecedingChidChi  = get_setDataStorage_dPrecedingMicroDeformationdChi( );
+
+                dPrecedingChidChin = get_setDataStorage_dPrecedingMicroDeformationdChin( );
+
             }
 
             // Construct the derivatives of the preceding F
 
-            fourthOrderTensor dPrecedingChidChi( sot_dim * sot_dim, 0 );
-
-            floatVector dPrecedingChidChin( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
+            dPrecedingChidChi.zero( sot_dim * sot_dim );
+            dPrecedingChidChin.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
@@ -5579,7 +5589,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                        dPrecedingChidChi[ sot_dim * i + j ] += dPrecedingChidSubChis[ num_configs * sot_dim * i + k ] * ( *dChi1dChi )[ sot_dim * k + j ];
+                        ( *dPrecedingChidChi.value )[ sot_dim * i + j ] += dPrecedingChidSubChis[ num_configs * sot_dim * i + k ] * ( *dChi1dChi )[ sot_dim * k + j ];
 
                     }
 
@@ -5587,30 +5597,15 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){ //TODO: See if this can be sped up by accessing the cache better
 
-                    dPrecedingChidChin[ ( num_configs - 1 ) * sot_dim * i + j ] = dPrecedingChidSubChis[ num_configs * sot_dim * i + sot_dim + j ];
+                    ( *dPrecedingChidChin.value )[ ( num_configs - 1 ) * sot_dim * i + j ] = dPrecedingChidSubChis[ num_configs * sot_dim * i + sot_dim + j ];
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dPrecedingChidChin[ ( num_configs - 1 ) * sot_dim * i + j ] += dPrecedingChidSubChis[ num_configs * sot_dim * i + k ] * ( *dChi1dChin )[ ( num_configs - 1 ) * sot_dim * k + j ];
+                        ( *dPrecedingChidChin.value )[ ( num_configs - 1 ) * sot_dim * i + j ] += dPrecedingChidSubChis[ num_configs * sot_dim * i + k ] * ( *dChi1dChin )[ ( num_configs - 1 ) * sot_dim * k + j ];
 
                     }
 
                 }
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousdPrecedingMicroDeformationdChi( dPrecedingChidChi );
-
-                set_previousdPrecedingMicroDeformationdChin( dPrecedingChidChin );
-
-            }
-            else{
-
-                set_dPrecedingMicroDeformationdChi( dPrecedingChidChi );
-
-                set_dPrecedingMicroDeformationdChin( dPrecedingChidChin );
 
             }
 
@@ -5853,11 +5848,11 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for if the previous (true) or current (false) velocity gradient should be calculated
              */
 
-            const unsigned int dim = hydra->getDimension( );
+            constexpr unsigned int dim = 3;
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            constexpr unsigned int tot_dim = sot_dim * dim;
 
             const secondOrderTensor *precedingDeformationGradient;
 
@@ -5936,8 +5931,13 @@ namespace tardigradeHydra{
             mat = mat.inverse( ).eval( );
 
             // Form the precedingPsi and its inverse
-            secondOrderTensor precedingPsi;
+            secondOrderTensor precedingPsi( sot_dim, 0 );
 
+//            auto map_precedingDeformationGradient = getFixedSizeMatrixMap< floatType, dim, dim >( precedingDeformationGradient->data( ) );
+//            auto map_precedingMicroDeformation    = getFixedSizeMatrixMap< floatType, dim, dim >( precedingMicroDeformation->data( ) );
+//            auto map_precedingPsi                 = getFixedSizeMatrixMap< floatType, dim, dim >( precedingPsi.data( ) );
+//
+//            map_precedingPsi = ( map_precedingDeformationGradient.transpose( ) * map_precedingMicroDeformation ).eval( );
             TARDIGRADE_ERROR_TOOLS_CATCH( precedingPsi = tardigradeVectorTools::matrixMultiply( *precedingDeformationGradient, *precedingMicroDeformation, dim, dim, dim, dim, true, false ) );
 
             secondOrderTensor inversePrecedingPsi = precedingPsi;
