@@ -2369,15 +2369,19 @@ namespace tardigradeHydra{
                                            alphaMicroGradient );
             )
 
-            dPlasticMicroGradientdPlasticMicroL += tardigradeVectorTools::matrixMultiply( dPlasticMicroGradientdPlasticMicroDeformation,
-                                                                                          dPlasticMicroDeformationdPlasticMicroL, tot_dim, sot_dim, sot_dim, sot_dim );
+            auto map_dPlasticMicroGradientdPlasticMicroDeformation            = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroDeformation.data( ) );
+            auto map_dPlasticMicroDeformationdPlasticMicroL                   = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPlasticMicroL.data( ) );
+            auto map_dPlasticMicroGradientdPlasticMicroL                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroL.data( ) );
+            auto map_dPlasticMicroDeformationdPreviousPlasticMicroDeformation = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPreviousPlasticMicroDeformation.data( ) );
+            auto map_dPlasticMicroGradientdPreviousPlasticMicroDeformation    = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPreviousPlasticMicroDeformation.data( ) );
+            auto map_dPlasticMicroDeformationdPreviousPlasticMicroL           = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPreviousPlasticMicroL.data( ) );
+            auto map_dPlasticMicroGradientdPreviousPlasticMicroL              = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPreviousPlasticMicroL.data( ) );
 
-            dPlasticMicroGradientdPreviousPlasticMicroDeformation += tardigradeVectorTools::matrixMultiply( dPlasticMicroGradientdPlasticMicroDeformation,
-                                                                                                            dPlasticMicroDeformationdPreviousPlasticMicroDeformation, tot_dim, sot_dim, sot_dim, sot_dim );
+            map_dPlasticMicroGradientdPlasticMicroL += ( map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPlasticMicroL ).eval( );
 
-            dPlasticMicroGradientdPreviousPlasticMicroL += tardigradeVectorTools::matrixMultiply( dPlasticMicroGradientdPlasticMicroDeformation,
-                                                                                                  dPlasticMicroDeformationdPreviousPlasticMicroL, tot_dim, sot_dim, sot_dim, sot_dim );
+            map_dPlasticMicroGradientdPreviousPlasticMicroDeformation += ( map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPreviousPlasticMicroDeformation ).eval( );
 
+            map_dPlasticMicroGradientdPreviousPlasticMicroL += ( map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPreviousPlasticMicroL ).eval( );
 
         }
 
@@ -2455,6 +2459,12 @@ namespace tardigradeHydra{
 
             secondOrderTensor chip;
 
+            setDataStorageBase< secondOrderTensor > macroDrivingStress;
+
+            setDataStorageBase< secondOrderTensor > symmetricMicroDrivingStress;
+
+            setDataStorageBase< thirdOrderTensor > higherOrderDrivingStress;
+
             if ( isPrevious ){
 
                 stress = hydra->getPreviousStress( );
@@ -2462,6 +2472,12 @@ namespace tardigradeHydra{
                 Fp     = hydra->getPreviousFollowingConfiguration(      ( *getPlasticConfigurationIndex( ) ) - 1 );
 
                 chip   = hydra->getPreviousFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) - 1 );
+
+                macroDrivingStress          = get_setDataStorage_previousMacroDrivingStress( );
+
+                symmetricMicroDrivingStress = get_setDataStorage_previousSymmetricMicroDrivingStress( );
+
+                higherOrderDrivingStress    = get_setDataStorage_previousHigherOrderDrivingStress( );
 
             }
             else{
@@ -2472,6 +2488,12 @@ namespace tardigradeHydra{
 
                 chip   = hydra->getFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) - 1 );
 
+                macroDrivingStress          = get_setDataStorage_macroDrivingStress( );
+
+                symmetricMicroDrivingStress = get_setDataStorage_symmetricMicroDrivingStress( );
+
+                higherOrderDrivingStress    = get_setDataStorage_higherOrderDrivingStress( );
+
             }
 
             // Extract the stresses from the stress vector
@@ -2479,39 +2501,14 @@ namespace tardigradeHydra{
 
             secondOrderTensor referenceSymmetricMicroStress( stress->begin( ) + 1 * sot_dim, stress->begin( ) + 2 * sot_dim );
 
-            thirdOrderTensor referenceHigherOrderStress(    stress->begin( ) + 2 * sot_dim, stress->begin( ) + 2 * sot_dim + tot_dim );
+            thirdOrderTensor referenceHigherOrderStress(     stress->begin( ) + 2 * sot_dim, stress->begin( ) + 2 * sot_dim + tot_dim );
 
             // Push the stresses forward to the current configuration of the plastic configuration
-            secondOrderTensor macroDrivingStress;
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, Fp, *macroDrivingStress.value ) );
 
-            secondOrderTensor symmetricMicroDrivingStress;
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, Fp, *symmetricMicroDrivingStress.value ) );
 
-            thirdOrderTensor higherOrderDrivingStress;
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, Fp, macroDrivingStress ) );
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, Fp, symmetricMicroDrivingStress ) );
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, higherOrderDrivingStress ) );
-
-            if ( isPrevious ){
-
-                set_previousMacroDrivingStress(          macroDrivingStress );
-
-                set_previousSymmetricMicroDrivingStress( symmetricMicroDrivingStress );
-
-                set_previousHigherOrderDrivingStress(    higherOrderDrivingStress );
-
-            }
-            else{
-
-                set_macroDrivingStress(          macroDrivingStress );
-
-                set_symmetricMicroDrivingStress( symmetricMicroDrivingStress );
-
-                set_higherOrderDrivingStress(    higherOrderDrivingStress );
-
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, *higherOrderDrivingStress.value ) );
 
         }
 
@@ -2723,9 +2720,11 @@ namespace tardigradeHydra{
              * We also assume that the stress from hydra is in the reference configuration
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            constexpr unsigned int sot_dim = dim * dim;
+
+            constexpr unsigned int tot_dim = sot_dim * dim;
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -2747,6 +2746,34 @@ namespace tardigradeHydra{
 
             secondOrderTensor chip;
 
+            setDataStorageBase< secondOrderTensor > macroDrivingStress;
+
+            setDataStorageBase< secondOrderTensor > symmetricMicroDrivingStress;
+
+            setDataStorageBase< thirdOrderTensor > higherOrderDrivingStress;
+
+            setDataStorageBase< fourthOrderTensor > dMacrodPK2;
+
+            setDataStorageBase< fourthOrderTensor > dMicrodSigma;
+
+            setDataStorageBase< sixthOrderTensor > dHigherdM;
+
+            setDataStorageBase< fourthOrderTensor > dMacroDrivingStressdF;
+
+            setDataStorageBase< fourthOrderTensor > dMicroDrivingStressdF;
+
+            setDataStorageBase< fifthOrderTensor > dHigherDrivingStressdF;
+
+            setDataStorageBase< fifthOrderTensor > dHigherDrivingStressdChi;
+
+            setDataStorageBase< floatVector > dMacroDrivingStressdFn;
+
+            setDataStorageBase< floatVector > dMicroDrivingStressdFn;
+
+            setDataStorageBase< floatVector > dHigherDrivingStressdFn;
+
+            setDataStorageBase< floatVector > dHigherDrivingStressdChin;
+
             if ( isPrevious ){
 
                 stress = hydra->getPreviousStress( );
@@ -2766,6 +2793,34 @@ namespace tardigradeHydra{
                 Fp            = hydra->getPreviousFollowingConfiguration(         ( *getPlasticConfigurationIndex( ) ) - 1 );
 
                 chip          = hydra->getPreviousFollowingMicroConfiguration(    ( *getPlasticConfigurationIndex( ) ) - 1 );
+
+                macroDrivingStress          = get_setDataStorage_previousMacroDrivingStress( );
+
+                symmetricMicroDrivingStress = get_setDataStorage_previousSymmetricMicroDrivingStress( );
+
+                higherOrderDrivingStress    = get_setDataStorage_previousHigherOrderDrivingStress( );
+
+                dMacrodPK2                  = get_setDataStorage_previousdMacroDrivingStressdMacroStress( );
+
+                dMicrodSigma                = get_setDataStorage_previousdSymmetricMicroDrivingStressdMicroStress( );
+
+                dHigherdM                   = get_setDataStorage_previousdHigherOrderDrivingStressdHigherOrderStress( );
+
+                dMacroDrivingStressdF       = get_setDataStorage_previousdMacroDrivingStressdF( );
+
+                dMicroDrivingStressdF       = get_setDataStorage_previousdSymmetricMicroDrivingStressdF( );
+
+                dHigherDrivingStressdF      = get_setDataStorage_previousdHigherOrderDrivingStressdF( );
+
+                dHigherDrivingStressdChi    = get_setDataStorage_previousdHigherOrderDrivingStressdChi( );
+
+                dMacroDrivingStressdFn      = get_setDataStorage_previousdMacroDrivingStressdFn( );
+
+                dMicroDrivingStressdFn      = get_setDataStorage_previousdSymmetricMicroDrivingStressdFn( );
+
+                dHigherDrivingStressdFn     = get_setDataStorage_previousdHigherOrderDrivingStressdFn( );
+
+                dHigherDrivingStressdChin   = get_setDataStorage_previousdHigherOrderDrivingStressdChin( );
 
             }
             else{
@@ -2787,6 +2842,34 @@ namespace tardigradeHydra{
                 Fp            = hydra->getFollowingConfiguration(         ( *getPlasticConfigurationIndex( ) ) - 1 );
 
                 chip          = hydra->getFollowingMicroConfiguration(    ( *getPlasticConfigurationIndex( ) ) - 1 );
+
+                macroDrivingStress          = get_setDataStorage_macroDrivingStress( );
+
+                symmetricMicroDrivingStress = get_setDataStorage_symmetricMicroDrivingStress( );
+
+                higherOrderDrivingStress    = get_setDataStorage_higherOrderDrivingStress( );
+
+                dMacrodPK2                  = get_setDataStorage_dMacroDrivingStressdMacroStress( );
+
+                dMicrodSigma                = get_setDataStorage_dSymmetricMicroDrivingStressdMicroStress( );
+
+                dHigherdM                   = get_setDataStorage_dHigherOrderDrivingStressdHigherOrderStress( );
+
+                dMacroDrivingStressdF       = get_setDataStorage_dMacroDrivingStressdF( );
+
+                dMicroDrivingStressdF       = get_setDataStorage_dSymmetricMicroDrivingStressdF( );
+
+                dHigherDrivingStressdF      = get_setDataStorage_dHigherOrderDrivingStressdF( );
+
+                dHigherDrivingStressdChi    = get_setDataStorage_dHigherOrderDrivingStressdChi( );
+
+                dMacroDrivingStressdFn      = get_setDataStorage_dMacroDrivingStressdFn( );
+
+                dMicroDrivingStressdFn      = get_setDataStorage_dSymmetricMicroDrivingStressdFn( );
+
+                dHigherDrivingStressdFn     = get_setDataStorage_dHigherOrderDrivingStressdFn( );
+
+                dHigherDrivingStressdChin   = get_setDataStorage_dHigherOrderDrivingStressdChin( );
 
             }
 
@@ -2839,97 +2922,58 @@ namespace tardigradeHydra{
             thirdOrderTensor  referenceHigherOrderStress(    stress->begin( ) + 2 * sot_dim, stress->begin( ) + 2 * sot_dim + tot_dim );
 
             // Push the stresses forward to the current configuration of the plastic configuration
-            secondOrderTensor macroDrivingStress;
-
-            secondOrderTensor symmetricMicroDrivingStress;
-
-            thirdOrderTensor higherOrderDrivingStress;
-
             fourthOrderTensor dMacrodFp;
 
-            fourthOrderTensor dMacrodPK2;
-
             fourthOrderTensor dMicrodFp;
-
-            fourthOrderTensor dMicrodSigma;
 
             fifthOrderTensor  dHigherdFp;
 
             fifthOrderTensor  dHigherdChip;
 
-            sixthOrderTensor  dHigherdM;
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, Fp, *macroDrivingStress.value,
+                                                                                             *dMacrodPK2.value, dMacrodFp ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, Fp, macroDrivingStress,
-                                                                                             dMacrodPK2, dMacrodFp ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, Fp, *symmetricMicroDrivingStress.value,
+                                                                                                        *dMicrodSigma.value, dMicrodFp ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, Fp, symmetricMicroDrivingStress,
-                                                                                                        dMicrodSigma, dMicrodFp ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, *higherOrderDrivingStress.value,
+                                                                                                     *dHigherdM.value, dHigherdFp, dHigherdChip ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, higherOrderDrivingStress,
-                                                                                                                  dHigherdM, dHigherdFp, dHigherdChip ) );
+            auto map_dMacrodFp    = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMacrodFp.data( )    );
+            auto map_dMicrodFp    = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicrodFp.data( )    );
+            auto map_dHigherdFp   = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dHigherdFp.data( )   );
+            auto map_dHigherdChip = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dHigherdChip.data( ) );
+            auto map_dFpdF        = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dFpdF.data( )        );
+            auto map_dChipdChi    = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dChipdChi.data( )    );
 
-            if ( isPrevious ){
+            auto map_dFpdFn       = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dFpdFn.data( )    ,    ( num_configs - 1 ) * sot_dim );
+            auto map_dChipdChin   = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dChipdChin.data( ),    ( num_configs - 1 ) * sot_dim );
 
-                set_previousMacroDrivingStress(          macroDrivingStress );
+            auto map_dMacroDrivingStressdF    = dMacroDrivingStressdF.zeroMap<    floatType, sot_dim, sot_dim >( );
+            auto map_dMicroDrivingStressdF    = dMicroDrivingStressdF.zeroMap<    floatType, sot_dim, sot_dim >( );
+            auto map_dHigherDrivingStressdF   = dHigherDrivingStressdF.zeroMap<   floatType, tot_dim, sot_dim >( );
+            auto map_dHigherDrivingStressdChi = dHigherDrivingStressdChi.zeroMap< floatType, tot_dim, sot_dim >( );
 
-                set_previousSymmetricMicroDrivingStress( symmetricMicroDrivingStress );
+            auto map_dMacroDrivingStressdFn    = dMacroDrivingStressdFn.zeroMap<    floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
+            auto map_dMicroDrivingStressdFn    = dMicroDrivingStressdFn.zeroMap<    floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
+            auto map_dHigherDrivingStressdFn   = dHigherDrivingStressdFn.zeroMap<   floatType, tot_dim >( ( num_configs - 1 ) * sot_dim );
+            auto map_dHigherDrivingStressdChin = dHigherDrivingStressdChin.zeroMap< floatType, tot_dim >( ( num_configs - 1 ) * sot_dim );
 
-                set_previousHigherOrderDrivingStress(    higherOrderDrivingStress );
+            map_dMacroDrivingStressdF     = ( map_dMacrodFp * map_dFpdF ).eval( );
 
-                set_previousdMacroDrivingStressdMacroStress( dMacrodPK2 );
+            map_dMicroDrivingStressdF     = ( map_dMicrodFp * map_dFpdF ).eval( );
 
-                set_previousdMacroDrivingStressdF( tardigradeVectorTools::matrixMultiply( dMacrodFp, dFpdF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+            map_dHigherDrivingStressdF    = ( map_dHigherdFp * map_dFpdF ).eval( );
 
-                set_previousdMacroDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dMacrodFp, dFpdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+            map_dHigherDrivingStressdChi  = ( map_dHigherdChip * map_dChipdChi ).eval( );
 
-                set_previousdSymmetricMicroDrivingStressdMicroStress( dMicrodSigma );
+            map_dMacroDrivingStressdFn    = ( map_dMacrodFp * map_dFpdFn ).eval( );
 
-                set_previousdSymmetricMicroDrivingStressdF( tardigradeVectorTools::matrixMultiply( dMicrodFp, dFpdF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+            map_dMicroDrivingStressdFn    = ( map_dMicrodFp * map_dFpdFn ).eval( );
 
-                set_previousdSymmetricMicroDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dMicrodFp, dFpdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
+            map_dHigherDrivingStressdFn   = ( map_dHigherdFp * map_dFpdFn ).eval( );
 
-                set_previousdHigherOrderDrivingStressdHigherOrderStress( dHigherdM );
-
-                set_previousdHigherOrderDrivingStressdF( tardigradeVectorTools::matrixMultiply( dHigherdFp, dFpdF, tot_dim, sot_dim, sot_dim, sot_dim ) );
-
-                set_previousdHigherOrderDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dHigherdFp, dFpdFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
-
-                set_previousdHigherOrderDrivingStressdChi( tardigradeVectorTools::matrixMultiply( dHigherdChip, dChipdChi, tot_dim, sot_dim, sot_dim, sot_dim ) );
-
-                set_previousdHigherOrderDrivingStressdChin( tardigradeVectorTools::matrixMultiply( dHigherdChip, dChipdChin, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
-
-            }
-            else{
-
-                set_macroDrivingStress(          macroDrivingStress );
-
-                set_symmetricMicroDrivingStress( symmetricMicroDrivingStress );
-
-                set_higherOrderDrivingStress(    higherOrderDrivingStress );
-
-                set_dMacroDrivingStressdMacroStress( dMacrodPK2 );
-
-                set_dMacroDrivingStressdF( tardigradeVectorTools::matrixMultiply( dMacrodFp, dFpdF, sot_dim, sot_dim, sot_dim, sot_dim ) );
-
-                set_dMacroDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dMacrodFp, dFpdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
-
-                set_dSymmetricMicroDrivingStressdMicroStress( dMicrodSigma );
-
-                set_dSymmetricMicroDrivingStressdF( tardigradeVectorTools::matrixMultiply( dMicrodFp, dFpdF, sot_dim, sot_dim, sot_dim, sot_dim ) );
-
-                set_dSymmetricMicroDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dMicrodFp, dFpdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
-
-                set_dHigherOrderDrivingStressdHigherOrderStress( dHigherdM );
-
-                set_dHigherOrderDrivingStressdF( tardigradeVectorTools::matrixMultiply( dHigherdFp, dFpdF, tot_dim, sot_dim, sot_dim, sot_dim ) );
-
-                set_dHigherOrderDrivingStressdFn( tardigradeVectorTools::matrixMultiply( dHigherdFp, dFpdFn, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
-
-                set_dHigherOrderDrivingStressdChi( tardigradeVectorTools::matrixMultiply( dHigherdChip, dChipdChi, tot_dim, sot_dim, sot_dim, sot_dim ) );
-
-                set_dHigherOrderDrivingStressdChin( tardigradeVectorTools::matrixMultiply( dHigherdChip, dChipdChin, tot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim ) );
-
-            }
+            map_dHigherDrivingStressdChin = ( map_dHigherdChip * map_dChipdChin ).eval( );
 
         }
 
@@ -3043,35 +3087,30 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic state variables
              */
 
-            floatVector plasticStateVariables( getStateVariableIndices( )->size( ), 0 );
-
             const floatVector *nonlinearISVs;
+
+            setDataStorageBase< floatVector > plasticStateVariables;
 
             if ( isPrevious ){
 
                 nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
+
+                plasticStateVariables = get_setDataStorage_previousPlasticStateVariables( );
 
             }
             else{
 
                 nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
 
+                plasticStateVariables = get_setDataStorage_plasticStateVariables( );
+
             }
+
+            plasticStateVariables.zero( getStateVariableIndices( )->size( ) );
 
             for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
 
-                plasticStateVariables[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ] = ( *nonlinearISVs )[ *ind ];
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousPlasticStateVariables( plasticStateVariables );
-
-            }
-            else{
-
-                set_plasticStateVariables( plasticStateVariables );
+                ( *plasticStateVariables.value )[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ] = ( *nonlinearISVs )[ *ind ];
 
             }
 
@@ -3102,35 +3141,30 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic multipliers
              */
 
-            floatVector plasticMultipliers( *getNumPlasticMultipliers( ), 0 );
-
             const floatVector *nonlinearISVs;
+
+            setDataStorageBase< floatVector > plasticMultipliers;
 
             if ( isPrevious ){
 
                 nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
+
+                plasticMultipliers = get_setDataStorage_previousPlasticMultipliers( );
 
             }
             else{
 
                 nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
 
+                plasticMultipliers = get_setDataStorage_plasticMultipliers( );
+
             }
+
+            plasticMultipliers.zero( *getNumPlasticMultipliers( ) );
 
             for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ); ind++ ){
 
-                plasticMultipliers[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ] = ( *nonlinearISVs )[ *ind ];
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousPlasticMultipliers( plasticMultipliers );
-
-            }
-            else{
-
-                set_plasticMultipliers( plasticMultipliers );
+                ( *plasticMultipliers.value )[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ] = ( *nonlinearISVs )[ *ind ];
 
             }
 
@@ -3161,35 +3195,30 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to set the current (false) or previous (true) values of the plastic multipliers
              */
 
-            floatVector plasticStrainLikeISVs( getStateVariableIndices( )->size( ) - *getNumPlasticMultipliers( ), 0 );
-
             const floatVector *nonlinearISVs;
+
+            setDataStorageBase< floatVector > plasticStrainLikeISVs;
 
             if ( isPrevious ){
 
                 nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
+
+                plasticStrainLikeISVs = get_setDataStorage_previousPlasticStrainLikeISVs( );
 
             }
             else{
 
                 nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
 
+                plasticStrainLikeISVs = get_setDataStorage_plasticStrainLikeISVs( );
+
             }
+
+            plasticStrainLikeISVs.zero( getStateVariableIndices( )->size( ) - *getNumPlasticMultipliers( ) );
 
             for ( auto ind = getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ); ind != getStateVariableIndices( )->end( ); ind++ ){
 
-                plasticStrainLikeISVs[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) - *getNumPlasticMultipliers( ) ] = ( *nonlinearISVs )[ *ind ];
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousPlasticStrainLikeISVs( plasticStrainLikeISVs );
-
-            }
-            else{
-
-                set_plasticStrainLikeISVs( plasticStrainLikeISVs );
+                ( *plasticStrainLikeISVs.value )[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) - *getNumPlasticMultipliers( ) ] = ( *nonlinearISVs )[ *ind ];
 
             }
 
