@@ -4993,6 +4993,8 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
+            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+
             const secondOrderTensor *macroDrivingStress;
 
             const secondOrderTensor *microDrivingStress;
@@ -5051,6 +5053,16 @@ namespace tardigradeHydra{
 
             setDataStorageBase< dimVector > microGradientYield;
 
+            setDataStorageBase< secondOrderTensor > dMacroYielddStress;
+
+            setDataStorageBase< floatVector > dMacroYielddStateVariables;
+
+            setDataStorageBase< secondOrderTensor > dMacroYielddF;
+
+            setDataStorageBase< floatVector > dMacroYielddFn;
+
+            setDataStorageBase< secondOrderTensor > dMicroYielddStress;
+
             if ( isPrevious ){
 
                 precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
@@ -5104,6 +5116,16 @@ namespace tardigradeHydra{
                 microYield                 = get_setDataStorage_previousMicroYield( );
 
                 microGradientYield         = get_setDataStorage_previousMicroGradientYield( );
+
+                dMacroYielddStress         = get_setDataStorage_previousdMacroYielddStress( );
+
+                dMacroYielddStateVariables = get_setDataStorage_previousdMacroYielddStateVariables( );
+
+                dMacroYielddF              = get_setDataStorage_previousdMacroYielddF( );
+
+                dMacroYielddFn             = get_setDataStorage_previousdMacroYielddFn( );
+
+                dMicroYielddStress         = get_setDataStorage_previousdMicroYielddStress( );
 
             }
             else{
@@ -5160,6 +5182,16 @@ namespace tardigradeHydra{
 
                 microGradientYield         = get_setDataStorage_microGradientYield( );
 
+                dMacroYielddStress         = get_setDataStorage_dMacroYielddStress( );
+
+                dMacroYielddStateVariables = get_setDataStorage_dMacroYielddStateVariables( );
+
+                dMacroYielddF              = get_setDataStorage_dMacroYielddF( );
+
+                dMacroYielddFn             = get_setDataStorage_dMacroYielddFn( );
+
+                dMicroYielddStress         = get_setDataStorage_dMicroYielddStress( );
+
             }
 
             secondOrderTensor dMacroYielddDrivingStress;
@@ -5193,17 +5225,49 @@ namespace tardigradeHydra{
                                                                                         *microGradientYield.value, dMicroGradientYielddDrivingStress, dMicroGradientYielddCohesion,
                                                                                         dMicroGradientYielddPrecedingF ) );
 
-            secondOrderTensor dMacroYielddStress = tardigradeVectorTools::matrixMultiply( dMacroYielddDrivingStress, *dMacroDrivingStressdStress, 1, sot_dim, sot_dim, sot_dim );
+            auto map_dMacroYielddDrivingStress         = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dMacroYielddDrivingStress.data( ) );
+            auto map_dMacroYielddPrecedingF            = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dMacroYielddPrecedingF.data( ) );
+            auto map_dMicroYielddDrivingStress         = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dMicroYielddDrivingStress.data( ) );
+            auto map_dMicroYielddPrecedingF            = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dMicroYielddPrecedingF.data( ) );
+            auto map_dMicroGradientYielddDrivingStress = getFixedSizeMatrixMap< floatType,       3, tot_dim >( dMicroGradientYielddDrivingStress.data( ) );
+            auto map_dMicroGradientYielddCohesion      = getFixedSizeMatrixMap< floatType,       3,       3 >( dMicroGradientYielddCohesion.data( ) );
+            auto map_dMicroGradientYielddPrecedingF    = getFixedSizeMatrixMap< floatType,       3, sot_dim >( dMicroGradientYielddPrecedingF.data( ) );
 
-            floatVector dMacroYielddStateVariables = dMacroYielddCohesion * ( *dMacroCohesiondStateVariables );
+            auto map_dPrecedingFdF                         = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPrecedingFdF->data( ) );
+            auto map_dMacroDrivingStressdStress            = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMacroDrivingStressdStress->data( ) );
+            auto map_dMicroDrivingStressdStress            = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicroDrivingStressdStress->data( ) );
+            auto map_dMicroGradientDrivingStressdStress    = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dMicroGradientDrivingStressdStress->data( ) );
+            auto map_dMacroDrivingStressdF                 = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMacroDrivingStressdF->data( ) );
+            auto map_dMicroDrivingStressdF                 = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicroDrivingStressdF->data( ) );
+            auto map_dMicroGradientDrivingStressdF         = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dMicroGradientDrivingStressdF->data( ) );
+            auto map_dMicroGradientDrivingStressdChi       = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dMicroGradientDrivingStressdChi->data( ) );
 
-            secondOrderTensor dMacroYielddF = tardigradeVectorTools::matrixMultiply( dMacroYielddDrivingStress, *dMacroDrivingStressdF, 1, sot_dim, sot_dim, sot_dim )
-                                            + tardigradeVectorTools::matrixMultiply( dMacroYielddPrecedingF,    *dPrecedingFdF,         1, sot_dim, sot_dim, sot_dim);
+            auto map_dPrecedingFdFn                        = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dPrecedingFdFn->data( ),                        ( num_configs - 1 ) * sot_dim );
+            auto map_dMacroCohesiondStateVariables         = getDynamicColumnSizeMatrixMap< floatType,       1 >( dMacroCohesiondStateVariables->data( ),         num_isvs                      );
+            auto map_dMicroCohesiondStateVariables         = getDynamicColumnSizeMatrixMap< floatType,       1 >( dMicroCohesiondStateVariables->data( ),         num_isvs                      );
+            auto map_dMicroGradientCohesiondStateVariables = getDynamicColumnSizeMatrixMap< floatType,       3 >( dMicroGradientCohesiondStateVariables->data( ), num_isvs                      );
+            auto map_dMacroDrivingStressdFn                = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dMacroDrivingStressdFn->data( ),                ( num_configs - 1 ) * sot_dim    );
+            auto map_dMicroDrivingStressdFn                = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dMicroDrivingStressdFn->data( ),                ( num_configs - 1 ) * sot_dim    );
+            auto map_dMicroGradientDrivingStressdFn        = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dMicroGradientDrivingStressdFn->data( ),        ( num_configs - 1 ) * sot_dim    );
+            auto map_dMicroGradientDrivingStressdChin      = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( dMicroGradientDrivingStressdChin->data( ),      ( num_configs - 1 ) * sot_dim    );
 
-            floatVector dMacroYielddFn = tardigradeVectorTools::matrixMultiply( dMacroYielddDrivingStress, *dMacroDrivingStressdFn, 1, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim )
-                                       + tardigradeVectorTools::matrixMultiply( dMacroYielddPrecedingF,    *dPrecedingFdFn,         1, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            auto map_dMacroYielddStress = dMacroYielddStress.zeroMap< floatType, 1, sot_dim >( );
+            auto map_dMacroYielddF      = dMacroYielddF.zeroMap< floatType, 1, sot_dim >( );
+            auto map_dMacroYielddFn     = dMacroYielddFn.zeroMap< floatType, 1 >( ( num_configs - 1 ) * sot_dim );
+            auto map_dMicroYielddStress = dMicroYielddStress.zeroMap< floatType, 1, sot_dim >( );
 
-            secondOrderTensor dMicroYielddStress = tardigradeVectorTools::matrixMultiply( dMicroYielddDrivingStress, *dMicroDrivingStressdStress, 1, sot_dim, sot_dim, sot_dim );
+            map_dMacroYielddStress = ( map_dMacroYielddDrivingStress * map_dMacroDrivingStressdStress ).eval( );
+
+            *dMacroYielddStateVariables.value = dMacroYielddCohesion * ( *dMacroCohesiondStateVariables );
+
+            map_dMacroYielddF  = ( map_dMacroYielddDrivingStress * map_dMacroDrivingStressdF ).eval( );
+            map_dMacroYielddF += ( map_dMacroYielddPrecedingF * map_dPrecedingFdF ).eval( );
+
+            map_dMacroYielddFn  = ( map_dMacroYielddDrivingStress * map_dMacroDrivingStressdFn ).eval( );
+            map_dMacroYielddFn += ( map_dMacroYielddPrecedingF * map_dPrecedingFdFn ).eval( );
+
+            map_dMicroYielddStress = ( map_dMicroYielddDrivingStress * map_dMicroDrivingStressdStress ).eval( );
+//            secondOrderTensor dMicroYielddStress = tardigradeVectorTools::matrixMultiply( dMicroYielddDrivingStress, *dMicroDrivingStressdStress, 1, sot_dim, sot_dim, sot_dim );
 
             floatVector dMicroYielddStateVariables = dMicroYielddCohesion * ( *dMicroCohesiondStateVariables );
 
@@ -5229,16 +5293,8 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousdMacroYielddStress( dMacroYielddStress );
-
-                set_previousdMacroYielddStateVariables( dMacroYielddStateVariables );
-
-                set_previousdMacroYielddF( dMacroYielddF );
-
-                set_previousdMacroYielddFn( dMacroYielddFn );
-
-                set_previousdMicroYielddStress( dMicroYielddStress );
-
+//                set_previousdMicroYielddStress( dMicroYielddStress );
+//
                 set_previousdMicroYielddStateVariables( dMicroYielddStateVariables );
 
                 set_previousdMicroYielddF( dMicroYielddF );
@@ -5260,16 +5316,8 @@ namespace tardigradeHydra{
             }
             else{
 
-                set_dMacroYielddStress( dMacroYielddStress );
-
-                set_dMacroYielddStateVariables( dMacroYielddStateVariables );
-
-                set_dMacroYielddF( dMacroYielddF );
-
-                set_dMacroYielddFn( dMacroYielddFn );
-
-                set_dMicroYielddStress( dMicroYielddStress );
-
+//                set_dMicroYielddStress( dMicroYielddStress );
+//
                 set_dMicroYielddStateVariables( dMicroYielddStateVariables );
 
                 set_dMicroYielddF( dMicroYielddF );
