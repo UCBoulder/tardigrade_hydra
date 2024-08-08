@@ -98,14 +98,14 @@ namespace tardigradeHydra{
 
             //Compute the right Cauchy-Green deformation tensor
             secondOrderTensor rightCauchyGreen;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen ) );
 
             //Compute the decomposition of the stress
             variableType pressure;
             secondOrderTensor deviatoricReferenceStress;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( stressMeasure,
-                                                                                                                                    rightCauchyGreen, deviatoricReferenceStress, pressure ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( stressMeasure,
+                                                                                                                       rightCauchyGreen, deviatoricReferenceStress, pressure ) );
 
             //Compute the l2norm of the deviatoric stress
             variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
@@ -161,7 +161,7 @@ namespace tardigradeHydra{
             secondOrderTensor rightCauchyGreen;
             fourthOrderTensor dRCGdPrecedingF;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
  
             //Compute the decomposition of the stress
             variableType pressure;
@@ -170,9 +170,9 @@ namespace tardigradeHydra{
             fourthOrderTensor dDevStressdStress, dDevStressdRCG;
             secondOrderTensor dPressuredStress, dPressuredRCG;
     
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
-                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
-                                                       dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
+                                          rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
+                                          dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
    
             fourthOrderTensor dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim );
             secondOrderTensor dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG, dRCGdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
@@ -250,7 +250,7 @@ namespace tardigradeHydra{
             secondOrderTensor rightCauchyGreen;
             fourthOrderTensor dRCGdPrecedingF;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
 
             //Compute the decomposition of the stress
             variableType pressure;
@@ -262,9 +262,9 @@ namespace tardigradeHydra{
             sixthOrderTensor d2DevStressdStressdRCG;
             fourthOrderTensor d2PressuredStressdRCG;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( stressMeasure,
-                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
-                                                       dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( stressMeasure,
+                                          rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
+                                          dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
 
             fourthOrderTensor dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim );
             secondOrderTensor dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG, dRCGdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
@@ -361,18 +361,18 @@ namespace tardigradeHydra{
 
             //Compute the right Cauchy-Green deformation tensor
             secondOrderTensor rightCauchyGreen;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen ) );
 
             //Compute the decomposition of the stress
             dimVector pressure;
             thirdOrderTensor deviatoricReferenceStress;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
-                                 rightCauchyGreen, deviatoricReferenceStress, pressure ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
+                                          rightCauchyGreen, deviatoricReferenceStress, pressure ) );
 
             //Compute the l2norm of the deviatoric stress
             dimVector normDevStress;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress ) );
 
             //Evaluate the yield equation
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
@@ -422,7 +422,7 @@ namespace tardigradeHydra{
             //Compute the right Cauchy-Green deformation tensor
             secondOrderTensor rightCauchyGreen;
             fourthOrderTensor dRCGdPrecedingF;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
 
             //Compute the decomposition of the stress
             dimVector pressure;
@@ -433,9 +433,9 @@ namespace tardigradeHydra{
             fourthOrderTensor dPressuredStress;
             thirdOrderTensor  dPressuredRCG;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
-                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
-                                                       dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
+                                          rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
+                                          dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
 
             fifthOrderTensor dDevStressdPrecedingF( tot_dim * sot_dim, 0. );
             thirdOrderTensor dPressuredPrecedingF( dim * sot_dim, 0 );
@@ -454,7 +454,7 @@ namespace tardigradeHydra{
             //Compute the l2norm of the deviatoric stress
             dimVector normDevStress;
             fourthOrderTensor dNormDevStressdDevStress;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress, dNormDevStressdDevStress ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress, dNormDevStressdDevStress ) );
 
             //Evaluate the yield equation
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
@@ -530,7 +530,7 @@ namespace tardigradeHydra{
             //Compute the right Cauchy-Green deformation tensor
             secondOrderTensor rightCauchyGreen;
             fourthOrderTensor dRCGdPrecedingF;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( precedingDeformationGradient, rightCauchyGreen, dRCGdPrecedingF ) );
 
             //Compute the decomposition of the stress
             dimVector pressure;
@@ -544,9 +544,9 @@ namespace tardigradeHydra{
             seventhOrderTensor d2DevStressdStressdRCG;
             fifthOrderTensor d2PressuredStressdRCG;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
-                                                       rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
-                                                       dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderReferenceStressDecomposition( stressMeasure,
+                                          rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
+                                          dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
 
             fifthOrderTensor dDevStressdPrecedingF( tot_dim * sot_dim, 0. );
             thirdOrderTensor dPressuredPrecedingF( dim * sot_dim, 0 );
@@ -579,9 +579,9 @@ namespace tardigradeHydra{
             thirdOrderTensor normDevStress;
             fourthOrderTensor dNormDevStressdDevStress;
             seventhOrderTensor d2NormDevStressdDevStress2;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress,
-                                                                                                                  dNormDevStressdDevStress,
-                                                                                                                  d2NormDevStressdDevStress2 ) )
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeHigherOrderStressNorm( deviatoricReferenceStress, normDevStress,
+                                                                                                     dNormDevStressdDevStress,
+                                                                                                     d2NormDevStressdDevStress2 ) )
 
             //Evaluate the yield equation
             yieldValue = normDevStress - ( AAngle * cohesion - BAngle * pressure );
@@ -2488,11 +2488,11 @@ namespace tardigradeHydra{
 
             thirdOrderTensor higherOrderDrivingStress;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, Fp, macroDrivingStress ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, Fp, macroDrivingStress ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, Fp, symmetricMicroDrivingStress ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, Fp, symmetricMicroDrivingStress ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, higherOrderDrivingStress ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, higherOrderDrivingStress ) );
 
             if ( isPrevious ){
 
@@ -2859,13 +2859,13 @@ namespace tardigradeHydra{
 
             sixthOrderTensor  dHigherdM;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, Fp, macroDrivingStress,
-                                                                                                          dMacrodPK2, dMacrodFp ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardPK2Stress( PK2Stress, Fp, macroDrivingStress,
+                                                                                             dMacrodPK2, dMacrodFp ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, Fp, symmetricMicroDrivingStress,
-                                                                                                                     dMicrodSigma, dMicrodFp ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardReferenceMicroStress( referenceSymmetricMicroStress, Fp, symmetricMicroDrivingStress,
+                                                                                                        dMicrodSigma, dMicrodFp ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, higherOrderDrivingStress,
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pushForwardHigherOrderStress( referenceHigherOrderStress, Fp, chip, higherOrderDrivingStress,
                                                                                                                   dHigherdM, dHigherdFp, dHigherdChip ) );
 
             if ( isPrevious ){
@@ -4494,11 +4494,10 @@ namespace tardigradeHydra{
 
             const floatVector *previousEvolutionRates        = get_previousPlasticStrainLikeISVEvolutionRates( );
 
-            floatVector dISVs, updatedISVs;
+            floatVector dISVs;
+            auto updatedISVs = get_setDataStorage_updatedPlasticStrainLikeISVs( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, updatedISVs, 1 - ( *getIntegrationParameter( ) ) ) );
-
-            set_updatedPlasticStrainLikeISVs( updatedISVs );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, 1 - ( *getIntegrationParameter( ) ) ) );
 
         }
 
@@ -4536,38 +4535,50 @@ namespace tardigradeHydra{
             const unsigned int num_isvs = previousPlasticStrainLikeISVs->size( );
             const unsigned int num_psvs = get_plasticStateVariables( )->size( );
 
-            floatVector dISVs, updatedISVs;
+            floatVector dISVs;
 
             floatVector dISVsdEvolutionRates;
+
+            auto updatedISVs = get_setDataStorage_updatedPlasticStrainLikeISVs( );
+
+            auto dUpdatedPlasticStrainLikeISVsdStateVariables = get_setDataStorage_dUpdatedPlasticStrainLikeISVsdStateVariables( );
 
             if ( addPrevious ){
 
                 floatVector dISVsdPreviousEvolutionRates;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, updatedISVs, dISVsdEvolutionRates, dISVsdPreviousEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
+                auto dISVsdStateVariables = get_setDataStorage_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables( );
 
-                floatVector dISVsdStateVariables = tardigradeVectorTools::matrixMultiply( dISVsdPreviousEvolutionRates, *get_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( ),
-                                                                                          num_isvs, num_isvs, num_isvs, num_psvs );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, dISVsdPreviousEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
 
-                for ( unsigned int i = 0; i < updatedISVs.size( ); i++ ){
+                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dISVsdPreviousEvolutionRates( dISVsdPreviousEvolutionRates.data( ), num_isvs, num_isvs );
+                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( get_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( )->data( ), num_isvs, num_psvs );
 
-                    dISVsdStateVariables[ num_psvs * i  + i + ( *getNumPlasticMultipliers( ) ) ] += 1;
+                dISVsdStateVariables.zero( num_isvs * num_psvs );
+                Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dISVsdStateVariables( dISVsdStateVariables.value->data( ), num_isvs, num_psvs );
+
+                map_dISVsdStateVariables = ( map_dISVsdPreviousEvolutionRates * map_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables ).eval( );
+
+                for ( unsigned int i = 0; i < num_isvs; i++ ){
+
+                    ( *dISVsdStateVariables.value )[ num_psvs * i  + i + ( *getNumPlasticMultipliers( ) ) ] += 1;
 
                 }
-
-                set_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables( dISVsdStateVariables );
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, updatedISVs, dISVsdEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
 
             }
 
-            set_dUpdatedPlasticStrainLikeISVsdStateVariables( tardigradeVectorTools::matrixMultiply( dISVsdEvolutionRates, *get_dPlasticStrainLikeISVEvolutionRatesdStateVariables( ),
-                                                                                                     num_isvs, num_isvs, num_isvs, num_psvs ) );
+            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dISVsdEvolutionRates( dISVsdEvolutionRates.data( ), num_isvs, num_isvs );
+            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dPlasticStrainLikeISVEvolutionRatesdStateVariables( get_dPlasticStrainLikeISVEvolutionRatesdStateVariables( )->data( ), num_isvs, num_psvs );
 
-            set_updatedPlasticStrainLikeISVs( updatedISVs );
+            dUpdatedPlasticStrainLikeISVsdStateVariables.zero( num_isvs * num_psvs );
+            Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dUpdatedPlasticStrainLikeISVsdStateVariables( dUpdatedPlasticStrainLikeISVsdStateVariables.value->data( ), num_isvs, num_psvs );
+
+            map_dUpdatedPlasticStrainLikeISVsdStateVariables = ( map_dISVsdEvolutionRates * map_dPlasticStrainLikeISVEvolutionRatesdStateVariables ).eval( );
 
         }
 
@@ -4652,6 +4663,12 @@ namespace tardigradeHydra{
 
             const floatVector *microGradientYieldParameters = get_microGradientYieldParameters( );
 
+            setDataStorageBase< floatType > macroYield;
+
+            setDataStorageBase< floatType > microYield;
+
+            setDataStorageBase< dimVector > microGradientYield;
+
             if ( isPrevious ){
 
                 precedingDeformationGradient = get_previousPrecedingDeformationGradient( );
@@ -4667,6 +4684,12 @@ namespace tardigradeHydra{
                 microCohesion              = get_previousMicroCohesion( );
 
                 microGradientCohesion      = get_previousMicroGradientCohesion( );
+
+                macroYield                 = get_setDataStorage_previousMacroYield( );
+
+                microYield                 = get_setDataStorage_previousMicroYield( );
+
+                microGradientYield         = get_setDataStorage_previousMicroGradientYield( );
 
             }
             else{
@@ -4685,44 +4708,25 @@ namespace tardigradeHydra{
 
                 microGradientCohesion      = get_microGradientCohesion( );
 
+                macroYield                 = get_setDataStorage_macroYield( );
+
+                microYield                 = get_setDataStorage_microYield( );
+
+                microGradientYield         = get_setDataStorage_microGradientYield( );
+
             }
-
-            floatType macroYield;
-
-            floatType microYield;
-
-            dimVector microGradientYield;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *macroDrivingStress, *macroCohesion, *precedingDeformationGradient,
                                                                                         ( *macroYieldParameters )[ 0 ], ( *macroYieldParameters )[ 1 ],
-                                                                                        macroYield ) );
+                                                                                        *macroYield.value ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( computeSecondOrderDruckerPragerYieldEquation( *microDrivingStress, *microCohesion, *precedingDeformationGradient,
                                                                                         ( *microYieldParameters )[ 0 ], ( *microYieldParameters )[ 1 ],
-                                                                                        microYield ) );
+                                                                                        *microYield.value ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( computeHigherOrderDruckerPragerYieldEquation( *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
                                                                                         ( *microGradientYieldParameters )[ 0 ], ( *microGradientYieldParameters )[ 1 ],
-                                                                                        microGradientYield ) );
-
-            if ( isPrevious ){
-
-                set_previousMacroYield( macroYield );
-
-                set_previousMicroYield( microYield );
-
-                set_previousMicroGradientYield( microGradientYield );
-
-            }
-            else{
-
-                set_macroYield( macroYield );
-
-                set_microYield( microYield );
-
-                set_microGradientYield( microGradientYield );
-
-            }
+                                                                                        *microGradientYield.value ) );
 
         }
 
@@ -5349,38 +5353,6 @@ namespace tardigradeHydra{
             map_dMicroGradientYielddChi = ( map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdChi ).eval( );
 
             map_dMicroGradientYielddChin = ( map_dMicroGradientYielddDrivingStress * map_dMicroGradientDrivingStressdChin ).eval( );
-//            thirdOrderTensor dMicroGradientYielddF = tardigradeVectorTools::matrixMultiply( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdF, 3, tot_dim, tot_dim, sot_dim )
-//                                                   + tardigradeVectorTools::matrixMultiply( dMicroGradientYielddPrecedingF, *dPrecedingFdF, 3, sot_dim, sot_dim, sot_dim );
-//
-//            floatVector dMicroGradientYielddFn = tardigradeVectorTools::matrixMultiply( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdFn, 3, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim )
-//                                               + tardigradeVectorTools::matrixMultiply( dMicroGradientYielddPrecedingF, *dPrecedingFdFn, 3, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
-//
-//            thirdOrderTensor dMicroGradientYielddChi = tardigradeVectorTools::matrixMultiply( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdChi, 3, tot_dim, tot_dim, sot_dim );
-//
-//            floatVector dMicroGradientYielddChin = tardigradeVectorTools::matrixMultiply( dMicroGradientYielddDrivingStress, *dMicroGradientDrivingStressdChin, 3, tot_dim, tot_dim, ( num_configs - 1 ) * sot_dim );
-
-            if ( isPrevious ){
-
-//                set_previousdMicroGradientYielddF( dMicroGradientYielddF );
-//
-//                set_previousdMicroGradientYielddFn( dMicroGradientYielddFn );
-//
-//                set_previousdMicroGradientYielddChi( dMicroGradientYielddChi );
-//
-//                set_previousdMicroGradientYielddChin( dMicroGradientYielddChin );
-
-            }
-            else{
-
-//                set_dMicroGradientYielddF( dMicroGradientYielddF );
-//
-//                set_dMicroGradientYielddFn( dMicroGradientYielddFn );
-//
-//                set_dMicroGradientYielddChi( dMicroGradientYielddChi );
-//
-//                set_dMicroGradientYielddChin( dMicroGradientYielddChin );
-
-            }
 
         }
 
@@ -6014,7 +5986,7 @@ namespace tardigradeHydra{
             // Form the preceding RCG and its inverse
             secondOrderTensor precedingRCG;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG ) );
 
             secondOrderTensor inversePrecedingRCG = precedingRCG;
             auto map_inversePrecedingRCG = getFixedSizeMatrixMap< floatType, dim, dim >( inversePrecedingRCG.data( ) );
@@ -6752,7 +6724,7 @@ namespace tardigradeHydra{
 
             secondOrderTensor dRCGdPrecedingF;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG, dRCGdPrecedingF ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG, dRCGdPrecedingF ) );
 
             secondOrderTensor inversePrecedingRCG = precedingRCG;
             auto map_inversePrecedingRCG = getFixedSizeMatrixMap< floatType, dim, dim >( inversePrecedingRCG.data( ) );
