@@ -4328,6 +4328,8 @@ namespace tardigradeHydra{
 
             const floatVector *plasticMultipliers;
 
+            setDataStorageBase< floatVector > evolutionRates;
+
             if ( isPrevious ){
 
                 plasticMultipliers    = get_previousPlasticMultipliers( );
@@ -4337,6 +4339,8 @@ namespace tardigradeHydra{
                 dMicroFlowdc          = get_previousdMicroFlowdc( );
 
                 dMicroGradientFlowdc = get_previousdMicroGradientFlowdc( );
+
+                evolutionRates = get_setDataStorage_previousPlasticStrainLikeISVEvolutionRates( );
 
             }
             else{
@@ -4349,34 +4353,25 @@ namespace tardigradeHydra{
 
                 dMicroGradientFlowdc = get_dMicroGradientFlowdc( );
 
+                evolutionRates = get_setDataStorage_plasticStrainLikeISVEvolutionRates( );
+
             }
 
             const unsigned int num_pm = plasticMultipliers->size( );
 
-            floatVector evolutionRates( plasticMultipliers->size( ), 0 );
+            evolutionRates.zero( plasticMultipliers->size( ) );
 
-            evolutionRates[ 0 ] = -( *dMacroFlowdc ) * ( *plasticMultipliers )[ 0 ];
+            ( *evolutionRates.value )[ 0 ] = -( *dMacroFlowdc ) * ( *plasticMultipliers )[ 0 ];
 
-            evolutionRates[ 1 ] = -( *dMicroFlowdc ) * ( *plasticMultipliers )[ 1 ];
+            ( *evolutionRates.value )[ 1 ] = -( *dMicroFlowdc ) * ( *plasticMultipliers )[ 1 ];
 
             for ( unsigned int i = 2; i < num_pm; i++ ){
 
                 for ( unsigned int j = 2; j < num_pm; j++ ){
 
-                    evolutionRates[ i ] -= ( *dMicroGradientFlowdc )[ 3 * ( i - 2 ) + j - 2 ] * ( *plasticMultipliers )[ j ];
+                    ( *evolutionRates.value )[ i ] -= ( *dMicroGradientFlowdc )[ 3 * ( i - 2 ) + j - 2 ] * ( *plasticMultipliers )[ j ];
 
                 }
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousPlasticStrainLikeISVEvolutionRates( evolutionRates );
-
-            }
-            else{
-
-                set_plasticStrainLikeISVEvolutionRates( evolutionRates );
 
             }
 
@@ -4415,6 +4410,10 @@ namespace tardigradeHydra{
 
             const floatVector *plasticMultipliers;
 
+            setDataStorageBase< floatVector > evolutionRates;
+
+            setDataStorageBase< floatVector > dEvolutionRatesdStateVariables;
+
             if ( isPrevious ){
 
                 plasticMultipliers    = get_previousPlasticMultipliers( );
@@ -4424,6 +4423,10 @@ namespace tardigradeHydra{
                 dMicroFlowdc          = get_previousdMicroFlowdc( );
 
                 dMicroGradientFlowdc = get_previousdMicroGradientFlowdc( );
+
+                evolutionRates       = get_setDataStorage_previousPlasticStrainLikeISVEvolutionRates( );
+
+                dEvolutionRatesdStateVariables = get_setDataStorage_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( );
 
             }
             else{
@@ -4436,48 +4439,37 @@ namespace tardigradeHydra{
 
                 dMicroGradientFlowdc = get_dMicroGradientFlowdc( );
 
+                evolutionRates       = get_setDataStorage_plasticStrainLikeISVEvolutionRates( );
+
+                dEvolutionRatesdStateVariables = get_setDataStorage_dPlasticStrainLikeISVEvolutionRatesdStateVariables( );
+
             }
 
             const unsigned int num_pm = plasticMultipliers->size( );
 
             const unsigned int num_psvs = get_plasticStateVariables( )->size( );
 
-            floatVector evolutionRates( num_pm, 0 );
+            evolutionRates.zero( num_pm );
 
-            floatVector dEvolutionRatesdStateVariables( num_pm * num_psvs, 0 );
+            dEvolutionRatesdStateVariables.zero( num_pm * num_psvs );
 
-            evolutionRates[ 0 ] = -( *dMacroFlowdc ) * ( *plasticMultipliers )[ 0 ];
+            ( *evolutionRates.value )[ 0 ] = -( *dMacroFlowdc ) * ( *plasticMultipliers )[ 0 ];
 
-            evolutionRates[ 1 ] = -( *dMicroFlowdc ) * ( *plasticMultipliers )[ 1 ];
+            ( *evolutionRates.value )[ 1 ] = -( *dMicroFlowdc ) * ( *plasticMultipliers )[ 1 ];
 
-            dEvolutionRatesdStateVariables[ num_psvs * 0 + 0 ] = -( *dMacroFlowdc );
+            ( *dEvolutionRatesdStateVariables.value )[ num_psvs * 0 + 0 ] = -( *dMacroFlowdc );
 
-            dEvolutionRatesdStateVariables[ num_psvs * 1 + 1 ] = -( *dMicroFlowdc );
+            ( *dEvolutionRatesdStateVariables.value )[ num_psvs * 1 + 1 ] = -( *dMicroFlowdc );
 
             for ( unsigned int i = 2; i < num_pm; i++ ){
 
                 for ( unsigned int j = 2; j < num_pm; j++ ){
 
-                    evolutionRates[ i ] -= ( *dMicroGradientFlowdc )[ 3 * ( i - 2 ) + j - 2 ] * ( *plasticMultipliers )[ j ];
+                    ( *evolutionRates.value )[ i ] -= ( *dMicroGradientFlowdc )[ 3 * ( i - 2 ) + j - 2 ] * ( *plasticMultipliers )[ j ];
 
-                    dEvolutionRatesdStateVariables[ num_psvs * i + j ] = -( *dMicroGradientFlowdc )[ 3 * ( i - 2 ) + j - 2 ];
+                    ( *dEvolutionRatesdStateVariables.value )[ num_psvs * i + j ] = -( *dMicroGradientFlowdc )[ 3 * ( i - 2 ) + j - 2 ];
 
                 }
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousPlasticStrainLikeISVEvolutionRates( evolutionRates );
-
-                set_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( dEvolutionRatesdStateVariables );
-
-            }
-            else{
-
-                set_plasticStrainLikeISVEvolutionRates( evolutionRates );
-
-                set_dPlasticStrainLikeISVEvolutionRatesdStateVariables( dEvolutionRatesdStateVariables );
 
             }
 
