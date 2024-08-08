@@ -2236,8 +2236,11 @@ namespace tardigradeHydra{
                                            dPlasticMicroGradientdPlasticMicroGradientL, alphaMicroGradient );
             )
 
-            dPlasticMicroGradientdPlasticMicroL += tardigradeVectorTools::matrixMultiply( dPlasticMicroGradientdPlasticMicroDeformation,
-                                                                                          dPlasticMicroDeformationdPlasticMicroL, tot_dim, sot_dim, sot_dim, sot_dim );
+            auto map_dPlasticMicroGradientdPlasticMicroDeformation            = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroDeformation.data( ) );
+            auto map_dPlasticMicroDeformationdPlasticMicroL                   = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPlasticMicroL.data( ) );
+            auto map_dPlasticMicroGradientdPlasticMicroL                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroL.data( ) );
+
+            map_dPlasticMicroGradientdPlasticMicroL += ( map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPlasticMicroL ).eval( );
 
         }
 
