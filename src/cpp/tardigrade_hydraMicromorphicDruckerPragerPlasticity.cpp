@@ -3928,8 +3928,6 @@ namespace tardigradeHydra{
             map_d2MicroGradientFlowdDrivingStressdF  = ( map_d2MicroGradientFlowdDrivingStress2 * map_dMicroGradientDrivingStressdF ).eval( );
             map_d2MicroGradientFlowdDrivingStressdF += ( map_d2MicroGradientFlowdDrivingStressdPrecedingF * map_dPrecedingFdF ).eval( );
 
-//            sixthOrderTensor   d2MicroGradientFlowdDrivingStressdF( dim * tot_dim * sot_dim, 0 );
-//
             sixthOrderTensor   d2MicroGradientFlowdDrivingStressdChi( dim * tot_dim * sot_dim, 0 );
 
             floatVector d2MacroFlowdDrivingStressdFn( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
@@ -3968,9 +3966,6 @@ namespace tardigradeHydra{
 
                         for ( unsigned int L = 0; L < sot_dim; L++ ){
 
-//                            d2MicroGradientFlowdDrivingStressdF[ tot_dim * sot_dim * I + sot_dim * J + L ]
-//                                += d2MicroGradientFlowdDrivingStress2[ tot_dim * tot_dim * I + tot_dim * J + K ] * ( *dMicroGradientDrivingStressdF )[ sot_dim * K + L ];
-//
                             d2MicroGradientFlowdDrivingStressdChi[ tot_dim * sot_dim * I + sot_dim * J + L ]
                                 += d2MicroGradientFlowdDrivingStress2[ tot_dim * tot_dim * I + tot_dim * J + K ] * ( *dMicroGradientDrivingStressdChi )[ sot_dim * K + L ];
 
@@ -3991,17 +3986,6 @@ namespace tardigradeHydra{
 
                     }
 
-//                    for ( unsigned int K = 0; K < sot_dim; K++ ){
-//
-//                        for ( unsigned int L = 0; L < sot_dim; L++ ){
-//
-//                            d2MicroGradientFlowdDrivingStressdF[ tot_dim * sot_dim * I + sot_dim * J + L ]
-//                                += d2MicroGradientFlowdDrivingStressdPrecedingF[ tot_dim * sot_dim * I + sot_dim * J + K ] * ( *dPrecedingFdF )[ sot_dim * K + L ];
-//
-//                        }
-//
-//                    }
-//
                     for ( unsigned int K = 0; K < sot_dim; K++ ){
 
                         for ( unsigned int L = 0; L < ( num_configs - 1 ) * sot_dim; L++ ){
@@ -4025,8 +4009,6 @@ namespace tardigradeHydra{
 
                 set_previousd2MicroGradientFlowdDrivingStressdFn( d2MicroGradientFlowdDrivingStressdFn );
 
-//                set_previousd2MicroGradientFlowdDrivingStressdF( d2MicroGradientFlowdDrivingStressdF );
-//
                 set_previousd2MicroGradientFlowdDrivingStressdChi( d2MicroGradientFlowdDrivingStressdChi );
 
                 set_previousd2MicroGradientFlowdDrivingStressdChin( d2MicroGradientFlowdDrivingStressdChin );
@@ -4040,8 +4022,6 @@ namespace tardigradeHydra{
 
                 set_d2MicroGradientFlowdDrivingStressdFn( d2MicroGradientFlowdDrivingStressdFn );
 
-//                set_d2MicroGradientFlowdDrivingStressdF( d2MicroGradientFlowdDrivingStressdF );
-//
                 set_d2MicroGradientFlowdDrivingStressdChi( d2MicroGradientFlowdDrivingStressdChi );
 
                 set_d2MicroGradientFlowdDrivingStressdChin( d2MicroGradientFlowdDrivingStressdChin );
