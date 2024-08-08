@@ -5852,8 +5852,6 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            constexpr unsigned int tot_dim = sot_dim * dim;
-
             const secondOrderTensor *precedingDeformationGradient;
 
             const secondOrderTensor *precedingMicroDeformation;
@@ -5927,48 +5925,25 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG ) );
 
             secondOrderTensor inversePrecedingRCG = precedingRCG;
-            Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( inversePrecedingRCG.data(), 3, 3 );
-            mat = mat.inverse( ).eval( );
+            auto map_inversePrecedingRCG = getFixedSizeMatrixMap< floatType, dim, dim >( inversePrecedingRCG.data( ) );
+            map_inversePrecedingRCG = map_inversePrecedingRCG.inverse( ).eval( );
 
             // Form the precedingPsi and its inverse
             secondOrderTensor precedingPsi( sot_dim, 0 );
-
-//            auto map_precedingDeformationGradient = getFixedSizeMatrixMap< floatType, dim, dim >( precedingDeformationGradient->data( ) );
-//            auto map_precedingMicroDeformation    = getFixedSizeMatrixMap< floatType, dim, dim >( precedingMicroDeformation->data( ) );
-//            auto map_precedingPsi                 = getFixedSizeMatrixMap< floatType, dim, dim >( precedingPsi.data( ) );
-//
-//            map_precedingPsi = ( map_precedingDeformationGradient.transpose( ) * map_precedingMicroDeformation ).eval( );
-            TARDIGRADE_ERROR_TOOLS_CATCH( precedingPsi = tardigradeVectorTools::matrixMultiply( *precedingDeformationGradient, *precedingMicroDeformation, dim, dim, dim, dim, true, false ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computePsi( *precedingDeformationGradient, *precedingMicroDeformation, precedingPsi ) );
 
             secondOrderTensor inversePrecedingPsi = precedingPsi;
-            new (&mat ) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( inversePrecedingPsi.data(), 3, 3 );
-            mat = mat.inverse( ).eval( );
+            auto map_inversePrecedingPsi = getFixedSizeMatrixMap< floatType, dim, dim >( inversePrecedingPsi.data( ) );
+            map_inversePrecedingPsi = map_inversePrecedingPsi.inverse( ).eval( );
 
             // Form the preceding micro RCG and its inverse
             secondOrderTensor precedingMicroRCG;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingMicroDeformation, precedingMicroRCG ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingMicroDeformation, precedingMicroRCG ) );
 
             // Form Gamma
-            thirdOrderTensor precedingGamma( tot_dim, 0 );
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                for ( unsigned int I = 0; I < dim; I++ ){
-
-                    for ( unsigned int J = 0; J < dim; J++ ){
-
-                        for ( unsigned int K = 0; K < dim; K++ ){
-
-                            precedingGamma[ sot_dim * I + dim * J + K ]
-                                += ( *precedingDeformationGradient )[ dim * i + I ] * ( *precedingGradientMicroDeformation )[ sot_dim * i + dim * J + K ];
-
-                        }
-
-                    }
-
-                }
-
-            }
+            thirdOrderTensor precedingGamma;
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeGamma( *precedingDeformationGradient, *precedingGradientMicroDeformation, precedingGamma ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
                 computePlasticMacroVelocityGradient( ( *plasticMultipliers )[ 0 ], ( *plasticMultipliers )[ 1 ],
@@ -6363,6 +6338,8 @@ namespace tardigradeHydra{
 
             constexpr unsigned int tot_dim = sot_dim * dim;
 
+            constexpr unsigned int fot_dim = tot_dim * dim;
+
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
@@ -6682,92 +6659,86 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingDeformationGradient, precedingRCG, dRCGdPrecedingF ) );
 
             secondOrderTensor inversePrecedingRCG = precedingRCG;
-            Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( inversePrecedingRCG.data(), 3, 3 );
-            mat = mat.inverse( ).eval( );
+            auto map_inversePrecedingRCG = getFixedSizeMatrixMap< floatType, dim, dim >( inversePrecedingRCG.data( ) );
+            map_inversePrecedingRCG = map_inversePrecedingRCG.inverse( ).eval( );
 
-            fourthOrderTensor dRCGdF = tardigradeVectorTools::matrixMultiply( dRCGdPrecedingF,  *dPrecedingFdF, sot_dim, sot_dim, sot_dim, sot_dim );
+            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dRCGdPrecedingF.data( ) );
+            auto map_dPrecedingFdF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPrecedingFdF->data( ) );
+            auto map_dPrecedingFdFn = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dPrecedingFdFn->data( ), ( num_configs - 1 ) * sot_dim );
 
-            floatVector dRCGdFn = tardigradeVectorTools::matrixMultiply( dRCGdPrecedingF, *dPrecedingFdFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            fourthOrderTensor dRCGdF( fot_dim, 0 );
+            auto map_dRCGdF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dRCGdF.data( ) );
+
+            floatVector dRCGdFn( fot_dim * ( num_configs - 1 ), 0 );
+            auto map_dRCGdFn = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dRCGdFn.data( ), ( num_configs - 1 ) * sot_dim );
+
+            map_dRCGdF = ( map_dRCGdPrecedingF * map_dPrecedingFdF ).eval( );
+
+            map_dRCGdFn = ( map_dRCGdPrecedingF * map_dPrecedingFdFn ).eval( );
 
             // Form the precedingPsi and its inverse
             secondOrderTensor precedingPsi;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( precedingPsi = tardigradeVectorTools::matrixMultiply( *precedingDeformationGradient, *precedingMicroDeformation, dim, dim, dim, dim, true, false ) );
+            fourthOrderTensor dPsidPrecedingF, dPsidPrecedingChi;
 
-            fourthOrderTensor dPsidPrecedingF( sot_dim * sot_dim, 0 );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computePsi( *precedingDeformationGradient, *precedingMicroDeformation, precedingPsi, dPsidPrecedingF, dPsidPrecedingChi ) );
 
-            fourthOrderTensor dPsidPrecedingChi( sot_dim * sot_dim, 0 );
+            auto map_dPsidPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPsidPrecedingF.data( ) );
+            auto map_dPsidPrecedingChi = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPsidPrecedingChi.data( ) );
+            auto map_dPrecedingChidChi = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPrecedingChidChi->data( ) );
+            auto map_dPrecedingChidChin = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dPrecedingChidChin->data( ), ( num_configs - 1 ) * sot_dim );
 
-            for ( unsigned int I = 0; I < dim; I++ ){ //TODO: Try to improve the cache access here
+            fourthOrderTensor dPsidF( fot_dim, 0 );
+            auto map_dPsidF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPsidF.data( ) );
 
-                for ( unsigned int J = 0; J < dim; J++ ){
+            fourthOrderTensor dPsidFn( fot_dim * ( num_configs - 1 ), 0 );
+            auto map_dPsidFn = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dPsidFn.data( ), ( num_configs - 1 ) * sot_dim );
 
-                    for ( unsigned int A = 0; A < dim; A++ ){
+            fourthOrderTensor dPsidChi( fot_dim, 0 );
+            auto map_dPsidChi = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPsidChi.data( ) );
 
-                        dPsidPrecedingF[   dim * dim * dim * I + dim * dim * J + dim * A + I ] += ( *precedingMicroDeformation )[ dim * A + J ];
+            fourthOrderTensor dPsidChin( fot_dim * ( num_configs - 1 ), 0 );
+            auto map_dPsidChin = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dPsidChin.data( ), ( num_configs - 1 ) * sot_dim );
 
-                        dPsidPrecedingChi[ dim * dim * dim * I + dim * dim * J + dim * A + J ] += ( *precedingDeformationGradient )[ dim * A + I ];
+            map_dPsidF = ( map_dPsidPrecedingF * map_dPrecedingFdF ).eval( );
 
-                    }
+            map_dPsidFn = ( map_dPsidPrecedingF * map_dPrecedingFdFn ).eval( );
 
-                }
+            map_dPsidChi = ( map_dPsidPrecedingChi * map_dPrecedingChidChi ).eval( );
 
-            }
-
-            fourthOrderTensor dPsidF    = tardigradeVectorTools::matrixMultiply( dPsidPrecedingF,   *dPrecedingFdF     , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
-
-            floatVector dPsidFn   = tardigradeVectorTools::matrixMultiply( dPsidPrecedingF,   *dPrecedingFdFn    , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
-
-            fourthOrderTensor dPsidChi  = tardigradeVectorTools::matrixMultiply( dPsidPrecedingChi, *dPrecedingChidChi , sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
-
-            floatVector dPsidChin = tardigradeVectorTools::matrixMultiply( dPsidPrecedingChi, *dPrecedingChidChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            map_dPsidChin = ( map_dPsidPrecedingChi * map_dPrecedingChidChin ).eval( );
 
             secondOrderTensor inversePrecedingPsi = precedingPsi;
-            new (&mat) Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> >( inversePrecedingPsi.data(), 3, 3 );
-            mat = mat.inverse( ).eval( );
+            auto map_inversePrecedingPsi = getFixedSizeMatrixMap< floatType, dim, dim >( inversePrecedingPsi.data( ) );
+            map_inversePrecedingPsi = map_inversePrecedingPsi.inverse( ).eval( );
 
             // Form the preceding micro RCG and its inverse
             secondOrderTensor precedingMicroRCG;
 
             fourthOrderTensor dMicroRCGdPrecedingChi;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingMicroDeformation, precedingMicroRCG, dMicroRCGdPrecedingChi ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeRightCauchyGreen( *precedingMicroDeformation, precedingMicroRCG, dMicroRCGdPrecedingChi ) );
 
-            fourthOrderTensor dMicroRCGdChi  = tardigradeVectorTools::matrixMultiply( dMicroRCGdPrecedingChi, *dPrecedingChidChi, sot_dim, sot_dim, sot_dim, sot_dim );
+            auto map_dMicroRCGdPrecedingChi = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicroRCGdPrecedingChi.data( ) );
 
-            floatVector dMicroRCGdChin = tardigradeVectorTools::matrixMultiply( dMicroRCGdPrecedingChi, *dPrecedingChidChin, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            fourthOrderTensor dMicroRCGdChi( fot_dim, 0 );
+            auto map_dMicroRCGdChi = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dMicroRCGdChi.data( ) );
+
+            fourthOrderTensor dMicroRCGdChin( fot_dim * ( num_configs - 1 ), 0 );
+            auto map_dMicroRCGdChin = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dMicroRCGdChin.data( ), ( num_configs - 1 ) * sot_dim );
+
+            map_dMicroRCGdChi = ( map_dMicroRCGdPrecedingChi * map_dPrecedingChidChi ).eval( );
+
+            map_dMicroRCGdChin = ( map_dMicroRCGdPrecedingChi * map_dPrecedingChidChin ).eval( );
 
             // Form Gamma
-            thirdOrderTensor precedingGamma( tot_dim, 0 );
+            thirdOrderTensor precedingGamma;
 
-            fifthOrderTensor dPrecedingGammadPrecedingF( tot_dim * sot_dim, 0 );
+            fifthOrderTensor dPrecedingGammadPrecedingF;
 
-            sixthOrderTensor dPrecedingGammadPrecedingGradChi( tot_dim * tot_dim, 0 );
+            sixthOrderTensor dPrecedingGammadPrecedingGradChi;
 
-            for ( unsigned int i = 0; i < dim; i++ ){ //TODO: Try to improve the cache access here
-
-                for ( unsigned int I = 0; I < dim; I++ ){
-
-                    for ( unsigned int J = 0; J < dim; J++ ){
-
-                        for ( unsigned int K = 0; K < dim; K++ ){
-
-                            precedingGamma[ sot_dim * I + dim * J + K ]
-                                += ( *precedingDeformationGradient )[ dim * i + I ] * ( *precedingGradientMicroDeformation )[ sot_dim * i + dim * J + K ];
-
-                            dPrecedingGammadPrecedingF[ sot_dim * sot_dim * I + dim * sot_dim * J + sot_dim * K + dim * i + I ]
-                                += ( *precedingGradientMicroDeformation )[ sot_dim * i + dim * J + K ];
-
-                            dPrecedingGammadPrecedingGradChi[ sot_dim * tot_dim * I + dim * tot_dim * J + tot_dim * K + sot_dim * i + dim * J + K ]
-                                += ( *precedingDeformationGradient )[ dim * i + I ];
-
-                        }
-
-                    }
-
-                }
-
-            }
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeGamma( *precedingDeformationGradient, *precedingGradientMicroDeformation, precedingGamma, dPrecedingGammadPrecedingF, dPrecedingGammadPrecedingGradChi ) );
 
             fifthOrderTensor dPrecedingGammadF        = tardigradeVectorTools::matrixMultiply( dPrecedingGammadPrecedingF, *dPrecedingFdF, tot_dim, sot_dim, sot_dim, sot_dim );
 
@@ -6854,23 +6825,15 @@ namespace tardigradeHydra{
             auto map_d2MacroFlowdDrivingStressdF              = getFixedSizeMatrixMap< floatType,     sot_dim, sot_dim >( d2MacroFlowdDrivingStressdF->data( ) );
             auto map_d2MicroFlowdDrivingStressdF              = getFixedSizeMatrixMap< floatType,     sot_dim, sot_dim >( d2MicroFlowdDrivingStressdF->data( ) );
             auto map_d2MicroGradientFlowdDrivingStressdF      = getFixedSizeMatrixMap< floatType, 3 * tot_dim, sot_dim >( d2MicroGradientFlowdDrivingStressdF->data( ) );
-            auto map_dRCGdF                                   = getFixedSizeMatrixMap< floatType,     sot_dim, sot_dim >( dRCGdF.data( ) );
-            auto map_dPsidF                                   = getFixedSizeMatrixMap< floatType,     sot_dim, sot_dim >( dPsidF.data( ) );
             auto map_dPrecedingGammadF                        = getFixedSizeMatrixMap< floatType,     tot_dim, sot_dim >( dPrecedingGammadF.data( ) );
             auto map_d2MicroGradientFlowdDrivingStressdChi    = getFixedSizeMatrixMap< floatType, 3 * tot_dim, sot_dim >( d2MicroGradientFlowdDrivingStressdChi->data( ) );
-            auto map_dMicroRCGdChi                            = getFixedSizeMatrixMap< floatType,     sot_dim, sot_dim >( dMicroRCGdChi.data( ) );
-            auto map_dPsidChi                                 = getFixedSizeMatrixMap< floatType,     sot_dim, sot_dim >( dPsidChi.data( ) );
             auto map_dPrecedingGammadChi                      = getFixedSizeMatrixMap< floatType,     tot_dim, sot_dim >( dPrecedingGammadChi.data( ) );
             auto map_dPrecedingGammadGradChi                  = getFixedSizeMatrixMap< floatType,     tot_dim, tot_dim >( dPrecedingGammadGradChi.data( ) );
             auto map_d2MacroFlowdDrivingStressdFn             = getDynamicColumnSizeMatrixMap< floatType,     sot_dim >( d2MacroFlowdDrivingStressdFn->data( ), ( num_configs - 1 ) * sot_dim );
             auto map_d2MicroFlowdDrivingStressdFn             = getDynamicColumnSizeMatrixMap< floatType,     sot_dim >( d2MicroFlowdDrivingStressdFn->data( ), ( num_configs - 1 ) * sot_dim );
             auto map_d2MicroGradientFlowdDrivingStressdFn     = getDynamicColumnSizeMatrixMap< floatType, 3 * tot_dim >( d2MicroGradientFlowdDrivingStressdFn->data( ), ( num_configs - 1 ) * sot_dim );
-            auto map_dRCGdFn                                  = getDynamicColumnSizeMatrixMap< floatType,     sot_dim >( dRCGdFn.data( ), ( num_configs - 1 ) * sot_dim );
-            auto map_dPsidFn                                  = getDynamicColumnSizeMatrixMap< floatType,     sot_dim >( dPsidFn.data( ), ( num_configs - 1 ) * sot_dim );
             auto map_dPrecedingGammadFn                       = getDynamicColumnSizeMatrixMap< floatType,     tot_dim >( dPrecedingGammadFn.data( ), ( num_configs - 1 ) * sot_dim );
             auto map_d2MicroGradientFlowdDrivingStressdChin   = getDynamicColumnSizeMatrixMap< floatType, 3 * tot_dim >( d2MicroGradientFlowdDrivingStressdChin->data( ), ( num_configs - 1 ) * sot_dim );
-            auto map_dMicroRCGdChin                           = getDynamicColumnSizeMatrixMap< floatType,     sot_dim >( dMicroRCGdChin.data( ), ( num_configs - 1 ) * sot_dim );
-            auto map_dPsidChin                                = getDynamicColumnSizeMatrixMap< floatType,     sot_dim >( dPsidChin.data( ), ( num_configs - 1 ) * sot_dim );
             auto map_dPrecedingGammadChin                     = getDynamicColumnSizeMatrixMap< floatType,     tot_dim >( dPrecedingGammadChin.data( ), ( num_configs - 1 ) * sot_dim );
             auto map_dPrecedingGammadGradChin                 = getDynamicColumnSizeMatrixMap< floatType,     tot_dim >( dPrecedingGammadGradChin.data( ), ( num_configs - 1 ) * tot_dim );
 
