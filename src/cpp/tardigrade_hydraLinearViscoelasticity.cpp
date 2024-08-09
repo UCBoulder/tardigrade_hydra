@@ -420,7 +420,7 @@ namespace tardigradeHydra{
 
             floatType invRM;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::WLF( variables[ 0 ], parameters, invRM ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::WLF( variables[ 0 ], parameters, invRM ) );
 
             return 1 / invRM;
 
@@ -447,7 +447,7 @@ namespace tardigradeHydra{
             floatType invRM;
             floatVector dinvRMdT( 1, 0 );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::WLF( variables[ 0 ], parameters, invRM, dinvRMdT[ 0 ] ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::WLF( variables[ 0 ], parameters, invRM, dinvRMdT[ 0 ] ) );
 
             return -1 / ( invRM * invRM ) * dinvRMdT;
 
@@ -758,20 +758,20 @@ namespace tardigradeHydra{
 
             // Compute the viscous mean stress
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::linearViscoelasticity( time,         volumetricStrain,
-                                                                                                     previousTime, previousVolumetricStrain,
-                                                                                                     *volumetricRateMultiplier,
-                                                                                                     *previousVolumetricRateMultiplier,
-                                                                                                     previousVolumetricStateVariables,
-                                                                                                     getVolumetricViscoelasticParameters( ),
-                                                                                                     *getIntegrationAlpha( ), deltaPK2MeanStress,
-                                                                                                     _PK2MeanStress, currentVolumetricStateVariables,
-                                                                                                     _dPK2MeanStressdJe, dPK2MeanStressdRateModifier,
-                                                                                                     _dPK2MeanStressdPreviousJe, dPK2MeanStressdPreviousRateModifier,
-                                                                                                     _dPK2MeanStressdPreviousVolumetricISVs,
-                                                                                                     _dISVsdJe, dISVsdRateModifier,
-                                                                                                     _dISVsdPreviousJe, dISVsdPreviousRateModifier,
-                                                                                                     _dISVsdPreviousVolumetricISVs ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::linearViscoelasticity( time,         volumetricStrain,
+                                                                                        previousTime, previousVolumetricStrain,
+                                                                                        *volumetricRateMultiplier,
+                                                                                        *previousVolumetricRateMultiplier,
+                                                                                        previousVolumetricStateVariables,
+                                                                                        getVolumetricViscoelasticParameters( ),
+                                                                                        *getIntegrationAlpha( ), deltaPK2MeanStress,
+                                                                                        _PK2MeanStress, currentVolumetricStateVariables,
+                                                                                        _dPK2MeanStressdJe, dPK2MeanStressdRateModifier,
+                                                                                        _dPK2MeanStressdPreviousJe, dPK2MeanStressdPreviousRateModifier,
+                                                                                        _dPK2MeanStressdPreviousVolumetricISVs,
+                                                                                        _dISVsdJe, dISVsdRateModifier,
+                                                                                        _dISVsdPreviousJe, dISVsdPreviousRateModifier,
+                                                                                        _dISVsdPreviousVolumetricISVs ) );
 
             *PK2MeanStress.value                  = _PK2MeanStress[ 0 ];
 
@@ -1049,9 +1049,9 @@ namespace tardigradeHydra{
 
             secondOrderTensor isochoricStrain, previousIsochoricStrain;
             fourthOrderTensor dEehatdFehat, previousdEehatdFehat;
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fehat, isochoricStrain, dEehatdFehat ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fehat, isochoricStrain, dEehatdFehat ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *previousFehat, previousIsochoricStrain, previousdEehatdFehat ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *previousFehat, previousIsochoricStrain, previousdEehatdFehat ) );
 
             Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dEehatdFehat( dEehatdFehat.data( ), sot_dim, sot_dim );
             Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dFehatdFe(    dFehatdFe->data( ),   sot_dim, sot_dim );
@@ -1107,20 +1107,20 @@ namespace tardigradeHydra{
             floatVector dISVsdPreviousIsochoricISVs;
 
             // Compute the viscous isochoric stress
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::linearViscoelasticity( time, isochoricStrain,
-                                                                                                     previousTime, previousIsochoricStrain,
-                                                                                                     *isochoricRateMultiplier,
-                                                                                                     *previousIsochoricRateMultiplier,
-                                                                                                     previousIsochoricStateVariables,
-                                                                                                     getIsochoricViscoelasticParameters( ),
-                                                                                                     *getIntegrationAlpha( ),
-                                                                                                     deltaPK2IsochoricStress, *PK2IsochoricStress.value, currentIsochoricStateVariables,
-                                                                                                     _dPK2IsochoricStressdEe,         dPK2IsochoricStressdRateMultiplier,
-                                                                                                     _dPK2IsochoricStressdPreviousEe, dPK2IsochoricStressdPreviousRateMultiplier,
-                                                                                                     _dPK2IsochoricStressdPreviousIsochoricISVs,
-                                                                                                     _dISVsdEe,                       dISVsdRateMultiplier,
-                                                                                                     _dISVsdPreviousEe,               dISVsdPreviousRateMultiplier,
-                                                                                                     _dISVsdPreviousIsochoricISVs ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::linearViscoelasticity( time, isochoricStrain,
+                                                                                        previousTime, previousIsochoricStrain,
+                                                                                        *isochoricRateMultiplier,
+                                                                                        *previousIsochoricRateMultiplier,
+                                                                                        previousIsochoricStateVariables,
+                                                                                        getIsochoricViscoelasticParameters( ),
+                                                                                        *getIntegrationAlpha( ),
+                                                                                        deltaPK2IsochoricStress, *PK2IsochoricStress.value, currentIsochoricStateVariables,
+                                                                                        _dPK2IsochoricStressdEe,         dPK2IsochoricStressdRateMultiplier,
+                                                                                        _dPK2IsochoricStressdPreviousEe, dPK2IsochoricStressdPreviousRateMultiplier,
+                                                                                        _dPK2IsochoricStressdPreviousIsochoricISVs,
+                                                                                        _dISVsdEe,                       dISVsdRateMultiplier,
+                                                                                        _dISVsdPreviousEe,               dISVsdPreviousRateMultiplier,
+                                                                                        _dISVsdPreviousIsochoricISVs ) );
 
             dPK2IsochoricStressdEe                    = tardigradeVectorTools::appendVectors( _dPK2IsochoricStressdEe );
 

@@ -114,7 +114,7 @@ namespace tardigradeHydra{
             // Compute the elastic Green-Lagrange strain
             floatVector Ee;
     
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( Fe, Ee ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeGreenLagrangeStrain( Fe, Ee ) );
     
             // Compute the damage strain
             floatVector Ed = ( *get_damage( ) ) / ( 1 - ( *get_damage( ) ) ) * Ee;
@@ -188,7 +188,7 @@ namespace tardigradeHydra{
 
             floatVector dEedFe;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( Fe, Ee, dEedFe ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeGreenLagrangeStrain( Fe, Ee, dEedFe ) );
 
             floatVector dFedF( sot_dim * sot_dim, 0 );
 
