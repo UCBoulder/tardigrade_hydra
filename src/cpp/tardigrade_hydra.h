@@ -287,8 +287,21 @@ namespace tardigradeHydra{
          * Get a matrix of type T with a dynamic size of RxC from the data vector
          *
          * \param *p: A pointer to the first value of the array
+         * \param C: The number of columns in the map
          */
         return Eigen::Map< Eigen::Matrix< T, R, -1, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T>
+    Eigen::Map< Eigen::Matrix< T, -1, -1, Eigen::RowMajor > > getDynamicSizeMatrixMap( T *p, int R, int C ){
+        /*!
+         * Get a matrix of type T with a dynamic size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         * \param R: The number of rows in the map
+         * \param C: The number of columns in the map
+         */
+        return Eigen::Map< Eigen::Matrix< T, -1, -1, Eigen::RowMajor > >( p, R, C );
     }
 
     template<typename T, int R, int C>
@@ -307,8 +320,21 @@ namespace tardigradeHydra{
          * Get a matrix of type T with a dynamic size of RxC from the data vector
          *
          * \param *p: A pointer to the first value of the array
+         * \param C: The number of columns in the map
          */
         return Eigen::Map< const Eigen::Matrix< T, R, -1, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T>
+    Eigen::Map< const Eigen::Matrix< T, -1, -1, Eigen::RowMajor > > getDynamicSizeMatrixMap( const T *p, int R, int C ){
+        /*!
+         * Get a matrix of type T with a dynamic size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         * \param R: The number of rows in the map
+         * \param C: The number of columns in the map
+         */
+        return Eigen::Map< const Eigen::Matrix< T, -1, -1, Eigen::RowMajor > >( p, R, C );
     }
 
     template<typename T, int R>
@@ -331,6 +357,30 @@ namespace tardigradeHydra{
          */
 
         return Eigen::Map< const Eigen::Vector< T, R > >( p, R );
+    }
+
+    template<typename T>
+    Eigen::Map< Eigen::Vector< T, -1 > > getDynamicSizeVectorMap( T *p, int R ){
+        /*!
+         * Get a vector of type T with a fixed size of R from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         * \param R: The number of rows in the map
+         */
+
+        return Eigen::Map< Eigen::Vector< T, -1 > >( p, R );
+    }
+
+    template<typename T>
+    Eigen::Map< const Eigen::Vector< T, -1 > > getDynamicSizeVectorMap( const T *p, int R ){
+        /*!
+         * Get a vector of type T with a fixed size of R from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         * \param R: The number of rows in the map
+         */
+
+        return Eigen::Map< const Eigen::Vector< T, -1 > >( p, R );
     }
 
     /*!
@@ -574,9 +624,43 @@ namespace tardigradeHydra{
           Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > zeroMap( const unsigned int C ){
               /*!
                * Create a zeroed Eigen::Map of the quantity with dynamic columns
+               * 
+               * \param C: The number of columns in the matrix
                */
               zero( R * C );
               return Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > ( value->data( ), R, C );
+          }
+
+          template< typename X, unsigned int R >
+          Eigen::Map< Eigen::Vector< X, R > > zeroMap( ){
+              /*!
+               * Create a zeroed Eigen::Map of the quantity with dynamic columns as a vector
+               */
+              zero( R );
+              return Eigen::Map< Eigen::Vector< X, R > > ( value->data( ), R );
+          }
+
+          template< typename X >
+          Eigen::Map< Eigen::Vector< X, -1 > > zeroMap( const unsigned int R ){
+              /*!
+               * Create a zeroed Eigen::Map of the quantity with dynamic columns as a vector
+               * 
+               * \param R: The number of rows in the vector
+               */
+              zero( R );
+              return Eigen::Map< Eigen::Vector< X, -1 > > ( value->data( ), R );
+          }
+
+          template< typename X >
+          Eigen::Map< Eigen::Matrix< X, -1, -1, Eigen::RowMajor > > zeroMap( const unsigned int R, const unsigned int C ){
+              /*!
+               * Create a zeroed Eigen::Map of the quantity with dynamic columns
+               * 
+               * \param R: The number of rows in the matrix
+               * \param C: The number of columns in the matrix
+               */
+              zero( R * C );
+              return Eigen::Map< Eigen::Matrix< X, -1, -1, Eigen::RowMajor > > ( value->data( ), R, C );
           }
 
       protected:
