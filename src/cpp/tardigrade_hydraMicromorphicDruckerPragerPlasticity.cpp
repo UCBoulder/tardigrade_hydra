@@ -173,9 +173,19 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::computeSecondOrderReferenceStressDecomposition( referenceStressMeasure,
                                           rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                                           dDevStressdRCG, dPressuredStress, dPressuredRCG ) );
-   
-            fourthOrderTensor dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim );
-            secondOrderTensor dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG, dRCGdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
+  
+            auto map_dDevStressdRCG  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdRCG.data( ) );
+            auto map_dPressuredRCG   = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dPressuredRCG.data( ) );
+            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dRCGdPrecedingF.data( ) );
+
+            fourthOrderTensor dDevStressdPrecedingF( sot_dim * sot_dim );
+            secondOrderTensor dPressuredPrecedingF( sot_dim );
+
+            auto map_dDevStressdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdPrecedingF.data( ) );
+            auto map_dPressuredPrecedingF  = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dPressuredPrecedingF.data( ) );
+
+            map_dDevStressdPrecedingF = ( map_dDevStressdRCG * map_dRCGdPrecedingF ).eval( );
+            map_dPressuredPrecedingF  = ( map_dPressuredRCG * map_dRCGdPrecedingF ).eval( );
  
             //Compute the l2norm of the deviatoric stress
             variableType normDevStress = tardigradeVectorTools::l2norm( deviatoricReferenceStress );
@@ -186,13 +196,21 @@ namespace tardigradeHydra{
             //Evaluate the jacobians
             secondOrderTensor devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
     
+            auto map_devStressDirection = getFixedSizeMatrixMap< floatType,       1, sot_dim >( devStressDirection.data( ) );
+            auto map_dDevStressdStress  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdStress.data( ) );
+
             dFdStress  = BAngle * dPressuredStress;
-            dFdStress += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdStress, 1, sot_dim, sot_dim, sot_dim );
+
+            auto map_dFdStress = getFixedSizeMatrixMap< floatType, 1, sot_dim >( dFdStress.data( ) );
+            map_dFdStress += ( map_devStressDirection * map_dDevStressdStress ).eval( );
     
             dFdc = - AAngle;
     
             dFdPrecedingF  = BAngle * dPressuredPrecedingF;
-            dFdPrecedingF += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
+            
+            auto map_dFdPrecedingF = getFixedSizeMatrixMap< floatType, 1, sot_dim >( dFdPrecedingF.data( ) );
+            map_dFdPrecedingF += ( map_devStressDirection * map_dDevStressdPrecedingF ).eval( );
+
         }
 
         void computeSecondOrderDruckerPragerYieldEquation( const secondOrderTensor &stressMeasure, const variableType &cohesion,
@@ -266,8 +284,18 @@ namespace tardigradeHydra{
                                           rightCauchyGreen, deviatoricReferenceStress, pressure, dDevStressdStress,
                                           dDevStressdRCG, dPressuredStress, dPressuredRCG, d2DevStressdStressdRCG, d2PressuredStressdRCG ) )
 
-            fourthOrderTensor dDevStressdPrecedingF = tardigradeVectorTools::matrixMultiply( dDevStressdRCG, dRCGdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim );
-            secondOrderTensor dPressuredPrecedingF  = tardigradeVectorTools::matrixMultiply( dPressuredRCG, dRCGdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
+            auto map_dDevStressdRCG  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdRCG.data( ) );
+            auto map_dPressuredRCG   = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dPressuredRCG.data( ) );
+            auto map_dRCGdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dRCGdPrecedingF.data( ) );
+
+            fourthOrderTensor dDevStressdPrecedingF( sot_dim * sot_dim );
+            secondOrderTensor dPressuredPrecedingF( sot_dim );
+
+            auto map_dDevStressdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdPrecedingF.data( ) );
+            auto map_dPressuredPrecedingF  = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dPressuredPrecedingF.data( ) );
+
+            map_dDevStressdPrecedingF = ( map_dDevStressdRCG * map_dRCGdPrecedingF ).eval( );
+            map_dPressuredPrecedingF  = ( map_dPressuredRCG * map_dRCGdPrecedingF ).eval( );
 
             sixthOrderTensor d2DevStressdStressdPrecedingF( sot_dim * sot_dim * sot_dim, 0 );
 
@@ -304,23 +332,40 @@ namespace tardigradeHydra{
             //Evaluate the jacobians
             secondOrderTensor devStressDirection = deviatoricReferenceStress / ( normDevStress + tol );
 
-            dFdStress = BAngle * dPressuredStress;
-            dFdStress += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdStress, 1, sot_dim, sot_dim, sot_dim );
+            auto map_devStressDirection = getFixedSizeMatrixMap< floatType,       1, sot_dim >( devStressDirection.data( ) );
+            auto map_dDevStressdStress  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressdStress.data( ) );
+
+            dFdStress  = BAngle * dPressuredStress;
+
+            auto map_dFdStress = getFixedSizeMatrixMap< floatType, 1, sot_dim >( dFdStress.data( ) );
+            map_dFdStress += ( map_devStressDirection * map_dDevStressdStress ).eval( );
 
             dFdc = - AAngle;
 
             dFdPrecedingF = BAngle * dPressuredPrecedingF;
-            dFdPrecedingF += tardigradeVectorTools::matrixMultiply( devStressDirection, dDevStressdPrecedingF, 1, sot_dim, sot_dim, sot_dim );
+
+            auto map_dFdPrecedingF = getFixedSizeMatrixMap< floatType, 1, sot_dim >( dFdPrecedingF.data( ) );
+            map_dFdPrecedingF += ( map_devStressDirection * map_dDevStressdPrecedingF ).eval( );
 
             //Evaluate the second-order jacobians
             fourthOrderTensor dDevStressDirectiondDevStress( sot_dim * sot_dim, 0 );
             for ( unsigned int i = 0; i < sot_dim; i++ ){ dDevStressDirectiondDevStress[ sot_dim * i + i ] = 1. / ( normDevStress + tol ); }
-            dDevStressDirectiondDevStress -= tardigradeVectorTools::matrixMultiply( devStressDirection, devStressDirection, sot_dim, 1, 1, sot_dim ) / ( normDevStress + tol );
 
-            d2FdStress2 = tardigradeVectorTools::matrixMultiply( dDevStressdStress, tardigradeVectorTools::matrixMultiply( dDevStressDirectiondDevStress, dDevStressdStress, sot_dim, sot_dim, sot_dim, sot_dim ), sot_dim, sot_dim, sot_dim, sot_dim, true, false );
+            auto map_dDevStressDirectiondDevStress = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDevStressDirectiondDevStress.data( ) );
+            map_dDevStressDirectiondDevStress -= ( map_devStressDirection.transpose( ) * map_devStressDirection / ( normDevStress + tol ) ).eval( );
+
+            d2FdStress2   = fourthOrderTensor( fot_dim );
+            fourthOrderTensor temp( fot_dim );
+            auto map_temp = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( temp.data( ) );
+            map_temp = ( map_dDevStressDirectiondDevStress * map_dDevStressdStress ).eval( );
+
+            auto map_d2FdStress2 = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( d2FdStress2.data( ) );
+            map_d2FdStress2 = ( map_dDevStressdStress.transpose( ) * map_temp ).eval( );
 
             d2FdStressdPrecedingF  = BAngle * d2PressuredStressdPrecedingF;
-            d2FdStressdPrecedingF += tardigradeVectorTools::matrixMultiply( tardigradeVectorTools::matrixMultiply( dDevStressDirectiondDevStress, dDevStressdStress, sot_dim, sot_dim, sot_dim, sot_dim ), dDevStressdPrecedingF, sot_dim, sot_dim, sot_dim, sot_dim, true, false );
+
+            auto map_d2FdStressdPrecedingF = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( d2FdStressdPrecedingF.data( ) );
+            map_d2FdStressdPrecedingF += ( map_temp.transpose( ) * map_dDevStressdPrecedingF ).eval( );
 
             for ( unsigned int AB = 0; AB < sot_dim; AB++ ){
                 for ( unsigned int IJKL = 0; IJKL < fot_dim; IJKL++ ){
