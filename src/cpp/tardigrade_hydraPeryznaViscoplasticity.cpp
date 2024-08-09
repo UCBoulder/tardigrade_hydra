@@ -111,13 +111,15 @@ namespace tardigradeHydra{
 
             floatVector precedingConfiguration;
 
-            floatVector drivingStress;
+            setDataStorageBase< secondOrderTensor > drivingStress;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getPreviousStress( ) );
+
+                drivingStress = get_setDataStorage_previousDrivingStress( );
 
             }
             else{
@@ -126,20 +128,11 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getStress( ) );
 
-            }
-
-            tardigradeConstitutiveTools::pullBackCauchyStress( *cauchyStress, precedingConfiguration, drivingStress );
-
-            if ( isPrevious ){
-
-                set_previousDrivingStress( drivingStress );
+                drivingStress = get_setDataStorage_drivingStress( );
 
             }
-            else{
 
-                set_drivingStress( drivingStress );
-
-            }
+            tardigradeConstitutiveTools::pullBackCauchyStress( *cauchyStress, precedingConfiguration, *drivingStress.value );
 
         }
 
