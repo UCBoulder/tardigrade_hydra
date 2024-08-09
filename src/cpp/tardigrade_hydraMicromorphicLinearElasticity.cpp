@@ -1595,8 +1595,8 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( computeDeformationMeasures( deformationGradient1, microDeformation1, gradientMicroDeformation1,
-                                                                                   *rightCauchyGreen.value, *Psi.value, *Gamma.value ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeDeformationMeasures( deformationGradient1, microDeformation1, gradientMicroDeformation1,
+                                                                      *rightCauchyGreen.value, *Psi.value, *Gamma.value ) );
 
         }
 
@@ -1939,16 +1939,16 @@ namespace tardigradeHydra{
             floatVector localReferenceHigherOrderStress;
 
             // Compute the stresses in the local configuration
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( linearElasticityReferenceDerivedMeasures( *C, *Psi, *Gamma, *getAMatrix( ), *getBMatrix( ), *getCMatrix( ), *getDMatrix( ),
-                                                                                                 localPK2Stress, localReferenceSymmetricMicroStress, localReferenceHigherOrderStress ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( linearElasticityReferenceDerivedMeasures( *C, *Psi, *Gamma, *getAMatrix( ), *getBMatrix( ), *getCMatrix( ), *getDMatrix( ),
+                                                                                    localPK2Stress, localReferenceSymmetricMicroStress, localReferenceHigherOrderStress ) );
 
             // Pull the stresses back to the true reference configuration
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, *PK2Stress.value ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, *PK2Stress.value ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, followingConfiguration, *referenceSymmetricMicroStress.value ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, followingConfiguration, *referenceSymmetricMicroStress.value ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
-                                                                                                               *referenceHigherOrderStress.value ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
+                                                                                                  *referenceHigherOrderStress.value ) );
 
         }
 
@@ -2609,10 +2609,10 @@ namespace tardigradeHydra{
             sixthOrderTensor  dLocalMdGamma;
 
             // Compute the stresses in the local configuration
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( linearElasticityReferenceDerivedMeasures( *C, *Psi, *Gamma, *getAMatrix( ), *getBMatrix( ), *getCMatrix( ), *getDMatrix( ),
-                                                                                                 localPK2Stress, localReferenceSymmetricMicroStress, localReferenceHigherOrderStress,
-                                                                                                 dLocalPK2dC, dLocalPK2dPsi, dLocalPK2dGamma, dLocalSIGMAdC, dLocalSIGMAdPsi, dLocalSIGMAdGamma,
-                                                                                                 dLocalMdGamma ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( linearElasticityReferenceDerivedMeasures( *C, *Psi, *Gamma, *getAMatrix( ), *getBMatrix( ), *getCMatrix( ), *getDMatrix( ),
+                                                                                    localPK2Stress, localReferenceSymmetricMicroStress, localReferenceHigherOrderStress,
+                                                                                    dLocalPK2dC, dLocalPK2dPsi, dLocalPK2dGamma, dLocalSIGMAdC, dLocalSIGMAdPsi, dLocalSIGMAdGamma,
+                                                                                    dLocalMdGamma ) );
 
             Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dLocalPK2dC(       dLocalPK2dC.data( ),       sot_dim, sot_dim );
 
@@ -2745,13 +2745,13 @@ namespace tardigradeHydra{
             floatVector dMdChiFollow;
 
             // Pull the stresses back to the true reference configuration
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, *PK2Stress.value, dPK2dLocalPK2, dPK2dFFollow ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pullBackCauchyStress( localPK2Stress, followingConfiguration, *PK2Stress.value, dPK2dLocalPK2, dPK2dFFollow ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, followingConfiguration, *referenceSymmetricMicroStress.value,
-                                                                                                         dSIGMAdLocalSIGMA, dSIGMAdFFollow ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pullBackMicroStress( localReferenceSymmetricMicroStress, followingConfiguration, *referenceSymmetricMicroStress.value,
+                                                                                            dSIGMAdLocalSIGMA, dSIGMAdFFollow ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
-                                                                                                               *referenceHigherOrderStress.value, dMdLocalM, dMdFFollow, dMdChiFollow ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeMicromorphicTools::pullBackHigherOrderStress( localReferenceHigherOrderStress, followingConfiguration, followingMicroConfiguration,
+                                                                                                  *referenceHigherOrderStress.value, dMdLocalM, dMdFFollow, dMdChiFollow ) );
 
             Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2dLocalPK2( dPK2dLocalPK2.data( ), sot_dim, sot_dim );
 
@@ -2979,8 +2979,8 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( mapStressMeasuresToCurrent( *deformationGradient, *microDeformation, *PK2Stress, *referenceSymmetricMicroStress,
-                                                                                   *referenceHigherOrderStress, *cauchyStress.value, *symmetricMicroStress.value, *higherOrderStress.value )  );
+            TARDIGRADE_ERROR_TOOLS_CATCH( mapStressMeasuresToCurrent( *deformationGradient, *microDeformation, *PK2Stress, *referenceSymmetricMicroStress,
+                                                                      *referenceHigherOrderStress, *cauchyStress.value, *symmetricMicroStress.value, *higherOrderStress.value )  );
 
         }
 
@@ -3606,11 +3606,11 @@ namespace tardigradeHydra{
 
             sixthOrderTensor dHigherOrderStressdM;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( mapStressMeasuresToCurrent( *deformationGradient, *microDeformation, *PK2Stress, *referenceSymmetricMicroStress,
-                                                                                   *referenceHigherOrderStress, *cauchyStress.value, *symmetricMicroStress.value, *higherOrderStress.value,
-                                                                                   *dCauchyStressdF.value, dCauchyStressdPK2Stress,
-                                                                                   *dMicroStressdF.value,  dMicroStressdSIGMA,
-                                                                                   *dHigherOrderStressdF.value, *dHigherOrderStressdChi.value, dHigherOrderStressdM )  );
+            TARDIGRADE_ERROR_TOOLS_CATCH( mapStressMeasuresToCurrent( *deformationGradient, *microDeformation, *PK2Stress, *referenceSymmetricMicroStress,
+                                                                      *referenceHigherOrderStress, *cauchyStress.value, *symmetricMicroStress.value, *higherOrderStress.value,
+                                                                      *dCauchyStressdF.value, dCauchyStressdPK2Stress,
+                                                                      *dMicroStressdF.value,  dMicroStressdSIGMA,
+                                                                      *dHigherOrderStressdF.value, *dHigherOrderStressdChi.value, dHigherOrderStressdM )  );
 
             Eigen::Map<       Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdF(         dCauchyStressdF.value->data( ),  sot_dim, sot_dim );
 
@@ -3954,9 +3954,9 @@ namespace tardigradeHydra{
 
             floatVector dGammadGradChi1;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( computeDeformationMeasures( deformationGradient1, microDeformation1, gradientMicroDeformation1,
-                                                                                   *rightCauchyGreen.value, *Psi.value, *Gamma.value,
-                                                                                   dCdF1, dPsidF1, dPsidChi1, dGammadF1, dGammadGradChi1 ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( computeDeformationMeasures( deformationGradient1, microDeformation1, gradientMicroDeformation1,
+                                                                      *rightCauchyGreen.value, *Psi.value, *Gamma.value,
+                                                                      dCdF1, dPsidF1, dPsidChi1, dGammadF1, dGammadGradChi1 ) );
 
             Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCdF1( dCdF1.data( ), sot_dim, sot_dim );
 

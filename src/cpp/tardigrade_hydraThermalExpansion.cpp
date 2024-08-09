@@ -60,7 +60,7 @@ namespace tardigradeHydra{
 
             auto dThermalGreenLagrangeStraindT = get_setDataStorage_dThermalGreenLagrangeStraindT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::quadraticThermalExpansion( *hydra->getTemperature( ), *getReferenceTemperature( ), *getLinearParameters( ), *getQuadraticParameters( ), *thermalGreenLagrangeStrain.value, *dThermalGreenLagrangeStraindT.value ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::quadraticThermalExpansion( *hydra->getTemperature( ), *getReferenceTemperature( ), *getLinearParameters( ), *getQuadraticParameters( ), *thermalGreenLagrangeStrain.value, *dThermalGreenLagrangeStraindT.value ) );
 
         }
 
