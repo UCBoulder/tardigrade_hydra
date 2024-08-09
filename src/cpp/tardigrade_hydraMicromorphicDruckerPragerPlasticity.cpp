@@ -2025,20 +2025,20 @@ namespace tardigradeHydra{
             dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient = fifthOrderTensor( tot_dim * sot_dim, 0 );
 
             //Solve for the Jacobians
-            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > LHSMat( LHS.data(), tot_dim, tot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > nDRDCDA( negdRdCurrentDtAtilde.data(), tot_dim, tot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > nDRDCFA( negdRdCurrentFourthA.data(), tot_dim, fot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DRDPPMG( dRHSdPreviousPlasticMicroGradient.data(), tot_dim, tot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DRDPPMaVG( dRHSdPreviousPlasticMacroVelocityGradient.data(), tot_dim, sot_dim );
-            Eigen::Map< const Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DRDPPMiVG( dRHSdPreviousPlasticMicroVelocityGradient.data(), tot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > LHSMat(    LHS.data(),                                       tot_dim, tot_dim );
+            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > nDRDCDA(   negdRdCurrentDtAtilde.data(),                     tot_dim, tot_dim );
+            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, fot_dim, Eigen::RowMajor > > nDRDCFA(   negdRdCurrentFourthA.data(),                      tot_dim, fot_dim );
+            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > DRDPPMG(   dRHSdPreviousPlasticMicroGradient.data(),         tot_dim, tot_dim );
+            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > DRDPPMaVG( dRHSdPreviousPlasticMacroVelocityGradient.data(), tot_dim, sot_dim );
+            Eigen::Map< const Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > DRDPPMiVG( dRHSdPreviousPlasticMicroVelocityGradient.data(), tot_dim, sot_dim );
 
-            Eigen::ColPivHouseholderQR< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > qrSolver( LHSMat );
+            Eigen::ColPivHouseholderQR< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > qrSolver( LHSMat );
 
-            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > X1( dCurrentPlasticMicroGradientdCurrentDTAtilde.data(), tot_dim, tot_dim );
-            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > X2( dCurrentPlasticMicroGradientdCurrentFourthA.data(), tot_dim, fot_dim );
-            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DCPMGDPMG( dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient.data(), tot_dim, tot_dim );
-            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DCPMGDPMaVG( dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient.data(), tot_dim, sot_dim );
-            Eigen::Map< Eigen::Matrix< variableType, -1, -1, Eigen::RowMajor > > DCPMGDPMiVG( dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient.data(), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > X1(          dCurrentPlasticMicroGradientdCurrentDTAtilde.data(),                      tot_dim, tot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, fot_dim, Eigen::RowMajor > > X2(          dCurrentPlasticMicroGradientdCurrentFourthA.data(),                       tot_dim, fot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, tot_dim, Eigen::RowMajor > > DCPMGDPMG(   dCurrentPlasticMicroGradientdPreviousPlasticMicroGradient.data(),         tot_dim, tot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > DCPMGDPMaVG( dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient.data(), tot_dim, sot_dim );
+            Eigen::Map< Eigen::Matrix< variableType, tot_dim, sot_dim, Eigen::RowMajor > > DCPMGDPMiVG( dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient.data(), tot_dim, sot_dim );
 
             X1          = qrSolver.solve( nDRDCDA );
             X2          = qrSolver.solve( nDRDCFA );
@@ -2047,26 +2047,43 @@ namespace tardigradeHydra{
             DCPMGDPMiVG = qrSolver.solve( DRDPPMiVG );
 
             //Assemble the final terms of the deformation
-            dCurrentPlasticMicroGradientdPlasticMicroDeformation = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentDTAtilde,
-                                                                                                          dCurrentDTAtildedPlasticMicroDeformation, tot_dim, tot_dim, tot_dim, sot_dim );
 
-            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentFourthA,
-                                                                                                               dCurrentFourthAdMacroVelocityGradient, tot_dim, fot_dim, fot_dim, sot_dim );
+            auto map_dCurrentDTAtildedPlasticMicroDeformation = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentDTAtildedPlasticMicroDeformation.data( ) );
+            auto map_dCurrentFourthAdMacroVelocityGradient    = getFixedSizeMatrixMap< floatType, fot_dim, sot_dim >( dCurrentFourthAdMacroVelocityGradient.data( ) );
+            auto map_dCurrentFourthAdMicroVelocityGradient    = getFixedSizeMatrixMap< floatType, fot_dim, sot_dim >( dCurrentFourthAdMicroVelocityGradient.data( ) );
+            auto map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dCurrentDTAtildedPlasticMicroGradientVelocityGradient.data( ) );
+            auto map_dPreviousDTAtildedPlasticMicroDeformation = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPreviousDTAtildedPlasticMicroDeformation.data( ) );
+            auto map_dPreviousDTAtildedPlasticMicroGradientVelocityGradient = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dPreviousDTAtildedPlasticMicroGradientVelocityGradient.data( ) );
 
-            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentFourthA,
-                                                                                                               dCurrentFourthAdMicroVelocityGradient, tot_dim, fot_dim, fot_dim, sot_dim );
+            dCurrentPlasticMicroGradientdPlasticMicroDeformation = floatVector( tot_dim * sot_dim );
+            auto map_dCurrentPlasticMicroGradientdPlasticMicroDeformation = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentPlasticMicroGradientdPlasticMicroDeformation.data( ) );
 
-            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentDTAtilde,
-                                                                                                                       dCurrentDTAtildedPlasticMicroGradientVelocityGradient,
-                                                                                                                       tot_dim, tot_dim, tot_dim, tot_dim );
+            dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient = floatVector( tot_dim * sot_dim );
+            auto map_dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient.data( ) );
 
-            dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentDTAtilde,
-                                                                                                                  dPreviousDTAtildedPlasticMicroDeformation,
-                                                                                                                  tot_dim, tot_dim, tot_dim, sot_dim );
+            dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = floatVector( tot_dim * sot_dim );
+            auto map_dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient.data( ) );
 
-            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient = tardigradeVectorTools::matrixMultiply( dCurrentPlasticMicroGradientdCurrentDTAtilde,
-                                                                                                                               dPreviousDTAtildedPlasticMicroGradientVelocityGradient,
-                                                                                                                               tot_dim, tot_dim, tot_dim, tot_dim );
+            dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = floatVector( tot_dim * tot_dim );
+            auto map_dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient.data( ) );
+
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation = floatVector( tot_dim * sot_dim );
+            auto map_dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation.data( ) );
+
+            dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient = floatVector( tot_dim * tot_dim );
+            auto map_dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient = getFixedSizeMatrixMap< floatType, tot_dim, tot_dim >( dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient.data( ) );
+
+            map_dCurrentPlasticMicroGradientdPlasticMicroDeformation = ( X1 * map_dCurrentDTAtildedPlasticMicroDeformation ).eval( );
+
+            map_dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient = ( X2 * map_dCurrentFourthAdMacroVelocityGradient ).eval( );
+
+            map_dCurrentPlasticMicroGradientdPlasticMicroVelocityGradient = ( X2 * map_dCurrentFourthAdMicroVelocityGradient ).eval( );
+
+            map_dCurrentPlasticMicroGradientdPlasticMicroGradientVelocityGradient = ( X1 * map_dCurrentDTAtildedPlasticMicroGradientVelocityGradient ).eval( );
+
+            map_dCurrentPlasticMicroGradientdPreviousPlasticMicroDeformation = ( X1 * map_dPreviousDTAtildedPlasticMicroDeformation ).eval( );
+
+            map_dCurrentPlasticMicroGradientdPreviousPlasticMicroGradientVelocityGradient = ( X1 * map_dPreviousDTAtildedPlasticMicroGradientVelocityGradient ).eval( );
 
         }
 
