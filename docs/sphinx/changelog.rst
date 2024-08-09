@@ -26,6 +26,7 @@ Internal Changes
 - Removed set_varname and replaced with setDataStorage for hydra micromorphic (:pull:`151`). By `Nathan Miller`_.
 - Corrected calling the Jacobian with every call to the residual (:pull:`153`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for hydra micromoprhic linear elasticity (:pull:`155`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra micromoprhic Drucker-Prager plasticity (:pull:`157`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
