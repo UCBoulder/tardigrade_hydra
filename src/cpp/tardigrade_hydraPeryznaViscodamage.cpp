@@ -307,31 +307,62 @@ namespace tardigradeHydra{
              * \param &isPrevious: Whether to compute the previous values or not
              */
 
-            const unsigned int dim = hydra->getDimension( );
+            constexpr unsigned int dim = 3;
 
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int sot_dim = dim * dim;
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
-
-            floatVector evolutionRates;
 
             floatVector tempJac;
 
             tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRateDerivatives( isPrevious );
 
+            const floatVector *stateVariableEvolutionRates;
+
+            const floatType   *plasticMultiplier;
+
+            const floatVector *dPlasticMultiplierdCauchyStress;
+
+            setDataStorageBase< floatVector > evolutionRates;
+
+            setDataStorageBase< floatVector > dStateVariableEvolutionRatesdCauchyStress;
+
             if ( isPrevious ){
 
-                evolutionRates = { ( *get_previousStateVariableEvolutionRates( ) )[ 0 ], *get_previousPlasticMultiplier( ) };
+                stateVariableEvolutionRates = get_previousStateVariableEvolutionRates( );
 
-                set_previousStateVariableEvolutionRates( evolutionRates );
+                plasticMultiplier           = get_previousPlasticMultiplier( );
 
-                // Set the derivatives w.r.t. the previous Cauchy stress
-                tempJac = *get_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( );
-                for ( unsigned int i = 0; i < sot_dim; i++ ){
-                    tempJac[ sot_dim + i ] = ( *get_dPreviousPlasticMultiplierdPreviousCauchyStress( ) )[ i ];
-                }
+                evolutionRates              = get_setDataStorage_previousStateVariableEvolutionRates( );
 
-                set_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( tempJac );
+                dPlasticMultiplierdCauchyStress = get_dPreviousPlasticMultiplierdPreviousCauchyStress( );
+
+                dStateVariableEvolutionRatesdCauchyStress = get_setDataStorage_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( );
+
+            }
+            else{
+
+                stateVariableEvolutionRates = get_stateVariableEvolutionRates( );
+
+                plasticMultiplier           = get_plasticMultiplier( );
+
+                evolutionRates              = get_setDataStorage_stateVariableEvolutionRates( );
+
+                dPlasticMultiplierdCauchyStress = get_dPlasticMultiplierdCauchyStress( );
+
+                dStateVariableEvolutionRatesdCauchyStress = get_setDataStorage_dStateVariableEvolutionRatesdCauchyStress( );
+
+            }
+
+            *evolutionRates.value = { ( *stateVariableEvolutionRates )[ 0 ], *plasticMultiplier };
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                ( *dStateVariableEvolutionRatesdCauchyStress.value )[ sot_dim + i ] = ( *dPlasticMultiplierdCauchyStress )[ i ];
+
+            }
+
+            if ( isPrevious ){
 
                 // Set the derivatives w.r.t. the previous deformation gradient
                 tempJac = *get_dPreviousStateVariableEvolutionRatesdPreviousF( );
@@ -363,18 +394,6 @@ namespace tardigradeHydra{
 
             }
             else{
-
-                evolutionRates = { ( *get_stateVariableEvolutionRates( ) )[ 0 ], *get_plasticMultiplier( ) };
-
-                set_stateVariableEvolutionRates( evolutionRates );
-
-                // Set the derivatives w.r.t. the Cauchy stress
-                tempJac = *get_dStateVariableEvolutionRatesdCauchyStress( );
-                for ( unsigned int i = 0; i < sot_dim; i++ ){
-                    tempJac[ sot_dim + i ] = ( *get_dPlasticMultiplierdCauchyStress( ) )[ i ];
-                }
-
-                set_dStateVariableEvolutionRatesdCauchyStress( tempJac );
 
                 // Set the derivatives w.r.t. the deformation gradient
                 tempJac = *get_dStateVariableEvolutionRatesdF( );
@@ -413,21 +432,26 @@ namespace tardigradeHydra{
              * Set the residual vector
              */
 
-            floatVector residual( *getNumEquations( ), 0 );
+            constexpr unsigned int dim = 3;
 
-            for ( unsigned int i = 0; i < get_damageDeformationGradient( )->size( ); i++ ){
+            constexpr unsigned int sot_dim = dim * dim;
 
-                residual[ i ] = hydra->getConfiguration( *getDamageConfigurationIndex( ) )[ i ] - ( *get_damageDeformationGradient( ) )[ i ];
+            const unsigned int num_isvs = get_plasticStateVariables( )->size( );
+
+            auto residual = get_setDataStorage_residual( );
+            residual.zero( *getNumEquations( ) );
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                ( *residual.value )[ i ] = hydra->getConfiguration( *getDamageConfigurationIndex( ) )[ i ] - ( *get_damageDeformationGradient( ) )[ i ];
 
             }
 
-            for ( unsigned int i = 0; i < get_plasticStateVariables( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < num_isvs; i++ ){
 
-                residual[ get_damageDeformationGradient( )->size( ) + i ] = ( *get_stateVariables( ) )[ i ] - ( *get_plasticStateVariables( ) )[ i ];
+                ( *residual.value )[ sot_dim + i ] = ( *get_stateVariables( ) )[ i ] - ( *get_plasticStateVariables( ) )[ i ];
 
             }
-
-            setResidual( residual );
 
         }
 
@@ -436,7 +460,9 @@ namespace tardigradeHydra{
              * Set the Jacobian matrix
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
+
+            constexpr unsigned int sot_dim = dim * dim;
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -446,7 +472,8 @@ namespace tardigradeHydra{
 
             const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
-            floatVector jacobian( *getNumEquations( ) * num_unknowns, 0 );
+            auto jacobian = get_setDataStorage_jacobian( );
+            jacobian.zero( *getNumEquations( ) * num_unknowns );
 
             // Jacobians of the damage deformation gradient
             for ( unsigned int i = 0; i < sot_dim; i++ ){
@@ -456,17 +483,17 @@ namespace tardigradeHydra{
                 for ( unsigned int j = 0; j < sot_dim; j++ ){
                     unsigned int col = j;
 
-                    jacobian[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdCauchyStress( ) )[ sot_dim * i + j ];
+                    ( *jacobian.value )[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdCauchyStress( ) )[ sot_dim * i + j ];
 
                 }
 
                 // Jacobians w.r.t. the sub configurations
-                jacobian[ num_unknowns * row + sot_dim * damage_configuration_index + i ] += 1;
+                ( *jacobian.value )[ num_unknowns * row + sot_dim * damage_configuration_index + i ] += 1;
 
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
                     unsigned int col = sot_dim + j;
 
-                    jacobian[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
+                    ( *jacobian.value )[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
 
                 }
 
@@ -474,7 +501,7 @@ namespace tardigradeHydra{
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
                     unsigned int col = sot_dim + ( num_configs - 1 ) * sot_dim + *ind;
 
-                    jacobian[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    ( *jacobian.value )[ num_unknowns * row + col ] -= ( *get_dDamageDeformationGradientdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
@@ -488,7 +515,7 @@ namespace tardigradeHydra{
                 for ( unsigned int j = 0; j < sot_dim; j++ ){
                     unsigned int col = j;
 
-                    jacobian[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdCauchyStress( ) )[ sot_dim * i + j ];
+                    ( *jacobian.value )[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdCauchyStress( ) )[ sot_dim * i + j ];
 
                 }
 
@@ -496,22 +523,20 @@ namespace tardigradeHydra{
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
                     unsigned int col = sot_dim + j;
 
-                    jacobian[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
+                    ( *jacobian.value )[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdSubFs( ) )[ ( num_configs - 1 ) * sot_dim * i + j ];
 
                 }
 
                 // Jacobians w.r.t. the state variables
-                jacobian[ num_unknowns * row + sot_dim + ( num_configs - 1 ) * sot_dim + ( *getStateVariableIndices( ) )[ i ] ] += 1;
+                ( *jacobian.value )[ num_unknowns * row + sot_dim + ( num_configs - 1 ) * sot_dim + ( *getStateVariableIndices( ) )[ i ] ] += 1;
                 for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->end( ); ind++ ){
                     unsigned int col = sot_dim + ( num_configs - 1 ) * sot_dim + *ind;
 
-                    jacobian[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
+                    ( *jacobian.value )[ num_unknowns * row + col ] -= ( *get_dPlasticStateVariablesdStateVariables( ) )[ num_isvs * i + ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ];
 
                 }
 
             }
-
-            setJacobian( jacobian );
 
         }
 
@@ -520,21 +545,27 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            floatVector dRdT( *getNumEquations( ), 0 );
+            constexpr unsigned int dim = 3;
 
-            for ( unsigned int i = 0; i < get_dDamageDeformationGradientdT( )->size( ); i++ ){
+            constexpr unsigned int sot_dim = dim * dim;
 
-                dRdT[ i ] -= ( *get_dDamageDeformationGradientdT( ) )[ i ];
+            const unsigned int num_isvs = get_dPlasticStateVariablesdT( )->size( );
+
+            auto dRdT = get_setDataStorage_dRdT( );
+
+            dRdT.zero( *getNumEquations( ) );
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                ( *dRdT.value )[ i ] -= ( *get_dDamageDeformationGradientdT( ) )[ i ];
 
             }
 
-            for ( unsigned int i = 0; i < get_dPlasticStateVariablesdT( )->size( ); i++ ){
+            for ( unsigned int i = 0; i < num_isvs; i++ ){
 
-                dRdT[ get_damageDeformationGradient( )->size( ) + i ] = -( *get_dPlasticStateVariablesdT( ) )[ i ];
+                ( *dRdT.value )[ sot_dim + i ] = -( *get_dPlasticStateVariablesdT( ) )[ i ];
 
             }
-
-            setdRdT( dRdT );
 
         }
 
@@ -543,16 +574,17 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
 
-            floatVector dRdF( ( *getNumEquations( ) ) * sot_dim, 0 );
+            constexpr unsigned int sot_dim = dim * dim;
 
-            dRdF = tardigradeVectorTools::appendVectors( { *get_dDamageDeformationGradientdF( ),
-                                                           *get_dPlasticStateVariablesdF( ) } );
+            auto dRdF = get_setDataStorage_dRdF( );
+            dRdF.zero( ( *getNumEquations( ) ) * sot_dim );
 
-            std::transform( dRdF.cbegin( ), dRdF.cend( ), dRdF.begin( ), std::negate<floatType>( ) );
+            *dRdF.value = tardigradeVectorTools::appendVectors( { *get_dDamageDeformationGradientdF( ),
+                                                                  *get_dPlasticStateVariablesdF( ) } );
 
-            setdRdF( dRdF );
+            std::transform( dRdF.value->cbegin( ), dRdF.value->cend( ), dRdF.value->begin( ), std::negate<floatType>( ) );
 
         }
 
