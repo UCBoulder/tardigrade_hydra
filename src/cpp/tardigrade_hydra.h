@@ -271,6 +271,68 @@ namespace tardigradeHydra{
 
     typedef void ( hydraBase::*hydraBaseFxn )( ); //!< Typedef for passing pointers to hydraBase functions
 
+    template<typename T, int R, int C>
+    Eigen::Map< Eigen::Matrix< T, R, C, Eigen::RowMajor > > getFixedSizeMatrixMap( T *p ){
+        /*!
+         * Get a matrix of type T with a fixed size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         */
+        return Eigen::Map< Eigen::Matrix< T, R, C, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T, int R>
+    Eigen::Map< Eigen::Matrix< T, R, -1, Eigen::RowMajor > > getDynamicColumnSizeMatrixMap( T *p, int C ){
+        /*!
+         * Get a matrix of type T with a dynamic size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         */
+        return Eigen::Map< Eigen::Matrix< T, R, -1, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T, int R, int C>
+    Eigen::Map< const Eigen::Matrix< T, R, C, Eigen::RowMajor > > getFixedSizeMatrixMap( const T *p ){
+        /*!
+         * Get a matrix of type T with a fixed size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         */
+        return Eigen::Map< const Eigen::Matrix< T, R, C, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T, int R>
+    Eigen::Map< const Eigen::Matrix< T, R, -1, Eigen::RowMajor > > getDynamicColumnSizeMatrixMap( const T *p, int C ){
+        /*!
+         * Get a matrix of type T with a dynamic size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         */
+        return Eigen::Map< const Eigen::Matrix< T, R, -1, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T, int R>
+    Eigen::Map< Eigen::Vector< T, R > > getFixedSizeVectorMap( T *p ){
+        /*!
+         * Get a vector of type T with a fixed size of R from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         */
+
+        return Eigen::Map< Eigen::Vector< T, R > >( p, R );
+    }
+
+    template<typename T, int R>
+    Eigen::Map< const Eigen::Vector< T, R > > getFixedSizeVectorMap( const T *p ){
+        /*!
+         * Get a vector of type T with a fixed size of R from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         */
+
+        return Eigen::Map< const Eigen::Vector< T, R > >( p, R );
+    }
+
     /*!
      * Base class for data objects which defines the clear command
      */
@@ -498,6 +560,24 @@ namespace tardigradeHydra{
           void zero( ){ _ds->zero( ); }
 
           void zero( const unsigned int size ){ _ds->zero( size ); }
+
+          template< typename X, unsigned int R, unsigned int C >
+          Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > zeroMap( ){
+              /*!
+               * Create a zeroed Eigen::Map of the quantity
+               */
+              zero( R * C );
+              return Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > ( value->data( ), R, C );
+          }
+
+          template< typename X, unsigned int R >
+          Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > zeroMap( const unsigned int C ){
+              /*!
+               * Create a zeroed Eigen::Map of the quantity with dynamic columns
+               */
+              zero( R * C );
+              return Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > ( value->data( ), R, C );
+          }
 
       protected:
 

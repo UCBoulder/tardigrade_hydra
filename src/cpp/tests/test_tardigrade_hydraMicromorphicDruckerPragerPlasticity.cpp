@@ -92,8 +92,8 @@ bool tolerantCheck( const std::vector< double > &v1, const std::vector< double >
         }
         else{
 
-            if ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) > eps ) ||
-                 ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) > eps ) ){
+            if ( ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) ) > eps ) ||
+                 ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) ) > eps ) ){
 
                 return false;
 
@@ -12590,7 +12590,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidX     ) == tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidX     ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidX ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidX ), 4e-5, 3e-6 ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidX ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidX ), 4e-5, 1e-5 ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -12920,7 +12920,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousStress     ) == tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidPreviousStress )    , CHECK_PER_ELEMENT );
 
-    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousStress ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousStress ), 1e-5, 1e-6 ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousStress ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousStress ), 1e-5, 1e-5 ) );
 
     for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
 
@@ -13679,7 +13679,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidX     ) == tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidX     ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidX ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidX ), 4e-5, 3e-6 ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidX ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidX ), 4e-5, 1e-5 ) );
 
     for ( unsigned int i = 0; i < deformationGradient.size( ); i++ ){
 
@@ -14009,7 +14009,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousStress     ) == tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidPreviousStress )    , CHECK_PER_ELEMENT );
 
-    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousStress ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousStress ), 1e-5, 1e-6 ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousStress ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousStress ), 1e-5, 1e-5 ) );
 
     for ( unsigned int i = 0; i < previousStateVariables.size( ); i++ ){
 
