@@ -23,19 +23,31 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( hydra->getPreviousAdditionalDOF( )->size( ) >= 5, "The previous additional DOF vector is of size " + std::to_string( hydra->getPreviousAdditionalDOF( )->size( ) ) + " which is less than the required size of 5" );
 
-            set_density( ( *hydra->getAdditionalDOF( ) )[ 0 ] );
+            auto density                 = get_setDataStorage_density( );
 
-            set_massChangeRate( ( *hydra->getAdditionalDOF( ) )[ 1 ] );
+            auto massChangeRate          = get_setDataStorage_massChangeRate( );
 
-            set_directionVector( dimVector( hydra->getAdditionalDOF( )->begin( ) + 2,
-                                            hydra->getAdditionalDOF( )->begin( ) + 5 ) );
+            auto directionVector         = get_setDataStorage_directionVector( );
 
-            set_previousDensity( ( *hydra->getPreviousAdditionalDOF( ) )[ 0 ] );
+            auto previousDensity         = get_setDataStorage_previousDensity( );
 
-            set_previousMassChangeRate( ( *hydra->getPreviousAdditionalDOF( ) )[ 1 ] );
+            auto previousMassChangeRate  = get_setDataStorage_previousMassChangeRate( );
 
-            set_previousDirectionVector( floatVector( hydra->getPreviousAdditionalDOF( )->begin( ) + 2,
-                                                             hydra->getPreviousAdditionalDOF( )->begin( ) + 5 ) );
+            auto previousDirectionVector = get_setDataStorage_previousDirectionVector( );
+
+            *density.value = ( *hydra->getAdditionalDOF( ) )[ 0 ];
+
+            *massChangeRate.value = ( *hydra->getAdditionalDOF( ) )[ 1 ];
+
+            *directionVector.value = dimVector( hydra->getAdditionalDOF( )->begin( ) + 2,
+                                                hydra->getAdditionalDOF( )->begin( ) + 5 );
+
+            *previousDensity.value = ( *hydra->getPreviousAdditionalDOF( ) )[ 0 ];
+
+            *previousMassChangeRate.value = ( *hydra->getPreviousAdditionalDOF( ) )[ 1 ];
+
+            *previousDirectionVector.value = dimVector( hydra->getPreviousAdditionalDOF( )->begin( ) + 2,
+                                                        hydra->getPreviousAdditionalDOF( )->begin( ) + 5 );
 
         }
 
@@ -50,11 +62,15 @@ namespace tardigradeHydra{
 
             const floatType *mass_change_rate;
 
+            setDataStorageBase< floatType > massChangeVelocityGradientTrace;
+
             if ( isPrevious ){
 
                 density = get_previousDensity( );
 
                 mass_change_rate = get_previousMassChangeRate( );
+
+                massChangeVelocityGradientTrace = get_setDataStorage_previousMassChangeVelocityGradientTrace( );
 
             }
             else{
@@ -63,20 +79,11 @@ namespace tardigradeHydra{
 
                 mass_change_rate = get_massChangeRate( );
 
-            }
-
-            floatType massChangeVelocityGradientTrace = ( *mass_change_rate ) / ( *density );
-
-            if ( isPrevious ){
-
-                set_previousMassChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
+                massChangeVelocityGradientTrace = get_setDataStorage_massChangeVelocityGradientTrace( );
 
             }
-            else{
 
-                set_massChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
-
-            }
+            *massChangeVelocityGradientTrace.value = ( *mass_change_rate ) / ( *density );
 
         }
 
@@ -91,11 +98,23 @@ namespace tardigradeHydra{
 
             const floatType *mass_change_rate;
 
+            setDataStorageBase< floatType > massChangeVelocityGradientTrace;
+
+            setDataStorageBase< floatType > dMassChangeVelocityGradientTracedDensity;
+
+            setDataStorageBase< floatType > dMassChangeVelocityGradientTracedMassChangeRate;
+
             if ( isPrevious ){
 
                 density = get_previousDensity( );
 
                 mass_change_rate = get_previousMassChangeRate( );
+
+                massChangeVelocityGradientTrace = get_setDataStorage_previousMassChangeVelocityGradientTrace( );
+
+                dMassChangeVelocityGradientTracedDensity = get_setDataStorage_dPreviousMassChangeVelocityGradientTracedPreviousDensity( );
+
+                dMassChangeVelocityGradientTracedMassChangeRate = get_setDataStorage_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( );
 
             }
             else{
@@ -104,32 +123,19 @@ namespace tardigradeHydra{
 
                 mass_change_rate = get_massChangeRate( );
 
-            }
+                massChangeVelocityGradientTrace = get_setDataStorage_massChangeVelocityGradientTrace( );
 
-            floatType massChangeVelocityGradientTrace = ( *mass_change_rate ) / ( *density );
+                dMassChangeVelocityGradientTracedDensity = get_setDataStorage_dMassChangeVelocityGradientTracedDensity( );
 
-            floatType dMassChangeVelocityGradientTracedDensity = - ( *mass_change_rate ) / ( ( *density ) * ( *density ) );
-
-            floatType dMassChangeVelocityGradientTracedMassChangeRate = 1. / ( *density );
-
-            if ( isPrevious ){
-
-                set_previousMassChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
-
-                set_dPreviousMassChangeVelocityGradientTracedPreviousDensity( dMassChangeVelocityGradientTracedDensity );
-
-                set_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( dMassChangeVelocityGradientTracedMassChangeRate );
+                dMassChangeVelocityGradientTracedMassChangeRate = get_setDataStorage_dMassChangeVelocityGradientTracedMassChangeRate( );
 
             }
-            else{
 
-                set_massChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
+            *massChangeVelocityGradientTrace.value = ( *mass_change_rate ) / ( *density );
 
-                set_dMassChangeVelocityGradientTracedDensity( dMassChangeVelocityGradientTracedDensity );
+            *dMassChangeVelocityGradientTracedDensity.value = - ( *mass_change_rate ) / ( ( *density ) * ( *density ) );
 
-                set_dMassChangeVelocityGradientTracedMassChangeRate( dMassChangeVelocityGradientTracedMassChangeRate );
-
-            }
+            *dMassChangeVelocityGradientTracedMassChangeRate.value = 1. / ( *density );
 
         }
 
@@ -198,35 +204,30 @@ namespace tardigradeHydra{
 
             const dimVector *directionVector;
 
+            setDataStorageBase< dimVector > unitDirectionVector;
+
             if ( isPrevious ){
 
                 directionVector = get_previousDirectionVector( );
+
+                unitDirectionVector = get_setDataStorage_previousUnitDirectionVector( );
 
             }
             else{
 
                 directionVector = get_directionVector( );
 
+                unitDirectionVector = get_setDataStorage_unitDirectionVector( );
+
             }
 
             floatType normDirectionVector = tardigradeVectorTools::l2norm( *directionVector );
 
-            dimVector unitDirectionVector( dim, 0 );
+            unitDirectionVector.zero( dim );
 
             if ( std::isfinite( 1. / normDirectionVector ) ){
 
-                unitDirectionVector = ( *directionVector ) / normDirectionVector;
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousUnitDirectionVector( unitDirectionVector );
-
-            }
-            else{
-
-                set_unitDirectionVector( unitDirectionVector );
+                *unitDirectionVector.value = ( *directionVector ) / normDirectionVector;
 
             }
 
@@ -263,30 +264,42 @@ namespace tardigradeHydra{
 
             const dimVector *directionVector;
 
+            setDataStorageBase< dimVector > unitDirectionVector;
+
+            setDataStorageBase< secondOrderTensor > dUnitDirectionVectordDirectionVector;
+
             if ( isPrevious ){
 
                 directionVector = get_previousDirectionVector( );
+
+                unitDirectionVector = get_setDataStorage_previousUnitDirectionVector( );
+
+                dUnitDirectionVectordDirectionVector = get_setDataStorage_dPreviousUnitDirectionVectordPreviousDirectionVector( );
 
             }
             else{
 
                 directionVector = get_directionVector( );
 
+                unitDirectionVector = get_setDataStorage_unitDirectionVector( );
+
+                dUnitDirectionVectordDirectionVector = get_setDataStorage_dUnitDirectionVectordDirectionVector( );
+
             }
 
             floatType normDirectionVector = tardigradeVectorTools::l2norm( *directionVector );
 
-            dimVector unitDirectionVector( dim, 0 );
+            unitDirectionVector.zero( dim );
 
-            secondOrderTensor dUnitDirectionVectordDirectionVector( sot_dim, 0 );
+            dUnitDirectionVectordDirectionVector.zero( sot_dim );
 
             if ( std::isfinite( 1. / normDirectionVector ) ){
 
-                unitDirectionVector = ( *directionVector ) / normDirectionVector;
+                *unitDirectionVector.value = ( *directionVector ) / normDirectionVector;
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
-                    dUnitDirectionVectordDirectionVector[ dim * i + i ] += 1 / normDirectionVector;
+                    ( *dUnitDirectionVectordDirectionVector.value )[ dim * i + i ] += 1 / normDirectionVector;
 
                 }
 
@@ -294,29 +307,13 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < dim; j++ ){
 
-                        dUnitDirectionVectordDirectionVector[ dim * i + j ] -= unitDirectionVector[ i ] * unitDirectionVector[ j ] / normDirectionVector;
+                        ( *dUnitDirectionVectordDirectionVector.value )[ dim * i + j ] -= ( *unitDirectionVector.value )[ i ] * ( *unitDirectionVector.value )[ j ] / normDirectionVector;
 
                     }
 
                 }
 
             }
-
-            if ( isPrevious ){
-
-                set_previousUnitDirectionVector( unitDirectionVector );
-
-                set_dPreviousUnitDirectionVectordPreviousDirectionVector( dUnitDirectionVectordDirectionVector );
-
-            }
-            else{
-
-                set_unitDirectionVector( unitDirectionVector );
-
-                set_dUnitDirectionVectordDirectionVector( dUnitDirectionVectordDirectionVector );
-
-            }
-
 
         }
 
@@ -355,11 +352,15 @@ namespace tardigradeHydra{
 
             const dimVector *unitDirectionVector;
 
+            setDataStorageBase< secondOrderTensor > velocityGradient;
+
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradientTrace = get_previousMassChangeVelocityGradientTrace( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_previousUnitDirectionVector( ) );
+
+                velocityGradient = get_setDataStorage_previousMassChangeVelocityGradient( );
 
             }
             else{
@@ -368,9 +369,11 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_unitDirectionVector( ) );
 
+                velocityGradient = get_setDataStorage_massChangeVelocityGradient( );
+
             }
 
-            secondOrderTensor velocityGradient( sot_dim, 0 );
+            velocityGradient.zero( sot_dim );
 
             floatType a = ( *velocityGradientTrace ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
 
@@ -378,7 +381,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
-                    velocityGradient[ dim * i + i ] += a * ( 1 - *massDirectionMixingParameter );
+                    ( *velocityGradient.value )[ dim * i + i ] += a * ( 1 - *massDirectionMixingParameter );
 
                 }
 
@@ -386,7 +389,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < dim; j++ ){
 
-                        velocityGradient[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
+                        ( *velocityGradient.value )[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
                     }
 
@@ -397,20 +400,9 @@ namespace tardigradeHydra{
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
-                    velocityGradient[ dim * i + i ] += *velocityGradientTrace;
+                    ( *velocityGradient.value )[ dim * i + i ] += *velocityGradientTrace;
 
                 }
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousMassChangeVelocityGradient( velocityGradient );
-
-            }
-            else{
-
-                set_massChangeVelocityGradient( velocityGradient );
 
             }
 
@@ -441,6 +433,14 @@ namespace tardigradeHydra{
 
             const secondOrderTensor *dUnitDirectionVectordDirectionVector;
 
+            setDataStorageBase< secondOrderTensor > velocityGradient;
+
+            setDataStorageBase< secondOrderTensor > dVelocityGradientdDensity;
+
+            setDataStorageBase< secondOrderTensor > dVelocityGradientdMassChangeRate;
+
+            setDataStorageBase< thirdOrderTensor > dVelocityGradientdDirectionVector;
+
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dVelocityGradientTracedDensity = get_dPreviousMassChangeVelocityGradientTracedPreviousDensity( ) )
@@ -452,6 +452,14 @@ namespace tardigradeHydra{
                 TARDIGRADE_ERROR_TOOLS_CATCH( dUnitDirectionVectordDirectionVector = get_dPreviousUnitDirectionVectordPreviousDirectionVector( ) )
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_previousUnitDirectionVector( ) )
+
+                velocityGradient = get_setDataStorage_previousMassChangeVelocityGradient( );
+
+                dVelocityGradientdDensity = get_setDataStorage_dPreviousMassChangeVelocityGradientdPreviousDensity( );
+
+                dVelocityGradientdMassChangeRate = get_setDataStorage_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( );
+
+                dVelocityGradientdDirectionVector = get_setDataStorage_dPreviousMassChangeVelocityGradientdPreviousDirectionVector( );
 
             }
             else{
@@ -466,15 +474,23 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_unitDirectionVector( ) )
 
+                velocityGradient = get_setDataStorage_massChangeVelocityGradient( );
+
+                dVelocityGradientdDensity = get_setDataStorage_dMassChangeVelocityGradientdDensity( );
+
+                dVelocityGradientdMassChangeRate = get_setDataStorage_dMassChangeVelocityGradientdMassChangeRate( );
+
+                dVelocityGradientdDirectionVector = get_setDataStorage_dMassChangeVelocityGradientdDirectionVector( );
+
             }
 
-            secondOrderTensor velocityGradient( sot_dim, 0 );
+            velocityGradient.zero( sot_dim );
 
-            secondOrderTensor dVelocityGradientdDensity( sot_dim, 0 );
+            dVelocityGradientdDensity.zero( sot_dim );
 
-            secondOrderTensor dVelocityGradientdMassChangeRate( sot_dim, 0 );
+            dVelocityGradientdMassChangeRate.zero( sot_dim );
 
-            thirdOrderTensor  dVelocityGradientdDirectionVector( tot_dim, 0 );
+            dVelocityGradientdDirectionVector.zero( tot_dim );
 
             floatType a = ( *velocityGradientTrace ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
 
@@ -486,11 +502,11 @@ namespace tardigradeHydra{
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
-                    velocityGradient[ dim * i + i ] += a * ( 1 - *massDirectionMixingParameter );
+                    ( *velocityGradient.value )[ dim * i + i ] += a * ( 1 - *massDirectionMixingParameter );
 
-                    dVelocityGradientdDensity[ dim * i + i ] += dadDensity * ( 1 - *massDirectionMixingParameter );
+                    ( *dVelocityGradientdDensity.value )[ dim * i + i ] += dadDensity * ( 1 - *massDirectionMixingParameter );
 
-                    dVelocityGradientdMassChangeRate[ dim * i + i ] += dadMassChangeRate * ( 1 - *massDirectionMixingParameter );
+                    ( *dVelocityGradientdMassChangeRate.value )[ dim * i + i ] += dadMassChangeRate * ( 1 - *massDirectionMixingParameter );
 
                 }
 
@@ -498,15 +514,15 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < dim; j++ ){
 
-                        velocityGradient[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
+                        ( *velocityGradient.value )[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
-                        dVelocityGradientdDensity[ dim * i + j ] += dadDensity * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
+                        ( *dVelocityGradientdDensity.value )[ dim * i + j ] += dadDensity * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
-                        dVelocityGradientdMassChangeRate[ dim * i + j ] += dadMassChangeRate * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
+                        ( *dVelocityGradientdMassChangeRate.value )[ dim * i + j ] += dadMassChangeRate * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
                         for ( unsigned int k = 0; k < dim; k++ ){
 
-                            dVelocityGradientdDirectionVector[ dim * dim * i + dim * j + k ]
+                            ( *dVelocityGradientdDirectionVector.value )[ dim * dim * i + dim * j + k ]
                                 += a * ( *massDirectionMixingParameter ) * ( ( *dUnitDirectionVectordDirectionVector )[ dim * i + k ] * ( *unitDirectionVector )[ j ]
                                                                            + ( *unitDirectionVector )[ i ] * ( *dUnitDirectionVectordDirectionVector )[ dim * j + k ] );
 
@@ -521,36 +537,13 @@ namespace tardigradeHydra{
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
-                    velocityGradient[ dim * i + i ] += *velocityGradientTrace;
+                    ( *velocityGradient.value )[ dim * i + i ] += *velocityGradientTrace;
 
-                    dVelocityGradientdDensity[ dim * i + i ] += ( *dVelocityGradientTracedDensity );
+                    ( *dVelocityGradientdDensity.value )[ dim * i + i ] += ( *dVelocityGradientTracedDensity );
 
-                    dVelocityGradientdMassChangeRate[ dim * i + i ] += ( *dVelocityGradientTracedMassChangeRate );
+                    ( *dVelocityGradientdMassChangeRate.value )[ dim * i + i ] += ( *dVelocityGradientTracedMassChangeRate );
 
                 }
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousMassChangeVelocityGradient( velocityGradient );
-
-                set_dPreviousMassChangeVelocityGradientdPreviousDensity( dVelocityGradientdDensity );
-
-                set_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( dVelocityGradientdMassChangeRate );
-
-                set_dPreviousMassChangeVelocityGradientdPreviousDirectionVector( dVelocityGradientdDirectionVector );
-
-            }
-            else{
-
-                set_massChangeVelocityGradient( velocityGradient );
-
-                set_dMassChangeVelocityGradientdDensity( dVelocityGradientdDensity );
-
-                set_dMassChangeVelocityGradientdMassChangeRate( dVelocityGradientdMassChangeRate );
-
-                set_dMassChangeVelocityGradientdDirectionVector( dVelocityGradientdDirectionVector );
 
             }
 
@@ -637,12 +630,14 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getMassChangeConfigurationIndex( ) ) );
+                auto precedingDeformationGradient = get_setDataStorage_previousPrecedingDeformationGradient( );
+                *precedingDeformationGradient.value = hydra->getPreviousPrecedingConfiguration( *getMassChangeConfigurationIndex( ) );
 
             }
             else{
 
-                set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getMassChangeConfigurationIndex( ) ) );
+                auto precedingDeformationGradient = get_setDataStorage_precedingDeformationGradient( );
+                *precedingDeformationGradient.value = hydra->getPrecedingConfiguration( *getMassChangeConfigurationIndex( ) );
 
             }
 
@@ -667,6 +662,12 @@ namespace tardigradeHydra{
 
             floatVector dpFdFs;
 
+            setDataStorageBase< secondOrderTensor > precedingDeformationGradient;
+
+            setDataStorageBase< fourthOrderTensor > dpFdF;
+
+            setDataStorageBase< floatVector > dpFdFn;
+
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dF1dF = hydra->get_previousdF1dF( ) )
@@ -675,7 +676,12 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dpFdFs = hydra->getPreviousPrecedingConfigurationJacobian( *getMassChangeConfigurationIndex( ) ) )
 
-                set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getMassChangeConfigurationIndex( ) ) );
+                auto precedingDeformationGradient = get_setDataStorage_previousPrecedingDeformationGradient( );
+                *precedingDeformationGradient.value = hydra->getPreviousPrecedingConfiguration( *getMassChangeConfigurationIndex( ) );
+
+                dpFdF = get_setDataStorage_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient( );
+
+                dpFdFn = get_setDataStorage_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( );
 
             }
             else{
@@ -686,13 +692,18 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dpFdFs = hydra->getPrecedingConfigurationJacobian( *getMassChangeConfigurationIndex( ) ) )
 
-                set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getMassChangeConfigurationIndex( ) ) );
+                auto precedingDeformationGradient = get_setDataStorage_precedingDeformationGradient( );
+                *precedingDeformationGradient.value = hydra->getPrecedingConfiguration( *getMassChangeConfigurationIndex( ) );
+
+                dpFdF = get_setDataStorage_dPrecedingDeformationGradientdDeformationGradient( );
+
+                dpFdFn = get_setDataStorage_dPrecedingDeformationGradientdSubDeformationGradients( );
 
             }
 
-            fourthOrderTensor dpFdF( sot_dim * sot_dim, 0 );
+            dpFdF.zero( sot_dim * sot_dim );
 
-            floatVector dpFdFn( sot_dim * sot_dim * ( num_configs - 1 ), 0 );
+            dpFdFn.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
@@ -700,7 +711,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dpFdF[ sot_dim * i + k ] += dpFdFs[ num_configs * sot_dim * i + j ] * ( *dF1dF )[ sot_dim * j + k ];
+                        ( *dpFdF.value )[ sot_dim * i + k ] += dpFdFs[ num_configs * sot_dim * i + j ] * ( *dF1dF )[ sot_dim * j + k ];
 
                     }
 
@@ -712,30 +723,15 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
-                    dpFdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dpFdFs[ num_configs * sot_dim * i + j + sot_dim ];
+                    ( *dpFdFn.value )[ ( num_configs - 1 ) * sot_dim * i + j ] += dpFdFs[ num_configs * sot_dim * i + j + sot_dim ];
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dpFdFn[ ( num_configs - 1 ) * sot_dim * i + j ] += dpFdFs[ num_configs * sot_dim * i + k ] * ( *dF1dFn )[ ( num_configs - 1 ) * sot_dim * k + j ];
+                        ( *dpFdFn.value )[ ( num_configs - 1 ) * sot_dim * i + j ] += dpFdFs[ num_configs * sot_dim * i + k ] * ( *dF1dFn )[ ( num_configs - 1 ) * sot_dim * k + j ];
 
                     }
 
                 }
-
-            }
-
-            if ( isPrevious ){
-
-                set_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient( dpFdF );
-
-                set_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( dpFdFn );
-
-            }
-            else{
-
-                set_dPrecedingDeformationGradientdDeformationGradient( dpFdF );
-
-                set_dPrecedingDeformationGradientdSubDeformationGradients( dpFdFn );
 
             }
 
@@ -806,11 +802,15 @@ namespace tardigradeHydra{
 
             const secondOrderTensor *precedingDeformationGradient;
 
+            setDataStorageBase< secondOrderTensor > intermediateVelocityGradient;
+
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_previousMassChangeVelocityGradient( ) )
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_previousPrecedingDeformationGradient( ) )
+
+                intermediateVelocityGradient = get_setDataStorage_previousMassChangeIntermediateVelocityGradient( );
 
             }
             else{
@@ -819,22 +819,11 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_precedingDeformationGradient( ) )
 
-            }
-
-            secondOrderTensor intermediateVelocityGradient;
-
-            tardigradeConstitutiveTools::pullBackVelocityGradient( *velocityGradient, *precedingDeformationGradient, intermediateVelocityGradient );
-
-            if ( isPrevious ){
-
-                set_previousMassChangeIntermediateVelocityGradient( intermediateVelocityGradient );
+                intermediateVelocityGradient = get_setDataStorage_massChangeIntermediateVelocityGradient( );
 
             }
-            else{
 
-                set_massChangeIntermediateVelocityGradient( intermediateVelocityGradient );
-
-            }
+            tardigradeConstitutiveTools::pullBackVelocityGradient( *velocityGradient, *precedingDeformationGradient, *intermediateVelocityGradient.value );
 
         }
 
@@ -867,6 +856,18 @@ namespace tardigradeHydra{
 
             const floatVector *dPFdFn;
 
+            setDataStorageBase< secondOrderTensor > intermediateVelocityGradient;
+
+            setDataStorageBase< secondOrderTensor > dILdRho;
+
+            setDataStorageBase< secondOrderTensor > dILdC;
+
+            setDataStorageBase< secondOrderTensor > dILdGradC;
+
+            setDataStorageBase< fourthOrderTensor > dILdF;
+
+            setDataStorageBase< fourthOrderTensor > dILdFn;
+
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dLdRho = get_dPreviousMassChangeVelocityGradientdPreviousDensity( ) )
@@ -882,6 +883,18 @@ namespace tardigradeHydra{
                 TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_previousMassChangeVelocityGradient( ) )
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_previousPrecedingDeformationGradient( ) )
+
+                intermediateVelocityGradient = get_setDataStorage_previousMassChangeIntermediateVelocityGradient( );
+
+                dILdRho                      = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity( );
+
+                dILdC                        = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate( );
+
+                dILdGradC                    = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector( );
+
+                dILdF                        = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( );
+
+                dILdFn                       = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( );
 
             }
             else{
@@ -900,82 +913,61 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_precedingDeformationGradient( ) )
 
-            }
+                intermediateVelocityGradient = get_setDataStorage_massChangeIntermediateVelocityGradient( );
 
-            secondOrderTensor intermediateVelocityGradient;
+                dILdRho                      = get_setDataStorage_dMassChangeIntermediateVelocityGradientdDensity( );
+
+                dILdC                        = get_setDataStorage_dMassChangeIntermediateVelocityGradientdMassChangeRate( );
+
+                dILdGradC                    = get_setDataStorage_dMassChangeIntermediateVelocityGradientdDirectionVector( );
+
+                dILdF                        = get_setDataStorage_dMassChangeIntermediateVelocityGradientdDeformationGradient( );
+
+                dILdFn                       = get_setDataStorage_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( );
+
+            }
 
             fourthOrderTensor dILdL, dILdPF;
 
-            tardigradeConstitutiveTools::pullBackVelocityGradient( *velocityGradient, *precedingDeformationGradient, intermediateVelocityGradient, dILdL, dILdPF );
+            tardigradeConstitutiveTools::pullBackVelocityGradient( *velocityGradient, *precedingDeformationGradient, *intermediateVelocityGradient.value, dILdL, dILdPF );
 
-            secondOrderTensor dILdRho( sot_dim, 0 );
+            dILdRho.zero( sot_dim );
 
-            secondOrderTensor dILdC( sot_dim, 0 );
+            dILdC.zero( sot_dim );
 
-            thirdOrderTensor  dILdGradC( tot_dim, 0 );
+            dILdGradC.zero( tot_dim );
 
-            fourthOrderTensor dILdF( sot_dim * sot_dim, 0 );
+            dILdF.zero( sot_dim * sot_dim );
 
-            floatVector dILdFn( ( num_configs - 1 ) * sot_dim * sot_dim, 0 );
+            dILdFn.zero( ( num_configs - 1 ) * sot_dim * sot_dim );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
                 for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                    dILdRho[ i ] += dILdL[ sot_dim * i + j ] * ( *dLdRho )[ j ];
+                    ( *dILdRho.value )[ i ] += dILdL[ sot_dim * i + j ] * ( *dLdRho )[ j ];
 
-                    dILdC[ i ] += dILdL[ sot_dim * i + j ] * ( *dLdC )[ j ];
+                    ( *dILdC.value )[ i ] += dILdL[ sot_dim * i + j ] * ( *dLdC )[ j ];
 
                     for ( unsigned int k = 0; k < dim; k++ ){
 
-                        dILdGradC[ dim * i + k ] += dILdL[ sot_dim * i + j ] * ( *dLdGradC )[ dim * j + k ];
+                        ( *dILdGradC.value )[ dim * i + k ] += dILdL[ sot_dim * i + j ] * ( *dLdGradC )[ dim * j + k ];
 
                     }
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dILdF[ sot_dim * i + k ] += dILdPF[ sot_dim * i + j ] * ( *dPFdF )[ sot_dim * j + k ];
+                        ( *dILdF.value )[ sot_dim * i + k ] += dILdPF[ sot_dim * i + j ] * ( *dPFdF )[ sot_dim * j + k ];
 
                     }
 
                     for ( unsigned int k = 0; k < ( num_configs - 1 ) * sot_dim; k++ ){
 
-                        dILdFn[ ( num_configs - 1 ) * sot_dim * i + k ] += dILdPF[ sot_dim * i + j ] * ( *dPFdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
+                        ( *dILdFn.value )[ ( num_configs - 1 ) * sot_dim * i + k ] += dILdPF[ sot_dim * i + j ] * ( *dPFdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
 
                     }
 
                 }
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousMassChangeIntermediateVelocityGradient( intermediateVelocityGradient );
-
-                set_dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity( dILdRho );
-
-                set_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate( dILdC );
-
-                set_dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector( dILdGradC );
-
-                set_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( dILdF );
-
-                set_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( dILdFn );
-
-            }
-            else{
-
-                set_massChangeIntermediateVelocityGradient( intermediateVelocityGradient );
-
-                set_dMassChangeIntermediateVelocityGradientdDensity( dILdRho );
-
-                set_dMassChangeIntermediateVelocityGradientdMassChangeRate( dILdC );
-
-                set_dMassChangeIntermediateVelocityGradientdDirectionVector( dILdGradC );
-
-                set_dMassChangeIntermediateVelocityGradientdDeformationGradient( dILdF );
-
-                set_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( dILdFn );
 
             }
 
@@ -1100,14 +1092,12 @@ namespace tardigradeHydra{
 
             const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
 
-            secondOrderTensor massChangeDeformationGradient;
+            auto massChangeDeformationGradient = get_setDataStorage_massChangeDeformationGradient( );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                               *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                               massChangeDeformationGradient,
+                                                                                              *massChangeDeformationGradient.value,
                                                                                               *getIntegrationParameter( ) ) )
-
-            set_massChangeDeformationGradient( massChangeDeformationGradient );
 
         }
 
@@ -1142,7 +1132,7 @@ namespace tardigradeHydra{
 
             const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
 
-            secondOrderTensor massChangeDeformationGradient;
+            auto massChangeDeformationGradient = get_setDataStorage_massChangeDeformationGradient( );
 
             fourthOrderTensor dFmdL;
 
@@ -1164,125 +1154,113 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                                   *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                                  massChangeDeformationGradient,
+                                                                                                  *massChangeDeformationGradient.value,
                                                                                                   dFmdL, dFmdFp, dFmdLp,
                                                                                                   *getIntegrationParameter( ) ) )
 
-                secondOrderTensor dFmdPreviousRho( sot_dim, 0 );
+                auto dFmdPreviousRho = get_setDataStorage_dMassChangeDeformationGradientdPreviousDensity( );
+                dFmdPreviousRho.zero( sot_dim );
 
-                secondOrderTensor dFmdPreviousC( sot_dim, 0 );
+                auto dFmdPreviousC = get_setDataStorage_dMassChangeDeformationGradientdPreviousMassChangeRate( );
+                dFmdPreviousC.zero( sot_dim );
 
-                thirdOrderTensor  dFmdPreviousGradC( tot_dim, 0 );
+                auto dFmdPreviousGradC = get_setDataStorage_dMassChangeDeformationGradientdPreviousDirectionVector( );
+                dFmdPreviousGradC.zero( tot_dim );
 
-                fourthOrderTensor dFmdPreviousF( sot_dim * sot_dim, 0 );
+                auto dFmdPreviousF = get_setDataStorage_dMassChangeDeformationGradientdPreviousDeformationGradient( );
+                dFmdPreviousF.zero( sot_dim * sot_dim );
 
-                floatVector dFmdPreviousFn( ( num_configs - 1 ) * sot_dim * sot_dim, 0 );
+                auto dFmdPreviousFn = get_setDataStorage_dMassChangeDeformationGradientdPreviousSubDeformationGradients( );
+                dFmdPreviousFn.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
 
                 for ( unsigned int i = 0; i < sot_dim; i++ ){
 
                     for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                        dFmdPreviousRho[ i ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdRho )[ j ];
+                        ( *dFmdPreviousRho.value )[ i ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdRho )[ j ];
 
-                        dFmdPreviousC[ i ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdC )[ j ];
+                        ( *dFmdPreviousC.value )[ i ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdC )[ j ];
 
-                        dFmdPreviousFn[ ( num_configs - 1 ) * sot_dim * i + j + ( ( *getMassChangeConfigurationIndex( ) ) - 1 ) * sot_dim ]
+                        ( *dFmdPreviousFn.value )[ ( num_configs - 1 ) * sot_dim * i + j + ( ( *getMassChangeConfigurationIndex( ) ) - 1 ) * sot_dim ]
                             += dFmdFp[ sot_dim * i + j ];
 
                         for ( unsigned int k = 0; k < dim; k++ ){
 
-                            dFmdPreviousGradC[ dim * i + k ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdGradC )[ dim * j + k ];
+                            ( *dFmdPreviousGradC.value )[ dim * i + k ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdGradC )[ dim * j + k ];
 
                         }
 
                         for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                            dFmdPreviousF[ sot_dim * i + k ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdF )[ sot_dim * j + k ];
+                            ( *dFmdPreviousF.value )[ sot_dim * i + k ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdF )[ sot_dim * j + k ];
 
                         }
 
                         for ( unsigned int k = 0; k < ( num_configs - 1 ) * sot_dim; k++ ){
 
-                            dFmdPreviousFn[ ( num_configs - 1 ) * sot_dim * i + k ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
+                            ( *dFmdPreviousFn.value )[ ( num_configs - 1 ) * sot_dim * i + k ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
 
                         }
 
                     }
 
                 }
-
-                set_dMassChangeDeformationGradientdPreviousDensity( dFmdPreviousRho );
-
-                set_dMassChangeDeformationGradientdPreviousMassChangeRate( dFmdPreviousC );
-
-                set_dMassChangeDeformationGradientdPreviousDirectionVector( dFmdPreviousGradC );
-
-                set_dMassChangeDeformationGradientdPreviousDeformationGradient( dFmdPreviousF );
-
-                set_dMassChangeDeformationGradientdPreviousSubDeformationGradients( dFmdPreviousFn );
 
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                                   *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                                  massChangeDeformationGradient,
+                                                                                                  *massChangeDeformationGradient.value,
                                                                                                   dFmdL,
                                                                                                   *getIntegrationParameter( ) ) )
 
             }
 
-            secondOrderTensor dFmdRho( sot_dim, 0 );
+            auto dFmdRho = get_setDataStorage_dMassChangeDeformationGradientdDensity( );
+            dFmdRho.zero( sot_dim );
 
-            secondOrderTensor dFmdC( sot_dim, 0 );
+            auto dFmdC = get_setDataStorage_dMassChangeDeformationGradientdMassChangeRate( );
+            dFmdC.zero( sot_dim );
 
-            thirdOrderTensor  dFmdGradC( tot_dim, 0 );
+            auto dFmdGradC = get_setDataStorage_dMassChangeDeformationGradientdDirectionVector( );
+            dFmdGradC.zero( tot_dim );
 
-            fourthOrderTensor dFmdF( sot_dim * sot_dim, 0 );
+            auto dFmdF = get_setDataStorage_dMassChangeDeformationGradientdDeformationGradient( );
+            dFmdF.zero( sot_dim * sot_dim );
 
-            floatVector dFmdFn( ( num_configs - 1 ) * sot_dim * sot_dim, 0 );
+            auto dFmdFn = get_setDataStorage_dMassChangeDeformationGradientdSubDeformationGradients( );
+            dFmdFn.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
                 for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                    dFmdRho[ i ] += dFmdL[ sot_dim * i + j ] * ( *dLdRho )[ j ];
+                    ( *dFmdRho.value )[ i ] += dFmdL[ sot_dim * i + j ] * ( *dLdRho )[ j ];
 
-                    dFmdC[ i ] += dFmdL[ sot_dim * i + j ] * ( *dLdC )[ j ];
+                    ( *dFmdC.value )[ i ] += dFmdL[ sot_dim * i + j ] * ( *dLdC )[ j ];
 
                     for ( unsigned int k = 0; k < dim; k++ ){
 
-                        dFmdGradC[ dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdGradC )[ dim * j + k ];
+                        ( *dFmdGradC.value )[ dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdGradC )[ dim * j + k ];
 
                     }
 
                     for ( unsigned int k = 0; k < sot_dim; k++ ){
 
-                        dFmdF[ sot_dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdF )[ sot_dim * j + k ];
+                        ( *dFmdF.value )[ sot_dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdF )[ sot_dim * j + k ];
 
                     }
 
                     for ( unsigned int k = 0; k < ( num_configs - 1 ) * sot_dim; k++ ){
 
-                        dFmdFn[ ( num_configs - 1 ) * sot_dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
+                        ( *dFmdFn.value )[ ( num_configs - 1 ) * sot_dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
 
                     }
 
                 }
 
             }
-
-            set_massChangeDeformationGradient( massChangeDeformationGradient );
-
-            set_dMassChangeDeformationGradientdDensity( dFmdRho );
-
-            set_dMassChangeDeformationGradientdMassChangeRate( dFmdC );
-
-            set_dMassChangeDeformationGradientdDirectionVector( dFmdGradC );
-
-            set_dMassChangeDeformationGradientdDeformationGradient( dFmdF );
-
-            set_dMassChangeDeformationGradientdSubDeformationGradients( dFmdFn );
 
         }
 
@@ -1385,8 +1363,10 @@ namespace tardigradeHydra{
 
             const unsigned int massChangeConfigurationIndex = *getMassChangeConfigurationIndex( );
 
-            setResidual( *get_massChangeDeformationGradient( ) - secondOrderTensor( hydra->get_configurations( )->begin( ) +   massChangeConfigurationIndex * 9,
-                                                                                    hydra->get_configurations( )->begin( ) + ( massChangeConfigurationIndex + 1 ) * 9 ) );
+            auto residual = get_setDataStorage_residual( );
+
+            *residual.value = *get_massChangeDeformationGradient( ) - secondOrderTensor( hydra->get_configurations( )->begin( ) +   massChangeConfigurationIndex * 9,
+                                                                                         hydra->get_configurations( )->begin( ) + ( massChangeConfigurationIndex + 1 ) * 9 );
 
         }
 
@@ -1403,23 +1383,22 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            floatVector jacobian( num_equations * num_unknowns, 0 );
+            auto jacobian = get_setDataStorage_jacobian( );
+            jacobian.zero( num_equations * num_unknowns );
 
             const floatVector *dFmdFn = get_dMassChangeDeformationGradientdSubDeformationGradients( );
 
             for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
 
-                jacobian[ num_unknowns * i + sot_dim * ( *getMassChangeConfigurationIndex( ) ) + i ] += -1;
+                ( *jacobian.value )[ num_unknowns * i + sot_dim * ( *getMassChangeConfigurationIndex( ) ) + i ] += -1;
 
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
-                    jacobian[ num_unknowns * i + j + sot_dim ] += ( *dFmdFn )[ ( num_configs - 1 ) * sot_dim * i + j ];
+                    ( *jacobian.value )[ num_unknowns * i + j + sot_dim ] += ( *dFmdFn )[ ( num_configs - 1 ) * sot_dim * i + j ];
 
                 }
 
             }
-
-            setJacobian( jacobian );
 
         }
 
@@ -1430,7 +1409,9 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            setdRdT( secondOrderTensor( sot_dim, 0 ) );
+            auto dRdT = get_setDataStorage_dRdT( );
+
+            dRdT.zero( sot_dim );
 
         }
 
@@ -1439,7 +1420,8 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            setdRdF( *get_dMassChangeDeformationGradientdDeformationGradient( ) );
+            auto dRdF = get_setDataStorage_dRdF( );
+            *dRdF.value = *get_dMassChangeDeformationGradientdDeformationGradient( );
 
         }
 
@@ -1462,23 +1444,22 @@ namespace tardigradeHydra{
 
             const thirdOrderTensor  *dMassChangeDeformationdDirectionVector = get_dMassChangeDeformationGradientdDirectionVector( );
 
-            floatVector dRdAdditionalDOF( num_equations * num_additional_dof, 0 );
+            auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
+            dRdAdditionalDOF.zero( num_equations * num_additional_dof );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                dRdAdditionalDOF[ num_additional_dof * i + 0 ] = ( *dMassChangeDeformationdDensity )[ i ];
+                ( *dRdAdditionalDOF.value )[ num_additional_dof * i + 0 ] = ( *dMassChangeDeformationdDensity )[ i ];
 
-                dRdAdditionalDOF[ num_additional_dof * i + 1 ] = ( *dMassChangeDeformationdMassChangeRate )[ i ];
+                ( *dRdAdditionalDOF.value )[ num_additional_dof * i + 1 ] = ( *dMassChangeDeformationdMassChangeRate )[ i ];
 
                 for ( unsigned int j = 0; j < dim; j++ ){
 
-                    dRdAdditionalDOF[ num_additional_dof * i + j + 2 ] = ( *dMassChangeDeformationdDirectionVector )[ dim * i + j ];
+                    ( *dRdAdditionalDOF.value )[ num_additional_dof * i + j + 2 ] = ( *dMassChangeDeformationdDirectionVector )[ dim * i + j ];
 
                 }
 
             }
-
-            setdRdAdditionalDOF( dRdAdditionalDOF );
 
         }
 
