@@ -198,35 +198,30 @@ namespace tardigradeHydra{
 
             const dimVector *directionVector;
 
+            setDataStorageBase< dimVector > unitDirectionVector;
+
             if ( isPrevious ){
 
                 directionVector = get_previousDirectionVector( );
+
+                unitDirectionVector = get_setDataStorage_previousUnitDirectionVector( );
 
             }
             else{
 
                 directionVector = get_directionVector( );
 
+                unitDirectionVector = get_setDataStorage_unitDirectionVector( );
+
             }
 
             floatType normDirectionVector = tardigradeVectorTools::l2norm( *directionVector );
 
-            dimVector unitDirectionVector( dim, 0 );
+            unitDirectionVector.zero( dim );
 
             if ( std::isfinite( 1. / normDirectionVector ) ){
 
-                unitDirectionVector = ( *directionVector ) / normDirectionVector;
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousUnitDirectionVector( unitDirectionVector );
-
-            }
-            else{
-
-                set_unitDirectionVector( unitDirectionVector );
+                *unitDirectionVector.value = ( *directionVector ) / normDirectionVector;
 
             }
 
@@ -263,30 +258,42 @@ namespace tardigradeHydra{
 
             const dimVector *directionVector;
 
+            setDataStorageBase< dimVector > unitDirectionVector;
+
+            setDataStorageBase< secondOrderTensor > dUnitDirectionVectordDirectionVector;
+
             if ( isPrevious ){
 
                 directionVector = get_previousDirectionVector( );
+
+                unitDirectionVector = get_setDataStorage_previousUnitDirectionVector( );
+
+                dUnitDirectionVectordDirectionVector = get_setDataStorage_dPreviousUnitDirectionVectordPreviousDirectionVector( );
 
             }
             else{
 
                 directionVector = get_directionVector( );
 
+                unitDirectionVector = get_setDataStorage_unitDirectionVector( );
+
+                dUnitDirectionVectordDirectionVector = get_setDataStorage_dUnitDirectionVectordDirectionVector( );
+
             }
 
             floatType normDirectionVector = tardigradeVectorTools::l2norm( *directionVector );
 
-            dimVector unitDirectionVector( dim, 0 );
+            unitDirectionVector.zero( dim );
 
-            secondOrderTensor dUnitDirectionVectordDirectionVector( sot_dim, 0 );
+            dUnitDirectionVectordDirectionVector.zero( sot_dim );
 
             if ( std::isfinite( 1. / normDirectionVector ) ){
 
-                unitDirectionVector = ( *directionVector ) / normDirectionVector;
+                *unitDirectionVector.value = ( *directionVector ) / normDirectionVector;
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
-                    dUnitDirectionVectordDirectionVector[ dim * i + i ] += 1 / normDirectionVector;
+                    ( *dUnitDirectionVectordDirectionVector.value )[ dim * i + i ] += 1 / normDirectionVector;
 
                 }
 
@@ -294,29 +301,13 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < dim; j++ ){
 
-                        dUnitDirectionVectordDirectionVector[ dim * i + j ] -= unitDirectionVector[ i ] * unitDirectionVector[ j ] / normDirectionVector;
+                        ( *dUnitDirectionVectordDirectionVector.value )[ dim * i + j ] -= ( *unitDirectionVector.value )[ i ] * ( *unitDirectionVector.value )[ j ] / normDirectionVector;
 
                     }
 
                 }
 
             }
-
-            if ( isPrevious ){
-
-                set_previousUnitDirectionVector( unitDirectionVector );
-
-                set_dPreviousUnitDirectionVectordPreviousDirectionVector( dUnitDirectionVectordDirectionVector );
-
-            }
-            else{
-
-                set_unitDirectionVector( unitDirectionVector );
-
-                set_dUnitDirectionVectordDirectionVector( dUnitDirectionVectordDirectionVector );
-
-            }
-
 
         }
 
