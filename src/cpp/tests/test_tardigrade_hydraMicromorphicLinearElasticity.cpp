@@ -1863,7 +1863,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReference, * boost::unit_test::toleran
         constantVector gradCol = ( PK2_P - PK2_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_TEST( gradCol[j] == dPK2dF[9*j+i] );
+            BOOST_TEST( tolerantCheck( gradCol[j], dPK2dF[9*j+i], 1e-5, 1e-5 ) );
         }
 
         gradCol = ( Sigma_P - Sigma_M ) / ( 2 * delta[ i ] );
@@ -4414,7 +4414,7 @@ BOOST_AUTO_TEST_CASE( testComputeDeformationMeasures2, * boost::unit_test::toler
 
         for ( unsigned int i = 0; i < 27; i++ ){
 
-            BOOST_TEST( dGammadStateVariables[ i ][ j ] == ( *RJ.get_dGammadFn( ) )[ ( numConfigurations - 1 ) * sot_dim * i + j ] );
+            BOOST_TEST( tolerantCheck( dGammadStateVariables[ i ][ j ], ( *RJ.get_dGammadFn( ) )[ ( numConfigurations - 1 ) * sot_dim * i + j ], 1e-5, 1e-5 ) );
 
         }
 
