@@ -355,11 +355,15 @@ namespace tardigradeHydra{
 
             const dimVector *unitDirectionVector;
 
+            setDataStorageBase< secondOrderTensor > velocityGradient;
+
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradientTrace = get_previousMassChangeVelocityGradientTrace( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_previousUnitDirectionVector( ) );
+
+                velocityGradient = get_setDataStorage_previousMassChangeVelocityGradient( );
 
             }
             else{
@@ -368,9 +372,11 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_unitDirectionVector( ) );
 
+                velocityGradient = get_setDataStorage_massChangeVelocityGradient( );
+
             }
 
-            secondOrderTensor velocityGradient( sot_dim, 0 );
+            velocityGradient.zero( sot_dim );
 
             floatType a = ( *velocityGradientTrace ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
 
@@ -378,7 +384,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
-                    velocityGradient[ dim * i + i ] += a * ( 1 - *massDirectionMixingParameter );
+                    ( *velocityGradient.value )[ dim * i + i ] += a * ( 1 - *massDirectionMixingParameter );
 
                 }
 
@@ -386,7 +392,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < dim; j++ ){
 
-                        velocityGradient[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
+                        ( *velocityGradient.value )[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
                     }
 
@@ -397,20 +403,9 @@ namespace tardigradeHydra{
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
-                    velocityGradient[ dim * i + i ] += *velocityGradientTrace;
+                    ( *velocityGradient.value )[ dim * i + i ] += *velocityGradientTrace;
 
                 }
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousMassChangeVelocityGradient( velocityGradient );
-
-            }
-            else{
-
-                set_massChangeVelocityGradient( velocityGradient );
 
             }
 
@@ -441,6 +436,14 @@ namespace tardigradeHydra{
 
             const secondOrderTensor *dUnitDirectionVectordDirectionVector;
 
+            setDataStorageBase< secondOrderTensor > velocityGradient;
+
+            setDataStorageBase< secondOrderTensor > dVelocityGradientdDensity;
+
+            setDataStorageBase< secondOrderTensor > dVelocityGradientdMassChangeRate;
+
+            setDataStorageBase< thirdOrderTensor > dVelocityGradientdDirectionVector;
+
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dVelocityGradientTracedDensity = get_dPreviousMassChangeVelocityGradientTracedPreviousDensity( ) )
@@ -452,6 +455,14 @@ namespace tardigradeHydra{
                 TARDIGRADE_ERROR_TOOLS_CATCH( dUnitDirectionVectordDirectionVector = get_dPreviousUnitDirectionVectordPreviousDirectionVector( ) )
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_previousUnitDirectionVector( ) )
+
+                velocityGradient = get_setDataStorage_previousMassChangeVelocityGradient( );
+
+                dVelocityGradientdDensity = get_setDataStorage_dPreviousMassChangeVelocityGradientdPreviousDensity( );
+
+                dVelocityGradientdMassChangeRate = get_setDataStorage_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( );
+
+                dVelocityGradientdDirectionVector = get_setDataStorage_dPreviousMassChangeVelocityGradientdPreviousDirectionVector( );
 
             }
             else{
@@ -466,15 +477,23 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_unitDirectionVector( ) )
 
+                velocityGradient = get_setDataStorage_massChangeVelocityGradient( );
+
+                dVelocityGradientdDensity = get_setDataStorage_dMassChangeVelocityGradientdDensity( );
+
+                dVelocityGradientdMassChangeRate = get_setDataStorage_dMassChangeVelocityGradientdMassChangeRate( );
+
+                dVelocityGradientdDirectionVector = get_setDataStorage_dMassChangeVelocityGradientdDirectionVector( );
+
             }
 
-            secondOrderTensor velocityGradient( sot_dim, 0 );
+            velocityGradient.zero( sot_dim );
 
-            secondOrderTensor dVelocityGradientdDensity( sot_dim, 0 );
+            dVelocityGradientdDensity.zero( sot_dim );
 
-            secondOrderTensor dVelocityGradientdMassChangeRate( sot_dim, 0 );
+            dVelocityGradientdMassChangeRate.zero( sot_dim );
 
-            thirdOrderTensor  dVelocityGradientdDirectionVector( tot_dim, 0 );
+            dVelocityGradientdDirectionVector.zero( tot_dim );
 
             floatType a = ( *velocityGradientTrace ) / ( 3. - 2. * ( *massDirectionMixingParameter ) );
 
@@ -486,11 +505,11 @@ namespace tardigradeHydra{
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
-                    velocityGradient[ dim * i + i ] += a * ( 1 - *massDirectionMixingParameter );
+                    ( *velocityGradient.value )[ dim * i + i ] += a * ( 1 - *massDirectionMixingParameter );
 
-                    dVelocityGradientdDensity[ dim * i + i ] += dadDensity * ( 1 - *massDirectionMixingParameter );
+                    ( *dVelocityGradientdDensity.value )[ dim * i + i ] += dadDensity * ( 1 - *massDirectionMixingParameter );
 
-                    dVelocityGradientdMassChangeRate[ dim * i + i ] += dadMassChangeRate * ( 1 - *massDirectionMixingParameter );
+                    ( *dVelocityGradientdMassChangeRate.value )[ dim * i + i ] += dadMassChangeRate * ( 1 - *massDirectionMixingParameter );
 
                 }
 
@@ -498,15 +517,15 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < dim; j++ ){
 
-                        velocityGradient[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
+                        ( *velocityGradient.value )[ dim * i + j ] += a * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
-                        dVelocityGradientdDensity[ dim * i + j ] += dadDensity * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
+                        ( *dVelocityGradientdDensity.value )[ dim * i + j ] += dadDensity * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
-                        dVelocityGradientdMassChangeRate[ dim * i + j ] += dadMassChangeRate * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
+                        ( *dVelocityGradientdMassChangeRate.value )[ dim * i + j ] += dadMassChangeRate * ( *massDirectionMixingParameter ) * ( *unitDirectionVector )[ i ] * ( *unitDirectionVector )[ j ];
 
                         for ( unsigned int k = 0; k < dim; k++ ){
 
-                            dVelocityGradientdDirectionVector[ dim * dim * i + dim * j + k ]
+                            ( *dVelocityGradientdDirectionVector.value )[ dim * dim * i + dim * j + k ]
                                 += a * ( *massDirectionMixingParameter ) * ( ( *dUnitDirectionVectordDirectionVector )[ dim * i + k ] * ( *unitDirectionVector )[ j ]
                                                                            + ( *unitDirectionVector )[ i ] * ( *dUnitDirectionVectordDirectionVector )[ dim * j + k ] );
 
@@ -521,36 +540,13 @@ namespace tardigradeHydra{
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
-                    velocityGradient[ dim * i + i ] += *velocityGradientTrace;
+                    ( *velocityGradient.value )[ dim * i + i ] += *velocityGradientTrace;
 
-                    dVelocityGradientdDensity[ dim * i + i ] += ( *dVelocityGradientTracedDensity );
+                    ( *dVelocityGradientdDensity.value )[ dim * i + i ] += ( *dVelocityGradientTracedDensity );
 
-                    dVelocityGradientdMassChangeRate[ dim * i + i ] += ( *dVelocityGradientTracedMassChangeRate );
+                    ( *dVelocityGradientdMassChangeRate.value )[ dim * i + i ] += ( *dVelocityGradientTracedMassChangeRate );
 
                 }
-
-            }
-
-            if ( isPrevious ){
-
-                set_previousMassChangeVelocityGradient( velocityGradient );
-
-                set_dPreviousMassChangeVelocityGradientdPreviousDensity( dVelocityGradientdDensity );
-
-                set_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( dVelocityGradientdMassChangeRate );
-
-                set_dPreviousMassChangeVelocityGradientdPreviousDirectionVector( dVelocityGradientdDirectionVector );
-
-            }
-            else{
-
-                set_massChangeVelocityGradient( velocityGradient );
-
-                set_dMassChangeVelocityGradientdDensity( dVelocityGradientdDensity );
-
-                set_dMassChangeVelocityGradientdMassChangeRate( dVelocityGradientdMassChangeRate );
-
-                set_dMassChangeVelocityGradientdDirectionVector( dVelocityGradientdDirectionVector );
 
             }
 
