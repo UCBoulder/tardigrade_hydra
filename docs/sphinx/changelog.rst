@@ -28,8 +28,9 @@ Internal Changes
 - Removed set_varname and replaced with setDataStorage for hydra micromoprhic linear elasticity (:pull:`155`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for hydra micromoprhic Drucker-Prager plasticity (:pull:`157`). By `Nathan Miller`_.
 - Removed calls to old tardigrade error tools catch macro (:pull:`158`). By `Nathan Miller`_.
-- Removed set_varname and replaced with setDataStorage for hydra micromoprhic Peryzna visoplasticity (:pull:`159`). By `Nathan Miller`_.
-- Removed set_varname and replaced with setDataStorage for hydra micromoprhic Peryzna visodamage (:pull:`160`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Peryzna visoplasticity (:pull:`159`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Peryzna visodamage (:pull:`160`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Peryzna isotropic-kenmatic J2 visoplasticity (:pull:`161`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
