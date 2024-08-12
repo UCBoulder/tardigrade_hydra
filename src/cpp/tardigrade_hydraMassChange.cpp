@@ -23,19 +23,31 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( hydra->getPreviousAdditionalDOF( )->size( ) >= 5, "The previous additional DOF vector is of size " + std::to_string( hydra->getPreviousAdditionalDOF( )->size( ) ) + " which is less than the required size of 5" );
 
-            set_density( ( *hydra->getAdditionalDOF( ) )[ 0 ] );
+            auto density                 = get_setDataStorage_density( );
 
-            set_massChangeRate( ( *hydra->getAdditionalDOF( ) )[ 1 ] );
+            auto massChangeRate          = get_setDataStorage_massChangeRate( );
 
-            set_directionVector( dimVector( hydra->getAdditionalDOF( )->begin( ) + 2,
-                                            hydra->getAdditionalDOF( )->begin( ) + 5 ) );
+            auto directionVector         = get_setDataStorage_directionVector( );
 
-            set_previousDensity( ( *hydra->getPreviousAdditionalDOF( ) )[ 0 ] );
+            auto previousDensity         = get_setDataStorage_previousDensity( );
 
-            set_previousMassChangeRate( ( *hydra->getPreviousAdditionalDOF( ) )[ 1 ] );
+            auto previousMassChangeRate  = get_setDataStorage_previousMassChangeRate( );
 
-            set_previousDirectionVector( floatVector( hydra->getPreviousAdditionalDOF( )->begin( ) + 2,
-                                                             hydra->getPreviousAdditionalDOF( )->begin( ) + 5 ) );
+            auto previousDirectionVector = get_setDataStorage_previousDirectionVector( );
+
+            *density.value = ( *hydra->getAdditionalDOF( ) )[ 0 ];
+
+            *massChangeRate.value = ( *hydra->getAdditionalDOF( ) )[ 1 ];
+
+            *directionVector.value = dimVector( hydra->getAdditionalDOF( )->begin( ) + 2,
+                                                hydra->getAdditionalDOF( )->begin( ) + 5 );
+
+            *previousDensity.value = ( *hydra->getPreviousAdditionalDOF( ) )[ 0 ];
+
+            *previousMassChangeRate.value = ( *hydra->getPreviousAdditionalDOF( ) )[ 1 ];
+
+            *previousDirectionVector.value = dimVector( hydra->getPreviousAdditionalDOF( )->begin( ) + 2,
+                                                        hydra->getPreviousAdditionalDOF( )->begin( ) + 5 );
 
         }
 
@@ -50,11 +62,15 @@ namespace tardigradeHydra{
 
             const floatType *mass_change_rate;
 
+            setDataStorageBase< floatType > massChangeVelocityGradientTrace;
+
             if ( isPrevious ){
 
                 density = get_previousDensity( );
 
                 mass_change_rate = get_previousMassChangeRate( );
+
+                massChangeVelocityGradientTrace = get_setDataStorage_previousMassChangeVelocityGradientTrace( );
 
             }
             else{
@@ -63,20 +79,11 @@ namespace tardigradeHydra{
 
                 mass_change_rate = get_massChangeRate( );
 
-            }
-
-            floatType massChangeVelocityGradientTrace = ( *mass_change_rate ) / ( *density );
-
-            if ( isPrevious ){
-
-                set_previousMassChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
+                massChangeVelocityGradientTrace = get_setDataStorage_massChangeVelocityGradientTrace( );
 
             }
-            else{
 
-                set_massChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
-
-            }
+            *massChangeVelocityGradientTrace.value = ( *mass_change_rate ) / ( *density );
 
         }
 
@@ -91,11 +98,23 @@ namespace tardigradeHydra{
 
             const floatType *mass_change_rate;
 
+            setDataStorageBase< floatType > massChangeVelocityGradientTrace;
+
+            setDataStorageBase< floatType > dMassChangeVelocityGradientTracedDensity;
+
+            setDataStorageBase< floatType > dMassChangeVelocityGradientTracedMassChangeRate;
+
             if ( isPrevious ){
 
                 density = get_previousDensity( );
 
                 mass_change_rate = get_previousMassChangeRate( );
+
+                massChangeVelocityGradientTrace = get_setDataStorage_previousMassChangeVelocityGradientTrace( );
+
+                dMassChangeVelocityGradientTracedDensity = get_setDataStorage_dPreviousMassChangeVelocityGradientTracedPreviousDensity( );
+
+                dMassChangeVelocityGradientTracedMassChangeRate = get_setDataStorage_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( );
 
             }
             else{
@@ -104,32 +123,19 @@ namespace tardigradeHydra{
 
                 mass_change_rate = get_massChangeRate( );
 
-            }
+                massChangeVelocityGradientTrace = get_setDataStorage_massChangeVelocityGradientTrace( );
 
-            floatType massChangeVelocityGradientTrace = ( *mass_change_rate ) / ( *density );
+                dMassChangeVelocityGradientTracedDensity = get_setDataStorage_dMassChangeVelocityGradientTracedDensity( );
 
-            floatType dMassChangeVelocityGradientTracedDensity = - ( *mass_change_rate ) / ( ( *density ) * ( *density ) );
-
-            floatType dMassChangeVelocityGradientTracedMassChangeRate = 1. / ( *density );
-
-            if ( isPrevious ){
-
-                set_previousMassChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
-
-                set_dPreviousMassChangeVelocityGradientTracedPreviousDensity( dMassChangeVelocityGradientTracedDensity );
-
-                set_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( dMassChangeVelocityGradientTracedMassChangeRate );
+                dMassChangeVelocityGradientTracedMassChangeRate = get_setDataStorage_dMassChangeVelocityGradientTracedMassChangeRate( );
 
             }
-            else{
 
-                set_massChangeVelocityGradientTrace( massChangeVelocityGradientTrace );
+            *massChangeVelocityGradientTrace.value = ( *mass_change_rate ) / ( *density );
 
-                set_dMassChangeVelocityGradientTracedDensity( dMassChangeVelocityGradientTracedDensity );
+            *dMassChangeVelocityGradientTracedDensity.value = - ( *mass_change_rate ) / ( ( *density ) * ( *density ) );
 
-                set_dMassChangeVelocityGradientTracedMassChangeRate( dMassChangeVelocityGradientTracedMassChangeRate );
-
-            }
+            *dMassChangeVelocityGradientTracedMassChangeRate.value = 1. / ( *density );
 
         }
 
