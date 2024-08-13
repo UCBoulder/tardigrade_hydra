@@ -95,12 +95,6 @@ bool tolerantCheck( const std::vector< double > &v1, const std::vector< double >
             if ( ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) ) > eps ) ||
                  ( ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) ) > eps ) ){
 
-                std::cout << "v1: " << v1[ i ] << "\n";
-                std::cout << "v1: " << v2[ i ] << "\n";
-
-                std::cout << "r1: " << ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v1[ i ] ) ) << "\n";
-                std::cout << "r1: " << ( std::fabs( v1[ i ] - v2[ i ] ) / std::fabs( v2[ i ] ) ) << "\n";
-
                 return false;
 
             }
