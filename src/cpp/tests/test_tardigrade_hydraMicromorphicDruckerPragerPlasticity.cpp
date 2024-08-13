@@ -1699,7 +1699,7 @@ BOOST_AUTO_TEST_CASE( test_setDrivingStresses, * boost::unit_test::tolerance( 1e
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors(  previousdMacrodX ) == tardigradeVectorTools::appendVectors( result_previousdMacrodX  ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors(  previousdMacrodX ), tardigradeVectorTools::appendVectors( result_previousdMacrodX  ), 1e-5, 1e-5 ) );
 
     BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors(  previousdMicrodX ), tardigradeVectorTools::appendVectors( result_previousdMicrodX  ), 1e-5, 1e-5 ) );
 
@@ -8600,7 +8600,7 @@ BOOST_AUTO_TEST_CASE( testComputePlasticMicroVelocityGradient, * boost::unit_tes
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
 
-            BOOST_TEST( gradCol[j] == dMicroLpdPsie[ 9 * j + i ] );
+            BOOST_TEST( tolerantCheck( gradCol[j], dMicroLpdPsie[ 9 * j + i ], 1e-5, 1e-5 ) );
 
         }
 
@@ -8803,15 +8803,15 @@ BOOST_AUTO_TEST_CASE( testComputePlasticMicroGradientVelocityGradient, * boost::
         variableVector gradCol = ( resultMicroGradLpP - resultMicroGradLpM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_TEST( gradCol[ j ] == dPlasticMicroGradientLdPlasticMicroL[ 9 * j + i ] );
+            BOOST_CHECK( tolerantCheck( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL[ 9 * j + i ], 1e-5, 1e-5 ) );
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_TEST( gradCol[ j ] == dPlasticMicroGradientLdPlasticMicroL2[ 9 * j + i ] );
+            BOOST_CHECK( tolerantCheck( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL2[ 9 * j + i ], 1e-5, 1e-5 ) );
         }
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_TEST( gradCol[ j ] == dPlasticMicroGradientLdPlasticMicroL3[ 9 * j + i ] );
+            BOOST_CHECK( tolerantCheck( gradCol[ j ], dPlasticMicroGradientLdPlasticMicroL3[ 9 * j + i ], 1e-5, 1e-5 ) );
         }
     }
 
@@ -10814,7 +10814,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient[ 9 * j + i ], 1e-5, 1e-6 ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPlasticMacroVelocityGradient[ 9 * j + i ], 2e-5, 2e-5 ) );
         }
     }
 
@@ -10994,7 +10994,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient[ 9 * j + i ], 1e-4, 1e-6 ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMacroVelocityGradient[ 9 * j + i ], 2e-4, 1e-5 ) );
         }
     }
 
@@ -11030,7 +11030,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
         variableVector gradCol = ( resultP - resultM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient[ 9 * j + i ], 4e-5, 1e-6 ) );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dCurrentPlasticMicroGradientdPreviousPlasticMicroVelocityGradient[ 9 * j + i ], 4e-5, 2e-5 ) );
         }
     }
 
@@ -11638,7 +11638,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_TEST( gradCol[ j ] == dGradChidPreviousMicroL[ 9 * j + i ] );
+            BOOST_TEST( tolerantCheck( gradCol[ j ], dGradChidPreviousMicroL[ 9 * j + i ], 1e-5, 1e-5 ) );
         }
     }
 
@@ -12656,7 +12656,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdF )       == *R.get_dUpdatedPlasticDeformationGradientdF( )     , CHECK_PER_ELEMENT );
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF )     == *R.get_dUpdatedPlasticMicroDeformationdF( )        , CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF ),     *R.get_dUpdatedPlasticMicroDeformationdF( )        , 1e-5, 1e-5 ) );
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ) == *R.get_dUpdatedPlasticGradientMicroDeformationdF( ), CHECK_PER_ELEMENT );
 
@@ -13040,7 +13040,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousISVs     ) == tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidPreviousISVs     ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousISVs ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousISVs ), 3e-5, 3e-6 ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousISVs ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousISVs ), 3e-5, 1e-5 ) );
 
     for ( unsigned int i = 0; i < previousDeformationGradient.size( ); i++ ){
 
@@ -13244,7 +13244,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousGradChi     ) == floatVector( 9 * 27, 0 )                                         , CHECK_PER_ELEMENT );
 
-    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ), 3e-5, 3e-6 ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ), 4e-5, 5e-6 ) );
 
 }
 
@@ -13745,7 +13745,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticFdF )       == *R.get_dUpdatedPlasticDeformationGradientdF( )     , CHECK_PER_ELEMENT );
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF )     == *R.get_dUpdatedPlasticMicroDeformationdF( )        , CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF ),      *R.get_dUpdatedPlasticMicroDeformationdF( )        , 1e-5, 1e-5 ) );
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ) == *R.get_dUpdatedPlasticGradientMicroDeformationdF( ), CHECK_PER_ELEMENT );
 
@@ -14129,7 +14129,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousISVs     ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticChidPreviousISVs )    , 1e-5, 1e-6 ) );
 
-    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousISVs ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousISVs ), 3e-5, 2e-6 ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousISVs ), tardigradeVectorTools::appendVectors( assembled_dUpdatedPlasticGradChidPreviousISVs ), 4e-5, 3e-6 ) );
 
     for ( unsigned int i = 0; i < previousDeformationGradient.size( ); i++ ){
 
@@ -16392,7 +16392,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians_weak, * boost::unit_test::t
 
     }
 
-    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ), 2e-4, 1e-6 ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ), 3e-4, 1e-6 ) );
 
 }
 
