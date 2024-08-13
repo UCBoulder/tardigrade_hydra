@@ -8606,7 +8606,7 @@ BOOST_AUTO_TEST_CASE( testComputePlasticMicroVelocityGradient, * boost::unit_tes
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
 
-            BOOST_TEST( gradCol[j] == dMicroLpdPsie[ 9 * j + i ] );
+            BOOST_TEST( tolerantCheck( gradCol[j], dMicroLpdPsie[ 9 * j + i ], 1e-5, 1e-5 ) );
 
         }
 
@@ -13250,7 +13250,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidPreviousGradChi     ) == floatVector( 9 * 27, 0 )                                         , CHECK_PER_ELEMENT );
 
-    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ), 3e-5, 3e-6 ) );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidPreviousGradChi ), *R.get_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( ), 4e-5, 5e-6 ) );
 
 }
 

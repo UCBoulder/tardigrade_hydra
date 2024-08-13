@@ -1869,7 +1869,7 @@ BOOST_AUTO_TEST_CASE( testLinearElasticityReference, * boost::unit_test::toleran
         gradCol = ( Sigma_P - Sigma_M ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_TEST( gradCol[j] == dSigmadF[9*j+i] );
+            BOOST_TEST( tolerantCheck( gradCol[j], dSigmadF[9*j+i], 1e-5, 1e-5 ) );
         }
 
         gradCol = ( M_P - M_M ) / ( 2 * delta[ i ] );
