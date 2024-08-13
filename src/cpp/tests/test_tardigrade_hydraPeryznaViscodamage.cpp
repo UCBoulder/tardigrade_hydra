@@ -100,7 +100,6 @@ bool tolerantCheck( const std::vector< double > &v1, const std::vector< double >
 
 BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::cout << "here 1\n";
     class stressMock : public tardigradeHydra::residualBase {
 
         public:
@@ -453,7 +452,6 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates, * boost::unit_test::t
 
 BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::cout << "here 2\n";
     class stressMock : public tardigradeHydra::residualBase {
 
         public:
@@ -974,7 +972,6 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
 BOOST_AUTO_TEST_CASE( test_setDamage, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::cout << "here 3\n";
     class stressMock : public tardigradeHydra::residualBase {
 
         public:
@@ -1209,7 +1206,6 @@ BOOST_AUTO_TEST_CASE( test_setDamage, * boost::unit_test::tolerance( DEFAULT_TES
 
 BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::cout << "here 4\n";
     class stressMock : public tardigradeHydra::residualBase {
 
         public:
@@ -1722,7 +1718,6 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
 BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::cout << "here 5\n";
     class stressMock : public tardigradeHydra::residualBase {
 
         public:
@@ -1887,7 +1882,6 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient, * boost::unit_test::tol
 
 BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::cout << "here 6\n";
     class stressMock : public tardigradeHydra::residualBase {
 
         public:
@@ -2400,7 +2394,6 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
 BOOST_AUTO_TEST_CASE( test_setResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::cout << "here 7\n";
     class stressMock : public tardigradeHydra::residualBase {
 
         public:
@@ -2569,7 +2562,6 @@ BOOST_AUTO_TEST_CASE( test_setResidual, * boost::unit_test::tolerance( DEFAULT_T
 
 BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::cout << "here 8\n";
     class stressMock : public tardigradeHydra::residualBase {
 
         public:
