@@ -2767,97 +2767,79 @@ namespace tardigradeHydra{
 
             Eigen::Map< const Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dMdChiFollow( dMdChiFollow.data( ), tot_dim, sot_dim );
 
-            dPK2dF.zero( fot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2dF( dPK2dF.value->data( ), sot_dim, sot_dim );
+            auto map_dPK2dF = dPK2dF.zeroMap< floatType, sot_dim, sot_dim >( );
 
             map_dPK2dF = ( map_dPK2dLocalPK2 * map_dLocalPK2dF ).eval( );
 
-            dPK2dFn.zero( fot_dim * ( num_configs - 1 ) );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPK2dFn( dPK2dFn.value->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
+            auto map_dPK2dFn = dPK2dFn.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
 
             map_dPK2dFn  = ( map_dPK2dLocalPK2 * map_dLocalPK2dFn ).eval( );
             map_dPK2dFn += ( map_dPK2dFFollow * map_dFFollowdFn ).eval( );
 
-            dPK2dChi.zero( fot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2dChi( dPK2dChi.value->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
+            auto map_dPK2dChi = dPK2dChi.zeroMap< floatType, sot_dim, sot_dim >( );
 
             map_dPK2dChi = ( map_dPK2dLocalPK2 * map_dLocalPK2dChi ).eval( );
 
-            dPK2dChin.zero( fot_dim * ( num_configs - 1 ) );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPK2dChin( dPK2dChin.value->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
+            auto map_dPK2dChin = dPK2dChin.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
 
             map_dPK2dChin = ( map_dPK2dLocalPK2 * map_dLocalPK2dChin ).eval( );
 
-            dPK2dGradChi.zero( fiot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dPK2dGradChi( dPK2dGradChi.value->data( ), sot_dim, tot_dim );
+            auto map_dPK2dGradChi = dPK2dGradChi.zeroMap< floatType, sot_dim, tot_dim >( );
 
             map_dPK2dGradChi = ( map_dPK2dLocalPK2 * map_dLocalPK2dGradChi ).eval( );
 
-            dPK2dGradChin.zero( fiot_dim * ( num_configs - 1 ) );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dPK2dGradChin( dPK2dGradChin.value->data( ), sot_dim, ( num_configs - 1 ) * tot_dim );
+            auto map_dPK2dGradChin = dPK2dGradChin.zeroMap< floatType, sot_dim >( tot_dim * ( num_configs - 1 ) );
 
             map_dPK2dGradChin = ( map_dPK2dLocalPK2 * map_dLocalPK2dGradChin ).eval( );
 
-            dSIGMAdF.zero( fot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dSIGMAdF( dSIGMAdF.value->data( ), sot_dim, sot_dim );
+            auto map_dSIGMAdF = dSIGMAdF.zeroMap< floatType, sot_dim, sot_dim >( );
 
             map_dSIGMAdF = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdF ).eval( );
 
-            dSIGMAdFn.zero( fot_dim * ( num_configs - 1 ) );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dSIGMAdFn( dSIGMAdFn.value->data( ), sot_dim, sot_dim );
+            auto map_dSIGMAdFn = dSIGMAdFn.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
 
             map_dSIGMAdFn  = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdFn ).eval( );
             map_dSIGMAdFn += ( map_dSIGMAdFFollow * map_dFFollowdFn ).eval( );
 
-            dSIGMAdChi.zero( fot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dSIGMAdChi( dSIGMAdChi.value->data( ), sot_dim, sot_dim );
+            auto map_dSIGMAdChi = dSIGMAdChi.zeroMap< floatType, sot_dim, sot_dim >( );
 
             map_dSIGMAdChi = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdChi ).eval( );
 
-            dSIGMAdChin.zero( fot_dim * ( num_configs - 1 ) );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dSIGMAdChin( dSIGMAdChin.value->data( ), sot_dim, ( num_configs - 1 ) * sot_dim );
+            auto map_dSIGMAdChin = dSIGMAdChin.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
 
             map_dSIGMAdChin = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdChin ).eval( );
 
-            dSIGMAdGradChi.zero( fiot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim, tot_dim, Eigen::RowMajor > > map_dSIGMAdGradChi( dSIGMAdGradChi.value->data( ), sot_dim, tot_dim );
+            auto map_dSIGMAdGradChi = dSIGMAdGradChi.zeroMap< floatType, sot_dim, tot_dim >( );
 
             map_dSIGMAdGradChi = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdGradChi ).eval( );
 
-            dSIGMAdGradChin.zero( fiot_dim * ( num_configs - 1 ) );
-            Eigen::Map< Eigen::Matrix< floatType, sot_dim,      -1, Eigen::RowMajor > > map_dSIGMAdGradChin( dSIGMAdGradChin.value->data( ), sot_dim, ( num_configs - 1 ) * tot_dim );
+            auto map_dSIGMAdGradChin = dSIGMAdGradChin.zeroMap< floatType, sot_dim >( tot_dim * ( num_configs - 1 ) );
 
             map_dSIGMAdGradChin = ( map_dSIGMAdLocalSIGMA * map_dLocalSIGMAdGradChin ).eval( );
 
-            dMdF.zero( fiot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dMdF( dMdF.value->data( ), tot_dim, sot_dim );
+            auto map_dMdF = dMdF.zeroMap< floatType, tot_dim, sot_dim >( );
 
             map_dMdF = ( map_dMdLocalM * map_dLocalMdF ).eval( );
 
-            dMdFn.zero( fiot_dim * ( num_configs - 1 ) );
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dMdFn( dMdFn.value->data( ), tot_dim, ( num_configs - 1 ) * sot_dim );
+            auto map_dMdFn = dMdFn.zeroMap< floatType, tot_dim >( sot_dim * ( num_configs - 1 ) );
 
             map_dMdFn  = ( map_dMdLocalM * map_dLocalMdFn );
             map_dMdFn += ( map_dMdFFollow * map_dFFollowdFn );
 
-            dMdChi.zero( fiot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim, sot_dim, Eigen::RowMajor > > map_dMdChi( dMdChi.value->data( ), tot_dim, sot_dim );
+            auto map_dMdChi = dMdChi.zeroMap< floatType, tot_dim, sot_dim >( );
 
             map_dMdChi = ( map_dMdLocalM * map_dLocalMdChi ).eval( );
 
-            dMdChin.zero( fiot_dim * ( num_configs - 1 ) );
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dMdChin( dMdChin.value->data( ), tot_dim, ( num_configs - 1 ) * sot_dim );
+            auto map_dMdChin = dMdChin.zeroMap< floatType, tot_dim >( sot_dim * ( num_configs - 1 ) );
 
             map_dMdChin  = ( map_dMdLocalM * map_dLocalMdChin ).eval( );
             map_dMdChin += ( map_dMdChiFollow * map_dChiFollowdChin ).eval( );
 
-            dMdGradChi.zero( siot_dim );
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim, tot_dim, Eigen::RowMajor > > map_dMdGradChi( dMdGradChi.value->data( ), tot_dim, tot_dim );
+            auto map_dMdGradChi = dMdGradChi.zeroMap< floatType, tot_dim, tot_dim >( );
 
             map_dMdGradChi = ( map_dMdLocalM * map_dLocalMdGradChi ).eval( );
 
-            dMdGradChin.zero( siot_dim * ( num_configs - 1 ) );
-            Eigen::Map< Eigen::Matrix< floatType, tot_dim,      -1, Eigen::RowMajor > > map_dMdGradChin( dMdGradChin.value->data( ), tot_dim, ( num_configs - 1 ) * tot_dim );
+            auto map_dMdGradChin = dMdGradChin.zeroMap< floatType, tot_dim >( tot_dim * ( num_configs - 1 ) );
 
             map_dMdGradChin = ( map_dMdLocalM * map_dLocalMdGradChin ).eval( );
 
