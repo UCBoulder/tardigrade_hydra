@@ -1039,6 +1039,8 @@ namespace tardigradeHydra{
 
                 virtual void setdRdT( ) override;
 
+                const floatType *getMinCohesion( ){ return &_minCohesion; }
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -1052,6 +1054,8 @@ namespace tardigradeHydra{
                 floatType _maxMicroPlasticDeltaNorm = 1.; //!< The maximum allowable value of the norm of the change in micro plasticity for a given nonlinear iteration
 
                 floatType _maxMicroGradientPlasticDeltaNorm = 1.; //!< The maximum allowable value of the norm of the change in micro gradient plasticity for a given nonlinear iteration
+
+                floatType _minCohesion = 1e-2; //!< The minimum allowable value of the cohesion
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroHardeningParameters,                             floatVector,       unexpectedError                                         )
 
