@@ -4143,6 +4143,8 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) cohesions
              */
 
+            constexpr unsigned int dim = 3;
+
             const floatVector *plasticStrainLikeISVs;
 
             setDataStorageBase< floatType > macroCohesion;
@@ -4180,12 +4182,18 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( get_microGradientHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microGradientHardeningParameters( )->size( ) ) );
 
-            *macroCohesion.value           = ( *get_macroHardeningParameters( ) )[ 0 ] + ( *get_macroHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 0 ];
+            *macroCohesion.value           = std::fmax( ( *get_macroHardeningParameters( ) )[ 0 ] + ( *get_macroHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 0 ], 0 );
 
-            *microCohesion.value           = ( *get_microHardeningParameters( ) )[ 0 ] + ( *get_microHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 1 ];
+            *microCohesion.value           = std::fmax( ( *get_microHardeningParameters( ) )[ 0 ] + ( *get_microHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 1 ], 0 );
 
             *microGradientCohesion.value   = ( *get_microGradientHardeningParameters( ) )[ 0 ] + ( *get_microGradientHardeningParameters( ) )[ 1 ] * dimVector( plasticStrainLikeISVs->begin( ) + 2,
                                                                                                                                                                  plasticStrainLikeISVs->end( ) );
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                ( *microGradientCohesion.value )[ i ] = std::fmax( ( *microGradientCohesion.value )[ i ], 0 );
+
+            }
 
         }
 
@@ -4321,16 +4329,41 @@ namespace tardigradeHydra{
 
             ( *dMacroCohesiondISVs.value )[ num_pms + 0 ] = ( *get_macroHardeningParameters( ) )[ 1 ];
 
+            if ( *macroCohesion.value < 0 ){
+
+                *macroCohesion.value = 0;
+
+                ( *dMacroCohesiondISVs.value )[ num_pms + 0 ] = 0;
+
+            }
+
             *microCohesion.value           = ( *get_microHardeningParameters( ) )[ 0 ] + ( *get_microHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 1 ];
 
             ( *dMicroCohesiondISVs.value )[ num_pms + 1 ] = ( *get_microHardeningParameters( ) )[ 1 ];
+
+            if ( *microCohesion.value < 0 ){
+
+                *microCohesion.value = 0;
+
+                ( *dMicroCohesiondISVs.value )[ num_pms + 1 ] = 0;
+
+            }
 
             *microGradientCohesion.value = ( *get_microGradientHardeningParameters( ) )[ 0 ] + ( *get_microGradientHardeningParameters( ) )[ 1 ] * dimVector( plasticStrainLikeISVs->begin( ) + 2,
                                                                                                                                                               plasticStrainLikeISVs->end( ) );
 
             for ( unsigned int i = 2; i < num_psisvs; i++ ){
 
-                ( *dMicroGradientCohesiondISVs.value )[ num_pisvs * ( i - 2 ) + get_plasticMultipliers( )->size( ) + i ] = ( *get_microGradientHardeningParameters( ) )[ 1 ];
+                if ( ( *microGradientCohesion.value )[ i - 2 ] < 0 ){
+
+                    ( *microGradientCohesion.value )[ i - 2 ] = 0;
+
+                }
+                else{
+
+                    ( *dMicroGradientCohesiondISVs.value )[ num_pisvs * ( i - 2 ) + get_plasticMultipliers( )->size( ) + i ] = ( *get_microGradientHardeningParameters( ) )[ 1 ];
+
+                }
 
             }
 
