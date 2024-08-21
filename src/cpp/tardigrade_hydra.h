@@ -917,6 +917,8 @@ namespace tardigradeHydra{
 
         protected:
 
+            void setPenaltyIndices( const std::vector< unsigned int > &indices ){ _penalty_indices = indices; }
+
             void unexpectedError( ){
                 /*!
                  * Function to throw for an unexpected error. A user should never get here!
@@ -970,6 +972,8 @@ namespace tardigradeHydra{
             unsigned int _numEquations; //!< The number of residual equations
 
             bool _useProjection = false; //!< Flag for whether to use the projection or not
+
+            std::vector< unsigned int > _penalty_indices; //!< The indices of the variables which should be penalized for negative values
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setResidual,                         getResidual,                        residual,                        floatVector, setResidual )
 

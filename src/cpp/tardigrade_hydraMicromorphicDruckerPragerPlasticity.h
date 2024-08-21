@@ -414,6 +414,8 @@ namespace tardigradeHydra{
 
                     _numPlasticMultipliers = 5; //Hard-coding this because we couldn't handle a different number anyway.
 
+                    _numPlasticStrainLikeStateVariables = 5; //Hard-coding this because we couldn't handle a different number anyway.
+
                     _stateVariableIndices = stateVariableIndices;
 
                     _integrationParameter = integrationParameter;
@@ -430,6 +432,9 @@ namespace tardigradeHydra{
 
                 //!Get the number of plastic multipliers expected for the problem
                 const unsigned int* getNumPlasticMultipliers( ){ return &_numPlasticMultipliers; }
+
+                //!Get the number of plastic multipliers expected for the problem
+                const unsigned int* getNumStrainLikePlasticStateVariables( ){ return &_numPlasticStrainLikeStateVariables; }
 
                 const unsigned int* getPlasticConfigurationIndex( );
 
@@ -500,6 +505,8 @@ namespace tardigradeHydra{
                 floatType _plasticMultiplierBarrierModulus; //!< The modulus applied to the plastic multipliers to make sure they are never negative
 
                 unsigned int _numPlasticMultipliers; //!< The number of plastic multipliers. Hard coded to 5 but setting as a variable just in case
+
+                unsigned int _numPlasticStrainLikeStateVariables = 5; //The number of plastic strain-like state variables. Hard coded to 5 but setting as a variable just in case
 
                 virtual void extractMaterialParameters( const parameterVector &parameters );
 

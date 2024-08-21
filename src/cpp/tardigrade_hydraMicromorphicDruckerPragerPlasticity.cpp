@@ -3283,9 +3283,9 @@ namespace tardigradeHydra{
 
             }
 
-            plasticStrainLikeISVs.zero( getStateVariableIndices( )->size( ) - *getNumPlasticMultipliers( ) );
+            plasticStrainLikeISVs.zero( *getNumStrainLikePlasticStateVariables( ) );
 
-            for ( auto ind = getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ); ind != getStateVariableIndices( )->end( ); ind++ ){
+            for ( auto ind = getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ); ind != getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ) + *getNumStrainLikePlasticStateVariables( ); ind++ ){
 
                 ( *plasticStrainLikeISVs.value )[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) - *getNumPlasticMultipliers( ) ] = ( *nonlinearISVs )[ *ind ];
 
