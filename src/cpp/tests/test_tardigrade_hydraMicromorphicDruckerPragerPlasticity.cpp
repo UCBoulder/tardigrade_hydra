@@ -15011,11 +15011,11 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
     R2.microGradientYield = -R.microGradientYield;
 
     floatVector answer1( 10, 0 );
-    answer1[ 0 ] = R.macroYield              + unknownVector[ 2 * configuration_unknown_count + 0 ] * R.macroYield;
-    answer1[ 1 ] = R.microYield              + unknownVector[ 2 * configuration_unknown_count + 1 ] * R.microYield;
-    answer1[ 2 ] = R.microGradientYield[ 0 ] + unknownVector[ 2 * configuration_unknown_count + 2 ] * R.microGradientYield[ 0 ];
-    answer1[ 3 ] = R.microGradientYield[ 1 ] + unknownVector[ 2 * configuration_unknown_count + 3 ] * R.microGradientYield[ 1 ];
-    answer1[ 4 ] = R.microGradientYield[ 2 ] + unknownVector[ 2 * configuration_unknown_count + 4 ] * R.microGradientYield[ 2 ];
+    answer1[ 0 ] = R.macroYield              + 0.1 * unknownVector[ 2 * configuration_unknown_count + 0 ] * R.macroYield;
+    answer1[ 1 ] = R.microYield              + 0.1 * unknownVector[ 2 * configuration_unknown_count + 1 ] * R.microYield;
+    answer1[ 2 ] = R.microGradientYield[ 0 ] + 0.1 * unknownVector[ 2 * configuration_unknown_count + 2 ] * R.microGradientYield[ 0 ];
+    answer1[ 3 ] = R.microGradientYield[ 1 ] + 0.1 * unknownVector[ 2 * configuration_unknown_count + 3 ] * R.microGradientYield[ 1 ];
+    answer1[ 4 ] = R.microGradientYield[ 2 ] + 0.1 * unknownVector[ 2 * configuration_unknown_count + 4 ] * R.microGradientYield[ 2 ];
     answer1[ 5 ] = R.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 0 ];
     answer1[ 6 ] = R.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 1 ];
     answer1[ 7 ] = R.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 2 ];
@@ -15023,11 +15023,11 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
     answer1[ 9 ] = R.updatedPlasticStrainLikeISVs[ 4 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 4 ];
 
     floatVector answer2( 10, 0 );
-    answer2[ 0 ] = std::fabs( unknownVector[ 2 * configuration_unknown_count + 0 ] * R2.macroYield );
-    answer2[ 1 ] = std::fabs( unknownVector[ 2 * configuration_unknown_count + 1 ] * R2.microYield );
-    answer2[ 2 ] = std::fabs( unknownVector[ 2 * configuration_unknown_count + 2 ] * R2.microGradientYield[ 0 ] );
-    answer2[ 3 ] = std::fabs( unknownVector[ 2 * configuration_unknown_count + 3 ] * R2.microGradientYield[ 1 ] );
-    answer2[ 4 ] = std::fabs( unknownVector[ 2 * configuration_unknown_count + 4 ] * R2.microGradientYield[ 2 ] );
+    answer2[ 0 ] = 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 0 ] * R2.macroYield );
+    answer2[ 1 ] = 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 1 ] * R2.microYield );
+    answer2[ 2 ] = 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 2 ] * R2.microGradientYield[ 0 ] );
+    answer2[ 3 ] = 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 3 ] * R2.microGradientYield[ 1 ] );
+    answer2[ 4 ] = 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 4 ] * R2.microGradientYield[ 2 ] );
     answer2[ 5 ] = R2.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 0 ];
     answer2[ 6 ] = R2.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 1 ];
     answer2[ 7 ] = R2.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 2 ];
@@ -15292,11 +15292,11 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals2, * boost::unit_test::toler
     R2.microGradientYield = -R.microGradientYield;
 
     floatVector answer1( 10, 0 );
-    answer1[ 0 ] = R.macroYield              + std::fabs( unknownVector[ 2 * configuration_unknown_count + 0 ] * R.macroYield ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 0 ] );
-    answer1[ 1 ] = R.microYield              + std::fabs( unknownVector[ 2 * configuration_unknown_count + 1 ] * R.microYield ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 1 ] );
-    answer1[ 2 ] = R.microGradientYield[ 0 ] + std::fabs( unknownVector[ 2 * configuration_unknown_count + 2 ] * R.microGradientYield[ 0 ] ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 2 ] );
-    answer1[ 3 ] = R.microGradientYield[ 1 ] + std::fabs( unknownVector[ 2 * configuration_unknown_count + 3 ] * R.microGradientYield[ 1 ] ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 3 ] );
-    answer1[ 4 ] = R.microGradientYield[ 2 ] + std::fabs( unknownVector[ 2 * configuration_unknown_count + 4 ] * R.microGradientYield[ 2 ] ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 4 ] );
+    answer1[ 0 ] = R.macroYield              + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 0 ] * R.macroYield ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 0 ] );
+    answer1[ 1 ] = R.microYield              + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 1 ] * R.microYield ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 1 ] );
+    answer1[ 2 ] = R.microGradientYield[ 0 ] + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 2 ] * R.microGradientYield[ 0 ] ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 2 ] );
+    answer1[ 3 ] = R.microGradientYield[ 1 ] + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 3 ] * R.microGradientYield[ 1 ] ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 3 ] );
+    answer1[ 4 ] = R.microGradientYield[ 2 ] + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 4 ] * R.microGradientYield[ 2 ] ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 4 ] );
     answer1[ 5 ] = R.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 0 ];
     answer1[ 6 ] = R.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 1 ];
     answer1[ 7 ] = R.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 2 ];
@@ -15304,11 +15304,11 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals2, * boost::unit_test::toler
     answer1[ 9 ] = R.updatedPlasticStrainLikeISVs[ 4 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 4 ];
 
     floatVector answer2( 10, 0 );
-    answer2[ 0 ] = unknownVector[ 2 * configuration_unknown_count + 0 ] * R2.macroYield + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 0 ] );
-    answer2[ 1 ] = unknownVector[ 2 * configuration_unknown_count + 1 ] * R2.microYield + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 1 ] );
-    answer2[ 2 ] = unknownVector[ 2 * configuration_unknown_count + 2 ] * R2.microGradientYield[ 0 ] + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 2 ] );
-    answer2[ 3 ] = unknownVector[ 2 * configuration_unknown_count + 3 ] * R2.microGradientYield[ 1 ] + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 3 ] );
-    answer2[ 4 ] = unknownVector[ 2 * configuration_unknown_count + 4 ] * R2.microGradientYield[ 2 ] + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 4 ] );
+    answer2[ 0 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 0 ] * R2.macroYield + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 0 ] );
+    answer2[ 1 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 1 ] * R2.microYield + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 1 ] );
+    answer2[ 2 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 2 ] * R2.microGradientYield[ 0 ] + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 2 ] );
+    answer2[ 3 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 3 ] * R2.microGradientYield[ 1 ] + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 3 ] );
+    answer2[ 4 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 4 ] * R2.microGradientYield[ 2 ] + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 4 ] );
     answer2[ 5 ] = R2.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 0 ];
     answer2[ 6 ] = R2.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 1 ];
     answer2[ 7 ] = R2.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 2 ];
@@ -16756,19 +16756,19 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals_weak, * boost::unit_test::t
 
     floatVector answer1( 10, 0 );
     answer1[ 0 ] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( R.macroYield, a )
-                 + std::fabs( unknownVector[ 2 * configuration_unknown_count + 0 ] * R.macroYield )
+                 + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 0 ] * R.macroYield )
                  + 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( -unknownVector[ 2 * configuration_unknown_count + 0 ], a );
     answer1[ 1 ] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( R.microYield, a )
-                 + std::fabs( unknownVector[ 2 * configuration_unknown_count + 1 ] * R.microYield )
+                 + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 1 ] * R.microYield )
                  + 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( -unknownVector[ 2 * configuration_unknown_count + 1 ], a );
     answer1[ 2 ] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( R.microGradientYield[ 0 ], a )
-                 + std::fabs( unknownVector[ 2 * configuration_unknown_count + 2 ] * R.microGradientYield[ 0 ] )
+                 + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 2 ] * R.microGradientYield[ 0 ] )
                  + 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( -unknownVector[ 2 * configuration_unknown_count + 2 ], a );
     answer1[ 3 ] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( R.microGradientYield[ 1 ], a )
-                 + std::fabs( unknownVector[ 2 * configuration_unknown_count + 3 ] * R.microGradientYield[ 1 ] )
+                 + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 3 ] * R.microGradientYield[ 1 ] )
                  + 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( -unknownVector[ 2 * configuration_unknown_count + 3 ], a );
     answer1[ 4 ] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( R.microGradientYield[ 2 ], a )
-                 + std::fabs( unknownVector[ 2 * configuration_unknown_count + 4 ] * R.microGradientYield[ 2 ] )
+                 + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 4 ] * R.microGradientYield[ 2 ] )
                  + 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( -unknownVector[ 2 * configuration_unknown_count + 4 ], a );
     answer1[ 5 ] = R.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 0 ];
     answer1[ 6 ] = R.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 1 ];
@@ -16778,19 +16778,19 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals_weak, * boost::unit_test::t
 
     floatVector answer2( 10, 0 );
     answer2[ 0 ] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( R2.macroYield, a )
-                 + std::fabs( unknownVector[ 2 * configuration_unknown_count + 0 ] * R2.macroYield )
+                 + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 0 ] * R2.macroYield )
                  + 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( -unknownVector[ 2 * configuration_unknown_count + 0 ], a );
     answer2[ 1 ] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( R2.microYield, a )
-                 + std::fabs( unknownVector[ 2 * configuration_unknown_count + 1 ] * R2.microYield )
+                 + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 1 ] * R2.microYield )
                  + 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( -unknownVector[ 2 * configuration_unknown_count + 1 ], a );
     answer2[ 2 ] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( R2.microGradientYield[ 0 ], a )
-                 + std::fabs( unknownVector[ 2 * configuration_unknown_count + 2 ] * R2.microGradientYield[ 0 ] )
+                 + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 2 ] * R2.microGradientYield[ 0 ] )
                  + 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( -unknownVector[ 2 * configuration_unknown_count + 2 ], a );
     answer2[ 3 ] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( R2.microGradientYield[ 1 ], a )
-                 + std::fabs( unknownVector[ 2 * configuration_unknown_count + 3 ] * R2.microGradientYield[ 1 ] )
+                 + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 3 ] * R2.microGradientYield[ 1 ] )
                  + 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( -unknownVector[ 2 * configuration_unknown_count + 3 ], a );
     answer2[ 4 ] = tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( R2.microGradientYield[ 2 ], a )
-                 + std::fabs( unknownVector[ 2 * configuration_unknown_count + 4 ] * R2.microGradientYield[ 2 ] )
+                 + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 4 ] * R2.microGradientYield[ 2 ] )
                  + 1000 * tardigradeHydra::micromorphicDruckerPragerPlasticity::weakMac( -unknownVector[ 2 * configuration_unknown_count + 4 ], a );
     answer2[ 5 ] = R2.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 0 ];
     answer2[ 6 ] = R2.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 1 ];
