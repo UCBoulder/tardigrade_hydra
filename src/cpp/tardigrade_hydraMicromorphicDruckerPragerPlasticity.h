@@ -450,6 +450,9 @@ namespace tardigradeHydra{
                 //!Return the value of the barrier modulus to prevent the plastic multipliers from becoming negative
                 const floatType *getPlasticMultiplierBarrierModulus( ){ return &_plasticMultiplierBarrierModulus; }
 
+                //!Return the value of the consistency condition modulus
+                const floatType *getConsistencyConditionModulus( ){ return &_consistencyConditionModulus; }
+
                 virtual void projectSuggestedX( std::vector< floatType > &trialX,
                                                 const std::vector< floatType > &Xp ) override;
 
@@ -502,6 +505,8 @@ namespace tardigradeHydra{
                 floatType _weakenedMacaulayParameter; //!< The weakening parameter for the weak Macaulay brackets
 
                 floatType _plasticMultiplierBarrierModulus; //!< The modulus applied to the plastic multipliers to make sure they are never negative
+
+                floatType _consistencyConditionModulus = 0.1; //!< Modulus for the consistency condition
 
                 unsigned int _numPlasticMultipliers; //!< The number of plastic multipliers. Hard coded to 5 but setting as a variable just in case
 

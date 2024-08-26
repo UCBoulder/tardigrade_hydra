@@ -8049,6 +8049,8 @@ namespace tardigradeHydra{
 
             floatVector macNegMicroGradientGamma( 3, 0 );
 
+            floatVector consistencyConditionModuli( 5, *getConsistencyConditionModulus( ) );
+
             if ( *useWeakenedMacaulay( ) ){
 
                 macroMac  = weakMac( *macroYield, *getWeakenedMacaulayParameter( ) );
@@ -8086,16 +8088,16 @@ namespace tardigradeHydra{
             }
 
             // Set the terms associated with the yield surface
-            ( *residual.value )[ 0 ] = macroMac + std::fabs( ( *plasticMultipliers )[ 0 ] * ( *macroYield ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMacroGamma;
+            ( *residual.value )[ 0 ] = macroMac + consistencyConditionModuli[ 0 ] * std::fabs( ( *plasticMultipliers )[ 0 ] * ( *macroYield ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMacroGamma;
 
-            ( *residual.value )[ 1 ] = microMac + std::fabs( ( *plasticMultipliers )[ 1 ] * ( *microYield ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGamma;
+            ( *residual.value )[ 1 ] = microMac + consistencyConditionModuli[ 1 ] * std::fabs( ( *plasticMultipliers )[ 1 ] * ( *microYield ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGamma;
 
             for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
 
                 unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
 
                 ( *residual.value )[ index + 2 ]
-                    = microGradientMac[ index ] + std::fabs( ( *plasticMultipliers )[ index + 2 ] * ( *y ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGradientGamma[ index ];
+                    = microGradientMac[ index ] + consistencyConditionModuli[ index + 2 ] * std::fabs( ( *plasticMultipliers )[ index + 2 ] * ( *y ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGradientGamma[ index ];
 
             }
 
@@ -8186,6 +8188,8 @@ namespace tardigradeHydra{
                 signs[ i + 2 ] = sgn( ( *plasticMultipliers )[ i + 2 ] * ( *microGradientYield )[ i ] );
             }
 
+            floatVector consistencyConditionModuli( 5, *getConsistencyConditionModulus( ) );
+
             // Stress Jacobians
             floatType dMacroMacdx, dMicroMacdx;
             floatType ndMacroMacdx, ndMicroMacdx;
@@ -8255,9 +8259,9 @@ namespace tardigradeHydra{
             unsigned int offset = numSecondOrderTensor;
             for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
 
-                ( *jacobian.value )[ numUnknowns * 0 + j ] = ( dMacroMacdx  + signs[ 0 ]  * ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddStress )[ j ];
+                ( *jacobian.value )[ numUnknowns * 0 + j ] = ( dMacroMacdx  + consistencyConditionModuli[ 0 ] * signs[ 0 ]  * ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddStress )[ j ];
 
-                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] = ( dMicroMacdx + signs[ 1 ] * ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddStress )[ j ];
+                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] = ( dMicroMacdx + consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddStress )[ j ];
 
             }
 
@@ -8266,7 +8270,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < numThirdOrderTensor; j++ ){
 
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddStress )[ numThirdOrderTensor * i + j ];
+                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddStress )[ numThirdOrderTensor * i + j ];
 
                 }
 
@@ -8276,9 +8280,9 @@ namespace tardigradeHydra{
             offset = 2 * numSecondOrderTensor + numThirdOrderTensor;
             for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
 
-                ( *jacobian.value )[ numUnknowns * 0 + j + offset ] = ( dMacroMacdx + signs[ 0 ] * ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddFn )[ j ];
+                ( *jacobian.value )[ numUnknowns * 0 + j + offset ] = ( dMacroMacdx + consistencyConditionModuli[ 0 ] * signs[ 0 ] * ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddFn )[ j ];
 
-                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] = ( dMicroMacdx + signs[ 1 ] * ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddFn )[ j ];
+                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] = ( dMicroMacdx + consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddFn )[ j ];
 
             } 
 
@@ -8286,7 +8290,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
 
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddFn )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
+                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddFn )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
 
                 }
 
@@ -8298,7 +8302,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
 
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddChin )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
+                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddChin )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
 
                 }
 
@@ -8308,21 +8312,21 @@ namespace tardigradeHydra{
             // State Variable Jacobians
             offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
 
-            ( *jacobian.value )[ numUnknowns * 0 + offset + 0 ] += signs[ 0 ] * ( *macroYield ) - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMacroGammadGamma;
+            ( *jacobian.value )[ numUnknowns * 0 + offset + 0 ] += consistencyConditionModuli[ 0 ] * signs[ 0 ] * ( *macroYield ) - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMacroGammadGamma;
 
-            ( *jacobian.value )[ numUnknowns * 1 + offset + 1 ] += signs[ 1 ] * ( *microYield ) - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMicroGammadGamma;
+            ( *jacobian.value )[ numUnknowns * 1 + offset + 1 ] += consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *microYield ) - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMicroGammadGamma;
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
-                ( *jacobian.value )[ numUnknowns * ( i + 2 ) + offset + i + 2 ] += signs[ i + 2 ] * ( *microGradientYield )[ i ] - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMicroGradientGammadGamma[ i ];
+                ( *jacobian.value )[ numUnknowns * ( i + 2 ) + offset + i + 2 ] += consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *microGradientYield )[ i ] - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMicroGradientGammadGamma[ i ];
 
             }
 
             for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
 
-                ( *jacobian.value )[ numUnknowns * 0 + j + offset ] += ( dMacroMacdx + signs[ 0 ] * ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddStateVariables )[ j ];
+                ( *jacobian.value )[ numUnknowns * 0 + j + offset ] += ( dMacroMacdx + consistencyConditionModuli[ 0 ] * signs[ 0 ] * ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddStateVariables )[ j ];
 
-                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] += ( dMicroMacdx + signs[ 1 ] * ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddStateVariables )[ j ];
+                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] += ( dMicroMacdx + consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddStateVariables )[ j ];
 
             }
 
@@ -8330,7 +8334,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
 
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] += ( dMicroGradientMacdx[ i ] + signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddStateVariables )[ numISVs * i + j ];
+                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] += ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddStateVariables )[ numISVs * i + j ];
 
                 }
 
@@ -8398,6 +8402,16 @@ namespace tardigradeHydra{
             auto dRdD = get_setDataStorage_dStateVariableResidualsdD( );
             dRdD.zero( get_plasticStateVariables( )->size( ) * numConfigurationUnknowns );
 
+            floatVector signs( 5, 0 );
+
+            signs[ 0 ] = sgn( ( *plasticMultipliers )[ 0 ] * ( *macroYield ) );
+            signs[ 1 ] = sgn( ( *plasticMultipliers )[ 1 ] * ( *microYield ) );
+            for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
+                signs[ i + 2 ] = sgn( ( *plasticMultipliers )[ i + 2 ] * ( *microGradientYield )[ i ] );
+            }
+
+            floatVector consistencyConditionModuli( 5, *getConsistencyConditionModulus( ) );
+
             // Deformation gradient jacobians
             floatType dMacroMacdx, dMicroMacdx;
             floatType ndMacroMacdx, ndMicroMacdx;
@@ -8448,9 +8462,9 @@ namespace tardigradeHydra{
             unsigned int offset = 0;
             for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
 
-                ( *dRdD.value )[ numConfigurationUnknowns * 0 + j + offset ] = ( dMacroMacdx + ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddF )[ j ];
+                ( *dRdD.value )[ numConfigurationUnknowns * 0 + j + offset ] = ( dMacroMacdx + consistencyConditionModuli[ 0 ] * signs[ 0 ] * ( *plasticMultipliers )[ 0 ] ) * ( *dMacroYielddF )[ j ];
 
-                ( *dRdD.value )[ numConfigurationUnknowns * 1 + j + offset ] = ( dMicroMacdx + ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddF )[ j ];
+                ( *dRdD.value )[ numConfigurationUnknowns * 1 + j + offset ] = ( dMicroMacdx + consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *plasticMultipliers )[ 1 ] ) * ( *dMicroYielddF )[ j ];
 
             } 
 
@@ -8458,7 +8472,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
 
-                    ( *dRdD.value )[ numConfigurationUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddF )[ numSecondOrderTensor * i + j ];
+                    ( *dRdD.value )[ numConfigurationUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddF )[ numSecondOrderTensor * i + j ];
 
                 }
 
@@ -8470,7 +8484,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
 
-                    ( *dRdD.value )[ numConfigurationUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddChi )[ numSecondOrderTensor * i + j ];
+                    ( *dRdD.value )[ numConfigurationUnknowns * ( i + 2 ) + j + offset ] = ( dMicroGradientMacdx[ i ] + consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *plasticMultipliers )[ i + 2 ] ) * ( *dMicroGradientYielddChi )[ numSecondOrderTensor * i + j ];
 
                 }
 
