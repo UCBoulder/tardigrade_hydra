@@ -641,7 +641,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
 
     residualMock R(  &hydra, 60, 1, stateVariableIndices, parameters );
 
-    floatMatrix jacobian( 10, floatVector( unknownVector.size( ), 0 ) );
+    floatMatrix jacobian( 15, floatVector( unknownVector.size( ), 0 ) );
 
     floatType eps = 1e-6;
 
