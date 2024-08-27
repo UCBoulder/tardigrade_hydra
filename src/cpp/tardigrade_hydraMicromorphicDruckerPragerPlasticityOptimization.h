@@ -122,6 +122,8 @@ namespace tardigradeHydra{
 
             protected:
 
+                virtual void setStateVariableResiduals( ) override;
+
             private:
 
         };
