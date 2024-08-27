@@ -94,10 +94,8 @@ namespace tardigradeHydra{
                 using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setdRdT;
 
                 residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const unsigned int &plasticConfigurationIndex,
-                          const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5,
-                          const bool useWeakenedMacaulay = false, const floatType weakenedMacaulayParameter=10, const floatType plasticMultiplierBarrierModulus=1000. )
-                        : tardigradeHydra::micromorphicDruckerPragerPlasticity::residual( _hydra, _numEquations, plasticConfigurationIndex, stateVariableIndices, parameters, integrationParameter,
-                                                                                          useWeakenedMacaulay, weakenedMacaulayParameter, plasticMultiplierBarrierModulus ){
+                          const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5 )
+                        : tardigradeHydra::micromorphicDruckerPragerPlasticity::residual( _hydra, _numEquations, plasticConfigurationIndex, stateVariableIndices, parameters, integrationParameter ){
                     /*!
                      * The main initialization constructor for the Drucker Prager plasticity residual based on optimization
                      * 
@@ -112,7 +110,13 @@ namespace tardigradeHydra{
                      * \param &plasticMultiplierBarrierModulus: The barrier modulus to make sure that the plastic multipliers never go negative (defaults to 1000)
                      */
 
-                    setPenaltyIndices( { 0, 1, 2, 3, 4, 10, 11, 12, 13, 14 } ); //!< The indices of parameters which should be penalized for being negative
+                    const unsigned int offset = ( *hydra->getNumConfigurations( ) ) * ( *hydra->getConfigurationUnknownCount( ) );
+
+                    std::vector< unsigned int > positive_indices = { 0, 1, 2, 3, 4, 10, 11, 12, 13, 14 };
+
+                    positive_indices += offset;
+
+                    setPenaltyIndices( positive_indices ); //!< The indices of values in the unknown vector which should be penalized for being negative
 
                 }
 
