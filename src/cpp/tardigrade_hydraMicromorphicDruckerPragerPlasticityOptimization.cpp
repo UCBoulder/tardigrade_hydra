@@ -321,6 +321,53 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::setConstraints( ){
+            /*!
+             * Set the values of the constraints which are defined as
+             * 
+             * c = -f - s
+             * 
+             * Where \f$f\f$ is the yield surface and \f$s\f$ is the slack variable.
+             */
+
+            const floatVector *plasticMultipliers = get_plasticMultipliers( );
+
+            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+
+            const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
+
+            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+
+            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+
+            const floatVector slackVariables( get_plasticStateVariables( )->begin( ) + numPlasticMultipliers + numPlasticStrainLikeISVs,
+                                              get_plasticStateVariables( )->end( ) );
+
+            const floatType *macroYield = get_macroYield( );
+
+            const floatType *microYield = get_microYield( );
+
+            const dimVector *microGradientYield = get_microGradientYield( );
+
+            auto constraints = get_setDataStorage_constraints( );
+            constraints.zero( get_plasticStateVariables( )->size( ) );
+
+            // Set the terms associated with the yield surface
+            ( *constraints.value )[ 0 ] = -( *macroYield ) - slackVariables[ 0 ];
+
+            ( *constraints.value )[ 1 ] = -( *microYield ) - slackVariables[ 1 ];
+
+            for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
+
+                unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
+
+                ( *constraints.value )[ index + 2 ]
+                    = -( *y ) - slackVariables[ index + 2 ];
+
+            }
+
+        }
+
     }
 
 }
