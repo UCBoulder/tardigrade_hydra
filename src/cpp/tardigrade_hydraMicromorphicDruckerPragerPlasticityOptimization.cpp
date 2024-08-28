@@ -350,7 +350,7 @@ namespace tardigradeHydra{
             const dimVector *microGradientYield = get_microGradientYield( );
 
             auto constraints = get_setDataStorage_constraints( );
-            constraints.zero( get_plasticStateVariables( )->size( ) );
+            constraints.zero( slackVariables.size( ) );
 
             // Set the terms associated with the yield surface
             ( *constraints.value )[ 0 ] = -( *macroYield ) - slackVariables[ 0 ];

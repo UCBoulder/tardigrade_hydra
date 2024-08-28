@@ -799,6 +799,15 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void setConstraints( ){
+                /*!
+                 * Compute the contraints
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the constraints is not implemented" ) );
+
+            }
+
             virtual void setCurrentAdditionalStateVariables( ){
                 /*!
                  * Set the current additional state variables
@@ -990,6 +999,8 @@ namespace tardigradeHydra{
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setStress,                           getStress,                          stress,                          floatVector, setStress )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setPreviousStress,                   getPreviousStress,                  previousStress,                  floatVector, setPreviousStress )
+
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraints,                      getConstraints,                     constraints,                     floatVector, setConstraints )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setCurrentAdditionalStateVariables,  getCurrentAdditionalStateVariables, currentAdditionalStateVariables, floatVector, setCurrentAdditionalStateVariables )
 

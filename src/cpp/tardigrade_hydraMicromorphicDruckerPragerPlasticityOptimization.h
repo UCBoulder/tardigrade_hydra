@@ -128,7 +128,7 @@ namespace tardigradeHydra{
 
                 virtual void setdStateVariableResidualsdD( ) override;
 
-                virtual void setConstraints( ); //override; //TODO: Remove comment not declaring an override
+                virtual void setConstraints( ) override;
 
             private:
 
