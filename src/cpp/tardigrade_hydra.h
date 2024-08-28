@@ -808,6 +808,15 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void setConstraintJacobians( ){
+                /*!
+                 * Compute the contraint Jacobians
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the constraint jacobians is not implemented" ) );
+
+            }
+
             virtual void setCurrentAdditionalStateVariables( ){
                 /*!
                  * Set the current additional state variables
@@ -1001,6 +1010,8 @@ namespace tardigradeHydra{
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setPreviousStress,                   getPreviousStress,                  previousStress,                  floatVector, setPreviousStress )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraints,                      getConstraints,                     constraints,                     floatVector, setConstraints )
+
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraintJacobians,              getConstraintJacobians,             constraintJacobians,             floatVector, setConstraintJacobians )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setCurrentAdditionalStateVariables,  getCurrentAdditionalStateVariables, currentAdditionalStateVariables, floatVector, setCurrentAdditionalStateVariables )
 

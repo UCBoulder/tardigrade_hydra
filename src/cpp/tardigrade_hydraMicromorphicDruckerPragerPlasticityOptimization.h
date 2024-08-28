@@ -130,6 +130,8 @@ namespace tardigradeHydra{
 
                 virtual void setConstraints( ) override;
 
+                virtual void setConstraintJacobians( ) override;
+
             private:
 
         };

@@ -330,15 +330,9 @@ namespace tardigradeHydra{
              * Where \f$f\f$ is the yield surface and \f$s\f$ is the slack variable.
              */
 
-            const floatVector *plasticMultipliers = get_plasticMultipliers( );
-
-            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
-
-            const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
-
             const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
 
-            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+            unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
 
             const floatVector slackVariables( get_plasticStateVariables( )->begin( ) + numPlasticMultipliers + numPlasticStrainLikeISVs,
                                               get_plasticStateVariables( )->end( ) );
@@ -363,6 +357,150 @@ namespace tardigradeHydra{
 
                 ( *constraints.value )[ index + 2 ]
                     = -( *y ) - slackVariables[ index + 2 ];
+
+            }
+
+        }
+
+        void residual::setConstraintJacobians( ){
+            /*!
+             * Set the values of the constraint Jacobians which are defined as
+             * 
+             * c = -f - s
+             * 
+             * Where \f$f\f$ is the yield surface and \f$s\f$ is the slack variable.
+             */
+
+            const unsigned int dim = hydra->getDimension( );
+
+            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+
+            const unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+
+            unsigned int numConfigurations = *hydra->getNumConfigurations( );
+
+            const floatVector *plasticMultipliers = get_plasticMultipliers( );
+
+            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+
+            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+
+            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+
+            const unsigned int numUnknowns = hydra->getNumUnknowns( );
+
+            const unsigned int numISVs = get_plasticStateVariables( )->size( );
+
+            const secondOrderTensor *dMacroYielddStress                 = get_dMacroYielddStress( );
+
+            const floatVector *dMacroYielddFn                     = get_dMacroYielddFn( );
+
+            const floatVector *dMacroYielddStateVariables         = get_dMacroYielddStateVariables( );
+
+            const secondOrderTensor *dMicroYielddStress                 = get_dMicroYielddStress( );
+
+            const floatVector *dMicroYielddFn                     = get_dMicroYielddFn( );
+
+            const floatVector *dMicroYielddStateVariables         = get_dMicroYielddStateVariables( );
+
+            const floatVector *dMicroGradientYielddStress         = get_dMicroGradientYielddStress( );
+
+            const floatVector *dMicroGradientYielddFn             = get_dMicroGradientYielddFn( );
+
+            const floatVector *dMicroGradientYielddChin           = get_dMicroGradientYielddChin( );
+
+            const floatVector *dMicroGradientYielddStateVariables = get_dMicroGradientYielddStateVariables( );
+
+            const floatVector *dUpdatedPlasticStrainLikeISVsdStateVariables = get_dUpdatedPlasticStrainLikeISVsdStateVariables( );
+
+            const floatType *macroYield = get_macroYield( );
+
+            const floatType *microYield = get_microYield( );
+
+            const dimVector *microGradientYield = get_microGradientYield( );
+
+            auto jacobian = get_setDataStorage_constraintJacobians( );
+            jacobian.zero( 5 * numUnknowns );
+
+            unsigned int offset = numSecondOrderTensor;
+            for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
+
+                ( *jacobian.value )[ numUnknowns * 0 + j ] = -( *dMacroYielddStress )[ j ];
+
+                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] = -( *dMicroYielddStress )[ j ];
+
+            }
+
+            offset = 2 * numSecondOrderTensor;
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                for ( unsigned int j = 0; j < numThirdOrderTensor; j++ ){
+
+                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = -( *dMicroGradientYielddStress )[ numThirdOrderTensor * i + j ];
+
+                }
+
+            }
+
+            // Sub-Deformation gradient jacobians
+            offset = 2 * numSecondOrderTensor + numThirdOrderTensor;
+            for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
+
+                ( *jacobian.value )[ numUnknowns * 0 + j + offset ] = -( *dMacroYielddFn )[ j ];
+
+                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] = -( *dMicroYielddFn )[ j ];
+
+            }
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
+
+                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = -( *dMicroGradientYielddFn )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
+
+                }
+
+            }
+
+            // Sub-Micro deformation jacobians
+            offset = 2 * numSecondOrderTensor + numThirdOrderTensor + ( numConfigurations - 1 ) * numSecondOrderTensor;
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
+
+                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = -( *dMicroGradientYielddChin )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
+
+                }
+
+            }
+
+
+            // State Variable Jacobians
+            offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
+
+            for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
+
+                ( *jacobian.value )[ numUnknowns * 0 + j + offset ] += -( *dMacroYielddStateVariables )[ j ];
+
+                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] += -( *dMicroYielddStateVariables )[ j ];
+
+            }
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
+
+                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] += -( *dMicroGradientYielddStateVariables )[ numISVs * i + j ];
+
+                }
+
+            }
+
+            unsigned int row0 = 0;
+            offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor ) + numPlasticMultipliers + numPlasticStrainLikeISVs;
+            for ( unsigned int i = 0; i < 5; i++ ){
+
+                ( *jacobian.value )[ numUnknowns * ( i + row0 ) + i + offset ] -= 1;
 
             }
 
