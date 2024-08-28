@@ -498,6 +498,9 @@ namespace tardigradeHydra{
 
                 }
 
+//                virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
+//                                                          std::vector< floatType > &values ) override;
+
             protected:
 
                 bool _useWeakenedMacaulay; //!< Flag for whether to use the weak Macaulay brackets or not
