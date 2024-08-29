@@ -370,28 +370,28 @@ BOOST_AUTO_TEST_CASE( test_computeStateVariableResidual, * boost::unit_test::tol
     R2.microGradientYield = -R.microGradientYield;
 
     floatVector answer1( 15, 0 );
-    answer1[ 0 ] = unknownVector[ 2 * configuration_unknown_count + 0 ] * R.macroYield;
-    answer1[ 1 ] = unknownVector[ 2 * configuration_unknown_count + 1 ] * R.microYield;
-    answer1[ 2 ] = unknownVector[ 2 * configuration_unknown_count + 2 ] * R.microGradientYield[ 0 ];
-    answer1[ 3 ] = unknownVector[ 2 * configuration_unknown_count + 3 ] * R.microGradientYield[ 1 ];
-    answer1[ 4 ] = unknownVector[ 2 * configuration_unknown_count + 4 ] * R.microGradientYield[ 2 ];
-    answer1[ 5 ] = R.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 0 ];
-    answer1[ 6 ] = R.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 1 ];
-    answer1[ 7 ] = R.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 2 ];
-    answer1[ 8 ] = R.updatedPlasticStrainLikeISVs[ 3 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 3 ];
-    answer1[ 9 ] = R.updatedPlasticStrainLikeISVs[ 4 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 4 ];
+    answer1[  5 ] = R.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 0 ];
+    answer1[  6 ] = R.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 1 ];
+    answer1[  7 ] = R.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 2 ];
+    answer1[  8 ] = R.updatedPlasticStrainLikeISVs[ 3 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 3 ];
+    answer1[  9 ] = R.updatedPlasticStrainLikeISVs[ 4 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 4 ];
+    answer1[ 10 ] = -R.macroYield                       - unknownVector[ 2 * configuration_unknown_count + 10 + 0 ];
+    answer1[ 11 ] = -R.microYield                       - unknownVector[ 2 * configuration_unknown_count + 10 + 1 ];
+    answer1[ 12 ] = -R.microGradientYield[ 0 ]          - unknownVector[ 2 * configuration_unknown_count + 10 + 2 ];
+    answer1[ 13 ] = -R.microGradientYield[ 1 ]          - unknownVector[ 2 * configuration_unknown_count + 10 + 3 ];
+    answer1[ 14 ] = -R.microGradientYield[ 2 ]          - unknownVector[ 2 * configuration_unknown_count + 10 + 4 ];
 
     floatVector answer2( 15, 0 );
-    answer2[ 0 ] = unknownVector[ 2 * configuration_unknown_count + 0 ] * R2.macroYield;
-    answer2[ 1 ] = unknownVector[ 2 * configuration_unknown_count + 1 ] * R2.microYield;
-    answer2[ 2 ] = unknownVector[ 2 * configuration_unknown_count + 2 ] * R2.microGradientYield[ 0 ];
-    answer2[ 3 ] = unknownVector[ 2 * configuration_unknown_count + 3 ] * R2.microGradientYield[ 1 ];
-    answer2[ 4 ] = unknownVector[ 2 * configuration_unknown_count + 4 ] * R2.microGradientYield[ 2 ];
-    answer2[ 5 ] = R2.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 0 ];
-    answer2[ 6 ] = R2.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 1 ];
-    answer2[ 7 ] = R2.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 2 ];
-    answer2[ 8 ] = R2.updatedPlasticStrainLikeISVs[ 3 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 3 ];
-    answer2[ 9 ] = R2.updatedPlasticStrainLikeISVs[ 4 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 4 ];
+    answer2[ 5 ] = R2.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 0 ];
+    answer2[ 6 ] = R2.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 1 ];
+    answer2[ 7 ] = R2.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 2 ];
+    answer2[ 8 ] = R2.updatedPlasticStrainLikeISVs[ 3 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 3 ];
+    answer2[ 9 ] = R2.updatedPlasticStrainLikeISVs[ 4 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 4 ];
+    answer2[ 10 ] = -R2.macroYield                      - unknownVector[ 2 * configuration_unknown_count + 10 + 0 ];
+    answer2[ 11 ] = -R2.microYield                      - unknownVector[ 2 * configuration_unknown_count + 10 + 1 ];
+    answer2[ 12 ] = -R2.microGradientYield[ 0 ]         - unknownVector[ 2 * configuration_unknown_count + 10 + 2 ];
+    answer2[ 13 ] = -R2.microGradientYield[ 1 ]         - unknownVector[ 2 * configuration_unknown_count + 10 + 3 ];
+    answer2[ 14 ] = -R2.microGradientYield[ 2 ]         - unknownVector[ 2 * configuration_unknown_count + 10 + 4 ];
 
     BOOST_TEST( answer1 == *R.get_stateVariableResiduals( ) , CHECK_PER_ELEMENT );
 
@@ -687,6 +687,21 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
 
     }
 
+    std::cout << "jacobian:\n";
+    for ( unsigned int i = 0; i < 15; i++ ){
+        for ( unsigned int j = 0; j < 105; j++ ){
+            std::cout << jacobian[ i ][ j ] << ", ";
+        }
+        std::cout << "\n";
+    }
+    std::cout << "analytic jacobian:\n";
+    for ( unsigned int i = 0; i < 15; i++ ){
+        for ( unsigned int j = 0; j < 105; j++ ){
+            std::cout << ( *R.get_stateVariableJacobians( ) )[ 105 * i + j ] << ", ";
+        }
+        std::cout << "\n";
+    }
+
     BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ), 1e-5, 1e-6 ) );
 
 }
@@ -829,11 +844,11 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD, * boost::unit_test::tol
 
     };
 
-    class residualMock : public tardigradeHydra::micromorphicDruckerPragerPlasticity::residual{
+    class residualMock : public tardigradeHydra::micromorphicDruckerPragerPlasticityOptimization::residual{
 
         public:
 
-            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::residual;
+            using tardigradeHydra::micromorphicDruckerPragerPlasticityOptimization::residual::residual;
 
             floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
                                               2, 0.37773052, 0.92739145,
