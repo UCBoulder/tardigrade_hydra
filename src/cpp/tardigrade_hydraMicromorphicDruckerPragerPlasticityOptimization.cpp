@@ -322,30 +322,24 @@ namespace tardigradeHydra{
 
             unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
 
+            const floatVector *plasticMultipliers = get_plasticMultipliers( );
+
             const floatVector slackVariables( get_plasticStateVariables( )->begin( ) + numPlasticMultipliers + numPlasticStrainLikeISVs,
                                               get_plasticStateVariables( )->end( ) );
 
-            const floatType *macroYield = get_macroYield( );
-
-            const floatType *microYield = get_microYield( );
-
-            const dimVector *microGradientYield = get_microGradientYield( );
+            const unsigned int numSlackVariables = slackVariables.size( );
 
             auto constraints = get_setDataStorage_constraints( );
-            constraints.zero( slackVariables.size( ) );
+            constraints.zero( numPlasticMultipliers + numSlackVariables );
 
-            // Set the terms associated with the yield surface
-            ( *constraints.value )[ 0 ] = -( *macroYield ) - slackVariables[ 0 ];
+            // Set the positivity constraints on the plastic multipliers
+            for ( unsigned int i = 0; i < numPlasticMultipliers; i++ ){
+                ( *constraints.value )[ i ] = ( *plasticMultipliers )[ i ];
+            }
 
-            ( *constraints.value )[ 1 ] = -( *microYield ) - slackVariables[ 1 ];
-
-            for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
-
-                unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
-
-                ( *constraints.value )[ index + 2 ]
-                    = -( *y ) - slackVariables[ index + 2 ];
-
+            // Set the positivity constraints on the slack variables
+            for ( unsigned int i = 0; i < numSlackVariables; i++ ){
+                ( *constraints.value )[ i + numPlasticMultipliers ] = slackVariables[ i ];
             }
 
         }
@@ -359,127 +353,33 @@ namespace tardigradeHydra{
              * Where \f$f\f$ is the yield surface and \f$s\f$ is the slack variable.
              */
 
-            const unsigned int dim = hydra->getDimension( );
+            const unsigned int numUnknowns = hydra->getNumUnknowns( );
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            const unsigned int numConfigurations = *hydra->getNumConfigurations( );
 
-            const unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
-
-            unsigned int numConfigurations = *hydra->getNumConfigurations( );
-
-            const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+            const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
 
             const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
 
-            unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+            unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
 
-            const unsigned int numUnknowns = hydra->getNumUnknowns( );
+            const floatVector slackVariables( get_plasticStateVariables( )->begin( ) + numPlasticMultipliers + numPlasticStrainLikeISVs,
+                                              get_plasticStateVariables( )->end( ) );
 
-            const unsigned int numISVs = get_plasticStateVariables( )->size( );
-
-            const secondOrderTensor *dMacroYielddStress                 = get_dMacroYielddStress( );
-
-            const floatVector *dMacroYielddFn                     = get_dMacroYielddFn( );
-
-            const floatVector *dMacroYielddStateVariables         = get_dMacroYielddStateVariables( );
-
-            const secondOrderTensor *dMicroYielddStress                 = get_dMicroYielddStress( );
-
-            const floatVector *dMicroYielddFn                     = get_dMicroYielddFn( );
-
-            const floatVector *dMicroYielddStateVariables         = get_dMicroYielddStateVariables( );
-
-            const floatVector *dMicroGradientYielddStress         = get_dMicroGradientYielddStress( );
-
-            const floatVector *dMicroGradientYielddFn             = get_dMicroGradientYielddFn( );
-
-            const floatVector *dMicroGradientYielddChin           = get_dMicroGradientYielddChin( );
-
-            const floatVector *dMicroGradientYielddStateVariables = get_dMicroGradientYielddStateVariables( );
+            const unsigned int numSlackVariables = slackVariables.size( );
 
             auto jacobian = get_setDataStorage_constraintJacobians( );
-            jacobian.zero( 5 * numUnknowns );
+            jacobian.zero( ( numPlasticMultipliers + numSlackVariables ) * numUnknowns );
 
-            unsigned int offset = numSecondOrderTensor;
-            for ( unsigned int j = 0; j < numSecondOrderTensor; j++ ){
-
-                ( *jacobian.value )[ numUnknowns * 0 + j ] = -( *dMacroYielddStress )[ j ];
-
-                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] = -( *dMicroYielddStress )[ j ];
-
+            unsigned int offset = numConfigurations * numConfigurationUnknowns;
+            for ( unsigned int i = 0; i < numPlasticMultipliers; i++ ){
+                ( *jacobian.value )[ numUnknowns * i + i + offset ] = 1;
             }
 
-            offset = 2 * numSecondOrderTensor;
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                for ( unsigned int j = 0; j < numThirdOrderTensor; j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = -( *dMicroGradientYielddStress )[ numThirdOrderTensor * i + j ];
-
-                }
-
-            }
-
-            // Sub-Deformation gradient jacobians
-            offset = 2 * numSecondOrderTensor + numThirdOrderTensor;
-            for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
-
-                ( *jacobian.value )[ numUnknowns * 0 + j + offset ] = -( *dMacroYielddFn )[ j ];
-
-                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] = -( *dMicroYielddFn )[ j ];
-
-            }
-
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = -( *dMicroGradientYielddFn )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
-
-                }
-
-            }
-
-            // Sub-Micro deformation jacobians
-            offset = 2 * numSecondOrderTensor + numThirdOrderTensor + ( numConfigurations - 1 ) * numSecondOrderTensor;
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                for ( unsigned int j = 0; j < ( numConfigurations - 1 ) * numSecondOrderTensor; j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] = -( *dMicroGradientYielddChin )[ ( numConfigurations - 1 ) * numSecondOrderTensor * i + j ];
-
-                }
-
-            }
-
-
-            // State Variable Jacobians
-            offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
-
-            for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
-
-                ( *jacobian.value )[ numUnknowns * 0 + j + offset ] += -( *dMacroYielddStateVariables )[ j ];
-
-                ( *jacobian.value )[ numUnknowns * 1 + j + offset ] += -( *dMicroYielddStateVariables )[ j ];
-
-            }
-
-            for ( unsigned int i = 0; i < dim; i++ ){
-
-                for ( unsigned int j = 0; j < ( numPlasticMultipliers + numPlasticStrainLikeISVs ); j++ ){
-
-                    ( *jacobian.value )[ numUnknowns * ( i + 2 ) + j + offset ] += -( *dMicroGradientYielddStateVariables )[ numISVs * i + j ];
-
-                }
-
-            }
-
-            unsigned int row0 = 0;
-            offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor ) + numPlasticMultipliers + numPlasticStrainLikeISVs;
-            for ( unsigned int i = 0; i < 5; i++ ){
-
-                ( *jacobian.value )[ numUnknowns * ( i + row0 ) + i + offset ] -= 1;
-
+            unsigned int row0 = numPlasticMultipliers;
+            offset = numConfigurations * numConfigurationUnknowns + numPlasticMultipliers + numPlasticStrainLikeISVs;
+            for ( unsigned int i = 0; i < numSlackVariables; i++ ){
+                ( *jacobian.value )[ numUnknowns * ( i + row0 ) + i + offset ] = 1;
             }
 
         }

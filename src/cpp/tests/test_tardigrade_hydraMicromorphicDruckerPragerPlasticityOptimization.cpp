@@ -687,21 +687,6 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
 
     }
 
-    std::cout << "jacobian:\n";
-    for ( unsigned int i = 0; i < 15; i++ ){
-        for ( unsigned int j = 0; j < 105; j++ ){
-            std::cout << jacobian[ i ][ j ] << ", ";
-        }
-        std::cout << "\n";
-    }
-    std::cout << "analytic jacobian:\n";
-    for ( unsigned int i = 0; i < 15; i++ ){
-        for ( unsigned int j = 0; j < 105; j++ ){
-            std::cout << ( *R.get_stateVariableJacobians( ) )[ 105 * i + j ] << ", ";
-        }
-        std::cout << "\n";
-    }
-
     BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( jacobian ), *R.get_stateVariableJacobians( ), 1e-5, 1e-6 ) );
 
 }
@@ -1253,29 +1238,19 @@ BOOST_AUTO_TEST_CASE( test_computeConstraints, * boost::unit_test::tolerance( DE
 
     residualMock R2( &hydra, 60, 1, stateVariableIndices, parameters );
 
-    R2.macroYield = -R.macroYield;
-
-    R2.microYield = -R.microYield;
-
-    R2.microGradientYield = -R.microGradientYield;
-
-    floatVector answer1( 5, 0 );
-    answer1[ 0 ] = -R.macroYield              - unknownVector[ 2 * configuration_unknown_count + 10 + 0 ];
-    answer1[ 1 ] = -R.microYield              - unknownVector[ 2 * configuration_unknown_count + 10 + 1 ];
-    answer1[ 2 ] = -R.microGradientYield[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 10 + 2 ];
-    answer1[ 3 ] = -R.microGradientYield[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 10 + 3 ];
-    answer1[ 4 ] = -R.microGradientYield[ 2 ] - unknownVector[ 2 * configuration_unknown_count + 10 + 4 ];
-
-    floatVector answer2( 5, 0 );
-    answer2[ 0 ] = -R2.macroYield              - unknownVector[ 2 * configuration_unknown_count + 10 + 0 ];
-    answer2[ 1 ] = -R2.microYield              - unknownVector[ 2 * configuration_unknown_count + 10 + 1 ];
-    answer2[ 2 ] = -R2.microGradientYield[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 10 + 2 ];
-    answer2[ 3 ] = -R2.microGradientYield[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 10 + 3 ];
-    answer2[ 4 ] = -R2.microGradientYield[ 2 ] - unknownVector[ 2 * configuration_unknown_count + 10 + 4 ];
+    floatVector answer1( 10, 0 );
+    answer1[ 0 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 0 ];
+    answer1[ 1 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 1 ];
+    answer1[ 2 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 2 ];
+    answer1[ 3 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 3 ];
+    answer1[ 4 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 4 ];
+    answer1[ 5 ] = unknownVector[ 2 * configuration_unknown_count + 10 + 0 ];
+    answer1[ 6 ] = unknownVector[ 2 * configuration_unknown_count + 10 + 1 ];
+    answer1[ 7 ] = unknownVector[ 2 * configuration_unknown_count + 10 + 2 ];
+    answer1[ 8 ] = unknownVector[ 2 * configuration_unknown_count + 10 + 3 ];
+    answer1[ 9 ] = unknownVector[ 2 * configuration_unknown_count + 10 + 4 ];
 
     BOOST_TEST( answer1 == *R.getConstraints( ) , CHECK_PER_ELEMENT );
-
-    BOOST_TEST( answer2 == *R2.getConstraints( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -1521,7 +1496,7 @@ BOOST_AUTO_TEST_CASE( test_setConstraintJacobians, * boost::unit_test::tolerance
 
     residualMock R(  &hydra, 60, 1, stateVariableIndices, parameters );
 
-    floatMatrix jacobian( 5, floatVector( unknownVector.size( ), 0 ) );
+    floatMatrix jacobian( 10, floatVector( unknownVector.size( ), 0 ) );
 
     floatType eps = 1e-6;
 
