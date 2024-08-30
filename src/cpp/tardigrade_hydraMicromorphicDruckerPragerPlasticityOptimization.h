@@ -120,6 +120,9 @@ namespace tardigradeHydra{
 
                 }
 
+                virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
+                                      std::vector< floatType > &values ) override;
+
             protected:
 
                 virtual void setStateVariableResiduals( ) override;
