@@ -2203,6 +2203,328 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::assembleKKTMatrix( floatVector &KKTMatrix, std::vector< bool > &active_constraints ){
+        /*!
+         * Assemble the Karush-Kuhn-Tucker matrix for an inequality constrained Newton-Raphson solve
+         * 
+         * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
+         * \param &active_constraints: The vector of currently active constraints.
+         */
+
+        const unsigned int numUnknowns = getNumUnknowns( );
+
+        const unsigned int numConstraints = active_constraints.size( );
+
+        KKTMatrix = floatVector( ( numUnknowns + numConstraints ) * ( numUnknowns + numConstraints ), 0 );
+
+
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > K( KKTMatrix.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
+
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
+
+        K.block( 0, 0, numUnknowns, numUnknowns ) = ( J.transpose( ) * J ).eval( );
+
+        for ( unsigned int I = 0; I < numUnknowns; I++ ){
+
+            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] = ( *getMuk( ) );
+
+        }
+
+        for ( unsigned int i = 0; i < numConstraints; i++ ){
+
+            if ( active_constraints[ i ] ){
+
+                for ( unsigned int I = 0; I < numUnknowns; I++ ){
+
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
+
+                }
+
+            }
+            else{
+
+                KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + numUnknowns + i ] = 1;
+
+            }
+
+        }
+
+    }
+
+    void hydraBase::updateKKTMatrix( floatVector &KKTMatrix, std::vector< bool > &active_constraints ){
+        /*!
+         * Update the KKTMatrix if the active constraints have changed
+         * 
+         * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
+         * \param &active_constraints: The vector of currently active constraints.
+         */
+
+        const unsigned int numUnknowns = getNumUnknowns( );
+
+        const unsigned int numConstraints = active_constraints.size( );
+
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > K( KKTMatrix.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
+
+        K.block( 0, numUnknowns, numUnknowns, numConstraints ).setZero( );
+
+        K.block( numUnknowns, 0, numConstraints, numUnknowns ).setZero( );
+
+        K.block( numUnknowns, numUnknowns, numConstraints, numConstraints ).setZero( );
+
+        for ( unsigned int i = 0; i < numConstraints; i++ ){
+
+            if ( active_constraints[ i ] ){
+
+                for ( unsigned int I = 0; I < numUnknowns; I++ ){
+
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
+
+                }
+
+            }
+            else{
+
+                KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + numUnknowns + i ] = 1;
+
+            }
+
+        }
+
+    }
+
+    void hydraBase::assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, std::vector< bool > &active_constraints ){
+        /*!
+         * Assemble the right hand side vector for the KKT matrix
+         * 
+         * \param &dx: The delta vector being solved for
+         * \param &KKTRHSVector: The right hand size vector for the KKT matrix
+         * \param &active_constraints: The active constraint vector
+         */
+
+        const unsigned int numUnknowns = getNumUnknowns( );
+
+        const unsigned int numConstraints = getNumConstraints( );
+
+        KKTRHSVector = floatVector( numUnknowns + numConstraints, 0 );
+
+        Eigen::Map< const Eigen::Vector< floatType, -1 > > _dx( dx.data( ), numUnknowns );
+
+        Eigen::Map< Eigen::Vector< floatType, -1 > > RHS( KKTRHSVector.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
+
+        Eigen::Map< const Eigen::Vector< floatType, -1 > > R( getResidual( )->data( ), numUnknowns );
+        
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
+
+        RHS.head( numUnknowns ) += ( J.transpose( ) * ( R + J * _dx ) + ( *getMuk( ) ) * _dx ).eval( );
+
+        for ( unsigned int i = 0; i < numConstraints; i++ ){
+
+            if ( active_constraints[ i ] ){
+
+                KKTRHSVector[ numUnknowns + i ] = ( *getConstraints( ) )[ i ];
+
+                for ( unsigned int I = 0; I < numUnknowns; I++ ){
+
+                    KKTRHSVector[ numUnknowns + i ] += ( *getConstraintJacobians( ) )[ numUnknowns * i + I ] * dx[ I ];
+
+                }
+
+            }
+
+        }
+
+    }
+
+    void hydraBase::solveConstrainedQP( floatVector &dx, const unsigned int kmax ){
+        /*!
+         * Solve the constrained QP problem to estimate the desired step size
+         * 
+         * \param &dx: The change in the unknown vector
+         * \param kmax: The maximum number of iterations (defaults to 100)
+         */
+
+        const unsigned int numUnknowns = getNumUnknowns( );
+
+        const unsigned int numConstraints = getNumConstraints( );
+
+        floatVector K;
+
+        floatVector RHS;
+
+        std::vector< bool > active_constraints( numConstraints, false );
+
+        assembleKKTRHSVector( dx, RHS, active_constraints );
+
+        assembleKKTMatrix( K, active_constraints );
+
+        floatType tol = ( *getRelativeTolerance( ) ) * ( tardigradeVectorTools::l2norm( RHS ) ) + ( *getAbsoluteTolerance( ) );
+
+        unsigned int k = 0;
+
+        floatVector y( numUnknowns + numConstraints, 0 );
+
+        floatVector ck( numConstraints, 0 );
+
+        floatVector ctilde( numConstraints, 0 );
+
+        floatVector negp( numUnknowns, 0 );
+
+        floatVector lambda( numConstraints, 0 );
+
+        floatVector P( numUnknowns + numConstraints, 0 );
+
+        for ( unsigned int i = 0; i < ( numUnknowns + numConstraints ); i++ ){
+
+            P[ i ] = 1 / std::max( std::fabs( *std::max_element( K.begin( ) + ( numUnknowns + numConstraints ) * i,
+                                                                 K.begin( ) + ( numUnknowns + numConstraints ) * ( i + 1 ),
+                                                                 [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
+
+        }
+
+        const floatVector *c0 = getConstraints( );
+
+        const floatVector *A  = getConstraintJacobians( );
+
+        Eigen::Map< Eigen::Vector< floatType, -1 > > _dx( dx.data( ), numUnknowns );
+
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > _K( K.data( ), numConstraints + numUnknowns, numConstraints + numUnknowns );
+
+        Eigen::Map< const Eigen::Vector< floatType, -1 > > _RHS( RHS.data( ), numConstraints + numUnknowns );
+
+        Eigen::Map< Eigen::Vector< floatType, -1 > > _y( y.data( ), numConstraints + numUnknowns );
+
+        Eigen::Map< Eigen::Vector< floatType, -1 > > _ck( ck.data( ), numConstraints );
+
+        Eigen::Map< Eigen::Vector< floatType, -1 > > _ctilde( ctilde.data( ), numConstraints );
+
+        Eigen::Map< Eigen::Vector< floatType, -1 > > _negp( negp.data( ), numUnknowns );
+
+        Eigen::Map< const Eigen::Vector< floatType, -1 > > _c0( c0->data( ), numConstraints );
+
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > _A( A->data( ), numConstraints, numUnknowns );
+
+        Eigen::Map< const Eigen::Vector< floatType, -1 > > _P( P.data( ), numUnknowns + numConstraints );
+
+        tardigradeVectorTools::solverType< floatType > linearSolver;
+
+        while ( k < kmax ){
+
+            linearSolver = tardigradeVectorTools::solverType< floatType >( _P.asDiagonal( ) * _K );
+
+            _y = linearSolver.solve( _P.asDiagonal( ) * _RHS );
+
+            negp   = floatVector( y.begin( ), y.begin( ) + numUnknowns );
+
+            lambda = floatVector( y.begin( ) + numUnknowns, y.end( ) );
+
+            if ( tardigradeVectorTools::l2norm( negp ) <= tol ){
+
+                bool negLambda = false;
+
+                floatType minLambda = 1;
+
+                unsigned int imin = 0;
+
+                for ( auto v = std::begin( lambda ); v != std::end( lambda ); v++ ){
+
+                    if ( *v < 0 ){
+
+                        negLambda = true;
+
+                        if ( ( *v ) < minLambda ){
+
+                            imin = ( unsigned int )( v - std::begin( lambda ) );
+
+                            minLambda = *v;
+
+                        }
+
+                    }
+
+                }
+
+                if ( negLambda ){
+
+                    active_constraints[ imin ] = false;
+
+                }
+                else{
+
+                    return;
+
+                }
+
+            }
+            else{
+
+                _ck = ( _c0 + _A * _dx ).eval( );
+
+                _ctilde = ( _c0 + _A * ( _dx - _negp ) ).eval( );
+
+                floatType alpha = 1.0;
+
+                unsigned int iblock = 0;
+
+                bool newBlock = false;
+
+                for ( unsigned int i = 0; i < numConstraints; i++ ){
+
+                    if ( !active_constraints[ i ] ){
+
+                        if ( ctilde[ i ] < -tol ){
+
+                            floatType alpha_trial = -ck[ i ] / ( ctilde[ i ] - ck[ i ] );
+
+                            if ( alpha_trial <= alpha ){
+
+                                iblock = i;
+
+                                alpha = alpha_trial;
+
+                                newBlock = true;
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+                if ( newBlock ){
+
+                    active_constraints[ iblock ] = true;
+
+                }
+
+                dx -= alpha * negp;
+
+                updateKKTMatrix( K, active_constraints );
+
+                assembleKKTRHSVector(  dx, RHS, active_constraints );
+
+            }
+
+            k++;
+
+        }
+
+    }
+
+    void hydraBase::setConstraints( ){
+        /*!
+         * Set the constraint values
+         */
+    }
+
+    void hydraBase::setConstraintJacobians( ){
+        /*!
+         * Set the constraint Jacobians values
+         */
+    }
+
     errorOut dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,
                                  floatType &SCD,                  floatType &RPL,             floatVector &ddsddt,       floatVector &drplde,       floatType &DRPLDT,
                                  const floatVector &strain,       const floatVector &dstrain, const floatVector &time,   const floatType &DTIME,    const floatType &TEMP,
