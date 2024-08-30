@@ -370,6 +370,11 @@ BOOST_AUTO_TEST_CASE( test_computeStateVariableResidual, * boost::unit_test::tol
     R2.microGradientYield = -R.microGradientYield;
 
     floatVector answer1( 15, 0 );
+    answer1[  0 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 0 ] * unknownVector[ 2 * configuration_unknown_count + 10 + 0 ];
+    answer1[  1 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 1 ] * unknownVector[ 2 * configuration_unknown_count + 10 + 1 ];
+    answer1[  2 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 2 ] * unknownVector[ 2 * configuration_unknown_count + 10 + 2 ];
+    answer1[  3 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 3 ] * unknownVector[ 2 * configuration_unknown_count + 10 + 3 ];
+    answer1[  4 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 4 ] * unknownVector[ 2 * configuration_unknown_count + 10 + 4 ];
     answer1[  5 ] = R.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 0 ];
     answer1[  6 ] = R.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 1 ];
     answer1[  7 ] = R.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 2 ];
@@ -382,11 +387,16 @@ BOOST_AUTO_TEST_CASE( test_computeStateVariableResidual, * boost::unit_test::tol
     answer1[ 14 ] = -R.microGradientYield[ 2 ]          - unknownVector[ 2 * configuration_unknown_count + 10 + 4 ];
 
     floatVector answer2( 15, 0 );
-    answer2[ 5 ] = R2.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 0 ];
-    answer2[ 6 ] = R2.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 1 ];
-    answer2[ 7 ] = R2.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 2 ];
-    answer2[ 8 ] = R2.updatedPlasticStrainLikeISVs[ 3 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 3 ];
-    answer2[ 9 ] = R2.updatedPlasticStrainLikeISVs[ 4 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 4 ];
+    answer2[  0 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 0 ] * unknownVector[ 2 * configuration_unknown_count + 10 + 0 ];
+    answer2[  1 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 1 ] * unknownVector[ 2 * configuration_unknown_count + 10 + 1 ];
+    answer2[  2 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 2 ] * unknownVector[ 2 * configuration_unknown_count + 10 + 2 ];
+    answer2[  3 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 3 ] * unknownVector[ 2 * configuration_unknown_count + 10 + 3 ];
+    answer2[  4 ] = unknownVector[ 2 * configuration_unknown_count +  0 + 4 ] * unknownVector[ 2 * configuration_unknown_count + 10 + 4 ];
+    answer2[  5 ] = R2.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 0 ];
+    answer2[  6 ] = R2.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 1 ];
+    answer2[  7 ] = R2.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 2 ];
+    answer2[  8 ] = R2.updatedPlasticStrainLikeISVs[ 3 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 3 ];
+    answer2[  9 ] = R2.updatedPlasticStrainLikeISVs[ 4 ] - unknownVector[ 2 * configuration_unknown_count +  5 + 4 ];
     answer2[ 10 ] = -R2.macroYield                      - unknownVector[ 2 * configuration_unknown_count + 10 + 0 ];
     answer2[ 11 ] = -R2.microYield                      - unknownVector[ 2 * configuration_unknown_count + 10 + 1 ];
     answer2[ 12 ] = -R2.microGradientYield[ 0 ]         - unknownVector[ 2 * configuration_unknown_count + 10 + 2 ];

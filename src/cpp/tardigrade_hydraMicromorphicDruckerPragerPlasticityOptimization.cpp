@@ -38,6 +38,8 @@ namespace tardigradeHydra{
 
             unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
 
+            const floatVector *plasticMultipliers = get_plasticMultipliers( );
+
             const floatVector slackVariables( get_plasticStateVariables( )->begin( ) + numPlasticMultipliers + numPlasticStrainLikeISVs,
                                               get_plasticStateVariables( )->end( ) );
 
@@ -50,8 +52,14 @@ namespace tardigradeHydra{
             auto residual = get_setDataStorage_stateVariableResiduals( );
             residual.zero( get_plasticStateVariables( )->size( ) );
 
+            // Add the consistency condition
+            unsigned int row0 = 0;
+            for ( unsigned int i = 0; i < numPlasticMultipliers; i++ ){
+                ( *residual.value )[ row0 + i ] = ( *plasticMultipliers )[ i ] * slackVariables[ i ];
+            }
+
             // Set the terms associated with the strain-like ISV evolution
-            unsigned int row0 = numPlasticMultipliers;
+            row0 = numPlasticMultipliers;
             for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
 
                 ( *residual.value )[ row0 + i ] = ( *updatedPlasticStrainLikeISVs )[ i ] - ( *plasticStrainLikeISVs )[ i ];
@@ -102,11 +110,18 @@ namespace tardigradeHydra{
 
             unsigned int numConfigurations = *hydra->getNumConfigurations( );
 
+            const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
+
             const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
 
             const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
+
+            const floatVector *plasticMultipliers = get_plasticMultipliers( );
+
+            const floatVector slackVariables( get_plasticStateVariables( )->begin( ) + numPlasticMultipliers + numPlasticStrainLikeISVs,
+                                              get_plasticStateVariables( )->end( ) );
 
             const unsigned int numUnknowns = hydra->getNumUnknowns( );
 
@@ -137,8 +152,17 @@ namespace tardigradeHydra{
             auto jacobian = get_setDataStorage_stateVariableJacobians( );
             jacobian.zero( numISVs * numUnknowns );
 
-            unsigned int offset = numSecondOrderTensor;
-            unsigned int row0 = numPlasticMultipliers;
+            unsigned int offset = numConfigurations * numConfigurationUnknowns;
+            unsigned int row0   = 0;
+            for ( unsigned int i = 0; i < numPlasticMultipliers; i++ ){
+
+                ( *jacobian.value )[ numUnknowns * ( i + row0 ) + i + offset ] = slackVariables[ i ];
+                ( *jacobian.value )[ numUnknowns * ( i + row0 ) + i + numPlasticMultipliers + numPlasticStrainLikeISVs + offset ] = ( *plasticMultipliers )[ i ];
+
+            }
+
+            offset = numSecondOrderTensor;
+            row0 = numPlasticMultipliers;
             offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
             for ( unsigned int i = 0; i < numPlasticStrainLikeISVs; i++ ){
 
