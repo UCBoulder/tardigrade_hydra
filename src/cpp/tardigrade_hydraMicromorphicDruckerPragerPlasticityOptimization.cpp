@@ -408,6 +408,48 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::suggestInitialIterateValues( std::vector< unsigned int >   &indices,
+                                                    std::vector< floatType > &values ){
+
+            /*!
+             * Function which is called which allows the residual to suggest initial values for given
+             * configurations. This is called when the unknown vector is being initialized. If more than
+             * one residual attempts to set the initial vector the last residual will override all of the others.
+             *
+             * After the initial iterate has been suggested, the iteration data is cleared so that the residual
+             * starts the iteration in a clean state.
+             * 
+             * \param &indices: The indices of the unknown vector to set
+             * \param &values:  The values to be set in the unknown vector
+             */
+
+            constexpr unsigned int dim = 3;
+
+            const unsigned int numPlasticMultipliers   = *getNumPlasticMultipliers( );
+
+            const unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
+
+            const unsigned int offset = numPlasticMultipliers + numPlasticStrainLikeISVs;
+
+            indices = std::vector< unsigned int >( getStateVariableIndices( )->begin( ) + offset,
+                                                   getStateVariableIndices( )->end( ) );
+
+            indices += ( *hydra->getNumConfigurations( ) ) * ( *hydra->getConfigurationUnknownCount( ) );
+
+            values  = std::vector< floatType >( 5, 0 );
+
+            values[ 0 ] = std::fmax( 0, -( *get_macroYield( ) ) );
+
+            values[ 1 ] = std::fmax( 0, -( *get_microYield( ) ) );
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                values[ i + 2 ] = std::fmax( 0, -( *get_microGradientYield( ) )[ i ] );
+
+            }
+
+        }
+
     }
 
 }
