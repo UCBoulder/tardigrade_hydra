@@ -799,6 +799,24 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void setConstraints( ){
+                /*!
+                 * Compute the contraints
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the constraints is not implemented" ) );
+
+            }
+
+            virtual void setConstraintJacobians( ){
+                /*!
+                 * Compute the contraint Jacobians
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the constraint jacobians is not implemented" ) );
+
+            }
+
             virtual void setCurrentAdditionalStateVariables( ){
                 /*!
                  * Set the current additional state variables
@@ -917,6 +935,8 @@ namespace tardigradeHydra{
 
         protected:
 
+            void setPenaltyIndices( const std::vector< unsigned int > &indices ){ _penalty_indices = indices; }
+
             void unexpectedError( ){
                 /*!
                  * Function to throw for an unexpected error. A user should never get here!
@@ -971,6 +991,8 @@ namespace tardigradeHydra{
 
             bool _useProjection = false; //!< Flag for whether to use the projection or not
 
+            std::vector< unsigned int > _penalty_indices; //!< The indices of the variables which should be penalized for negative values
+
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setResidual,                         getResidual,                        residual,                        floatVector, setResidual )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setJacobian,                         getJacobian,                        jacobian,                        floatVector, setJacobian )
@@ -986,6 +1008,10 @@ namespace tardigradeHydra{
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setStress,                           getStress,                          stress,                          floatVector, setStress )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setPreviousStress,                   getPreviousStress,                  previousStress,                  floatVector, setPreviousStress )
+
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraints,                      getConstraints,                     constraints,                     floatVector, setConstraints )
+
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraintJacobians,              getConstraintJacobians,             constraintJacobians,             floatVector, setConstraintJacobians )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setCurrentAdditionalStateVariables,  getCurrentAdditionalStateVariables, currentAdditionalStateVariables, floatVector, setCurrentAdditionalStateVariables )
 
