@@ -2517,12 +2517,56 @@ namespace tardigradeHydra{
         /*!
          * Set the constraint values
          */
+
+        const unsigned int numConstraints = getNumConstraints( );
+
+        auto constraints = get_setDataStorage_constraints( );
+
+        constraints.zero( numConstraints );
+
+        unsigned int offset = 0;
+
+        for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->end( ); v++ ){
+
+            if ( ( *( *v )->getNumConstraints( ) ) > 0 ){
+
+                std::copy( ( *v )->getConstraints( )->begin( ), ( *v )->getConstraints( )->end( ),  constraints.value->begin( ) + offset );
+
+                offset += ( *v )->getConstraints( )->size( );
+
+            }
+
+        }
+
     }
 
     void hydraBase::setConstraintJacobians( ){
         /*!
          * Set the constraint Jacobians values
          */
+
+        const unsigned int numUnknowns    = getNumUnknowns( );
+
+        const unsigned int numConstraints = getNumConstraints( );
+
+        auto constraintJacobians = get_setDataStorage_constraintJacobians( );
+
+        constraintJacobians.zero( numConstraints * numUnknowns );
+
+        unsigned int offset = 0;
+
+        for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->end( ); v++ ){
+
+            if ( ( *( *v )->getNumConstraints( ) ) > 0 ){
+
+                std::copy( ( *v )->getConstraintJacobians( )->begin( ), ( *v )->getConstraintJacobians( )->end( ),  constraintJacobians.value->begin( ) + offset );
+
+                offset += ( *v )->getConstraintJacobians( )->size( );
+
+            }
+
+        }
+
     }
 
     errorOut dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,
