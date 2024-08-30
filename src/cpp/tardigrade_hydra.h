@@ -718,7 +718,7 @@ namespace tardigradeHydra{
              * 
              * \param &r: The residual to be copied
              */
-            residualBase( residualBase &r ) : hydra( r.hydra ), _numEquations( *r.getNumEquations( ) ){ }
+            residualBase( residualBase &r ) : hydra( r.hydra ), _numEquations( *r.getNumEquations( ) ), _numConstraints( *r.getNumConstraints( ) ){ }
 
             hydraBase* hydra; //!< The hydra class which owns the residualBase object
 
@@ -884,6 +884,9 @@ namespace tardigradeHydra{
             //! Get the number of equations the residual defined
             const unsigned int* getNumEquations( ){ return &_numEquations; }
 
+            //! Get the number of constraints the residual defined
+            const unsigned int* getNumConstraints( ){ return &_numConstraints; }
+
             void addIterationData( dataBase *data );
 
             template<class T>
@@ -934,6 +937,8 @@ namespace tardigradeHydra{
             }
 
         protected:
+
+            void setNumConstraints( const unsigned int numConstraints ){ _numConstraints = numConstraints; }
 
             void setPenaltyIndices( const std::vector< unsigned int > &indices ){ _penalty_indices = indices; }
 
@@ -988,6 +993,8 @@ namespace tardigradeHydra{
         private:
 
             unsigned int _numEquations; //!< The number of residual equations
+
+            unsigned int _numConstraints = 0; //!< The number of constraint equations
 
             bool _useProjection = false; //!< Flag for whether to use the projection or not
 

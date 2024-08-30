@@ -2441,11 +2441,31 @@ BOOST_AUTO_TEST_CASE( test_residualBase_residualBase, * boost::unit_test::tolera
 
     unsigned int numEquations = 3;
 
-    tardigradeHydra::residualBase residual( &hydra, numEquations );
+    unsigned int numConstraints = 5;
+
+    class residualBaseMock : public tardigradeHydra::residualBase{
+
+        public:
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            void public_setNumConstraints( const unsigned int &val ){
+
+                setNumConstraints( val );
+
+            }
+
+    };
+
+    residualBaseMock residual( &hydra, numEquations );
+
+    residual.public_setNumConstraints( numConstraints );
 
     BOOST_CHECK( residual.hydra == &hydra );
 
     BOOST_CHECK( *residual.getNumEquations( ) == numEquations );
+
+    BOOST_CHECK( *residual.getNumConstraints( ) == numConstraints );
 
 }
 
