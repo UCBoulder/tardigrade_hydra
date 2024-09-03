@@ -34,6 +34,7 @@ Internal Changes
 - Removed set_varname and replaced with setDataStorage for hydra Peryzna isotropic-kenmatic J2 visoplasticity (:pull:`161`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for hydra mass-change rate (:pull:`162`). By `Nathan Miller`_.
 - Enabled passing the tests when higher levels of optimization are used (:pull:`163`). By `Nathan Miller`_.
+- Added an active set solver for quadratic problems (:pull:`167`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
