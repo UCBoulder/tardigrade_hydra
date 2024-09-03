@@ -2203,7 +2203,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::assembleKKTMatrix( floatVector &KKTMatrix, std::vector< bool > &active_constraints ){
+    void hydraBase::assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints ){
         /*!
          * Assemble the Karush-Kuhn-Tucker matrix for an inequality constrained Newton-Raphson solve
          * 
@@ -2226,7 +2226,7 @@ namespace tardigradeHydra{
 
         for ( unsigned int I = 0; I < numUnknowns; I++ ){
 
-            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] = ( *getMuk( ) );
+            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] += ( *getMuk( ) );
 
         }
 
@@ -2252,7 +2252,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::updateKKTMatrix( floatVector &KKTMatrix, std::vector< bool > &active_constraints ){
+    void hydraBase::updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints ){
         /*!
          * Update the KKTMatrix if the active constraints have changed
          * 
@@ -2294,7 +2294,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, std::vector< bool > &active_constraints ){
+    void hydraBase::assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints ){
         /*!
          * Assemble the right hand side vector for the KKT matrix
          * 
@@ -2314,10 +2314,10 @@ namespace tardigradeHydra{
         Eigen::Map< Eigen::Vector< floatType, -1 > > RHS( KKTRHSVector.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
 
         Eigen::Map< const Eigen::Vector< floatType, -1 > > R( getResidual( )->data( ), numUnknowns );
-        
+
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 
-        RHS.head( numUnknowns ) += ( J.transpose( ) * ( R + J * _dx ) + ( *getMuk( ) ) * _dx ).eval( );
+        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + ( *getMuk( ) ) * _dx ).eval( );
 
         for ( unsigned int i = 0; i < numConstraints; i++ ){
 

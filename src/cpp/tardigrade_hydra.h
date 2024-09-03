@@ -1619,11 +1619,11 @@ namespace tardigradeHydra{
 
             virtual tardigradeHydra::hydraBase::setDataStorageIteration<secondOrderTensor> get_setDataStorage_stress( );
 
-            virtual void assembleKKTMatrix( floatVector &KKTMatrix, std::vector< bool > &active_constraints );
+            virtual void assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
 
-            virtual void updateKKTMatrix( floatVector &KKTMatrix, std::vector< bool > &active_constraints );
+            virtual void updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
 
-            virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, std::vector< bool > &active_constraints );
+            virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints );
 
             virtual void solveConstrainedQP( floatVector &x, const unsigned int kmax=100 );
 
