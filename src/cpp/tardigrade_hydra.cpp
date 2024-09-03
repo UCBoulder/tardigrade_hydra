@@ -2514,8 +2514,6 @@ namespace tardigradeHydra{
 
             }
 
-            if ( k > 4 ){ throw std::runtime_error("derp"); }
-
             k++;
 
         }
