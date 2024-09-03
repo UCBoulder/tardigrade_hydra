@@ -2213,7 +2213,7 @@ namespace tardigradeHydra{
 
         const unsigned int numUnknowns = getNumUnknowns( );
 
-        const unsigned int numConstraints = active_constraints.size( );
+        const unsigned int numConstraints = getNumConstraints( );
 
         KKTMatrix = floatVector( ( numUnknowns + numConstraints ) * ( numUnknowns + numConstraints ), 0 );
 
@@ -2262,7 +2262,7 @@ namespace tardigradeHydra{
 
         const unsigned int numUnknowns = getNumUnknowns( );
 
-        const unsigned int numConstraints = active_constraints.size( );
+        const unsigned int numConstraints = getNumConstraints( );
 
         Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > K( KKTMatrix.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
 
