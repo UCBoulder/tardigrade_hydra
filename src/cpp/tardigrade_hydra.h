@@ -1631,6 +1631,8 @@ namespace tardigradeHydra{
 
             virtual void setConstraintJacobians( );
 
+            virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
+
         private:
 
             // Friend classes
