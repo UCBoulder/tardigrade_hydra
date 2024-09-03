@@ -718,7 +718,7 @@ namespace tardigradeHydra{
              * 
              * \param &r: The residual to be copied
              */
-            residualBase( residualBase &r ) : hydra( r.hydra ), _numEquations( *r.getNumEquations( ) ){ }
+            residualBase( residualBase &r ) : hydra( r.hydra ), _numEquations( *r.getNumEquations( ) ), _numConstraints( *r.getNumConstraints( ) ){ }
 
             hydraBase* hydra; //!< The hydra class which owns the residualBase object
 
@@ -884,6 +884,9 @@ namespace tardigradeHydra{
             //! Get the number of equations the residual defined
             const unsigned int* getNumEquations( ){ return &_numEquations; }
 
+            //! Get the number of constraints the residual defined
+            const unsigned int* getNumConstraints( ){ return &_numConstraints; }
+
             void addIterationData( dataBase *data );
 
             template<class T>
@@ -934,6 +937,8 @@ namespace tardigradeHydra{
             }
 
         protected:
+
+            void setNumConstraints( const unsigned int numConstraints ){ _numConstraints = numConstraints; }
 
             void setPenaltyIndices( const std::vector< unsigned int > &indices ){ _penalty_indices = indices; }
 
@@ -988,6 +993,8 @@ namespace tardigradeHydra{
         private:
 
             unsigned int _numEquations; //!< The number of residual equations
+
+            unsigned int _numConstraints = 0; //!< The number of constraint equations
 
             bool _useProjection = false; //!< Flag for whether to use the projection or not
 
@@ -1090,8 +1097,23 @@ namespace tardigradeHydra{
             //! Get a reference to the number of state variables involved in the non-linear solve
             const unsigned int* getNumNonLinearSolveStateVariables( ){ return &_numNonLinearSolveStateVariables; }
 
-            //! Get a reference to the number of terms in the unknown vector
+            //! Get the number of terms in the unknown vector
             virtual const unsigned int getNumUnknowns( ){ return ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( ); }
+
+            //! Get the value of the number of constraint equations
+            virtual const unsigned int getNumConstraints( ){
+
+                unsigned int value = 0;
+
+                for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->end( ); v++ ){
+
+                    value += *( *v )->getNumConstraints( );
+
+                }
+
+                return value;
+
+            }
 
             //! Get a reference to the dimension
             constexpr unsigned int getDimension( ){ return _dimension; }
@@ -1597,6 +1619,19 @@ namespace tardigradeHydra{
 
             virtual tardigradeHydra::hydraBase::setDataStorageIteration<secondOrderTensor> get_setDataStorage_stress( );
 
+            virtual void assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
+
+            virtual void updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
+
+            virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints );
+
+            virtual void solveConstrainedQP( floatVector &x, const unsigned int kmax=100 );
+
+            virtual void setConstraints( );
+
+            virtual void setConstraintJacobians( );
+
+            virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
 
         private:
 
@@ -1775,13 +1810,17 @@ namespace tardigradeHydra{
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,          get_dF1dF,          dF1dF,          secondOrderTensor, setFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraints,         getConstraints,         constraints,         floatVector,       setConstraints )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dFn,         get_dF1dFn,         dF1dFn,         floatVector, setFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraintJacobians, getConstraintJacobians, constraintJacobians, floatVector,       setConstraintJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dF,  get_previousdF1dF,  previousdF1dF,  secondOrderTensor, setPreviousFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,              get_dF1dF,              dF1dF,               secondOrderTensor, setFirstConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn, floatVector, setPreviousFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dFn,             get_dF1dFn,             dF1dFn,              floatVector,       setFirstConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dF,      get_previousdF1dF,      previousdF1dF,       secondOrderTensor, setPreviousFirstConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dFn,     get_previousdF1dFn,     previousdF1dFn,      floatVector,       setPreviousFirstConfigurationJacobians )
 
     };
 

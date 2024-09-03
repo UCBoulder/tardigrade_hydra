@@ -2441,11 +2441,31 @@ BOOST_AUTO_TEST_CASE( test_residualBase_residualBase, * boost::unit_test::tolera
 
     unsigned int numEquations = 3;
 
-    tardigradeHydra::residualBase residual( &hydra, numEquations );
+    unsigned int numConstraints = 5;
+
+    class residualBaseMock : public tardigradeHydra::residualBase{
+
+        public:
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            void public_setNumConstraints( const unsigned int &val ){
+
+                setNumConstraints( val );
+
+            }
+
+    };
+
+    residualBaseMock residual( &hydra, numEquations );
+
+    residual.public_setNumConstraints( numConstraints );
 
     BOOST_CHECK( residual.hydra == &hydra );
 
     BOOST_CHECK( *residual.getNumEquations( ) == numEquations );
+
+    BOOST_CHECK( *residual.getNumConstraints( ) == numConstraints );
 
 }
 
@@ -6169,5 +6189,655 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageIteration2, * boost::unit_test::toleran
     BOOST_TEST( !residual._myScalarData.first );
 
     BOOST_TEST( !residual._myVectorData.first );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setConstraints, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class residualMock : public tardigradeHydra::residualBase{
+
+        public:
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            residualMock( tardigradeHydra::hydraBase *h, const unsigned int neq, const unsigned int ncon ) : tardigradeHydra::residualBase( h, neq ){
+
+                setNumConstraints( ncon );
+
+            }
+
+        protected:
+
+            virtual void setConstraints( ){
+
+                auto constraints = get_setDataStorage_constraints( );
+
+                constraints.zero( *getNumConstraints( ) );
+
+                for ( unsigned int i = 0; i < *getNumConstraints( ); i++ ){
+
+                    ( *constraints.value )[ i ] = ( *getNumConstraints( ) ) + 0.1 * i;
+
+                }
+
+            }
+
+            virtual void setConstraintJacobians( ){
+
+                const unsigned int numUnknowns = hydra->getNumUnknowns( );
+
+                auto constraintJacobians = get_setDataStorage_constraintJacobians( );
+
+                constraintJacobians.zero( ( *getNumConstraints( ) ) * numUnknowns );
+
+                for ( unsigned int i = 0; i < *getNumConstraints( ); i++ ){
+
+                    for ( unsigned int j = 0; j < numUnknowns; j++ ){
+
+                        ( *constraintJacobians.value )[ numUnknowns * i + j ] = ( *getNumConstraints( ) ) + 0.1 * ( i + j );
+
+                    }
+
+                }
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            residualMock r1;
+        
+            residualMock r2;
+        
+            residualMock r3;
+
+            unsigned int s1 = 36;
+
+            unsigned int s2 = 2;
+
+            unsigned int s3 = 3;
+
+            unsigned int n1 = 2;
+
+            unsigned int n2 = 0;
+
+            unsigned int n3 = 5;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            virtual void setResidualClasses( ){
+
+                r1 = residualMock( this, s1, n1 );
+
+                r2 = residualMock( this, s2, n2 );
+
+                r3 = residualMock( this, s3, n3 );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+
+                residuals[ 0 ] = &r1;
+
+                residuals[ 1 ] = &r2;
+
+                residuals[ 2 ] = &r3;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+                                           0.54506801, 0.34276383, 0.30412079, 0.0,        0.1 }; 
+
+    floatVector parameters = { 1, 2, 3, 4, 5 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    const floatVector constraint_answer = { 2.0, 2.1, 5.0, 5.1, 5.2, 5.3, 5.4 };
+
+    const floatVector constraintJacobian_answer = { 2.0, 2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0,
+                                                    2.1, 2.2, 2.3, 2.4, 2.5, 2.6, 2.7, 2.8, 2.9, 3.0, 3.1, 3.2, 3.3, 3.4, 3.5, 3.6, 3.7, 3.8, 3.9, 4.0, 4.1, 4.2, 4.3, 4.4, 4.5, 4.6, 4.7, 4.8, 4.9, 5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1,
+                                                    5.0, 5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 9.0,
+                                                    5.1, 5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.1,
+                                                    5.2, 5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.1, 9.2,
+                                                    5.3, 5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.1, 9.2, 9.3,
+                                                    5.4, 5.5, 5.6, 5.7, 5.8, 5.9, 6.0, 6.1, 6.2, 6.3, 6.4, 6.5, 6.6, 6.7, 6.8, 6.9, 7.0, 7.1, 7.2, 7.3, 7.4, 7.5, 7.6, 7.7, 7.8, 7.9, 8.0, 8.1, 8.2, 8.3, 8.4, 8.5, 8.6, 8.7, 8.8, 8.9, 9.0, 9.1, 9.2, 9.3, 9.4 };
+
+    BOOST_TEST( constraint_answer         == *hydra.getConstraints( ),         CHECK_PER_ELEMENT );
+
+    BOOST_TEST( constraintJacobian_answer == *hydra.getConstraintJacobians( ), CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTMatrix, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            floatVector initialUnknownVector = { 2, 1 };
+
+            virtual void public_assembleKKTMatrix( floatVector &K, const std::vector< bool > &active_constraints ){
+
+                assembleKKTMatrix( K, active_constraints );
+
+            }
+
+            virtual void public_updateKKTMatrix( floatVector &K, const std::vector< bool > &active_constraints ){
+
+                updateKKTMatrix( K, active_constraints );
+
+            }
+
+            virtual void public_assembleKKTRHSVector( const floatVector &dx, floatVector &RHS, const std::vector< bool > &active_constraints ){
+
+                assembleKKTRHSVector( dx, RHS, active_constraints );
+
+            }
+
+        protected:
+
+            virtual void setConstraints( ) override{
+
+                auto constraints = get_setDataStorage_constraints( );
+
+                *constraints.value = { 2, 6, 2, 0, 0 };
+
+                for ( unsigned int i = 0; i < 5; i++ ){
+
+                    for ( unsigned int j = 0; j < 2; j++ ){
+
+                        ( *constraints.value )[ i ] += ( *getConstraintJacobians( ) )[ 2 * i + j ] * initialUnknownVector[ j ];
+
+                    }
+
+                }
+
+            }
+
+            virtual void setConstraintJacobians( ) override{
+
+                auto constraintJacobians = get_setDataStorage_constraintJacobians( );
+
+                *constraintJacobians.value = { 1, -2,
+                                              -1, -2,
+                                              -1,  2,
+                                               1,  0,
+                                               0,  1 };
+
+            }
+
+            virtual void formNonLinearDerivatives( ) override{
+
+                floatVector jacobian = { std::pow( 2, 0.5 ), 0.4, -0.1, std::pow( 2, 0.5 ) };
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
+
+            }
+
+            virtual const unsigned int getNumUnknowns( ) override{ return initialUnknownVector.size( ); }
+
+            virtual const unsigned int getNumConstraints( ) override{ return 5; }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+                                           0.54506801, 0.34276383, 0.30412079, 0.0,        0.1 }; 
+
+    floatVector parameters = { 1, 2, 3, 4, 5 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.setMuk( 0.1 );
+
+    floatVector result_KKT;
+    std::vector< bool > active_constraints( 5, false );
+
+    floatVector answer1_KKTMatrix = { 2.11      , 0.42426407, 0., 0., 0., 0., 0.,
+                                      0.42426407, 2.26      , 0., 0., 0., 0., 0.,
+                                      0.        , 0.        , 1., 0., 0., 0., 0.,
+                                      0.        , 0.        , 0., 1., 0., 0., 0.,
+                                      0.        , 0.        , 0., 0., 1., 0., 0.,
+                                      0.        , 0.        , 0., 0., 0., 1., 0.,
+                                      0.        , 0.        , 0., 0., 0., 0., 1. };
+
+    floatVector answer2_KKTMatrix = { 2.11      ,  0.42426407,  0.,  0., -1.,  0.,  0.,
+                                      0.42426407,  2.26      ,  0.,  0.,  2.,  0.,  1.,
+                                      0.        ,  0.        ,  1.,  0.,  0.,  0.,  0.,
+                                      0.        ,  0.        ,  0.,  1.,  0.,  0.,  0.,
+                                     -1.        ,  2.        ,  0.,  0.,  0.,  0.,  0.,
+                                      0.        ,  0.        ,  0.,  0.,  0.,  1.,  0.,
+                                      0.        ,  1.        ,  0.,  0.,  0.,  0.,  0. };
+
+    hydra.public_assembleKKTMatrix( result_KKT, active_constraints );
+
+    BOOST_TEST( answer1_KKTMatrix == result_KKT, CHECK_PER_ELEMENT );
+
+    active_constraints[ 2 ] = true;
+    active_constraints[ 4 ] = true;
+
+    hydra.public_updateKKTMatrix( result_KKT, active_constraints );
+
+    BOOST_TEST( answer2_KKTMatrix == result_KKT, CHECK_PER_ELEMENT );
+
+    result_KKT.clear( );
+
+    hydra.public_assembleKKTMatrix( result_KKT, active_constraints );
+
+    BOOST_TEST( answer2_KKTMatrix == result_KKT, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTRHSVector, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            floatVector initialUnknownVector = { 2, 1 };
+
+            virtual void public_assembleKKTMatrix( floatVector &K, const std::vector< bool > &active_constraints ){
+
+                assembleKKTMatrix( K, active_constraints );
+
+            }
+
+            virtual void public_updateKKTMatrix( floatVector &K, const std::vector< bool > &active_constraints ){
+
+                updateKKTMatrix( K, active_constraints );
+
+            }
+
+            virtual void public_assembleKKTRHSVector( const floatVector &dx, floatVector &RHS, const std::vector< bool > &active_constraints ){
+
+                assembleKKTRHSVector( dx, RHS, active_constraints );
+
+            }
+
+        protected:
+
+            virtual void setConstraints( ) override{
+
+                auto constraints = get_setDataStorage_constraints( );
+
+                *constraints.value = { 2, 6, 2, 0, 0 };
+
+                for ( unsigned int i = 0; i < 5; i++ ){
+
+                    for ( unsigned int j = 0; j < 2; j++ ){
+
+                        ( *constraints.value )[ i ] += ( *getConstraintJacobians( ) )[ 2 * i + j ] * initialUnknownVector[ j ];
+
+                    }
+
+                }
+
+            }
+
+            virtual void setConstraintJacobians( ) override{
+
+                auto constraintJacobians = get_setDataStorage_constraintJacobians( );
+
+                *constraintJacobians.value = { 1, -2,
+                                              -1, -2,
+                                              -1,  2,
+                                               1,  0,
+                                               0,  1 };
+
+            }
+
+            virtual void formNonLinearResidual( ) override{
+
+                floatVector residual = { 1., 2. };
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
+
+            }
+
+            virtual void formNonLinearDerivatives( ) override{
+
+                floatVector jacobian = { std::pow( 2, 0.5 ), 0.4, -0.1, std::pow( 2, 0.5 ) };
+
+                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
+
+            }
+
+            virtual const unsigned int getNumUnknowns( ) override{ return initialUnknownVector.size( ); }
+
+            virtual const unsigned int getNumConstraints( ) override{ return 5; }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+                                           0.54506801, 0.34276383, 0.30412079, 0.0,        0.1 }; 
+
+    floatVector parameters = { 1, 2, 3, 4, 5 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    floatVector dx = { -0.2, 1.4 };
+
+    hydra.setMuk( 0.1 );
+
+    floatVector result_KKTRHSVector;
+    std::vector< bool > active_constraints( 5, false );
+
+    floatVector answer1_KKTRHSVector = { 1.38618326,  6.30757431,  0.0       ,  0.0       ,  0.0       ,  0.0       ,  0.0       };
+
+    floatVector answer2_KKTRHSVector = { 1.38618326,  6.30757431,  0.0       ,  0.0       ,  5.        ,  0.0       ,  2.4       };
+
+    hydra.public_assembleKKTRHSVector( dx, result_KKTRHSVector, active_constraints );
+
+    BOOST_TEST( answer1_KKTRHSVector == result_KKTRHSVector, CHECK_PER_ELEMENT );
+
+    active_constraints[ 2 ] = true;
+    active_constraints[ 4 ] = true;
+
+    result_KKTRHSVector.clear( );
+
+    hydra.public_assembleKKTRHSVector( dx, result_KKTRHSVector, active_constraints );
+
+    BOOST_TEST( answer2_KKTRHSVector == result_KKTRHSVector, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_solveConstrainedQP, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            floatVector initialUnknownVector = { 2, 0 };
+
+            void public_solveConstrainedQP( floatVector &dx ){
+
+                solveConstrainedQP( dx );
+
+            }
+
+        protected:
+
+            virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &RHS, const std::vector< bool > &active_constraints ) override{
+
+                RHS = floatVector( 7, 0 );
+
+                RHS[ 0 ] = 2 * ( initialUnknownVector[ 0 ] + dx[ 0 ] - 1.0 );
+                RHS[ 1 ] = 2 * ( initialUnknownVector[ 1 ] + dx[ 1 ] - 2.5 );
+
+                RHS[ 2 + 0 ] =  ( initialUnknownVector[ 0 ] + dx[ 0 ] ) - 2 * ( initialUnknownVector[ 1 ] + dx[ 1 ] ) + 2;
+                RHS[ 2 + 1 ] = -( initialUnknownVector[ 0 ] + dx[ 0 ] ) - 2 * ( initialUnknownVector[ 1 ] + dx[ 1 ] ) + 6;
+                RHS[ 2 + 2 ] = -( initialUnknownVector[ 0 ] + dx[ 0 ] ) + 2 * ( initialUnknownVector[ 1 ] + dx[ 1 ] ) + 2;
+                RHS[ 2 + 3 ] =  initialUnknownVector[ 0 ] + dx[ 0 ];
+                RHS[ 2 + 4 ] =  initialUnknownVector[ 1 ] + dx[ 1 ];
+
+                for ( unsigned int i = 0; i < active_constraints.size( ); i++ ){
+
+                    if ( !active_constraints[ i ] ){
+
+                        RHS[ 2 + i ] = 0;
+
+                    }
+
+                }
+
+            }
+
+            virtual void assembleKKTMatrix( floatVector &K, const std::vector< bool > &active_constraints ) override{
+
+                const unsigned int numConstraints = getNumConstraints( );
+
+                K = floatVector( ( 2 + 5 ) * ( 2 + 5 ), 0 );
+
+                K[ 7 * 0 + 0 ] = 2;
+                K[ 7 * 1 + 1 ] = 2;
+
+                for ( unsigned int i = 0; i < numConstraints; i++ ){
+
+                    if ( active_constraints[ i ] ){
+
+                        K[ 7 * 0 + i + 2 ] = ( *getConstraintJacobians( ) )[ 2 * i + 0 ];
+                        K[ 7 * 1 + i + 2 ] = ( *getConstraintJacobians( ) )[ 2 * i + 1 ];
+
+                        K[ 7 * ( i + 2 ) + 0 ] = ( *getConstraintJacobians( ) )[ 2 * i + 0 ];
+                        K[ 7 * ( i + 2 ) + 1 ] = ( *getConstraintJacobians( ) )[ 2 * i + 1 ];
+
+                    }
+                    else{
+
+                        K[ 7 * ( i + 2 ) + i + 2 ] = 1;
+
+                    }
+
+                }
+
+            }
+
+            virtual void updateKKTMatrix( floatVector &K, const std::vector< bool > &active_constraints ) override{
+
+                const unsigned int numConstraints = getNumConstraints( );
+
+                for ( unsigned int i = 0; i < numConstraints; i++ ){
+
+                    if ( active_constraints[ i ] ){
+
+                        K[ 7 * 0 + i + 2 ] = ( *getConstraintJacobians( ) )[ 2 * i + 0 ];
+                        K[ 7 * 1 + i + 2 ] = ( *getConstraintJacobians( ) )[ 2 * i + 1 ];
+
+                        K[ 7 * ( i + 2 ) + 0 ] = ( *getConstraintJacobians( ) )[ 2 * i + 0 ];
+                        K[ 7 * ( i + 2 ) + 1 ] = ( *getConstraintJacobians( ) )[ 2 * i + 1 ];
+
+                        K[ 7 * ( i + 2 ) + i + 2 ] = 0;
+
+                    }
+                    else{
+
+                        K[ 7 * 0 + i + 2 ] = 0;
+                        K[ 7 * 1 + i + 2 ] = 0;
+
+                        K[ 7 * ( i + 2 ) + 0 ] = 0;
+                        K[ 7 * ( i + 2 ) + 1 ] = 0;
+
+                        K[ 7 * ( i + 2 ) + i + 2 ] = 1;
+
+                    }
+
+                }
+
+            }
+
+            virtual void initializeActiveConstraints( std::vector< bool > &active_constraints ) override{
+
+                active_constraints = { false, false, true, false, true };
+
+            }
+
+            virtual void setConstraints( ) override{
+
+                auto constraints = get_setDataStorage_constraints( );
+
+                *constraints.value = { 2, 6, 2, 0, 0 };
+
+                for ( unsigned int i = 0; i < 5; i++ ){
+
+                    for ( unsigned int j = 0; j < 2; j++ ){
+
+                        ( *constraints.value )[ i ] += ( *getConstraintJacobians( ) )[ 2 * i + j ] * initialUnknownVector[ j ];
+
+                    }
+
+                }
+
+            }
+
+            virtual void setConstraintJacobians( ) override{
+
+                auto constraintJacobians = get_setDataStorage_constraintJacobians( );
+
+                *constraintJacobians.value = { 1, -2,
+                                              -1, -2,
+                                              -1,  2,
+                                               1,  0,
+                                               0,  1 };
+
+            }
+
+            virtual const unsigned int getNumUnknowns( ) override{ return initialUnknownVector.size( ); }
+
+            virtual const unsigned int getNumConstraints( ) override{ return 5; }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+                                           0.54506801, 0.34276383, 0.30412079, 0.0,        0.1 }; 
+
+    floatVector parameters = { 1, 2, 3, 4, 5 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    floatVector result = { 0, 0 };
+
+    floatVector answer = { 1.4, 1.7 };
+
+    hydra.public_solveConstrainedQP( result );
+
+    BOOST_TEST( ( result + hydra.initialUnknownVector ) == answer, CHECK_PER_ELEMENT );
 
 }
