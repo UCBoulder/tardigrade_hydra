@@ -1403,6 +1403,8 @@ namespace tardigradeHydra{
 
             unsigned int getNumGrad( ){ /*! Get the number of gradient descent steps performed */  return _NUM_GRAD; }
 
+            const bool *getUseSQPSolver( ){ return &_useSQPSolver; }
+
         protected:
 
             // Setters that the user may need to access but not override
@@ -1633,6 +1635,8 @@ namespace tardigradeHydra{
 
             virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
 
+            void setUseSQPSolver( const unsigned int &value ){ _useSQPSolver = value; }
+
         private:
 
             // Friend classes
@@ -1755,6 +1759,8 @@ namespace tardigradeHydra{
             unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
 
             floatType _lambda = 1;
+
+            bool _useSQPSolver = false;
 
             void setFirstConfigurationJacobians( );
 
