@@ -118,6 +118,8 @@ namespace tardigradeHydra{
 
                     setPenaltyIndices( positive_indices ); //!< The indices of values in the unknown vector which should be penalized for being negative
 
+                    setNumConstraints( 10 );
+
                 }
 
                 virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,

@@ -14,6 +14,7 @@ New Features
 - Added a data storage set object that will automatically set an object when the destructor is called (:pull:`143`). By `Nathan Miller`_.
 - Added a setDataStorage to the macros for data storage definitions (:pull:`144`). By `Nathan Miller`_.
 - Added a micromorphic Drucker-Prager plasticity model based on constrained optimization (:pull:`166`). By `Nathan Miller`_.
+- Constrained active set solver added as option for incrementation (:pull:`167`). By `Nathan Miller`_.
 
 Internal Changes
 ================
@@ -34,6 +35,7 @@ Internal Changes
 - Removed set_varname and replaced with setDataStorage for hydra Peryzna isotropic-kenmatic J2 visoplasticity (:pull:`161`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for hydra mass-change rate (:pull:`162`). By `Nathan Miller`_.
 - Enabled passing the tests when higher levels of optimization are used (:pull:`163`). By `Nathan Miller`_.
+- Added an active set solver for quadratic problems (:pull:`167`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
