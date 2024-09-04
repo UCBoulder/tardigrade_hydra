@@ -1864,9 +1864,20 @@ namespace tardigradeHydra{
 
             floatVector X0 = *getUnknownVector( );
 
-            solveNewtonUpdate( deltaX );
-
             setBaseQuantities( );
+
+            if ( *getUseSQPSolver( ) ){
+
+                std::fill( deltaX.begin( ), deltaX.end( ), 0 );
+
+                solveConstrainedQP( deltaX );
+
+            }
+            else{
+
+                solveNewtonUpdate( deltaX );
+
+            }
 
             updateUnknownVector( X0 + *getLambda( ) * deltaX );
 
@@ -2345,6 +2356,14 @@ namespace tardigradeHydra{
          */
 
         active_constraints = std::vector< bool >( getNumConstraints( ), false );
+
+        for ( auto c = getConstraints( )->begin( ); c != getConstraints( )->end( ); c++ ){
+
+            unsigned int index = ( unsigned int )( c - getConstraints( )->begin( ) );
+
+            active_constraints[ index ] = ( ( *c ) < 0. );
+
+        }
 
     }
 
