@@ -4182,16 +4182,16 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( get_microGradientHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microGradientHardeningParameters( )->size( ) ) );
 
-            *macroCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ], ( *get_macroHardeningParameters( ) )[ 0 ], 0.1, *getMinCohesion( ) );
+            *macroCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ], ( *get_macroHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
-            *microCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 0 ], 0.1, *getMinCohesion( ) );
+            *microCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
                 
             microGradientCohesion.zero( dim );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
                 ( *microGradientCohesion.value )[ i ] = softLinearCohesion( ( *plasticStrainLikeISVs )[ i + 2 ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
-                                                                            ( *get_microGradientHardeningParameters( ) )[ 0 ], 0.1, *getMinCohesion( ) );
+                                                                            ( *get_microGradientHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
             }
 
@@ -4327,26 +4327,26 @@ namespace tardigradeHydra{
 
             dMicroGradientCohesiondISVs.zero( ( get_plasticStrainLikeISVs( )->size( ) - 2 ) * num_pisvs );
 
-            *macroCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ], ( *get_macroHardeningParameters( ) )[ 0 ], 0.1, *getMinCohesion( ) );
+            *macroCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ], ( *get_macroHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
             ( *dMacroCohesiondISVs.value )[ num_pms + 0 ] = softLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ],
-                                                                                          ( *get_macroHardeningParameters( ) )[ 0 ], 0.1, *getMinCohesion( ) );
+                                                                                          ( *get_macroHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
-            *microCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 0 ], 0.1, *getMinCohesion( ) );
+            *microCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
             ( *dMicroCohesiondISVs.value )[ num_pms + 1 ] = softLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ],
-                                                                                          ( *get_microHardeningParameters( ) )[ 0 ], 0.1, *getMinCohesion( ) );
+                                                                                          ( *get_microHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
             microGradientCohesion.zero( dim );
 
             for ( unsigned int i = 2; i < num_psisvs; i++ ){
 
                 ( *microGradientCohesion.value )[ i - 2 ] = softLinearCohesion( ( *plasticStrainLikeISVs )[ i ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
-                                                                                ( *get_microGradientHardeningParameters( ) )[ 0 ], 0.1, *getMinCohesion( ) );
+                                                                                ( *get_microGradientHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
                 ( *dMicroGradientCohesiondISVs.value )[ num_pisvs * ( i - 2 ) + get_plasticMultipliers( )->size( ) + i ]
                     = softLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ i ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
-                                                    ( *get_microGradientHardeningParameters( ) )[ 0 ], 0.1, *getMinCohesion( ) );
+                                                    ( *get_microGradientHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
             }
 
