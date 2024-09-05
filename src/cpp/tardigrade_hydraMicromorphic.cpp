@@ -110,7 +110,38 @@ namespace tardigradeHydra{
 
         std::copy( std::begin( *nonLinearSolveStateVariables ), std::end( *nonLinearSolveStateVariables ), std::begin( X ) + offset );
 
-        setX( X );
+        bool resetRequired = false;
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+            std::vector< unsigned int > indices;
+
+            std::vector< floatType > values;
+
+            ( *residual_ptr )->suggestInitialIterateValues( indices, values );
+
+            if ( indices.size( ) > 0 ){
+                resetRequired = true;
+            }
+
+            for ( auto i = indices.begin( ); i != indices.end( ); i++ ){
+
+                X[ *i ] = values[ ( unsigned int )( i - indices.begin( ) ) ];
+
+            }
+
+        }
+
+        if ( resetRequired ){
+
+            updateUnknownVector( X );
+
+        }
+        else{
+
+            setX( X );
+
+        }
 
     }
 
