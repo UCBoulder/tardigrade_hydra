@@ -1048,6 +1048,10 @@ namespace tardigradeHydra{
 
                 const floatType *getMinCohesion( ){ return &_minCohesion; }
 
+                virtual double softLinearCohesion( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf );
+
+                virtual double softLinearCohesionDerivative( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration

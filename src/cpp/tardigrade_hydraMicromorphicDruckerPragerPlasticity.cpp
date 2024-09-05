@@ -9022,6 +9022,64 @@ namespace tardigradeHydra{
 
         }
 
+        double residual::softLinearCohesion( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf ){
+            /*!
+             * Soften a linear cohesion function with an exponential function
+             *
+             * \param &Z: The internal strain-like state variable
+             * \param &A: The slope of the linear function
+             * \param &c0: The initial cohesion value
+             * \param &rc: The ratio of the initial cohesion when to start smoothing
+             * \param &cf: The final minimum value of the cohesion
+             */
+
+            floatType c = cf;
+
+            floatType a = rc * c0 - c;
+
+            floatType b = A / a;
+
+            floatType Z0 = c0 * ( rc - 1 ) / A;
+
+            if ( ( A < 0 ) && ( Z > Z0 ) ){
+
+                return a * std::exp( b * ( Z - Z0 ) ) + c;
+
+            }
+
+            return c0 + A * Z;
+
+        }
+
+        double residual::softLinearCohesionDerivative( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf ){
+            /*!
+             * Compute the derivative of a softened linear cohesion function with an exponential function
+             *
+             * \param &Z: The internal strain-like state variable
+             * \param &A: The slope of the linear function
+             * \param &c0: The initial cohesion value
+             * \param &rc: The ratio of the initial cohesion when to start smoothing
+             * \param &cf: The final minimum value of the cohesion
+             */
+
+            floatType c = cf;
+
+            floatType a = rc * c0 - c;
+
+            floatType b = A / a;
+
+            floatType Z0 = c0 * ( rc - 1 ) / A;
+
+            if ( ( A < 0 ) && ( Z > Z0 ) ){
+
+                return a * b * std::exp( b * ( Z - Z0 ) );
+
+            }
+
+            return A;
+
+        }
+
     }
 
 }
