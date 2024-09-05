@@ -15,6 +15,7 @@ New Features
 - Added a setDataStorage to the macros for data storage definitions (:pull:`144`). By `Nathan Miller`_.
 - Added a micromorphic Drucker-Prager plasticity model based on constrained optimization (:pull:`166`). By `Nathan Miller`_.
 - Constrained active set solver added as option for incrementation (:pull:`167`). By `Nathan Miller`_.
+- Added softened cohesion function (:pull:`169`). By `Nathan Miller`_.
 
 Internal Changes
 ================
