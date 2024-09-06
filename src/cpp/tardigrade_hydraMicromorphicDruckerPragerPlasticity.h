@@ -1048,6 +1048,12 @@ namespace tardigradeHydra{
 
                 const floatType *getMinCohesion( ){ return &_minCohesion; }
 
+                const floatType *getSmoothRatio( ){ return &_smoothRatio; };
+
+                virtual double softLinearCohesion( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf );
+
+                virtual double softLinearCohesionDerivative( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -1061,6 +1067,8 @@ namespace tardigradeHydra{
                 floatType _maxMicroPlasticDeltaNorm = 1.; //!< The maximum allowable value of the norm of the change in micro plasticity for a given nonlinear iteration
 
                 floatType _maxMicroGradientPlasticDeltaNorm = 1.; //!< The maximum allowable value of the norm of the change in micro gradient plasticity for a given nonlinear iteration
+
+                floatType _smoothRatio = 0.1; //!< The ratio of the initial cohesion value at which to start smoothing the response to zero
 
                 floatType _minCohesion = 1e-2; //!< The minimum allowable value of the cohesion
 
