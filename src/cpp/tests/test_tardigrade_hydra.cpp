@@ -5932,7 +5932,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate, * boost::unit_test::tolerance( DE
 
     BOOST_CHECK_THROW( hydra.evaluate( ), tardigradeHydra::convergence_error );
 
-    BOOST_TEST( *hydra.getUseLevenbergMarquardt( ) );
+    BOOST_TEST( !( *hydra.getUseLevenbergMarquardt( ) ) );
 
     BOOST_TEST( !( *hydra.getRankDeficientError( ) ) );
 

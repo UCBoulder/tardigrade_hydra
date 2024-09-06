@@ -38,6 +38,7 @@ Internal Changes
 - Enabled passing the tests when higher levels of optimization are used (:pull:`163`). By `Nathan Miller`_.
 - Added an active set solver for quadratic problems (:pull:`167`). By `Nathan Miller`_.
 - Allow for initial values to be set for the micromorphic hydra base class (:pull:`168`). By `Nathan Miller`_.
+- Working towards improved convergence (:pull:`170`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
