@@ -4182,16 +4182,16 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( get_microGradientHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microGradientHardeningParameters( )->size( ) ) );
 
-            *macroCohesion.value           = std::fmax( ( *get_macroHardeningParameters( ) )[ 0 ] + ( *get_macroHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 0 ], *getMinCohesion( ) );
+            *macroCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ], ( *get_macroHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
-            *microCohesion.value           = std::fmax( ( *get_microHardeningParameters( ) )[ 0 ] + ( *get_microHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 1 ], *getMinCohesion( ) );
-
-            *microGradientCohesion.value   = ( *get_microGradientHardeningParameters( ) )[ 0 ] + ( *get_microGradientHardeningParameters( ) )[ 1 ] * dimVector( plasticStrainLikeISVs->begin( ) + 2,
-                                                                                                                                                                 plasticStrainLikeISVs->end( ) );
+            *microCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
+                
+            microGradientCohesion.zero( dim );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
-                ( *microGradientCohesion.value )[ i ] = std::fmax( ( *microGradientCohesion.value )[ i ], *getMinCohesion( ) );
+                ( *microGradientCohesion.value )[ i ] = softLinearCohesion( ( *plasticStrainLikeISVs )[ i + 2 ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
+                                                                            ( *get_microGradientHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
             }
 
@@ -4257,6 +4257,8 @@ namespace tardigradeHydra{
              * 
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) cohesions
              */
+
+            constexpr unsigned int dim = 3;
 
             const unsigned int num_pms   = get_plasticMultipliers( )->size( );
 
@@ -4325,45 +4327,26 @@ namespace tardigradeHydra{
 
             dMicroGradientCohesiondISVs.zero( ( get_plasticStrainLikeISVs( )->size( ) - 2 ) * num_pisvs );
 
-            *macroCohesion.value           = ( *get_macroHardeningParameters( ) )[ 0 ] + ( *get_macroHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 0 ];
+            *macroCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ], ( *get_macroHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
-            ( *dMacroCohesiondISVs.value )[ num_pms + 0 ] = ( *get_macroHardeningParameters( ) )[ 1 ];
+            ( *dMacroCohesiondISVs.value )[ num_pms + 0 ] = softLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ],
+                                                                                          ( *get_macroHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
-            if ( *macroCohesion.value < *getMinCohesion( ) ){
+            *microCohesion.value = softLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
-                *macroCohesion.value = *getMinCohesion( );
+            ( *dMicroCohesiondISVs.value )[ num_pms + 1 ] = softLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ],
+                                                                                          ( *get_microHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
-                ( *dMacroCohesiondISVs.value )[ num_pms + 0 ] = 0;
-
-            }
-
-            *microCohesion.value           = ( *get_microHardeningParameters( ) )[ 0 ] + ( *get_microHardeningParameters( ) )[ 1 ] * ( *plasticStrainLikeISVs )[ 1 ];
-
-            ( *dMicroCohesiondISVs.value )[ num_pms + 1 ] = ( *get_microHardeningParameters( ) )[ 1 ];
-
-            if ( *microCohesion.value < *getMinCohesion( ) ){
-
-                *microCohesion.value = *getMinCohesion( );
-
-                ( *dMicroCohesiondISVs.value )[ num_pms + 1 ] = 0;
-
-            }
-
-            *microGradientCohesion.value = ( *get_microGradientHardeningParameters( ) )[ 0 ] + ( *get_microGradientHardeningParameters( ) )[ 1 ] * dimVector( plasticStrainLikeISVs->begin( ) + 2,
-                                                                                                                                                              plasticStrainLikeISVs->end( ) );
+            microGradientCohesion.zero( dim );
 
             for ( unsigned int i = 2; i < num_psisvs; i++ ){
 
-                if ( ( *microGradientCohesion.value )[ i - 2 ] < *getMinCohesion( ) ){
+                ( *microGradientCohesion.value )[ i - 2 ] = softLinearCohesion( ( *plasticStrainLikeISVs )[ i ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
+                                                                                ( *get_microGradientHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
-                    ( *microGradientCohesion.value )[ i - 2 ] = *getMinCohesion( );
-
-                }
-                else{
-
-                    ( *dMicroGradientCohesiondISVs.value )[ num_pisvs * ( i - 2 ) + get_plasticMultipliers( )->size( ) + i ] = ( *get_microGradientHardeningParameters( ) )[ 1 ];
-
-                }
+                ( *dMicroGradientCohesiondISVs.value )[ num_pisvs * ( i - 2 ) + get_plasticMultipliers( )->size( ) + i ]
+                    = softLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ i ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
+                                                    ( *get_microGradientHardeningParameters( ) )[ 0 ], *getSmoothRatio( ), *getMinCohesion( ) );
 
             }
 
@@ -9068,6 +9051,64 @@ namespace tardigradeHydra{
 //            values  = std::vector< floatType >( 5, 0 );
 //
 //        }
+
+        double residual::softLinearCohesion( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf ){
+            /*!
+             * Soften a linear cohesion function with an exponential function
+             *
+             * \param &Z: The internal strain-like state variable
+             * \param &A: The slope of the linear function
+             * \param &c0: The initial cohesion value
+             * \param &rc: The ratio of the initial cohesion when to start smoothing
+             * \param &cf: The final minimum value of the cohesion
+             */
+
+            floatType c = cf;
+
+            floatType a = rc * c0 - c;
+
+            floatType b = A / a;
+
+            floatType Z0 = c0 * ( rc - 1 ) / A;
+
+            if ( ( A < 0 ) && ( Z > Z0 ) ){
+
+                return a * std::exp( b * ( Z - Z0 ) ) + c;
+
+            }
+
+            return c0 + A * Z;
+
+        }
+
+        double residual::softLinearCohesionDerivative( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf ){
+            /*!
+             * Compute the derivative of a softened linear cohesion function with an exponential function
+             *
+             * \param &Z: The internal strain-like state variable
+             * \param &A: The slope of the linear function
+             * \param &c0: The initial cohesion value
+             * \param &rc: The ratio of the initial cohesion when to start smoothing
+             * \param &cf: The final minimum value of the cohesion
+             */
+
+            floatType c = cf;
+
+            floatType a = rc * c0 - c;
+
+            floatType b = A / a;
+
+            floatType Z0 = c0 * ( rc - 1 ) / A;
+
+            if ( ( A < 0 ) && ( Z > Z0 ) ){
+
+                return a * b * std::exp( b * ( Z - Z0 ) );
+
+            }
+
+            return A;
+
+        }
 
     }
 
