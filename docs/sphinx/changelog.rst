@@ -38,12 +38,17 @@ Internal Changes
 - Enabled passing the tests when higher levels of optimization are used (:pull:`163`). By `Nathan Miller`_.
 - Added an active set solver for quadratic problems (:pull:`167`). By `Nathan Miller`_.
 - Allow for initial values to be set for the micromorphic hydra base class (:pull:`168`). By `Nathan Miller`_.
+- Working towards improved convergence (:pull:`170`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
 - Corrected issue where the wrong Jacobian was being used in checkDescentDirection (:pull:`156`). By `Nathan Miller`_.
 - Corrected bug when forming an Eigen::Map (pull:`164`). By `Nathan Miller`_.
 - Corrected bug where the cohesions can go negative (pull:`165`). By `Nathan Miller`_.
+
+Bug Fixes
+=========
+- Changed the residual of the micromorphic state variables to hopefully prevent negative plastic multipliers (:pull:`154`). By `Nathan Miller`_.
 
 ******************
 0.4.4 (07-12-2024)

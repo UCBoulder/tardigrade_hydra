@@ -76,6 +76,10 @@ namespace tardigradeHydra{
         typedef std::vector< floatType > seventhOrderTensor; //!< A seventh order tensor
         typedef std::vector< floatType > eighthOrderTensor; //!< A eighth order tensor
 
+        template <typename T> int sgn(T val){
+            return (T(0) < val) - (val < T(0));
+        }
+
         void computeDruckerPragerInternalParameters( const parameterType &frictionAngle, const parameterType &beta,
                                                      parameterType &A, parameterType &B );
 
@@ -451,6 +455,9 @@ namespace tardigradeHydra{
                 //!Return the value of the barrier modulus to prevent the plastic multipliers from becoming negative
                 const floatType *getPlasticMultiplierBarrierModulus( ){ return &_plasticMultiplierBarrierModulus; }
 
+                //!Return the value of the consistency condition modulus
+                const floatType *getConsistencyConditionModulus( ){ return &_consistencyConditionModulus; }
+
                 virtual void projectSuggestedX( std::vector< floatType > &trialX,
                                                 const std::vector< floatType > &Xp ) override;
 
@@ -496,6 +503,9 @@ namespace tardigradeHydra{
 
                 }
 
+//                virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
+//                                                          std::vector< floatType > &values ) override;
+
             protected:
 
                 bool _useWeakenedMacaulay; //!< Flag for whether to use the weak Macaulay brackets or not
@@ -503,6 +513,8 @@ namespace tardigradeHydra{
                 floatType _weakenedMacaulayParameter; //!< The weakening parameter for the weak Macaulay brackets
 
                 floatType _plasticMultiplierBarrierModulus; //!< The modulus applied to the plastic multipliers to make sure they are never negative
+
+                floatType _consistencyConditionModulus = 0.1; //!< Modulus for the consistency condition
 
                 unsigned int _numPlasticMultipliers; //!< The number of plastic multipliers. Hard coded to 5 but setting as a variable just in case
 
