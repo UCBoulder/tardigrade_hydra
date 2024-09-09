@@ -1058,9 +1058,17 @@ namespace tardigradeHydra{
 
                 virtual void setdRdT( ) override;
 
-                const floatType *getMinCohesion( ){ return &_minCohesion; }
+                const floatType *getMinMacroCohesion( ){ return &_minMacroCohesion; }
 
-                const floatType *getSmoothRatio( ){ return &_smoothRatio; };
+                const floatType *getMinMicroCohesion( ){ return &_minMicroCohesion; }
+
+                const floatType *getMinMicroGradientCohesion( ){ return &_minMicroGradientCohesion; }
+
+                const floatType *getMacroSmoothRatio( ){ return &_macroSmoothRatio; };
+
+                const floatType *getMicroSmoothRatio( ){ return &_microSmoothRatio; };
+
+                const floatType *getMicroGradientSmoothRatio( ){ return &_microGradientSmoothRatio; };
 
                 virtual double softLinearCohesion( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf );
 
@@ -1080,9 +1088,17 @@ namespace tardigradeHydra{
 
                 floatType _maxMicroGradientPlasticDeltaNorm = 1.; //!< The maximum allowable value of the norm of the change in micro gradient plasticity for a given nonlinear iteration
 
-                floatType _smoothRatio = 0.1; //!< The ratio of the initial cohesion value at which to start smoothing the response to zero
+                floatType _macroSmoothRatio = 0.1; //!< The ratio of the initial macro cohesion value at which to start smoothing the response to zero
 
-                floatType _minCohesion = 1e-2; //!< The minimum allowable value of the cohesion
+                floatType _microSmoothRatio = 0.1; //!< The ratio of the initial micro cohesion value at which to start smoothing the response to zero
+
+                floatType _microGradientSmoothRatio = 0.1; //!< The ratio of the initial micro gradient cohesion value at which to start smoothing the response to zero
+
+                floatType _minMacroCohesion = 1e-2; //!< The minimum allowable value of the macro cohesion
+
+                floatType _minMicroCohesion = 1e-2; //!< The minimum allowable value of the micro cohesion
+
+                floatType _minMicroGradientCohesion = 1e-2; //!< The minimum allowable value of the micro gradient cohesion
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroHardeningParameters,                             floatVector,       unexpectedError                                         )
 
