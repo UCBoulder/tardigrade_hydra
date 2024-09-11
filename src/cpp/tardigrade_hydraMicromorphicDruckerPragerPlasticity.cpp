@@ -9161,15 +9161,15 @@ namespace tardigradeHydra{
 
             bool isConverged = true;
 
-            floatType tol = ( *getRelativeTolerance( ) ) * std::fabs( *getBaseMacroSmoothingRatio( ) ) + ( *getAbsoluteTolerance( ) );
+            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( *getBaseMacroSmoothingRatio( ) ) + ( *hydra->getAbsoluteTolerance( ) );
 
             isConverged = ( isConverged ) && ( ( *getMacroSmoothingRatio( ) ) - ( *getBaseMacroSmoothingRatio( ) ) > tol );
 
-            tol = ( *getRelativeTolerance( ) ) * std::fabs( *getBaseMicroSmoothingRatio( ) ) + ( *getAbsoluteTolerance( ) );
+            tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( *getBaseMicroSmoothingRatio( ) ) + ( *hydra->getAbsoluteTolerance( ) );
 
             isConverged = ( isConverged ) && ( ( *getMicroSmoothingRatio( ) ) - ( *getBaseMicroSmoothingRatio( ) ) > tol );
 
-            tol = ( *getRelativeTolerance( ) ) * std::fabs( *getBaseMicroGradientSmoothingRatio( ) ) + ( *getAbsoluteTolerance( ) );
+            tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( *getBaseMicroGradientSmoothingRatio( ) ) + ( *hydra->getAbsoluteTolerance( ) );
 
             isConverged = ( isConverged ) && ( ( *getMicroGradientSmoothingRatio( ) ) - ( *getBaseMicroGradientSmoothingRatio( ) ) > tol );
 
