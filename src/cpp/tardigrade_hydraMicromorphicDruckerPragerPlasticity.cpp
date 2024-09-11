@@ -4237,6 +4237,8 @@ namespace tardigradeHydra{
 
             }
 
+            std::cout << "      microCohesion: " << *microCohesion.value << "\n";
+
         }
 
         void residual::setdMacroCohesiondStateVariables( ){
@@ -9149,6 +9151,65 @@ namespace tardigradeHydra{
             }
 
             return A;
+
+        }
+
+        bool residual::checkRelaxedConvergence( ){
+            /*!
+             * Check if the relaxation is converged
+             */
+
+            bool isConverged = true;
+
+            isConverged = ( isConverged ) && ( *getMacroSmoothingRatio( ) <= *getBaseMacroSmoothingRatio( ) );
+
+            isConverged = ( isConverged ) && ( *getMicroSmoothingRatio( ) <= *getBaseMicroSmoothingRatio( ) );
+
+            isConverged = ( isConverged ) && ( *getMicroGradientSmoothingRatio( ) <= *getBaseMicroGradientSmoothingRatio( ) );
+
+            return isConverged;
+
+        }
+
+        void residual::setupRelaxedStep( const unsigned int &relaxedStep ){
+            /*!
+             * Setup a relaxed step. It's assumed that the reason why it's failing is because of the hardening function.
+             * 
+             * \param relaxedStep: The current relaxed step
+             */
+
+            constexpr unsigned int dim = 3;
+
+            // Save the base smoothing ratios
+            if ( relaxedStep == 0 ){
+
+                setBaseMacroSmoothingRatio(                 *getMacroSmoothingRatio( ) );
+
+                setBaseMicroSmoothingRatio(                 *getMicroSmoothingRatio( ) );
+
+                setBaseMicroGradientSmoothingRatio( *getMicroGradientSmoothingRatio( ) );
+
+            }
+
+            // Update the smoothing parameters
+            floatType trial_r;
+
+            trial_r = ( *get_macroCohesion( ) ) / ( *get_macroHardeningParameters( ) )[ 0 ];
+
+            setMacroSmoothingRatio( std::fmax( std::fmax( trial_r, *getMinMacroCohesion( ) ), *getBaseMacroSmoothingRatio( ) ) );
+
+            trial_r = ( *get_microCohesion( ) ) / ( *get_microHardeningParameters( ) )[ 0 ];
+
+            setMicroSmoothingRatio( std::fmax( std::fmax( trial_r, *getMinMicroCohesion( ) ), *getBaseMicroSmoothingRatio( ) ) );
+
+            trial_r = -1;
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                trial_r = std::fmax( trial_r, ( *get_microGradientCohesion( ) )[ i ] / ( *get_microGradientHardeningParameters( ) )[ 0 ] );
+
+            }
+
+            setMicroGradientSmoothingRatio( std::fmax( std::fmax( trial_r, *getMinMicroGradientCohesion( ) ), *getBaseMicroGradientSmoothingRatio( ) ) );
 
         }
 

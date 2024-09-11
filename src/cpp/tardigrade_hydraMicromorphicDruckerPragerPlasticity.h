@@ -503,6 +503,10 @@ namespace tardigradeHydra{
 
                 }
 
+                virtual bool checkRelaxedConvergence( ) override;
+
+                virtual void setupRelaxedStep( const unsigned int &relaxedStep ) override;
+
 //                virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
 //                                                          std::vector< floatType > &values ) override;
 
@@ -1146,6 +1150,60 @@ namespace tardigradeHydra{
 
                 virtual double smoothLinearCohesionDerivative( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf );
 
+                void setBaseMacroSmoothingRatio( const floatType &value ){
+                    /*!
+                     * Set the base macro smoothing ratio
+                     */
+
+                    _baseMacroSmoothingRatio = value;
+
+                }
+
+                void setBaseMicroSmoothingRatio( const floatType &value ){
+                    /*!
+                     * Set the base micro smoothing ratio
+                     */
+
+                    _baseMicroSmoothingRatio = value;
+
+                }
+
+                void setBaseMicroGradientSmoothingRatio( const floatType &value ){
+                    /*!
+                     * Set the base micro gradient smoothing ratio
+                     */
+
+                    _baseMicroGradientSmoothingRatio = value;
+
+                }
+
+                const floatType *getBaseMacroSmoothingRatio( ){
+                    /*!
+                     * Get the base macro smoothing ratio
+                     */
+
+                    return &_baseMacroSmoothingRatio;
+
+                }
+
+                const floatType *getBaseMicroSmoothingRatio( ){
+                    /*!
+                     * Get the base micro smoothing ratio
+                     */
+
+                    return &_baseMicroSmoothingRatio;
+
+                }
+
+                const floatType *getBaseMicroGradientSmoothingRatio( ){
+                    /*!
+                     * Get the base micro gradient smoothing ratio
+                     */
+
+                    return &_baseMicroGradientSmoothingRatio;
+
+                }
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
@@ -1165,6 +1223,12 @@ namespace tardigradeHydra{
                 floatType _microSmoothingRatio = 0.1; //!< The ratio of the initial micro cohesion value at which to start smoothing the response to zero
 
                 floatType _microGradientSmoothingRatio = 0.1; //!< The ratio of the initial micro gradient cohesion value at which to start smoothing the response to zero
+
+                floatType _baseMacroSmoothingRatio = 1e-2; //!< The base ratio of the initial macro cohesion value at which to start smoothing the response to zero
+
+                floatType _baseMicroSmoothingRatio = 1e-2; //!< The base ratio of the initial micro cohesion value at which to start smoothing the response to zero
+
+                floatType _baseMicroGradientSmoothingRatio = 1e-2; //!< The base ratio of the initial micro gradient cohesion value at which to start smoothing the response to zero
 
                 floatType _minMacroCohesion = 1e-2; //!< The minimum allowable value of the macro cohesion
 
