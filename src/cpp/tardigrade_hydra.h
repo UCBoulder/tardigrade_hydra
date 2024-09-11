@@ -876,6 +876,25 @@ namespace tardigradeHydra{
 
             }
 
+            virtual bool checkRelaxedConvergence( ){
+                /*!
+                 * When performing a relaxed solve the residuals must return if they are converged or not.
+                 * This function returns true or false (default true)
+                 */
+
+                return true;
+
+            }
+
+            virtual void setupRelaxedStep( const unsigned int &relaxedStep ){
+                /*!
+                 * When performing a relaxed iteration this function is called prior to the solution of the non-linear
+                 * problem. Users can use this function to dynamically adjust parameters or perform other tuning tasks.
+                 *
+                 * \param &relaxedStep: The current relaxed step.
+                 */
+            }
+
             //!< Get the flag for whether to use the projection or not
             const bool *getUseProjection( ){ return &_useProjection; }
 
@@ -1391,6 +1410,9 @@ namespace tardigradeHydra{
 
             const floatVector *getFlatdXdAdditionalDOF( );
 
+            //! Return the flag which indicates whether hydra should initialize the unknown vector
+            const bool *getInitializeUnknownVector( ){ return &_initializeUnknownVector; }
+
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
 
@@ -1404,6 +1426,26 @@ namespace tardigradeHydra{
             unsigned int getNumGrad( ){ /*! Get the number of gradient descent steps performed */  return _NUM_GRAD; }
 
             const bool *getUseSQPSolver( ){ return &_useSQPSolver; }
+
+            const void setMaxRelaxedIterations( const unsigned int &value ){
+                /*!
+                 * Set the maximum allowable number of relaxed iterations
+                 * 
+                 * \param &value: The number of relaxed iterations
+                 */
+
+                _maxRelaxedIterations = value;
+
+            }
+
+            const unsigned int *getMaxRelaxedIterations( ){
+                /*!
+                 * Get the maximum number of relaxed iterations
+                 */
+
+                return &_maxRelaxedIterations;
+
+            }
 
         protected:
 
@@ -1637,6 +1679,19 @@ namespace tardigradeHydra{
 
             void setUseSQPSolver( const unsigned int &value ){ _useSQPSolver = value; }
 
+            void setInitializeUnknownVector( const bool &value ){
+                /*!
+                 * Set the initialize unknown vector flag
+                 * 
+                 * \param &value: The value of the flag
+                 */
+
+                _initializeUnknownVector = value;
+
+            }
+
+            virtual void performRelaxedSolve( );
+
         private:
 
             // Friend classes
@@ -1691,6 +1746,10 @@ namespace tardigradeHydra{
             bool _use_gradient_descent = false; //!< Flag for whether to attempt a gradient descent step
 
             bool _rank_deficient_error = true; //!< Flag for whether a rank-deficient LHS will throw a convergence error
+
+            bool _initializeUnknownVector = true; //!< Flag for whether to initialize the unknown vector in the non-linear solve
+
+            unsigned int _maxRelaxedIterations = 5; //!< The number of allowed relaxed iterations
 
             floatType _mu_k = -1; //!< The Levenberg-Marquardt scaling parameter
 

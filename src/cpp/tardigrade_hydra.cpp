@@ -1850,7 +1850,9 @@ namespace tardigradeHydra{
          */
 
         // Form the initial unknown vector
-        TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+        if ( getInitializeUnknownVector( ) ){
+            TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+        }
 
         _initialX = *getUnknownVector( );
 
@@ -1920,6 +1922,76 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::performRelaxedSolve( ){
+        /*!
+         * Solve the non-linear problem by relaxing difficult sub-problems
+         * to achieve a series of solutions.
+         */
+
+        unsigned int relaxedIteration = 0;
+
+        // Initialize the residuals
+        for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
+
+            // Prepare the residuals to take a relaxed step
+            ( *residual )->setupRelaxedStep( relaxedIteration );
+
+        }
+
+        while ( relaxedIteration < *getMaxRelaxedIterations( ) ){
+
+            // Solve the non-linear problem
+            TARDIGRADE_ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
+
+            // Check if the relaxation has converged
+            bool relaxedConverged = true;
+            for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
+
+                if ( !( *residual )->checkRelaxedConvergence( ) ){
+
+                    relaxedConverged = false;
+                    break;
+
+                }
+
+            }
+
+            if ( relaxedConverged ){
+
+                return;
+
+            }
+
+            // Use the current unknown vector as the initial estimate
+            if ( *getInitializeUnknownVector( ) ){
+
+                setInitializeUnknownVector( false );
+
+            }
+
+            relaxedIteration++;
+
+            // Initialize the residuals
+            for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
+
+                // Prepare the residuals to take a relaxed step
+                ( *residual )->setupRelaxedStep( relaxedIteration );
+
+            }
+
+            // Reset hydra
+            updateUnknownVector( *getUnknownVector( ) ); //This allows for the relaxed to change the projection and adjust the decomposition
+
+        }
+
+        if ( relaxedIteration >= *getMaxRelaxedIterations( ) ){
+
+            throw convergence_error( "Failure in relaxed solve" );
+
+        }
+
+    }
+
     void hydraBase::evaluate( ){
         /*!
          * Solve the non-linear problem and update the variables
@@ -1954,8 +2026,6 @@ namespace tardigradeHydra{
             resetIterations( );
             updateUnknownVector( _initialX );
 
-            setUseLevenbergMarquardt( false );
-
             try{
 
                 solveNonLinearProblem( );
@@ -1967,6 +2037,8 @@ namespace tardigradeHydra{
 
             }
             catch( std::exception &e ){
+
+                setUseLevenbergMarquardt( false );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
 
