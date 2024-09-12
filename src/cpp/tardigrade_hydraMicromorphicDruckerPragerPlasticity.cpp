@@ -4237,8 +4237,6 @@ namespace tardigradeHydra{
 
             }
 
-            std::cout << "      microCohesion: " << *microCohesion.value << "\n";
-
         }
 
         void residual::setdMacroCohesiondStateVariables( ){
@@ -9163,12 +9161,15 @@ namespace tardigradeHydra{
 
             floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( *getBaseMacroSmoothingRatio( ) ) + ( *hydra->getAbsoluteTolerance( ) );
 
+            std::cout << "  macroSmoothing, baseMacroSmoothing, macro abs delta, tol                         : " << ( *getMacroSmoothingRatio( ) ) << ", " << ( *getBaseMacroSmoothingRatio( ) ) << ", " << std::fabs( ( *getMacroSmoothingRatio( ) ) - ( *getBaseMacroSmoothingRatio( ) ) ) << ", " << tol << "\n";
             isConverged = ( isConverged ) && ( std::fabs( ( *getMacroSmoothingRatio( ) ) - ( *getBaseMacroSmoothingRatio( ) ) ) <= tol );
 
             tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( *getBaseMicroSmoothingRatio( ) ) + ( *hydra->getAbsoluteTolerance( ) );
 
+            std::cout << "  microSmoothing, biseMacroSmoothing, micro abs delta, tol                         : " << ( *getMicroSmoothingRatio( ) ) << ", " << ( *getBaseMicroSmoothingRatio( ) ) << ", " << std::fabs( ( *getMicroSmoothingRatio( ) ) - ( *getBaseMicroSmoothingRatio( ) ) ) << ", " << tol << "\n";
             isConverged = ( isConverged ) && ( std::fabs( ( *getMicroSmoothingRatio( ) ) - ( *getBaseMicroSmoothingRatio( ) ) ) <= tol );
 
+            std::cout << "  microGradientSmoothing, baseMicroGradientSmoothing, micro gradient abs delta, tol: " << ( *getMicroGradientSmoothingRatio( ) ) << ", " << ( *getBaseMicroGradientSmoothingRatio( ) ) << ", " << std::fabs( ( *getMicroGradientSmoothingRatio( ) ) - ( *getBaseMicroGradientSmoothingRatio( ) ) ) << ", " << tol << "\n";
             tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( *getBaseMicroGradientSmoothingRatio( ) ) + ( *hydra->getAbsoluteTolerance( ) );
 
             isConverged = ( isConverged ) && ( std::fabs( ( *getMicroGradientSmoothingRatio( ) ) - ( *getBaseMicroGradientSmoothingRatio( ) ) ) <= tol );
