@@ -1204,6 +1204,13 @@ namespace tardigradeHydra{
 
                 }
 
+                virtual void computeBaseCohesion( floatType &macroCohesion, floatType &microCohesion, floatVector &microGradientCohesion );
+
+                virtual void computeCohesion( floatType &macroCohesion, floatType &microCohesion, floatVector &microGradientCohesion );
+
+                virtual void computeCohesion( floatType       &macroCohesion,       floatType       &microCohesion,       floatVector     &microGradientCohesion,
+                                              const floatType &macroSmoothingRatio, const floatType &microSmoothingRatio, const floatType &microGradientSmoothingRatio );
+
             private:
 
                 unsigned int _plasticConfigurationIndex; //! The index of the plastic configuration
