@@ -9167,19 +9167,16 @@ namespace tardigradeHydra{
 
             floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMacroCohesion ) + ( *hydra->getAbsoluteTolerance( ) );
 
-            std::cout << "  macroC, baseMacroC, macro abs delta, tol                              : " << baseMacroCohesion << ", " << *get_macroCohesion( ) << ", " << std::fabs( baseMacroCohesion - ( *get_macroCohesion( ) ) ) << ", " << tol << "\n";
             isConverged = ( isConverged ) && ( std::fabs( baseMacroCohesion - *get_macroCohesion( ) ) <= tol );
 
             tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMicroCohesion ) + ( *hydra->getAbsoluteTolerance( ) );
 
-            std::cout << "  microC, baseMicroC, micro abs delta, tol                              : " << baseMicroCohesion << ", " << *get_microCohesion( ) << ", " << std::fabs( baseMicroCohesion - ( *get_microCohesion( ) ) ) << ", " << tol << "\n";
             isConverged = ( isConverged ) && ( std::fabs( baseMicroCohesion - *get_microCohesion( ) ) <= tol );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
                 tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMicroGradientCohesion[ i ] ) + ( *hydra->getAbsoluteTolerance( ) );
 
-                std::cout << "  microGradientC, baseMicroGradientC, micro gradient abs delta, tol : " << baseMicroGradientCohesion[ i ] << ", " << ( *get_microGradientCohesion( ) )[ i ] << ", " << std::fabs( baseMicroGradientCohesion[ i ] - ( *get_microGradientCohesion( ) )[ i ] ) << ", " << tol << "\n";
                 isConverged = ( isConverged ) && ( std::fabs( baseMicroGradientCohesion[ i ] - ( *get_microGradientCohesion( ) )[ i ] ) <= tol );
 
             }
