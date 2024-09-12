@@ -2013,34 +2013,56 @@ namespace tardigradeHydra{
         }
         catch( const convergence_error &e ){
 
-            //Try a Levenberg-Marquardt solve if there is a convergence error
-            setRankDeficientError( false );
+            if ( *getUseRelaxedSolve( ) ){
 
-            setUseLevenbergMarquardt( true );
+                try{
 
-            // Turn on projection
-            for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
-                ( *residual_ptr )->setUseProjection( true );
-            }
+                    performRelaxedSolve( );
 
-            resetIterations( );
-            updateUnknownVector( _initialX );
+                }
+                catch( const convergence_error &e ){
 
-            try{
+                    throw;
 
-                solveNonLinearProblem( );
+                }
+                catch( std::exception *e ){
 
-            }
-            catch( const convergence_error &e ){
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
 
-                throw;
+                }
 
             }
-            catch( std::exception &e ){
-
-                setUseLevenbergMarquardt( false );
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+            else{
+                //Try a Levenberg-Marquardt solve if there is a convergence error
+                setRankDeficientError( false );
+    
+                setUseLevenbergMarquardt( true );
+    
+                // Turn on projection
+                for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+                    ( *residual_ptr )->setUseProjection( true );
+                }
+    
+                resetIterations( );
+                updateUnknownVector( _initialX );
+    
+                try{
+    
+                    solveNonLinearProblem( );
+    
+                }
+                catch( const convergence_error &e ){
+    
+                    throw;
+    
+                }
+                catch( std::exception &e ){
+    
+                    setUseLevenbergMarquardt( false );
+    
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+    
+                }
 
             }
 

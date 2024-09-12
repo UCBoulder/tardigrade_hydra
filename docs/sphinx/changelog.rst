@@ -17,6 +17,7 @@ New Features
 - Constrained active set solver added as option for incrementation (:pull:`167`). By `Nathan Miller`_.
 - Added softened cohesion function (:pull:`169`). By `Nathan Miller`_.
 - Added the minimum cohesion and softening ratio as optional parameters to the micromorphic Drucker-Prager plasticity (:pull:`171`). By `Nathan Miller`_.
+- Added a relaxed solver as the default (:pull:`172`). By `Nathan Miller`_.
 
 Internal Changes
 ================

@@ -1188,6 +1188,9 @@ namespace tardigradeHydra{
             //!< Get a reference to whether the Newton step should be a LevenbergMarquardt step
             const bool* getUseLevenbergMarquardt( ){ return &_use_LM_step; }
 
+            //!< Get a reference to whether the Newton step should be a relaxed solve
+            const bool* getUseRelaxedSolve( ){ return &_use_relaxed_solve; }
+
             //!< Get a reference to whether Gradient descent is allowed
             const bool* getUseGradientDescent( ){ return &_use_gradient_descent; }
 
@@ -1289,6 +1292,18 @@ namespace tardigradeHydra{
                 setUseGradientDescent( value );
 
                 _use_LM_step = value;
+
+            }
+
+            //!< Set whether to attempt a Relaxed-solve
+            void setUseRelaxedSolve( const bool &value ){
+                /*!
+                 * Set whether to attempt a relaxed solve
+                 * 
+                 * \param &value: The value of the parameter
+                 */
+
+                _use_relaxed_solve = value;
 
             }
 
@@ -1742,6 +1757,8 @@ namespace tardigradeHydra{
             unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
 
             bool _use_LM_step = false; //!< Flag for whether to attempt a Levenberg-Marquardt step
+
+            bool _use_relaxed_solve = true; //!< Flag for whether to attempt a relaxed solve in case of failure
 
             bool _use_gradient_descent = false; //!< Flag for whether to attempt a gradient descent step
 
