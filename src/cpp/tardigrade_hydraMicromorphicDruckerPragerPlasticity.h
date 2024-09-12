@@ -1257,11 +1257,11 @@ namespace tardigradeHydra{
 
                 floatType _maxMicroGradientPlasticDeltaNorm = 1.; //!< The maximum allowable value of the norm of the change in micro gradient plasticity for a given nonlinear iteration
 
-                floatType _macroSmoothingRatio = 0.1; //!< The ratio of the initial macro cohesion value at which to start smoothing the response to zero
+                floatType _macroSmoothingRatio = 1e-2; //!< The ratio of the initial macro cohesion value at which to start smoothing the response to zero
 
-                floatType _microSmoothingRatio = 0.1; //!< The ratio of the initial micro cohesion value at which to start smoothing the response to zero
+                floatType _microSmoothingRatio = 1e-2; //!< The ratio of the initial micro cohesion value at which to start smoothing the response to zero
 
-                floatVector _microGradientSmoothingRatio = { 0.1, 0.1, 0.1 }; //!< The ratio of the initial micro gradient cohesion value at which to start smoothing the response to zero
+                floatVector _microGradientSmoothingRatio = { 1e-2, 1e-2, 1e-2 }; //!< The ratio of the initial micro gradient cohesion value at which to start smoothing the response to zero
 
                 floatType _baseMacroSmoothingRatio = 1e-2; //!< The base ratio of the initial macro cohesion value at which to start smoothing the response to zero
 
