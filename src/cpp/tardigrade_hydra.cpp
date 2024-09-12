@@ -2017,6 +2017,8 @@ namespace tardigradeHydra{
 
                 try{
 
+                    resetIterations( );
+                    updateUnknownVector( _initialX );
                     performRelaxedSolve( );
 
                 }
