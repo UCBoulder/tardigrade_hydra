@@ -9109,7 +9109,16 @@ namespace tardigradeHydra{
 
             floatType a = rc * c0 - c;
 
-            floatType b = A / a;
+            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( c ) + ( *hydra->getAbsoluteTolerance( ) );
+
+            floatType b;
+            if ( a < tol ){
+                a = 0;
+                b = 0;
+            }
+            else{
+                b = A / a;
+            }
 
             floatType Z0 = c0 * ( rc - 1 ) / A;
 
@@ -9138,7 +9147,16 @@ namespace tardigradeHydra{
 
             floatType a = rc * c0 - c;
 
-            floatType b = A / a;
+            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( c ) + ( *hydra->getAbsoluteTolerance( ) );
+
+            floatType b;
+            if ( a < tol ){
+                a = 0;
+                b = 0;
+            }
+            else{
+                b = A / a;
+            }
 
             floatType Z0 = c0 * ( rc - 1 ) / A;
 
