@@ -1850,7 +1850,9 @@ namespace tardigradeHydra{
          */
 
         // Form the initial unknown vector
-        TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+        if ( getInitializeUnknownVector( ) ){
+            TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+        }
 
         _initialX = *getUnknownVector( );
 
@@ -1920,6 +1922,76 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::performRelaxedSolve( ){
+        /*!
+         * Solve the non-linear problem by relaxing difficult sub-problems
+         * to achieve a series of solutions.
+         */
+
+        unsigned int relaxedIteration = 0;
+
+        // Initialize the residuals
+        for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
+
+            // Prepare the residuals to take a relaxed step
+            ( *residual )->setupRelaxedStep( relaxedIteration );
+
+        }
+
+        while ( relaxedIteration < *getMaxRelaxedIterations( ) ){
+
+            // Solve the non-linear problem
+            TARDIGRADE_ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
+
+            // Check if the relaxation has converged
+            bool relaxedConverged = true;
+            for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
+
+                if ( !( *residual )->checkRelaxedConvergence( ) ){
+
+                    relaxedConverged = false;
+                    break;
+
+                }
+
+            }
+
+            if ( relaxedConverged ){
+
+                return;
+
+            }
+
+            // Use the current unknown vector as the initial estimate
+            if ( *getInitializeUnknownVector( ) ){
+
+                setInitializeUnknownVector( false );
+
+            }
+
+            relaxedIteration++;
+
+            // Initialize the residuals
+            for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
+
+                // Prepare the residuals to take a relaxed step
+                ( *residual )->setupRelaxedStep( relaxedIteration );
+
+            }
+
+            // Reset hydra
+            updateUnknownVector( *getUnknownVector( ) ); //This allows for the relaxed to change the projection and adjust the decomposition
+
+        }
+
+        if ( relaxedIteration >= *getMaxRelaxedIterations( ) ){
+
+            throw convergence_error( "Failure in relaxed solve" );
+
+        }
+
+    }
+
     void hydraBase::evaluate( ){
         /*!
          * Solve the non-linear problem and update the variables
@@ -1941,34 +2013,58 @@ namespace tardigradeHydra{
         }
         catch( const convergence_error &e ){
 
-            //Try a Levenberg-Marquardt solve if there is a convergence error
-            setRankDeficientError( false );
+            if ( *getUseRelaxedSolve( ) ){
 
-            setUseLevenbergMarquardt( true );
+                try{
 
-            // Turn on projection
-            for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
-                ( *residual_ptr )->setUseProjection( true );
-            }
+                    resetIterations( );
+                    updateUnknownVector( _initialX );
+                    performRelaxedSolve( );
 
-            resetIterations( );
-            updateUnknownVector( _initialX );
+                }
+                catch( const convergence_error &e ){
 
-            setUseLevenbergMarquardt( false );
+                    throw;
 
-            try{
+                }
+                catch( std::exception *e ){
 
-                solveNonLinearProblem( );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
 
-            }
-            catch( const convergence_error &e ){
-
-                throw;
+                }
 
             }
-            catch( std::exception &e ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+            else{
+                //Try a Levenberg-Marquardt solve if there is a convergence error
+                setRankDeficientError( false );
+    
+                setUseLevenbergMarquardt( true );
+    
+                // Turn on projection
+                for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+                    ( *residual_ptr )->setUseProjection( true );
+                }
+    
+                resetIterations( );
+                updateUnknownVector( _initialX );
+    
+                try{
+    
+                    solveNonLinearProblem( );
+    
+                }
+                catch( const convergence_error &e ){
+    
+                    throw;
+    
+                }
+                catch( std::exception &e ){
+    
+                    setUseLevenbergMarquardt( false );
+    
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+    
+                }
 
             }
 

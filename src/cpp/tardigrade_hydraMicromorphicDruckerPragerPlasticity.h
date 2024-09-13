@@ -503,6 +503,10 @@ namespace tardigradeHydra{
 
                 }
 
+                virtual bool checkRelaxedConvergence( ) override;
+
+                virtual void setupRelaxedStep( const unsigned int &relaxedStep ) override;
+
 //                virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
 //                                                          std::vector< floatType > &values ) override;
 
@@ -1095,7 +1099,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the value of the macro smoothing ratio
                      * 
-                     * \param &value: The vaue of the cohesion
+                     * \param &value: The vlaue of the smoothing ratio
                      */
 
                     _macroSmoothingRatio = value;
@@ -1106,7 +1110,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the value of the micro smoothing ratio
                      * 
-                     * \param &value: The vaue of the cohesion
+                     * \param &value: The vlaue of the smoothing ratio
                      */
 
                     _microSmoothingRatio = value;
@@ -1117,7 +1121,20 @@ namespace tardigradeHydra{
                     /*!
                      * Set the value of the micro gradient smoothing ratio
                      * 
-                     * \param &value: The vaue of the cohesion
+                     * \param &value: The vlaue of the smoothing ratio
+                     */
+
+                    constexpr unsigned int dim = 3;
+
+                    _microGradientSmoothingRatio = floatVector( dim, value );
+
+                }
+
+                void setMicroGradientSmoothingRatio( const floatVector &value ){
+                    /*!
+                     * Set the value of the micro gradient smoothing ratio
+                     * 
+                     * \param &value: The vlaue of the smoothing ratio
                      */
 
                     _microGradientSmoothingRatio = value;
@@ -1140,11 +1157,91 @@ namespace tardigradeHydra{
                 const floatType *getMicroSmoothingRatio( ){ return &_microSmoothingRatio; };
 
                 //! Get the minimum micro gradient smooth ratio
-                const floatType *getMicroGradientSmoothingRatio( ){ return &_microGradientSmoothingRatio; };
+                const floatVector *getMicroGradientSmoothingRatio( ){ return &_microGradientSmoothingRatio; };
 
                 virtual double smoothLinearCohesion( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf );
 
                 virtual double smoothLinearCohesionDerivative( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf );
+
+                void setBaseMacroSmoothingRatio( const floatType &value ){
+                    /*!
+                     * Set the base macro smoothing ratio
+                     */
+
+                    _baseMacroSmoothingRatio = value;
+
+                }
+
+                void setBaseMicroSmoothingRatio( const floatType &value ){
+                    /*!
+                     * Set the base micro smoothing ratio
+                     *
+                     * \param &value: The value of the smoothing ratio
+                     */
+
+                    _baseMicroSmoothingRatio = value;
+
+                }
+
+                void setBaseMicroGradientSmoothingRatio( const floatType &value ){
+                    /*!
+                     * Set the base micro gradient smoothing ratio
+                     *
+                     * \param &value: The value of the smoothing ratio
+                     */
+
+                    constexpr unsigned int dim = 3;
+
+                    _baseMicroGradientSmoothingRatio = floatVector( dim, value );
+
+                }
+
+                void setBaseMicroGradientSmoothingRatio( const floatVector &value ){
+                    /*!
+                     * Set the base micro gradient smoothing ratio
+                     *
+                     * \param &value: The value of the smoothing ratio
+                     */
+
+                    _baseMicroGradientSmoothingRatio = floatVector( value );
+
+                }
+
+                const floatType *getBaseMacroSmoothingRatio( ){
+                    /*!
+                     * Get the base macro smoothing ratio
+                     *
+                     * \param &value: The value of the smoothing ratio
+                     */
+
+                    return &_baseMacroSmoothingRatio;
+
+                }
+
+                const floatType *getBaseMicroSmoothingRatio( ){
+                    /*!
+                     * Get the base micro smoothing ratio
+                     */
+
+                    return &_baseMicroSmoothingRatio;
+
+                }
+
+                const floatVector *getBaseMicroGradientSmoothingRatio( ){
+                    /*!
+                     * Get the base micro gradient smoothing ratio
+                     */
+
+                    return &_baseMicroGradientSmoothingRatio;
+
+                }
+
+                virtual void computeBaseCohesion( floatType &macroCohesion, floatType &microCohesion, floatVector &microGradientCohesion );
+
+                virtual void computeCohesion( floatType &macroCohesion, floatType &microCohesion, floatVector &microGradientCohesion );
+
+                virtual void computeCohesion( floatType       &macroCohesion,       floatType       &microCohesion,       floatVector       &microGradientCohesion,
+                                              const floatType &macroSmoothingRatio, const floatType &microSmoothingRatio, const floatVector &microGradientSmoothingRatio );
 
             private:
 
@@ -1160,11 +1257,17 @@ namespace tardigradeHydra{
 
                 floatType _maxMicroGradientPlasticDeltaNorm = 1.; //!< The maximum allowable value of the norm of the change in micro gradient plasticity for a given nonlinear iteration
 
-                floatType _macroSmoothingRatio = 0.1; //!< The ratio of the initial macro cohesion value at which to start smoothing the response to zero
+                floatType _macroSmoothingRatio = 1e-2; //!< The ratio of the initial macro cohesion value at which to start smoothing the response to zero
 
-                floatType _microSmoothingRatio = 0.1; //!< The ratio of the initial micro cohesion value at which to start smoothing the response to zero
+                floatType _microSmoothingRatio = 1e-2; //!< The ratio of the initial micro cohesion value at which to start smoothing the response to zero
 
-                floatType _microGradientSmoothingRatio = 0.1; //!< The ratio of the initial micro gradient cohesion value at which to start smoothing the response to zero
+                floatVector _microGradientSmoothingRatio = { 1e-2, 1e-2, 1e-2 }; //!< The ratio of the initial micro gradient cohesion value at which to start smoothing the response to zero
+
+                floatType _baseMacroSmoothingRatio = 1e-2; //!< The base ratio of the initial macro cohesion value at which to start smoothing the response to zero
+
+                floatType _baseMicroSmoothingRatio = 1e-2; //!< The base ratio of the initial micro cohesion value at which to start smoothing the response to zero
+
+                floatVector _baseMicroGradientSmoothingRatio = { 1e-2, 1e-2, 1e-2 }; //!< The base ratio of the initial micro gradient cohesion value at which to start smoothing the response to zero
 
                 floatType _minMacroCohesion = 1e-2; //!< The minimum allowable value of the macro cohesion
 

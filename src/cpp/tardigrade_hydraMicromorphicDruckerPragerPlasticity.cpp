@@ -4233,7 +4233,7 @@ namespace tardigradeHydra{
             for ( unsigned int i = 0; i < dim; i++ ){
 
                 ( *microGradientCohesion.value )[ i ] = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ i + 2 ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
-                                                                              ( *get_microGradientHardeningParameters( ) )[ 0 ], *getMicroGradientSmoothingRatio( ), *getMinMicroGradientCohesion( ) );
+                                                                              ( *get_microGradientHardeningParameters( ) )[ 0 ], ( *getMicroGradientSmoothingRatio( ) )[ i ], *getMinMicroGradientCohesion( ) );
 
             }
 
@@ -4384,11 +4384,11 @@ namespace tardigradeHydra{
             for ( unsigned int i = 2; i < num_psisvs; i++ ){
 
                 ( *microGradientCohesion.value )[ i - 2 ] = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ i ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
-                                                                                  ( *get_microGradientHardeningParameters( ) )[ 0 ], *getMicroGradientSmoothingRatio( ), *getMinMicroGradientCohesion( ) );
+                                                                                  ( *get_microGradientHardeningParameters( ) )[ 0 ], ( *getMicroGradientSmoothingRatio( ) )[ i - 2 ], *getMinMicroGradientCohesion( ) );
 
                 ( *dMicroGradientCohesiondISVs.value )[ num_pisvs * ( i - 2 ) + get_plasticMultipliers( )->size( ) + i ]
                     = smoothLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ i ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
-                                                      ( *get_microGradientHardeningParameters( ) )[ 0 ], *getMicroGradientSmoothingRatio( ), *getMinMicroGradientCohesion( ) );
+                                                      ( *get_microGradientHardeningParameters( ) )[ 0 ], ( *getMicroGradientSmoothingRatio( ) )[ i - 2 ], *getMinMicroGradientCohesion( ) );
 
             }
 
@@ -9109,7 +9109,16 @@ namespace tardigradeHydra{
 
             floatType a = rc * c0 - c;
 
-            floatType b = A / a;
+            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( c ) + ( *hydra->getAbsoluteTolerance( ) );
+
+            floatType b;
+            if ( a < tol ){
+                a = 0;
+                b = 0;
+            }
+            else{
+                b = A / a;
+            }
 
             floatType Z0 = c0 * ( rc - 1 ) / A;
 
@@ -9138,7 +9147,16 @@ namespace tardigradeHydra{
 
             floatType a = rc * c0 - c;
 
-            floatType b = A / a;
+            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( c ) + ( *hydra->getAbsoluteTolerance( ) );
+
+            floatType b;
+            if ( a < tol ){
+                a = 0;
+                b = 0;
+            }
+            else{
+                b = A / a;
+            }
 
             floatType Z0 = c0 * ( rc - 1 ) / A;
 
@@ -9149,6 +9167,140 @@ namespace tardigradeHydra{
             }
 
             return A;
+
+        }
+
+        bool residual::checkRelaxedConvergence( ){
+            /*!
+             * Check if the relaxation is converged
+             */
+
+            constexpr unsigned int dim = 3;
+            bool isConverged = true;
+
+            floatType baseMacroCohesion, baseMicroCohesion;
+            floatVector baseMicroGradientCohesion;
+
+            computeBaseCohesion( baseMacroCohesion, baseMicroCohesion, baseMicroGradientCohesion ); 
+
+            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMacroCohesion ) + ( *hydra->getAbsoluteTolerance( ) );
+
+            isConverged = ( isConverged ) && ( std::fabs( baseMacroCohesion - *get_macroCohesion( ) ) <= tol );
+
+            tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMicroCohesion ) + ( *hydra->getAbsoluteTolerance( ) );
+
+            isConverged = ( isConverged ) && ( std::fabs( baseMicroCohesion - *get_microCohesion( ) ) <= tol );
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMicroGradientCohesion[ i ] ) + ( *hydra->getAbsoluteTolerance( ) );
+
+                isConverged = ( isConverged ) && ( std::fabs( baseMicroGradientCohesion[ i ] - ( *get_microGradientCohesion( ) )[ i ] ) <= tol );
+
+            }
+
+            return isConverged;
+
+        }
+
+        void residual::setupRelaxedStep( const unsigned int &relaxedStep ){
+            /*!
+             * Setup a relaxed step. It's assumed that the reason why it's failing is because of the hardening function.
+             * 
+             * \param relaxedStep: The current relaxed step
+             */
+
+            constexpr unsigned int dim = 3;
+
+            // Save the base smoothing ratios
+            if ( relaxedStep == 0 ){
+
+                setBaseMacroSmoothingRatio(                 *getMacroSmoothingRatio( ) );
+
+                setBaseMicroSmoothingRatio(                 *getMicroSmoothingRatio( ) );
+
+                setBaseMicroGradientSmoothingRatio( *getMicroGradientSmoothingRatio( ) );
+
+            }
+
+            // Update the smoothing parameters
+            floatType trial_r;
+
+            trial_r = ( *get_macroCohesion( ) ) / ( *get_macroHardeningParameters( ) )[ 0 ];
+
+            setMacroSmoothingRatio( std::fmax( std::fmax( trial_r, ( *getMinMacroCohesion( ) ) / ( *get_macroHardeningParameters( ) )[ 0 ] ), *getBaseMacroSmoothingRatio( ) ) );
+
+            trial_r = ( *get_microCohesion( ) ) / ( *get_microHardeningParameters( ) )[ 0 ];
+
+            setMicroSmoothingRatio( std::fmax( std::fmax( trial_r, ( *getMinMicroCohesion( ) ) / ( *get_microHardeningParameters( ) )[ 0 ] ), *getBaseMicroSmoothingRatio( ) ) );
+
+            floatVector microGradientSmoothingRatio( dim, ( *getMinMicroGradientCohesion( ) ) );
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                trial_r = ( *get_microGradientCohesion( ) )[ i ] / ( *get_microGradientHardeningParameters( ) )[ 0 ];
+
+                microGradientSmoothingRatio[ i ] = std::fmax( std::fmax( trial_r, ( *getMinMicroGradientCohesion( ) ) / ( *get_microGradientHardeningParameters( ) )[ 0 ] ), ( *getBaseMicroGradientSmoothingRatio( ) )[ i ] );
+
+            }
+
+            setMicroGradientSmoothingRatio( microGradientSmoothingRatio );
+
+        }
+
+        void residual::computeBaseCohesion( floatType &macroCohesion, floatType &microCohesion, floatVector &microGradientCohesion ){
+            /*!
+             * Compute the base cohesions
+             *
+             * \param &macroCohesion: The macro-scale cohesion
+             * \param &microCohesion: The micro-scale cohesion
+             * \param &microGradientCohesion: The micro-gradient cohesion
+             */
+
+            computeCohesion( macroCohesion, microCohesion, microGradientCohesion, *getBaseMacroSmoothingRatio( ), *getBaseMicroSmoothingRatio( ), *getBaseMicroGradientSmoothingRatio( ) );
+
+        }
+
+        void residual::computeCohesion( floatType &macroCohesion, floatType &microCohesion, floatVector &microGradientCohesion ){
+            /*!
+             * Compute the base cohesions
+             *
+             * \param &macroCohesion: The macro-scale cohesion
+             * \param &microCohesion: The micro-scale cohesion
+             * \param &microGradientCohesion: The micro-gradient cohesion
+             */
+
+            computeCohesion( macroCohesion, microCohesion, microGradientCohesion, *getMacroSmoothingRatio( ), *getMicroSmoothingRatio( ), *getMicroGradientSmoothingRatio( ) );
+
+        }
+
+        void residual::computeCohesion( floatType &macroCohesion, floatType &microCohesion, floatVector &microGradientCohesion,
+                                        const floatType &macroSmoothingRatio, const floatType &microSmoothingRatio, const floatVector &microGradientSmoothingRatio ){
+            /*!
+             * Compute the base cohesions
+             *
+             * \param &macroCohesion: The macro-scale cohesion
+             * \param &microCohesion: The micro-scale cohesion
+             * \param &microGradientCohesion: The micro-gradient cohesion
+             * \param &macroSmoothingRatio: The macro-scale smoothing ratio
+             * \param &macroSmoothingRatio: The macro-scale smoothing ratio
+             * \param &microSmoothingRatio: The micro-scale smoothing ratio
+             * \param &microGradientSmoothingRatio: The micro-gradient smoothing ratios
+             */
+
+            constexpr unsigned int dim = 3;
+
+            macroCohesion = smoothLinearCohesion( ( *get_plasticStrainLikeISVs( ) )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ], ( *get_macroHardeningParameters( ) )[ 0 ], macroSmoothingRatio, *getMinMacroCohesion( ) );
+
+            microCohesion = smoothLinearCohesion( ( *get_plasticStrainLikeISVs( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 0 ], microSmoothingRatio, *getMinMicroCohesion( ) );
+                
+            microGradientCohesion = dimVector( dim, 0 );
+
+            for ( unsigned int i = 0; i < dim; i++ ){
+
+                microGradientCohesion[ i ] = smoothLinearCohesion( ( *get_plasticStrainLikeISVs( ) )[ i + 2 ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
+                                                                   ( *get_microGradientHardeningParameters( ) )[ 0 ], microGradientSmoothingRatio[ i ], *getMinMicroGradientCohesion( ) );
+
+            }
 
         }
 
