@@ -1848,7 +1848,7 @@ namespace tardigradeHydra{
 
             void setTolerance( const floatVector &tolerance );
 
-            void incrementIteration( ){ _iteration++; }
+            void incrementIteration( ){ _iteration++; resetLSIteration( ); }
 
             void incrementLSIteration( ){ _LSIteration++; }
 
