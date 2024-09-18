@@ -47,6 +47,7 @@ Bug Fixes
 - Corrected issue where the wrong Jacobian was being used in checkDescentDirection (:pull:`156`). By `Nathan Miller`_.
 - Corrected bug when forming an Eigen::Map (pull:`164`). By `Nathan Miller`_.
 - Corrected bug where the cohesions can go negative (pull:`165`). By `Nathan Miller`_.
+- Corrected bug where the line search target residual didn't reset (pull:`173`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
