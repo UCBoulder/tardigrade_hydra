@@ -1658,9 +1658,9 @@ BOOST_AUTO_TEST_CASE( test_suggestInitialIterates, * boost::unit_test::tolerance
 
     unsigned int configuration_unknown_count = 45;
 
-    floatType tolr = 1e-2;
+    floatType tolr = 1e-9;
 
-    floatType tola = 1e-3;
+    floatType tola = 1e-9;
 
     unsigned int maxIterations = 24;
 
@@ -1812,11 +1812,11 @@ BOOST_AUTO_TEST_CASE( test_suggestInitialIterates, * boost::unit_test::tolerance
     const std::vector< unsigned int > index_answer2 = { 100, 101, 102, 103, 104 };
 
     floatVector answer1( 10, 0 );
-    answer1[ 5 ] = tolr * R.macroYield + tola;
-    answer1[ 6 ] = tolr * R.microYield + tola;
-    answer1[ 7 ] = tolr * R.microGradientYield[ 0 ] + tola;
-    answer1[ 8 ] = tolr * R.microGradientYield[ 1 ] + tola;
-    answer1[ 9 ] = tolr * R.microGradientYield[ 2 ] + tola;
+    answer1[ 5 ] = 0.01;
+    answer1[ 6 ] = 0.02;
+    answer1[ 7 ] = 0.03;
+    answer1[ 8 ] = 0.04;
+    answer1[ 9 ] = 0.05;
 
     floatVector answer2( 5, 0 );
     answer2[ 0 ] = -R2.macroYield;
