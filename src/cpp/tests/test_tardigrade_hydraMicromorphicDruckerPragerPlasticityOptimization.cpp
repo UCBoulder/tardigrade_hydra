@@ -1808,9 +1808,15 @@ BOOST_AUTO_TEST_CASE( test_suggestInitialIterates, * boost::unit_test::tolerance
 
     R2.microGradientYield = -R.microGradientYield;
 
-    const std::vector< unsigned int > index_answer = { 100, 101, 102, 103, 104 };
+    const std::vector< unsigned int > index_answer1 = { 100, 101, 102, 103, 104, 90, 91, 92, 93, 94 };
+    const std::vector< unsigned int > index_answer2 = { 100, 101, 102, 103, 104 };
 
-    floatVector answer1( 5, 0 );
+    floatVector answer1( 10, 0 );
+    answer1[ 5 ] = tolr * R.macroYield + tola;
+    answer1[ 6 ] = tolr * R.microYield + tola;
+    answer1[ 7 ] = tolr * R.microGradientYield[ 0 ] + tola;
+    answer1[ 8 ] = tolr * R.microGradientYield[ 1 ] + tola;
+    answer1[ 9 ] = tolr * R.microGradientYield[ 2 ] + tola;
 
     floatVector answer2( 5, 0 );
     answer2[ 0 ] = -R2.macroYield;
@@ -1826,7 +1832,7 @@ BOOST_AUTO_TEST_CASE( test_suggestInitialIterates, * boost::unit_test::tolerance
 
     BOOST_TEST( answer1 == value_result, CHECK_PER_ELEMENT );
 
-    BOOST_TEST( index_answer == index_result, CHECK_PER_ELEMENT );
+    BOOST_TEST( index_answer1 == index_result, CHECK_PER_ELEMENT );
 
     value_result.clear( );
     index_result.clear( );
@@ -1835,6 +1841,6 @@ BOOST_AUTO_TEST_CASE( test_suggestInitialIterates, * boost::unit_test::tolerance
 
     BOOST_TEST( answer2 == value_result, CHECK_PER_ELEMENT );
 
-    BOOST_TEST( index_answer == index_result, CHECK_PER_ELEMENT );
+    BOOST_TEST( index_answer2 == index_result, CHECK_PER_ELEMENT );
 
 }

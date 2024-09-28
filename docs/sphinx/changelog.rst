@@ -41,6 +41,7 @@ Internal Changes
 - Added an active set solver for quadratic problems (:pull:`167`). By `Nathan Miller`_.
 - Allow for initial values to be set for the micromorphic hydra base class (:pull:`168`). By `Nathan Miller`_.
 - Working towards improved convergence (:pull:`170`). By `Nathan Miller`_.
+- Set the initial estimate of the plastic multiplier to be positive in the case of yielding (:pull:`174`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
