@@ -434,19 +434,46 @@ namespace tardigradeHydra{
             indices = std::vector< unsigned int >( getStateVariableIndices( )->begin( ) + offset,
                                                    getStateVariableIndices( )->end( ) );
 
-            indices += ( *hydra->getNumConfigurations( ) ) * ( *hydra->getConfigurationUnknownCount( ) );
-
             values  = std::vector< floatType >( 5, 0 );
 
             values[ 0 ] = std::fmax( 0, -( *get_macroYield( ) ) );
 
+            if ( ( *get_macroYield( ) ) > 0 ){
+
+                // Perturb the plastic multiplier
+                floatType delta = std::fmax( ( *get_plasticMultipliers( ) )[ 0 ], ( *hydra->getRelativeTolerance( ) ) * ( *get_macroYield( ) ) + ( *hydra->getAbsoluteTolerance( ) ) );
+                indices.push_back( ( *getStateVariableIndices( ) )[ 0 ] );
+                values.push_back( delta );
+
+            }
+
             values[ 1 ] = std::fmax( 0, -( *get_microYield( ) ) );
+
+            if ( ( *get_microYield( ) ) > 0 ){
+
+                // Perturb the plastic multiplier
+                floatType delta = std::fmax( ( *get_plasticMultipliers( ) )[ 1 ], ( *hydra->getRelativeTolerance( ) ) * ( *get_microYield( ) ) + ( *hydra->getAbsoluteTolerance( ) ) );
+                indices.push_back( ( *getStateVariableIndices( ) )[ 1 ] );
+                values.push_back( delta );
+
+            }
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
                 values[ i + 2 ] = std::fmax( 0, -( *get_microGradientYield( ) )[ i ] );
 
+                if ( ( *get_microGradientYield( ) )[ i ] > 0 ){
+    
+                    // Perturb the plastic multiplier
+                    floatType delta = std::fmax( ( *get_plasticMultipliers( ) )[ i + 2 ], ( *hydra->getRelativeTolerance( ) ) * ( *get_microGradientYield( ) )[ i ] + ( *hydra->getAbsoluteTolerance( ) ) );
+                    indices.push_back( ( *getStateVariableIndices( ) )[ i + 2 ] );
+                    values.push_back( delta );
+    
+                }
+
             }
+
+            indices += ( *hydra->getNumConfigurations( ) ) * ( *hydra->getConfigurationUnknownCount( ) );
 
         }
 
