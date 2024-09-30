@@ -1674,7 +1674,7 @@ namespace tardigradeHydra{
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
              * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
              *     velocity gradient.
-             * \param &previousPlasticMicroDeformation: The the plastic micro deformation 
+             * \param &previousPlasticMicroDeformation: The plastic micro deformation 
              *     from the last converged increment.
              * \param &previousPlasticMicroGradient: The micro gradient deformation in the 
              *     intermediate configuation from the last converged increment.
@@ -1808,7 +1808,7 @@ namespace tardigradeHydra{
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
              * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
              *     velocity gradient.
-             * \param &previousPlasticMicroDeformation: The the plastic micro deformation 
+             * \param &previousPlasticMicroDeformation: The plastic micro deformation 
              *     from the last converged increment.
              * \param &previousPlasticMicroGradient: The micro gradient deformation in the 
              *     intermediate configuation from the last converged increment.
@@ -1953,7 +1953,7 @@ namespace tardigradeHydra{
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
              * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
              *     velocity gradient.
-             * \param &previousPlasticMicroDeformation: The the plastic micro deformation 
+             * \param &previousPlasticMicroDeformation: The plastic micro deformation 
              *     from the last converged increment.
              * \param &previousPlasticMicroGradient: The micro gradient deformation in the 
              *     intermediate configuation from the last converged increment.
