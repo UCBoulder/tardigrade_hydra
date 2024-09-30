@@ -1622,7 +1622,7 @@ namespace tardigradeHydra{
              * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
              *
              * \param &Dt: The change in time.
-             * \param &currentPlasticMicroDeformation: The inverse of the current micro deformation.
+             * \param &currentPlasticMicroDeformation: The current plastic micro deformation.
              * \param &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
              * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
@@ -1669,7 +1669,7 @@ namespace tardigradeHydra{
              * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
              *
              * \param &Dt: The change in time.
-             * \param &currentPlasticMicroDeformation: The inverse of the current micro deformation.
+             * \param &currentPlasticMicroDeformation: The current plastic micro deformation.
              * \param &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
              * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
@@ -1803,7 +1803,7 @@ namespace tardigradeHydra{
              * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
              *
              * \param &Dt: The change in time.
-             * \param &currentPlasticMicroDeformation: The inverse of the current micro deformation.
+             * \param &currentPlasticMicroDeformation: The current plastic micro deformation.
              * \param &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
              * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
@@ -1948,7 +1948,7 @@ namespace tardigradeHydra{
              * Evolve the plastic micro gradient of the micro-deformation measure in the intermediate configuration.
              *
              * \param &Dt: The change in time.
-             * \param &currentPlasticMicroDeformation: The inverse of the current micro deformation.
+             * \param &currentPlasticMicroDeformation: The current plastic micro deformation.
              * \param &currentPlasticMacroVelocityGradient: The current plastic macro velocity gradient.
              * \param &currentPlasticMicroVelocityGradient: The current plastic micro velocity gradient.
              * \param &currentPlasticMicroGradientVelocityGradient: The current plastic micro gradient
