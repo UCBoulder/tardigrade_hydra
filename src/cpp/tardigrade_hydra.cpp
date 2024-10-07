@@ -1681,6 +1681,14 @@ namespace tardigradeHydra{
 
         while ( !checkLSConvergence( ) && checkLSIteration( ) ){
 
+            if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                addToFailureOutput( "    lambda, |R|: " );
+                addToFailureOutput( *getLambda( ) );
+                addToFailureOutput( ", " );
+                addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
+                addToFailureOutput( "\n" );
+            }
+
             updateLambda( );
 
             incrementLSIteration( );
@@ -1862,10 +1870,24 @@ namespace tardigradeHydra{
 
         resetGradientIteration( );
 
+        if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+            addToFailureOutput( "Initial Unknown:\n" );
+            addToFailureOutput( *getUnknownVector( ) );
+        }
+
         while( !checkConvergence( ) && checkIteration( ) ){
 
+            if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                addToFailureOutput( "\n\n  iteration: " );
+                addToFailureOutput( _iteration );
+            }
             floatVector X0 = *getUnknownVector( );
 
+            if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                addToFailureOutput( "  X0:\n" );
+                addToFailureOutput( "  " );
+                addToFailureOutput( *getUnknownVector( ) );
+            }
             setBaseQuantities( );
 
             if ( *getUseSQPSolver( ) ){
@@ -1879,6 +1901,11 @@ namespace tardigradeHydra{
 
                 solveNewtonUpdate( deltaX );
 
+            }
+            if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                addToFailureOutput( "  deltaX:\n" );
+                addToFailureOutput( "  " );
+                addToFailureOutput( deltaX );
             }
 
             updateUnknownVector( X0 + *getLambda( ) * deltaX );
@@ -1912,6 +1939,12 @@ namespace tardigradeHydra{
             // Reset the nonlinear step data
             resetNLStepData( );
 
+            if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                addToFailureOutput( "  final residual: " );
+                addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
+                addToFailureOutput( "\n" );
+            }
+
         }
 
         if ( !checkConvergence( ) ){
@@ -1940,6 +1973,11 @@ namespace tardigradeHydra{
 
         while ( relaxedIteration < *getMaxRelaxedIterations( ) ){
 
+            if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                addToFailureOutput( "\n\n###  relaxed iteration: " );
+                addToFailureOutput( relaxedIteration );
+                addToFailureOutput( "\n\n" );
+            }
             // Solve the non-linear problem
             TARDIGRADE_ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
 
