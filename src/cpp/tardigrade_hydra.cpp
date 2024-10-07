@@ -1904,7 +1904,7 @@ namespace tardigradeHydra{
             }
             if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
                 addToFailureOutput( "  deltaX:\n" );
-                addToFailureOutput( "        " );
+                addToFailureOutput( "  " );
                 addToFailureOutput( deltaX );
             }
 
@@ -1973,6 +1973,11 @@ namespace tardigradeHydra{
 
         while ( relaxedIteration < *getMaxRelaxedIterations( ) ){
 
+            if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                addToFailureOutput( "\n\n###  relaxed iterationl: " );
+                addToFailureOutput( relaxedIteration );
+                addToFailureOutput( "\n\n" );
+            }
             // Solve the non-linear problem
             TARDIGRADE_ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
 
