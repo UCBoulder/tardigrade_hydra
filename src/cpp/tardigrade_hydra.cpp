@@ -1981,6 +1981,7 @@ namespace tardigradeHydra{
 
             // Reset hydra
             updateUnknownVector( *getUnknownVector( ) ); //This allows for the relaxed to change the projection and adjust the decomposition
+            resetIterations( );
 
         }
 
