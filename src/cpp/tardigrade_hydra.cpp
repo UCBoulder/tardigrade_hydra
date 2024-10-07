@@ -1878,7 +1878,7 @@ namespace tardigradeHydra{
         while( !checkConvergence( ) && checkIteration( ) ){
 
             if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
-                addToFailureOutput( "  iteration: " );
+                addToFailureOutput( "\n\n  iteration: " );
                 addToFailureOutput( _iteration );
             }
             floatVector X0 = *getUnknownVector( );
@@ -1974,7 +1974,7 @@ namespace tardigradeHydra{
         while ( relaxedIteration < *getMaxRelaxedIterations( ) ){
 
             if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
-                addToFailureOutput( "\n\n###  relaxed iterationl: " );
+                addToFailureOutput( "\n\n###  relaxed iteration: " );
                 addToFailureOutput( relaxedIteration );
                 addToFailureOutput( "\n\n" );
             }
