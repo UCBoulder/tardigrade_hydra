@@ -1462,6 +1462,35 @@ namespace tardigradeHydra{
 
             }
 
+            void setFailureVerbosityLevel( const unsigned int &value ){
+                /*!
+                 * Set the verbosity level for failures
+                 * 
+                 * \param &value: The verbosity level of the failure (defaults to zero)
+                 */
+
+                _failure_verbosity_level = value;
+
+            }
+
+            //! Set the failure output string to use scientific notation
+            void setFailureOutputScientific( ){ _failure_output << std::scientific; }
+
+            //! Get the verbosity level for failure outputs
+            const unsigned int *getFailureVerbosityLevel( ){ return &_failure_verbosity_level; }
+
+            //! Add a string to the failure output string
+            void addToFailureOutput( const std::string &additional ){ _failure_output << additional; }
+
+            //! Add a floating point vector to the output string
+            void addToFailureOutput( const floatVector &value ){ for ( auto v = value.begin( ); v != value.end( ); v++ ){ _failure_output << *v << ", "; } _failure_output << "\n"; }
+
+            //! Add a floating point value to the output string
+            void addToFailureOutput( const floatType &value ){ _failure_output << value; _failure_output << "\n"; }
+
+            //! Get the failure output string
+            const std::string getFailureOutput( ){ return _failure_output.str( ); }
+
         protected:
 
             // Setters that the user may need to access but not override
@@ -1871,6 +1900,10 @@ namespace tardigradeHydra{
             void resetIterationData( );
 
             void resetNLStepData( );
+
+            unsigned int _failure_verbosity_level = 0; //!< The verbosity level for failure.
+
+            std::stringstream _failure_output; //!< Additional failure output information
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 
