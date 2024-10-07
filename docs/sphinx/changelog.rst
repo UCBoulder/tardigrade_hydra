@@ -42,6 +42,7 @@ Internal Changes
 - Allow for initial values to be set for the micromorphic hydra base class (:pull:`168`). By `Nathan Miller`_.
 - Working towards improved convergence (:pull:`170`). By `Nathan Miller`_.
 - Set the initial estimate of the plastic multiplier to be positive in the case of yielding (:pull:`174`). By `Nathan Miller`_.
+- Added additional verbosity for debugging of the solves (:pull:`175`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
@@ -49,6 +50,7 @@ Bug Fixes
 - Corrected bug when forming an Eigen::Map (pull:`164`). By `Nathan Miller`_.
 - Corrected bug where the cohesions can go negative (pull:`165`). By `Nathan Miller`_.
 - Corrected bug where the line search target residual didn't reset (pull:`173`). By `Nathan Miller`_.
+- Corrected bug where the iteration count wasn't resetting during relaxed iterations (pull:`174`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
