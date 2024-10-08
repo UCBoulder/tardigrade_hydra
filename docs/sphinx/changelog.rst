@@ -18,6 +18,8 @@ New Features
 - Added softened cohesion function (:pull:`169`). By `Nathan Miller`_.
 - Added the minimum cohesion and softening ratio as optional parameters to the micromorphic Drucker-Prager plasticity (:pull:`171`). By `Nathan Miller`_.
 - Added a relaxed solver as the default (:pull:`172`). By `Nathan Miller`_.
+- Added ability to turn on additional messages for failed solves (:pull:`177`). By `Nathan Miller`_.
+- Added the ability to scale the incoming load information by a scale factor (:pull:`178`). By `Nathan Miller`_.
 
 Internal Changes
 ================

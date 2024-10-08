@@ -225,6 +225,253 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor, * boost
 
 }
 
+BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    floatType time = 1.23;
+
+    floatType deltaTime = 2.34;
+
+    floatType temperature = 3.45;
+
+    floatType previousTemperature = 4.56;
+
+    floatVector deformationGradient = { 1, 2, 2, 4, 5, 6, 7, 8, 9 };
+
+    floatVector previousDeformationGradient = { 10, 11, 12, 13, 14, 15, 16, 16, 18 };
+
+    floatVector microDeformation = { 18, 20, 21, 22, 23, 24, 25, 26, 27 };
+
+    floatVector previousMicroDeformation = { 28, 29, 30, 31, 32, 33, 34, 35, 33 };
+
+    floatVector gradientMicroDeformation = { 36, 37, 38, 39, 40, 41, 42, 43, 44,
+                                             45, 46, 47, 48, 49, 50, 51, 52, 53,
+                                             54, 55, 56, 57, 58, 59, 60, 61, 62 };
+
+    floatVector previousGradientMicroDeformation = { 63, 64, 65, 66, 67, 68, 69, 70, 71,
+                                                     72, 73, 74, 75, 76, 77, 78, 79, 80,
+                                                     81, 82, 83, 84, 85, 86, 87, 88, 89 };
+
+    floatVector previousStateVariables = { 0.01,  0.02,  0.03,  0.04,  0.05,  0.06,  0.07,  0.08,  0.09,
+                                          -0.01, -0.02, -0.03, -0.04, -0.05, -0.06, -0.07, -0.08, -0.09,
+                                           1.00,  2.00,  3.00,  4.00,  5.00,  6.00,  7.00,  8.00,  9.00,
+                                          10.00, 11.00, 12.00, 13.00, 14.00, 15.00, 16.00, 17.00, 18.00,
+                                          19.00, 20.00, 21.00, 22.00, 23.00, 24.00, 25.00, 26.00, 27.00,
+                                          -1.00, -2.00, -3.00, -4.00, -5.00, -6.00 };
+
+    floatMatrix configurationsAnswer = { { 0.80151542, 1.75875283, 1.71599025, 3.43145793, 4.30238634, 5.17331475, 6.12262672, 6.91517157, 7.70771643 },
+                                         { 1.01, 0.02, 0.03, 0.04, 1.05, 0.06, 0.07, 0.08, 1.09 } };
+
+    floatMatrix previousConfigurationsAnswer = { { 8.81379551,  9.5279568 , 10.2421181 , 11.50496429, 12.14074203, 12.77651977, 14.23044766, 13.79655112, 15.36265459 },
+                                                 { 1.01, 0.02, 0.03, 0.04, 1.05, 0.06, 0.07, 0.08, 1.09 } };
+
+    floatMatrix inverseConfigurationsAnswer = { { -1.        , -0.64666667,  0.65666667,  2.        , -1.65666667,         0.66666667, -1.        ,  2.        , -0.99       },
+                                                {  0.99259711, -0.01689601, -0.02638913, -0.03431458,  0.95697614,        -0.05173315, -0.06122627, -0.06915172,  0.92292284 } };
+
+    floatMatrix previousInverseConfigurationsAnswer = { { -1.96      ,  0.97      ,  0.5       , -0.97      ,  1.98      ,        -1.        ,  2.68666667, -2.67666667,  0.5        },
+                                                        {  0.99259711, -0.01689601, -0.02638913, -0.03431458,  0.95697614,        -0.05173315, -0.06122627, -0.06915172,  0.92292284 } };
+
+    floatMatrix microConfigurationsAnswer = { { 20.92702193, 23.6257958 , 25.32456968, 25.37137468, 27.1869842 , 29.00259373, 28.8021693 , 30.72388588, 32.64560245 },
+                                              { 0.99, -0.02, -0.03, -0.04,  0.95, -0.06, -0.07, -0.08,  0.91 } };
+
+    floatMatrix inverseMicroConfigurationsAnswer = { { -1.        ,   1.92      ,  -0.93      ,   2.        , -13.07      ,  10.06      ,  -1.        ,  10.60666667,  -8.61666667 },
+                                                     {  1.01355812, 0.02428672, 0.03501533, 0.04786607, 1.05965574, 0.07144541, 0.08217402, 0.09502476, 1.1078755 } };
+
+    floatMatrix previousMicroConfigurationsAnswer = { { 32.23296392, 34.26078755, 36.28861118, 35.66375855, 37.79768922, 39.9316199 , 38.84803112, 41.04951662, 40.25100212 },
+                                                      { 0.99, -0.02, -0.03, -0.04,  0.95, -0.06, -0.07, -0.08,  0.91 } };
+
+    floatMatrix previousInverseMicroConfigurationsAnswer = { { -11.1       ,  10.42333333,  -0.33333333,  10.91      , -10.58666667,   0.66666667,  -0.41333333,   0.73666667,  -0.33333333 },
+                                                             { 1.01355812, 0.02428672, 0.03501533, 0.04786607, 1.05965574, 0.07144541, 0.08217402, 0.09502476, 1.1078755 } };
+
+    floatVector parameters = { 0.1, 0.2, 0.3, 0.4 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 6;
+
+    unsigned int dimension = 3;
+
+    unsigned int configuration_unknown_count = 45;
+
+    floatType tolr = 1e-2;
+
+    floatType tola = 1e-3;
+
+    unsigned int maxIterations = 24;
+
+    unsigned int maxLSIterations = 45;
+
+    floatType lsAlpha = 2.3;
+
+    class residualBaseMock : public tardigradeHydra::residualBase{
+
+        using tardigradeHydra::residualBase::residualBase;
+
+    };
+
+    class residualBaseMockStress : public tardigradeHydra::residualBase{
+
+        using tardigradeHydra::residualBase::residualBase;
+
+        using tardigradeHydra::residualBase::setStress;
+
+        floatVector stress = { 1,  2,  3,  4,  5,  6,  7,  8,  9,
+                              10, 11, 12, 13, 14, 15, 16, 17, 18,
+                              19, 20, 21, 22, 23, 24, 25, 26, 27,
+                              28, 29, 30, 31, 32, 33, 34, 35, 36,
+                              37, 38, 39, 40, 41, 42, 43, 44, 45 };
+
+        virtual void setStress( ) override{
+
+            setStress( stress );
+
+        }
+
+    };
+
+    class hydraBaseMicromorphicMock : public tardigradeHydra::hydraBaseMicromorphic{
+
+        public:
+
+            unsigned int ndecomp = 0;
+    
+            unsigned int nsrc = 0;
+
+            residualBaseMockStress r1;
+        
+            residualBaseMock r2;
+
+            unsigned int s1 = 45;
+
+            unsigned int s2 = 51;
+
+            using tardigradeHydra::hydraBaseMicromorphic::hydraBaseMicromorphic;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            virtual void setResidualClasses( ){
+
+                r1 = residualBaseMockStress( this, s1 );
+
+                r2 = residualBaseMock( this, s2 );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                residuals[ 0 ] = &r1;
+
+                residuals[ 1 ] = &r2;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    hydraBaseMicromorphicMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                     microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+                                     { }, { },
+                                     previousStateVariables, parameters,
+                                     numConfigurations, numNonLinearSolveStateVariables,
+                                     dimension, configuration_unknown_count,
+                                     tolr, tola, maxIterations, maxLSIterations, lsAlpha );
+
+    BOOST_TEST( time == *hydra.getTime( ) );
+
+    BOOST_TEST( deltaTime == *hydra.getDeltaTime( ) );
+
+    BOOST_TEST( temperature == *hydra.getTemperature( ) );
+
+    BOOST_TEST( previousTemperature == *hydra.getPreviousTemperature( ) );
+
+    BOOST_TEST( deformationGradient == *hydra.getDeformationGradient( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( previousDeformationGradient == *hydra.getPreviousDeformationGradient( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( microDeformation == *hydra.getMicroDeformation( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( previousMicroDeformation == *hydra.getPreviousMicroDeformation( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( gradientMicroDeformation == *hydra.getGradientMicroDeformation( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( previousGradientMicroDeformation == *hydra.getPreviousGradientMicroDeformation( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( configurationsAnswer ) == *hydra.get_configurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousConfigurationsAnswer ) == *hydra.get_previousConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( inverseConfigurationsAnswer ) == *hydra.get_inverseConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousInverseConfigurationsAnswer ) == *hydra.get_previousInverseConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( microConfigurationsAnswer ) == *hydra.get_microConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousMicroConfigurationsAnswer ) == *hydra.get_previousMicroConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( inverseMicroConfigurationsAnswer ) == *hydra.get_inverseMicroConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousInverseMicroConfigurationsAnswer ) == *hydra.get_previousInverseMicroConfigurations( ), CHECK_PER_ELEMENT );
+
+    floatType scale_factor = 0.68;
+
+    hydra.setScaleFactor( scale_factor );
+
+    floatType scaled_time = ( scale_factor - 1 ) * deltaTime + time;
+
+    floatType scaled_deltaTime = scale_factor * deltaTime;
+
+    floatType scaled_temperature = scale_factor * ( temperature - previousTemperature ) + previousTemperature;
+
+    floatVector scaled_deformationGradient = scale_factor * ( deformationGradient - previousDeformationGradient ) + previousDeformationGradient;
+
+    floatVector scaled_microDeformation = scale_factor * ( microDeformation - previousMicroDeformation ) + previousMicroDeformation;
+
+    floatVector scaled_gradientMicroDeformation = scale_factor * ( gradientMicroDeformation - previousGradientMicroDeformation ) + previousGradientMicroDeformation;
+
+    configurationsAnswer[ 0 ] = { 3.36544504,  4.2448981 ,  4.44435116,  6.01497997,  6.81066016, 7.60634036,  8.71712942,  9.11721303, 10.15729664 };
+
+    inverseConfigurationsAnswer[ 0 ] = { -0.12122531, -1.8436894 ,  1.4336981 ,  3.69897495, -3.23648435,  0.80516088, -3.21617129,  4.48735505, -1.854682 };
+
+    microConfigurationsAnswer[ 0 ] = { 24.54492337, 27.02899316, 28.83306296, 28.66493751, 30.58240981, 32.4998821 , 32.01684508, 34.02808772, 35.07933035 };
+
+    inverseMicroConfigurationsAnswer[ 0 ] = { -1.2869465 ,  1.28214968, -0.13007957,  1.36076467, -2.41554301, 1.11945836, -0.14539197,  1.1729392 , -0.93868068 };
+
+    BOOST_TEST( scaled_time == *hydra.getTime( ) );
+
+    BOOST_TEST( scaled_deltaTime == *hydra.getDeltaTime( ) );
+
+    BOOST_TEST( scaled_temperature == *hydra.getTemperature( ) );
+
+    BOOST_TEST( previousTemperature == *hydra.getPreviousTemperature( ) );
+
+    BOOST_TEST( scaled_deformationGradient == *hydra.getDeformationGradient( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( previousDeformationGradient == *hydra.getPreviousDeformationGradient( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( scaled_microDeformation == *hydra.getMicroDeformation( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( previousMicroDeformation == *hydra.getPreviousMicroDeformation( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( scaled_gradientMicroDeformation == *hydra.getGradientMicroDeformation( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( previousGradientMicroDeformation == *hydra.getPreviousGradientMicroDeformation( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( configurationsAnswer ) == *hydra.get_configurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousConfigurationsAnswer ) == *hydra.get_previousConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( inverseConfigurationsAnswer ) == *hydra.get_inverseConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousInverseConfigurationsAnswer ) == *hydra.get_previousInverseConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( microConfigurationsAnswer ) == *hydra.get_microConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousMicroConfigurationsAnswer ) == *hydra.get_previousMicroConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( inverseMicroConfigurationsAnswer ) == *hydra.get_inverseMicroConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousInverseMicroConfigurationsAnswer ) == *hydra.get_previousInverseMicroConfigurations( ), CHECK_PER_ELEMENT );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getSubMicroConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     floatType time = 1.23;
