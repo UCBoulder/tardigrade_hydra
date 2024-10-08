@@ -1081,25 +1081,25 @@ namespace tardigradeHydra{
             const unsigned int* getConfigurationUnknownCount( ){ return &_configuration_unknown_count; }
 
             //! Get a reference to the current time
-            const floatType* getTime( ){ return &_time; }
+            const floatType* getTime( ){ return getScaledTime( ); }
 
             //! Get a reference to the change in time
-            const floatType* getDeltaTime( ){ return &_deltaTime; }
+            const floatType* getDeltaTime( ){ return getScaledDeltaTime( ); }
 
             //! Get a reference to the current temperature
-            const floatType* getTemperature( ){ return &_temperature; };
+            const floatType* getTemperature( ){ return getScaledTemperature( ); };
 
             //! Get a reference to the previous temperature
             const floatType* getPreviousTemperature( ){ return &_previousTemperature; };
 
             //! Get a reference to the deformation gradient
-            const secondOrderTensor* getDeformationGradient( ){ return &_deformationGradient; }
+            const secondOrderTensor* getDeformationGradient( ){ return getScaledDeformationGradient( ); }
 
             //! Get a reference to the previous deformation gradient
             const secondOrderTensor* getPreviousDeformationGradient( ){ return &_previousDeformationGradient; }
 
             //! Get a reference to the additional degrees of freedom
-            const floatVector* getAdditionalDOF( ){ return &_additionalDOF; }
+            const floatVector* getAdditionalDOF( ){ return getScaledAdditionalDOF( ); }
 
             //! Get a reference to the previous additional degrees of freedom
             const floatVector* getPreviousAdditionalDOF( ){ return &_previousAdditionalDOF; }
@@ -1491,6 +1491,22 @@ namespace tardigradeHydra{
             //! Get the failure output string
             const std::string getFailureOutput( ){ return _failure_output.str( ); }
 
+            //! Get a scale factor for the deformation
+            const floatType *getScaleFactor( ){ return &_scale_factor; }
+
+            //! Set the value of the scale factor. Will automatically re-calculate the deformation
+            const void setScaleFactor( const floatType &value ){ _scale_factor = value; setScaledQuantities( ); updateUnknownVector( *getUnknownVector( ) ); }
+
+            const floatType   *getScaledTime( ){ return &_scaled_time; }
+
+            const floatType   *getScaledDeltaTime( ){ return &_scaled_deltaTime; }
+
+            const floatType   *getScaledTemperature( ){ return &_scaled_temperature; }
+
+            const floatVector *getScaledDeformationGradient( ){ return &_scaled_deformationGradient; }
+
+            const floatVector *getScaledAdditionalDOF( ){ return &_scaled_additionalDOF; }
+
         protected:
 
             // Setters that the user may need to access but not override
@@ -1535,6 +1551,21 @@ namespace tardigradeHydra{
             virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
 
             virtual void performGradientStep( const floatVector &X0 );
+
+            //! Update the scaled quantities
+            virtual void setScaledQuantities( ){
+
+                _scaled_time = ( _scale_factor - 1 ) * _deltaTime + _time;
+
+                _scaled_deltaTime = _scale_factor * _deltaTime;
+
+                _scaled_temperature = _scale_factor * ( _temperature - _previousTemperature ) + _previousTemperature;
+
+                _scaled_deformationGradient = _scale_factor * ( _deformationGradient - _previousDeformationGradient ) + _previousDeformationGradient;
+
+                _scaled_additionalDOF = _scale_factor * ( _additionalDOF - _previousAdditionalDOF ) + _previousAdditionalDOF;
+
+            }
 
             const floatType *get_baseResidualNorm( );
 
@@ -1765,6 +1796,16 @@ namespace tardigradeHydra{
 
             floatVector _parameters; //!< The model parameters
 
+            floatType _scaled_time; //!< The current time scaled by the scaling factor
+
+            floatType _scaled_deltaTime; //!< The change in time scaled by the scaling factor
+
+            floatType _scaled_temperature; //!< The current temperature scaled by the scaling factor
+
+            secondOrderTensor _scaled_deformationGradient; //!< The current deformation gradient scaled by the scaling factor
+
+            floatVector _scaled_additionalDOF; //!< The current additional degrees of freedom scaled by the scaling factor
+
             unsigned int _numConfigurations; //!< The number of configurations
 
             unsigned int _numNonLinearSolveStateVariables; //!< The number of state variables which will be solved in the Newton-Raphson loop
@@ -1904,6 +1945,8 @@ namespace tardigradeHydra{
             unsigned int _failure_verbosity_level = 0; //!< The verbosity level for failure.
 
             std::stringstream _failure_output; //!< Additional failure output information
+
+            floatType _scale_factor = 1.0; //!< A scale factor applied to the incoming loading (deformation, temperature, etc.)
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 

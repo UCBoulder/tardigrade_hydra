@@ -46,19 +46,19 @@ namespace tardigradeHydra{
 
                 static void checkTime( hydraBase &hydra ){
     
-                    BOOST_CHECK( &hydra._time == hydra.getTime( ) );
+                    BOOST_CHECK( &hydra._scaled_time == hydra.getScaledTime( ) );
     
                 }
     
                 static void checkDeltaTime( hydraBase &hydra ){
     
-                    BOOST_CHECK( &hydra._deltaTime == hydra.getDeltaTime( ) );
+                    BOOST_CHECK( &hydra._scaled_deltaTime == hydra.getScaledDeltaTime( ) );
     
                 }
     
                 static void checkTemperature( hydraBase &hydra ){
     
-                    BOOST_CHECK( &hydra._temperature == hydra.getTemperature( ) );
+                    BOOST_CHECK( &hydra._scaled_temperature == hydra.getScaledTemperature( ) );
     
                 }
     
@@ -70,7 +70,7 @@ namespace tardigradeHydra{
     
                 static void checkDeformationGradient( hydraBase &hydra ){
     
-                    BOOST_CHECK( &hydra._deformationGradient == hydra.getDeformationGradient( ) );
+                    BOOST_CHECK( &hydra._scaled_deformationGradient == hydra.getScaledDeformationGradient( ) );
     
                 }
     
@@ -82,7 +82,7 @@ namespace tardigradeHydra{
 
                 static void checkAdditionalDOF( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._additionalDOF == hydra.getAdditionalDOF( ) );
+                    BOOST_CHECK( &hydra._scaled_additionalDOF == hydra.getScaledAdditionalDOF( ) );
 
                 }
 
@@ -1105,6 +1105,243 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector, * boost::unit
     BOOST_TEST( additionalStateVariablesAnswer == *hydra.get_additionalStateVariables( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( previousAdditionalStateVariablesAnswer == *hydra.get_previousAdditionalStateVariables( ), CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class residualBaseMock : public tardigradeHydra::residualBase{
+
+        using tardigradeHydra::residualBase::residualBase;
+
+    };
+
+    class residualBaseMockStress : public tardigradeHydra::residualBase{
+
+        using tardigradeHydra::residualBase::residualBase;
+
+        using tardigradeHydra::residualBase::setStress;
+
+        floatVector cauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        virtual void setStress( ) override{
+
+            setStress( cauchyStress );
+
+        }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            residualBaseMockStress r1;
+        
+            residualBaseMock r2;
+        
+            residualBaseMock r3;
+
+            unsigned int s1 = 36;
+
+            unsigned int s2 = 2;
+
+            unsigned int s3 = 3;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            virtual void setResidualClasses( ){
+
+                r1 = residualBaseMockStress( this, s1 );
+
+                r2 = residualBaseMock( this, s2 );
+
+                r3 = residualBaseMock( this, s3 );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+
+                residuals[ 0 ] = &r1;
+
+                residuals[ 1 ] = &r2;
+
+                residuals[ 2 ] = &r3;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+                                        0.10262954,  0.43893794, -0.15378708,
+                                        0.9615284 ,  0.36965948, -0.0381362 };
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+                                           0.54506801, 0.34276383, 0.30412079 }; 
+
+    floatMatrix configurationsAnswer = {
+                                           { 1.05936416, -0.30634264, -0.86204928,
+                                             0.03274674,  0.17917379, -0.22403642,
+                                             1.24895144, -0.21368066, -1.05360316 },
+                                           { 1.53155137,  0.53182759,  0.63440096,
+                                             0.84943179,  1.72445532,  0.61102351,
+                                             0.72244338,  0.32295891,  1.36178866 },
+                                           { 1.22826323,  0.29371405,  0.63097612,
+                                             0.09210494,  1.43370117,  0.43086276,
+                                             0.4936851 ,  0.42583029,  1.31226122 },
+                                           { 1.42635131,  0.89338916,  0.94416002,
+                                             0.50183668,  1.62395295,  0.1156184 ,
+                                             0.31728548,  0.41482621,  1.86630916 }
+                                       };
+
+    floatMatrix previousConfigurationsAnswer = {
+                                                   { -0.41803693, -0.10444357,  0.58891991,
+                                                      0.33131016, -0.34276201, -0.04604603,
+                                                      1.32949612, -0.42712653, -1.03631144 },
+                                                   {  1.53155137,  0.53182759,  0.63440096,
+                                                      0.84943179,  1.72445532,  0.61102351,
+                                                      0.72244338,  0.32295891,  1.36178866 },
+                                                   {  1.22826323,  0.29371405,  0.63097612,
+                                                      0.09210494,  1.43370117,  0.43086276,
+                                                      0.4936851 ,  0.42583029,  1.31226122 },
+                                                   {  1.42635131,  0.89338916,  0.94416002,
+                                                      0.50183668,  1.62395295,  0.1156184 ,
+                                                      0.31728548,  0.41482621,  1.86630916 }
+                                               };
+
+    floatType scale_factor = 0.68;
+
+    floatMatrix inverseConfigurationsAnswer( 4 );
+
+    floatMatrix previousInverseConfigurationsAnswer( 4 );
+
+    for ( unsigned int i = 0; i < 4; i++ ){
+
+        Eigen::Map< const Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > map_configuration( configurationsAnswer[ i ].data( ), 3, 3 );
+
+        inverseConfigurationsAnswer[ i ] = floatVector( 9, 0 );
+        Eigen::Map< Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > map_inverseConfiguration( inverseConfigurationsAnswer[ i ].data( ), 3, 3 );
+
+        map_inverseConfiguration = map_configuration.inverse( ).eval( );
+
+        Eigen::Map< const Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > map_previousConfiguration( previousConfigurationsAnswer[ i ].data( ), 3, 3 );
+
+        previousInverseConfigurationsAnswer[ i ] = floatVector( 9, 0 );
+        Eigen::Map< Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > map_previousInverseConfiguration( previousInverseConfigurationsAnswer[ i ].data( ), 3, 3 );
+
+        map_previousInverseConfiguration = map_previousConfiguration.inverse( ).eval( );
+
+    }
+
+    floatVector nonLinearSolveStateVariablesAnswer = { 0.25045537, 0.48303426, 0.98555979,
+                                                       0.51948512, 0.61289453 };
+
+    floatVector previousNonLinearSolveStateVariablesAnswer = { 0.25045537, 0.48303426, 0.98555979,
+                                                               0.51948512, 0.61289453 };
+
+    floatVector additionalStateVariablesAnswer = { 0.12062867, 0.8263408 , 0.60306013,
+                                                   0.54506801, 0.34276383, 0.30412079 };
+
+    floatVector additionalDOF = { };
+
+    floatVector previousAdditionalDOF = { };
+
+    floatVector previousAdditionalStateVariablesAnswer = { 0.12062867, 0.8263408 , 0.60306013,
+                                                           0.54506801, 0.34276383, 0.30412079  };
+
+    floatVector parameters = { 1, 2, 3, 4, 5 };
+
+    unsigned int numConfigurations = 4;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         additionalDOF, previousAdditionalDOF,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    tardigradeHydra::unit_test::hydraBaseTester::decomposeStateVariableVector( hydra );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( configurationsAnswer ) == *hydra.get_configurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousConfigurationsAnswer ) == *hydra.get_previousConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( inverseConfigurationsAnswer ) == *hydra.get_inverseConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousInverseConfigurationsAnswer ) == *hydra.get_previousInverseConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( nonLinearSolveStateVariablesAnswer == *hydra.get_nonLinearSolveStateVariables( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( previousNonLinearSolveStateVariablesAnswer == *hydra.get_previousNonLinearSolveStateVariables( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( additionalStateVariablesAnswer == *hydra.get_additionalStateVariables( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( previousAdditionalStateVariablesAnswer == *hydra.get_previousAdditionalStateVariables( ), CHECK_PER_ELEMENT );
+
+    hydra.setScaleFactor( scale_factor );
+
+    configurationsAnswer[ 0 ] = { 0.58659581, -0.24173494, -0.39773914,
+                                  0.12828703,  0.01215433, -0.1670795 ,
+                                  1.27472574, -0.28198334, -1.04806981 },
+
+    inverseConfigurationsAnswer[ 0 ] = { -13.52872661, -31.91604776,  10.22204935,
+                                         -17.74983625, -24.36324336,  10.61990622,
+                                         -11.67885744, -32.26328862,   8.6212508 };
+
+    additionalStateVariablesAnswer = { }; //Goes away because of the reset
+
+    floatType scaled_time = ( scale_factor - 1) * deltaTime + time;
+
+    floatType scaled_deltaTime = scale_factor * deltaTime;
+
+    floatType scaled_temperature = scale_factor * ( temperature - previousTemperature ) + previousTemperature;
+
+    floatVector scaled_deformationGradient = scale_factor * ( deformationGradient - previousDeformationGradient ) + previousDeformationGradient;
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( configurationsAnswer ) == *hydra.get_configurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousConfigurationsAnswer ) == *hydra.get_previousConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( inverseConfigurationsAnswer ) == *hydra.get_inverseConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( tardigradeVectorTools::appendVectors( previousInverseConfigurationsAnswer ) == *hydra.get_previousInverseConfigurations( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( nonLinearSolveStateVariablesAnswer == *hydra.get_nonLinearSolveStateVariables( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( previousNonLinearSolveStateVariablesAnswer == *hydra.get_previousNonLinearSolveStateVariables( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( additionalStateVariablesAnswer == *hydra.get_additionalStateVariables( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( previousAdditionalStateVariablesAnswer == *hydra.get_previousAdditionalStateVariables( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( scaled_time == *hydra.getTime( ) );
+
+    BOOST_TEST( scaled_deltaTime == *hydra.getDeltaTime( ) );
+
+    BOOST_TEST( scaled_temperature == *hydra.getTemperature( ) );
+
+    BOOST_TEST( scaled_deformationGradient == *hydra.getDeformationGradient( ) );
 
 }
 

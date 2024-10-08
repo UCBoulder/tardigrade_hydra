@@ -39,13 +39,13 @@ namespace tardigradeHydra{
                                    const bool use_preconditioner=false, const unsigned int preconditioner_type=0 );
 
             //! Get the current micro-deformation tensor
-            const secondOrderTensor *getMicroDeformation( ){ return &_microDeformation; }
+            const secondOrderTensor *getMicroDeformation( ){ return getScaledMicroDeformation( ); }
 
             //! Get the previous micro-deformation tensor
             const secondOrderTensor *getPreviousMicroDeformation( ){ return &_previousMicroDeformation; }
 
             //! Get the current spatial gradient w.r.t. the reference configuration of the micro-deformation tensor
-            const thirdOrderTensor *getGradientMicroDeformation( ){ return &_gradientMicroDeformation; }
+            const thirdOrderTensor *getGradientMicroDeformation( ){ return getScaledGradientMicroDeformation( ); }
 
             //! Get the previous spatial gradient w.r.t. the reference configuration of the micro-deformation tensor
             const thirdOrderTensor *getPreviousGradientMicroDeformation( ){ return &_previousGradientMicroDeformation; }
@@ -78,6 +78,10 @@ namespace tardigradeHydra{
 
             floatVector getPreviousFollowingMicroConfigurationJacobian( const unsigned int &index );
 
+            const secondOrderTensor *getScaledMicroDeformation( ){ return &_scaled_microDeformation; }
+
+            const thirdOrderTensor *getScaledGradientMicroDeformation( ){ return &_scaled_gradientMicroDeformation; }
+
             const floatVector *getFlatdXdD( ){
                 /*!
                  * Get the total derivative of the unknown vector w.r.t. the deformation.
@@ -101,6 +105,19 @@ namespace tardigradeHydra{
 
             virtual void decomposeStateVariableVectorMicroConfigurations( );
 
+            virtual void setScaledQuantities( ) override{
+                /*!
+                 * Scale the current values by the scale factor
+                 */
+
+                hydraBase::hydraBase::setScaledQuantities( );
+
+                _scaled_microDeformation = ( *getScaleFactor( ) ) * ( _microDeformation - _previousMicroDeformation ) + _previousMicroDeformation;
+
+                _scaled_gradientMicroDeformation = ( *getScaleFactor( ) ) * ( _gradientMicroDeformation - _previousGradientMicroDeformation ) + _previousGradientMicroDeformation;
+
+            }
+
         private:
 
             secondOrderTensor _microDeformation; //!< The current micro-deformation
@@ -110,6 +127,10 @@ namespace tardigradeHydra{
             thirdOrderTensor  _gradientMicroDeformation; //!< The spatial gradient of the micro-deformation w.r.t. the reference coordinates
 
             thirdOrderTensor  _previousGradientMicroDeformation; //!< The previous spatial gradient of the micro-deformation w.r.t. the reference coordinates
+
+            secondOrderTensor _scaled_microDeformation; //!< The current micro-deformation scaled by the scale factor
+
+            thirdOrderTensor  _scaled_gradientMicroDeformation; //!< The spatial gradient of the micro-deformation w.r.t. the reference coordinates scaled by the scale factor
 
             void setFirstMicroConfigurationJacobians( );
 

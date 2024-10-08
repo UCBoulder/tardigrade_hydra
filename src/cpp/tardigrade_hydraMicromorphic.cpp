@@ -57,6 +57,8 @@ namespace tardigradeHydra{
          * \param &lsAlpha: The alpha term for the line search (defaults to 1e-4)
          */
 
+        setScaledQuantities( );
+
         decomposeStateVariableVectorMicroConfigurations( );
 
     }

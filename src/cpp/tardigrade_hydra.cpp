@@ -85,6 +85,9 @@ namespace tardigradeHydra{
          *     0. A diagonal pre-conditioner populate by the inverse of the absolute largest entries of the Jacobian's rows
          */
 
+        // Initialize the scaled-quantities
+        setScaledQuantities( );
+
         // Decompose the state variable vector initializing all of the configurations
         decomposeStateVariableVector( );
 
