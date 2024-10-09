@@ -2095,9 +2095,11 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::evaluate( ){
+    void hydraBase::evaluate( const bool &use_subcycler ){
         /*!
          * Solver the non-linear problem and update the variables
+         * 
+         * \param &use_subcycler: Flag for if the subcycler should be used for difficult analyses (defaults to false)
          */
 
         try{
@@ -2108,6 +2110,12 @@ namespace tardigradeHydra{
 
         }
         catch( std::exception &e ){
+
+            if ( !use_subcycler ){
+
+                throw;
+
+            }
 
             floatType sp = 0.0;
 

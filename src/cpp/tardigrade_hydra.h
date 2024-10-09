@@ -1413,7 +1413,7 @@ namespace tardigradeHydra{
 
             const floatVector* getPreviousStress( );
 
-            virtual void evaluate( );
+            virtual void evaluate( const bool &use_subcycler = false );
 
             virtual void computeTangents( );
 
