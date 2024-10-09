@@ -2034,9 +2034,143 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::setScaledQuantities( ){
+        /*!
+         * Set the scaled quantities
+         */
+
+        _scaled_time = ( _scale_factor - 1 ) * _deltaTime + _time;
+
+        _scaled_deltaTime = _scale_factor * _deltaTime;
+
+        _scaled_temperature = _scale_factor * ( _temperature - _previousTemperature ) + _previousTemperature;
+
+        _scaled_deformationGradient = _scale_factor * ( _deformationGradient - _previousDeformationGradient ) + _previousDeformationGradient;
+
+        _scaled_additionalDOF = _scale_factor * ( _additionalDOF - _previousAdditionalDOF ) + _previousAdditionalDOF;
+
+    }
+
+    void hydraBase::setScaleFactor( const floatType &value ){
+        /*!
+         * Set the value of the scale factor. Will automatically re-calculate the deformation and trial stresses
+         * 
+         * \param &value: The value of the scale factor
+         */
+
+        // Update the scale factor
+        _scale_factor = value;
+
+        // Update the scaled quantities
+        setScaledQuantities( );
+
+        // Copy the unknown vector
+        floatVector unknownVector = *getUnknownVector( );
+
+        // Reset the iteration data
+        resetIterationData( );
+
+        // Copy over the updated stress
+        std::copy( getStress( )->begin( ), getStress( )->end( ), unknownVector.begin( ) );
+
+        // Update the unknown vector
+        updateUnknownVector( unknownVector );
+
+    }
+
+    const bool hydraBase::allowStepGrowth( const unsigned int &num_good ){
+        /*!
+         * Function to determine if we can increase the step-size for the sub-cycler
+         * 
+         * \param &num_good: The number of good increments since the last failure
+         */
+
+        if ( num_good >= ( *getNumGoodControl( ) ) ){
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
     void hydraBase::evaluate( ){
         /*!
-         * Solve the non-linear problem and update the variables
+         * Solver the non-linear problem and update the variables
+         */
+
+        try{
+
+            evaluateInternal( );
+
+            return;
+
+        }
+        catch( std::exception &e ){
+
+            floatType sp = 0.0;
+
+            floatType ds = ( *getCutbackFactor( ) );
+
+            unsigned int num_good = 0;
+
+            // Set the unknown vector to the initial unknown. We're using setX because we call setScaleFactor right away which will update the unknown vector
+            setX( _initialX );
+
+            while ( sp < 1.0 ){
+
+                try{
+
+                    setScaleFactor( sp + ds ); // Update the scaling factor
+
+                    evaluateInternal( ); // Try to solve the non-linear problem
+
+                    sp += ds; // Update the pseudo-time
+
+                    num_good++; // Update the number of good iterations
+
+                    // Grow the step if possible
+                    if ( allowStepGrowth( num_good ) ){
+
+                        ds *= ( *getGrowthFactor( ) );
+
+                    }
+
+                    // Make sure s will be less than or equal to 1
+                    if ( sp + ds > 1.0 ){
+
+                        ds = 1.0 - sp;
+
+                    }
+
+                }
+                catch( std::exception &e ){
+
+                    // Reduce the time-step and try again
+                    num_good = 0;
+
+                    ds *= ( *getCutbackFactor( ) );
+
+                    setX( _initialX ); // Reset X to the last good point
+
+                    if ( ds < *getMinDS( ) ){
+
+                        throw;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    void hydraBase::evaluateInternal( ){
+        /*!
+         * Solve the non-linear problem with the current scaling and update the variables
          */
 
         // Reset the counters for the number of steps being performed
