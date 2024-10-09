@@ -105,18 +105,7 @@ namespace tardigradeHydra{
 
             virtual void decomposeStateVariableVectorMicroConfigurations( );
 
-            virtual void setScaledQuantities( ) override{
-                /*!
-                 * Scale the current values by the scale factor
-                 */
-
-                hydraBase::hydraBase::setScaledQuantities( );
-
-                _scaled_microDeformation = ( *getScaleFactor( ) ) * ( _microDeformation - _previousMicroDeformation ) + _previousMicroDeformation;
-
-                _scaled_gradientMicroDeformation = ( *getScaleFactor( ) ) * ( _gradientMicroDeformation - _previousGradientMicroDeformation ) + _previousGradientMicroDeformation;
-
-            }
+            virtual void setScaledQuantities( ) override;
 
         private:
 

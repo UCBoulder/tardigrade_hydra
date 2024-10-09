@@ -63,6 +63,19 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBaseMicromorphic::setScaledQuantities( ){
+        /*!
+         * Scale the current values by the scale factor
+         */
+
+        hydraBase::hydraBase::setScaledQuantities( );
+
+        _scaled_microDeformation = ( *getScaleFactor( ) ) * ( _microDeformation - _previousMicroDeformation ) + _previousMicroDeformation;
+
+        _scaled_gradientMicroDeformation = ( *getScaleFactor( ) ) * ( _gradientMicroDeformation - _previousGradientMicroDeformation ) + _previousGradientMicroDeformation;
+
+    }
+
     void hydraBaseMicromorphic::initializeUnknownVector( ){
         /*!
          * Initialize the unknown vector for the non-linear solve.
