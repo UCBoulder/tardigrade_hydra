@@ -224,15 +224,12 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::decomposeUnknownVector( ){
+    void hydraBase::updateConfigurationsFromUnknownVector( ){
         /*!
-         * Decompose the unknown vector into the cauchy stress, configurations, and state variables used for the non-linear solve
+         * Update the configurations from the unknown vector
          */
 
         const floatVector *unknownVector = getUnknownVector( );
-
-        // Set the stress
-        extractStress( );
 
         // Set the configurations
         auto configurations = get_setDataStorage_configurations( );
@@ -251,6 +248,18 @@ namespace tardigradeHydra{
         std::copy( std::begin( *unknownVector ) + ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ),
                    std::end(   *unknownVector ),
                    std::begin( *nonLinearSolveStateVariables.value ) );
+
+    }
+
+    void hydraBase::decomposeUnknownVector( ){
+        /*!
+         * Decompose the unknown vector into the cauchy stress, configurations, and state variables used for the non-linear solve
+         */
+
+        // Set the stress
+        extractStress( );
+
+        updateConfigurationsFromUnknownVector( );
 
     }
 
@@ -2064,17 +2073,26 @@ namespace tardigradeHydra{
         // Update the scaled quantities
         setScaledQuantities( );
 
-        // Copy the unknown vector
+        // Copy the current unknown vector
         floatVector unknownVector = *getUnknownVector( );
 
         // Reset the iteration data
         resetIterationData( );
 
-        // Copy over the updated stress
+        // Set the unknown vector
+        setX( unknownVector );
+
+        // Update the deformation quantities
+        updateConfigurationsFromUnknownVector( );
+
+        // Compute the new trial stress
         std::copy( getStress( )->begin( ), getStress( )->end( ), unknownVector.begin( ) );
 
-        // Update the unknown vector
-        updateUnknownVector( unknownVector );
+        // Re-set the unknown vector
+        setX( unknownVector );
+
+        // Extract the stress
+        extractStress( );
 
     }
 

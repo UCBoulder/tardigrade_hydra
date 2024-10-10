@@ -192,38 +192,49 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBaseMicromorphic::decomposeUnknownVector( ){
+    void hydraBaseMicromorphic::updateConfigurationsFromUnknownVector( ){
         /*!
          * Decompose the incoming unknown vector setting the different configurations along the way
-         * 
-         * The state variable vector is assumed to be of the form:
-         * 
-         * \f$ \text{ISV} = \left\{\bf{S}^2, \bf{\Sigma}, \bf{M}, \bf{F}^2, \bf{F}^3, \cdots, \bf{F}^n, \bf{\chi}^2, \bf{\chi}^3, \cdots, \bf{\chi}^n \frac{\partial}{\partial \bf{X}} \bf{\chi}^2, \frac{\partial}{\partial \bf{X}} \bf{\chi}^3, \cdots, \frac{\partial}{\partial \bf{X}} \bf{\chi}^n, \xi^1, \xi^2, \cdots, \xi^m\right\} \f$
-         * 
-         * where \f$\bf{S}^2\f$ is the second Piola Kirchhoff stress, \f$\bf{\Sigma}\f$ is the reference symmetric micro stress, and \f$\bf{M}\f$
-         * is the reference higher order stress the \f$\bf{F}\f$ are the different deformation gradients (configurations), \f$\bf{\chi}\f$ are the micro-deformations,
-         * \f$\xi^y\f$ are the other variables to be solved during the non-linear solve, and \f$\eta^z\f$ are other state variables. Note
-         * that we decompose the deformation gradient and micro-deformation as
-         * 
-         * \f$\bf{F} = \bf{F}^1 \bf{F}^2 \cdots \bf{F}^n\f$
-         * 
-         * \f$\bf{\chi} = \bf{\chi}^1 \bf{\chi}^2 \cdots \bf{\chi}^n\f$
-         * 
-         * and so because \f$\bf{F}\f$ and \f$\bf{\chi}\f$ are provided we can solve for \f$\bf{F}^1\f$ and \f$\bf{\chi}\f$. Typically,
-         * this configuration would be the elastic configuration (i.e., the configuration that generates the stress) though we do not insist that users follow convention.
-         * 
-         * NOTE: Though we overload the decomposeStateVariableVector in hydraBase this function will not be called in hydraBase's constructor because
-         *       virtual functions do not come into being during the construction of parent classes constructors. We could work around this but instead
-         *       we will overload and define a local method to do the decomposition of the micro-deformation tensors.
          */
 
-        // Call the parent class decomposition
-        hydraBase::decomposeUnknownVector( );
+        hydraBase::updateConfigurationsFromUnknownVector( );
 
-        // Decompose the micro-deformation
         decomposeUnknownVectorMicroConfigurations( );
 
     }
+
+//    void hydraBaseMicromorphic::decomposeUnknownVector( ){
+//        /*!
+//         * Decompose the incoming unknown vector setting the different configurations along the way
+//         * 
+//         * The state variable vector is assumed to be of the form:
+//         * 
+//         * \f$ \text{ISV} = \left\{\bf{S}^2, \bf{\Sigma}, \bf{M}, \bf{F}^2, \bf{F}^3, \cdots, \bf{F}^n, \bf{\chi}^2, \bf{\chi}^3, \cdots, \bf{\chi}^n \frac{\partial}{\partial \bf{X}} \bf{\chi}^2, \frac{\partial}{\partial \bf{X}} \bf{\chi}^3, \cdots, \frac{\partial}{\partial \bf{X}} \bf{\chi}^n, \xi^1, \xi^2, \cdots, \xi^m\right\} \f$
+//         * 
+//         * where \f$\bf{S}^2\f$ is the second Piola Kirchhoff stress, \f$\bf{\Sigma}\f$ is the reference symmetric micro stress, and \f$\bf{M}\f$
+//         * is the reference higher order stress the \f$\bf{F}\f$ are the different deformation gradients (configurations), \f$\bf{\chi}\f$ are the micro-deformations,
+//         * \f$\xi^y\f$ are the other variables to be solved during the non-linear solve, and \f$\eta^z\f$ are other state variables. Note
+//         * that we decompose the deformation gradient and micro-deformation as
+//         * 
+//         * \f$\bf{F} = \bf{F}^1 \bf{F}^2 \cdots \bf{F}^n\f$
+//         * 
+//         * \f$\bf{\chi} = \bf{\chi}^1 \bf{\chi}^2 \cdots \bf{\chi}^n\f$
+//         * 
+//         * and so because \f$\bf{F}\f$ and \f$\bf{\chi}\f$ are provided we can solve for \f$\bf{F}^1\f$ and \f$\bf{\chi}\f$. Typically,
+//         * this configuration would be the elastic configuration (i.e., the configuration that generates the stress) though we do not insist that users follow convention.
+//         * 
+//         * NOTE: Though we overload the decomposeStateVariableVector in hydraBase this function will not be called in hydraBase's constructor because
+//         *       virtual functions do not come into being during the construction of parent classes constructors. We could work around this but instead
+//         *       we will overload and define a local method to do the decomposition of the micro-deformation tensors.
+//         */
+//
+//        // Call the parent class decomposition
+//        hydraBase::decomposeUnknownVector( );
+//
+//        // Decompose the micro-deformation
+//        decomposeUnknownVectorMicroConfigurations( );
+//
+//    }
 
     void hydraBaseMicromorphic::computeGradientMicroConfigurations( const floatVector *data_vector, unsigned int start_index,
                                                                     const floatVector &configurations,             const floatVector &microConfigurations,

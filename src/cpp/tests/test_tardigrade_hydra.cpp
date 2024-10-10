@@ -6387,6 +6387,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
             unsigned int num_updateUnknownVectorCalls = 0;
 
+            unsigned int num_updateConfigurationsFromUnknownVectorCalls = 0;
+
             std::vector< unsigned int > fail_indices = { 0, 1, 3 };
 
             residualBaseMockStress r1;
@@ -6450,6 +6452,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
             virtual void updateUnknownVector( const floatVector &newX ) override{
                 tardigradeHydra::hydraBase::updateUnknownVector( newX );
                 num_updateUnknownVectorCalls++;
+            }
+
+            virtual void updateConfigurationsFromUnknownVector( ) override{
+                tardigradeHydra::hydraBase::updateConfigurationsFromUnknownVector( );
+                num_updateConfigurationsFromUnknownVectorCalls++;
             }
 
             virtual void evaluateInternal( ) override{
@@ -6528,7 +6535,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
     BOOST_TEST( hydra.num_evaluateInternalCalls == 9 );
 
-    BOOST_TEST( hydra.num_updateUnknownVectorCalls == 8 );
+    BOOST_TEST( hydra.num_updateUnknownVectorCalls == 0 );
+
+    BOOST_TEST( hydra.num_updateConfigurationsFromUnknownVectorCalls == 8 );
 
 }
 

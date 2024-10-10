@@ -97,7 +97,9 @@ namespace tardigradeHydra{
             //Utility functions
             virtual void initializeUnknownVector( ) override;
 
-            virtual void decomposeUnknownVector( ) override;
+            virtual void updateConfigurationsFromUnknownVector( ) override;
+
+//            virtual void decomposeUnknownVector( ) override;
 
             virtual void decomposeUnknownVectorMicroConfigurations( );
 

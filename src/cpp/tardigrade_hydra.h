@@ -1539,6 +1539,8 @@ namespace tardigradeHydra{
 
             virtual void extractStress( );
 
+            virtual void updateConfigurationsFromUnknownVector( );
+
             virtual void decomposeUnknownVector( );
 
             virtual void decomposeStateVariableVector( );
