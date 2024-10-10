@@ -2136,6 +2136,14 @@ namespace tardigradeHydra{
 
             }
 
+            if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                addToFailureOutput( "\n\n" );
+                addToFailureOutput( "#########################################\n" );
+                addToFailureOutput( "###        ENTERING SUB-CYCLER        ###\n" );
+                addToFailureOutput( "#########################################\n" );
+                addToFailureOutput( "\n\n" );
+            }
+
             floatType sp = 0.0;
 
             floatType ds = ( *getCutbackFactor( ) );
@@ -2148,6 +2156,13 @@ namespace tardigradeHydra{
             while ( sp < 1.0 ){
 
                 try{
+
+                    if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                        addToFailureOutput( "\n\n" );
+                        addToFailureOutput( "######### PSEUDO-TIME INCREMENT #########\n" );
+                        addToFailureOutput( "\n\n    sp, ds: " + std::to_string( sp ) + ", " + std::to_string( ds ) );
+                        addToFailureOutput( "\n" );
+                    }
 
                     setScaleFactor( sp + ds ); // Update the scaling factor
 
