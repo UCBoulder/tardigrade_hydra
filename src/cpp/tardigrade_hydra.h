@@ -1080,6 +1080,9 @@ namespace tardigradeHydra{
             //! Get a reference to the number of unknowns in each configuration
             const unsigned int* getConfigurationUnknownCount( ){ return &_configuration_unknown_count; }
 
+            //! Get a reference to the number of components of the stress
+            const unsigned int* getStressSize( ){ return &_stress_size; }
+
             //! Get a reference to the current time
             const floatType* getTime( ){ return getScaledTime( ); }
 
@@ -1413,7 +1416,7 @@ namespace tardigradeHydra{
 
             const floatVector* getPreviousStress( );
 
-            virtual void evaluate( );
+            virtual void evaluate( const bool &use_subcycler = false );
 
             virtual void computeTangents( );
 
@@ -1494,8 +1497,8 @@ namespace tardigradeHydra{
             //! Get a scale factor for the deformation
             const floatType *getScaleFactor( ){ return &_scale_factor; }
 
-            //! Set the value of the scale factor. Will automatically re-calculate the deformation
-            const void setScaleFactor( const floatType &value ){ _scale_factor = value; setScaledQuantities( ); updateUnknownVector( *getUnknownVector( ) ); }
+            //! Set the value of the scale factor. Will automatically re-calculate the deformation and trial stresses
+            void setScaleFactor( const floatType &value );
 
             const floatType   *getScaledTime( ){ return &_scaled_time; }
 
@@ -1506,6 +1509,24 @@ namespace tardigradeHydra{
             const floatVector *getScaledDeformationGradient( ){ return &_scaled_deformationGradient; }
 
             const floatVector *getScaledAdditionalDOF( ){ return &_scaled_additionalDOF; }
+
+            const floatType *getCutbackFactor( ){ return &_cutback_factor; }
+
+            const unsigned int *getNumGoodControl( ){ return &_num_good_control; }
+
+            const floatType *getGrowthFactor( ){ return &_growth_factor; }
+
+            const floatType *getMinDS( ){ return &_minDS; }
+
+            void setCutbackFactor( const floatType &value ){ _cutback_factor = value; }
+
+            void setNumGoodControl( const unsigned int &value ){ _num_good_control = value; }
+
+            void setGrowthFactor( const floatType &value ){ _growth_factor = value; }
+
+            void setMinDS( const floatType &value ){ _minDS = value; }
+
+            const bool allowStepGrowth( const unsigned int &num_good );
 
         protected:
 
@@ -1520,6 +1541,8 @@ namespace tardigradeHydra{
                                                 const bool add_eye=false );
 
             virtual void extractStress( );
+
+            virtual void updateConfigurationsFromUnknownVector( );
 
             virtual void decomposeUnknownVector( );
 
@@ -1541,6 +1564,8 @@ namespace tardigradeHydra{
 
             virtual void initializePreconditioner( );
 
+            virtual void evaluateInternal( );
+
             //! Update the line-search lambda parameter
             virtual void updateLambda( ){ _lambda *= 0.5; }
 
@@ -1553,19 +1578,7 @@ namespace tardigradeHydra{
             virtual void performGradientStep( const floatVector &X0 );
 
             //! Update the scaled quantities
-            virtual void setScaledQuantities( ){
-
-                _scaled_time = ( _scale_factor - 1 ) * _deltaTime + _time;
-
-                _scaled_deltaTime = _scale_factor * _deltaTime;
-
-                _scaled_temperature = _scale_factor * ( _temperature - _previousTemperature ) + _previousTemperature;
-
-                _scaled_deformationGradient = _scale_factor * ( _deformationGradient - _previousDeformationGradient ) + _previousDeformationGradient;
-
-                _scaled_additionalDOF = _scale_factor * ( _additionalDOF - _previousAdditionalDOF ) + _previousAdditionalDOF;
-
-            }
+            virtual void setScaledQuantities( );
 
             const floatType *get_baseResidualNorm( );
 
@@ -1776,6 +1789,8 @@ namespace tardigradeHydra{
 
             unsigned int _configuration_unknown_count; //!< The number of unknowns required for a configuration. Used to ensure that the unknown and state variable vectors are the right size. Must be set by all inheriting classes. For 3D classical continuum this will be 9, for higher order theories this will change.
 
+            unsigned int _stress_size; //!< The number of terms in the stress measures. For 3D classical continuum this will be 9, for higher order theories this will change.
+
             floatType _time; //!< The current time
 
             floatType _deltaTime; //!< The change in time
@@ -1947,6 +1962,14 @@ namespace tardigradeHydra{
             std::stringstream _failure_output; //!< Additional failure output information
 
             floatType _scale_factor = 1.0; //!< A scale factor applied to the incoming loading (deformation, temperature, etc.)
+
+            floatType _cutback_factor = 0.5; //!< The factor by which the pseudo-time will be scaled if a solve fails
+
+            floatType _growth_factor  = 1.2; //!< The factor by which the pseudo-time will be scaled if we can grow the pseudo-timestep
+
+            unsigned int _num_good_control = 2; //!< The number of good iterations we need to have before we try and increase the timestep
+
+            floatType _minDS = 1e-2; //!< The minimum allowable pseudo-timestep
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 

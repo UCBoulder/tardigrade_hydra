@@ -44,6 +44,7 @@ namespace tardigradeHydra{
                           const unsigned int maxLSIterations, const floatType lsAlpha,
                           const bool use_preconditioner, const unsigned int preconditioner_type ) : _dimension( dimension ),
                                                            _configuration_unknown_count( configuration_unknown_count ),
+                                                           _stress_size( configuration_unknown_count ),
                                                            _time( time ), _deltaTime( deltaTime ),
                                                            _temperature( temperature ), _previousTemperature( previousTemperature ),
                                                            _deformationGradient( deformationGradient ),
@@ -224,22 +225,19 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::decomposeUnknownVector( ){
+    void hydraBase::updateConfigurationsFromUnknownVector( ){
         /*!
-         * Decompose the unknown vector into the cauchy stress, configurations, and state variables used for the non-linear solve
+         * Update the configurations from the unknown vector
          */
 
         const floatVector *unknownVector = getUnknownVector( );
-
-        // Set the stress
-        extractStress( );
 
         // Set the configurations
         auto configurations = get_setDataStorage_configurations( );
 
         auto inverseConfigurations = get_setDataStorage_inverseConfigurations( );
 
-        computeConfigurations( unknownVector, getStress( )->size( ), *getDeformationGradient( ), *configurations.value, *inverseConfigurations.value );
+        computeConfigurations( unknownVector, *getStressSize( ), *getDeformationGradient( ), *configurations.value, *inverseConfigurations.value );
 
         // Extract the remaining state variables required for the non-linear solve
         auto nonLinearSolveStateVariables = get_setDataStorage_nonLinearSolveStateVariables( );
@@ -251,6 +249,18 @@ namespace tardigradeHydra{
         std::copy( std::begin( *unknownVector ) + ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ),
                    std::end(   *unknownVector ),
                    std::begin( *nonLinearSolveStateVariables.value ) );
+
+    }
+
+    void hydraBase::decomposeUnknownVector( ){
+        /*!
+         * Decompose the unknown vector into the cauchy stress, configurations, and state variables used for the non-linear solve
+         */
+
+        // Set the stress
+        extractStress( );
+
+        updateConfigurationsFromUnknownVector( );
 
     }
 
@@ -2034,9 +2044,177 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::evaluate( ){
+    void hydraBase::setScaledQuantities( ){
         /*!
-         * Solve the non-linear problem and update the variables
+         * Set the scaled quantities
+         */
+
+        _scaled_time = ( _scale_factor - 1 ) * _deltaTime + _time;
+
+        _scaled_deltaTime = _scale_factor * _deltaTime;
+
+        _scaled_temperature = _scale_factor * ( _temperature - _previousTemperature ) + _previousTemperature;
+
+        _scaled_deformationGradient = _scale_factor * ( _deformationGradient - _previousDeformationGradient ) + _previousDeformationGradient;
+
+        _scaled_additionalDOF = _scale_factor * ( _additionalDOF - _previousAdditionalDOF ) + _previousAdditionalDOF;
+
+    }
+
+    void hydraBase::setScaleFactor( const floatType &value ){
+        /*!
+         * Set the value of the scale factor. Will automatically re-calculate the deformation and trial stresses
+         * 
+         * \param &value: The value of the scale factor
+         */
+
+        // Update the scale factor
+        _scale_factor = value;
+
+        // Update the scaled quantities
+        setScaledQuantities( );
+
+        // Copy the current unknown vector
+        floatVector unknownVector = *getUnknownVector( );
+
+        // Reset the iteration data
+        resetIterationData( );
+
+        // Set the unknown vector
+        setX( unknownVector );
+
+        // Update the deformation quantities
+        updateConfigurationsFromUnknownVector( );
+
+        // Compute the new trial stress
+        std::copy( getStress( )->begin( ), getStress( )->end( ), unknownVector.begin( ) );
+
+        // Re-set the unknown vector
+        setX( unknownVector );
+
+        // Extract the stress
+        extractStress( );
+
+    }
+
+    const bool hydraBase::allowStepGrowth( const unsigned int &num_good ){
+        /*!
+         * Function to determine if we can increase the step-size for the sub-cycler
+         * 
+         * \param &num_good: The number of good increments since the last failure
+         */
+
+        if ( num_good >= ( *getNumGoodControl( ) ) ){
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
+    void hydraBase::evaluate( const bool &use_subcycler ){
+        /*!
+         * Solver the non-linear problem and update the variables
+         * 
+         * \param &use_subcycler: Flag for if the subcycler should be used for difficult analyses (defaults to false)
+         */
+
+        try{
+
+            evaluateInternal( );
+
+            return;
+
+        }
+        catch( std::exception &e ){
+
+            if ( !use_subcycler ){
+
+                throw;
+
+            }
+
+            if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                addToFailureOutput( "\n\n" );
+                addToFailureOutput( "#########################################\n" );
+                addToFailureOutput( "###        ENTERING SUB-CYCLER        ###\n" );
+                addToFailureOutput( "#########################################\n" );
+                addToFailureOutput( "\n\n" );
+            }
+
+            floatType sp = 0.0;
+
+            floatType ds = ( *getCutbackFactor( ) );
+
+            unsigned int num_good = 0;
+
+            // Set the unknown vector to the initial unknown. We're using setX because we call setScaleFactor right away which will update the unknown vector
+            setX( _initialX );
+
+            while ( sp < 1.0 ){
+
+                try{
+
+                    if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                        addToFailureOutput( "\n\n" );
+                        addToFailureOutput( "######### PSEUDO-TIME INCREMENT #########\n" );
+                        addToFailureOutput( "\n\n    sp, ds: " + std::to_string( sp ) + ", " + std::to_string( ds ) );
+                        addToFailureOutput( "\n" );
+                    }
+
+                    setScaleFactor( sp + ds ); // Update the scaling factor
+
+                    resetIterations( ); // Reset the non-linear iteration count
+
+                    evaluateInternal( ); // Try to solve the non-linear problem
+
+                    sp += ds; // Update the pseudo-time
+
+                    num_good++; // Update the number of good iterations
+
+                    // Grow the step if possible
+                    if ( allowStepGrowth( num_good ) ){
+
+                        ds *= ( *getGrowthFactor( ) );
+
+                    }
+
+                    // Make sure s will be less than or equal to 1
+                    if ( sp + ds > 1.0 ){
+
+                        ds = 1.0 - sp;
+
+                    }
+
+                }
+                catch( std::exception &e ){
+
+                    // Reduce the time-step and try again
+                    num_good = 0;
+
+                    ds *= ( *getCutbackFactor( ) );
+
+                    setX( _initialX ); // Reset X to the last good point
+
+                    if ( ds < *getMinDS( ) ){
+
+                        throw;
+
+                    }
+
+                }
+
+            }
+
+        }
+
+    }
+
+    void hydraBase::evaluateInternal( ){
+        /*!
+         * Solve the non-linear problem with the current scaling and update the variables
          */
 
         // Reset the counters for the number of steps being performed

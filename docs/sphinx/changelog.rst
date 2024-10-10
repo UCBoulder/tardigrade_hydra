@@ -20,6 +20,7 @@ New Features
 - Added a relaxed solver as the default (:pull:`172`). By `Nathan Miller`_.
 - Added ability to turn on additional messages for failed solves (:pull:`177`). By `Nathan Miller`_.
 - Added the ability to scale the incoming load information by a scale factor (:pull:`178`). By `Nathan Miller`_.
+- Added the ability to sub-cycle the analysis to try and improve convergence (:pull:`179`). By `Nathan Miller`_.
 
 Internal Changes
 ================
