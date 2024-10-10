@@ -44,6 +44,7 @@ namespace tardigradeHydra{
                           const unsigned int maxLSIterations, const floatType lsAlpha,
                           const bool use_preconditioner, const unsigned int preconditioner_type ) : _dimension( dimension ),
                                                            _configuration_unknown_count( configuration_unknown_count ),
+                                                           _stress_size( configuration_unknown_count ),
                                                            _time( time ), _deltaTime( deltaTime ),
                                                            _temperature( temperature ), _previousTemperature( previousTemperature ),
                                                            _deformationGradient( deformationGradient ),
@@ -236,7 +237,7 @@ namespace tardigradeHydra{
 
         auto inverseConfigurations = get_setDataStorage_inverseConfigurations( );
 
-        computeConfigurations( unknownVector, getStress( )->size( ), *getDeformationGradient( ), *configurations.value, *inverseConfigurations.value );
+        computeConfigurations( unknownVector, *getStressSize( ), *getDeformationGradient( ), *configurations.value, *inverseConfigurations.value );
 
         // Extract the remaining state variables required for the non-linear solve
         auto nonLinearSolveStateVariables = get_setDataStorage_nonLinearSolveStateVariables( );

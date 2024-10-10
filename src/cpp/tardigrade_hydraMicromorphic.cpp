@@ -269,7 +269,7 @@ namespace tardigradeHydra{
         const unsigned int sot_dim = getSOTDimension( );
         const unsigned int num_configs = *getNumConfigurations( );
 
-        unsigned int start_index = getStress( )->size( ) + ( num_configs - 1 ) * sot_dim;
+        unsigned int start_index = ( *getStressSize( ) ) + ( num_configs - 1 ) * sot_dim;
 
         auto microConfigurations         = get_setDataStorage_microConfigurations( );
 

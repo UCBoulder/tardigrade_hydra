@@ -1080,6 +1080,9 @@ namespace tardigradeHydra{
             //! Get a reference to the number of unknowns in each configuration
             const unsigned int* getConfigurationUnknownCount( ){ return &_configuration_unknown_count; }
 
+            //! Get a reference to the number of components of the stress
+            const unsigned int* getStressSize( ){ return &_stress_size; }
+
             //! Get a reference to the current time
             const floatType* getTime( ){ return getScaledTime( ); }
 
@@ -1785,6 +1788,8 @@ namespace tardigradeHydra{
             unsigned int _dimension; //!< The spatial dimension of the problem
 
             unsigned int _configuration_unknown_count; //!< The number of unknowns required for a configuration. Used to ensure that the unknown and state variable vectors are the right size. Must be set by all inheriting classes. For 3D classical continuum this will be 9, for higher order theories this will change.
+
+            unsigned int _stress_size; //!< The number of terms in the stress measures. For 3D classical continuum this will be 9, for higher order theories this will change.
 
             floatType _time; //!< The current time
 
