@@ -2151,6 +2151,8 @@ namespace tardigradeHydra{
 
                     setScaleFactor( sp + ds ); // Update the scaling factor
 
+                    resetIterations( ); // Reset the non-linear iteration count
+
                     evaluateInternal( ); // Try to solve the non-linear problem
 
                     sp += ds; // Update the pseudo-time
