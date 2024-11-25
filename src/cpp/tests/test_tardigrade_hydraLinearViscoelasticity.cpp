@@ -982,9 +982,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2MeanStress, * boost::unit_test::tolera
     floatVector previousPK2MeanStressAnswer;
     floatVector previousUpdatedISVsAnswer;
 
-    BOOST_CHECK( !tardigradeStressTools::linearViscoelasticity(  1.1, {  0.1 }, -1.1, { -0.2 }, currentRateModifier, previousRateModifier, ISVs, params, 0.5, PK2MeanStressAnswer, updatedISVsAnswer ) );
+    tardigradeStressTools::linearViscoelasticity(  1.1, {  0.1 }, -1.1, { -0.2 }, currentRateModifier, previousRateModifier, ISVs, params, 0.5, PK2MeanStressAnswer, updatedISVsAnswer );
 
-    BOOST_CHECK( !tardigradeStressTools::linearViscoelasticity( -1.1, { -0.2 }, -1.1, { -0.2 }, previousRateModifier, previousRateModifier, ISVs, params, 0.5, previousPK2MeanStressAnswer, previousUpdatedISVsAnswer ) );
+    tardigradeStressTools::linearViscoelasticity( -1.1, { -0.2 }, -1.1, { -0.2 }, previousRateModifier, previousRateModifier, ISVs, params, 0.5, previousPK2MeanStressAnswer, previousUpdatedISVsAnswer );
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          { }, { },
@@ -1333,10 +1333,10 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStress, * boost::unit_test::t
     unsigned int ISVub = 31;
 
     floatVector strain;
-    BOOST_CHECK( !tardigradeConstitutiveTools::computeGreenLagrangeStrain( deformationGradient / std::pow( 1.1, 1/3.), strain ) );
+    tardigradeConstitutiveTools::computeGreenLagrangeStrain( deformationGradient / std::pow( 1.1, 1/3.), strain );
 
     floatVector previousStrain;
-    BOOST_CHECK( !tardigradeConstitutiveTools::computeGreenLagrangeStrain( previousDeformationGradient, previousStrain ) );
+    tardigradeConstitutiveTools::computeGreenLagrangeStrain( previousDeformationGradient, previousStrain );
 
     floatType currentRateModifier;
     tardigradeConstitutiveTools::WLF( temperature, { parameters[ 7 ], parameters[ 8 ], 293.15 }, currentRateModifier );
@@ -1354,9 +1354,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2IsochoricStress, * boost::unit_test::t
     floatVector previousPK2IsochoricStressAnswer;
     floatVector previousUpdatedISVsAnswer;
 
-    BOOST_CHECK( !tardigradeStressTools::linearViscoelasticity(  1.1,         strain, -1.1, previousStrain,  currentRateModifier, previousRateModifier, ISVs, params, 0.5,        PK2IsochoricStressAnswer, updatedISVsAnswer ) );
+    tardigradeStressTools::linearViscoelasticity(  1.1,         strain, -1.1, previousStrain,  currentRateModifier, previousRateModifier, ISVs, params, 0.5,        PK2IsochoricStressAnswer, updatedISVsAnswer );
 
-    BOOST_CHECK( !tardigradeStressTools::linearViscoelasticity( -1.1, previousStrain, -1.1, previousStrain, previousRateModifier, previousRateModifier, ISVs, params, 0.5, previousPK2IsochoricStressAnswer, previousUpdatedISVsAnswer ) );
+    tardigradeStressTools::linearViscoelasticity( -1.1, previousStrain, -1.1, previousStrain, previousRateModifier, previousRateModifier, ISVs, params, 0.5, previousPK2IsochoricStressAnswer, previousUpdatedISVsAnswer );
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          { }, { },
