@@ -56,8 +56,6 @@ namespace tardigradeHydra{
         const std::string __BASENAME__ = file_name(__FILE__);  //!< The base filename which will be parsed
         const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
 
-        typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
-        typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
         typedef double floatType; //!< Define the float values type.
         typedef std::vector< floatType > floatVector; //!< Define a vector of floats
         typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
@@ -73,49 +71,49 @@ namespace tardigradeHydra{
         typedef std::vector< constantType > constantVector; //!< Define a vector of constants
         typedef std::vector< std::vector< constantType > > constantMatrix; //!< Define a matrix of constants
 
-        errorOut linearElasticity( const variableVector &deformationGradient, const variableVector &microDeformation,
-                                   const variableVector &gradientMicroDeformation,
-                                   const parameterVector &A, const parameterVector &B, const parameterVector &C,
-                                   const parameterVector &D,
-                                   variableVector &cauchyStress, variableVector &microStress,
-                                   variableVector &higherOrderStress );
+        void linearElasticity( const variableVector &deformationGradient, const variableVector &microDeformation,
+                               const variableVector &gradientMicroDeformation,
+                               const parameterVector &A, const parameterVector &B, const parameterVector &C,
+                               const parameterVector &D,
+                               variableVector &cauchyStress, variableVector &microStress,
+                               variableVector &higherOrderStress );
     
-        errorOut linearElasticity( const variableVector &deformationGradient, const variableVector &microDeformation,
-                                   const variableVector &gradientMicroDeformation,
-                                   const parameterVector &A, const parameterVector &B, const parameterVector &C,
-                                   const parameterVector &D,
-                                   variableVector &cauchyStress, variableVector &microStress,
-                                   variableVector &higherOrderStress,
-                                   variableVector &dCauchyStressdF, variableVector &dCauchyStressdChi, variableVector &dCauchyStressdGradChi,
-                                   variableVector &dMicroStressdF, variableVector &dMicroStressdChi, variableVector &dMicroStressdGradChi,
-                                   variableVector &dHigherOrderStressdF, variableVector &dHigherOrderStressdChi,
-                                   variableVector &dHigherOrderStressdGradChi );
+        void linearElasticity( const variableVector &deformationGradient, const variableVector &microDeformation,
+                               const variableVector &gradientMicroDeformation,
+                               const parameterVector &A, const parameterVector &B, const parameterVector &C,
+                               const parameterVector &D,
+                               variableVector &cauchyStress, variableVector &microStress,
+                               variableVector &higherOrderStress,
+                               variableVector &dCauchyStressdF, variableVector &dCauchyStressdChi, variableVector &dCauchyStressdGradChi,
+                               variableVector &dMicroStressdF, variableVector &dMicroStressdChi, variableVector &dMicroStressdGradChi,
+                               variableVector &dHigherOrderStressdF, variableVector &dHigherOrderStressdChi,
+                               variableVector &dHigherOrderStressdGradChi );
 
-        errorOut linearElasticityReference( const variableVector &deformationGradient, const variableVector &microDeformation,
-                                            const variableVector &gradientMicroDeformation,
-                                            const parameterVector &A, const parameterVector &B, const parameterVector &C,
-                                            const parameterVector &D,
-                                            variableVector &PK2Stress, variableVector &referenceMicroStress,
-                                            variableVector &referenceHigherOrderStress );
+        void linearElasticityReference( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                        const variableVector &gradientMicroDeformation,
+                                        const parameterVector &A, const parameterVector &B, const parameterVector &C,
+                                        const parameterVector &D,
+                                        variableVector &PK2Stress, variableVector &referenceMicroStress,
+                                        variableVector &referenceHigherOrderStress );
     
-        errorOut linearElasticityReference( const variableVector &deformationGradient, const variableVector &microDeformation,
-                                            const variableVector &gradientMicroDeformation,
-                                            const parameterVector &A, const parameterVector &B, const parameterVector &C,
-                                            const parameterVector &D,
-                                            variableVector &PK2Stress, variableVector &referenceMicroStress,
-                                            variableVector &referenceHigherOrderStress,
-                                            variableVector &dPK2StressdF, variableVector &dPK2StressdChi, variableVector &dPK2StressdGradChi,
-                                            variableVector &dReferenceMicroStressdF, variableVector &dReferenceMicroStressdChi,
-                                            variableVector &dReferenceMicroStressdGradChi, variableVector &dMdF, variableVector &dMdGradChi );
+        void linearElasticityReference( const variableVector &deformationGradient, const variableVector &microDeformation,
+                                        const variableVector &gradientMicroDeformation,
+                                        const parameterVector &A, const parameterVector &B, const parameterVector &C,
+                                        const parameterVector &D,
+                                        variableVector &PK2Stress, variableVector &referenceMicroStress,
+                                        variableVector &referenceHigherOrderStress,
+                                        variableVector &dPK2StressdF, variableVector &dPK2StressdChi, variableVector &dPK2StressdGradChi,
+                                        variableVector &dReferenceMicroStressdF, variableVector &dReferenceMicroStressdChi,
+                                        variableVector &dReferenceMicroStressdGradChi, variableVector &dMdF, variableVector &dMdGradChi );
 
-        errorOut linearElasticityReferenceDerivedMeasures( const variableVector &rightCauchyGreenDeformation, const variableVector &Psi,
+        void linearElasticityReferenceDerivedMeasures( const variableVector &rightCauchyGreenDeformation, const variableVector &Psi,
                                                            const variableVector &Gamma,
                                                            const parameterVector &A, const parameterVector &B, const parameterVector &C,
                                                            const parameterVector &D,
                                                            variableVector &PK2Stress, variableVector &referenceMicroStress,
                                                            variableVector &referenceHigherOrderStress );
     
-        errorOut linearElasticityReferenceDerivedMeasures( const variableVector &rightCauchyGreenDeformation, const variableVector &Psi,
+        void linearElasticityReferenceDerivedMeasures( const variableVector &rightCauchyGreenDeformation, const variableVector &Psi,
                                                            const variableVector &Gamma,
                                                            const parameterVector &A, const parameterVector &B, const parameterVector &C,
                                                            const parameterVector &D,
@@ -128,13 +126,13 @@ namespace tardigradeHydra{
                                                            variableVector &dReferenceMicroStressdGamma,
                                                            variableVector &dMdGamma );
 
-        errorOut mapStressMeasuresToCurrent( const variableVector &deformationGradient, const variableVector &microDeformation,
+        void mapStressMeasuresToCurrent( const variableVector &deformationGradient, const variableVector &microDeformation,
                                              const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                              const variableVector &referenceHigherOrderStress,
                                              variableVector &cauchyStress, variableVector &microStress,
                                              variableVector &higherOrderStress );
     
-        errorOut mapStressMeasuresToCurrent( const variableVector &deformationGradient, const variableVector &microDeformation,
+        void mapStressMeasuresToCurrent( const variableVector &deformationGradient, const variableVector &microDeformation,
                                              const variableVector &PK2Stress, const variableVector &referenceMicroStress,
                                              const variableVector &referenceHigherOrderStress,
                                              variableVector &cauchyStress, variableVector &microStress,
@@ -144,78 +142,78 @@ namespace tardigradeHydra{
                                              variableVector &dHigherOrderStressdF, variableVector &dHigherOrderStressdChi,
                                              variableVector &dHigherOrderStressdReferenceHigherOrderStress );
 
-        errorOut computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
+        void computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
                                              const variableVector &gradientMicroDeformation,
                                              variableVector &rightCauchyGreen, variableVector &Psi, variableVector &Gamma );
     
-        errorOut computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
+        void computeDeformationMeasures( const variableVector &deformationGradient, const variableVector &microDeformation,
                                              const variableVector &gradientMicroDeformation,
                                              variableVector &rightCauchyGreen, variableVector &Psi, variableVector &Gamma,
                                              variableVector &dCdF, variableVector &dPsidF, variableVector &dPsidChi,
                                              variableVector &dGammadF, variableVector &dGammadGradChi );
 
-        errorOut computeLinearElasticTerm1( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+        void computeLinearElasticTerm1( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
                                             const parameterVector &A, const parameterVector &D, variableVector &term1 );
     
-        errorOut computeLinearElasticTerm1( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+        void computeLinearElasticTerm1( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
                                             const parameterVector &A, const parameterVector &D, variableVector &term1,
                                             variableVector &dTerm1dGreenLagrangeStrain, variableVector &dTerm1dMicroStrain );
     
-        errorOut computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+        void computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
                                             const variableVector &incCPsi, const parameterVector &B, const parameterVector &D,
                                             variableVector &term2 );
     
-        errorOut computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
+        void computeLinearElasticTerm2( const variableVector &greenLagrangeStrain, const variableVector &microStrain,
                                             const variableVector &invCPsi, const parameterVector &B, const parameterVector &D,
                                             variableVector &term2, variableVector &dTerm2dGreenLagrangeStrain,
                                             variableVector &dTerm2dMicroStrain, variableVector &dTerm2dInvCPsi );
 
-        errorOut computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
+        void computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
                                                     variableVector &referenceHigherOrderStress );
     
-        errorOut computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
+        void computeReferenceHigherOrderStress( const variableVector &Gamma, const parameterVector &C,
                                                     variableVector &referenceHigherOrderStress,
                                                     variableVector &dHigherOrderStressdGamma );
 
-        errorOut computeLinearElasticTerm3( const variableVector &invCGamma,
+        void computeLinearElasticTerm3( const variableVector &invCGamma,
                                             const variableVector &referenceHigherOrderStress, variableVector &term3 );
     
-        errorOut computeLinearElasticTerm3( const variableVector &invCGamma,
+        void computeLinearElasticTerm3( const variableVector &invCGamma,
                                             const variableVector &referenceHigherOrderStress, variableVector &term3,
                                             variableVector &dTerm3dInvCGamma, variableVector &dTerm3dReferenceHigherOrderStress );
 
-        errorOut computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi );
+        void computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi );
     
-        errorOut computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi,
+        void computeInvRCGPsi( const variableVector &invRCG, const variableVector &Psi, variableVector &invRCGPsi,
                                    variableVector &dInvRCGPsidRGG, variableVector &dInvRCGPsidPsi );
     
-        errorOut computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma );
+        void computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma );
     
-        errorOut computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma,
+        void computeInvRCGGamma( const variableVector &invRCG, const variableVector &Gamma, variableVector &invRCGGamma,
                                      variableVector &dInvRCGGammadRCG, variableVector &dInvRCGGammadGamma );
 
-        errorOut formIsotropicA( const parameterType &lambda, const parameterType &mu, parameterVector &A );
+        void formIsotropicA( const parameterType &lambda, const parameterType &mu, parameterVector &A );
     
-        errorOut formIsotropicB( const parameterType &eta, const parameterType &tau,   const parameterType &kappa,
+        void formIsotropicB( const parameterType &eta, const parameterType &tau,   const parameterType &kappa,
                                  const parameterType &nu,  const parameterType &sigma, parameterVector &B );
     
-        errorOut formIsotropicC( const parameterVector &taus, parameterVector &C );
+        void formIsotropicC( const parameterVector &taus, parameterVector &C );
     
-        errorOut formIsotropicD( const parameterType &tau, const parameterType &sigma, parameterVector &D );
+        void formIsotropicD( const parameterType &tau, const parameterType &sigma, parameterVector &D );
 
-        errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
+        void assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
                                                          const double ( &grad_phi )[ 9 ][ 3 ],
                                                          variableVector &deformationGradient, variableVector &microDeformation,
                                                          variableVector &gradientMicroDeformation );
     
-        errorOut assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
+        void assembleFundamentalDeformationMeasures( const double ( &grad_u )[ 3 ][ 3 ], const double ( &phi )[ 9 ],
                                                          const double ( &grad_phi )[ 9 ][ 3 ],
                                                          variableVector &deformationGradient, variableVector &microDeformation,
                                                          variableVector &gradientMicroDeformation,
                                                          variableVector &dFdGradU, variableVector &dChidPhi,
                                                          variableVector &dGradChidGradPhi );
 
-        errorOut extractMaterialParameters( const std::vector< double > &fparams,
+        void extractMaterialParameters( const std::vector< double > &fparams,
                                             parameterVector &Amatrix, parameterVector &Bmatrix,
                                             parameterVector &Cmatrix, parameterVector &Dmatrix );
 
@@ -236,7 +234,7 @@ namespace tardigradeHydra{
                      */
 
                     // Form the stiffness matrices
-                    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( extractMaterialParameters( parameters, _Amatrix, _Bmatrix, _Cmatrix, _Dmatrix ) );
+                    TARDIGRADE_ERROR_TOOLS_CATCH( extractMaterialParameters( parameters, _Amatrix, _Bmatrix, _Cmatrix, _Dmatrix ) );
 
                 }
 
