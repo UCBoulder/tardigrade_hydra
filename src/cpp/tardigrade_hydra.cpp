@@ -1315,13 +1315,10 @@ namespace tardigradeHydra{
 
     /// Say hello
     /// @param message The message to print
-    errorOut sayHello( std::string message ) {
-        if ( message.compare( "George" ) == 0 ){
-            errorOut result = new errorNode( __func__, "ERROR: George is a wolf in sheep's clothing!");
-            return result;
-        }
+    void sayHello( std::string message ) {
+        TARDIGRADE_ERROR_TOOLS_CHECK( ( message.compare( "George" ) != 0 ), "ERROR: George is a wolf in sheep's clothing!");
         std::cout << "Hello " << message << std::endl;
-        return NULL;
+        return;
     }
 
     const floatVector* hydraBase::getStress( ){
@@ -2915,14 +2912,14 @@ namespace tardigradeHydra{
 
     }
 
-    errorOut dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,
-                                 floatType &SCD,                  floatType &RPL,             floatVector &ddsddt,       floatVector &drplde,       floatType &DRPLDT,
-                                 const floatVector &strain,       const floatVector &dstrain, const floatVector &time,   const floatType &DTIME,    const floatType &TEMP,
-                                 const floatType &DTEMP,          const floatVector &predef,  const floatVector &dpred,  const std::string &cmname, const int &NDI,
-                                 const int &NSHR,                 const int &NTENS,           const int &NSTATV,         const floatVector &props,  const int &NPROPS,
-                                 const floatVector &coords,       const floatMatrix &drot,    floatType &PNEWDT,         const floatType &CELENT,   const floatMatrix &dfgrd0,
-                                 const floatMatrix &dfgrd1,       const int &NOEL,            const int &NPT,            const int &LAYER,          const int &KSPT,
-                                 const std::vector< int > &jstep, const int &KINC ){
+    void dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,
+                             floatType &SCD,                  floatType &RPL,             floatVector &ddsddt,       floatVector &drplde,       floatType &DRPLDT,
+                             const floatVector &strain,       const floatVector &dstrain, const floatVector &time,   const floatType &DTIME,    const floatType &TEMP,
+                             const floatType &DTEMP,          const floatVector &predef,  const floatVector &dpred,  const std::string &cmname, const int &NDI,
+                             const int &NSHR,                 const int &NTENS,           const int &NSTATV,         const floatVector &props,  const int &NPROPS,
+                             const floatVector &coords,       const floatMatrix &drot,    floatType &PNEWDT,         const floatType &CELENT,   const floatMatrix &dfgrd0,
+                             const floatMatrix &dfgrd1,       const int &NOEL,            const int &NPT,            const int &LAYER,          const int &KSPT,
+                             const std::vector< int > &jstep, const int &KINC ){
         /*!
          * A template Abaqus c++ UMAT using c++ STL types. Variables in all caps reference ABAQUS FORTRAN
          * memory directly. Variables in lower case are native c++ type conversions stored separately from the original
@@ -2930,16 +2927,9 @@ namespace tardigradeHydra{
          */
 
         //Call functions of constitutive model to do things
-        errorOut error = sayHello( "Abaqus" );
+        TARDIGRADE_ERROR_TOOLS_CATCH( sayHello( "Abaqus" ) );
 
-        //Error handling
-        if ( error ){
-            errorOut result = new errorNode( __func__, "Error when calling sayHello" );
-            result->addNext( error );
-            return result;
-        }
-
-        return NULL;
+        return;
     }
 
     void abaqusInterface( double *STRESS,       double *STATEV,       double *DDSDDE,       double &SSE,          double &SPD,
@@ -2954,9 +2944,6 @@ namespace tardigradeHydra{
          * A template Abaqus UMAT c++ interface that performs Fortran to C++ type conversions, calculates the material
          * model's expected input, handles tensor shape changes, and calls a c++ material model.
          */
-
-        //Initialize error return codes
-        errorOut error = NULL;
 
         //Provide a variable string message for error nodes
         std::ostringstream message;
@@ -3001,26 +2988,27 @@ namespace tardigradeHydra{
 
         //Call the constitutive model c++ interface
         if ( KINC == 1 && NOEL == 1 && NPT == 1 ){
-            error = dummyMaterialModel( stress, statev,  ddsdde, SSE,    SPD,
-                                        SCD,    RPL,     ddsddt, drplde, DRPLDT,
-                                        strain, dstrain, time,   DTIME,  TEMP,
-                                        DTEMP,  predef,  dpred,  cmname, NDI,
-                                        NSHR,   NTENS,   NSTATV, props,  NPROPS,
-                                        coords, drot,    PNEWDT, CELENT, dfgrd0,
-                                        dfgrd1, NOEL,    NPT,    LAYER,  KSPT,
-                                        jstep,  KINC );
-        }
 
-        //Error handling
-        if ( error ){
-            message.clear();
-            message << "ERROR:" << __FILENAME__ << "." << __func__ << ": Error when calling dummyMaterialModel.";
-            errorOut result = new errorNode( __func__, message.str( ) );
-            result->addNext( error );
-            error->print( true );
-            //If an error was thrown, but the ratio of new/current time increment is not updated, it was a fatal error.
-            if ( PNEWDT >= 1. ){
-                throw std::runtime_error( message.str( ) );
+            try{
+
+                dummyMaterialModel( stress, statev,  ddsdde, SSE,    SPD,
+                                            SCD,    RPL,     ddsddt, drplde, DRPLDT,
+                                            strain, dstrain, time,   DTIME,  TEMP,
+                                            DTEMP,  predef,  dpred,  cmname, NDI,
+                                            NSHR,   NTENS,   NSTATV, props,  NPROPS,
+                                            coords, drot,    PNEWDT, CELENT, dfgrd0,
+                                            dfgrd1, NOEL,    NPT,    LAYER,  KSPT,
+                                            jstep,  KINC );
+
+            }
+            catch(std::exception &e){
+
+                if ( PNEWDT >= 1. ){
+
+                    throw e;
+
+                }
+
             }
         }
 
