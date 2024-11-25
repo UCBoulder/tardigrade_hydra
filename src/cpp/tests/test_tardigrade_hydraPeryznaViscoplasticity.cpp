@@ -1010,9 +1010,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection, * boost::unit_test::toler
     floatVector answer( 9, 0 );
     floatVector answer2( 9, 0 );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( R.drivingStress, R.flowParameters[ 1 ], R.flowParameters[ 0 ], dpYield, jac, answer ) );
+    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::druckerPragerSurface( R.drivingStress, R.flowParameters[ 1 ], R.flowParameters[ 0 ], dpYield, jac, answer ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( R.previousDrivingStress, R.flowParameters[ 1 ], R.flowParameters[ 0 ], dpYield, jac, answer2 ) );
+    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::druckerPragerSurface( R.previousDrivingStress, R.flowParameters[ 1 ], R.flowParameters[ 0 ], dpYield, jac, answer2 ) );
 
     BOOST_CHECK( R.get_flowDirection( )->size( ) == 9 );
 
@@ -1547,12 +1547,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction, * boost::unit_test::toler
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
 
     floatType answer1;
-    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( R.drivingStress, R.yieldParameters[1], R.yieldParameters[0], answer1 ) );
+    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::druckerPragerSurface( R.drivingStress, R.yieldParameters[1], R.yieldParameters[0], answer1 ) );
 
     BOOST_TEST( answer1 == *R.get_yieldFunction( ) );
 
     floatType answer2;
-    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeStressTools::druckerPragerSurface( R.previousDrivingStress, R.yieldParameters[1], R.yieldParameters[0], answer2 ) );
+    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::druckerPragerSurface( R.previousDrivingStress, R.yieldParameters[1], R.yieldParameters[0], answer2 ) );
 
     BOOST_TEST( answer2 == *R.get_previousYieldFunction( ) );
 

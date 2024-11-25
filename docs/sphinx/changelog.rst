@@ -46,6 +46,7 @@ Internal Changes
 - Working towards improved convergence (:pull:`170`). By `Nathan Miller`_.
 - Set the initial estimate of the plastic multiplier to be positive in the case of yielding (:pull:`174`). By `Nathan Miller`_.
 - Added additional verbosity for debugging of the solves (:pull:`176`). By `Nathan Miller`_.
+- Changed functions to remove errorOut (:pull:`180`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
