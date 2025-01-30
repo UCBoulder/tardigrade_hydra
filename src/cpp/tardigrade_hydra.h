@@ -1123,6 +1123,9 @@ namespace tardigradeHydra{
             //! Get the number of terms in the unknown vector
             virtual const unsigned int getNumUnknowns( ){ return ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( ); }
 
+            //! Get the number of additional degrees of freedom
+            virtual const unsigned int getNumAdditionalDOF( ){ return getAdditionalDOF( )->size( ); }
+
             //! Get the value of the number of constraint equations
             virtual const unsigned int getNumConstraints( ){
 
