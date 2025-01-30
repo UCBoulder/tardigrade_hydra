@@ -85,6 +85,8 @@ namespace tardigradeHydra{
 
             protected:
 
+                virtual void setXPred( );
+
                 virtual void setStress( ) override;
 
                 virtual void setPreviousStress( ) override;
@@ -98,7 +100,7 @@ namespace tardigradeHydra{
                 virtual void setdRdF( ) override;
 
                 virtual void decomposeParameterVector( const floatVector &parameters );
-     
+
             private:
     
                 // Friend classes
@@ -119,6 +121,14 @@ namespace tardigradeHydra{
                 using tardigradeHydra::residualBase::setStress;
 
                 using tardigradeHydra::residualBase::setPreviousStress;
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE( protected,  F_params,       floatVector, unexpectedError )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE( protected,  T_params,       floatVector, unexpectedError )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE( protected,  add_dof_params, floatVector, unexpectedError )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( protected, XPred,          floatVector, setXPred        )
 
         };
 

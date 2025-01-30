@@ -21,12 +21,80 @@ namespace tardigradeHydra{
              * \param &parameters: The paramter vector. Assumed to be a vector of length 2 which defines lambda and mu.
              */
     
-            if ( parameters.size( ) != 2 ){
+            if ( parameters.size( ) != 3360 ){
     
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Parameter vector is expected to have a length of 2 but has a length of " + std::to_string( parameters.size( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Parameter vector is expected to have a length of 3360 but has a length of " + std::to_string( parameters.size( ) ) ) );
     
             }
+
+            // Decompose the parameter vector
+            set_F_params( floatVector( std::begin( parameters ), std::begin( parameters ) + 189 ) );
     
+            set_T_params( floatVector( std::begin( parameters ) + 189, std::begin( parameters ) + 210 ) );
+    
+            set_add_dof_params( floatVector( std::begin( parameters ) + 210, std::end( parameters ) ) );
+
+        }
+
+        void residual::setXPred( ){
+            /*!
+             * Compute all of the values of the X vector for the residual calculation
+             */
+
+            auto F_params = get_F_params( );
+
+            auto T_params = get_T_params( );
+
+            auto add_dof_params = get_add_dof_params( );
+
+            auto XPred = get_setDataStorage_XPred( );
+
+            XPred.zero( *getNumEquations( ) );
+
+            unsigned int i = 0;
+
+            for
+            (
+                auto xi = XPred.begin( );
+                xi != XPred.end( );
+                ++i, ++xi
+            )
+            {
+
+                unsigned int j = 0;
+
+                // Add the contributions from the deformation gradient
+                for
+                (
+                    auto v = std::begin( *hydra->getDeformationGradient( ) );
+                    v != std::end( *hydra->getDeformationGradient( ) );
+                    ++j, ++v
+                )
+                {
+                
+                    *xi += ( *F_params )[ ( *getNumEquations( ) ) * i + j ] * ( *v );
+
+                }
+
+                // Add the contributions from the temperature
+                *xi += ( *T_params )[ i ] * ( *( hydra->getTemperature( ) ) );
+
+                // Add the contributions from the additional degrees of freedom
+                j = 0;
+                for
+                (
+                    auto v = std::begin( *hydra->getAdditionalDOF( ) );
+                    v != std::end( *hydra->getAdditionalDOF( ) );
+                    ++j, ++v
+                )
+                {
+
+                    *xi += ( *add_dof_params )[ ( *getNumEquations( ) ) * i + j ] * ( *v );
+
+                }
+
+            }
+
         }
 
         void residual::setStress( ){
@@ -36,11 +104,17 @@ namespace tardigradeHydra{
              * Currently uses the Cauchy stress
              */
 
-//            setCauchyStress( false );
-//
-//            auto stress = get_setDataStorage_stress( );
-//
-//            *stress.value = *get_cauchyStress( );
+            constexpr unsigned int dim = 3;
+
+            auto stress = get_setDataStorage_stress( );
+
+            stress.zero( dim * dim );
+
+            std::copy(
+                std::begin( *get_XPred( ) ),
+                std::end( *get_XPred( ) ),
+                std::begin( *stress.value )
+            );
 
         }
     
@@ -51,11 +125,7 @@ namespace tardigradeHydra{
              * Currently uses the Cauchy stress
              */
 
-//            setCauchyStress( true );
-//
-//            auto previousStress = get_setDataStorage_previousStress( );
-//
-//            *previousStress.value = *get_previousCauchyStress( );
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Not implemented" ) );
 
         }
     
@@ -66,9 +136,15 @@ namespace tardigradeHydra{
 
             auto residual = get_setDataStorage_residual( );
 
-//            const secondOrderTensor *stress = getStress( );
-//
- //           TARDIGRADE_ERROR_TOOLS_CATCH( *residual.value = *stress - *hydra->getStress( ) );
+            residual.zero( *getNumEquations( ) );
+
+            std::transform(
+                std::begin( *get_XPred( ) ),
+                std::end( *get_XPred( ) ),
+                std::begin( *( hydra->getUnknownVector( ) ) ),
+                residual.begin( ),
+                std::minus< floatType >{}
+            );
     
         }
     
@@ -77,36 +153,19 @@ namespace tardigradeHydra{
              * Set the Jacobian value
              */
 
-//            const unsigned int dim = hydra->getDimension( );
-//
-//            const unsigned int sot_dim = hydra->getSOTDimension( );
-//
-//            const unsigned int num_configs = *hydra->getNumConfigurations( );
-//
-//            const unsigned int num_unknown_config_vars = ( num_configs - 1 ) * sot_dim;
-//
-//            const unsigned int num_unknowns = hydra->getNumUnknowns( );
-//
-//            // Form the Jacobian
-//            auto jacobian = get_setDataStorage_jacobian( );
-//
-//            jacobian.zero( sot_dim * num_unknowns );
-//
-//            for ( unsigned int i = 0; i < dim; i++ ){
-//
-//                for ( unsigned int j = 0; j < dim; j++ ){
-//
-//                    ( *jacobian.value )[ num_unknowns * dim * i + num_unknowns * j + dim * i + j ] = -1;
-//
-//                    for ( unsigned int I = 0; I < num_unknown_config_vars; I++ ){
-//
-//                        ( *jacobian.value )[ num_unknowns * dim * i + num_unknowns * j + getStress( )->size( ) + I ] = ( *get_dCauchyStressdFn( ) )[ dim * num_unknown_config_vars * i + num_unknown_config_vars * j + I ];
-//
-//                    }
-//
-//                }
-//
-//            }
+            auto jacobian = get_setDataStorage_jacobian( );
+
+            jacobian.zero( ( *getNumEquations( ) ) * hydra->getNumUnknowns( ) );
+
+            for
+            (
+                unsigned int i = 0;
+                i < std::min( ( *getNumEquations( ) ), hydra->getNumUnknowns( ) );
+                ++i
+            )
+            {
+                ( *jacobian.value )[ ( *getNumEquations( ) ) * i + i ] = 1;
+            }
 
         }
 
@@ -117,7 +176,13 @@ namespace tardigradeHydra{
 
             auto dRdT = get_setDataStorage_dRdT( );
 
-            dRdT.zero( *getNumEquations( ) );
+            dRdT.zero( ( *getNumEquations( ) ) );
+
+            std::copy(
+                std::begin( *get_T_params( ) ),
+                std::end( *get_T_params( ) ),
+                std::begin( *dRdT.value )
+            );
 
         }
 
@@ -126,9 +191,17 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-//            auto dRdF = get_setDataStorage_dRdF( );
-//
-//            *dRdF.value = *get_dCauchyStressdF( );
+            constexpr unsigned int dim = 3;
+
+            auto dRdF = get_setDataStorage_dRdF( );
+
+            dRdF.zero( ( *getNumEquations( ) ) * dim * dim );
+
+            std::copy(
+                std::begin( *get_F_params( ) ),
+                std::end( *get_F_params( ) ),
+                std::begin( *dRdF.value )
+            );
 
         }
 
