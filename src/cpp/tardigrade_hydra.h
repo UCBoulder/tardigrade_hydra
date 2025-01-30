@@ -38,7 +38,6 @@
 
 /*!
  * \brief Declares a setDataStorage getter function
- * \param getname: The name of the getter function
  * \param varname: The name of the variable
  * \param classtype: The type of the class to be defined
  * \param vartype: The ctype of the variable
@@ -604,6 +603,10 @@ namespace tardigradeHydra{
           }
 
           T * value;
+
+          auto begin( ){ return std::begin( *value ); }
+
+          auto end( ){ return std::end( *value ); }
 
           void zero( ){ _ds->zero( ); }
 
