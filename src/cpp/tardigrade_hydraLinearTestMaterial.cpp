@@ -41,6 +41,8 @@ namespace tardigradeHydra{
              * Compute all of the values of the X vector for the residual calculation
              */
 
+            constexpr unsigned int dim = 3;
+
             auto F_params = get_F_params( );
 
             auto T_params = get_T_params( );
@@ -72,7 +74,7 @@ namespace tardigradeHydra{
                 )
                 {
                 
-                    *xi += ( *F_params )[ ( *getNumEquations( ) ) * i + j ] * ( *v );
+                    *xi += ( *F_params )[ dim * dim * i + j ] * ( *v );
 
                 }
 
@@ -89,7 +91,7 @@ namespace tardigradeHydra{
                 )
                 {
 
-                    *xi += ( *add_dof_params )[ ( *getNumEquations( ) ) * i + j ] * ( *v );
+                    *xi += ( *add_dof_params )[ hydra->getNumAdditionalDOF( ) * i + j ] * ( *v );
 
                 }
 
