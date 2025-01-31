@@ -20,19 +20,22 @@ namespace tardigradeHydra{
              * 
              * \param &parameters: The paramter vector. Assumed to be a vector of length 2 which defines lambda and mu.
              */
-    
-            if ( parameters.size( ) != 3360 ){
-    
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "Parameter vector is expected to have a length of 3360 but has a length of " + std::to_string( parameters.size( ) ) ) );
-    
-            }
+
+            TARDIGRADE_ERROR_TOOLS_EVAL(
+                const unsigned int expected_parameter_size = ( *getNumEquations( ) ) * ( hydra->getNumAdditionalDOF( ) + 9 + 1 )
+            )
+
+            TARDIGRADE_ERROR_TOOLS_CHECK(
+                parameters.size( ) == expected_parameter_size,
+                "Parameter vector is expected to have a length of " + std::to_string( expected_parameter_size ) + " but has a length of " + std::to_string( parameters.size( ) )
+            );
 
             // Decompose the parameter vector
-            set_F_params( floatVector( std::begin( parameters ), std::begin( parameters ) + 189 ) );
+            set_F_params( floatVector( std::begin( parameters ), std::begin( parameters ) + ( *getNumEquations( ) ) * ( 9 ) ) );
     
-            set_T_params( floatVector( std::begin( parameters ) + 189, std::begin( parameters ) + 210 ) );
+            set_T_params( floatVector( std::begin( parameters ) + ( *getNumEquations( ) ) * ( 9 ), std::begin( parameters ) + ( *getNumEquations( ) ) * ( 9 + 1 ) ) );
     
-            set_add_dof_params( floatVector( std::begin( parameters ) + 210, std::end( parameters ) ) );
+            set_add_dof_params( floatVector( std::begin( parameters ) + ( *getNumEquations( ) ) * ( 9 + 1 ), std::end( parameters ) ) );
 
         }
 
