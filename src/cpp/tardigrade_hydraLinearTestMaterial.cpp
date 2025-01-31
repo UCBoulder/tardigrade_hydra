@@ -169,7 +169,7 @@ namespace tardigradeHydra{
                 ++i
             )
             {
-                ( *jacobian.value )[ ( *getNumEquations( ) ) * i + i ] = 1;
+                ( *jacobian.value )[ ( *getNumEquations( ) ) * i + i ] = -1;
             }
 
         }

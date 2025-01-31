@@ -693,4 +693,174 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
     BOOST_TEST( ( *R.getResidual( ) ) == answer, CHECK_PER_ELEMENT );
 
+    floatType eps = 1e-6;
+
+    // Check derivatives w.r.t. the unknown vector
+    {
+
+        const unsigned int output_dim = 22;
+        const unsigned int var_dim = unknownVector.size( );
+
+        for ( unsigned int i = 0; i < var_dim; ++i ){
+
+            floatType delta = eps * std::fabs( unknownVector[ i ] ) + eps;
+
+            floatVector xp = unknownVector;
+            floatVector xm = unknownVector;
+
+            xp[ i ] += delta;
+            xm[ i ] -= delta;
+
+            tardigradeHydra::hydraBase hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                                additionalDOF, previousAdditionalDOF,
+                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                                additionalDOF, previousAdditionalDOF,
+                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::linearTestMaterial::residual R_p( &hydra_p, 22, parameters );
+
+            tardigradeHydra::linearTestMaterial::residual R_m( &hydra_m, 22, parameters );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, xp );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, xm );
+
+            for ( unsigned int j = 0; j < output_dim; ++j ){
+
+                BOOST_TEST( ( *R.getJacobian( ) )[ var_dim * j + i ] == ( ( *R_p.getResidual( ) )[ j ] - ( *R_m.getResidual( ) )[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
+
+    // Check derivatives w.r.t. the deformation gradient
+    {
+
+        const unsigned int output_dim = 22;
+        const unsigned int var_dim = 9;
+
+        for ( unsigned int i = 0; i < var_dim; ++i ){
+
+            floatType delta = eps * std::fabs( deformationGradient[ i ] ) + eps;
+
+            floatVector xp = deformationGradient;
+            floatVector xm = deformationGradient;
+
+            xp[ i ] += delta;
+            xm[ i ] -= delta;
+
+            tardigradeHydra::hydraBase hydra_p( time, deltaTime, temperature, previousTemperature, xp, previousDeformationGradient,
+                                                additionalDOF, previousAdditionalDOF,
+                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, xm, previousDeformationGradient,
+                                                additionalDOF, previousAdditionalDOF,
+                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::linearTestMaterial::residual R_p( &hydra_p, 22, parameters );
+
+            tardigradeHydra::linearTestMaterial::residual R_m( &hydra_m, 22, parameters );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector );
+
+            for ( unsigned int j = 0; j < output_dim; ++j ){
+
+                BOOST_TEST( ( *R.getdRdF( ) )[ var_dim * j + i ] == ( ( *R_p.getResidual( ) )[ j ] - ( *R_m.getResidual( ) )[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
+
+    // Check derivatives w.r.t. the temperature
+    {
+
+        const unsigned int output_dim = 22;
+        const unsigned int var_dim = 1;
+
+        for ( unsigned int i = 0; i < var_dim; ++i ){
+
+            floatType delta = eps * std::fabs( temperature ) + eps;
+
+            floatType xp = temperature;
+            floatType xm = temperature;
+
+            xp += delta;
+            xm -= delta;
+
+            tardigradeHydra::hydraBase hydra_p( time, deltaTime, xp, previousTemperature, deformationGradient, previousDeformationGradient,
+                                                additionalDOF, previousAdditionalDOF,
+                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::hydraBase hydra_m( time, deltaTime, xm, previousTemperature, deformationGradient, previousDeformationGradient,
+                                                additionalDOF, previousAdditionalDOF,
+                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::linearTestMaterial::residual R_p( &hydra_p, 22, parameters );
+
+            tardigradeHydra::linearTestMaterial::residual R_m( &hydra_m, 22, parameters );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector );
+
+            for ( unsigned int j = 0; j < output_dim; ++j ){
+
+                BOOST_TEST( ( *R.getdRdT( ) )[ var_dim * j + i ] == ( ( *R_p.getResidual( ) )[ j ] - ( *R_m.getResidual( ) )[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
+
+    // Check derivatives w.r.t. the additional dof vector
+    {
+
+        const unsigned int output_dim = 22;
+        const unsigned int var_dim = additionalDOF.size( );
+
+        for ( unsigned int i = 0; i < var_dim; ++i ){
+
+            floatType delta = eps * std::fabs( additionalDOF[ i ] ) + eps;
+
+            floatVector xp = additionalDOF;
+            floatVector xm = additionalDOF;
+
+            xp[ i ] += delta;
+            xm[ i ] -= delta;
+
+            tardigradeHydra::hydraBase hydra_p( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                                xp, previousAdditionalDOF,
+                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::hydraBase hydra_m( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                                xm, previousAdditionalDOF,
+                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::linearTestMaterial::residual R_p( &hydra_p, 22, parameters );
+
+            tardigradeHydra::linearTestMaterial::residual R_m( &hydra_m, 22, parameters );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_p, unknownVector );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra_m, unknownVector );
+
+            for ( unsigned int j = 0; j < output_dim; ++j ){
+
+                BOOST_TEST( ( *R.getdRdAdditionalDOF( ) )[ var_dim * j + i ] == ( ( *R_p.getResidual( ) )[ j ] - ( *R_m.getResidual( ) )[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
+
 }
