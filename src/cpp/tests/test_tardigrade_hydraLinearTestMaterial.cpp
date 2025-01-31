@@ -607,3 +607,90 @@ BOOST_AUTO_TEST_CASE( test_residual_getXPred, * boost::unit_test::tolerance( DEF
     BOOST_TEST( ( *tardigradeHydra::linearTestMaterial::unit_test::residualTester::getStress( R ) ) == stress, CHECK_PER_ELEMENT );
 
 }
+
+BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 0.1;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient =
+    {
+         1.42334973, -0.43413865,  0.33018996, -1.523222  ,  1.61018561,
+        -0.52042286, -0.42632552,  0.42836373,  0.37842759
+    };
+
+    floatVector previousDeformationGradient =
+    {
+        1, 0, 0, 0, 1, 0, 0, 0, 1
+    };
+
+    floatVector additionalDOF =
+    {
+        -0.34, -0.92, -0.1 , -0.72,  0.94, -0.28,  0.58,  0.66, -0.82,
+         0.34, -0.32, -0.4 ,  0.5 , -0.5 , -0.38,  0.52, -0.3 , -0.22,
+         0.48, -0.72,  0.38, -0.36,  0.68,  0.24, -0.98, -0.74,  0.5 ,
+        -0.56, -0.96,  0.48,  0.34, -0.56,  0.26,  0.26,  0.88, -0.8 ,
+        -0.66, -0.4 ,  0.54, -0.06, -0.26, -0.24,  0.02, -0.36,  0.36,
+        -0.94,  0.2 , -0.28, -0.04,  0.5 , -0.92, -0.56,  0.02,  0.24,
+        -0.62, -0.6 ,  0.24,  0.44, -0.1 , -0.1 , -0.2 , -0.5 ,  0.98,
+         0.26, -0.28, -0.48, -0.5 , -0.36,  0.1 ,  0.16,  0.32, -0.96,
+         0.16,  0.16,  0.84, -0.54, -0.92,  0.9 ,  0.12, -0.8 , -0.34,
+        -0.22,  0.54, -0.48,  0.9 ,  0.14, -0.8 ,  0.02,  0.16,  0.92,
+         0.82,  0.88,  0.3 ,  0.28,  0.36, -0.9 , -0.48, -0.5 ,  0.56,
+        -0.66,  0.48, -0.16, -0.46,  0.8 , -0.4 ,  0.54,  0.52, -0.24,
+        -0.34, -1.  , -0.08, -0.64, -0.98,  0.24, -0.74, -0.38,  0.42,
+         0.5 ,  0.9 ,  0.82,  0.04,  0.9 , -0.32,  0.1 ,  0.08, -0.96,
+        -0.92, -0.52,  0.86,  0.8 ,  0.28, -0.86,  0.9 , -0.86,  0.02,
+         0.24,  0.42,  0.86, -0.32, -0.26,  0.08, -0.5 ,  0.1 , -0.3 ,
+         0.86, -0.38,  0.26, -0.22,  0.98,  0.78
+    };
+
+    floatVector previousStateVariables( 13, 0 );
+
+    floatVector previousAdditionalDOF( additionalDOF.size( ) );
+
+    floatVector XPred =
+    {
+         1.65840055, -2.24548374, -4.15729419, -5.43689868, -6.51644794,
+        -6.2098627 , -0.69731418, -2.74173005, -3.25132098,  2.34413958,
+        -2.90337874, -2.06251238, -1.88062211, -0.64140041, -2.24230101,
+         0.64487023, -2.97788305, -2.00739234, -1.95398705, -1.95134198,
+        -4.01518506, -2.73165174
+    };
+
+    floatVector stress( std::begin( XPred ), std::begin( XPred ) + 9 );
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = XPred.size( ) - 9;
+
+    unsigned int dimension = 3;
+
+    tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                      additionalDOF, previousAdditionalDOF,
+                                      previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    tardigradeHydra::linearTestMaterial::residual R( &hydra, 22, parameters );
+
+    floatVector unknownVector( XPred.size( ) );
+    for ( unsigned int i = 0; i < XPred.size( ); ++i ){ unknownVector[ i ] = 0.1 * i + 0.1; }
+
+    floatVector answer( XPred.size( ) );
+    std::transform(
+        std::begin( XPred ),
+        std::end( XPred ),
+        std::begin( unknownVector ),
+        std::begin( answer ),
+        std::minus< floatType >{ }
+    );
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
+    BOOST_TEST( ( *R.getResidual( ) ) == answer, CHECK_PER_ELEMENT );
+
+}
