@@ -117,7 +117,7 @@ namespace tardigradeHydra{
 
             std::copy(
                 std::begin( *get_XPred( ) ),
-                std::end( *get_XPred( ) ),
+                std::begin( *get_XPred( ) ) + dim * dim,
                 std::begin( *stress.value )
             );
 
@@ -186,7 +186,7 @@ namespace tardigradeHydra{
             std::copy(
                 std::begin( *get_T_params( ) ),
                 std::end( *get_T_params( ) ),
-                std::begin( *dRdT.value )
+                dRdT.begin( )
             );
 
         }
@@ -205,7 +205,24 @@ namespace tardigradeHydra{
             std::copy(
                 std::begin( *get_F_params( ) ),
                 std::end( *get_F_params( ) ),
-                std::begin( *dRdF.value )
+                dRdF.begin( )
+            );
+
+        }
+
+        void residual::setdRdAdditionalDOF( ){
+            /*!
+             * Set the derivative of the residual w.r.t. the additional DOF
+             */
+
+            auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
+
+            dRdAdditionalDOF.zero( ( *getNumEquations( ) ) * ( hydra->getNumAdditionalDOF( ) ) );
+
+            std::copy(
+                std::begin( *get_add_dof_params( ) ),
+                std::end( *get_add_dof_params( ) ),
+                dRdAdditionalDOF.begin( )
             );
 
         }

@@ -74,6 +74,12 @@ namespace tardigradeHydra{
 
                     }
 
+                    static auto getStress( tardigradeHydra::linearTestMaterial::residual &R ){
+
+                        return R.getStress( );
+
+                    }
+
             };
     
         }
@@ -582,6 +588,8 @@ BOOST_AUTO_TEST_CASE( test_residual_getXPred, * boost::unit_test::tolerance( DEF
         -4.01518506, -2.73165174
     };
 
+    floatVector stress( std::begin( XPred ), std::begin( XPred ) + 9 );
+
     unsigned int numConfigurations = 1;
 
     unsigned int numNonLinearSolveStateVariables = 0;
@@ -595,5 +603,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getXPred, * boost::unit_test::tolerance( DEF
     tardigradeHydra::linearTestMaterial::residual R( &hydra, 22, parameters );
 
     BOOST_TEST( ( *tardigradeHydra::linearTestMaterial::unit_test::residualTester::getXPred( R ) ) == XPred, CHECK_PER_ELEMENT );
+
+    BOOST_TEST( ( *tardigradeHydra::linearTestMaterial::unit_test::residualTester::getStress( R ) ) == stress, CHECK_PER_ELEMENT );
 
 }

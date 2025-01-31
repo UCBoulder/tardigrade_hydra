@@ -99,6 +99,8 @@ namespace tardigradeHydra{
 
                 virtual void setdRdF( ) override;
 
+                virtual void setdRdAdditionalDOF( ) override;
+
                 virtual void decomposeParameterVector( const floatVector &parameters );
 
             private:
