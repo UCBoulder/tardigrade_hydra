@@ -38,7 +38,6 @@
 
 /*!
  * \brief Declares a setDataStorage getter function
- * \param getname: The name of the getter function
  * \param varname: The name of the variable
  * \param classtype: The type of the class to be defined
  * \param vartype: The ctype of the variable
@@ -605,6 +604,10 @@ namespace tardigradeHydra{
 
           T * value;
 
+          auto begin( ){ return std::begin( *value ); }
+
+          auto end( ){ return std::end( *value ); }
+
           void zero( ){ _ds->zero( ); }
 
           void zero( const unsigned int size ){ _ds->zero( size ); }
@@ -1119,6 +1122,9 @@ namespace tardigradeHydra{
 
             //! Get the number of terms in the unknown vector
             virtual const unsigned int getNumUnknowns( ){ return ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( ); }
+
+            //! Get the number of additional degrees of freedom
+            virtual const unsigned int getNumAdditionalDOF( ){ return getAdditionalDOF( )->size( ); }
 
             //! Get the value of the number of constraint equations
             virtual const unsigned int getNumConstraints( ){
