@@ -34,6 +34,15 @@ namespace tardigradeHydra{
 
     }
 
+    void residualBase::setupRelaxedStep( const unsigned int &relaxedStep ){
+        /*!
+         * When performing a relaxed iteration this function is called prior to the solution of the non-linear
+         * problem. Users can use this function to dynamically adjust parameters or perform other tuning tasks.
+         *
+         * \param &relaxedStep: The current relaxed step.
+         */
+    }
+
     hydraBase::hydraBase( const floatType &time, const floatType &deltaTime,
                           const floatType &temperature, const floatType &previousTemperature,
                           const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,
@@ -1686,7 +1695,7 @@ namespace tardigradeHydra{
          * Perform an Armijo-type line search
          *
          * \param &X0: The base value of the unknown vector
-         * \param &delta: The proposed change in X
+         * \param &deltaX: The proposed change in X
          */
 
         while ( !checkLSConvergence( ) && checkLSIteration( ) ){

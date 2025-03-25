@@ -78,8 +78,10 @@ namespace tardigradeHydra{
 
             floatVector getPreviousFollowingMicroConfigurationJacobian( const unsigned int &index );
 
+            //! Get a reference to the scaled value of the micro deformation
             const secondOrderTensor *getScaledMicroDeformation( ){ return &_scaled_microDeformation; }
 
+            //! Get a reference to the scaled value of the gradient of the micro deformation
             const thirdOrderTensor *getScaledGradientMicroDeformation( ){ return &_scaled_gradientMicroDeformation; }
 
             const floatVector *getFlatdXdD( ){

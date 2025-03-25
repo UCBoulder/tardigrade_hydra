@@ -422,18 +422,25 @@ namespace tardigradeHydra{
 
                 virtual void decomposeParameters( const floatVector &parameters );
 
+                //! Get a reference to the parameter vector
                 const floatVector * getParameters( ){ return &_parameters; }
 
+                //! Set the Peryzna parameters
                 virtual void setPeryznaParameters( ){ decomposeParameters( *getParameters( ) ); }
 
+                //! Set the drag stress parameters
                 virtual void setDragStressParameters( ){ decomposeParameters( *getParameters( ) ); }
 
+                //! Set the thermal parameters
                 virtual void setThermalParameters( ){ decomposeParameters( *getParameters( ) ); }
 
+                //! Set the yield parameters
                 virtual void setYieldParameters( ){ decomposeParameters( *getParameters( ) ); }
 
+                //! Set the flow parameters
                 virtual void setFlowParameters( ){ decomposeParameters( *getParameters( ) ); }
 
+                //! Set the hardening parameters
                 virtual void setHardeningParameters( ){ decomposeParameters( *getParameters( ) ); }
 
             private:
