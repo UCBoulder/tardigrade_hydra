@@ -1709,7 +1709,7 @@ namespace tardigradeHydra{
 
         if ( !checkLSConvergence( ) ){
 
-            throw convergence_error( "Failure in line search" );
+            throw convergence_error( "Failure in line search:\n  scale factor: " + std::to_string( *getScaleFactor( ) ) + "\n" );
 
         }
 
@@ -1805,7 +1805,7 @@ namespace tardigradeHydra{
 
         if ( l >= maxiter ){
 
-            throw convergence_error( "Failure in gradient step" );
+            throw convergence_error( "Failure in gradient step:\n  scale_factor: " + std::to_string( *getScaleFactor( ) ) );
 
         }
 
@@ -1959,7 +1959,7 @@ namespace tardigradeHydra{
 
         if ( !checkConvergence( ) ){
 
-            throw convergence_error( "Failure to converge main loop" );
+            throw convergence_error( "Failure to converge main loop:\n  scale_factor: " + std::to_string( *getScaleFactor( ) ) );
 
         }
 
@@ -2035,7 +2035,7 @@ namespace tardigradeHydra{
 
         if ( relaxedIteration >= *getMaxRelaxedIterations( ) ){
 
-            throw convergence_error( "Failure in relaxed solve" );
+            throw convergence_error( "Failure in relaxed solve:\n  scale_factor: " + std::to_string( *getScaleFactor( ) ) );
 
         }
 
