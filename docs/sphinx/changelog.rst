@@ -21,6 +21,7 @@ New Features
 - Added ability to turn on additional messages for failed solves (:pull:`177`). By `Nathan Miller`_.
 - Added the ability to scale the incoming load information by a scale factor (:pull:`178`). By `Nathan Miller`_.
 - Added the ability to sub-cycle the analysis to try and improve convergence (:pull:`179`). By `Nathan Miller`_.
+- Added a linear test material for the full material-response vector (:pull:`181`). By `Nathan Miller`_.
 
 Internal Changes
 ================
@@ -47,6 +48,8 @@ Internal Changes
 - Set the initial estimate of the plastic multiplier to be positive in the case of yielding (:pull:`174`). By `Nathan Miller`_.
 - Added additional verbosity for debugging of the solves (:pull:`176`). By `Nathan Miller`_.
 - Changed functions to remove errorOut (:pull:`180`). By `Nathan Miller`_.
+- Added density to the full material-response simulation capability (:pull:`182`). By `Nathan Miller`_.
+- Added some additional information to convergence error messages (:pull:`183`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
