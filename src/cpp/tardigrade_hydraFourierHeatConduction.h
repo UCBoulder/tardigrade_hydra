@@ -53,7 +53,7 @@ namespace tardigradeHydra{
         //Return filename for constructing debugging messages
         //https://stackoverflow.com/questions/31050113/how-to-extract-the-source-filename-without-path-and-suffix-at-compile-time
         const std::string __BASENAME__ = file_name(__FILE__);  //!< The base filename which will be parsed
-    const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
+        const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
     
         typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
         typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
@@ -77,14 +77,17 @@ namespace tardigradeHydra{
                  * \param &parameters: The parameter vector
                  * \param &temperatureGradientIndex: The index in the additional DOF array where the temperature gradient exists
                  * \param &expectedParameterVectorSize: The expected size of the parameter vector (defaults to 1)
+                 * \param &heatFluxIndex: The index of the heat flux in the residual vector (defaults to 17)
                  */
                 residual(
                     tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters,
                     const unsigned int temperatureGradientIndex,
-                    const unsigned int expectedParameterVectorSize = 1
+                    const unsigned int expectedParameterVectorSize = 1,
+                    const unsigned int heatFluxIndex = 17
                 ) : tardigradeHydra::residualBase( hydra, numEquations ),
                 _expectedParameterVectorSize( expectedParameterVectorSize ),
-                _temperatureGradientIndex( temperatureGradientIndex ){
+                _temperatureGradientIndex( temperatureGradientIndex ),
+                _heatFluxIndex( heatFluxIndex ){
     
                     TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameterVector( parameters ) );
 
@@ -95,6 +98,9 @@ namespace tardigradeHydra{
 
             //! Get the index in the additional DOF vector where the temperature gradient is stored
             auto get_temperatureGradientIndex( ){ return _temperatureGradientIndex; }
+
+            //! Get the index in the residual vector where the heat flux is stored
+            auto get_heatFluxIndex( ){ return _heatFluxIndex; }
 
             const floatVector *get_conductivityParameters( ){
                 /*!
@@ -127,6 +133,8 @@ namespace tardigradeHydra{
                 virtual void setdRdT( ) override;
 
                 virtual void setdRdF( ) override;
+
+                virtual void setdRdAdditionalDOF( ) override;
 
                 virtual void decomposeParameterVector( const floatVector &parameters );
 
@@ -173,13 +181,15 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousHeatFlux,                  floatVector,             setPreviousHeatFlux )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dQdGradT,                    secondOrderTensor,              setdHeatFluxdGradT )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHeatFluxdGradT,             secondOrderTensor,              setdHeatFluxdGradT )
 
                 floatVector _conductivityParameters; //!< The parameters used in the calculation of the conductivity
 
                 const unsigned int _expectedParameterVectorSize; //!< The expected size of the parameter vector
 
                 const unsigned int _temperatureGradientIndex; //!< The index in the additional DOF vector where the temperature gradient is located
+
+                const unsigned int _heatFluxIndex; //!< The index of the heat flux in the output residual vector
 
         };
 

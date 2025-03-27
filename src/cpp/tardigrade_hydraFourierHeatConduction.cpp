@@ -104,9 +104,8 @@ namespace tardigradeHydra{
             heat_flux.zero( dim );
 
             std::transform(
-                heat_flux.begin( ),
-                heat_flux.end( ),
                 std::begin( *get_temperatureGradient( ) ),
+                std::end(   *get_temperatureGradient( ) ),
                 heat_flux.begin( ),
                 std::bind( std::multiplies<>( ), std::placeholders::_1, -( *get_conductivity( ) ) )
             );
@@ -125,9 +124,8 @@ namespace tardigradeHydra{
             heat_flux.zero( dim );
 
             std::transform(
-                heat_flux.begin( ),
-                heat_flux.end( ),
                 std::begin( *get_previousTemperatureGradient( ) ),
+                std::end(   *get_previousTemperatureGradient( ) ),
                 heat_flux.begin( ),
                 std::bind( std::multiplies<>( ), std::placeholders::_1, -( *get_previousConductivity( ) ) )
             );
@@ -138,6 +136,19 @@ namespace tardigradeHydra{
             /*!
              * Get the derivative of the heat flux w.r.t. the gradient of the temperature
              */
+
+            auto dim = hydra->getDimension( );
+
+            auto sot_dim = dim * dim;
+
+            auto dHeatFluxdGradT = get_setDataStorage_dHeatFluxdGradT( );
+
+            dHeatFluxdGradT.zero( sot_dim );
+
+            for ( unsigned int i = 0; i < dim; ++i ){
+                ( *dHeatFluxdGradT.value )[ dim * i + i ] = -( *get_conductivity( ) );
+            }
+
         }
 
         void residual::setResidual( ){
@@ -145,9 +156,17 @@ namespace tardigradeHydra{
              * Set the residual value
              */
 
+            auto dim = hydra->getDimension( );
+
             auto residual = get_setDataStorage_residual( );
 
             residual.zero( *getNumEquations( ) );
+
+            for ( unsigned int i = 0; i < dim; ++i ){
+
+                ( *residual.value )[ get_heatFluxIndex( ) + i ] = ( *hydra->getUnknownVector( ) )[ get_heatFluxIndex( ) + i ] - ( *get_heatFlux( ) )[ i ];
+
+            }
 
         }
     
@@ -166,6 +185,12 @@ namespace tardigradeHydra{
             auto jacobian = get_setDataStorage_jacobian( );
 
             jacobian.zero( sot_dim * num_unknowns );
+
+            for ( unsigned int i = 0; i < dim; ++i ){
+
+                ( *jacobian.value )[ hydra->getNumUnknowns( ) * i + get_heatFluxIndex( ) + i ] = 1.;
+
+            }
 
         }
 
@@ -188,6 +213,29 @@ namespace tardigradeHydra{
             auto dRdF = get_setDataStorage_dRdF( );
 
             dRdF.zero( ( *getNumEquations( ) ) * hydra->getDimension( ) * hydra->getDimension( ) );
+
+        }
+
+        void residual::setdRdAdditionalDOF( ){
+            /*!
+             * Set the derivative of the residual w.r.t. the additional DOF vector
+             */
+
+            auto dim = hydra->getDimension( );
+
+            auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
+
+            dRdAdditionalDOF.zero( ( *getNumEquations( ) ) * hydra->getNumAdditionalDOF( ) );
+
+            for ( unsigned int i = 0; i < dim; ++i ){
+
+                for ( unsigned int j = 0; j < dim; ++j ){
+
+                    ( *dRdAdditionalDOF.value )[ hydra->getNumAdditionalDOF( ) * i + get_temperatureGradientIndex( ) + j ] -= ( *get_dHeatFluxdGradT( ) )[ dim * i + j ];
+
+                }
+
+            }
 
         }
 
