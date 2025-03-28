@@ -175,7 +175,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, conductivity,                        floatType,                 setConductivity )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousConductivity,                floatType,         setPreviousConductivity )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousConductivity,                floatType,         setPreviousConductivity )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, heatFlux,                          floatVector,                     setHeatFlux )
 
