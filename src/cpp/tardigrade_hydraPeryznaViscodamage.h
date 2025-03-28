@@ -113,6 +113,8 @@ namespace tardigradeHydra{
 
                 using tardigradeHydra::peryznaViscoplasticity::residual::setAdditionalDerivatives;
 
+                using tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRates;
+
                 //! Get the configuration of the damage
                 const unsigned int *getDamageConfigurationIndex( ){ return &( *getPlasticConfigurationIndex( ) ); }
 

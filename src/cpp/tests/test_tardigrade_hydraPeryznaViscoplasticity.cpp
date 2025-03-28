@@ -881,6 +881,8 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection, * boost::unit_test::toler
 
         private:
 
+            using tardigradeHydra::peryznaViscoplasticity::residual::setDrivingStress;
+
             virtual void setDrivingStress( const bool isPrevious ) override{
 
                 set_flowParameters( flowParameters );
@@ -1421,6 +1423,8 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction, * boost::unit_test::toler
             floatVector yieldParameters = { 1.23, 0.46 };
 
         private:
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::setDrivingStress;
 
             virtual void setDrivingStress( const bool isPrevious ) override{
 
@@ -2129,6 +2133,8 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress, * boost::unit_test::toleranc
 
         private:
 
+            using tardigradeHydra::peryznaViscoplasticity::residual::setStateVariables;
+
             virtual void setStateVariables( const bool isPrevious ) override{
 
                 if ( isPrevious ){
@@ -2277,6 +2283,8 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress_jacobian, * boost::unit_test:
             floatVector previousStateVariables = { 0.9 };
 
         private:
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::setStateVariables;
 
             virtual void setStateVariables( const bool isPrevious ) override{
 
@@ -2511,6 +2519,8 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction, * boost::unit_test::t
             floatVector previousStateVariables = { 0.9 };
 
         private:
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::setStateVariables;
 
             virtual void setStateVariables( const bool isPrevious ) override{
 
@@ -3203,6 +3213,17 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
             
 
         private:
+
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::setDragStress;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdDragStressdStateVariables;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setPlasticThermalMultiplier;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticThermalMultiplierdT;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setYieldFunction;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdYieldFunctiondStateVariables;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdYieldFunctiondSubFs;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdYieldFunctiondF;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdYieldFunctiondCauchyStress;
 
             virtual void setYieldFunction( const bool isPrevious ) override{
 
@@ -4055,6 +4076,18 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
                 return value;
 
             }
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::setPlasticMultiplier;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdCauchyStress;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdF;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdSubFs;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdT;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdStateVariables;
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::setFlowDirection;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdFlowDirectiondCauchyStress;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdFlowDirectiondF;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdFlowDirectiondSubFs;
 
             virtual void setPlasticMultiplier( const bool isPrevious ) override{
 
@@ -4944,6 +4977,16 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
             }
         private:
 
+            using tardigradeHydra::peryznaViscoplasticity::residual::setPlasticMultiplier;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdCauchyStress;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdF;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdSubFs;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdT;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdStateVariables;
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::setHardeningFunction;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdHardeningFunctiondStateVariables;
+
             virtual void setPlasticMultiplier( const bool isPrevious ) override{
 
                 if ( isPrevious ){
@@ -5761,6 +5804,13 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
             floatVector dPreviousLdPreviousXi     = initializeVector( 9, -0.19 );
 
         private:
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::setVelocityGradient;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdVelocityGradientdCauchyStress;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdVelocityGradientdF;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdVelocityGradientdSubFs;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdVelocityGradientdT;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdVelocityGradientdStateVariables;
 
             floatVector initializeVector( int nvals, floatType val_0 ){
 
@@ -6615,6 +6665,13 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
                 return value;
 
             }
+
+            using tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRates;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdStateVariableEvolutionRatesdCauchyStress;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdStateVariableEvolutionRatesdF;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdStateVariableEvolutionRatesdSubFs;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdStateVariableEvolutionRatesdT;
+            using tardigradeHydra::peryznaViscoplasticity::residual::setdStateVariableEvolutionRatesdStateVariables;
 
             virtual void setStateVariableEvolutionRates( const bool isPrevious ) override{
 

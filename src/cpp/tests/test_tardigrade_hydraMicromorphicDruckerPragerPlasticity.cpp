@@ -5853,6 +5853,7 @@ BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs, * boost::unit_test::
 
             }
 
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setPlasticStrainLikeISVEvolutionRates;
             virtual void setPlasticStrainLikeISVEvolutionRates( const bool isPrevious ) override{
 
                 if ( isPrevious ){
@@ -10113,6 +10114,14 @@ BOOST_AUTO_TEST_CASE( test_setPlasticVelocityGradients, * boost::unit_test::tole
         public:
 
             using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::residual;
+
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setPrecedingDeformationGradient;
+
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setPrecedingMicroDeformation;
+
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setPrecedingGradientMicroDeformation;
+
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setPlasticMultipliers;
 
             floatVector precedingDeformationGradient = { 1, .2, .3, .4, 1.1, 0.3, 0.1, 0.2, 1.2 };
 

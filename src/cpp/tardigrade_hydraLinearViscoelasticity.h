@@ -170,6 +170,8 @@ namespace tardigradeHydra{
 
             protected:
 
+                using tardigradeHydra::linearElasticity::residual::setPK2Stress;
+
                 virtual void setNumVolumetricViscousTerms( const unsigned int &num );
 
                 virtual void setNumIsochoricViscousTerms( const unsigned int &num );
