@@ -63,6 +63,11 @@ namespace tardigradeHydra{
         typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
 
         template <typename T> int sgn(T val){
+            /*!
+             * Get the sign of the value
+             * 
+             * \param val: The value to compute the sign of
+             */
             return (T(0) < val) - (val < T(0));
         }
 

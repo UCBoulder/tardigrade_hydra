@@ -578,95 +578,110 @@ namespace tardigradeHydra{
     template< typename T >
     class setDataStorageBase {
 
-      public:
+        public:
 
-          setDataStorageBase( ) : _ds( NULL ){ }
+            //! Default constructor which points to no data
+            setDataStorageBase( ) : _ds( NULL ){ }
 
-          setDataStorageBase( dataStorage< T > *ds ) : _ds( ds ){
+            //! Constructor that reads in a data storage object and sets the value
+            setDataStorageBase( dataStorage< T > *ds ) : _ds( ds ){
 
-              if ( _ds ){
+                if ( _ds ){
 
-                  value = &_ds->second;
+                    value = &_ds->second;
 
-              }
+                }
 
-          }
+            }
 
-          ~setDataStorageBase( ){
+            //! Destructor which indicates that the data storage object has been set
+            ~setDataStorageBase( ){
 
-              if ( _ds ){
+                if ( _ds ){
 
-                  _ds->first = true;
+                    _ds->first = true;
 
-              }
+                }
 
-          }
+            }
 
-          T * value;
+            T * value; //!< A pointer to the value of the data storage object
 
-          auto begin( ){ return std::begin( *value ); }
+            //! Get the starting iterator of the data storage object
+            auto begin( ){ return std::begin( *value ); }
 
-          auto end( ){ return std::end( *value ); }
+            //! Get the stopping iterator of the data storage object
+            auto end( ){ return std::end( *value ); }
 
-          void zero( ){ _ds->zero( ); }
+            //! Initialize the data storage object to zero
+            void zero( ){ _ds->zero( ); }
 
-          void zero( const unsigned int size ){ _ds->zero( size ); }
+            void zero( const unsigned int size ){
+                /*!
+                 * Resize (if possible) the data storage object and set to zero
+                 * 
+                 * \param size: The size of the data storage object
+                 */
 
-          template< typename X, unsigned int R, unsigned int C >
-          Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > zeroMap( ){
-              /*!
-               * Create a zeroed Eigen::Map of the quantity
-               */
-              zero( R * C );
-              return Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > ( value->data( ), R, C );
-          }
+                _ds->zero( size );
 
-          template< typename X, unsigned int R >
-          Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > zeroMap( const unsigned int C ){
-              /*!
-               * Create a zeroed Eigen::Map of the quantity with dynamic columns
-               * 
-               * \param C: The number of columns in the matrix
-               */
-              zero( R * C );
-              return Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > ( value->data( ), R, C );
-          }
+            }
 
-          template< typename X, unsigned int R >
-          Eigen::Map< Eigen::Vector< X, R > > zeroMap( ){
-              /*!
-               * Create a zeroed Eigen::Map of the quantity with dynamic columns as a vector
-               */
-              zero( R );
-              return Eigen::Map< Eigen::Vector< X, R > > ( value->data( ), R );
-          }
+            template< typename X, unsigned int R, unsigned int C >
+            Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > zeroMap( ){
+                /*!
+                 * Create a zeroed Eigen::Map of the quantity
+                 */
+                zero( R * C );
+                return Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > ( value->data( ), R, C );
+            }
 
-          template< typename X >
-          Eigen::Map< Eigen::Vector< X, -1 > > zeroMap( const unsigned int R ){
-              /*!
-               * Create a zeroed Eigen::Map of the quantity with dynamic columns as a vector
-               * 
-               * \param R: The number of rows in the vector
-               */
-              zero( R );
-              return Eigen::Map< Eigen::Vector< X, -1 > > ( value->data( ), R );
-          }
+            template< typename X, unsigned int R >
+            Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > zeroMap( const unsigned int C ){
+                /*!
+                 * Create a zeroed Eigen::Map of the quantity with dynamic columns
+                 * 
+                 * \param C: The number of columns in the matrix
+                 */
+                zero( R * C );
+                return Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > ( value->data( ), R, C );
+            }
 
-          template< typename X >
-          Eigen::Map< Eigen::Matrix< X, -1, -1, Eigen::RowMajor > > zeroMap( const unsigned int R, const unsigned int C ){
-              /*!
-               * Create a zeroed Eigen::Map of the quantity with dynamic columns
-               * 
-               * \param R: The number of rows in the matrix
-               * \param C: The number of columns in the matrix
-               */
-              zero( R * C );
-              return Eigen::Map< Eigen::Matrix< X, -1, -1, Eigen::RowMajor > > ( value->data( ), R, C );
-          }
+            template< typename X, unsigned int R >
+            Eigen::Map< Eigen::Vector< X, R > > zeroMap( ){
+                /*!
+                 * Create a zeroed Eigen::Map of the quantity with dynamic columns as a vector
+                 */
+                zero( R );
+                return Eigen::Map< Eigen::Vector< X, R > > ( value->data( ), R );
+            }
+
+            template< typename X >
+            Eigen::Map< Eigen::Vector< X, -1 > > zeroMap( const unsigned int R ){
+                /*!
+                 * Create a zeroed Eigen::Map of the quantity with dynamic columns as a vector
+                 * 
+                 * \param R: The number of rows in the vector
+                 */
+                zero( R );
+                return Eigen::Map< Eigen::Vector< X, -1 > > ( value->data( ), R );
+            }
+
+            template< typename X >
+            Eigen::Map< Eigen::Matrix< X, -1, -1, Eigen::RowMajor > > zeroMap( const unsigned int R, const unsigned int C ){
+                /*!
+                 * Create a zeroed Eigen::Map of the quantity with dynamic columns
+                 * 
+                 * \param R: The number of rows in the matrix
+                 * \param C: The number of columns in the matrix
+                 */
+                zero( R * C );
+                return Eigen::Map< Eigen::Matrix< X, -1, -1, Eigen::RowMajor > > ( value->data( ), R, C );
+            }
 
       protected:
 
-          dataStorage< T > *_ds;
+          dataStorage< T > *_ds; //!< Pointer to the data for the data storage object
 
     };
 
@@ -887,16 +902,9 @@ namespace tardigradeHydra{
 
             }
 
-            virtual void setupRelaxedStep( const unsigned int &relaxedStep ){
-                /*!
-                 * When performing a relaxed iteration this function is called prior to the solution of the non-linear
-                 * problem. Users can use this function to dynamically adjust parameters or perform other tuning tasks.
-                 *
-                 * \param &relaxedStep: The current relaxed step.
-                 */
-            }
+            virtual void setupRelaxedStep( const unsigned int &relaxedStep );
 
-            //!< Get the flag for whether to use the projection or not
+            //! Get the flag for whether to use the projection or not
             const bool *getUseProjection( ){ return &_useProjection; }
 
             // Getter functions
@@ -958,9 +966,25 @@ namespace tardigradeHydra{
 
         protected:
 
-            void setNumConstraints( const unsigned int numConstraints ){ _numConstraints = numConstraints; }
+            void setNumConstraints( const unsigned int numConstraints ){
+                /*!
+                 * Set the number of constraints for the solve
+                 * 
+                 * \param numConstraints: The number of constraints
+                 */
 
-            void setPenaltyIndices( const std::vector< unsigned int > &indices ){ _penalty_indices = indices; }
+                _numConstraints = numConstraints;
+
+            }
+
+            void setPenaltyIndices( const std::vector< unsigned int > &indices ){
+                /*!
+                 * Set the indices where the penalties are defined
+                 * 
+                 * \param &indices: The indices where the penalty is defined
+                 */
+                _penalty_indices = indices;
+            }
 
             void unexpectedError( ){
                 /*!
@@ -971,16 +995,25 @@ namespace tardigradeHydra{
 
             }
 
+            //! Class which defines data storage objects which are reset at each iteration
             template< typename T >
             class setDataStorageIteration : public setDataStorageBase< T > {
 
               public:
 
                   setDataStorageIteration( dataStorage< T > *ds, residualBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
-
+                      /*!
+                       * Create a data storage object that will be reset at each new iteration
+                       * 
+                       * \param *ds: The data storage object
+                       * \param *rp: The residual class that contains the data storage object
+                       */
                   }
 
                   ~setDataStorageIteration( ){
+                      /*!
+                       * Destructor that says the data storage object has been set
+                       */
 
                       _rp->addIterationData( this->_ds );
 
@@ -988,25 +1021,42 @@ namespace tardigradeHydra{
 
               protected:
 
-                  residualBase *_rp;
+                  residualBase *_rp; //!< The containing residual class
 
             };
 
+            //! Class which defines data storage objects for values defined at the previous timestep
             template< typename T >
             class setDataStoragePrevious : public setDataStorageBase< T > {
 
                 public:
 
-                    setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){ }
+                    setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                        /*!
+                         * Constructor for data storage objects for temporally previous objects
+                         * 
+                         * \param *ds: The data storage object to modify
+                         */
+                    }
 
             };
 
+            /*!
+             * Class that is a constant data storage object
+             */
             template< typename T >
             class setDataStorageConstant : public setDataStorageBase< T > {
 
                 public:
 
-                    setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){ }
+                    setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                        /*!
+                         * Constructor for constant data storage objects
+                         * 
+                         * \param *ds: The data storage object
+                         */
+
+                    }
 
             };
 
@@ -1447,7 +1497,7 @@ namespace tardigradeHydra{
 
             unsigned int getNumGrad( ){ /*! Get the number of gradient descent steps performed */  return _NUM_GRAD; }
 
-            const bool *getUseSQPSolver( ){ return &_useSQPSolver; }
+            const bool *getUseSQPSolver( ){ /*! Return a flag for whether to use the SQP solver */ return &_useSQPSolver; }
 
             const void setMaxRelaxedIterations( const unsigned int &value ){
                 /*!
@@ -1504,31 +1554,31 @@ namespace tardigradeHydra{
             //! Set the value of the scale factor. Will automatically re-calculate the deformation and trial stresses
             void setScaleFactor( const floatType &value );
 
-            const floatType   *getScaledTime( ){ return &_scaled_time; }
+            const floatType   *getScaledTime( ){ /*! Get the value of the scaled current time */ return &_scaled_time; }
 
-            const floatType   *getScaledDeltaTime( ){ return &_scaled_deltaTime; }
+            const floatType   *getScaledDeltaTime( ){ /*! Get the value of the scaled changed in time */ return &_scaled_deltaTime; }
 
-            const floatType   *getScaledTemperature( ){ return &_scaled_temperature; }
+            const floatType   *getScaledTemperature( ){ /*! Get the value of the scaled current temperature */ return &_scaled_temperature; }
 
-            const floatVector *getScaledDeformationGradient( ){ return &_scaled_deformationGradient; }
+            const floatVector *getScaledDeformationGradient( ){ /*! Get the value of the scaled current deformation gradient */ return &_scaled_deformationGradient; }
 
-            const floatVector *getScaledAdditionalDOF( ){ return &_scaled_additionalDOF; }
+            const floatVector *getScaledAdditionalDOF( ){ /*! Get the value of the scaled current additional DOF */ return &_scaled_additionalDOF; }
 
-            const floatType *getCutbackFactor( ){ return &_cutback_factor; }
+            const floatType *getCutbackFactor( ){ /*! Get the value of the cutback factor */ return &_cutback_factor; }
 
-            const unsigned int *getNumGoodControl( ){ return &_num_good_control; }
+            const unsigned int *getNumGoodControl( ){ /*! Get the number of good iterations we need to have before increasing the timestep */ return &_num_good_control; }
 
-            const floatType *getGrowthFactor( ){ return &_growth_factor; }
+            const floatType *getGrowthFactor( ){ /*! Get the growth factor for the timestep increase */ return &_growth_factor; }
 
-            const floatType *getMinDS( ){ return &_minDS; }
+            const floatType *getMinDS( ){ /*! Get the minimum allowable ratio of the total timestep to the cutback timestep */ return &_minDS; }
 
-            void setCutbackFactor( const floatType &value ){ _cutback_factor = value; }
+            void setCutbackFactor( const floatType &value ){ /*! Get the current value of the cutback factor. \param &value: The value of the cutback */  _cutback_factor = value; }
 
-            void setNumGoodControl( const unsigned int &value ){ _num_good_control = value; }
+            void setNumGoodControl( const unsigned int &value ){ /*! Set the number of good iterations that need to happen before the timestep increases. \param &value: The value of the number of good iterations prior to increasing the relative timestep */  _num_good_control = value; }
 
-            void setGrowthFactor( const floatType &value ){ _growth_factor = value; }
+            void setGrowthFactor( const floatType &value ){ /*! Set the relative growth factor for the local timestep increase \param &value: The new value */ _growth_factor = value; }
 
-            void setMinDS( const floatType &value ){ _minDS = value; }
+            void setMinDS( const floatType &value ){ /*! Set the minimum value of the relative cutback timestep \param &value: The new value */  _minDS = value; }
 
             const bool allowStepGrowth( const unsigned int &num_good );
 
@@ -1588,13 +1638,13 @@ namespace tardigradeHydra{
 
             const floatVector *get_basedResidualNormdX( );
 
-            dataStorage< floatType > _baseResidualNorm;
+            dataStorage< floatType > _baseResidualNorm; //!< The base value of the norm of the residual
 
-            dataStorage< floatVector > _basedResidualNormdX;
+            dataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
 
-            void set_baseResidualNorm( const floatType &value ){ setNLStepData( value, _baseResidualNorm ); }
+            void set_baseResidualNorm( const floatType &value ){ /*! Set the base value of the residual norm \param &value: The new value */  setNLStepData( value, _baseResidualNorm ); }
 
-            void set_basedResidualNormdX( const floatVector &value ){ setNLStepData( value, _basedResidualNormdX ); }
+            void set_basedResidualNormdX( const floatVector &value ){ /*! Set the base derivative of the residual norm w.r.t. the unknown vector \param &value: The new value */  setNLStepData( value, _basedResidualNormdX ); }
 
             virtual void setBaseQuantities( );
 
@@ -1710,17 +1760,23 @@ namespace tardigradeHydra{
             std::string build_upper_index_out_of_range_error_string( const unsigned int upperIndex, const unsigned int num_configurations );
             std::string build_lower_index_out_of_range_error_string( const unsigned int lowerIndex, const unsigned int upperIndex );
 
-            floatVector _initialX;
+            floatVector _initialX; //!< The initial value of the unknown vector
 
+            //! A data storage class that resets at every iteration
             template< typename T >
             class setDataStorageIteration : public setDataStorageBase< T > {
 
               public:
 
                   setDataStorageIteration( dataStorage< T > *ds, hydraBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
+                      /*!
+                       * Create a data storage object that will be reset at each new iteration
+                       * 
+                       * \param *ds: The data storage object
+                       * \param *rp: The base hydra class that contains the data storage object
+                       */ }
 
-                  }
-
+                  //! Destructor object that adds the data storage object to the iteration data list
                   ~setDataStorageIteration( ){
 
                       _rp->addIterationData( this->_ds );
@@ -1729,25 +1785,44 @@ namespace tardigradeHydra{
 
               protected:
 
-                  hydraBase *_rp;
+                  hydraBase *_rp; //!< The containing hydraBase class
 
             };
 
+            /*!
+             * Class which defines setting values defined at the previous timestep
+             */
             template< typename T >
             class setDataStoragePrevious : public setDataStorageBase< T > {
 
                 public:
 
-                    setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){ }
+                    //! Create a data storage object that will be reset whenever the previous value gets reset
+                    setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                        /*!
+                         * Constructor for data storage objects for temporally previous objects
+                         * 
+                         * \param *ds: The data storage object to modify
+                         */
+                    }
 
             };
 
+            /*!
+             * Class which defines setting constant values regardless of the timestep
+             */
             template< typename T >
             class setDataStorageConstant : public setDataStorageBase< T > {
 
                 public:
 
-                    setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){ }
+                    setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                        /*!
+                         * Constructor for constant data storage objects
+                         * 
+                         * \param *ds: The data storage object
+                         */
+                    }
 
             };
 
@@ -1761,7 +1836,7 @@ namespace tardigradeHydra{
 
             virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints );
 
-            virtual void solveConstrainedQP( floatVector &x, const unsigned int kmax=100 );
+            virtual void solveConstrainedQP( floatVector &dx, const unsigned int kmax=100 );
 
             virtual void setConstraints( );
 
@@ -1769,7 +1844,7 @@ namespace tardigradeHydra{
 
             virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
 
-            void setUseSQPSolver( const unsigned int &value ){ _useSQPSolver = value; }
+            void setUseSQPSolver( const unsigned int &value ){ /*! Set whether to use the SQP solver \param &value: The updated value */ _useSQPSolver = value; }
 
             void setInitializeUnknownVector( const bool &value ){
                 /*!
@@ -2009,15 +2084,22 @@ namespace tardigradeHydra{
 
     };
 
+    //! A data storage class that updates at every iteration
     template< typename T >
     class setDataStorageIteration : public setDataStorageBase< T > {
 
       public:
 
           setDataStorageIteration( dataStorage< T > *ds, residualBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
-
+                      /*!
+                       * Create a data storage object that will be reset at each new iteration
+                       * 
+                       * \param *ds: The data storage object
+                       * \param *rp: The residual class that contains the data storage object
+                       */
           }
 
+          //! The destructor that says that the data storage object has been set
           ~setDataStorageIteration( ){
 
               _rp->addIterationData( this->_ds );
@@ -2026,25 +2108,39 @@ namespace tardigradeHydra{
 
       protected:
 
-          residualBase *_rp;
+          residualBase *_rp; //!< The containing residual base class
 
     };
 
+    //! A data storage class that updates whenever the previous values change
     template< typename T >
     class setDataStoragePrevious : public setDataStorageBase< T > {
 
         public:
 
-            setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){ }
+            setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                /*!
+                 * Constructor for data storage objects for temporally previous objects
+                 * 
+                 * \param *ds: The data storage object to modify
+                 */
+            }
 
     };
 
+    //! A data storage class that is constant
     template< typename T >
     class setDataStorageConstant : public setDataStorageBase< T > {
 
         public:
 
-            setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){ }
+            setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                /*!
+                 * Constructor for constant data storage objects
+                 * 
+                 * \param *ds: The data storage object
+                 */
+            }
 
     };
 

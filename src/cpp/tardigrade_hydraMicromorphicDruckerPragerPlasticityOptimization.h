@@ -1,6 +1,6 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraMicromorphicLinearElasticityOptimization.h
+  * \file tardigrade_hydraMicromorphicDruckerPragerPlasticityOptimization.h
   ******************************************************************************
   * An implementation of micromorphic drucker-prager plasticity model which is
   * based on an optimization approach to its solution.
@@ -105,9 +105,6 @@ namespace tardigradeHydra{
                      * \param &stateVariableIndices: The indices of the plastic state variables
                      * \param &parameters: The parameter vector
                      * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
-                     * \param &useWeakenedMacaulay: A flag for whether to use a weakened Macaulay bracket or not (defaults to false)
-                     * \param &weakenedMacaulayParameter: The value of the parameter for the weakened Macaulay bracket (defaults to 10)
-                     * \param &plasticMultiplierBarrierModulus: The barrier modulus to make sure that the plastic multipliers never go negative (defaults to 1000)
                      */
 
                     const unsigned int offset = ( *hydra->getNumConfigurations( ) ) * ( *hydra->getConfigurationUnknownCount( ) );

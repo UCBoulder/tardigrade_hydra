@@ -9069,31 +9069,6 @@ namespace tardigradeHydra{
 
         }
 
-//        void residual::suggestInitialIterateValues( std::vector< unsigned int >   &indices,
-//                                                    std::vector< floatType > &values ){
-//
-//            /*!
-//             * Function which is called which allows the residual to suggest initial values for given
-//             * configurations. This is called when the unknown vector is being initialized. If more than
-//             * one residual attempts to set the initial vector the last residual will override all of the others.
-//             *
-//             * After the initial iterate has been suggested, the iteration data is cleared so that the residual
-//             * starts the iteration in a clean state.
-//             * 
-//             * \param &indices: The indices of the unknown vector to set
-//             * \param &values:  The values to be set in the unknown vector
-//             */
-//
-//            // Assume no additional plastic deformation
-//            indices = std::vector< unsigned int >( getStateVariableIndices( )->begin( ),
-//                                                   getStateVariableIndices( )->begin( ) + 5 );
-//
-//            indices += ( *hydra->getNumConfigurations( ) ) * ( *hydra->getConfigurationUnknownCount( ) );
-//
-//            values  = std::vector< floatType >( 5, 0 );
-//
-//        }
-
         double residual::smoothLinearCohesion( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf ){
             /*!
              * Soften a linear cohesion function with an exponential function
@@ -9207,7 +9182,7 @@ namespace tardigradeHydra{
             /*!
              * Setup a relaxed step. It's assumed that the reason why it's failing is because of the hardening function.
              * 
-             * \param relaxedStep: The current relaxed step
+             * \param &relaxedStep: The current relaxed step
              */
 
             constexpr unsigned int dim = 3;
@@ -9281,7 +9256,6 @@ namespace tardigradeHydra{
              * \param &macroCohesion: The macro-scale cohesion
              * \param &microCohesion: The micro-scale cohesion
              * \param &microGradientCohesion: The micro-gradient cohesion
-             * \param &macroSmoothingRatio: The macro-scale smoothing ratio
              * \param &macroSmoothingRatio: The macro-scale smoothing ratio
              * \param &microSmoothingRatio: The micro-scale smoothing ratio
              * \param &microGradientSmoothingRatio: The micro-gradient smoothing ratios

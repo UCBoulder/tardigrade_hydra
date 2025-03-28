@@ -80,8 +80,9 @@ namespace tardigradeHydra{
                      * \param *hydra: A reference to the containing hydra object
                      * \param &numEquations: The number of equations to be defined by
                      *     the residual
-                     * \param &thermalConfigurationIndex: The index of the mass-change
+                     * \param &massChangeConfigurationIndex: The index of the mass-change
                      * \param &parameters: The parameters for the model
+                     * \param integrationParameter: The parameter of the integration 0 is explicit, 1 is implicit
                      */
 
                     _massChangeConfigurationIndex = massChangeConfigurationIndex;
@@ -92,8 +93,10 @@ namespace tardigradeHydra{
 
                 }
 
+                //! Get the index of the mass-change configuration
                 const unsigned int *getMassChangeConfigurationIndex( ){ return &_massChangeConfigurationIndex; }
 
+                //! Get the integration parameter 0 for explicit, 1 for implicit
                 const floatType *getIntegrationParameter( ){ return &_integrationParameter; }
 
                 virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,

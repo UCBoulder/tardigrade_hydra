@@ -44,6 +44,8 @@ namespace tardigradeHydra{
          * \param &previousMicroDeformation: The previous micro-deformation \f$ \chi \f$
          * \param &gradientMicroDeformation: The current reference spatial gradient of the micro-deformation \f$ \frac{\partial}{\partial X} \chi \f$
          * \param &previousGradientMicroDeformation: The previous reference spatial gradient of the micro-deformation \f$ \frac{\partial}{\partial X} \chi \f$
+         * \param &additionalDOF: Additional degrees of freedom used in the material models
+         * \param &previousAdditionalDOF: The previous values of the additional degrees of freedom used in the material models
          * \param &previousStateVariables: The previous state variables
          * \param &parameters: The model parameters
          * \param &numConfigurations: The number of configurations
@@ -55,6 +57,9 @@ namespace tardigradeHydra{
          * \param &maxIterations: The maximum number of non-linear iterations (defaults to 20)
          * \param &maxLSIterations: The maximum number of line-search iterations (defaults to 5)
          * \param &lsAlpha: The alpha term for the line search (defaults to 1e-4)
+         * \param use_preconditioner: Boolean for whether to use the preconditioner
+         * \param preconditioner_type: The type of the preconditioner to use.  Options are
+         *     0. A diagonal pre-conditioner populate by the inverse of the absolute largest entries of the Jacobian's rows
          */
 
         setScaledQuantities( );

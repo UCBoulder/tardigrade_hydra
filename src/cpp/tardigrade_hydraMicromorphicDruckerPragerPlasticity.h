@@ -507,9 +507,6 @@ namespace tardigradeHydra{
 
                 virtual void setupRelaxedStep( const unsigned int &relaxedStep ) override;
 
-//                virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
-//                                                          std::vector< floatType > &values ) override;
-
             protected:
 
                 bool _useWeakenedMacaulay; //!< Flag for whether to use the weak Macaulay brackets or not
@@ -522,7 +519,7 @@ namespace tardigradeHydra{
 
                 unsigned int _numPlasticMultipliers; //!< The number of plastic multipliers. Hard coded to 5 but setting as a variable just in case
 
-                unsigned int _numPlasticStrainLikeStateVariables = 5; //The number of plastic strain-like state variables. Hard coded to 5 but setting as a variable just in case
+                unsigned int _numPlasticStrainLikeStateVariables = 5; //!< The number of plastic strain-like state variables. Hard coded to 5 but setting as a variable just in case
 
                 virtual void extractMaterialParameters( const parameterVector &parameters );
 
@@ -1210,8 +1207,6 @@ namespace tardigradeHydra{
                 const floatType *getBaseMacroSmoothingRatio( ){
                     /*!
                      * Get the base macro smoothing ratio
-                     *
-                     * \param &value: The value of the smoothing ratio
                      */
 
                     return &_baseMacroSmoothingRatio;
