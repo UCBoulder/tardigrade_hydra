@@ -177,18 +177,16 @@ namespace tardigradeHydra{
 
             auto dim = hydra->getDimension( );
 
-            auto sot_dim = dim * dim;
-
-            const unsigned int num_unknowns = hydra->getNumUnknowns( );
+            auto num_unknowns = hydra->getNumUnknowns( );
 
             // Form the Jacobian
             auto jacobian = get_setDataStorage_jacobian( );
 
-            jacobian.zero( sot_dim * num_unknowns );
+            jacobian.zero( num_unknowns * num_unknowns );
 
             for ( unsigned int i = 0; i < dim; ++i ){
 
-                ( *jacobian.value )[ hydra->getNumUnknowns( ) * i + get_heatFluxIndex( ) + i ] = 1.;
+                ( *jacobian.value )[ hydra->getNumUnknowns( ) * ( get_heatFluxIndex( ) + i ) + get_heatFluxIndex( ) + i ] = 1.;
 
             }
 
@@ -231,7 +229,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < dim; ++j ){
 
-                    ( *dRdAdditionalDOF.value )[ hydra->getNumAdditionalDOF( ) * i + get_temperatureGradientIndex( ) + j ] -= ( *get_dHeatFluxdGradT( ) )[ dim * i + j ];
+                    ( *dRdAdditionalDOF.value )[ hydra->getNumAdditionalDOF( ) * ( get_heatFluxIndex( ) + i ) + get_temperatureGradientIndex( ) + j ] -= ( *get_dHeatFluxdGradT( ) )[ dim * i + j ];
 
                 }
 

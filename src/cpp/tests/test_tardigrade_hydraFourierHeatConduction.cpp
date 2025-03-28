@@ -354,11 +354,13 @@ BOOST_AUTO_TEST_CASE( test_residual_getHeatFlux, * boost::unit_test::tolerance( 
 
     unsigned int dimension = 3;
 
+    constexpr unsigned int temperatureGradientIndex = 28;
+
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 23, parameters, 28 );
+    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 23, parameters, temperatureGradientIndex );
 
     std::vector< double > answer = {
          0.10108012, -0.0641783 ,  0.19986858
@@ -371,6 +373,56 @@ BOOST_AUTO_TEST_CASE( test_residual_getHeatFlux, * boost::unit_test::tolerance( 
     BOOST_TEST(         answer == *R.get_heatFlux( ),         CHECK_PER_ELEMENT );
 
     BOOST_TEST( previousAnswer == *R.get_previousHeatFlux( ), CHECK_PER_ELEMENT );
+
+    // Check the jacobians
+    floatType eps = 1e-6;
+
+    {
+
+        std::vector< double > x_base = additionalDOF;
+
+        constexpr unsigned int offset = temperatureGradientIndex;
+
+        constexpr unsigned int NUM_VAR = 3;
+
+        constexpr unsigned int NUM_OUT = 3;
+
+        for ( unsigned int i = 0; i < NUM_VAR; ++i ){
+
+            floatType delta = eps * std::fabs( x_base[ offset + i ] ) + eps;
+
+            std::vector< double > x_p, x_m;
+
+            x_p = x_base;
+            x_m = x_base;
+
+            x_p[ offset + i ] += delta;
+            x_m[ offset + i ] -= delta;
+
+            tardigradeHydra::hydraBase hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                               x_p, previousAdditionalDOF,
+                                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::hydraBase hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                               x_m, previousAdditionalDOF,
+                                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 23, parameters, temperatureGradientIndex );
+
+            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 23, parameters, temperatureGradientIndex );
+
+            floatVector rp = *Rp.get_heatFlux( );
+            floatVector rm = *Rm.get_heatFlux( );
+
+            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
+
+                BOOST_TEST( ( *R.get_dHeatFluxdGradT( ) )[ NUM_VAR * j + i ] == ( rp[ j ] - rm[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
 
 }
 
@@ -438,11 +490,13 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
     unsigned int dimension = 3;
 
+    constexpr unsigned int temperatureGradientIndex = 28;
+
     tardigradeHydra::hydraBase hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 23, parameters, 28 );
+    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 23, parameters, temperatureGradientIndex );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
@@ -455,5 +509,204 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
     };
 
     BOOST_TEST(         answer == *R.getResidual( ),         CHECK_PER_ELEMENT );
+
+    // Check the jacobians
+    floatType eps = 1e-6;
+
+    // dRdF
+    {
+
+        std::vector< double > x_base = deformationGradient;
+
+        constexpr unsigned int NUM_VAR = 9;
+
+        constexpr unsigned int NUM_OUT = 23;
+
+        for ( unsigned int i = 0; i < NUM_VAR; ++i ){
+
+            floatType delta = eps * std::fabs( x_base[ i ] ) + eps;
+
+            std::vector< double > x_p, x_m;
+
+            x_p = x_base;
+            x_m = x_base;
+
+            x_p[ i ] += delta;
+            x_m[ i ] -= delta;
+
+            tardigradeHydra::hydraBase hydrap( time, deltaTime, temperature, previousTemperature, x_p, previousDeformationGradient,
+                                               additionalDOF, previousAdditionalDOF,
+                                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::hydraBase hydram( time, deltaTime, temperature, previousTemperature, x_m, previousDeformationGradient,
+                                               additionalDOF, previousAdditionalDOF,
+                                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 23, parameters, temperatureGradientIndex );
+
+            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 23, parameters, temperatureGradientIndex );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+            floatVector rp = *Rp.getResidual( );
+            floatVector rm = *Rm.getResidual( );
+
+            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
+
+                BOOST_TEST( ( *R.getdRdF( ) )[ NUM_VAR * j + i ] == ( rp[ j ] - rm[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
+
+    // dRdT
+    {
+
+        double x_base = temperature;
+
+        constexpr unsigned int NUM_VAR = 1;
+
+        constexpr unsigned int NUM_OUT = 23;
+
+        for ( unsigned int i = 0; i < NUM_VAR; ++i ){
+
+            floatType delta = eps * std::fabs( temperature ) + eps;
+
+            double x_p, x_m;
+
+            x_p = x_base;
+            x_m = x_base;
+
+            x_p += delta;
+            x_m -= delta;
+
+            tardigradeHydra::hydraBase hydrap( time, deltaTime, x_p, previousTemperature, deformationGradient, previousDeformationGradient,
+                                               additionalDOF, previousAdditionalDOF,
+                                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::hydraBase hydram( time, deltaTime, x_m, previousTemperature, deformationGradient, previousDeformationGradient,
+                                               additionalDOF, previousAdditionalDOF,
+                                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 23, parameters, temperatureGradientIndex );
+
+            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 23, parameters, temperatureGradientIndex );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+            floatVector rp = *Rp.getResidual( );
+            floatVector rm = *Rm.getResidual( );
+
+            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
+
+                BOOST_TEST( ( *R.getdRdT( ) )[ NUM_VAR * j + i ] == ( rp[ j ] - rm[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
+
+    // dRdX
+    {
+
+        std::vector< double > x_base = unknownVector;
+
+        constexpr unsigned int NUM_VAR = 23;
+
+        constexpr unsigned int NUM_OUT = 23;
+
+        for ( unsigned int i = 0; i < NUM_VAR; ++i ){
+
+            floatType delta = eps * std::fabs( x_base[ i ] ) + eps;
+
+            std::vector< double > x_p, x_m;
+
+            x_p = x_base;
+            x_m = x_base;
+
+            x_p[ i ] += delta;
+            x_m[ i ] -= delta;
+
+            tardigradeHydra::hydraBase hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                               additionalDOF, previousAdditionalDOF,
+                                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::hydraBase hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                               additionalDOF, previousAdditionalDOF,
+                                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 23, parameters, temperatureGradientIndex );
+
+            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 23, parameters, temperatureGradientIndex );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, x_p );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, x_m );
+
+            floatVector rp = *Rp.getResidual( );
+            floatVector rm = *Rm.getResidual( );
+
+            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
+
+                BOOST_TEST( ( *R.getJacobian( ) )[ NUM_VAR * j + i ] == ( rp[ j ] - rm[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
+
+    // dRdAdditionalDOF
+    {
+
+        constexpr unsigned int NUM_VAR = 55;
+
+        constexpr unsigned int NUM_OUT = 23;
+
+        for ( unsigned int i = 0; i < NUM_VAR; ++i ){
+
+            floatType delta = eps * std::fabs( additionalDOF[ i ] ) + eps;
+
+            floatVector x_p = additionalDOF;
+            floatVector x_m = additionalDOF;
+
+            x_p[ i ] += delta;
+            x_m[ i ] -= delta;
+
+            tardigradeHydra::hydraBase hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                               x_p, previousAdditionalDOF,
+                                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::hydraBase hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                               x_m, previousAdditionalDOF,
+                                               previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 23, parameters, temperatureGradientIndex );
+
+            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 23, parameters, temperatureGradientIndex );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+            tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+            floatVector rp = *Rp.getResidual( );
+            floatVector rm = *Rm.getResidual( );
+
+            for ( unsigned int j = 0; j < NUM_OUT; ++j ){
+
+                BOOST_TEST( ( *R.getdRdAdditionalDOF( ) )[ NUM_VAR * j + i ] == ( rp[ j ] - rm[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
 
 }
