@@ -141,8 +141,6 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the additional DOF vector
              */
 
-            auto dim = hydra->getDimension( );
-
             auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
 
             dRdAdditionalDOF.zero( ( *getNumEquations( ) ) * hydra->getNumAdditionalDOF( ) );
