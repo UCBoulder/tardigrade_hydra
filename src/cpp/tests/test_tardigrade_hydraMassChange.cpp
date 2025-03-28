@@ -827,6 +827,10 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_1, * boost::unit_
 
         protected:
 
+            using tardigradeHydra::massChange::residual::setUnitDirectionVector;
+
+            using tardigradeHydra::massChange::residual::setMassChangeVelocityGradientTrace;
+
             virtual void setMassChangeVelocityGradientTrace( const bool &isPrevious ) override{
 
                 if ( isPrevious ){
@@ -1032,6 +1036,10 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_2, * boost::unit_
             floatVector previousdDdGradC = { .1, .2, .3, .4, .5, .6, .7, .8, .9 };
 
         protected:
+
+            using tardigradeHydra::massChange::residual::setUnitDirectionVector;
+
+            using tardigradeHydra::massChange::residual::setMassChangeVelocityGradientTrace;
 
             virtual void setMassChangeVelocityGradientTrace( const bool &isPrevious ) override{
 
@@ -1248,6 +1256,10 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeVelocityGradient_3, * boost::unit_
             floatVector previousdDdGradC = { .1, .2, .3, .4, .5, .6, .7, .8, .9 };
 
         protected:
+
+            using tardigradeHydra::massChange::residual::setUnitDirectionVector;
+
+            using tardigradeHydra::massChange::residual::setMassChangeVelocityGradientTrace;
 
             virtual void setMassChangeVelocityGradientTrace( const bool &isPrevious ) override{
 
@@ -2926,6 +2938,8 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_1, * 
 
         protected:
 
+            using tardigradeHydra::massChange::residual::setMassChangeVelocityGradient;
+
             virtual void setMassChangeVelocityGradient( const bool &isPrevious ) override{
 
                 if ( isPrevious ){
@@ -3692,6 +3706,8 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1, * boost::un
             }
 
         protected:
+
+            using tardigradeHydra::massChange::residual::setMassChangeIntermediateVelocityGradient;
 
             virtual void setMassChangeIntermediateVelocityGradient( const bool &isPrevious ) override{
 

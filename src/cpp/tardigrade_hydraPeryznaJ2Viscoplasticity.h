@@ -124,6 +124,12 @@ namespace tardigradeHydra{
 
             protected:
 
+                using tardigradeHydra::peryznaViscoplasticity::residual::setHardeningFunction;
+
+                using tardigradeHydra::peryznaViscoplasticity::residual::setDragStress;
+
+                using tardigradeHydra::peryznaViscoplasticity::residual::setYieldFunction;
+
                 virtual void setYieldFunction( const bool isPrevious ) override;
 
                 virtual void setYieldFunctionDerivatives( const bool isPrevious ) override;

@@ -1,13 +1,13 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraFourierHeatConduction.h
+  * \file tardigrade_hydraLinearInternalEnergy.h
   ******************************************************************************
   * An implementation of Fourier heat conduction using the hydra framework.
   ******************************************************************************
   */
 
-#ifndef TARDIGRADE_HYDRA_FOURIER_HEAT_CONDUCTION_H
-#define TARDIGRADE_HYDRA_FOURIER_HEAT_CONDUCTION_H
+#ifndef TARDIGRADE_HYDRA_LINEAR_INTERNAL_ENERGY_H
+#define TARDIGRADE_HYDRA_LINEAR_INTERNAL_ENERGY_H
 
 #define USE_EIGEN
 #include<tardigrade_vector_tools.h>
@@ -15,7 +15,7 @@
 
 namespace tardigradeHydra{
 
-    namespace fourierHeatConduction{
+    namespace linearInternalEnergy{
 
         // forward class definitions
         namespace unit_test{
@@ -70,24 +70,21 @@ namespace tardigradeHydra{
             public:
 
                 /*!
-                 * The main initialization constructor for the linear elastic residual
+                 * The main initialization constructor for the linear temperature-internal energy relation
                  * 
                  * \param *hydra: A pointer to the containing hydra class
                  * \param &numEquations: The number of equations the residual defines
                  * \param &parameters: The parameter vector
-                 * \param &temperatureGradientIndex: The index in the additional DOF array where the temperature gradient exists
                  * \param &expectedParameterVectorSize: The expected size of the parameter vector (defaults to 1)
-                 * \param &heatFluxIndex: The index of the heat flux in the residual vector (defaults to 17)
+                 * \param &internalEnergyIndex: The index of the predicted internal energy residual vector (defaults to 9)
                  */
                 residual(
                     tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters,
-                    const unsigned int temperatureGradientIndex,
                     const unsigned int expectedParameterVectorSize = 1,
-                    const unsigned int heatFluxIndex = 17
+                    const unsigned int internalEnergyIndex = 9
                 ) : tardigradeHydra::residualBase( hydra, numEquations ),
                 _expectedParameterVectorSize( expectedParameterVectorSize ),
-                _temperatureGradientIndex( temperatureGradientIndex ),
-                _heatFluxIndex( heatFluxIndex ){
+                _internalEnergyIndex( internalEnergyIndex ){
     
                     TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameterVector( parameters ) );
 
@@ -96,33 +93,30 @@ namespace tardigradeHydra{
             //! Get the expected parameter vector size
             auto get_expectedParameterVectorSize( ){ return _expectedParameterVectorSize; }
 
-            //! Get the index in the additional DOF vector where the temperature gradient is stored
-            auto get_temperatureGradientIndex( ){ return _temperatureGradientIndex; }
+            //! Get the index in the residual vector where the internal energy is stored
+            auto get_internalEnergyIndex( ){ return _internalEnergyIndex; }
 
-            //! Get the index in the residual vector where the heat flux is stored
-            auto get_heatFluxIndex( ){ return _heatFluxIndex; }
-
-            const floatVector *get_conductivityParameters( ){
+            const floatVector *get_specificHeatParameters( ){
                 /*!
-                 * Get the conductivity parameters
+                 * Get the specific heat parameters
                  */
 
-                return &_conductivityParameters;
+                return &_specificHeatParameters;
 
             }
 
             protected:
 
-                virtual void setConductivityParameters(
-                    const floatVector &conductivityParameters
+                virtual void setSpecificHeatParameters(
+                    const floatVector &specificHeatParameters
                 ){
                     /*!
-                     * Set the values of the conductivity parameters
+                     * Set the values of the specific heat parameters
                      * 
-                     * \param &conductivityParameters: The values of the conductivity parameters
+                     * \param &specificHeatParameters: The values of the specific heat parameters
                      */
 
-                     _conductivityParameters = conductivityParameters;
+                     _specificHeatParameters = specificHeatParameters;
 
                 }
 
@@ -138,24 +132,20 @@ namespace tardigradeHydra{
 
                 virtual void decomposeParameterVector( const floatVector &parameters );
 
-                virtual void setTemperatureGradient( );
+                virtual void setSpecificHeat( );
 
-                virtual void setPreviousTemperatureGradient( );
+                virtual void setPreviousSpecificHeat( );
 
-                virtual void setConductivity( );
+                virtual void setInternalEnergy( );
 
-                virtual void setPreviousConductivity( );
+                virtual void setPreviousInternalEnergy( );
 
-                virtual void setHeatFlux( );
-
-                virtual void setPreviousHeatFlux( );
-
-                virtual void setdHeatFluxdGradT( );
+                virtual void setdInternalEnergydT( );
      
             private:
     
                 // Friend classes
-                friend class tardigradeHydra::fourierHeatConduction::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
+                friend class tardigradeHydra::linearInternalEnergy::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
         
                 using tardigradeHydra::residualBase::residualBase;
         
@@ -169,27 +159,21 @@ namespace tardigradeHydra{
         
                 using tardigradeHydra::residualBase::setAdditionalDerivatives;
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, temperatureGradient,               floatVector,          setTemperatureGradient )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, specificHeat,           floatType,           setSpecificHeat )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, previousTemperatureGradient,       floatVector,  setPreviousTemperatureGradient )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousSpecificHeat,   floatType,   setPreviousSpecificHeat )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, conductivity,                        floatType,                 setConductivity )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, internalEnergy,         floatType,         setInternalEnergy )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousConductivity,                floatType,         setPreviousConductivity )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, previousInternalEnergy, floatType, setPreviousInternalEnergy )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, heatFlux,                          floatVector,                     setHeatFlux )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dInternalEnergydT,      floatType,      setdInternalEnergydT )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousHeatFlux,                  floatVector,             setPreviousHeatFlux )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dHeatFluxdGradT,             secondOrderTensor,              setdHeatFluxdGradT )
-
-                floatVector _conductivityParameters; //!< The parameters used in the calculation of the conductivity
+                floatVector _specificHeatParameters; //!< The parameters used in the calculation of the specific heat
 
                 const unsigned int _expectedParameterVectorSize; //!< The expected size of the parameter vector
 
-                const unsigned int _temperatureGradientIndex; //!< The index in the additional DOF vector where the temperature gradient is located
-
-                const unsigned int _heatFluxIndex; //!< The index of the heat flux in the output residual vector
+                const unsigned int _internalEnergyIndex; //!< The index of the internal energy in the output residual vector
 
         };
 

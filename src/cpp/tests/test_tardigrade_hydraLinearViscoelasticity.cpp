@@ -1691,6 +1691,10 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2Stress, * boost::unit_test::tolerance(
 
         private:
 
+            using tardigradeHydra::linearViscoelasticity::residual::setPK2MeanStress;
+
+            using tardigradeHydra::linearViscoelasticity::residual::setPK2IsochoricStress;
+
             virtual void setPK2MeanStress( ) override {
 
                 setPK2MeanStress( PK2MeanStress );

@@ -22,6 +22,8 @@ New Features
 - Added the ability to scale the incoming load information by a scale factor (:pull:`178`). By `Nathan Miller`_.
 - Added the ability to sub-cycle the analysis to try and improve convergence (:pull:`179`). By `Nathan Miller`_.
 - Added a linear test material for the full material-response vector (:pull:`181`). By `Nathan Miller`_.
+- Added Fourier heat conduction residual (:pull:`184`). By `Nathan Miller`_.
+- Added linear temperature to internal energy relation (:pull:`185`). By `Nathan Miller`_.
 
 Internal Changes
 ================
