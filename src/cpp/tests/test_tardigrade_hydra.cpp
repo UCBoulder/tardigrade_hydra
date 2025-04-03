@@ -3152,6 +3152,16 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             unsigned int numVariables = 41;
 
+            unsigned int _num_modify_global_residual_calls = 0;
+
+            unsigned int _num_modify_global_jacobian_calls = 0;
+
+            unsigned int _num_modify_global_dRdT_calls     = 0;
+
+            unsigned int _num_modify_global_dRdF_calls     = 0;
+
+            unsigned int _num_modify_global_dRdAdditionalDOF_calls = 0;
+
             using tardigradeHydra::residualBase::residualBase;
 
             using tardigradeHydra::residualBase::setResidual;
@@ -3263,6 +3273,46 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
                 }
 
                 setAdditionalDerivatives( tardigradeVectorTools::appendVectors( additionalDerivatives ) );
+
+            }
+
+            virtual void modifyGlobalResidual( ) override {
+
+                _num_modify_global_residual_calls++;
+
+                BOOST_CHECK( hydra->getMutableResidual( ) );
+
+            }
+
+            virtual void modifyGlobalJacobian( ) override {
+
+                _num_modify_global_jacobian_calls++;
+
+                BOOST_CHECK( hydra->getMutableJacobian( ) );
+
+            }
+
+            virtual void modifyGlobaldRdT( ) override {
+
+                _num_modify_global_dRdT_calls++;
+
+                BOOST_CHECK( hydra->getMutabledRdT( ) );
+
+            }
+
+            virtual void modifyGlobaldRdF( ) override {
+
+                _num_modify_global_dRdF_calls++;
+
+                BOOST_CHECK( hydra->getMutabledRdF( ) );
+
+            }
+
+            virtual void modifyGlobaldRdAdditionalDOF( ) override {
+
+                _num_modify_global_dRdAdditionalDOF_calls++;
+
+                BOOST_CHECK( hydra->getMutabledRdAdditionalDOF( ) );
 
             }
 
@@ -3413,6 +3463,27 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
         BOOST_TEST( additionalDerivativesAnswer[ i ] == hydra.getAdditionalDerivatives( )[ i ], CHECK_PER_ELEMENT );
 
     }
+
+    // Check that the global modify functions have been called
+    BOOST_TEST( hydra.r1._num_modify_global_residual_calls == 1 );
+    BOOST_TEST( hydra.r2._num_modify_global_residual_calls == 1 );
+    BOOST_TEST( hydra.r3._num_modify_global_residual_calls == 1 );
+
+    BOOST_TEST( hydra.r1._num_modify_global_jacobian_calls == 1 );
+    BOOST_TEST( hydra.r2._num_modify_global_jacobian_calls == 1 );
+    BOOST_TEST( hydra.r3._num_modify_global_jacobian_calls == 1 );
+
+    BOOST_TEST( hydra.r1._num_modify_global_dRdT_calls == 1 );
+    BOOST_TEST( hydra.r2._num_modify_global_dRdT_calls == 1 );
+    BOOST_TEST( hydra.r3._num_modify_global_dRdT_calls == 1 );
+
+    BOOST_TEST( hydra.r1._num_modify_global_dRdF_calls == 1 );
+    BOOST_TEST( hydra.r2._num_modify_global_dRdF_calls == 1 );
+    BOOST_TEST( hydra.r3._num_modify_global_dRdF_calls == 1 );
+
+    BOOST_TEST( hydra.r1._num_modify_global_dRdAdditionalDOF_calls == 1 );
+    BOOST_TEST( hydra.r2._num_modify_global_dRdAdditionalDOF_calls == 1 );
+    BOOST_TEST( hydra.r3._num_modify_global_dRdAdditionalDOF_calls == 1 );
 
 }
 

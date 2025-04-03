@@ -6,7 +6,7 @@ Changelog
 #########
 
 ******************
-0.5.0 (unreleased)
+0.4.5 (unreleased)
 ******************
 
 New Features
@@ -24,6 +24,7 @@ New Features
 - Added a linear test material for the full material-response vector (:pull:`181`). By `Nathan Miller`_.
 - Added Fourier heat conduction residual (:pull:`184`). By `Nathan Miller`_.
 - Added linear temperature to internal energy relation (:pull:`185`). By `Nathan Miller`_.
+- Added the ability to modify the global residuals and Jacobians (:pull:`186`). By `Nathan Miller`_.
 
 Internal Changes
 ================
