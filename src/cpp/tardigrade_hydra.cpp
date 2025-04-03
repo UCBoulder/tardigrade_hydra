@@ -887,8 +887,6 @@ namespace tardigradeHydra{
 
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
 
-//            residualBase *residual = ( *residual_ptr );
-
             // Extract the terms
 
             const floatVector* localResidual;
@@ -952,8 +950,6 @@ namespace tardigradeHydra{
         unsigned int numAdditionalDerivatives = 0;
 
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
-
-//            residualBase *residual = ( *residual_ptr );
 
             // Extract the terms
 
