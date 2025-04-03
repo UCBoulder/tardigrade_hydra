@@ -885,20 +885,20 @@ namespace tardigradeHydra{
 
         unsigned int offset = 0;
 
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
 
-            residualBase *residual = ( *residual_ptr );
+//            residualBase *residual = ( *residual_ptr );
 
             // Extract the terms
 
             const floatVector* localResidual;
-            TARDIGRADE_ERROR_TOOLS_CATCH( localResidual = residual->getResidual( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( localResidual = ( *residual_ptr )->getResidual( ) );
 
             // Check the contributions to make sure they are consistent sizes
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( localResidual->size( ) == *residual->getNumEquations( ),
+            TARDIGRADE_ERROR_TOOLS_CHECK( localResidual->size( ) == *( *residual_ptr )->getNumEquations( ),
                   "The residual for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                + "  expected: " + std::to_string( *( *residual_ptr )->getNumEquations( ) ) + "\n"
                 + "  actual:   " + std::to_string( localResidual->size( ) ) + "\n"
             )
 
@@ -907,9 +907,18 @@ namespace tardigradeHydra{
             // Copy over the values of the local vector to the global structures
             std::copy( localResidual->begin( ), localResidual->end( ), _residual.second.begin( ) + offset );
 
-            offset += *residual->getNumEquations( );
+            offset += *( *residual_ptr )->getNumEquations( );
 
         }
+
+        // Allow the residuals to modify the global residual if needed
+        setAllowModifyGlobalResidual( true );
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
+            ( *residual_ptr )->modifyGlobalResidual( );
+
+        }
+        setAllowModifyGlobalResidual( false );
 
         _residual.first = true;
 
@@ -942,52 +951,52 @@ namespace tardigradeHydra{
 
         unsigned int numAdditionalDerivatives = 0;
 
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
 
-            residualBase *residual = ( *residual_ptr );
+//            residualBase *residual = ( *residual_ptr );
 
             // Extract the terms
 
             const floatVector* localJacobian;
-            TARDIGRADE_ERROR_TOOLS_CATCH( localJacobian = residual->getJacobian( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( localJacobian = ( *residual_ptr )->getJacobian( ) );
 
             const floatVector* localdRdF;
-            TARDIGRADE_ERROR_TOOLS_CATCH( localdRdF = residual->getdRdF( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( localdRdF = ( *residual_ptr )->getdRdF( ) );
 
             const floatVector* localdRdT;
-            TARDIGRADE_ERROR_TOOLS_CATCH( localdRdT = residual->getdRdT( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( localdRdT = ( *residual_ptr )->getdRdT( ) );
 
             const floatVector* localdRdAdditionalDOF;
-            TARDIGRADE_ERROR_TOOLS_CATCH( localdRdAdditionalDOF = residual->getdRdAdditionalDOF( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( localdRdAdditionalDOF = ( *residual_ptr )->getdRdAdditionalDOF( ) );
 
             const floatVector* localAdditionalDerivatives;
-            TARDIGRADE_ERROR_TOOLS_CATCH( localAdditionalDerivatives = residual->getAdditionalDerivatives( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( localAdditionalDerivatives = ( *residual_ptr )->getAdditionalDerivatives( ) );
 
             // Check the contributions to make sure they are consistent sizes
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( localJacobian->size( ) == *residual->getNumEquations( ) * residualSize,
+            TARDIGRADE_ERROR_TOOLS_CHECK( localJacobian->size( ) == *( *residual_ptr )->getNumEquations( ) * residualSize,
                   "The jacobian for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                + "  expected: " + std::to_string( *residual->getNumEquations( ) * residualSize ) + "\n"
+                + "  expected: " + std::to_string( *( *residual_ptr )->getNumEquations( ) * residualSize ) + "\n"
                 + "  actual:   " + std::to_string( localJacobian->size( ) ) + "\n"
             )
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( localdRdF->size( ) == *residual->getNumEquations( ) * configurationUnknownCount,
+            TARDIGRADE_ERROR_TOOLS_CHECK( localdRdF->size( ) == *( *residual_ptr )->getNumEquations( ) * configurationUnknownCount,
                   "dRdF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                + "  expected: " + std::to_string( *residual->getNumEquations( ) * configurationUnknownCount ) + "\n"
+                + "  expected: " + std::to_string( *( *residual_ptr )->getNumEquations( ) * configurationUnknownCount ) + "\n"
                 + "  actual:   " + std::to_string( localdRdF->size( ) ) + "\n"
             )
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( localdRdT->size( ) == *residual->getNumEquations( ),
+            TARDIGRADE_ERROR_TOOLS_CHECK( localdRdT->size( ) == *( *residual_ptr )->getNumEquations( ),
                   "dRdT for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                + "  expected: " + std::to_string( *residual->getNumEquations( ) ) + "\n"
+                + "  expected: " + std::to_string( *( *residual_ptr )->getNumEquations( ) ) + "\n"
                 + "  actual:   " + std::to_string( localdRdT->size( ) ) + "\n"
             )
 
             if ( localdRdAdditionalDOF->size( ) != 0 ){
 
-                TARDIGRADE_ERROR_TOOLS_CHECK( localdRdAdditionalDOF->size( ) == ( ( *residual->getNumEquations( ) ) * numAdditionalDOF ),
+                TARDIGRADE_ERROR_TOOLS_CHECK( localdRdAdditionalDOF->size( ) == ( ( *( *residual_ptr )->getNumEquations( ) ) * numAdditionalDOF ),
                                               "dRdAdditionalDOF for residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + " is not the expected length\n"
-                                            + "  expected: " + std::to_string( ( *residual->getNumEquations( ) ) * numAdditionalDOF ) + "\n"
+                                            + "  expected: " + std::to_string( ( *( *residual_ptr )->getNumEquations( ) ) * numAdditionalDOF ) + "\n"
                                             + "  actual  : " + std::to_string( localdRdAdditionalDOF->size( ) ) + "\n"
                 )
 
@@ -997,11 +1006,11 @@ namespace tardigradeHydra{
 
             if ( localAdditionalDerivatives->size( ) != 0 ){
 
-                if ( ( *localAdditionalDerivatives ).size( ) != *residual->getNumEquations( ) * numAdditionalDerivatives ){
+                if ( ( *localAdditionalDerivatives ).size( ) != *( *residual_ptr )->getNumEquations( ) * numAdditionalDerivatives ){
     
                     if ( numAdditionalDerivatives == 0 ){
     
-                        numAdditionalDerivatives = ( *localAdditionalDerivatives ).size( ) / ( *residual->getNumEquations( ) );
+                        numAdditionalDerivatives = ( *localAdditionalDerivatives ).size( ) / ( *( *residual_ptr )->getNumEquations( ) );
     
                         _additionalDerivatives.second = floatVector( residualSize * numAdditionalDerivatives, 0 );
     
@@ -1031,9 +1040,26 @@ namespace tardigradeHydra{
 
             std::copy( localAdditionalDerivatives->begin( ), localAdditionalDerivatives->end( ), _additionalDerivatives.second.begin( ) + numAdditionalDerivatives * offset );
 
-            offset += *residual->getNumEquations( );
+            offset += *( *residual_ptr )->getNumEquations( );
 
         }
+
+        setAllowModifyGlobalJacobian( true );
+        setAllowModifyGlobaldRdT( true );
+        setAllowModifyGlobaldRdF( true );
+        setAllowModifyGlobaldRdAdditionalDOF( true );
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+            ( *residual_ptr )->modifyGlobalJacobian( );
+            ( *residual_ptr )->modifyGlobaldRdT( );
+            ( *residual_ptr )->modifyGlobaldRdF( );
+            ( *residual_ptr )->modifyGlobaldRdAdditionalDOF( );
+
+        }
+        setAllowModifyGlobalJacobian( false );
+        setAllowModifyGlobaldRdT( false );
+        setAllowModifyGlobaldRdF( false );
+        setAllowModifyGlobaldRdAdditionalDOF( false );
 
         _jacobian.first = true;
 

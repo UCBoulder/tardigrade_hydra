@@ -902,6 +902,56 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void modifyGlobalResidual( ){
+                /*!
+                 * Function that is called to modify the global residual.
+                 *
+                 * Called after all of the residuals are agglomerated into the whole.
+                 *
+                 * A mutable version of the global residual is accessable with hydra->getMutableResidual( )
+                 */
+            }
+
+            virtual void modifyGlobalJacobian( ){
+                /*!
+                 * Function that is called to modify the global jacobian.
+                 *
+                 * Called after all of the residuals are agglomerated into the whole
+                 *
+                 * A mutable version of the global jacobian is accessable with hydra->getMutableJacobian( )
+                 */
+            }
+
+            virtual void modifyGlobaldRdT( ){
+                /*!
+                 * Function that is called to modify the global derivative of the residual w.r.t. the temperature
+                 *
+                 * Called after all of the residuals are agglomerated into the whole
+                 *
+                 * A mutable version of the global dRdT is accessable with hydra->getMutabledRdT( )
+                 */
+            }
+
+            virtual void modifyGlobaldRdF( ){
+                /*!
+                 * Function that is called to modify the global derivative of the residual w.r.t. the deformation
+                 *
+                 * Called after all of the residuals are agglomerated into the whole
+                 *
+                 * A mutable version of the global dRdF is accessable with hydra->getMutabledRdF( )
+                 */
+            }
+
+            virtual void modifyGlobaldRdAdditionalDOF( ){
+                /*!
+                 * Function that is called to modify the global derivative of the residual w.r.t. the additional DOF
+                 *
+                 * Called after all of the residuals are agglomerated into the whole
+                 *
+                 * A mutable version of the global dRdAdditionalDOF is accessable with hydra->getMutabledRdAdditionalDOF( )
+                 */
+            }
+
             virtual void setupRelaxedStep( const unsigned int &relaxedStep );
 
             //! Get the flag for whether to use the projection or not
@@ -1582,6 +1632,86 @@ namespace tardigradeHydra{
 
             const bool allowStepGrowth( const unsigned int &num_good );
 
+            floatVector *getMutableResidual( ){
+                /*! Get a reference to the full residual that is mutable. Returns NULL if it's not allowed.
+                 *
+                 * This should only be called in residual classes that need to modify the full residual in their modifyGlobalResidual methods.
+                 *
+                 * Be careful!
+                 */
+                
+                if ( _allow_modify_global_residual ){
+                    return &_residual.second;
+                }
+
+                return NULL;
+
+            }
+
+            floatVector *getMutableJacobian( ){
+                /*! Get a reference to the full jacobian that is mutable. Returns NULL if it's not allowed.
+                 *
+                 * This should only be called in residual classes that need to modify the full residual in their modifyGlobalJacobian methods.
+                 *
+                 * Be careful!
+                 */
+                
+                if ( _allow_modify_global_jacobian ){
+                    return &_jacobian.second;
+                }
+
+                return NULL;
+
+            }
+
+            floatVector *getMutabledRdT( ){
+                /*! Get a reference to the full dRdT that is mutable. Returns NULL if it's not allowed.
+                 *
+                 * This should only be called in residual classes that need to modify the full residual in their modifyGlobaldRdT methods.
+                 *
+                 * Be careful!
+                 */
+                
+                if ( _allow_modify_global_dRdT ){
+                    return &_dRdT.second;
+                }
+
+                return NULL;
+
+            }
+
+            floatVector *getMutabledRdF( ){
+                /*! Get a reference to the full dRdF that is mutable. Returns NULL if it's not allowed.
+                 *
+                 * This should only be called in residual classes that need to modify the full residual in their modifyGlobaldRdF methods.
+                 *
+                 * Be careful!
+                 */
+                
+                if ( _allow_modify_global_dRdF ){
+                    return &_dRdF.second;
+                }
+
+                return NULL;
+
+            }
+
+            floatVector *getMutabledRdAdditionalDOF( ){
+                /*! Get a reference to the full dRdAdditionalDOF that is mutable. Returns NULL if it's not allowed.
+                 *
+                 * This should only be called in residual classes that need to modify the full residual in their modifyGlobaldRdAdditionalDOF methods.
+                 *
+                 * Be careful!
+                 */
+                
+                if ( _allow_modify_global_dRdAdditionalDOF ){
+                    return &_dRdAdditionalDOF.second;
+                }
+
+                return NULL;
+
+            }
+
         protected:
 
             // Setters that the user may need to access but not override
@@ -1859,6 +1989,53 @@ namespace tardigradeHydra{
 
             virtual void performRelaxedSolve( );
 
+            void setAllowModifyGlobalResidual( const bool value){
+                /*!
+                 * Set a flag for if the global residual can be modified
+                 *
+                 * \param value: The updated value
+                 */
+                _allow_modify_global_residual = value;
+            }
+
+            void setAllowModifyGlobalJacobian( const bool value){
+                /*!
+                 * Set a flag for if the global jacobian can be modified
+                 *
+                 * \param value: The updated value
+                 */
+                _allow_modify_global_jacobian = value;
+            }
+
+            void setAllowModifyGlobaldRdT( const bool value){
+                /*!
+                 * Set a flag for if the global dRdT can be modified
+                 *
+                 * \param value: The updated value
+                 */
+                _allow_modify_global_dRdT = value;
+            }
+
+            void setAllowModifyGlobaldRdF( const bool value){
+                /*!
+                 * Set a flag for if the global dRdF can be modified
+                 *
+                 * \param value: The updated value
+                 */
+                _allow_modify_global_dRdF = value;
+
+            }
+
+            void setAllowModifyGlobaldRdAdditionalDOF( const bool value){
+                /*!
+                 * Set a flag for if the global dRdAdditionalDOF can be modified
+                 *
+                 * \param value: The updated value
+                 */
+                _allow_modify_global_dRdAdditionalDOF = value;
+
+            }
+
         private:
 
             // Friend classes
@@ -2049,6 +2226,16 @@ namespace tardigradeHydra{
             unsigned int _num_good_control = 2; //!< The number of good iterations we need to have before we try and increase the timestep
 
             floatType _minDS = 1e-2; //!< The minimum allowable pseudo-timestep
+
+            bool _allow_modify_global_residual = false; //!< Flag for if the global residual can be modified
+
+            bool _allow_modify_global_jacobian = false; //!< Flag for if the global jacobian can be modified
+
+            bool _allow_modify_global_dRdT = false; //!< Flag for if the global dRdT can be modified
+
+            bool _allow_modify_global_dRdF = false; //!< Flag for if the global dRdF can be modified
+
+            bool _allow_modify_global_dRdAdditionalDOF = false; //!< Flag for if the global dRdAdditionalDOF can be modified
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 
