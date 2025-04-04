@@ -25,6 +25,7 @@ New Features
 - Added Fourier heat conduction residual (:pull:`184`). By `Nathan Miller`_.
 - Added linear temperature to internal energy relation (:pull:`185`). By `Nathan Miller`_.
 - Added the ability to modify the global residuals and Jacobians (:pull:`186`). By `Nathan Miller`_.
+- Added a micromorphic linear elasticity model that is compatible with radial return algorithms (:pull:`187`). By `Nathan Miller`_.
 
 Internal Changes
 ================
