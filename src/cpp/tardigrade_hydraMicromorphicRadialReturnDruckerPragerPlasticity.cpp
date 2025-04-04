@@ -1,17 +1,98 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraMicromorphicDruckerPragerPlasticityRadialReturn.cpp
+  * \file tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity.cpp
   ******************************************************************************
   * An implementation of micromorphic Drucker-Prager plasticity based on an
   * radial return mapping approach.
   ******************************************************************************
   */
 
-#include<tardigrade_hydraMicromorphicDruckerPragerPlasticityRadialReturn.h>
+#include<tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity.h>
 
 namespace tardigradeHydra{
 
-    namespace micromorphicDruckerPragerPlasticityRadialReturn{
+    namespace micromorphicRadialReturnDruckerPragerPlasticity{
+
+        void residual::projectSuggestedX( std::vector< floatType > &trialX,    
+                                          const std::vector< floatType > &Xp ){
+            /*!
+             * Project the suggested X vector if required
+             * 
+             * \param &trialX: The proposed unknown vector
+             * \param &Xp: The previous unknown vector
+             */
+        }
+
+        void residual::setDeltaIntegratedPlasticMultipliers( ){
+            /*!
+             * Set the net change in the integrated plastic multipliers
+             * using trapezoidal integration
+             * 
+             * 
+             */
+
+            auto plasticMultipliers         = get_plasticMultipliers( );
+
+            auto previousPlasticMultipliers = get_previousPlasticMultipliers( );
+
+            auto deltaIntegratedPlasticMultipliers = get_setDataStorage_deltaIntegratedPlasticMultipliers( );
+
+            auto num_plastic_multipliers = ( unsigned int )( std::end( *plasticMultipliers ) - std::begin( *plasticMultipliers ) );
+
+            deltaIntegratedPlasticMultipliers.zero( num_plastic_multipliers );
+
+            for ( unsigned int i = 0; i < num_plastic_multipliers; ++i ){
+
+                ( *deltaIntegratedPlasticMultipliers.value )[ i ] = ( *hydra->getDeltaTime( ) ) * ( ( 1 - ( *getIntegrationParameter( ) ) ) * ( *previousPlasticMultipliers )[ i ] + ( *getIntegrationParameter( ) ) * ( *plasticMultipliers )[ i ] );
+
+            }
+
+        }
+
+        void residual::setdDeltaIntegratedPlasticMultipliersdPlasticMultipliers( ){
+            /*!
+             * Set the derivative of the net change in the integrated plastic multipliers
+             * using trapezoidal integration w.r.t. the plastic multipliers
+             * 
+             * This just returns the diagonal of the Jacobian since it's the only non-zero part
+             */
+
+            auto plasticMultipliers         = get_plasticMultipliers( );
+
+            auto dDeltaIntegratedPlasticMultipliersdPlasticMultipliers = get_setDataStorage_dDeltaIntegratedPlasticMultipliersdPlasticMultipliers( );
+
+            auto num_plastic_multipliers = ( unsigned int )( std::end( *plasticMultipliers ) - std::begin( *plasticMultipliers ) );
+
+            dDeltaIntegratedPlasticMultipliersdPlasticMultipliers.zero( num_plastic_multipliers );
+
+            std::fill(
+                dDeltaIntegratedPlasticMultipliersdPlasticMultipliers.begin( ),
+                dDeltaIntegratedPlasticMultipliersdPlasticMultipliers.end( ),
+                ( *hydra->getDeltaTime( ) ) * ( *getIntegrationParameter( ) )
+            );
+
+        }
+
+        void residual::setActiveConstraints( ){
+            /*!
+             * Set which constraints are active
+             */
+
+            auto activeConstraints   = get_setDataStorage_activeConstraints( );
+
+            activeConstraints.value->resize( 5 );
+
+            ( *activeConstraints.value )[ 0 ] = ( *get_macroYield( ) ) > 0;
+
+            ( *activeConstraints.value )[ 1 ] = ( *get_microYield( ) ) > 0;
+
+            for ( auto v = std::begin( *get_microGradientYield( ) ); v != std::end( *get_microGradientYield( ) ); ++v ){
+
+                ( *activeConstraints.value )[ ( v - std::begin( *get_microGradientYield( ) ) ) + 2 ] = ( *v ) > 0;
+
+            }
+
+        }
 
         void residual::setStateVariableResiduals( ){
             /*!
@@ -19,81 +100,243 @@ namespace tardigradeHydra{
              *
              * We define these residuals as
              *
-             * \f$R = -( c^{\text{trial}} - c ) + \dot{\bar{\gamma}} \frac{\partial f}{\partial Z} \f$
+             * \f$R = Z^{\text{update}} - Z \f$
              *
              * and
              *
              * \f$R = f\f$ if the constraint is in the active set and \f$ R = \dot{\bar{\gamma}} \f$ if it isn't
              */
 
-            auto trialMacroCohesion = get_trialMacroCohesion( );
+            auto updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
 
-            auto trialMicroCohesion = get_trialMicroCohesion( );
+            auto plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
 
-            auto trialMicroGradientCohesion = get_trialMicroGradientCohesion( );
-
-            auto macroCohesion = get_macroCohesion( );
-
-            auto microCohesion = get_microCohesion( );
-
-            auto microGradientCohesion = get_microGradientCohesion( );
-
-            auto numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto activeConstraints = get_activeConstraints( );
 
             auto plasticMultipliers = get_plasticMultipliers( );
 
-            auto macroYield = get_macroYield( );
-
-            auto microYield = get_microYield( );
-
-            auto microGradientYield = get_microGradientYield( );
-
-            auto dMacroYielddStateVariables = get_dMacroYielddStateVariables( );
-
-            auto dMicroYielddStateVariables = get_dMicroYielddStateVariables( );
-
-            auto dMicroGradientYielddStateVariables = get_dMicroGradientYielddStateVariables( );
-
-            auto activeConstraintSet = get_activeConstraintSet( );
-
             auto residual = get_setDataStorage_stateVariableResiduals( );
-            residual.zero( get_plasticStateVariables( )->size( ) );
 
-            // Add the trial to computed cohesion comparison
-            ( *residual.value )[ 0 ] = -( ( *trialMacroCohesion ) - ( *macroCohesion ) );
+            auto num_ISVS = get_plasticStateVariables( )->size( );
 
-            ( *residual.value )[ 1 ] = -( ( *trialMicroCohesion ) - ( *microCohesion ) );
+            auto num_plastic_state_variables = ( const unsigned int )( std::end( *plasticStrainLikeISVs ) - std::begin( *plasticStrainLikeISVs ) );
 
-            for (
-                unsigned int i = 0;
-                i < ( const unsigned int )( std::end( *microGradientCohesion ) - std::begin( *microGradientCohesion ) );
-                ++i
-            ){
+            residual.zero( num_ISVS );
 
-                ( *residual.value )[ 2 + i ] = -( ( std::begin( *trialMicroGradientCohesion ) + i ) - ( std::begin( microGradientCohesion ) + i ) );
+            // Set the state variable residuals
+            for ( unsigned int i = 0; i < num_plastic_state_variables; ++i ){
+
+                ( *residual.value )[ i ] = ( *updatedPlasticStrainLikeISVs )[ i ] - ( *plasticStrainLikeISVs )[ i ];
 
             }
 
-            // Add the constraint equations
-            for ( auto v = std::begin( *activeConstraintSet ); v != std::end( *activeConstraintSet ); ++v ){
+            // Assemble the yield surface values
+            std::array< floatType, 5 > yieldSurfaceValues = {
+                *get_macroYield( ), *get_microYield( ),
+                ( *get_microGradientYield( ) )[ 0 ], ( *get_microGradientYield( ) )[ 1 ], ( *get_microGradientYield( ) )[ 2 ]
+            };
 
-                ( *residual.value )[ 0 ] += ( *( std::begin( *plasticMultipliers ) + 0 ) ) * ( *( std::begin( *dMacroYielddStateVariables ) + ( *v ) ) );
+            // Set the constraints
+            for ( auto v = std::begin( *activeConstraints ); v != std::end( *activeConstraints ); ++v ){
 
-                ( *residual.value )[ 1 ] += ( *( std::begin( *plasticMultipliers ) + 1 ) ) * ( *( std::begin( *dMicroYielddStateVariables ) + ( *v ) ) );
+                if ( *v ){
+                    ( *residual.value )[ num_plastic_state_variables + ( unsigned int )( v - std::begin( *activeConstraints ) ) ] += yieldSurfaceValues[ ( unsigned int )( v - std::begin( *activeConstraints ) )  ];
+                }
+                else{
+                    ( *residual.value )[ num_plastic_state_variables + ( unsigned int )( v - std::begin( *activeConstraints ) ) ] += ( *plasticMultipliers )[ ( unsigned int )( v - std::begin( *activeConstraints ) ) ];
+                }
 
-                for (
-                    unsigned int i = 0;
-                    i < ( const unsigned int )( std::end( *microGradientCohesion ) - std::begin( *microGradientCohesion ) );
-                    ++i
-                ){
+            }
 
-                    ( *residual.value )[ 2 + i ] += ( *( std::begin( *plasticMultipliers ) + 2 + i ) ) * ( *( std::begin( *dMicroGradientYielddStateVariables ) + numPlasticStrainLikeISVS * i + ( *v ) ) );
+        }
+
+        void residual::setStateVariableJacobians( ){
+            /*!
+             * Set the Jacobians of the state variable residuals
+             *
+             * We define these residuals as
+             *
+             * \f$R = Z^{\text{update}} - Z \f$
+             *
+             * and
+             *
+             * \f$R = f\f$ if the constraint is in the active set and \f$ R = \dot{\bar{\gamma}} \f$ if it isn't
+             */
+
+            auto dim = hydra->getDimension( );
+
+            auto sot_dim = dim * dim;
+
+            auto tot_dim = dim * dim * dim;
+
+            auto plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+
+            auto activeConstraints = get_activeConstraints( );
+
+            auto plasticMultipliers = get_plasticMultipliers( );
+
+            auto jacobian = get_setDataStorage_stateVariableJacobians( );
+
+            auto num_ISVS = get_plasticStateVariables( )->size( );
+
+            auto num_unknowns = hydra->getNumUnknowns( );
+
+            auto num_plastic_multipliers     = ( const unsigned int )( std::end( *plasticMultipliers )    - std::begin( *plasticMultipliers ) );
+
+            auto num_plastic_state_variables = ( const unsigned int )( std::end( *plasticStrainLikeISVs ) - std::begin( *plasticStrainLikeISVs ) );
+
+            auto num_configurations = *hydra->getNumConfigurations( );
+
+            jacobian.zero( num_ISVS * num_unknowns );
+
+            // Set the state variable jacobians
+            unsigned int offset = num_configurations * ( 2 * sot_dim + tot_dim ) + num_plastic_multipliers;
+            for ( unsigned int i = 0; i < num_plastic_state_variables; ++i ){
+
+                ( *jacobian.value )[ num_unknowns * i + i + offset ] -= 1;
+
+                for ( unsigned int j = 0; j < sot_dim; ++j ){
+
+                    ( *jacobian.value )[ num_unknowns * i + j + offset ] = ( *get_dUpdatedPlasticStrainLikeISVsdStateVariables( ) )[ num_ISVS * i + j ];
 
                 }
 
             }
 
-            // Add the yield conditions
+            // Add the active constraint contributions
+
+            // Macro yielding
+            unsigned int row = 0;
+            if ( ( *activeConstraints )[ 0 ] ){
+
+                row = num_plastic_state_variables;
+
+                // Stress Jacobians
+                unsigned int col;
+                for ( auto v = std::begin( *get_dMacroYielddStress( ) ); v != std::end( *get_dMacroYielddStress( ) ); ++v ){
+                    
+                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddStress( ) ) );
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+                // Deformation Jacobians
+                for ( auto v = std::begin ( *get_dMacroYielddFn( ) ); v != std::end( *get_dMacroYielddFn( ) ); ++v ){
+
+                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddFn( ) ) ) + 2 * sot_dim + tot_dim;
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+                // State variable Jacobians
+                for ( auto v = std::begin ( *get_dMacroYielddStateVariables( ) ); v != std::end( *get_dMacroYielddStateVariables( ) ); ++v ){
+
+                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddFn( ) ) ) + num_configurations * ( 2 * sot_dim + tot_dim );
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+            }
+
+            // Micro yielding
+            if ( ( *activeConstraints )[ 1 ] ){
+
+                row = num_plastic_state_variables + 1;
+
+                // Stress Jacobians
+                unsigned int col;
+                for ( auto v = std::begin( *get_dMicroYielddStress( ) ); v != std::end( *get_dMicroYielddStress( ) ); ++v ){
+                    
+                    col = ( unsigned int )( v - std::begin( *get_dMicroYielddStress( ) ) );
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+                // Deformation Jacobians
+                for ( auto v = std::begin ( *get_dMicroYielddFn( ) ); v != std::end( *get_dMicroYielddFn( ) ); ++v ){
+
+                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddFn( ) ) ) + 2 * sot_dim + tot_dim;
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+                // State variable Jacobians
+                for ( auto v = std::begin ( *get_dMicroYielddStateVariables( ) ); v != std::end( *get_dMicroYielddStateVariables( ) ); ++v ){
+
+                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddStateVariables( ) ) ) + num_configurations * ( 2 * sot_dim + tot_dim );
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+            }
+
+            // Micro gradient yielding
+            for ( unsigned int i = 0; i < 3; ++i ){
+
+                if ( ( *activeConstraints )[ 2 + i ] ){
+
+                    row = num_plastic_state_variables + 2 + i;
+
+                    // Stress Jacobians
+                    unsigned int col;
+                    for (
+                        auto v = std::begin( *get_dMicroGradientYielddStress( ) ) + ( 2 * sot_dim + tot_dim ) * i;
+                        v != std::begin( *get_dMicroGradientYielddStress( ) ) + ( 2 * sot_dim + tot_dim ) * ( i + 1 ); ++v
+                    ){
+                        
+                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddStress( ) ) - ( 2 * sot_dim + tot_dim )  * i );
+                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                    }
+
+                    // Deformation Jacobians
+                    for (
+                        auto v = std::begin ( *get_dMicroGradientYielddFn( ) ) + sot_dim * ( num_configurations - 1 ) * i;
+                        v != std::begin( *get_dMicroGradientYielddFn( ) ) + sot_dim * ( num_configurations - 1 ) * ( i + 1 ); ++v
+                    ){
+
+                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddFn( ) ) - sot_dim * num_configurations * i ) + 2 * sot_dim + tot_dim;
+                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                    }
+
+                    for (
+                        auto v = std::begin ( *get_dMicroGradientYielddChin( ) ) + tot_dim * ( num_configurations - 1 ) * i;
+                        v != std::begin( *get_dMicroGradientYielddChin( ) ) + tot_dim * ( num_configurations - 1 ) * ( i + 1 ); ++v ){
+
+                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddChin( ) ) ) + 2 * sot_dim + tot_dim + ( num_configurations - 1 ) * sot_dim;
+                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                    }
+
+
+                    // State variable Jacobians
+                    for (
+                        auto v = std::begin ( *get_dMicroYielddStateVariables( ) ) + num_ISVS * i;
+                        v != std::begin( *get_dMicroGradientYielddStateVariables( ) ) + num_ISVS * ( i + 1 ); ++v ){
+
+                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddStateVariables( ) ) - num_ISVS * i ) + num_configurations * ( 2 * sot_dim + tot_dim );
+                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                    }
+
+                }
+
+            }
+
+            // Set the inactive constraints
+            for ( auto v = std::begin( *activeConstraints ); v != std::end( *activeConstraints ); ++v ){
+
+                row = num_plastic_state_variables + ( unsigned int )( v - std::begin( *activeConstraints ) );
+
+                if ( !( *v ) ){
+
+                    offset = num_configurations * ( 2 * sot_dim + tot_dim );
+                    ( *jacobian.value )[ num_unknowns * row + row + offset ] += 1;
+
+                }
+
+            }
 
         }
 

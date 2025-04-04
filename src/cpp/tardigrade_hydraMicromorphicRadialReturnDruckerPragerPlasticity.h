@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraMicromorphicDruckerPragerPlasticityRadialReturn.h
+  * \file tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity.h
   ******************************************************************************
   * An implementation of micromorphic drucker-prager plasticity model which is
   * based on a radial return mapping approach to its solution.
   ******************************************************************************
   */
 
-#ifndef TARDIGRADE_HYDRA_MICROMORPHIC_DRUCKER_PRAGER_PLASTICITY_RADIAL_RETURN_H
-#define TARDIGRADE_HYDRA_MICROMORPHIC_DRUCKER_PRAGER_PLASTICITY_RADIAL_RETURN_H
+#ifndef TARDIGRADE_HYDRA_MICROMORPHIC_RADIAL_RETURN_DRUCKER_PRAGER_PLASTICITY_H
+#define TARDIGRADE_HYDRA_MICROMORPHIC_RADIAL_RETURN_DRUCKER_PRAGER_PLASTICITY_H
 
 #define USE_EIGEN
 #include<tardigrade_vector_tools.h>
@@ -16,7 +16,7 @@
 
 namespace tardigradeHydra{
 
-    namespace micromorphicDruckerPragerPlasticityRadialReturn{
+    namespace micromorphicRadialReturnDruckerPragerPlasticity{
 
         // forward class definitions
         namespace unit_test{
@@ -109,14 +109,28 @@ namespace tardigradeHydra{
 
                 }
 
-                virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
-                                      std::vector< floatType > &values ) override;
+                virtual void setActiveConstraints( );
+
+                virtual void setDeltaIntegratedPlasticMultipliers( );
+
+                virtual void setdDeltaIntegratedPlasticMultipliersdPlasticMultipliers( );
+
+                virtual void projectSuggestedX( std::vector< floatType > &trialX,
+                                                const std::vector< floatType > &Xp ) override;
 
             protected:
 
                 virtual void setStateVariableResiduals( ) override;
 
+                virtual void setStateVariableJacobians( ) override;
+
             private:
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                        activeConstraints, std::vector< bool >,                                     setActiveConstraints )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                        deltaIntegratedPlasticMultipliers,         floatVector,                     setDeltaIntegratedPlasticMultipliers )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,    dDeltaIntegratedPlasticMultipliersdPlasticMultipliers,         floatVector, setdDeltaIntegratedPlasticMultipliersdPlasticMultipliers )
 
         };
 
