@@ -227,7 +227,7 @@ BOOST_AUTO_TEST_CASE( test_setDeltaIntegratedPlasticMultipliers, * boost::unit_t
 
         protected:
 
-            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setPlasticMultipliers;
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setPlasticMultipliers;
 
             virtual void setPlasticMultipliers( const bool isPrevious ) override{
 
@@ -608,11 +608,11 @@ BOOST_AUTO_TEST_CASE( test_setActiveConstraints, * boost::unit_test::tolerance( 
 
         protected:
 
-            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setMacroYield;
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setMacroYield;
 
-            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setMicroYield;
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setMicroYield;
 
-            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setMicroGradientYield;
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setMicroGradientYield;
 
             virtual void setMacroYield( ) override{
 
@@ -685,5 +685,249 @@ BOOST_AUTO_TEST_CASE( test_setActiveConstraints, * boost::unit_test::tolerance( 
     answer = { true, false, true, false, true };
 
     BOOST_TEST( answer == *residual4.publicGetActiveConstraints( ), CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_setStateVariableResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+    /*!
+     * Test setting the change in the plastic multipliers
+     */
+
+    // Form a hydra class and residual class
+    floatType time = 1.23;
+
+    floatType deltaTime = 2.34;
+
+    floatType temperature = 3.45;
+
+    floatType previousTemperature = 4.56;
+
+    variableVector deformationGradient = { -0.50668478, -0.48303615, -1.43907185,
+                                            0.24106815,  0.10656166,  1.06851718,
+                                           -0.18353482, -1.11676646, -0.68534721 };
+
+    variableVector microDeformation = { -0.36302711,  0.94624033,  0.07877948,
+                                        -0.68872716,  0.10276167, -0.81357538,
+                                         0.22307023, -0.23788599,  0.67759487 };
+
+    variableVector gradientMicroDeformation = { 0.02197053,  0.0370446 , -0.02739394,  0.06279444, -0.00127596,
+                                               -0.01796094,  0.02814145, -0.05906054,  0.02578498, -0.01458269,
+                                                0.00048507, -0.03393819, -0.03257968, -0.00138203, -0.04167585,
+                                               -0.03382795,  0.01151479, -0.03641219,  0.01271894,  0.04506872,
+                                                0.03179861,  0.04033839,  0.0440033 , -0.05450839, -0.05968426,
+                                               -0.02910144,  0.0279304 };
+
+    floatVector previousDeformationGradient = { 9.94656270e-01,  4.82152400e-02,  3.31984800e-02,  2.81918700e-02,
+         1.02086536e+00, -1.77592100e-02, -2.24798000e-03, -1.28410000e-04,
+         9.77165250e-01 };
+
+    floatVector previousMicroDeformation = { 0.96917405, -0.01777599,  0.00870406, -0.02163002,  0.9998683 ,
+        -0.01669352,  0.03355217,  0.04427456,  1.01778466 };
+
+    floatVector previousGradientMicroDeformation = { 0.05043761,  0.02160516, -0.0565408 ,  0.01218304, -0.05851034,
+         0.00485749, -0.00962607, -0.03455912,  0.04490067,  0.01552915,
+        -0.02878364,  0.00595866,  0.04750406, -0.02377005, -0.05041534,
+        -0.02922214,  0.06280788,  0.02850865, -0.00226005,  0.0146049 ,
+         0.01560184,  0.03224767,  0.05822091, -0.05294424, -0.03518206,
+         0.01831308,  0.03774438 };
+
+    floatVector previousStateVariables = {-0.02495446, -0.00169657,  0.04855598,  0.00194851,  0.01128945,
+       -0.03793713,  0.03263408,  0.01030601,  0.0045068 , -0.01572362,
+       -0.01958792, -0.00829778,  0.01813008,  0.03754568,  0.00104223,
+        0.01693138,  0.00859366,  0.01249035,  0.01746891,  0.03423424,
+       -0.0416805 ,  0.02636828, -0.02563336, -0.0305777 ,  0.0072457 ,
+       -0.04042875,  0.03853268,  0.0127249 ,  0.02234164, -0.04838708,
+        0.00944319,  0.00567852, -0.03410404, -0.03469295,  0.01955295,
+       -0.01812336,  0.01919703,  0.00543832, -0.01110494,  0.04251325,
+        0.034167  , -0.01426024, -0.04564085, -0.01952319, -0.01018143 };
+
+    floatVector parameters = {
+        2, 0.53895133, -3.7172145,
+        2, 0.37773052, -9.2739145,
+        2, 0.53186824, -7.5454313,
+        2, 0.95338442, 0.74042148,
+        2, 0.38093104, 0.49241325,
+        2, 0.82121039, 0.90566759,
+        2, 0.01166325, 0.05331896,
+        2, 0.32982199, 0.60161431,
+        2, 0.58881096, 0.11473813
+    };
+
+    floatVector unknownVector( 90, 0 );
+
+    floatType val = -1.0;
+    for ( unsigned int i = 0; i < unknownVector.size( ); i++ ){
+        unknownVector[ i ] = val;
+        val--;
+    }
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    std::vector< unsigned int > stateVariableIndices = { 0, 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+    unsigned int dimension = 3;
+
+    unsigned int configuration_unknown_count = 45;
+
+    floatType tolr = 1e-2;
+
+    floatType tola = 1e-3;
+
+    unsigned int maxIterations = 24;
+
+    unsigned int maxLSIterations = 45;
+
+    floatType lsAlpha = 2.3;
+
+    class residualMock : public tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual {
+
+        public:
+
+            floatVector _updatedZ = { 1, 2, 3, 4, 5 };
+
+            floatVector _Z = { 6, 7, 8, 9, 10 };
+
+            floatVector _gammaDot = { 0.1, -0.2, 0.3, -0.4, 0.5 };
+
+            floatVector _previousGammaDot = { -1, -2, -3, -4, -5 };
+
+            floatType _macYield = 1.3;
+
+            floatType _micYield = 2.4;
+
+            floatVector _micGradYield = { 1.34, 3.4, 0.2 };
+
+            std::vector< bool > _ac = { true, true, false, false, true };
+
+            floatVector _pISVS = { .01, .02, .03, .04, .05, .06, .07, .08, .09, .10 };
+
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::residual;
+
+            const floatVector * publicGetStateVariableResiduals( ){
+
+                return get_stateVariableResiduals( );
+
+            }
+
+        protected:
+
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setPlasticMultipliers;
+
+            virtual void setPlasticMultipliers( const bool isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    auto gammaDot = get_setDataStorage_previousPlasticMultipliers( );
+
+                    *gammaDot.value = _previousGammaDot;
+
+                }
+                else{
+
+                    auto gammaDot = get_setDataStorage_plasticMultipliers( );
+
+                    *gammaDot.value = _gammaDot;
+
+                }
+
+            }
+
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setUpdatedPlasticStrainLikeISVs;
+
+            virtual void setUpdatedPlasticStrainLikeISVs( ) override{
+
+                auto z = get_setDataStorage_updatedPlasticStrainLikeISVs( );
+
+                *z.value = _updatedZ;
+
+            }
+
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setPlasticStrainLikeISVs;
+
+            virtual void setPlasticStrainLikeISVs( ) override{
+
+                auto z = get_setDataStorage_plasticStrainLikeISVs( );
+
+                *z.value = _Z;
+
+            }
+
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setMacroYield;
+
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setMicroYield;
+
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setMicroGradientYield;
+
+            virtual void setMacroYield( ) override{
+
+                auto yield = get_setDataStorage_macroYield( );
+
+                *yield.value = _macYield;
+
+            }
+
+            virtual void setMicroYield( ) override{
+
+                auto yield = get_setDataStorage_microYield( );
+
+                *yield.value = _micYield;
+
+            }
+
+            virtual void setMicroGradientYield( ) override{
+
+                auto yield = get_setDataStorage_microGradientYield( );
+
+                *yield.value = _micGradYield;
+
+            }
+
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setActiveConstraints;
+
+            virtual void setActiveConstraints( ) override{
+
+                auto activeConstraints = get_setDataStorage_activeConstraints( );
+
+                *activeConstraints.value = _ac;
+
+            }
+
+            using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setPlasticStateVariables;
+
+            virtual void setPlasticStateVariables( ) override{
+
+                auto plasticStateVariables = get_setDataStorage_plasticStateVariables( );
+
+                *plasticStateVariables.value = _pISVS;
+
+            }
+
+    };
+
+    tardigradeHydra::hydraBaseMicromorphic hydra(
+        time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+        microDeformation, previousMicroDeformation, gradientMicroDeformation, previousGradientMicroDeformation,
+        { }, { },
+        previousStateVariables, parameters,
+        numConfigurations, numNonLinearSolveStateVariables,
+        dimension, configuration_unknown_count,
+        tolr, tola, maxIterations, maxLSIterations, lsAlpha
+    );
+
+    residualMock residual( &hydra, 55, 1, stateVariableIndices, parameters, 0.27 );
+
+    std::vector< double > answer( 10, 0 );
+    for ( unsigned int i = 0; i < 5; ++i ){
+        answer[ i ] = residual._updatedZ[ i ] - residual._Z[ i ];
+    }
+    answer[ 5 ] = residual._macYield;
+    answer[ 6 ] = residual._micYield;
+    answer[ 7 ] = residual._gammaDot[ 2 ];
+    answer[ 8 ] = residual._gammaDot[ 3 ];
+    answer[ 9 ] = residual._micGradYield[ 2 ];
+
+    BOOST_TEST( answer == *residual.publicGetStateVariableResiduals( ), CHECK_PER_ELEMENT );
 
 }
