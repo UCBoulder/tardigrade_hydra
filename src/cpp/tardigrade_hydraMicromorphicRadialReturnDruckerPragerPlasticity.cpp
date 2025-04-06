@@ -136,6 +136,8 @@ namespace tardigradeHydra{
                 ( *get_microGradientYield( ) )[ 0 ], ( *get_microGradientYield( ) )[ 1 ], ( *get_microGradientYield( ) )[ 2 ]
             };
 
+//            std::cout << "yieldSurfaceValues: "; for ( auto v = std::begin( yieldSurfaceValues ); v != std::end( yieldSurfaceValues ); ++v ){ std::cout << *v << " "; } std::cout << "\n";
+
             // Set the constraints
             for ( auto v = std::begin( *activeConstraints ); v != std::end( *activeConstraints ); ++v ){
 
@@ -190,153 +192,153 @@ namespace tardigradeHydra{
             jacobian.zero( num_ISVS * num_unknowns );
 
             // Set the state variable jacobians
-            unsigned int offset = num_configurations * ( 2 * sot_dim + tot_dim ) + num_plastic_multipliers;
+            unsigned int offset = num_configurations * ( 2 * sot_dim + tot_dim );
+
             for ( unsigned int i = 0; i < num_plastic_state_variables; ++i ){
 
-                ( *jacobian.value )[ num_unknowns * i + i + offset ] -= 1;
+                ( *jacobian.value )[ num_unknowns * i + i + offset + num_plastic_multipliers ] -= 1;
 
-                for ( unsigned int j = 0; j < sot_dim; ++j ){
+                for ( unsigned int j = 0; j < num_ISVS; ++j ){
 
-                    ( *jacobian.value )[ num_unknowns * i + j + offset ] = ( *get_dUpdatedPlasticStrainLikeISVsdStateVariables( ) )[ num_ISVS * i + j ];
+                    ( *jacobian.value )[ num_unknowns * i + j + offset ] += ( *get_dUpdatedPlasticStrainLikeISVsdStateVariables( ) )[ num_ISVS * i + j ];
 
                 }
 
             }
 
-//            // Add the active constraint contributions
-//
-//            // Macro yielding
-//            unsigned int row = 0;
-//            if ( ( *activeConstraints )[ 0 ] ){
-//
-//                row = num_plastic_state_variables;
-//
-//                // Stress Jacobians
-//                unsigned int col;
-//                for ( auto v = std::begin( *get_dMacroYielddStress( ) ); v != std::end( *get_dMacroYielddStress( ) ); ++v ){
-//                    
-//                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddStress( ) ) );
-//                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
-//
-//                }
-//
-//                // Deformation Jacobians
-//                for ( auto v = std::begin ( *get_dMacroYielddFn( ) ); v != std::end( *get_dMacroYielddFn( ) ); ++v ){
-//
-//                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddFn( ) ) ) + 2 * sot_dim + tot_dim;
-//                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
-//
-//                }
-//
-//                // State variable Jacobians
-//                for ( auto v = std::begin ( *get_dMacroYielddStateVariables( ) ); v != std::end( *get_dMacroYielddStateVariables( ) ); ++v ){
-//
-//                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddFn( ) ) ) + num_configurations * ( 2 * sot_dim + tot_dim );
-//                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
-//
-//                }
-//
-//            }
-//
-//            // Micro yielding
-//            if ( ( *activeConstraints )[ 1 ] ){
-//
-//                row = num_plastic_state_variables + 1;
-//
-//                // Stress Jacobians
-//                unsigned int col;
-//                for ( auto v = std::begin( *get_dMicroYielddStress( ) ); v != std::end( *get_dMicroYielddStress( ) ); ++v ){
-//                    
-//                    col = ( unsigned int )( v - std::begin( *get_dMicroYielddStress( ) ) );
-//                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
-//
-//                }
-//
-//                // Deformation Jacobians
-//                for ( auto v = std::begin ( *get_dMicroYielddFn( ) ); v != std::end( *get_dMicroYielddFn( ) ); ++v ){
-//
-//                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddFn( ) ) ) + 2 * sot_dim + tot_dim;
-//                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
-//
-//                }
-//
-//                // State variable Jacobians
-//                for ( auto v = std::begin ( *get_dMicroYielddStateVariables( ) ); v != std::end( *get_dMicroYielddStateVariables( ) ); ++v ){
-//
-//                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddStateVariables( ) ) ) + num_configurations * ( 2 * sot_dim + tot_dim );
-//                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
-//
-//                }
-//
-//            }
-//
-//            // Micro gradient yielding
-//            for ( unsigned int i = 0; i < 3; ++i ){
-//
-//                if ( ( *activeConstraints )[ 2 + i ] ){
-//
-//                    row = num_plastic_state_variables + 2 + i;
-//
-//                    // Stress Jacobians
-//                    unsigned int col;
-//                    for (
-//                        auto v = std::begin( *get_dMicroGradientYielddStress( ) ) + ( 2 * sot_dim + tot_dim ) * i;
-//                        v != std::begin( *get_dMicroGradientYielddStress( ) ) + ( 2 * sot_dim + tot_dim ) * ( i + 1 ); ++v
-//                    ){
-//                        
-//                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddStress( ) ) - ( 2 * sot_dim + tot_dim )  * i );
-//                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
-//
-//                    }
-//
-//                    // Deformation Jacobians
-//                    for (
-//                        auto v = std::begin ( *get_dMicroGradientYielddFn( ) ) + sot_dim * ( num_configurations - 1 ) * i;
-//                        v != std::begin( *get_dMicroGradientYielddFn( ) ) + sot_dim * ( num_configurations - 1 ) * ( i + 1 ); ++v
-//                    ){
-//
-//                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddFn( ) ) - sot_dim * num_configurations * i ) + 2 * sot_dim + tot_dim;
-//                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
-//
-//                    }
-//
-//                    for (
-//                        auto v = std::begin ( *get_dMicroGradientYielddChin( ) ) + tot_dim * ( num_configurations - 1 ) * i;
-//                        v != std::begin( *get_dMicroGradientYielddChin( ) ) + tot_dim * ( num_configurations - 1 ) * ( i + 1 ); ++v ){
-//
-//                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddChin( ) ) ) + 2 * sot_dim + tot_dim + ( num_configurations - 1 ) * sot_dim;
-//                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
-//
-//                    }
-//
-//
-//                    // State variable Jacobians
-//                    for (
-//                        auto v = std::begin ( *get_dMicroYielddStateVariables( ) ) + num_ISVS * i;
-//                        v != std::begin( *get_dMicroGradientYielddStateVariables( ) ) + num_ISVS * ( i + 1 ); ++v ){
-//
-//                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddStateVariables( ) ) - num_ISVS * i ) + num_configurations * ( 2 * sot_dim + tot_dim );
-//                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
-//
-//                    }
-//
-//                }
-//
-//            }
-//
-//            // Set the inactive constraints
-//            for ( auto v = std::begin( *activeConstraints ); v != std::end( *activeConstraints ); ++v ){
-//
-//                row = num_plastic_state_variables + ( unsigned int )( v - std::begin( *activeConstraints ) );
-//
-//                if ( !( *v ) ){
-//
-//                    offset = num_configurations * ( 2 * sot_dim + tot_dim );
-//                    ( *jacobian.value )[ num_unknowns * row + row + offset ] += 1;
-//
-//                }
-//
-//            }
+            // Add the active constraint contributions
+
+            // Macro yielding
+            unsigned int row = 0;
+            if ( ( *activeConstraints )[ 0 ] ){
+
+                row = num_plastic_state_variables;
+
+                // Stress Jacobians
+                unsigned int col;
+                for ( auto v = std::begin( *get_dMacroYielddStress( ) ); v != std::end( *get_dMacroYielddStress( ) ); ++v ){
+                    
+                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddStress( ) ) );
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+                // Deformation Jacobians
+                for ( auto v = std::begin ( *get_dMacroYielddFn( ) ); v != std::end( *get_dMacroYielddFn( ) ); ++v ){
+
+                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddFn( ) ) ) + 2 * sot_dim + tot_dim;
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+                // State variable Jacobians
+                for ( auto v = std::begin ( *get_dMacroYielddStateVariables( ) ); v != std::end( *get_dMacroYielddStateVariables( ) ); ++v ){
+
+                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddStateVariables( ) ) ) + num_configurations * ( 2 * sot_dim + tot_dim );
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+            }
+
+            // Micro yielding
+            if ( ( *activeConstraints )[ 1 ] ){
+
+                row = num_plastic_state_variables + 1;
+
+                // Stress Jacobians
+                unsigned int col;
+                for ( auto v = std::begin( *get_dMicroYielddStress( ) ); v != std::end( *get_dMicroYielddStress( ) ); ++v ){
+                    
+                    col = sot_dim + ( unsigned int )( v - std::begin( *get_dMicroYielddStress( ) ) );
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+                // Deformation Jacobians
+                for ( auto v = std::begin ( *get_dMicroYielddFn( ) ); v != std::end( *get_dMicroYielddFn( ) ); ++v ){
+
+                    col = ( unsigned int )( v - std::begin( *get_dMicroYielddFn( ) ) ) + 2 * sot_dim + tot_dim;
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+                // State variable Jacobians
+                for ( auto v = std::begin ( *get_dMicroYielddStateVariables( ) ); v != std::end( *get_dMicroYielddStateVariables( ) ); ++v ){
+
+                    col = ( unsigned int )( v - std::begin( *get_dMicroYielddStateVariables( ) ) ) + num_configurations * ( 2 * sot_dim + tot_dim );
+                    ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                }
+
+            }
+
+            // Micro gradient yielding
+            for ( unsigned int i = 0; i < 3; ++i ){
+
+                if ( ( *activeConstraints )[ 2 + i ] ){
+
+                    row = num_plastic_state_variables + 2 + i;
+
+                    // Stress Jacobians
+                    unsigned int col;
+                    for (
+                        auto v = std::begin( *get_dMicroGradientYielddStress( ) ) + tot_dim * i;
+                        v != std::begin( *get_dMicroGradientYielddStress( ) ) + tot_dim * ( i + 1 ); ++v
+                    ){
+                        
+                        col = 2 * sot_dim + ( unsigned int )( v - std::begin( *get_dMicroGradientYielddStress( ) ) - tot_dim  * i );
+                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                    }
+
+                    // Deformation Jacobians
+                    for (
+                        auto v = std::begin ( *get_dMicroGradientYielddFn( ) ) + sot_dim * ( num_configurations - 1 ) * i;
+                        v != std::begin( *get_dMicroGradientYielddFn( ) ) + sot_dim * ( num_configurations - 1 ) * ( i + 1 ); ++v
+                    ){
+
+                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddFn( ) ) - sot_dim * ( num_configurations - 1 ) * i ) + 2 * sot_dim + tot_dim;
+                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                    }
+
+                    for (
+                        auto v = std::begin ( *get_dMicroGradientYielddChin( ) ) + sot_dim * ( num_configurations - 1 ) * i;
+                        v != std::begin( *get_dMicroGradientYielddChin( ) ) + sot_dim * ( num_configurations - 1 ) * ( i + 1 ); ++v ){
+
+                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddChin( ) ) - sot_dim * ( num_configurations - 1 ) * i ) + 2 * sot_dim + tot_dim + sot_dim * ( num_configurations - 1 );
+                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                    }
+
+                    // State variable Jacobians
+                    for (
+                        auto v = std::begin ( *get_dMicroGradientYielddStateVariables( ) ) + num_ISVS * i;
+                        v != std::begin( *get_dMicroGradientYielddStateVariables( ) ) + num_ISVS * ( i + 1 ); ++v ){
+
+                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddStateVariables( ) ) - num_ISVS * i ) + num_configurations * ( 2 * sot_dim + tot_dim );
+                        ( *jacobian.value )[ num_unknowns * row + col ] += *v;
+
+                    }
+
+                }
+
+            }
+
+            // Set the inactive constraints
+            for ( auto v = std::begin( *activeConstraints ); v != std::end( *activeConstraints ); ++v ){
+
+                row = num_plastic_state_variables + ( unsigned int )( v - std::begin( *activeConstraints ) );
+
+                if ( !( *v ) ){
+
+                    offset = num_configurations * ( 2 * sot_dim + tot_dim );
+                    ( *jacobian.value )[ num_unknowns * row + ( unsigned int )( v - std::begin( *activeConstraints ) ) + offset ] += 1;
+
+                }
+
+            }
 
         }
 
