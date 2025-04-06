@@ -2249,7 +2249,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousNonLinearSolveStateVariables, floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, additionalStateVariables,             floatVector, passThrough )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, additionalStateVariables,             floatVector, passThrough )
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousAdditionalStateVariables,     floatVector, passThrough )
 
