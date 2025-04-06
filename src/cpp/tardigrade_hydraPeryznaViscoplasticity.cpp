@@ -2386,7 +2386,12 @@ namespace tardigradeHydra{
 
             dStateVariableEvolutionRatesdSubFs.zero( num_stateVariables * ( num_configs - 1 ) * sot_dim );
 
-            for ( unsigned int i = 0; i < num_stateVariables; i++ ){
+            dStateVariableEvolutionRatesdT.zero( num_stateVariables );
+
+            dStateVariableEvolutionRatesdStateVariables.zero( num_stateVariables * num_stateVariables );
+
+            const unsigned int iub = hardeningFunction->size( );
+            for ( unsigned int i = 0; i < iub; i++ ){
                 for ( unsigned int j = 0; j < sot_dim; j++ ){
                     ( *dStateVariableEvolutionRatesdCauchyStress.value )[ sot_dim * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdCauchyStress )[ j ];
                     ( *dStateVariableEvolutionRatesdF.value )[ sot_dim * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdF )[ j ];
@@ -2394,14 +2399,13 @@ namespace tardigradeHydra{
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
                     ( *dStateVariableEvolutionRatesdSubFs.value )[  ( num_configs - 1 ) * sot_dim * i + j ] += ( *dPlasticMultiplierdSubFs )[ j ] * ( *hardeningFunction )[ i ];
                 }
+
+                ( *dStateVariableEvolutionRatesdT.value )[ i ] = ( *dPlasticMultiplierdT ) * ( *hardeningFunction )[ i ];
             }
 
-            *dStateVariableEvolutionRatesdT.value = ( *dPlasticMultiplierdT ) * ( *hardeningFunction );
-
-            *dStateVariableEvolutionRatesdStateVariables.value = ( *plasticMultiplier ) * ( *dHardeningFunctiondStateVariables );
-
-            for ( unsigned int i = 0; i < num_stateVariables; i++ ){
+            for ( unsigned int i = 0; i < iub; i++ ){
                 for ( unsigned int j = 0; j < num_stateVariables; j++ ){
+                    ( *dStateVariableEvolutionRatesdStateVariables.value )[ num_stateVariables * i + j ] += ( *plasticMultiplier ) * ( *dHardeningFunctiondStateVariables )[ num_stateVariables * i + j ];
                     ( *dStateVariableEvolutionRatesdStateVariables.value )[ num_stateVariables * i + j ] += ( *hardeningFunction )[ i ] * ( *dPlasticMultiplierdStateVariables )[ j ];
                 }
             }

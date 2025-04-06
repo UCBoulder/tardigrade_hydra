@@ -524,7 +524,7 @@ namespace tardigradeHydra{
 
             }
 
-            dStateVariableEvolutionRatesdT.value->resize( dStateVariableEvolutionRatesdT.value->size( ) + 1 );
+            dStateVariableEvolutionRatesdT.value->resize( dStateVariableEvolutionRatesdT.value->size( ) );
             for ( unsigned int i = 0; i < 1; i++ ){
 
                 ( *dStateVariableEvolutionRatesdT.value )[ i + num_isvs ] = *dPlasticMultiplierdT;
