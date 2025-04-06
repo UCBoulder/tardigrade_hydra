@@ -136,8 +136,6 @@ namespace tardigradeHydra{
                 ( *get_microGradientYield( ) )[ 0 ], ( *get_microGradientYield( ) )[ 1 ], ( *get_microGradientYield( ) )[ 2 ]
             };
 
-//            std::cout << "yieldSurfaceValues: "; for ( auto v = std::begin( yieldSurfaceValues ); v != std::end( yieldSurfaceValues ); ++v ){ std::cout << *v << " "; } std::cout << "\n";
-
             // Set the constraints
             for ( auto v = std::begin( *activeConstraints ); v != std::end( *activeConstraints ); ++v ){
 
@@ -335,6 +333,106 @@ namespace tardigradeHydra{
 
                     offset = num_configurations * ( 2 * sot_dim + tot_dim );
                     ( *jacobian.value )[ num_unknowns * row + ( unsigned int )( v - std::begin( *activeConstraints ) ) + offset ] += 1;
+
+                }
+
+            }
+
+        }
+
+        void residual::setdStateVariableResidualsdD( ){
+            /*!
+             * Set the Jacobians of the state variable residuals w.r.t. the deformation measure
+             *
+             * We define these residuals as
+             *
+             * \f$R = Z^{\text{update}} - Z \f$
+             *
+             * and
+             *
+             * \f$R = f\f$ if the constraint is in the active set and \f$ R = \dot{\bar{\gamma}} \f$ if it isn't
+             */
+
+            auto dim = hydra->getDimension( );
+
+            auto sot_dim = dim * dim;
+
+            auto tot_dim = dim * dim * dim;
+
+            auto plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
+
+            auto activeConstraints = get_activeConstraints( );
+
+            auto jacobian = get_setDataStorage_dStateVariableResidualsdD( );
+
+            auto num_ISVS = get_plasticStateVariables( )->size( );
+
+            auto num_plastic_state_variables = ( const unsigned int )( std::end( *plasticStrainLikeISVs ) - std::begin( *plasticStrainLikeISVs ) );
+
+            auto num_cols = ( 2 * sot_dim + tot_dim );
+
+            jacobian.zero( num_ISVS * num_cols );
+
+            // Add the active constraint contributions
+
+            // Macro yielding
+            unsigned int row = 0;
+            unsigned int col = 0;
+            if ( ( *activeConstraints )[ 0 ] ){
+
+                row = num_plastic_state_variables;
+
+                // Deformation Jacobians
+                for ( auto v = std::begin ( *get_dMacroYielddF( ) ); v != std::end( *get_dMacroYielddF( ) ); ++v ){
+
+                    col = ( unsigned int )( v - std::begin( *get_dMacroYielddF( ) ) );
+                    ( *jacobian.value )[ num_cols * row + col ] += *v;
+
+                }
+
+            }
+
+            // Micro yielding
+            if ( ( *activeConstraints )[ 1 ] ){
+
+                row = num_plastic_state_variables + 1;
+
+                // Deformation Jacobians
+                for ( auto v = std::begin ( *get_dMicroYielddF( ) ); v != std::end( *get_dMicroYielddF( ) ); ++v ){
+
+                    col = ( unsigned int )( v - std::begin( *get_dMicroYielddF( ) ) );
+                    ( *jacobian.value )[ num_cols * row + col ] += *v;
+
+                }
+
+            }
+
+            // Micro gradient yielding
+            for ( unsigned int i = 0; i < 3; ++i ){
+
+                if ( ( *activeConstraints )[ 2 + i ] ){
+
+                    row = num_plastic_state_variables + 2 + i;
+
+                    // Deformation Jacobians
+                    for (
+                        auto v = std::begin ( *get_dMicroGradientYielddF( ) ) + sot_dim * i;
+                        v != std::begin( *get_dMicroGradientYielddF( ) ) + sot_dim * ( i + 1 ); ++v
+                    ){
+
+                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddF( ) ) - sot_dim * i );
+                        ( *jacobian.value )[ num_cols * row + col ] += *v;
+
+                    }
+
+                    for (
+                        auto v = std::begin ( *get_dMicroGradientYielddChi( ) ) + sot_dim * i;
+                        v != std::begin( *get_dMicroGradientYielddChi( ) ) + sot_dim * ( i + 1 ); ++v ){
+
+                        col = ( unsigned int )( v - std::begin( *get_dMicroGradientYielddChi( ) ) - sot_dim * i ) + sot_dim;
+                        ( *jacobian.value )[ num_cols * row + col ] += *v;
+
+                    }
 
                 }
 

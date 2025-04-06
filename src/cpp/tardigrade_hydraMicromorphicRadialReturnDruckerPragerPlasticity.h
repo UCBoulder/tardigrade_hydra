@@ -124,6 +124,8 @@ namespace tardigradeHydra{
 
                 virtual void setStateVariableJacobians( ) override;
 
+                virtual void setdStateVariableResidualsdD( ) override;
+
             private:
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                        activeConstraints, std::vector< bool >,                                     setActiveConstraints )
