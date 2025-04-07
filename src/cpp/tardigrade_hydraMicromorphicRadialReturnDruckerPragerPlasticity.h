@@ -93,6 +93,10 @@ namespace tardigradeHydra{
 
                 using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setdRdT;
 
+                using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStresses;
+
+                using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStressesJacobians;
+
                 residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const unsigned int &plasticConfigurationIndex,
                           const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5 )
                         : tardigradeHydra::micromorphicDruckerPragerPlasticity::residual( _hydra, _numEquations, plasticConfigurationIndex, stateVariableIndices, parameters, integrationParameter ){
@@ -109,11 +113,43 @@ namespace tardigradeHydra{
 
                 }
 
+                virtual void setDrivingStresses( const bool isPrevious ) override;
+
+                virtual void setDrivingStressesJacobians( const bool isPrevious ) override;
+
+                virtual void setFollowingDeformationGradient( );
+
+                virtual void setdFfollowdF( );
+
+                virtual void setdFfollowdFn( );
+
+                virtual void setFollowingMicroDeformation( );
+
+                virtual void setdChifollowdChi( );
+
+                virtual void setdChifollowdChin( );
+
                 virtual void setActiveConstraints( );
 
                 virtual void setDeltaIntegratedPlasticMultipliers( );
 
                 virtual void setdDeltaIntegratedPlasticMultipliersdPlasticMultipliers( );
+
+                virtual void setMacroYieldStressGradient( );
+
+                virtual void setdMacroYieldStressGradientdStress( );
+
+                virtual void setdMacroYieldStressGradientdFn( );
+
+                virtual void setdMacroYieldStressGradientdF( );
+
+                virtual void setMacroYieldStressGradientJacobians( );
+
+                virtual void setdMacroYieldStressGradientdD( );
+
+                virtual void setMicroYieldStressGradient( );
+
+                virtual void setMicroGradientYieldStressGradient( );
 
                 virtual void projectSuggestedX( std::vector< floatType > &trialX,
                                                 const std::vector< floatType > &Xp ) override;
@@ -133,6 +169,30 @@ namespace tardigradeHydra{
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                        deltaIntegratedPlasticMultipliers,         floatVector,                     setDeltaIntegratedPlasticMultipliers )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,    dDeltaIntegratedPlasticMultipliersdPlasticMultipliers,         floatVector, setdDeltaIntegratedPlasticMultipliersdPlasticMultipliers )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                 macroYieldStressGradient,         floatVector,                              setMacroYieldStressGradient )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                         dMacroYieldStressGradientdStress,         floatVector,                      setdMacroYieldStressGradientdStress )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                             dMacroYieldStressGradientdFn,         floatVector,                          setdMacroYieldStressGradientdFn )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                              dMacroYieldStressGradientdF,         floatVector,                           setdMacroYieldStressGradientdF )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                 microYieldStressGradient,         floatVector,                              setMicroYieldStressGradient )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                         microGradientYieldStressGradient,         floatVector,                      setMicroGradientYieldStressGradient )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                             followingDeformationGradient,         floatVector,                          setFollowingDeformationGradient )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                               dFfollowdF,         floatVector,                                            setdFfollowdF )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                              dFfollowdFn,         floatVector,                                           setdFfollowdFn )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                followingMicroDeformation,         floatVector,                             setFollowingMicroDeformation )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                           dChifollowdChi,         floatVector,                                        setdChifollowdChi )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                          dChifollowdChin,         floatVector,                                       setdChifollowdChin )
 
         };
 

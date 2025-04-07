@@ -9,6 +9,8 @@
 
 #include<tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity.h>
 
+#include<tardigrade_micromorphic_tools.h>
+
 namespace tardigradeHydra{
 
     namespace micromorphicRadialReturnDruckerPragerPlasticity{
@@ -436,6 +438,373 @@ namespace tardigradeHydra{
 
                 }
 
+            }
+
+        }
+
+        void residual::setDrivingStresses( const bool isPrevious ){
+            /*!
+             * Set the driving stresses
+             * 
+             * \param isPrevious: Flag for if the previous values are to be set (currently throws not implemented error)
+             */
+
+            if ( isPrevious ){
+
+                tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStresses( isPrevious );
+
+            }
+            else{
+
+                tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStresses(
+                    isPrevious, *get_setDataStorage_followingDeformationGradient( ).value, *get_setDataStorage_followingMicroDeformation( ).value
+                );
+            }
+
+        }
+
+        void residual::setDrivingStressesJacobians( const bool isPrevious ){
+            /*!
+             * Set the driving stresses and jacobians
+             * 
+             * \param isPrevious: Flag for if the previous values are to be set (currently throws not implemented error)
+             */
+
+            if ( isPrevious ){
+
+                tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStressesJacobians( isPrevious );
+
+            }
+            else{
+
+                tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStressesJacobians(
+                    isPrevious,
+                    *get_setDataStorage_followingDeformationGradient( ).value, *get_setDataStorage_followingMicroDeformation( ).value,
+                    *get_setDataStorage_dFfollowdF( ).value,                   *get_setDataStorage_dFfollowdFn( ).value,
+                    *get_setDataStorage_dChifollowdChi( ).value,               *get_setDataStorage_dChifollowdChin( ).value
+                );
+
+            }
+
+        }
+
+        void residual::setFollowingDeformationGradient( ){
+            /*!
+             * Set the following deformation gradient
+             */
+
+            setDrivingStresses( false );
+
+        }
+
+        void residual::setdFfollowdF( ){
+            /*!
+             * Set the derivative of the following deformation gradient w.r.t. the deformation gradient
+             */
+
+            setDrivingStressesJacobians( false );
+
+        }
+
+        void residual::setdFfollowdFn( ){
+            /*!
+             * Set the derivative of the following deformation gradient w.r.t. the sub deformation gradients
+             */
+
+            setDrivingStressesJacobians( false );
+
+        }
+
+        void residual::setFollowingMicroDeformation( ){
+            /*!
+             * Set the following micro deformation
+             */
+
+            setDrivingStresses( false );
+
+        }
+
+        void residual::setdChifollowdChi( ){
+            /*!
+             * Set the derivative of the following micro deformation w.r.t. the micro deformation
+             */
+
+            setDrivingStressesJacobians( false );
+
+        }
+
+        void residual::setdChifollowdChin( ){
+            /*!
+             * Set the derivative of the following micro deformation w.r.t. the sub micro deformations
+             */
+
+            setDrivingStressesJacobians( false );
+
+        }
+
+        void residual::setMacroYieldStressGradient( ){
+            /*!
+             * Set the partial derivative of the macro yield function w.r.t. the stress
+             */
+
+            auto dim = hydra->getDimension( );
+
+            auto sot_dim = dim * dim;
+
+            auto macroCohesion = get_macroCohesion( );
+
+            auto macroYieldParameters = get_macroYieldParameters( );
+
+            auto macroDrivingStress = get_macroDrivingStress( );
+
+            auto precedingDeformationGradient = get_precedingDeformationGradient( );
+
+            auto macroYieldStressGradient = get_setDataStorage_macroYieldStressGradient( );
+
+            floatType tempYield;
+
+            floatVector dMacroYielddDrivingStress;
+
+            floatType dMacroYielddCohesion;
+
+            floatVector dMacroYielddPrecedingF;
+
+            floatVector dDrivingStressdStress;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation(
+                    *macroDrivingStress, *macroCohesion, *precedingDeformationGradient,
+                    ( *macroYieldParameters )[ 0 ], ( *macroYieldParameters )[ 1 ],
+                    tempYield, dMacroYielddDrivingStress, dMacroYielddCohesion, dMacroYielddPrecedingF
+                )
+
+            );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeMicromorphicTools::dCauchyStressdPK2Stress( *get_followingDeformationGradient( ), dDrivingStressdStress );
+            )
+
+            macroYieldStressGradient.zero( sot_dim );
+            for ( unsigned int IJ = 0; IJ < sot_dim; ++IJ ){
+                for ( unsigned int KL = 0; KL < sot_dim; ++KL ){
+                    ( *macroYieldStressGradient.value )[ KL ] += dMacroYielddDrivingStress[ IJ ] * dDrivingStressdStress[ sot_dim * IJ + KL ];
+                }
+            }
+
+        }
+
+        void residual::setdMacroYieldStressGradientdStress( ){
+            /*!
+             * Set the jacobian of the macro yield stress gradient w.r.t. the stress
+             */
+
+            setMacroYieldStressGradientJacobians( );
+
+        }
+
+        void residual::setdMacroYieldStressGradientdFn( ){
+            /*!
+             * Set the jacobian of the macro yield stress gradient w.r.t. the sub deformation gradients
+             */
+
+            setMacroYieldStressGradientJacobians( );
+
+        }
+
+        void residual::setdMacroYieldStressGradientdF( ){
+            /*!
+             * Set the jacobian of the macro yield stress gradient w.r.t. the deformation gradient
+             */
+
+            setdMacroYieldStressGradientdD( );
+
+        }
+
+        void residual::setMacroYieldStressGradientJacobians( ){
+            /*!
+             * Set the jacobians of the gradient of the macro yield function w.r.t. the stress
+             */
+
+            auto dim = hydra->getDimension( );
+
+            auto sot_dim = dim * dim;
+
+            auto macroCohesion = get_macroCohesion( );
+
+            auto macroYieldParameters = get_macroYieldParameters( );
+
+            auto macroDrivingStress = get_macroDrivingStress( );
+
+            auto precedingDeformationGradient = get_precedingDeformationGradient( );
+
+            auto macroYieldStressGradient = get_setDataStorage_macroYieldStressGradient( );
+
+            auto dMacroYieldStressGradientdStress = get_setDataStorage_dMacroYieldStressGradientdStress( );
+
+            auto dMacroYieldStressGradientdFn = get_setDataStorage_dMacroYieldStressGradientdFn( );
+
+            floatType tempYield;
+
+            floatVector dMacroYielddDrivingStress;
+
+            floatType dMacroYielddCohesion;
+
+            floatVector dMacroYielddPrecedingF;
+
+            floatVector dDrivingStressdStress;
+
+            floatVector d2MacroYielddDrivingStress2;
+
+            floatVector d2MacroYielddDrivingStressdPrecedingF;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation(
+                    *macroDrivingStress, *macroCohesion, *precedingDeformationGradient,
+                    ( *macroYieldParameters )[ 0 ], ( *macroYieldParameters )[ 1 ],
+                    tempYield, dMacroYielddDrivingStress, dMacroYielddCohesion, dMacroYielddPrecedingF,
+                    d2MacroYielddDrivingStress2, d2MacroYielddDrivingStressdPrecedingF
+                )
+
+            );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeMicromorphicTools::dCauchyStressdPK2Stress( *get_followingDeformationGradient( ), dDrivingStressdStress );
+            )
+
+            floatVector dMacroYieldStressGradientdDrivingStress( sot_dim * sot_dim, 0 );
+
+            macroYieldStressGradient.zero( sot_dim );
+            dMacroYieldStressGradientdStress.zero( sot_dim * sot_dim );
+            for ( unsigned int IJ = 0; IJ < sot_dim; ++IJ ){
+
+                for ( unsigned int KL = 0; KL < sot_dim; ++KL ){
+
+                    ( *macroYieldStressGradient.value )[ KL ] += dMacroYielddDrivingStress[ IJ ] * dDrivingStressdStress[ sot_dim * IJ + KL ];
+
+                    for ( unsigned int MN = 0; MN < sot_dim; ++MN ){
+
+                        dMacroYieldStressGradientdDrivingStress[ sot_dim * IJ + MN ] += d2MacroYielddDrivingStress2[ sot_dim * IJ + MN ] * dDrivingStressdStress[ sot_dim * IJ + KL ];
+
+                    }
+
+                }
+
+            }
+
+            for ( unsigned int IJ = 0; IJ < sot_dim; ++IJ ){
+                for ( unsigned int KL = 0; KL < sot_dim; ++KL ){
+                    for ( unsigned int MN = 0; MN < sot_dim; ++MN ){
+                        ( *dMacroYieldStressGradientdStress.value )[ sot_dim * IJ + MN ] += dMacroYieldStressGradientdDrivingStress[ sot_dim * IJ + KL ] * dDrivingStressdStress[ sot_dim * KL + MN ];
+                    }
+                }
+            }
+
+        }
+
+        void residual::setdMacroYieldStressGradientdD( ){
+            /*!
+             * Set the Jacobians of the macro yield stress gradient w.r.t. the fundamental deformation measures
+             */
+        }
+
+        void residual::setMicroYieldStressGradient( ){
+            /*!
+             * Set the partial derivative of the micro yield function w.r.t. the stress
+             */
+
+            auto dim = hydra->getDimension( );
+
+            auto sot_dim = dim * dim;
+
+            auto microCohesion = get_microCohesion( );
+
+            auto microYieldParameters = get_microYieldParameters( );
+
+            auto microDrivingStress = get_symmetricMicroDrivingStress( );
+
+            auto precedingDeformationGradient = get_precedingDeformationGradient( );
+
+            auto microYieldStressGradient = get_setDataStorage_microYieldStressGradient( );
+
+            floatType tempYield;
+
+            floatVector dMicroYielddDrivingStress;
+
+            floatType dMicroYielddCohesion;
+
+            floatVector dMicroYielddPrecedingF;
+
+            floatVector dDrivingStressdStress;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeHydra::micromorphicDruckerPragerPlasticity::computeSecondOrderDruckerPragerYieldEquation(
+                    *microDrivingStress, *microCohesion, *precedingDeformationGradient,
+                    ( *microYieldParameters )[ 0 ], ( *microYieldParameters )[ 1 ],
+                    tempYield, dMicroYielddDrivingStress, dMicroYielddCohesion, dMicroYielddPrecedingF
+                )
+            );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeMicromorphicTools::dSymmetricMicroStressdReferenceSymmetricMicroStress( *get_followingDeformationGradient( ), dDrivingStressdStress );
+            )
+
+            microYieldStressGradient.zero( sot_dim );
+            for ( unsigned int IJ = 0; IJ < sot_dim; ++IJ ){
+                for ( unsigned int KL = 0; KL < sot_dim; ++KL ){
+                    ( *microYieldStressGradient.value )[ KL ] += dMicroYielddDrivingStress[ IJ ] * dDrivingStressdStress[ sot_dim * IJ + KL ];
+                }
+            }
+
+        }
+
+        void residual::setMicroGradientYieldStressGradient( ){
+            /*!
+             * Set the partial derivative of the micro gradient yield function w.r.t. the stress
+             */
+
+            auto dim = hydra->getDimension( );
+
+            auto tot_dim = dim * dim * dim;
+
+            auto microGradientCohesion = get_microGradientCohesion( );
+
+            auto microGradientYieldParameters = get_microGradientYieldParameters( );
+
+            auto microGradientDrivingStress = get_higherOrderDrivingStress( );
+
+            auto precedingDeformationGradient = get_precedingDeformationGradient( );
+
+            auto microGradientYieldStressGradient = get_setDataStorage_microGradientYieldStressGradient( );
+
+            dimVector tempVectorYield;
+
+            floatVector dMicroGradientYielddDrivingStress;
+
+            floatVector dMicroGradientYielddCohesion;
+
+            floatVector dMicroGradientYielddPrecedingF;
+
+            floatVector dDrivingStressdStress;
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeHydra::micromorphicDruckerPragerPlasticity::computeHigherOrderDruckerPragerYieldEquation(
+                    *microGradientDrivingStress, *microGradientCohesion, *precedingDeformationGradient,
+                    ( *microGradientYieldParameters )[ 0 ], ( *microGradientYieldParameters )[ 1 ],
+                    tempVectorYield, dMicroGradientYielddDrivingStress, dMicroGradientYielddCohesion, dMicroGradientYielddPrecedingF
+                )
+            );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH(
+                tardigradeMicromorphicTools::dHigherOrderStressdReferenceHigherOrderStress( *get_followingDeformationGradient( ), *get_followingMicroDeformation( ), dDrivingStressdStress );
+            )
+
+            microGradientYieldStressGradient.zero( dim * tot_dim );
+            for ( unsigned int I = 0; I < dim; ++I ){
+                for ( unsigned int JKL = 0; JKL < tot_dim; ++JKL ){
+                    for ( unsigned int MNO = 0; MNO < tot_dim; ++MNO ){
+                        ( *microGradientYieldStressGradient.value )[ tot_dim * I + MNO ] += dMicroGradientYielddDrivingStress[ tot_dim * I + JKL ] * dDrivingStressdStress[ tot_dim * JKL + MNO ];
+                    }
+                }
             }
 
         }
