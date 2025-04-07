@@ -3325,7 +3325,9 @@ BOOST_AUTO_TEST_CASE( test_setMacroYieldStressGradient, * boost::unit_test::tole
 
             for ( unsigned int j = 0; j < OUT_SIZE; ++j ){
 
-                residual.publicGetdMacroYieldStressGradientdStress( );
+                if ( ( i >= 0 ) && ( i < 9 ) ){
+                    BOOST_TEST( ( *residual.publicGetdMacroYieldStressGradientdStress( ) )[ 9 * j + i ] == ( vp[ j ] - vm[ j ] ) / ( 2 * delta ) );
+                }
                 std::cout << ( vp[ j ] - vm[ j ] ) / ( 2 * delta ) << " ";
 
             }
