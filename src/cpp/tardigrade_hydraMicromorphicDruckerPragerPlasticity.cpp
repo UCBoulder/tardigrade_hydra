@@ -2518,15 +2518,33 @@ namespace tardigradeHydra{
              * We also assume that the stress from hydra is in the reference configuration
              */
 
+            floatVector Fp;
+
+            floatVector chip;
+
+            setDrivingStresses( isPrevious, Fp, chip );
+
+        }
+
+        void residual::setDrivingStresses( const bool isPrevious, floatVector &Fp, floatVector &chip ){
+            /*!
+             * Set the driving stresses for the plasticity
+             * 
+             * We here assume that the driving stresses are in the current configuration of
+             * this residual's configuration.
+             *
+             * We also assume that the stress from hydra is in the reference configuration
+             * 
+             * \param isPrevious: Whether the values should be computed for the previous stress or not
+             * \param &Fp: The following deformation gradient from the reference to the intermediate configuration
+             * \param &chip: The following micro gradient from the reference to the intermediate configuration
+             */
+
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
             const unsigned int tot_dim = hydra->getTOTDimension( );
 
             const floatVector *stress;
-
-            secondOrderTensor Fp;
-
-            secondOrderTensor chip;
 
             setDataStorageBase< secondOrderTensor > macroDrivingStress;
 
@@ -2787,6 +2805,41 @@ namespace tardigradeHydra{
              * this residual's configuration.
              *
              * We also assume that the stress from hydra is in the reference configuration
+             * 
+             * \param isPrevious: Whether the values should be computed for the previous stress or not
+             */
+
+            secondOrderTensor Fp, chip;
+
+            fourthOrderTensor dFpdF, dChipdChi;
+
+            floatVector dFpdFn, dChipdChin;
+
+            setDrivingStressesJacobians( isPrevious, Fp, chip, dFpdF, dFpdFn, dChipdChi, dChipdChin );
+
+        }
+
+        void residual::setDrivingStressesJacobians(
+            const bool isPrevious, secondOrderTensor &Fp, secondOrderTensor &chip,
+            fourthOrderTensor &dFpdF, floatVector &dFpdFn,
+            fourthOrderTensor &dChipdChi, floatVector &dChipdChin
+        ){
+            /*!
+             * Set the driving stresses for the plasticity along with the Jacobians
+             * 
+             * We here assume that the driving stresses are in the current configuration of
+             * this residual's configuration.
+             *
+             * We also assume that the stress from hydra is in the reference configuration
+             * 
+             * \param isPrevious: Whether the values should be computed for the previous stress or not
+             * \param &Fp: The following deformation gradient from the reference to the intermediate configuration
+             * \param &chip: The following micro gradient from the reference to the intermediate configuration
+             * \param &dFpdF: The derivative of the following deformation gradient from the reference to the intermediate configuration w.r.t. the deformation gradient
+             * \param &dFpdFn: The derivative of the following deformation gradient from the reference to the intermediate configuration w.r.t. the sub deformation gradients
+             * \param &dChipdChi: The derivative of the following micro gradient from the reference to the intermediate configuration w.r.t. the micro deformation
+             * \param &dChipdChin: The derivative of the following micro gradient from the reference to the intermediate configuration w.r.t. the sub micro deformations
+             * 
              */
 
             constexpr unsigned int dim = 3;
@@ -2810,10 +2863,6 @@ namespace tardigradeHydra{
             const fourthOrderTensor *dChi1dChi;
 
             const floatVector *dChi1dChin;
-
-            secondOrderTensor Fp;
-
-            secondOrderTensor chip;
 
             setDataStorageBase< secondOrderTensor > macroDrivingStress;
 
@@ -2942,15 +2991,15 @@ namespace tardigradeHydra{
 
             }
 
+            dFpdF      = fourthOrderTensor( sot_dim * sot_dim, 0 );
+
+            dFpdFn     = fourthOrderTensor( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
+
+            dChipdChi  = fourthOrderTensor( sot_dim * sot_dim, 0 );
+
+            dChipdChin = fourthOrderTensor( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
+
             // Assemble the derivatives of the deformation gradient map
-            fourthOrderTensor dFpdF(  sot_dim * sot_dim, 0 );
-
-            floatVector dFpdFn( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
-
-            fourthOrderTensor dChipdChi(  sot_dim * sot_dim, 0 );
-
-            floatVector dChipdChin( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
-
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
                 for ( unsigned int k = 0; k < sot_dim; k++ ){
