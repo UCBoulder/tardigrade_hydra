@@ -683,7 +683,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int MN = 0; MN < sot_dim; ++MN ){
 
-                        dMacroYieldStressGradientdDrivingStress[ sot_dim * IJ + MN ] += d2MacroYielddDrivingStress2[ sot_dim * IJ + MN ] * dDrivingStressdStress[ sot_dim * IJ + KL ];
+                        dMacroYieldStressGradientdDrivingStress[ sot_dim * KL + MN ] += d2MacroYielddDrivingStress2[ sot_dim * IJ + MN ] * dDrivingStressdStress[ sot_dim * IJ + KL ];
 
                     }
 
