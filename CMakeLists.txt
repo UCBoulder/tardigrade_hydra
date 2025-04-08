@@ -16,6 +16,9 @@ set(SPHINX_SRC_PATH "docs/sphinx")
 set(TARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built for hydra")
 set(TARDIGRADE_HYDRA_USE_LIBXSMM OFF CACHE BOOL "Flag for whether to use libxsmm for matrix math")
 
+# Add a flag for if a full build of all tardigrade repositories should be performed
+set(TARDIGRADE_FULL_BUILD OFF CACHE BOOL "Flag for whether a full build of Tardigrade should be performed (i.e., all repos pulled from git and built)")
+
 # Set the internal support libraries
 set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearTestMaterial" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPeryznaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPeryznaViscodamage" "tardigrade_hydraMicromorphicDruckerPragerPlasticity" "tardigrade_hydraPeryznaJ2Viscoplasticity" "tardigrade_hydraMassChange" "tardigrade_hydraMicromorphicDruckerPragerPlasticityOptimization" "tardigrade_hydraFourierHeatConduction" "tardigrade_hydraLinearInternalEnergy" "tardigrade_hydraMicromorphicRadialReturnLinearElasticity")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
@@ -135,7 +138,11 @@ set(LOCAL_BUILD_INCLUDE_DIRECTORIES "")
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
     set(${package_upper}_BUILD_PYTHON_BINDINGS ${TARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS} CACHE INTERNAL "Setting ${package}'s python binding flag to the global value")
-    find_package(${package} ${upstream_required} CONFIG)
+    if(TARDIGRADE_FULL_BUILD)
+        message("Not attempting to find ${package}")
+    else()
+        find_package(${package} ${upstream_required} CONFIG)
+    endif()
     if(${package}_FOUND)
         message(STATUS "Found ${package}: ${${package}_DIR}")
     else()
