@@ -34,6 +34,17 @@ namespace tardigradeHydra{
 
     }
 
+    void residualBase::addNLStepData( dataBase *data ){
+        /*!
+         * Add data to the vector of values which will be cleared after each nonlinear step
+         * 
+         * \param *data: The dataBase object to be cleared
+         */
+
+        hydra->addNLStepData( data );
+
+    }
+
     void residualBase::setupRelaxedStep( const unsigned int &relaxedStep ){
         /*!
          * When performing a relaxed iteration this function is called prior to the solution of the non-linear

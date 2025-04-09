@@ -153,6 +153,16 @@
     TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_setDataStorage_##varname,varname,setDataStorageIteration,vartype,setIterationData,uncall,this)
 
 /*!
+ * \brief Declare a dataStorage variable that uses setNLStepData as the setter function
+ * \param context: The context (public, protected, private) that the macro should return to
+ * \param varname: The name of the variable
+ * \param vartype: The type of the variable
+ * \param uncall: The function that is called if the variable is not set
+ */
+#define TARDIGRADE_HYDRA_DECLARE_NLSTEP_STORAGE(context,varname,vartype,uncall) \
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_setDataStorage_##varname,varname,setDataStorageNLStep,vartype,setNLStepData,uncall,this)
+
+/*!
  * \brief Declare a named dataStorage variable that uses setPreviousData as the setter function
  * \param context: The context (public, protected, private) that the macro should return to
  * \param setname: The name of the setter
@@ -967,6 +977,8 @@ namespace tardigradeHydra{
 
             void addIterationData( dataBase *data );
 
+            void addNLStepData( dataBase *data );
+
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
                 /*!
@@ -981,6 +993,23 @@ namespace tardigradeHydra{
                 storage.first = true;
 
                 addIterationData( &storage );
+
+            }
+
+            template<class T>
+            void setNLStepData( const T &data, dataStorage<T> &storage ){
+                /*!
+                 * Template function for adding nonlinear step data
+                 *
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
+
+                storage.second = data;
+
+                storage.first = true;
+
+                addNLStepData( &storage );
 
             }
 
@@ -1066,6 +1095,36 @@ namespace tardigradeHydra{
                        */
 
                       _rp->addIterationData( this->_ds );
+
+                  }
+
+              protected:
+
+                  residualBase *_rp; //!< The containing residual class
+
+            };
+
+            //! Class which defines data storage objects which are reset at each nonlinear step
+            template< typename T >
+            class setDataStorageNLStep : public setDataStorageBase< T > {
+
+              public:
+
+                  setDataStorageNLStep( dataStorage< T > *ds, residualBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
+                      /*!
+                       * Create a data storage object that will be reset at each nonlinear step
+                       * 
+                       * \param *ds: The data storage object
+                       * \param *rp: The residual class that contains the data storage object
+                       */
+                  }
+
+                  ~setDataStorageNLStep( ){
+                      /*!
+                       * Destructor that says the data storage object has been set
+                       */
+
+                      _rp->addNLStepData( this->_ds );
 
                   }
 
@@ -2249,7 +2308,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousNonLinearSolveStateVariables, floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, additionalStateVariables,             floatVector, passThrough )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, additionalStateVariables,             floatVector, passThrough )
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousAdditionalStateVariables,     floatVector, passThrough )
 

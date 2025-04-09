@@ -3705,6 +3705,10 @@ BOOST_AUTO_TEST_CASE( test_setFlowDerivatives, * boost::unit_test::tolerance( DE
 
             using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::residual;
 
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStresses;
+
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStressesJacobians;
+
             floatType macroCohesion = 1.23;
 
             floatType microCohesion = 2.34;
@@ -6104,6 +6108,10 @@ BOOST_AUTO_TEST_CASE( test_setUpdatedPlasticStrainLikeISVs2, * boost::unit_test:
 
             using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::residual;
 
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStresses;
+
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStressesJacobians;
+
             floatType macroCohesion = 1.23;
 
             floatType microCohesion = 2.34;
@@ -6615,6 +6623,10 @@ BOOST_AUTO_TEST_CASE( test_setYield, * boost::unit_test::tolerance( DEFAULT_TEST
         public:
 
             using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::residual;
+
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStresses;
+
+            using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStressesJacobians;
 
             floatType macroCohesion = 1.23;
 

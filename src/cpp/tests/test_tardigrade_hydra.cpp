@@ -1309,8 +1309,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector2, * boost::uni
                                          -17.74983625, -24.36324336,  10.61990622,
                                          -11.67885744, -32.26328862,   8.6212508 };
 
-    additionalStateVariablesAnswer = { }; //Goes away because of the reset
-
     floatType scaled_time = ( scale_factor - 1) * deltaTime + time;
 
     floatType scaled_deltaTime = scale_factor * deltaTime;

@@ -535,6 +535,8 @@ namespace tardigradeHydra{
 
                 virtual void setPreviousHigherOrderDrivingStress( );
 
+                virtual void setDrivingStresses( const bool isPrevious, secondOrderTensor &Fp, secondOrderTensor &chip );
+
                 virtual void setDrivingStresses( const bool isPrevious );
 
                 virtual void setdMacroDrivingStressdMacroStress( );
@@ -580,6 +582,12 @@ namespace tardigradeHydra{
                 virtual void setPreviousdHigherOrderDrivingStressdFn( );
 
                 virtual void setPreviousdHigherOrderDrivingStressdChin( );
+
+                virtual void setDrivingStressesJacobians(
+                    const bool isPrevious, secondOrderTensor &Fp, secondOrderTensor &chip,
+                    fourthOrderTensor &dFpdF,     floatVector &dFpdFn,
+                    fourthOrderTensor &dChipdChi, floatVector &dChipdChin
+                );
 
                 virtual void setDrivingStressesJacobians( const bool isPrevious );
 
