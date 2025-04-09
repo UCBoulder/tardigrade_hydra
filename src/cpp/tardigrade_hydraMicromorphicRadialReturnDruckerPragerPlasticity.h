@@ -98,8 +98,12 @@ namespace tardigradeHydra{
                 using tardigradeHydra::micromorphicDruckerPragerPlasticity::residual::setDrivingStressesJacobians;
 
                 residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const unsigned int &plasticConfigurationIndex,
-                          const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5 )
-                        : tardigradeHydra::micromorphicDruckerPragerPlasticity::residual( _hydra, _numEquations, plasticConfigurationIndex, stateVariableIndices, parameters, integrationParameter ){
+                          const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters,
+			  const floatType integrationParameter = 0.5,
+			  const double yieldTolerance = 0., const double plasticMultiplierTolerance = 0.
+		       	)
+                        : tardigradeHydra::micromorphicDruckerPragerPlasticity::residual( _hydra, _numEquations, plasticConfigurationIndex, stateVariableIndices, parameters, integrationParameter ),
+		          _yieldTolerance( yieldTolerance ), _plasticMultiplierTolerance( plasticMultiplierTolerance ) {
                     /*!
                      * The main initialization constructor for the Drucker Prager plasticity residual based on optimization
                      * 
@@ -108,17 +112,30 @@ namespace tardigradeHydra{
                      * \param &plasticConfigurationIndex: The index of the configuration which represents the plastic deformation
                      * \param &stateVariableIndices: The indices of the plastic state variables
                      * \param &parameters: The parameter vector
-                     * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
+		     * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
+		     * \param &yieldTolerance: The allowable value of the yield stress before it is assumed to be an inactive surface (defaults to 0)
+		     * \param &plasticMultiplierTolerance: The allowable value of a plastic multiplier before it is assumed to be an inactive surface (defaults to 0)
                      */
 
                 }
 
+            protected:
+
                 virtual void setActiveConstraints( );
+
+		std::vector< bool > *getMutableActiveConstraints( ){
+		    /*!
+		     * Return a mutable reference to the active constraints
+		     */
+
+                    return &_activeConstraints.second;
+
+		}
+
+		virtual void updateActiveConstraints( );
 
                 virtual void projectSuggestedX( std::vector< floatType > &trialX,
                                                 const std::vector< floatType > &Xp ) override;
-
-            protected:
 
                 virtual void setStateVariableResiduals( ) override;
 
@@ -126,9 +143,31 @@ namespace tardigradeHydra{
 
                 virtual void setdStateVariableResidualsdD( ) override;
 
+                const double *getYieldTolerance( ){
+                    /*!
+		     * Return the yield tolerance
+		     */
+
+		    return &_yieldTolerance;
+
+		}
+
+                const double *getPlasticMultiplierTolerance( ){
+                    /*!
+		     * Return the plastic multiplier tolerance
+		     */
+
+		    return &_plasticMultiplierTolerance;
+
+		}
+
             private:
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, activeConstraints, std::vector< bool >, setActiveConstraints )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE( private, activeConstraints, std::vector< bool >, setActiveConstraints )
+
+                double _yieldTolerance;
+
+                double _plasticMultiplierTolerance;
 
         };
 

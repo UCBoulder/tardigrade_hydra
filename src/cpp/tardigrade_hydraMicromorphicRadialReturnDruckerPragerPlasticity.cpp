@@ -34,17 +34,33 @@ namespace tardigradeHydra{
 
             activeConstraints.value->resize( 5 );
 
-            ( *activeConstraints.value )[ 0 ] = ( *get_macroYield( ) ) > 0;
+	    // Check the yield stress constraint
+            ( *activeConstraints.value )[ 0 ] = ( ( *get_macroYield( ) ) > *getYieldTolerance( ) );
 
-            ( *activeConstraints.value )[ 1 ] = ( *get_microYield( ) ) > 0;
+            ( *activeConstraints.value )[ 1 ] = ( ( *get_microYield( ) ) > *getYieldTolerance( ) );
 
             for ( auto v = std::begin( *get_microGradientYield( ) ); v != std::end( *get_microGradientYield( ) ); ++v ){
 
-                ( *activeConstraints.value )[ ( v - std::begin( *get_microGradientYield( ) ) ) + 2 ] = ( *v ) > 0;
+                ( *activeConstraints.value )[ ( v - std::begin( *get_microGradientYield( ) ) ) + 2 ] = ( ( *v ) > *getYieldTolerance( ) );
 
             }
 
         }
+
+	void residual::updateActiveConstraints( ){
+            /*!
+	     * Update the active constraints based on the plastic multipliers
+	     */
+
+	    auto activeConstraints = getMutableActiveConstraints( );
+
+	    for ( auto v = std::begin( *activeConstraints ); v != std::end( *activeConstraints ); ++v ){
+
+                *v = ( *get_plasticMultipliers( ) )[ v - std::begin( *activeConstraints ) ] > *getPlasticMultiplierTolerance( );
+
+	    }
+
+	}
 
         void residual::setStateVariableResiduals( ){
             /*!
