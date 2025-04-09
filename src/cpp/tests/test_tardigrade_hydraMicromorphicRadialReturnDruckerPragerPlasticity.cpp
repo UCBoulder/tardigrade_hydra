@@ -543,7 +543,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
         answer[ i ] = residual._updatedZ[ i ] - residual._Z[ i ];
     }
     answer[ 5 ] = residual._macYield;
-    answer[ 6 ] = residual._micYield;
+    answer[ 6 ] = residual._gammaDot[ 1 ];
     answer[ 7 ] = residual._gammaDot[ 2 ];
     answer[ 8 ] = residual._gammaDot[ 3 ];
     answer[ 9 ] = residual._micGradYield[ 2 ];

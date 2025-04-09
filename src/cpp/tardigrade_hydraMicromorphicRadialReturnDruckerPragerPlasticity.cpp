@@ -30,7 +30,7 @@ namespace tardigradeHydra{
              * Set which constraints are active
              */
 
-            auto activeConstraints   = get_setDataStorage_activeConstraints( );
+            auto activeConstraints = get_setDataStorage_activeConstraints( );
 
             activeConstraints.value->resize( 5 );
 
@@ -52,11 +52,14 @@ namespace tardigradeHydra{
 	     * Update the active constraints based on the plastic multipliers
 	     */
 
-	    auto activeConstraints = getMutableActiveConstraints( );
+            get_activeConstraints( ); // Initializes the active constraints if they haven't been yet
+	    auto activeConstraints = get_setDataStorage_activeConstraints( );
 
-	    for ( auto v = std::begin( *activeConstraints ); v != std::end( *activeConstraints ); ++v ){
+            TARDIGRADE_ERROR_TOOLS_CHECK( activeConstraints.value->size( ) == get_plasticMultipliers( )->size( ), "The active constraints must be the same size as the plastic multipliers\n  activeConstraints size : " + std::to_string( activeConstraints.value->size( ) ) + "\n  plasticMultipliers size: " + std::to_string( get_plasticMultipliers( )->size( ) ) + "\n" )
 
-                *v = ( *get_plasticMultipliers( ) )[ v - std::begin( *activeConstraints ) ] > *getPlasticMultiplierTolerance( );
+	    for ( auto v = activeConstraints.begin( ); v != activeConstraints.end( ); ++v ){
+
+                *v = ( *v ) && ( ( *get_plasticMultipliers( ) )[ v - activeConstraints.begin( ) ] > *getPlasticMultiplierTolerance( ) );
 
 	    }
 
@@ -79,7 +82,9 @@ namespace tardigradeHydra{
 
             auto plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
 
-            auto activeConstraints = get_activeConstraints( );
+	    try{
+	    updateActiveConstraints( );
+	    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e); throw;}
 
             auto plasticMultipliers = get_plasticMultipliers( );
 
@@ -105,13 +110,13 @@ namespace tardigradeHydra{
             };
 
             // Set the constraints
-            for ( auto v = std::begin( *activeConstraints ); v != std::end( *activeConstraints ); ++v ){
+            for ( auto v = std::begin( *get_activeConstraints( ) ); v != std::end( *get_activeConstraints( ) ); ++v ){
 
                 if ( *v ){
-                    ( *residual.value )[ num_plastic_state_variables + ( unsigned int )( v - std::begin( *activeConstraints ) ) ] += yieldSurfaceValues[ ( unsigned int )( v - std::begin( *activeConstraints ) )  ];
+                    ( *residual.value )[ num_plastic_state_variables + ( unsigned int )( v - std::begin( *get_activeConstraints( ) ) ) ] += yieldSurfaceValues[ ( unsigned int )( v - std::begin( *get_activeConstraints( ) ) )  ];
                 }
                 else{
-                    ( *residual.value )[ num_plastic_state_variables + ( unsigned int )( v - std::begin( *activeConstraints ) ) ] += ( *plasticMultipliers )[ ( unsigned int )( v - std::begin( *activeConstraints ) ) ];
+                    ( *residual.value )[ num_plastic_state_variables + ( unsigned int )( v - std::begin( *get_activeConstraints( ) ) ) ] += ( *plasticMultipliers )[ ( unsigned int )( v - std::begin( *get_activeConstraints( ) ) ) ];
                 }
 
             }
