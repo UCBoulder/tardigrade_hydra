@@ -113,43 +113,7 @@ namespace tardigradeHydra{
 
                 }
 
-                virtual void setDrivingStresses( const bool isPrevious ) override;
-
-                virtual void setDrivingStressesJacobians( const bool isPrevious ) override;
-
-                virtual void setFollowingDeformationGradient( );
-
-                virtual void setdFfollowdF( );
-
-                virtual void setdFfollowdFn( );
-
-                virtual void setFollowingMicroDeformation( );
-
-                virtual void setdChifollowdChi( );
-
-                virtual void setdChifollowdChin( );
-
                 virtual void setActiveConstraints( );
-
-                virtual void setDeltaIntegratedPlasticMultipliers( );
-
-                virtual void setdDeltaIntegratedPlasticMultipliersdPlasticMultipliers( );
-
-                virtual void setMacroYieldStressGradient( );
-
-                virtual void setdMacroYieldStressGradientdStress( );
-
-                virtual void setdMacroYieldStressGradientdFn( );
-
-                virtual void setdMacroYieldStressGradientdF( );
-
-                virtual void setMacroYieldStressGradientJacobians( );
-
-                virtual void setdMacroYieldStressGradientdD( );
-
-                virtual void setMicroYieldStressGradient( );
-
-                virtual void setMicroGradientYieldStressGradient( );
 
                 virtual void projectSuggestedX( std::vector< floatType > &trialX,
                                                 const std::vector< floatType > &Xp ) override;
@@ -164,35 +128,7 @@ namespace tardigradeHydra{
 
             private:
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                        activeConstraints, std::vector< bool >,                                     setActiveConstraints )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                        deltaIntegratedPlasticMultipliers,         floatVector,                     setDeltaIntegratedPlasticMultipliers )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,    dDeltaIntegratedPlasticMultipliersdPlasticMultipliers,         floatVector, setdDeltaIntegratedPlasticMultipliersdPlasticMultipliers )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                 macroYieldStressGradient,         floatVector,                              setMacroYieldStressGradient )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                         dMacroYieldStressGradientdStress,         floatVector,                      setdMacroYieldStressGradientdStress )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                             dMacroYieldStressGradientdFn,         floatVector,                          setdMacroYieldStressGradientdFn )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                              dMacroYieldStressGradientdF,         floatVector,                           setdMacroYieldStressGradientdF )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                 microYieldStressGradient,         floatVector,                              setMicroYieldStressGradient )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                         microGradientYieldStressGradient,         floatVector,                      setMicroGradientYieldStressGradient )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                             followingDeformationGradient,         floatVector,                          setFollowingDeformationGradient )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                               dFfollowdF,         floatVector,                                            setdFfollowdF )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                              dFfollowdFn,         floatVector,                                           setdFfollowdFn )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                followingMicroDeformation,         floatVector,                             setFollowingMicroDeformation )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                           dChifollowdChi,         floatVector,                                        setdChifollowdChi )
-
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private,                                          dChifollowdChin,         floatVector,                                       setdChifollowdChin )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, activeConstraints, std::vector< bool >, setActiveConstraints )
 
         };
 
