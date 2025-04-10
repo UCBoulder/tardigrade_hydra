@@ -82,8 +82,6 @@ namespace tardigradeHydra{
 
             auto plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
 
-            updateActiveConstraints( );
-
             auto plasticMultipliers = get_plasticMultipliers( );
 
             auto residual = get_setDataStorage_stateVariableResiduals( );
@@ -408,6 +406,39 @@ namespace tardigradeHydra{
                 }
 
             }
+
+        }
+
+        void residual::correctResiduals( ){
+            /*!
+             * Correct the residuals to be consistent with the new active set
+             */
+
+            setStateVariableResiduals( );
+
+            setResidual( );
+
+            floatVector * globalResidual = hydra->getMutableResidual( );
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( globalResidual, "The global residual isn't mutable" );
+
+            unsigned int offset = hydra->getCurrentResidualOffset( );
+
+            std::copy(
+                std::begin( *getResidual( ) ),
+                std::end( *getResidual( ) ),
+                std::begin( *globalResidual ) + offset
+            );
+
+        }
+
+        void residual::successfulNLStep( ){
+            /*!
+             * Function that runs after a successful nonlinear step
+             */
+
+            updateActiveConstraints( );
+            correctResiduals( );            
 
         }
 

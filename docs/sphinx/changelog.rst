@@ -57,6 +57,7 @@ Internal Changes
 - Changed functions to remove errorOut (:pull:`180`). By `Nathan Miller`_.
 - Added density to the full material-response simulation capability (:pull:`182`). By `Nathan Miller`_.
 - Added some additional information to convergence error messages (:pull:`183`). By `Nathan Miller`_.
+- Moved the update of the active constraints to the end of a successful nonlinear step (:pull:`195`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
