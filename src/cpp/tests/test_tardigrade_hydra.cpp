@@ -7811,9 +7811,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualSuccessfulNLStep, * boost::unit
         public:
 
             residualMock r1;
-        
+
             residualMock r2;
-        
+
             residualMock r3;
 
             unsigned int s1 = 36;
