@@ -47,23 +47,23 @@ namespace tardigradeHydra{
 
         }
 
-	void residual::updateActiveConstraints( ){
+        void residual::updateActiveConstraints( ){
             /*!
-	     * Update the active constraints based on the plastic multipliers
-	     */
-
+             * Update the active constraints based on the plastic multipliers
+             */
+        
             get_activeConstraints( ); // Initializes the active constraints if they haven't been yet
-	    auto activeConstraints = get_setDataStorage_activeConstraints( );
-
+            auto activeConstraints = get_setDataStorage_activeConstraints( );
+        
             TARDIGRADE_ERROR_TOOLS_CHECK( activeConstraints.value->size( ) == get_plasticMultipliers( )->size( ), "The active constraints must be the same size as the plastic multipliers\n  activeConstraints size : " + std::to_string( activeConstraints.value->size( ) ) + "\n  plasticMultipliers size: " + std::to_string( get_plasticMultipliers( )->size( ) ) + "\n" )
-
-	    for ( auto v = activeConstraints.begin( ); v != activeConstraints.end( ); ++v ){
-
+        
+            for ( auto v = activeConstraints.begin( ); v != activeConstraints.end( ); ++v ){
+        
                 *v = ( *v ) && ( ( *get_plasticMultipliers( ) )[ v - activeConstraints.begin( ) ] > *getPlasticMultiplierTolerance( ) );
-
-	    }
-
-	}
+        
+            }
+        
+        }
 
         void residual::setStateVariableResiduals( ){
             /*!
@@ -82,9 +82,7 @@ namespace tardigradeHydra{
 
             auto plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
 
-	    try{
-	    updateActiveConstraints( );
-	    }catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e); throw;}
+            updateActiveConstraints( );
 
             auto plasticMultipliers = get_plasticMultipliers( );
 
