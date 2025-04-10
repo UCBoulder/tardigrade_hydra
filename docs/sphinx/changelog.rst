@@ -27,6 +27,8 @@ New Features
 - Added the ability to modify the global residuals and Jacobians (:pull:`186`). By `Nathan Miller`_.
 - Added a micromorphic linear elasticity model that is compatible with radial return algorithms (:pull:`187`). By `Nathan Miller`_.
 - Allow the user to do a complete build of the tardigrade stack (:pull:`188`). By `Nathan Miller`_.
+- Added the active set radial return map approach for micromorphic Drucker-Prager plasticity (:pull:`193`). By `Nathan Miller`_.
+- Added a function that is called after every successful nonlinear step (:pull:`194`). By `Nathan Miller`_.
 
 Internal Changes
 ================
