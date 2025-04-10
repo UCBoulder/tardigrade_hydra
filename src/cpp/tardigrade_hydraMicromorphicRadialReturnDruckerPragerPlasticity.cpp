@@ -442,6 +442,38 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::preNLSolve( ){
+            /*!
+             * Function that runs prior to a nonlinear solve
+             */
+
+            setActiveConstraints( );
+
+        }
+
+        void residual::postNLSolve( ){
+            /*!
+             * Function that runs after a nonlinear solve
+             */
+
+            // Assemble the yield surface values
+            std::array< floatType, 5 > yieldSurfaceValues = {
+                *get_macroYield( ), *get_microYield( ),
+                ( *get_microGradientYield( ) )[ 0 ], ( *get_microGradientYield( ) )[ 1 ], ( *get_microGradientYield( ) )[ 2 ]
+            };
+
+            for ( auto v = std::begin( yieldSurfaceValues ); v != std::end( yieldSurfaceValues ); ++v ){
+
+                if ( ( *v ) > *getYieldTolerance( ) ){
+
+                    throw convergence_error( "A yield surface is larger than the yield surface tolerance" );
+
+                }
+
+            }
+
+        }
+
     }
 
 }

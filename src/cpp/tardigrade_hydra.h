@@ -968,6 +968,12 @@ namespace tardigradeHydra{
                  */
             };
 
+            virtual void postNLSolve( ){
+                /*!
+                 * Function that is called after a nonlinear solve
+                 */
+            };
+
             virtual void successfulNLStep( ){
                 /*!
                  * Function that is called whenever a successful nonlinear step is taken
@@ -1914,6 +1920,8 @@ namespace tardigradeHydra{
             virtual void callResidualSuccessfulNLStep( );
 
             virtual void callResidualPreNLSolve( );
+
+            virtual void callResidualPostNLSolve( );
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
