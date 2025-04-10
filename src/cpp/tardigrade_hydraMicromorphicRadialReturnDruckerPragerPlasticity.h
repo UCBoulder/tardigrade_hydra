@@ -99,8 +99,8 @@ namespace tardigradeHydra{
 
                 residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const unsigned int &plasticConfigurationIndex,
                           const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters,
-			  const floatType integrationParameter = 0.5,
-			  const double yieldTolerance = 0., const double plasticMultiplierTolerance = 0.
+                          const floatType integrationParameter = 0.5,
+                          const double yieldTolerance = 0., const double plasticMultiplierTolerance = -1e-4
 		       	)
                         : tardigradeHydra::micromorphicDruckerPragerPlasticity::residual( _hydra, _numEquations, plasticConfigurationIndex, stateVariableIndices, parameters, integrationParameter ),
 		          _yieldTolerance( yieldTolerance ), _plasticMultiplierTolerance( plasticMultiplierTolerance ) {
