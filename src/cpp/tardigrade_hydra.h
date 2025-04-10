@@ -1306,6 +1306,25 @@ namespace tardigradeHydra{
 
             }
 
+            //! Get the current residual index
+            const unsigned int getCurrentResidualIndex( ){
+
+                TARDIGRADE_ERROR_TOOLS_CHECK( currentResidualIndexMeaningful( ), "The current residual index isn't meaningful" );
+                return _current_residual_index;
+
+            }
+
+            const unsigned int getCurrentResidualOffset( ){
+                /*!
+                 * Get the offset of the current residual
+                 */
+                unsigned int offset = 0;
+                for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->begin( ) + getCurrentResidualIndex( ); ++v ){
+                    offset += *( *v )->getNumEquations( );
+                }
+                return offset;
+            }
+
             //! Get a reference to the dimension
             constexpr unsigned int getDimension( ){ return _dimension; }
 
@@ -1777,9 +1796,38 @@ namespace tardigradeHydra{
 
             }
 
+            const bool currentResidualIndexMeaningful( ){
+                /*!
+                 * Return if the current residual index is meaningful or not
+                 */
+                return _current_residual_index_set;
+            }
+
         protected:
 
             // Setters that the user may need to access but not override
+
+            const void setCurrentResidualIndexMeaningful( const bool &value ){
+                /*!
+                 * Set if the current residual index is meaningful
+                 * 
+                 * \param &value: Set if the current residual index is meaningful or not
+                 */
+
+                _current_residual_index_set = value;
+
+            }
+
+            const void setCurrentResidualIndex( const unsigned int value ){
+                /*!
+                 * Set if the current residual index is meaningful
+                 * 
+                 * \param value: Set the value of the current residual index
+                 */
+
+                _current_residual_index = value;
+
+            }
 
             void setStress( const floatVector &stress );
 
@@ -2303,6 +2351,10 @@ namespace tardigradeHydra{
             bool _allow_modify_global_dRdF = false; //!< Flag for if the global dRdF can be modified
 
             bool _allow_modify_global_dRdAdditionalDOF = false; //!< Flag for if the global dRdAdditionalDOF can be modified
+
+            bool _current_residual_index_set = false; //!< Flag for whether the current residual index has been set
+
+            int _current_residual_index = 0; //!< The current residual index
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 

@@ -896,7 +896,9 @@ namespace tardigradeHydra{
 
         unsigned int offset = 0;
 
+        setCurrentResidualIndexMeaningful( true );
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin() );
 
             // Extract the terms
 
@@ -919,14 +921,18 @@ namespace tardigradeHydra{
             offset += *( *residual_ptr )->getNumEquations( );
 
         }
+        setCurrentResidualIndexMeaningful( false );
 
         // Allow the residuals to modify the global residual if needed
         setAllowModifyGlobalResidual( true );
+        setCurrentResidualIndexMeaningful( true );
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
             ( *residual_ptr )->modifyGlobalResidual( );
 
         }
+        setCurrentResidualIndexMeaningful( false );
         setAllowModifyGlobalResidual( false );
 
         _residual.first = true;
@@ -960,7 +966,9 @@ namespace tardigradeHydra{
 
         unsigned int numAdditionalDerivatives = 0;
 
+        setCurrentResidualIndexMeaningful( true );
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
             // Extract the terms
 
@@ -1050,12 +1058,16 @@ namespace tardigradeHydra{
             offset += *( *residual_ptr )->getNumEquations( );
 
         }
+        setCurrentResidualIndexMeaningful( false );
 
         setAllowModifyGlobalJacobian( true );
         setAllowModifyGlobaldRdT( true );
         setAllowModifyGlobaldRdF( true );
         setAllowModifyGlobaldRdAdditionalDOF( true );
+        setCurrentResidualIndexMeaningful( true );
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+            setCurrentResidualIndexMeaningful( residual_ptr - getResidualClasses( )->begin( ) );
 
             ( *residual_ptr )->modifyGlobalJacobian( );
             ( *residual_ptr )->modifyGlobaldRdT( );
@@ -1063,6 +1075,7 @@ namespace tardigradeHydra{
             ( *residual_ptr )->modifyGlobaldRdAdditionalDOF( );
 
         }
+        setCurrentResidualIndexMeaningful( false );
         setAllowModifyGlobalJacobian( false );
         setAllowModifyGlobaldRdT( false );
         setAllowModifyGlobaldRdF( false );
@@ -1444,7 +1457,9 @@ namespace tardigradeHydra{
 
         bool resetRequired = false;
 
+        setCurrentResidualIndexMeaningful( true );
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
             std::vector< unsigned int > indices;
 
@@ -1463,6 +1478,7 @@ namespace tardigradeHydra{
             }
 
         }
+        setCurrentResidualIndexMeaningful( false );
 
         if ( resetRequired ){
 
@@ -1627,11 +1643,14 @@ namespace tardigradeHydra{
 
         }
 
+        setCurrentResidualIndexMeaningful( true );
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
             if ( *( *residual_ptr )->getUseProjection( ) ){
                 ( *residual_ptr )->projectSuggestedX( trialX, Xp );
             }
         }
+        setCurrentResidualIndexMeaningful( false );
 
         // Reset all of the iteration data
         resetIterationData( );
@@ -1910,11 +1929,14 @@ namespace tardigradeHydra{
          */
 
         setAllowModifyGlobalResidual( true );
+        setCurrentResidualIndexMeaningful( true );
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
             ( *residual_ptr )->successfulNLStep( );
 
         }
+        setCurrentResidualIndexMeaningful( false );
         setAllowModifyGlobalResidual( false );
 
     }
@@ -2034,12 +2056,15 @@ namespace tardigradeHydra{
         unsigned int relaxedIteration = 0;
 
         // Initialize the residuals
+        setCurrentResidualIndexMeaningful( true );
         for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
+            setCurrentResidualIndexMeaningful( residual - getResidualClasses( )->begin( ) );
 
             // Prepare the residuals to take a relaxed step
             ( *residual )->setupRelaxedStep( relaxedIteration );
 
         }
+        setCurrentResidualIndexMeaningful( false );
 
         while ( relaxedIteration < *getMaxRelaxedIterations( ) ){
 
@@ -2053,7 +2078,9 @@ namespace tardigradeHydra{
 
             // Check if the relaxation has converged
             bool relaxedConverged = true;
+            setCurrentResidualIndexMeaningful( true );
             for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
+                setCurrentResidualIndex( residual - getResidualClasses( )->begin( ) );
 
                 if ( !( *residual )->checkRelaxedConvergence( ) ){
 
@@ -2063,6 +2090,7 @@ namespace tardigradeHydra{
                 }
 
             }
+            setCurrentResidualIndexMeaningful( false );
 
             if ( relaxedConverged ){
 
@@ -2080,12 +2108,15 @@ namespace tardigradeHydra{
             relaxedIteration++;
 
             // Initialize the residuals
+            setCurrentResidualIndexMeaningful( true );
             for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
+                setCurrentResidualIndex( residual - getResidualClasses( )->begin( ) );
 
                 // Prepare the residuals to take a relaxed step
                 ( *residual )->setupRelaxedStep( relaxedIteration );
 
             }
+            setCurrentResidualIndexMeaningful( false );
 
             // Reset hydra
             updateUnknownVector( *getUnknownVector( ) ); //This allows for the relaxed to change the projection and adjust the decomposition
@@ -2318,9 +2349,12 @@ namespace tardigradeHydra{
                 setUseLevenbergMarquardt( true );
     
                 // Turn on projection
+                setCurrentResidualIndexMeaningful( true );
                 for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+                    setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
                     ( *residual_ptr )->setUseProjection( true );
                 }
+                setCurrentResidualIndexMeaningful( false );
     
                 resetIterations( );
                 updateUnknownVector( _initialX );
@@ -2929,7 +2963,9 @@ namespace tardigradeHydra{
 
         unsigned int offset = 0;
 
+        setCurrentResidualIndexMeaningful( true );
         for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->end( ); v++ ){
+            setCurrentResidualIndexMeaningful( v - getResidualClasses( )->begin( ) );
 
             if ( ( *( *v )->getNumConstraints( ) ) > 0 ){
 
@@ -2940,6 +2976,7 @@ namespace tardigradeHydra{
             }
 
         }
+        setCurrentResidualIndexMeaningful( false );
 
     }
 
@@ -2958,7 +2995,9 @@ namespace tardigradeHydra{
 
         unsigned int offset = 0;
 
+        setCurrentResidualIndexMeaningful( true );
         for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->end( ); v++ ){
+            setCurrentResidualIndex( v - getResidualClasses( )->begin( ) );
 
             if ( ( *( *v )->getNumConstraints( ) ) > 0 ){
 
@@ -2969,6 +3008,7 @@ namespace tardigradeHydra{
             }
 
         }
+        setCurrentResidualIndexMeaningful( false );
 
     }
 

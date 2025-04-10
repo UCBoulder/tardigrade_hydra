@@ -132,7 +132,9 @@ namespace tardigradeHydra{
 
         bool resetRequired = false;
 
+        setCurrentResidualIndexMeaningful( true );
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
             std::vector< unsigned int > indices;
 
@@ -151,6 +153,7 @@ namespace tardigradeHydra{
             }
 
         }
+        setCurrentResidualIndexMeaningful( false );
 
         if ( resetRequired ){
 
