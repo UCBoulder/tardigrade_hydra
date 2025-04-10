@@ -1904,6 +1904,20 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::callResidualSuccessfulNLStep( ){
+        /*!
+         * Signal to the residuals that a successful nonlinear step has been performed
+         */
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+            ( *residual_ptr )->successfulNLStep( );
+
+        }
+
+
+    }
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
@@ -1990,6 +2004,9 @@ namespace tardigradeHydra{
 
             // Reset the nonlinear step data
             resetNLStepData( );
+
+            // Call residual end of a successful nonlinear step functions
+            callResidualSuccessfulNLStep( );
 
             if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
                 addToFailureOutput( "  final residual: " );

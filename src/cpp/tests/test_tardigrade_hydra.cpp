@@ -4575,6 +4575,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             unsigned int num_residual_calls = 0;
 
+            unsigned int num_successful_nlstep_calls = 0;
+
         private:
 
             using tardigradeHydra::hydraBase::getResidual;
@@ -4739,6 +4741,15 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             }
 
+            virtual void callResidualSuccessfulNLStep( ) override{
+
+                tardigradeHydra::hydraBase::callResidualSuccessfulNLStep( );
+
+
+                num_successful_nlstep_calls++;
+
+            }
+
     };
 
     floatType time = 1.1;
@@ -4784,6 +4795,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     BOOST_TEST( hydra.getNumNewton( ) == 2 );
 
+    BOOST_TEST( hydra.num_successful_nlstep_calls == 4 );
+
     BOOST_TEST( hydra.getNumLS( ) == 1 );
 
     BOOST_TEST( hydra.getNumGrad( ) == 1 );
@@ -4802,6 +4815,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
     tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra_pre );
 
     BOOST_TEST( hydra_pre.getNumNewton( ) == 2 );
+
+    BOOST_TEST( hydra_pre.num_successful_nlstep_calls == 4 );
 
     BOOST_TEST( hydra_pre.getNumLS( ) == 1 );
 

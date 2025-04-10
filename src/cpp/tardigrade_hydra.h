@@ -962,6 +962,12 @@ namespace tardigradeHydra{
                  */
             }
 
+            virtual void successfulNLStep( ){
+                /*!
+                 * Function that is called whenever a successful nonlinear step is taken
+                 */
+            };
+
             virtual void setupRelaxedStep( const unsigned int &relaxedStep );
 
             //! Get the flag for whether to use the projection or not
@@ -1850,6 +1856,8 @@ namespace tardigradeHydra{
             void incrementNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD++; }
 
             void resetIterations( ){ /*! Reset the number of iterations */ _iteration = 0; }
+
+            virtual void callResidualSuccessfulNLStep( );
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
