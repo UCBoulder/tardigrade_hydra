@@ -1909,12 +1909,13 @@ namespace tardigradeHydra{
          * Signal to the residuals that a successful nonlinear step has been performed
          */
 
+        setAllowModifyGlobalResidual( true );
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
 
             ( *residual_ptr )->successfulNLStep( );
 
         }
-
+        setAllowModifyGlobalResidual( false );
 
     }
 

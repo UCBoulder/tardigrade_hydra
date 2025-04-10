@@ -7798,6 +7798,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualSuccessfulNLStep, * boost::unit
 
             virtual void successfulNLStep( ) override{
 
+                BOOST_TEST( hydra->getMutableResidual( ) );
+
                 numSuccessfulNLStepCalls++;
 
             }
