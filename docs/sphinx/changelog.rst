@@ -29,6 +29,7 @@ New Features
 - Allow the user to do a complete build of the tardigrade stack (:pull:`188`). By `Nathan Miller`_.
 - Added the active set radial return map approach for micromorphic Drucker-Prager plasticity (:pull:`193`). By `Nathan Miller`_.
 - Added a function that is called after every successful nonlinear step (:pull:`194`). By `Nathan Miller`_.
+- Added functions that are called before every nonlinear solve and after a successful one (:pull:`194`). By `Nathan Miller`_.
 
 Internal Changes
 ================

@@ -1941,6 +1941,38 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::callResidualPreNLSolve( ){
+        /*!
+         * Signal to the residuals that we are about to start a nonlinear solve
+         */
+
+        setCurrentResidualIndexMeaningful( true );
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+
+            ( *residual_ptr )->preNLSolve( );
+
+        }
+        setCurrentResidualIndexMeaningful( false );
+
+    }
+
+    void hydraBase::callResidualPostNLSolve( ){
+        /*!
+         * Signal to the residuals that we have finisehd a nonlinear solve
+         */
+
+        setCurrentResidualIndexMeaningful( true );
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+
+            ( *residual_ptr )->postNLSolve( );
+
+        }
+        setCurrentResidualIndexMeaningful( false );
+
+    }
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
@@ -1963,6 +1995,8 @@ namespace tardigradeHydra{
             addToFailureOutput( "Initial Unknown:\n" );
             addToFailureOutput( *getUnknownVector( ) );
         }
+
+        callResidualPreNLSolve( );
 
         while( !checkConvergence( ) && checkIteration( ) ){
 
@@ -2044,6 +2078,8 @@ namespace tardigradeHydra{
             throw convergence_error( "Failure to converge main loop:\n  scale_factor: " + std::to_string( *getScaleFactor( ) ) );
 
         }
+
+        callResidualPostNLSolve( );
 
     }
 

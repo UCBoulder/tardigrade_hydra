@@ -100,7 +100,7 @@ namespace tardigradeHydra{
                 residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const unsigned int &plasticConfigurationIndex,
                           const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters,
                           const floatType integrationParameter = 0.5,
-                          const double yieldTolerance = 0., const double plasticMultiplierTolerance = -1e-4
+                          const double yieldTolerance = 1e-3, const double plasticMultiplierTolerance = -1e-4
 		       	)
                         : tardigradeHydra::micromorphicDruckerPragerPlasticity::residual( _hydra, _numEquations, plasticConfigurationIndex, stateVariableIndices, parameters, integrationParameter ),
 		          _yieldTolerance( yieldTolerance ), _plasticMultiplierTolerance( plasticMultiplierTolerance ) {
@@ -113,13 +113,17 @@ namespace tardigradeHydra{
                      * \param &stateVariableIndices: The indices of the plastic state variables
                      * \param &parameters: The parameter vector
                      * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
-                     * \param &yieldTolerance: The allowable value of the yield stress before it is assumed to be an inactive surface (defaults to 0)
-                     * \param &plasticMultiplierTolerance: The allowable value of a plastic multiplier before it is assumed to be an inactive surface (defaults to 0)
+                     * \param &yieldTolerance: The allowable value of the yield stress before it is assumed to be an inactive surface (defaults to 1e-3)
+                     * \param &plasticMultiplierTolerance: The allowable value of a plastic multiplier before it is assumed to be an inactive surface (defaults to 1e-4)
                      */
 
                 }
 
                 virtual void successfulNLStep( ) override;
+
+                virtual void preNLSolve( ) override;
+
+                virtual void postNLSolve( ) override;
 
             protected:
 

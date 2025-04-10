@@ -35,13 +35,13 @@ namespace tardigradeHydra{
             activeConstraints.value->resize( 5 );
 
 	    // Check the yield stress constraint
-            ( *activeConstraints.value )[ 0 ] = ( ( *get_macroYield( ) ) > *getYieldTolerance( ) );
+            ( *activeConstraints.value )[ 0 ] = ( ( *get_macroYield( ) ) > 0. );
 
-            ( *activeConstraints.value )[ 1 ] = ( ( *get_microYield( ) ) > *getYieldTolerance( ) );
+            ( *activeConstraints.value )[ 1 ] = ( ( *get_microYield( ) ) > 0. );
 
             for ( auto v = std::begin( *get_microGradientYield( ) ); v != std::end( *get_microGradientYield( ) ); ++v ){
 
-                ( *activeConstraints.value )[ ( v - std::begin( *get_microGradientYield( ) ) ) + 2 ] = ( ( *v ) > *getYieldTolerance( ) );
+                ( *activeConstraints.value )[ ( v - std::begin( *get_microGradientYield( ) ) ) + 2 ] = ( ( *v ) > 0. );
 
             }
 
@@ -439,6 +439,38 @@ namespace tardigradeHydra{
 
             updateActiveConstraints( );
             correctResiduals( );            
+
+        }
+
+        void residual::preNLSolve( ){
+            /*!
+             * Function that runs prior to a nonlinear solve
+             */
+
+            setActiveConstraints( );
+
+        }
+
+        void residual::postNLSolve( ){
+            /*!
+             * Function that runs after a nonlinear solve
+             */
+
+            // Assemble the yield surface values
+            std::array< floatType, 5 > yieldSurfaceValues = {
+                *get_macroYield( ), *get_microYield( ),
+                ( *get_microGradientYield( ) )[ 0 ], ( *get_microGradientYield( ) )[ 1 ], ( *get_microGradientYield( ) )[ 2 ]
+            };
+
+            for ( auto v = std::begin( yieldSurfaceValues ); v != std::end( yieldSurfaceValues ); ++v ){
+
+                if ( ( *v ) > *getYieldTolerance( ) ){
+
+                    throw convergence_error( "A yield surface is larger than the yield surface tolerance" );
+
+                }
+
+            }
 
         }
 
