@@ -35,13 +35,13 @@ namespace tardigradeHydra{
             activeConstraints.value->resize( 5 );
 
 	    // Check the yield stress constraint
-            ( *activeConstraints.value )[ 0 ] = ( ( *get_macroYield( ) ) > *getYieldTolerance( ) );
+            ( *activeConstraints.value )[ 0 ] = ( ( *get_macroYield( ) ) > 0. );
 
-            ( *activeConstraints.value )[ 1 ] = ( ( *get_microYield( ) ) > *getYieldTolerance( ) );
+            ( *activeConstraints.value )[ 1 ] = ( ( *get_microYield( ) ) > 0. );
 
             for ( auto v = std::begin( *get_microGradientYield( ) ); v != std::end( *get_microGradientYield( ) ); ++v ){
 
-                ( *activeConstraints.value )[ ( v - std::begin( *get_microGradientYield( ) ) ) + 2 ] = ( ( *v ) > *getYieldTolerance( ) );
+                ( *activeConstraints.value )[ ( v - std::begin( *get_microGradientYield( ) ) ) + 2 ] = ( ( *v ) > 0. );
 
             }
 
