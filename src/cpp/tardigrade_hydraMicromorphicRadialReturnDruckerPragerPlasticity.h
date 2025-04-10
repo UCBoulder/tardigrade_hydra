@@ -119,6 +119,8 @@ namespace tardigradeHydra{
 
                 }
 
+                virtual void successfulNLStep( ) override;
+
             protected:
 
                 virtual void setActiveConstraints( );
