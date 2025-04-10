@@ -112,9 +112,9 @@ namespace tardigradeHydra{
                      * \param &plasticConfigurationIndex: The index of the configuration which represents the plastic deformation
                      * \param &stateVariableIndices: The indices of the plastic state variables
                      * \param &parameters: The parameter vector
-		     * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
-		     * \param &yieldTolerance: The allowable value of the yield stress before it is assumed to be an inactive surface (defaults to 0)
-		     * \param &plasticMultiplierTolerance: The allowable value of a plastic multiplier before it is assumed to be an inactive surface (defaults to 0)
+                     * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
+                     * \param &yieldTolerance: The allowable value of the yield stress before it is assumed to be an inactive surface (defaults to 0)
+                     * \param &plasticMultiplierTolerance: The allowable value of a plastic multiplier before it is assumed to be an inactive surface (defaults to 0)
                      */
 
                 }
