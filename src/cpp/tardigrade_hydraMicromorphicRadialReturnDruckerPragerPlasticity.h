@@ -123,16 +123,16 @@ namespace tardigradeHydra{
 
                 virtual void setActiveConstraints( );
 
-		std::vector< bool > *getMutableActiveConstraints( ){
-		    /*!
-		     * Return a mutable reference to the active constraints
-		     */
+                std::vector< bool > *getMutableActiveConstraints( ){
+                    /*!
+                     * Return a mutable reference to the active constraints
+                     */
 
                     return &_activeConstraints.second;
 
-		}
+                }
 
-		virtual void updateActiveConstraints( );
+                virtual void updateActiveConstraints( );
 
                 virtual void projectSuggestedX( std::vector< floatType > &trialX,
                                                 const std::vector< floatType > &Xp ) override;
@@ -143,23 +143,25 @@ namespace tardigradeHydra{
 
                 virtual void setdStateVariableResidualsdD( ) override;
 
+                virtual void correctResiduals( );
+
                 const double *getYieldTolerance( ){
                     /*!
-		     * Return the yield tolerance
-		     */
+                     * Return the yield tolerance
+                     */
 
-		    return &_yieldTolerance;
+                    return &_yieldTolerance;
 
-		}
+                }
 
                 const double *getPlasticMultiplierTolerance( ){
                     /*!
-		     * Return the plastic multiplier tolerance
-		     */
+                     * Return the plastic multiplier tolerance
+                     */
 
-		    return &_plasticMultiplierTolerance;
+                    return &_plasticMultiplierTolerance;
 
-		}
+                }
 
             private:
 

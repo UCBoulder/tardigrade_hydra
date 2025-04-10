@@ -411,6 +411,29 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::correctResiduals( ){
+            /*!
+             * Corret the residuals to be consistent with the new active set
+             */
+
+            setStateVariableResiduals( );
+
+            setResidual( );
+
+            floatVector * globalResidual = hydra->getMutableResidual( );
+
+            TARDIGRADE_ERROR_TOOLS_CHECK( globalResidual, "The global residual isn't mutable" );
+
+            unsigned int offset = hydra->getCurrentResidualOffset( );
+
+            std::copy(
+                std::begin( *getResidual( ) ),
+                std::end( *getResidual( ) ),
+                std::begin( *globalResidual ) + offset
+            );
+
+        }
+
     }
 
 }
