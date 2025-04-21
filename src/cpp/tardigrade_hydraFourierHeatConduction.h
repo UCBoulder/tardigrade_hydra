@@ -185,11 +185,11 @@ namespace tardigradeHydra{
 
                 floatVector _conductivityParameters; //!< The parameters used in the calculation of the conductivity
 
-                const unsigned int _expectedParameterVectorSize; //!< The expected size of the parameter vector
+                unsigned int _expectedParameterVectorSize; //!< The expected size of the parameter vector
 
-                const unsigned int _temperatureGradientIndex; //!< The index in the additional DOF vector where the temperature gradient is located
+                unsigned int _temperatureGradientIndex; //!< The index in the additional DOF vector where the temperature gradient is located
 
-                const unsigned int _heatFluxIndex; //!< The index of the heat flux in the output residual vector
+                unsigned int _heatFluxIndex; //!< The index of the heat flux in the output residual vector
 
         };
 

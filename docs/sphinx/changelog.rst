@@ -30,6 +30,7 @@ New Features
 - Added the active set radial return map approach for micromorphic Drucker-Prager plasticity (:pull:`193`). By `Nathan Miller`_.
 - Added a function that is called after every successful nonlinear step (:pull:`194`). By `Nathan Miller`_.
 - Added functions that are called before every nonlinear solve and after a successful one (:pull:`194`). By `Nathan Miller`_.
+- Added pre and post nonlinear solve function call (:pull:`196`). By `Nathan Miller`_.
 
 Internal Changes
 ================
@@ -59,6 +60,7 @@ Internal Changes
 - Added density to the full material-response simulation capability (:pull:`182`). By `Nathan Miller`_.
 - Added some additional information to convergence error messages (:pull:`183`). By `Nathan Miller`_.
 - Moved the update of the active constraints to the end of a successful nonlinear step (:pull:`195`). By `Nathan Miller`_.
+- Changed variables of the internal energy and Fourier heat conduction to not be constants but just private (:pull:`196`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
