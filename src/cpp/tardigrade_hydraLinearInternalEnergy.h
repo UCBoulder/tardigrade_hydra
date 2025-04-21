@@ -171,9 +171,9 @@ namespace tardigradeHydra{
 
                 floatVector _specificHeatParameters; //!< The parameters used in the calculation of the specific heat
 
-                const unsigned int _expectedParameterVectorSize; //!< The expected size of the parameter vector
+                unsigned int _expectedParameterVectorSize; //!< The expected size of the parameter vector
 
-                const unsigned int _internalEnergyIndex; //!< The index of the internal energy in the output residual vector
+                unsigned int _internalEnergyIndex; //!< The index of the internal energy in the output residual vector
 
         };
 
