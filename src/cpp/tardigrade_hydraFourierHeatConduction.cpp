@@ -164,7 +164,7 @@ namespace tardigradeHydra{
 
             for ( unsigned int i = 0; i < dim; ++i ){
 
-                ( *residual.value )[ get_heatFluxIndex( ) + i ] = ( *hydra->getUnknownVector( ) )[ get_heatFluxIndex( ) + i ] - ( *get_heatFlux( ) )[ i ];
+                ( *residual.value )[ i ] = ( *hydra->getUnknownVector( ) )[ get_heatFluxIndex( ) + i ] - ( *get_heatFlux( ) )[ i ];
 
             }
 
@@ -186,7 +186,7 @@ namespace tardigradeHydra{
 
             for ( unsigned int i = 0; i < dim; ++i ){
 
-                ( *jacobian.value )[ hydra->getNumUnknowns( ) * ( get_heatFluxIndex( ) + i ) + get_heatFluxIndex( ) + i ] = 1.;
+                ( *jacobian.value )[ hydra->getNumUnknowns( ) * ( i ) + get_heatFluxIndex( ) + i ] = 1.;
 
             }
 
@@ -229,7 +229,7 @@ namespace tardigradeHydra{
 
                 for ( unsigned int j = 0; j < dim; ++j ){
 
-                    ( *dRdAdditionalDOF.value )[ hydra->getNumAdditionalDOF( ) * ( get_heatFluxIndex( ) + i ) + get_temperatureGradientIndex( ) + j ] -= ( *get_dHeatFluxdGradT( ) )[ dim * i + j ];
+                    ( *dRdAdditionalDOF.value )[ hydra->getNumAdditionalDOF( ) * ( i ) + get_temperatureGradientIndex( ) + j ] -= ( *get_dHeatFluxdGradT( ) )[ dim * i + j ];
 
                 }
 

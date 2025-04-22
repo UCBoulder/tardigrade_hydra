@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests, * boost::unit_test::tolera
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 23, parameters, 28 );
+    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 3, parameters, 28 );
 
     tardigradeHydra::fourierHeatConduction::unit_test::residualTester::runBasicGetTests( R );
 
@@ -212,7 +212,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getTemperatureGradient, * boost::unit_test::
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 23, parameters, 28 );
+    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 3, parameters, 28 );
 
     std::vector< double > answer = {
         -0.41257191,  0.26195225, -0.81579012
@@ -288,7 +288,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getConductivity, * boost::unit_test::toleran
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 23, parameters, 28 );
+    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 3, parameters, 28 );
 
     double answer = 0.245;
 
@@ -360,7 +360,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getHeatFlux, * boost::unit_test::tolerance( 
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 23, parameters, temperatureGradientIndex );
+    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 3, parameters, temperatureGradientIndex );
 
     std::vector< double > answer = {
          0.10108012, -0.0641783 ,  0.19986858
@@ -407,9 +407,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getHeatFlux, * boost::unit_test::tolerance( 
                                                x_m, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 23, parameters, temperatureGradientIndex );
+            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 3, parameters, temperatureGradientIndex );
 
-            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 23, parameters, temperatureGradientIndex );
+            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 3, parameters, temperatureGradientIndex );
 
             floatVector rp = *Rp.get_heatFlux( );
             floatVector rm = *Rm.get_heatFlux( );
@@ -477,16 +477,17 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
         +1.047402e-01, +1.571029e-01, +4.306612e-02, -9.946239e-01, +9.766908e-01,
         +8.106832e-01, -5.847283e-01, -4.150212e-01, +4.002031e-02, +8.038227e-01,
         +9.672618e-01, -4.849159e-01, +1.287181e-01, +6.139374e-01, -2.112599e-01,
-        +4.621461e-01, -6.778620e-01, +2.013971e-01
+        +4.621461e-01, -6.778620e-01, +2.013971e-01, +1.012700e-01, +2.274211e-01,
+        -8.212532e-01
     };
 
-    floatVector previousStateVariables( 14, 0 );
+    floatVector previousStateVariables( 17, 0 );
 
     floatVector parameters = { 0.245 };
 
     unsigned int numConfigurations = 1;
 
-    unsigned int numNonLinearSolveStateVariables = 14;
+    unsigned int numNonLinearSolveStateVariables = 17;
 
     unsigned int dimension = 3;
 
@@ -496,16 +497,12 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 23, parameters, temperatureGradientIndex );
+    tardigradeHydra::fourierHeatConduction::residual R( &hydra, 3, parameters, temperatureGradientIndex );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     std::vector< double > answer = {
-        +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00,
-        +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00,
-        +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00,
-        +0.000000e+00, +0.000000e+00, +2.763797e-02, +6.781157e-01, -4.111285e-01,
-        +0.000000e+00, +0.000000e+00, +0.000000e+00
+        +2.763797e-02, +6.781157e-01, -4.111285e-01
     };
 
     BOOST_TEST(         answer == *R.getResidual( ),         CHECK_PER_ELEMENT );
@@ -520,7 +517,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
         constexpr unsigned int NUM_VAR = 9;
 
-        constexpr unsigned int NUM_OUT = 23;
+        constexpr unsigned int NUM_OUT = 3;
 
         for ( unsigned int i = 0; i < NUM_VAR; ++i ){
 
@@ -542,9 +539,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 23, parameters, temperatureGradientIndex );
+            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 3, parameters, temperatureGradientIndex );
 
-            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 23, parameters, temperatureGradientIndex );
+            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 3, parameters, temperatureGradientIndex );
 
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -570,7 +567,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
         constexpr unsigned int NUM_VAR = 1;
 
-        constexpr unsigned int NUM_OUT = 23;
+        constexpr unsigned int NUM_OUT = 3;
 
         for ( unsigned int i = 0; i < NUM_VAR; ++i ){
 
@@ -592,9 +589,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 23, parameters, temperatureGradientIndex );
+            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 3, parameters, temperatureGradientIndex );
 
-            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 23, parameters, temperatureGradientIndex );
+            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 3, parameters, temperatureGradientIndex );
 
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -618,9 +615,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
         std::vector< double > x_base = unknownVector;
 
-        constexpr unsigned int NUM_VAR = 23;
+        constexpr unsigned int NUM_VAR = 26;
 
-        constexpr unsigned int NUM_OUT = 23;
+        constexpr unsigned int NUM_OUT = 3;
 
         for ( unsigned int i = 0; i < NUM_VAR; ++i ){
 
@@ -642,9 +639,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 23, parameters, temperatureGradientIndex );
+            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 3, parameters, temperatureGradientIndex );
 
-            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 23, parameters, temperatureGradientIndex );
+            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 3, parameters, temperatureGradientIndex );
 
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, x_p );
 
@@ -668,7 +665,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
         constexpr unsigned int NUM_VAR = 55;
 
-        constexpr unsigned int NUM_OUT = 23;
+        constexpr unsigned int NUM_OUT = 3;
 
         for ( unsigned int i = 0; i < NUM_VAR; ++i ){
 
@@ -688,9 +685,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                x_m, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 23, parameters, temperatureGradientIndex );
+            tardigradeHydra::fourierHeatConduction::residual Rp( &hydrap, 3, parameters, temperatureGradientIndex );
 
-            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 23, parameters, temperatureGradientIndex );
+            tardigradeHydra::fourierHeatConduction::residual Rm( &hydram, 3, parameters, temperatureGradientIndex );
 
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 

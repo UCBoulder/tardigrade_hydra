@@ -92,7 +92,7 @@ namespace tardigradeHydra{
 
             residual.zero( *getNumEquations( ) );
 
-            ( *residual.value )[ get_internalEnergyIndex( ) ] = ( *hydra->getUnknownVector( ) )[ get_internalEnergyIndex( ) ] - ( *get_internalEnergy( ) );
+            ( *residual.value )[ 0 ] = ( *hydra->getUnknownVector( ) )[ get_internalEnergyIndex( ) ] - ( *get_internalEnergy( ) );
 
         }
     
@@ -108,7 +108,7 @@ namespace tardigradeHydra{
 
             jacobian.zero( num_unknowns * num_unknowns );
 
-            ( *jacobian.value )[ hydra->getNumUnknowns( ) * ( get_internalEnergyIndex( ) ) + get_internalEnergyIndex( ) ] = 1.;
+            ( *jacobian.value )[ 0 + get_internalEnergyIndex( ) ] = 1.;
 
         }
 
@@ -121,7 +121,7 @@ namespace tardigradeHydra{
 
             dRdT.zero( *getNumEquations( ) );
 
-            ( *dRdT.value )[ get_internalEnergyIndex( ) ] -= ( *get_dInternalEnergydT( ) );
+            ( *dRdT.value )[ 0 ] -= ( *get_dInternalEnergydT( ) );
 
         }
 

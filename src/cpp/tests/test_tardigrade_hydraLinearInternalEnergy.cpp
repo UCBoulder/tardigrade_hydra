@@ -138,7 +138,7 @@ BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests, * boost::unit_test::tolera
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::linearInternalEnergy::residual R( &hydra, 23, parameters );
+    tardigradeHydra::linearInternalEnergy::residual R( &hydra, 1, parameters );
 
     tardigradeHydra::linearInternalEnergy::unit_test::residualTester::runBasicGetTests( R );
 
@@ -210,7 +210,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getSpecificHeat, * boost::unit_test::toleran
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::linearInternalEnergy::residual R( &hydra, 23, parameters );
+    tardigradeHydra::linearInternalEnergy::residual R( &hydra, 1, parameters );
 
     double answer = 0.245;
 
@@ -280,7 +280,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getInternalEnergy, * boost::unit_test::toler
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::linearInternalEnergy::residual R( &hydra, 23, parameters );
+    tardigradeHydra::linearInternalEnergy::residual R( &hydra, 1, parameters );
 
     double answer = 0.2009;
 
@@ -321,9 +321,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getInternalEnergy, * boost::unit_test::toler
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-            tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 23, parameters );
+            tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 1, parameters );
 
-            tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 23, parameters );
+            tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 1, parameters );
 
             floatType rp = *Rp.get_internalEnergy( );
             floatType rm = *Rm.get_internalEnergy( );
@@ -391,16 +391,17 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
         +1.047402e-01, +1.571029e-01, +4.306612e-02, -9.946239e-01, +9.766908e-01,
         +8.106832e-01, -5.847283e-01, -4.150212e-01, +4.002031e-02, +8.038227e-01,
         +9.672618e-01, -4.849159e-01, +1.287181e-01, +6.139374e-01, -2.112599e-01,
-        +4.621461e-01, -6.778620e-01, +2.013971e-01
+        +4.621461e-01, -6.778620e-01, +2.013971e-01, +1.012700e-01, +2.274211e-01,
+        -8.212532e-01
     };
 
-    floatVector previousStateVariables( 14, 0 );
+    floatVector previousStateVariables( 17, 0 );
 
     floatVector parameters = { 0.245 };
 
     unsigned int numConfigurations = 1;
 
-    unsigned int numNonLinearSolveStateVariables = 14;
+    unsigned int numNonLinearSolveStateVariables = 17;
 
     unsigned int dimension = 3;
 
@@ -408,16 +409,12 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                       additionalDOF, previousAdditionalDOF,
                                       previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::linearInternalEnergy::residual R( &hydra, 23, parameters );
+    tardigradeHydra::linearInternalEnergy::residual R( &hydra, 1, parameters );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     std::vector< double > answer = {
-        +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00,
-        +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +7.757908e-01,
-        +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00,
-        +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00, +0.000000e+00,
-        +0.000000e+00, +0.000000e+00, +0.000000e+00
+         +7.757908e-01,
     };
 
     BOOST_TEST(         answer == *R.getResidual( ),         CHECK_PER_ELEMENT );
@@ -432,7 +429,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
         constexpr unsigned int NUM_VAR = 9;
 
-        constexpr unsigned int NUM_OUT = 23;
+        constexpr unsigned int NUM_OUT = 1;
 
         for ( unsigned int i = 0; i < NUM_VAR; ++i ){
 
@@ -454,9 +451,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-            tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 23, parameters );
+            tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 1, parameters );
 
-            tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 23, parameters );
+            tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 1, parameters );
 
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -482,7 +479,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
         constexpr unsigned int NUM_VAR = 1;
 
-        constexpr unsigned int NUM_OUT = 23;
+        constexpr unsigned int NUM_OUT = 1;
 
         for ( unsigned int i = 0; i < NUM_VAR; ++i ){
 
@@ -504,9 +501,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-            tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 23, parameters );
+            tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 1, parameters );
 
-            tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 23, parameters );
+            tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 1, parameters );
 
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
@@ -530,9 +527,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
         std::vector< double > x_base = unknownVector;
 
-        constexpr unsigned int NUM_VAR = 23;
+        constexpr unsigned int NUM_VAR = 26;
 
-        constexpr unsigned int NUM_OUT = 23;
+        constexpr unsigned int NUM_OUT = 1;
 
         for ( unsigned int i = 0; i < NUM_VAR; ++i ){
 
@@ -554,9 +551,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                additionalDOF, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-            tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 23, parameters );
+            tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 1, parameters );
 
-            tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 23, parameters );
+            tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 1, parameters );
 
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, x_p );
 
@@ -580,7 +577,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
         constexpr unsigned int NUM_VAR = 55;
 
-        constexpr unsigned int NUM_OUT = 23;
+        constexpr unsigned int NUM_OUT = 1;
 
         for ( unsigned int i = 0; i < NUM_VAR; ++i ){
 
@@ -600,9 +597,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
                                                x_m, previousAdditionalDOF,
                                                previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-            tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 23, parameters );
+            tardigradeHydra::linearInternalEnergy::residual Rp( &hydrap, 1, parameters );
 
-            tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 23, parameters );
+            tardigradeHydra::linearInternalEnergy::residual Rm( &hydram, 1, parameters );
 
             tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
 
