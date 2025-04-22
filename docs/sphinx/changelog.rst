@@ -60,15 +60,16 @@ Internal Changes
 - Added density to the full material-response simulation capability (:pull:`182`). By `Nathan Miller`_.
 - Added some additional information to convergence error messages (:pull:`183`). By `Nathan Miller`_.
 - Moved the update of the active constraints to the end of a successful nonlinear step (:pull:`195`). By `Nathan Miller`_.
-- Changed variables of the internal energy and Fourier heat conduction to not be constants but just private (:pull:`196`). By `Nathan Miller`_.
+- Changed variables of the internal energy and Fourier heat conduction to not be constants but just private (:pull:`197`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
 - Corrected issue where the wrong Jacobian was being used in checkDescentDirection (:pull:`156`). By `Nathan Miller`_.
-- Corrected bug when forming an Eigen::Map (pull:`164`). By `Nathan Miller`_.
-- Corrected bug where the cohesions can go negative (pull:`165`). By `Nathan Miller`_.
-- Corrected bug where the line search target residual didn't reset (pull:`173`). By `Nathan Miller`_.
-- Corrected bug where the iteration count wasn't resetting during relaxed iterations (pull:`175`). By `Nathan Miller`_.
+- Corrected bug when forming an Eigen::Map (:pull:`164`). By `Nathan Miller`_.
+- Corrected bug where the cohesions can go negative (:pull:`165`). By `Nathan Miller`_.
+- Corrected bug where the line search target residual didn't reset (:pull:`173`). By `Nathan Miller`_.
+- Corrected bug where the iteration count wasn't resetting during relaxed iterations (:pull:`175`). By `Nathan Miller`_.
+- Corrected bug in the residuals for the linear internal energy and the Fourier heat transfer (:pull:`198`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
