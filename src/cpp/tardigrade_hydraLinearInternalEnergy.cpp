@@ -106,7 +106,7 @@ namespace tardigradeHydra{
             // Form the Jacobian
             auto jacobian = get_setDataStorage_jacobian( );
 
-            jacobian.zero( num_unknowns * num_unknowns );
+            jacobian.zero( ( *getNumEquations( ) ) * num_unknowns );
 
             ( *jacobian.value )[ 0 + get_internalEnergyIndex( ) ] = 1.;
 

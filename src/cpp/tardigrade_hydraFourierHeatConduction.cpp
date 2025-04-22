@@ -182,11 +182,11 @@ namespace tardigradeHydra{
             // Form the Jacobian
             auto jacobian = get_setDataStorage_jacobian( );
 
-            jacobian.zero( num_unknowns * num_unknowns );
+            jacobian.zero( ( *getNumEquations( ) ) * num_unknowns );
 
             for ( unsigned int i = 0; i < dim; ++i ){
 
-                ( *jacobian.value )[ hydra->getNumUnknowns( ) * ( i ) + get_heatFluxIndex( ) + i ] = 1.;
+                ( *jacobian.value )[ num_unknowns * ( i ) + get_heatFluxIndex( ) + i ] = 1.;
 
             }
 
