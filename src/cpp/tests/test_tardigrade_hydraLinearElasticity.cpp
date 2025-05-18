@@ -542,9 +542,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setdEedFe, * boost::unit_test::tolerance( DE
 
     floatMatrix previousdEedFeAnswer;
 
-    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( deformationGradient, EeAnswer, dEedFeAnswer ) );
+    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeGreenLagrangeStrain( deformationGradient, EeAnswer, dEedFeAnswer ) );
 
-    TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( previousDeformationGradient, previousEeAnswer, previousdEedFeAnswer ) );
+    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeGreenLagrangeStrain( previousDeformationGradient, previousEeAnswer, previousdEedFeAnswer ) );
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          { }, { },
@@ -575,6 +575,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2Stress, * boost::unit_test::tolerance(
             floatVector previousEe = { -1, -2, -3, -4, -5, -6, -7, -8, -9 };
 
         private:
+
+            using tardigradeHydra::linearElasticity::residual::setEe;
 
             virtual void setEe( ) override {
 
@@ -675,6 +677,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdEe, * boost::unit_test::tolera
             floatVector previousEe = { -1, -2, -3, -4, -5, -6, -7, -8, -9 };
 
         private:
+
+            using tardigradeHydra::linearElasticity::residual::setEe;
 
             virtual void setEe( ) override {
 
@@ -964,6 +968,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setCauchyStress, * boost::unit_test::toleran
 
         private:
 
+            using tardigradeHydra::linearElasticity::residual::setPK2Stress;
+
             virtual void setPK2Stress( ) override {
 
                 set_PK2Stress( PK2Stress );
@@ -1068,6 +1074,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setStress, * boost::unit_test::tolerance( DE
 
         private:
 
+            using tardigradeHydra::linearElasticity::residual::setPK2Stress;
+
             virtual void setPK2Stress( ) override {
 
                 set_PK2Stress( PK2Stress );
@@ -1161,6 +1169,8 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdPK2Stress, * boost::unit_te
         public:
 
             using tardigradeHydra::linearElasticity::residual::residual;
+
+            using tardigradeHydra::linearElasticity::residual::setPK2Stress;
 
             void setPK2Stress( floatVector &value ){
 

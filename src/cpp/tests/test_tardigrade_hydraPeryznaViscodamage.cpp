@@ -182,6 +182,22 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates, * boost::unit_test::t
 
         protected:
 
+            using tardigradeHydra::peryznaViscodamage::residual::setHardeningFunction;
+
+            using tardigradeHydra::peryznaViscodamage::residual::setStateVariables;
+            using tardigradeHydra::peryznaViscodamage::residual::setdStateVariableEvolutionRatesdCauchyStress;
+            using tardigradeHydra::peryznaViscodamage::residual::setdStateVariableEvolutionRatesdF;
+            using tardigradeHydra::peryznaViscodamage::residual::setdStateVariableEvolutionRatesdSubFs;
+            using tardigradeHydra::peryznaViscodamage::residual::setdStateVariableEvolutionRatesdT;
+            using tardigradeHydra::peryznaViscodamage::residual::setdStateVariableEvolutionRatesdStateVariables;
+
+            using tardigradeHydra::peryznaViscodamage::residual::setPlasticMultiplier;
+            using tardigradeHydra::peryznaViscodamage::residual::setdPlasticMultiplierdCauchyStress;
+            using tardigradeHydra::peryznaViscodamage::residual::setdPlasticMultiplierdF;
+            using tardigradeHydra::peryznaViscodamage::residual::setdPlasticMultiplierdSubFs;
+            using tardigradeHydra::peryznaViscodamage::residual::setdPlasticMultiplierdT;
+            using tardigradeHydra::peryznaViscodamage::residual::setdPlasticMultiplierdStateVariables;
+
             virtual void setHardeningFunction( ) override{
 
                 set_hardeningFunction( stateVariableEvolutionRates / plasticMultiplier );
@@ -1033,6 +1049,10 @@ BOOST_AUTO_TEST_CASE( test_setDamage, * boost::unit_test::tolerance( DEFAULT_TES
             }
 
         protected:
+
+            using tardigradeHydra::peryznaViscodamage::residual::setStateVariables;
+            using tardigradeHydra::peryznaViscodamage::residual::setHardeningFunction;
+            using tardigradeHydra::peryznaViscodamage::residual::setPlasticMultiplier;
 
             virtual void setPlasticMultiplier( ) override{
 
@@ -2437,6 +2457,8 @@ BOOST_AUTO_TEST_CASE( test_setResidual, * boost::unit_test::tolerance( DEFAULT_T
             floatVector stateVariables = { 5, 6 };
 
         protected:
+
+            using tardigradeHydra::peryznaViscodamage::residual::setStateVariables;
 
             virtual void setDamageDeformationGradient( ) override{
 

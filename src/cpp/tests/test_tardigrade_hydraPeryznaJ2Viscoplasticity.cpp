@@ -156,6 +156,8 @@ BOOST_AUTO_TEST_CASE( test_get_yieldFunction, * boost::unit_test::tolerance( DEF
 
         protected:
 
+            using tardigradeHydra::peryznaJ2Viscoplasticity::residual::setDrivingStress;
+
             floatVector fillVector( const unsigned int npoints ){
                 /*!
                  * Fill a vector with values

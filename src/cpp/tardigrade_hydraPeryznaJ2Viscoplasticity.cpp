@@ -46,7 +46,9 @@ namespace tardigradeHydra{
 
             const floatVector* yieldParameters;
 
-            floatType yieldFunction;
+            setDataStorageBase< floatType > yieldFunction;
+
+            setDataStorageBase< floatType > signTerm;
 
             if ( isPrevious ){
 
@@ -54,12 +56,20 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
 
+                yieldFunction = get_setDataStorage_previousYieldFunction( );
+
+                signTerm      = get_setDataStorage_previousSignTerm( );
+
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_drivingStress( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
+
+                yieldFunction = get_setDataStorage_yieldFunction( );
+
+                signTerm      = get_setDataStorage_signTerm( );
 
             }
 
@@ -71,24 +81,9 @@ namespace tardigradeHydra{
 
             floatType term1 = vonMises - ( *yieldParameters )[ 2 ] * ( *stateVariables )[ 1 ];
 
-            yieldFunction = std::fabs( term1 ) - ( *yieldParameters )[ 1 ] * ( *stateVariables )[ 0 ] - ( *yieldParameters )[ 0 ];
+            *yieldFunction.value = std::fabs( term1 ) - ( *yieldParameters )[ 1 ] * ( *stateVariables )[ 0 ] - ( *yieldParameters )[ 0 ];
 
-            floatType sign_term1 = sgn( term1 );
-
-            if ( isPrevious ){
-
-                set_previousYieldFunction( yieldFunction );
-
-                set_previousSignTerm( sign_term1 );
-
-            }
-            else{
-
-                set_yieldFunction( yieldFunction );
-
-                set_signTerm( sign_term1 );
-
-            }
+            *signTerm.value      = sgn( term1 );
 
         }
 
@@ -99,7 +94,9 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether this is the previous timestep
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
+
+            constexpr unsigned int sot_dim = dim * dim;
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
@@ -115,7 +112,17 @@ namespace tardigradeHydra{
 
             const floatVector* yieldParameters;
 
-            floatType yieldFunction;
+            setDataStorageBase< floatType > yieldFunction;
+
+            setDataStorageBase< floatType > signTerm;
+
+            setDataStorageBase< secondOrderTensor > dYieldFunctiondCauchyStress;
+
+            setDataStorageBase< secondOrderTensor > dYieldFunctiondF;
+
+            setDataStorageBase< floatVector > dYieldFunctiondSubFs;
+
+            setDataStorageBase< floatVector > dYieldFunctiondStateVariables;
 
             if ( isPrevious ){
 
@@ -128,6 +135,18 @@ namespace tardigradeHydra{
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_previousDrivingStress( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
+
+                yieldFunction = get_setDataStorage_previousYieldFunction( );
+
+                signTerm      = get_setDataStorage_previousSignTerm( );
+
+                dYieldFunctiondCauchyStress   = get_setDataStorage_dPreviousYieldFunctiondPreviousCauchyStress( );
+
+                dYieldFunctiondF              = get_setDataStorage_dPreviousYieldFunctiondPreviousF( );
+
+                dYieldFunctiondSubFs          = get_setDataStorage_dPreviousYieldFunctiondPreviousSubFs( );
+
+                dYieldFunctiondStateVariables = get_setDataStorage_dPreviousYieldFunctiondPreviousStateVariables( );
 
             }
             else{
@@ -142,6 +161,18 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
 
+                yieldFunction = get_setDataStorage_yieldFunction( );
+
+                signTerm      = get_setDataStorage_signTerm( );
+
+                dYieldFunctiondCauchyStress   = get_setDataStorage_dYieldFunctiondCauchyStress( );
+
+                dYieldFunctiondF              = get_setDataStorage_dYieldFunctiondF( );
+
+                dYieldFunctiondSubFs          = get_setDataStorage_dYieldFunctiondSubFs( );
+
+                dYieldFunctiondStateVariables = get_setDataStorage_dYieldFunctiondStateVariables( );
+
             }
 
             TARDIGRADE_ERROR_TOOLS_CATCH( yieldParameters = get_yieldParameters( ) );
@@ -154,50 +185,31 @@ namespace tardigradeHydra{
 
             floatType term1 = vonMises - ( *yieldParameters )[ 2 ] * ( *stateVariables )[ 1 ];
 
-            yieldFunction = std::fabs( term1 ) - ( *yieldParameters )[ 1 ] * ( *stateVariables )[ 0 ] - ( *yieldParameters )[ 0 ];
+            *yieldFunction.value = std::fabs( term1 ) - ( *yieldParameters )[ 1 ] * ( *stateVariables )[ 0 ] - ( *yieldParameters )[ 0 ];
 
-            floatType sign_term = sgn( term1 );
+            *signTerm.value = sgn( term1 );
 
-            floatVector dYieldFunctiondDrivingStress = sign_term * dVonMisesdDrivingStress;
+            floatVector dYieldFunctiondDrivingStress = ( *signTerm.value ) * dVonMisesdDrivingStress;
 
-            floatVector dYieldFunctiondStateVariables = { -( *yieldParameters )[ 1 ], -sign_term * ( *yieldParameters )[ 2 ] };
+            *dYieldFunctiondStateVariables.value = { -( *yieldParameters )[ 1 ], -( *signTerm.value ) * ( *yieldParameters )[ 2 ] };
 
-            floatVector dYieldFunctiondCauchyStress = tardigradeVectorTools::matrixMultiply( dYieldFunctiondDrivingStress, *dDrivingStressdCauchyStress, 1, sot_dim, sot_dim, sot_dim );
+            auto map_dYieldFunctiondDrivingStress = getFixedSizeMatrixMap< floatType,       1, sot_dim >( dYieldFunctiondDrivingStress.data( ) );
+            auto map_dDrivingStressdCauchyStress  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDrivingStressdCauchyStress->data( ) );
+            auto map_dDrivingStressdF             = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dDrivingStressdF->data( ) );
 
-            floatVector dYieldFunctiondF = tardigradeVectorTools::matrixMultiply( dYieldFunctiondDrivingStress, *dDrivingStressdF, 1, sot_dim, sot_dim, sot_dim );
+            auto map_dDrivingStressdSubFs         = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( dDrivingStressdSubFs->data( ), ( num_configs - 1 ) * sot_dim );
 
-            floatVector dYieldFunctiondSubFs = tardigradeVectorTools::matrixMultiply( dYieldFunctiondDrivingStress, *dDrivingStressdSubFs, 1, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
+            auto map_dYieldFunctiondCauchyStress = dYieldFunctiondCauchyStress.zeroMap< floatType, 1, sot_dim >( );
 
-            if ( isPrevious ){
+            auto map_dYieldFunctiondF            = dYieldFunctiondF.zeroMap< floatType, 1, sot_dim >( );
 
-                set_previousYieldFunction( yieldFunction );
+            auto map_dYieldFunctiondSubFs        = dYieldFunctiondSubFs.zeroMap< floatType, 1 >( ( num_configs - 1 ) * sot_dim );
 
-                set_previousSignTerm( sign_term );
+            map_dYieldFunctiondCauchyStress = ( map_dYieldFunctiondDrivingStress * map_dDrivingStressdCauchyStress ).eval( );
 
-                set_dPreviousYieldFunctiondPreviousCauchyStress( dYieldFunctiondCauchyStress );
+            map_dYieldFunctiondF            = ( map_dYieldFunctiondDrivingStress * map_dDrivingStressdF ).eval( );
 
-                set_dPreviousYieldFunctiondPreviousF( dYieldFunctiondF );
-
-                set_dPreviousYieldFunctiondPreviousSubFs( dYieldFunctiondSubFs );
-
-                set_dPreviousYieldFunctiondPreviousStateVariables( dYieldFunctiondStateVariables );
-
-            }
-            else{
-
-                set_yieldFunction( yieldFunction );
-
-                set_signTerm( sign_term );
-
-                set_dYieldFunctiondCauchyStress( dYieldFunctiondCauchyStress );
-
-                set_dYieldFunctiondF( dYieldFunctiondF );
-
-                set_dYieldFunctiondSubFs( dYieldFunctiondSubFs );
-
-                set_dYieldFunctiondStateVariables( dYieldFunctiondStateVariables );
-
-            }
+            map_dYieldFunctiondSubFs        = ( map_dYieldFunctiondDrivingStress * map_dDrivingStressdSubFs ).eval( );
 
         }
 
@@ -206,12 +218,16 @@ namespace tardigradeHydra{
              * Set the viscous drag stress
              */
 
+            setDataStorageBase< floatType > dragStress;
+
             if ( isPrevious ){
-                set_previousDragStress( ( *get_dragStressParameters( ) )[ 0 ] );
+                dragStress = get_setDataStorage_previousDragStress( );
             }
             else{
-                set_dragStress( ( *get_dragStressParameters( ) )[ 0 ] );
+                dragStress = get_setDataStorage_dragStress( );
             }
+
+            *dragStress.value = ( *get_dragStressParameters( ) )[ 0 ];
 
         }
 
@@ -220,14 +236,20 @@ namespace tardigradeHydra{
              * Set the derivatives of the drag stress
              */
 
+            setDataStorageBase< floatType > dragStress;
+            setDataStorageBase< floatVector > dDragStressdStateVariables;
+
             if ( isPrevious ){
-                set_previousDragStress( ( *get_dragStressParameters( ) )[ 0 ] );
-                set_dPreviousDragStressdPreviousStateVariables( floatVector( get_stateVariables( )->size( ), 0 ) );
+                dragStress = get_setDataStorage_previousDragStress( );
+                dDragStressdStateVariables = get_setDataStorage_dPreviousDragStressdPreviousStateVariables( );
             }
             else{
-                set_previousDragStress( ( *get_dragStressParameters( ) )[ 0 ] );
-                set_dDragStressdStateVariables( floatVector( get_stateVariables( )->size( ), 0 ) );
+                dragStress = get_setDataStorage_dragStress( );
+                dDragStressdStateVariables = get_setDataStorage_dDragStressdStateVariables( );
             }
+
+            *dragStress.value = ( *get_dragStressParameters( ) )[ 0 ];
+            *dDragStressdStateVariables.value = floatVector( get_stateVariables( )->size( ), 0 );
 
         }
         void residual::setHardeningFunction( const bool isPrevious ){
@@ -244,11 +266,15 @@ namespace tardigradeHydra{
 
             const floatType *sign_term;
 
+            setDataStorageBase< floatVector > hardeningFunction;
+
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( sign_term = get_previousSignTerm( ) );
+
+                hardeningFunction = get_setDataStorage_previousHardeningFunction( );
 
             }
             else{
@@ -257,23 +283,14 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( sign_term = get_signTerm( ) );
 
+                hardeningFunction = get_setDataStorage_hardeningFunction( );
+
             }
 
             TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = get_hardeningParameters( ) );
 
-            floatVector hardeningFunction = { ( ( *hardeningParameters )[ 0 ] + ( *hardeningParameters )[ 1 ] * ( *stateVariables )[ 0 ] ),
-                                              ( ( *hardeningParameters )[ 2 ] + ( *hardeningParameters )[ 3 ] * ( *stateVariables )[ 0 ] ) * ( *sign_term ) };
-
-            if ( isPrevious ){
-
-                set_previousHardeningFunction( hardeningFunction );
-
-            }
-            else{
-
-                set_hardeningFunction( hardeningFunction );
-
-            }
+            *hardeningFunction.value = { ( ( *hardeningParameters )[ 0 ] + ( *hardeningParameters )[ 1 ] * ( *stateVariables )[ 0 ] ),
+                                         ( ( *hardeningParameters )[ 2 ] + ( *hardeningParameters )[ 3 ] * ( *stateVariables )[ 0 ] ) * ( *sign_term ) };
 
         }
 
@@ -291,11 +308,19 @@ namespace tardigradeHydra{
 
             const floatType *sign_term;
 
+            setDataStorageBase< floatVector > hardeningFunction;
+
+            setDataStorageBase< floatVector > dHardeningFunctiondStateVariables;
+
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( sign_term = get_previousSignTerm( ) );
+
+                hardeningFunction = get_setDataStorage_previousHardeningFunction( );
+
+                dHardeningFunctiondStateVariables = get_setDataStorage_dPreviousHardeningFunctiondPreviousStateVariables( );
 
             }
             else{
@@ -304,31 +329,20 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( sign_term = get_signTerm( ) );
 
+                hardeningFunction = get_setDataStorage_hardeningFunction( );
+
+                dHardeningFunctiondStateVariables = get_setDataStorage_dHardeningFunctiondStateVariables( );
+
             }
 
             TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = get_hardeningParameters( ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( hardeningParameters = get_hardeningParameters( ) );
 
-            floatVector hardeningFunction = { ( ( *hardeningParameters )[ 0 ] + ( *hardeningParameters )[ 1 ] * ( *stateVariables )[ 0 ] ),
-                                              ( ( *hardeningParameters )[ 2 ] + ( *hardeningParameters )[ 3 ] * ( *stateVariables )[ 0 ] ) * ( *sign_term ) };
+            *hardeningFunction.value = { ( ( *hardeningParameters )[ 0 ] + ( *hardeningParameters )[ 1 ] * ( *stateVariables )[ 0 ] ),
+                                         ( ( *hardeningParameters )[ 2 ] + ( *hardeningParameters )[ 3 ] * ( *stateVariables )[ 0 ] ) * ( *sign_term ) };
 
-            floatVector dHardeningFunctiondStateVariables = { ( *hardeningParameters )[ 1 ], 0., ( *hardeningParameters )[ 3 ] * ( *sign_term ), 0 };
-
-            if ( isPrevious ){
-
-                set_previousHardeningFunction( hardeningFunction );
-
-                set_dPreviousHardeningFunctiondPreviousStateVariables( dHardeningFunctiondStateVariables );
-
-            }
-            else{
-
-                set_hardeningFunction( hardeningFunction );
-
-                set_dHardeningFunctiondStateVariables( dHardeningFunctiondStateVariables );
-
-            }
+            *dHardeningFunctiondStateVariables.value = { ( *hardeningParameters )[ 1 ], 0., ( *hardeningParameters )[ 3 ] * ( *sign_term ), 0 };
 
         }
 

@@ -38,24 +38,12 @@ A C++ framework to develop finite deformation material models
 Information
 ===========
 
-* Documentation (``main`` branch): https://aea.re-pages.lanl.gov/stub-repositories/tardigrade-hydra/
-
-* Wiki: https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra/-/wikis/home
+TODO
 
 Developers
 ==========
 
-* Nathan Miller: nathanm@lanl.gov
-
-************
-Gitlab CI/CD
-************
-
-    **NOTE**
-
-    The repository setup has moved out of the README and into the HTML
-    documentation. You can find the Gitlab project setup guide here:
-    https://aea.re-pages.lanl.gov/stub-repositories/tardigrade-hydra/gitlab_setup.html
+* Nathan Miller: Nathan.A.Miller@colorado.edu
 
 ************
 Dependencies
@@ -99,8 +87,12 @@ during the Gitlab-CI ``conda-build`` job to limit the test phase to the as-insta
 The build type can be set with the ``-DCMAKE_BUILD_TYPE=<build type string>`` during project configuration. Both build
 types will require the upstream dependent libraries
 
-* ``abaqus_tools``: https://re-git.lanl.gov/aea/material-models/abaqus_tools
-* ``error_tools``: https://re-git.lanl.gov/aea/material-models/error_tools
+* ``abaqus_tools``: https://github.com/UCBoulder/tardigrade_abaqus_tools
+* ``error_tools``: https://github.com/UCBoulder/tardigrade_error_tools
+* ``vector_tools``: https://github.com/UCBoulder/tardigrade_vector_tools
+* ``constitutive_tools``: https://github.com/UCBoulder/tardigrade_constitutive_tools
+* ``stress_tools``: https://github.com/UCBoulder/tardigrade_stress_tools
+* ``micromorphic_tools``: https://github.com/UCBoulder/tardigrade_micromorphic_tools
 
 to be installed and found in the user's environment. If the build type string doesn't match those previously listed, the
 CMake project will build missing upstream libraries with the `CMake fetch_content`_ feature. The 'conda-test' build type
@@ -241,8 +233,6 @@ Building the documentation
     **HEALTH WARNING**
 
     The sphinx API docs are a work-in-progress. The doxygen API is much more useful.
-
-    * Documentation (``main`` branch): https://aea.re-pages.lanl.gov/stub-repositories/tardigrade-hydra/doxygen
 
 To build just the documentation pick up the steps here:
 

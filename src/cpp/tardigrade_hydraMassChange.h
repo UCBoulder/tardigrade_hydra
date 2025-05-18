@@ -80,8 +80,9 @@ namespace tardigradeHydra{
                      * \param *hydra: A reference to the containing hydra object
                      * \param &numEquations: The number of equations to be defined by
                      *     the residual
-                     * \param &thermalConfigurationIndex: The index of the mass-change
+                     * \param &massChangeConfigurationIndex: The index of the mass-change
                      * \param &parameters: The parameters for the model
+                     * \param integrationParameter: The parameter of the integration 0 is explicit, 1 is implicit
                      */
 
                     _massChangeConfigurationIndex = massChangeConfigurationIndex;
@@ -92,8 +93,10 @@ namespace tardigradeHydra{
 
                 }
 
+                //! Get the index of the mass-change configuration
                 const unsigned int *getMassChangeConfigurationIndex( ){ return &_massChangeConfigurationIndex; }
 
+                //! Get the integration parameter 0 for explicit, 1 for implicit
                 const floatType *getIntegrationParameter( ){ return &_integrationParameter; }
 
                 virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
@@ -262,9 +265,9 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, previousMassChangeRate,                          floatType,   unexpectedError                                    )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, directionVector,                                 floatVector, unexpectedError                                    )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, directionVector,                                 dimVector,   unexpectedError                                    )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, previousDirectionVector,                  floatVector, unexpectedError                                    )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, previousDirectionVector,                         dimVector,   unexpectedError                                    )
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, massDirectionMixingParameter,                    floatType,   unexpectedError                                    )
 
@@ -280,85 +283,85 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate, floatType, setdPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, unitDirectionVector,                                     floatVector, setUnitDirectionVector                                     ) 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, unitDirectionVector,                                     dimVector, setUnitDirectionVector                                     ) 
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousUnitDirectionVector,                             floatVector, setPreviousUnitDirectionVector                             ) 
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousUnitDirectionVector,                             dimVector, setPreviousUnitDirectionVector                             ) 
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUnitDirectionVectordDirectionVector,                 floatVector, setdUnitDirectionVectordDirectionVector                 ) 
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dUnitDirectionVectordDirectionVector,                 secondOrderTensor, setdUnitDirectionVectordDirectionVector                 ) 
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousUnitDirectionVectordPreviousDirectionVector, floatVector, setdPreviousUnitDirectionVectordPreviousDirectionVector ) 
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousUnitDirectionVectordPreviousDirectionVector, secondOrderTensor, setdPreviousUnitDirectionVectordPreviousDirectionVector ) 
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeVelocityGradient,                          floatVector, setMassChangeVelocityGradient                          )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeVelocityGradient,                           dimVector, setMassChangeVelocityGradient                          )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeVelocityGradientdDensity,                 floatVector, setdMassChangeVelocityGradientdDensity                 )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeVelocityGradientdDensity,                  dimVector, setdMassChangeVelocityGradientdDensity                 )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeVelocityGradientdMassChangeRate,          floatVector, setdMassChangeVelocityGradientdMassChangeRate          )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeVelocityGradientdMassChangeRate,           dimVector, setdMassChangeVelocityGradientdMassChangeRate          )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeVelocityGradientdDirectionVector,  floatVector, setdMassChangeVelocityGradientdDirectionVector  )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeVelocityGradientdDirectionVector,          secondOrderTensor, setdMassChangeVelocityGradientdDirectionVector  )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMassChangeVelocityGradient,                  floatVector, setPreviousMassChangeVelocityGradient                  )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMassChangeVelocityGradient,                   dimVector, setPreviousMassChangeVelocityGradient                  )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientdPreviousDensity,                floatVector, setdPreviousMassChangeVelocityGradientdPreviousDensity                 )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientdPreviousDensity,                secondOrderTensor, setdPreviousMassChangeVelocityGradientdPreviousDensity                 )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientdPreviousMassChangeRate,         floatVector, setdPreviousMassChangeVelocityGradientdPreviousMassChangeRate          )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientdPreviousMassChangeRate,         secondOrderTensor, setdPreviousMassChangeVelocityGradientdPreviousMassChangeRate          )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientdPreviousDirectionVector, floatVector, setdPreviousMassChangeVelocityGradientdPreviousDirectionVector  )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeVelocityGradientdPreviousDirectionVector, thirdOrderTensor, setdPreviousMassChangeVelocityGradientdPreviousDirectionVector  )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, precedingDeformationGradient,                                       floatVector, setPrecedingDeformationGradient )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, precedingDeformationGradient,                                       secondOrderTensor, setPrecedingDeformationGradient )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPrecedingDeformationGradientdDeformationGradient,                  floatVector, setdPrecedingDeformationGradientdDeformationGradient )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPrecedingDeformationGradientdDeformationGradient,                  fourthOrderTensor, setdPrecedingDeformationGradientdDeformationGradient )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPrecedingDeformationGradientdSubDeformationGradients,              floatVector, setdPrecedingDeformationGradientdSubDeformationGradients )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousPrecedingDeformationGradient,                                       floatVector, setPreviousPrecedingDeformationGradient )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, previousPrecedingDeformationGradient,                                       secondOrderTensor, setPreviousPrecedingDeformationGradient )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, dPreviousPrecedingDeformationGradientdPreviousDeformationGradient,          floatVector, setdPreviousPrecedingDeformationGradientdPreviousDeformationGradient )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, dPreviousPrecedingDeformationGradientdPreviousDeformationGradient,          fourthOrderTensor, setdPreviousPrecedingDeformationGradientdPreviousDeformationGradient )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients,      floatVector, setdPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeIntermediateVelocityGradient,                             floatVector, setMassChangeIntermediateVelocityGradient         )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeIntermediateVelocityGradient,                             secondOrderTensor, setMassChangeIntermediateVelocityGradient         )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeIntermediateVelocityGradientdDensity,                    floatVector, setdMassChangeIntermediateVelocityGradientdDensity )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeIntermediateVelocityGradientdDensity,                    secondOrderTensor, setdMassChangeIntermediateVelocityGradientdDensity )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeIntermediateVelocityGradientdMassChangeRate,             floatVector, setdMassChangeIntermediateVelocityGradientdMassChangeRate )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeIntermediateVelocityGradientdMassChangeRate,             secondOrderTensor, setdMassChangeIntermediateVelocityGradientdMassChangeRate )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeIntermediateVelocityGradientdDirectionVector,     floatVector, setdMassChangeIntermediateVelocityGradientdDirectionVector )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeIntermediateVelocityGradientdDirectionVector,     thirdOrderTensor, setdMassChangeIntermediateVelocityGradientdDirectionVector )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeIntermediateVelocityGradientdDeformationGradient,        floatVector, setdMassChangeIntermediateVelocityGradientdDeformationGradient )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeIntermediateVelocityGradientdDeformationGradient,        fourthOrderTensor, setdMassChangeIntermediateVelocityGradientdDeformationGradient )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeIntermediateVelocityGradientdSubDeformationGradients,    floatVector, setdMassChangeIntermediateVelocityGradientdSubDeformationGradients )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMassChangeIntermediateVelocityGradient,                     floatVector, setPreviousMassChangeIntermediateVelocityGradient )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousMassChangeIntermediateVelocityGradient,                     secondOrderTensor, setPreviousMassChangeIntermediateVelocityGradient )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity,                    floatVector, setdPreviousMassChangeIntermediateVelocityGradientdPreviousDensity )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity,                    secondOrderTensor, setdPreviousMassChangeIntermediateVelocityGradientdPreviousDensity )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate,             floatVector, setdPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate,             secondOrderTensor, setdPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector,     floatVector, setdPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector,     thirdOrderTensor, setdPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient,        floatVector, setdPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient,        fourthOrderTensor, setdPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients,    floatVector, setdPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeDeformationGradient,                                                      floatVector, setMassChangeDeformationGradient )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, massChangeDeformationGradient,                                                      secondOrderTensor, setMassChangeDeformationGradient )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdDensity,                                             floatVector, setdMassChangeDeformationGradientdDensity )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdDensity,                                             secondOrderTensor, setdMassChangeDeformationGradientdDensity )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdMassChangeRate,                                      floatVector, setdMassChangeDeformationGradientdMassChangeRate )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdMassChangeRate,                                      secondOrderTensor, setdMassChangeDeformationGradientdMassChangeRate )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdDirectionVector,                              floatVector, setdMassChangeDeformationGradientdDirectionVector )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdDirectionVector,                                     thirdOrderTensor, setdMassChangeDeformationGradientdDirectionVector )
 
-                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdDeformationGradient,                                 floatVector, setdMassChangeDeformationGradientdDeformationGradient )
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdDeformationGradient,                                 fourthOrderTensor, setdMassChangeDeformationGradientdDeformationGradient )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dMassChangeDeformationGradientdSubDeformationGradients,                             floatVector, setdMassChangeDeformationGradientdSubDeformationGradients )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousDensity,                                     floatVector, setdMassChangeDeformationGradientdPreviousDensity )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousDensity,                                     secondOrderTensor, setdMassChangeDeformationGradientdPreviousDensity )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousMassChangeRate,                              floatVector, setdMassChangeDeformationGradientdPreviousMassChangeRate )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousMassChangeRate,                              secondOrderTensor, setdMassChangeDeformationGradientdPreviousMassChangeRate )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousDirectionVector,                      floatVector, setdMassChangeDeformationGradientdPreviousDirectionVector )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousDirectionVector,                             thirdOrderTensor, setdMassChangeDeformationGradientdPreviousDirectionVector )
 
-                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousDeformationGradient,                         floatVector, setdMassChangeDeformationGradientdPreviousDeformationGradient )
+                TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousDeformationGradient,                         fourthOrderTensor, setdMassChangeDeformationGradientdPreviousDeformationGradient )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, dMassChangeDeformationGradientdPreviousSubDeformationGradients,                     floatVector, setdMassChangeDeformationGradientdPreviousSubDeformationGradients )
 

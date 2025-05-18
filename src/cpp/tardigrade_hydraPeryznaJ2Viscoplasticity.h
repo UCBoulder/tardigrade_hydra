@@ -63,6 +63,11 @@ namespace tardigradeHydra{
         typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
 
         template <typename T> int sgn(T val){
+            /*!
+             * Get the sign of the value
+             * 
+             * \param val: The value to compute the sign of
+             */
             return (T(0) < val) - (val < T(0));
         }
 
@@ -118,6 +123,12 @@ namespace tardigradeHydra{
                 unsigned int damageISVIndex = 1;
 
             protected:
+
+                using tardigradeHydra::peryznaViscoplasticity::residual::setHardeningFunction;
+
+                using tardigradeHydra::peryznaViscoplasticity::residual::setDragStress;
+
+                using tardigradeHydra::peryznaViscoplasticity::residual::setYieldFunction;
 
                 virtual void setYieldFunction( const bool isPrevious ) override;
 

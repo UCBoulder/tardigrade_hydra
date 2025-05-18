@@ -16,8 +16,11 @@ set(SPHINX_SRC_PATH "docs/sphinx")
 set(TARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS ON CACHE BOOL "Flag for whether the python bindings should be built for hydra")
 set(TARDIGRADE_HYDRA_USE_LIBXSMM OFF CACHE BOOL "Flag for whether to use libxsmm for matrix math")
 
+# Add a flag for if a full build of all tardigrade repositories should be performed
+set(TARDIGRADE_FULL_BUILD OFF CACHE BOOL "Flag for whether a full build of Tardigrade should be performed (i.e., all repos pulled from git and built)")
+
 # Set the internal support libraries
-set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPeryznaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPeryznaViscodamage" "tardigrade_hydraMicromorphicDruckerPragerPlasticity" "tardigrade_hydraPeryznaJ2Viscoplasticity" "tardigrade_hydraMassChange")
+set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearTestMaterial" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPeryznaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPeryznaViscodamage" "tardigrade_hydraMicromorphicDruckerPragerPlasticity" "tardigrade_hydraPeryznaJ2Viscoplasticity" "tardigrade_hydraMassChange" "tardigrade_hydraMicromorphicDruckerPragerPlasticityOptimization" "tardigrade_hydraFourierHeatConduction" "tardigrade_hydraLinearInternalEnergy" "tardigrade_hydraMicromorphicRadialReturnLinearElasticity" "tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
@@ -39,6 +42,7 @@ set(TARDIGRADE_HYDRAPERYZNAVISCODAMAGE_UPSTREAM_LIBRARIES "tardigrade_constituti
 set(TARDIGRADE_HYDRAPERYZNAJ2VISCOPLASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
 set(TARDIGRADE_HYDRAMASSCHANGE_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
 set(TARDIGRADE_HYDRAMICROMORPHICLINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
+set(TARDIGRADE_HYDRAMICROMORPHICLINEARTESTMATERIAL_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
 set(TARDIGRADE_HYDRAMICROMORPHICDRUCKERPRAGERPLASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
 # Set some Abaqus integration variables
 set(UMAT "${PROJECT_NAME}_umat")
@@ -56,16 +60,20 @@ if(cmake_build_type_lower STREQUAL "release")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
-    # Find the installed project umat
-    find_file(installed_umat
-              "${UMAT}.o"
-              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
-              NO_CACHE
-              REQUIRED)
+#    # Find the installed project umat
+#    find_file(installed_umat
+#              "${UMAT}.o"
+#              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
+#              NO_CACHE
+#              REQUIRED)
 endif()
 
 # Get version number from Git
 if(${not_conda_test} STREQUAL "true")
+    if (DEFINED ENV{PREFIX})
+        set(Python_ROOT_DIR "$ENV{PREFIX}/bin")
+    endif()
+    set(Python_FIND_STRATEGY LOCATION)
     find_package(Python COMPONENTS Interpreter REQUIRED)
     execute_process(COMMAND ${Python_EXECUTABLE} -m setuptools_scm
                             OUTPUT_VARIABLE ${PROJECT_NAME}_VERSION_STRING_FULL
@@ -87,7 +95,7 @@ set(CMAKE_POSITION_INDEPENDENT_CODE ON)
 # Set the c++ standard
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED True)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -pedantic -Woverloaded-virtual")
 if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -lrt -O3 -DNDEBUG -ggdb")
 endif()
@@ -134,7 +142,11 @@ set(LOCAL_BUILD_INCLUDE_DIRECTORIES "")
 foreach(package ${upstream_packages})
     string(TOUPPER "${package}" package_upper)
     set(${package_upper}_BUILD_PYTHON_BINDINGS ${TARDIGRADE_HYDRA_BUILD_PYTHON_BINDINGS} CACHE INTERNAL "Setting ${package}'s python binding flag to the global value")
-    find_package(${package} ${upstream_required} CONFIG)
+    if(TARDIGRADE_FULL_BUILD)
+        message("Not attempting to find ${package}")
+    else()
+        find_package(${package} ${upstream_required} CONFIG)
+    endif()
     if(${package}_FOUND)
         message(STATUS "Found ${package}: ${${package}_DIR}")
     else()
@@ -178,7 +190,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
     # Add c++ tests and docs
     add_subdirectory(${CPP_TEST_PATH})
-    add_subdirectory(${ABAQUS_SRC_PATH})
+#    add_subdirectory(${ABAQUS_SRC_PATH})
     if(${not_conda_test} STREQUAL "true")
         add_subdirectory(${DOXYGEN_SRC_PATH})
         add_subdirectory(${SPHINX_SRC_PATH})
@@ -187,7 +199,7 @@ endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
 if(${not_conda_test} STREQUAL "true")
-    foreach(package ${PROJECT_NAME} ${UMAT})
+    foreach(package ${PROJECT_NAME})# ${UMAT})
         include(CMakePackageConfigHelpers)
         write_basic_package_version_file("${package}ConfigVersion.cmake"
                                          VERSION ${PROJECT_VERSION}
@@ -208,5 +220,11 @@ if(${not_conda_test} STREQUAL "true")
         install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
                       "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
                 DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+    endforeach(package)
+    install(FILES ${CPP_SRC_PATH}/${PROJECT_NAME}.cpp
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
+        install(FILES ${CPP_SRC_PATH}/${package}.cpp
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     endforeach(package)
 endif()

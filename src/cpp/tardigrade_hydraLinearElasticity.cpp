@@ -40,19 +40,23 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to set the current (false) or previous (true) elastic deformation gradient
              */
 
-            const unsigned int dim = 3;
-            const unsigned int sot_dim = dim * dim;
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
 
             if ( isPrevious ){
 
-                set_previousFe( floatVector( hydra->get_previousConfigurations( )->begin( ),
-                                             hydra->get_previousConfigurations( )->begin( ) + sot_dim ) );
+                auto previousFe = get_setDataStorage_previousFe( );
+
+                *previousFe.value = secondOrderTensor( hydra->get_previousConfigurations( )->begin( ),
+                                                       hydra->get_previousConfigurations( )->begin( ) + sot_dim );
 
             }
             else{
 
-                set_Fe( floatVector( hydra->get_configurations( )->begin( ),
-                                     hydra->get_configurations( )->begin( ) + sot_dim ) );
+                auto Fe = get_setDataStorage_Fe( );
+                
+                *Fe.value = secondOrderTensor( hydra->get_configurations( )->begin( ),
+                                               hydra->get_configurations( )->begin( ) + sot_dim );
 
             }
 
@@ -83,16 +87,24 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousdFedF( *hydra->get_previousdF1dF( ) );
+                auto previousdFedF = get_setDataStorage_previousdFedF( );
 
-                set_previousdFedFn( *hydra->get_previousdF1dFn( ) );
+                auto previousdFedFn = get_setDataStorage_previousdFedFn( );
+
+                *previousdFedF.value  = *hydra->get_previousdF1dF( );
+
+                *previousdFedFn.value = *hydra->get_previousdF1dFn( );
 
             }
             else{
 
-                set_dFedF(  *hydra->get_dF1dF( ) );
+                auto dFedF = get_setDataStorage_dFedF( );
 
-                set_dFedFn( *hydra->get_dF1dFn( ) );
+                auto dFedFn = get_setDataStorage_dFedFn( );
+
+                *dFedF.value  = *hydra->get_dF1dF( );
+
+                *dFedFn.value = *hydra->get_dF1dFn( );
 
             }
 
@@ -141,38 +153,32 @@ namespace tardigradeHydra{
              * \param isPrevious: Flag for whether to compute the strain (false) or the previous strain (true)
              */
 
-            const floatVector *Fe;
-    
+            const secondOrderTensor *Fe;
+   
+            setDataStorageBase< secondOrderTensor > Ee;
+
+            setDataStorageBase< fourthOrderTensor > dEedFe;
+
             if ( isPrevious ){
 
                 Fe = get_previousFe( );
+
+                Ee = get_setDataStorage_previousEe( );
+
+                dEedFe = get_setDataStorage_previousdEedFe( );
 
             }
             else{
 
                 Fe = get_Fe( );
 
-            }
+                Ee = get_setDataStorage_Ee( );
 
-            floatVector Ee;
-   
-            floatVector dEedFe;
-
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fe, Ee, dEedFe ) );
-
-            if ( isPrevious ){
-    
-                set_previousEe( Ee );
-    
-                set_previousdEedFe( dEedFe );
-            }
-            else{
-
-                set_Ee( Ee );
-    
-                set_dEedFe( dEedFe );
+                dEedFe = get_setDataStorage_dEedFe( );
 
             }
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::computeGreenLagrangeStrain( *Fe, *Ee.value, *dEedFe.value ) );
 
         }
  
@@ -222,35 +228,34 @@ namespace tardigradeHydra{
              * 
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) PK2 stress
              */
-    
-            floatVector eye( get_Ee( )->size( ), 0 );
-            tardigradeVectorTools::eye( eye );
+   
+            constexpr unsigned int dim = 3;
 
-            const floatVector *Ee;
+            setDataStorageBase< secondOrderTensor > PK2Stress;
+
+            const secondOrderTensor *Ee;
 
             if ( isPrevious ){
 
                 Ee = get_previousEe( );
+
+                PK2Stress = get_setDataStorage_previousPK2Stress( );
 
             }
             else{
 
                 Ee = get_Ee( );
 
-            }
-            floatVector PK2Stress = ( *getLambda( ) ) * tardigradeVectorTools::trace( *Ee ) * eye + 2 * ( *getMu( ) ) * ( *Ee );
-
-            if ( isPrevious ){
-
-                set_previousPK2Stress( PK2Stress );
+                PK2Stress = get_setDataStorage_PK2Stress( );
 
             }
-            else{
- 
-                set_PK2Stress( PK2Stress );
 
-            }
-    
+            *PK2Stress.value = 2 * ( *getMu( ) ) * ( *Ee );
+
+            floatType trace_Ee = tardigradeVectorTools::trace( *Ee );            
+
+            for ( unsigned int i = 0; i < dim; i++ ){ ( *PK2Stress.value )[ dim * i + i ] += ( *getLambda( ) ) * trace_Ee; }
+
         }
     
         void residual::setPK2Stress( ){
@@ -277,22 +282,24 @@ namespace tardigradeHydra{
              * 
              * \param isPrevious: Flag for whether to compute the current (false) or previous (true) value
              */
-   
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+  
+            const unsigned int dim     = hydra->getDimension( ); 
             const unsigned int fot_dim = hydra->getFOTDimension( );
- 
-            floatVector eye( sot_dim, 0 );
-            tardigradeVectorTools::eye( eye );
-    
-            floatVector EYE( fot_dim, 0 );
-            tardigradeVectorTools::eye( EYE );
-    
-            floatVector dPK2StressdEe = ( *getLambda( ) ) * tardigradeVectorTools::matrixMultiply( eye, eye, sot_dim, 1, 1, sot_dim ) + 2 * ( *getMu( ) ) * EYE;
-   
-            set_dPK2StressdEe( dPK2StressdEe );
 
-            set_previousdPK2StressdEe( dPK2StressdEe );
-    
+            auto dPK2StressdEe = get_setDataStorage_dPK2StressdEe( );
+
+            auto previousdPK2StressdEe = get_setDataStorage_previousdPK2StressdEe( );
+
+            dPK2StressdEe.zero( fot_dim );
+            for ( unsigned int i = 0; i < dim; i++ ){
+                for ( unsigned int j = 0; j < dim; j++ ){
+                    ( *dPK2StressdEe.value )[ dim * dim * ( dim * i + j ) + ( dim * i + j ) ] += 2 * ( *getMu( ) );
+                    ( *dPK2StressdEe.value )[ dim * dim * dim * i + dim * dim * i + dim * j + j ] += ( *getLambda( ) );
+                }
+            }
+
+            *previousdPK2StressdEe.value = *dPK2StressdEe.value;
+
         }
     
         void residual::setdPK2StressdEe( ){
@@ -321,9 +328,25 @@ namespace tardigradeHydra{
 
              const unsigned int sot_dim = hydra->getSOTDimension( );
 
-             floatVector dPK2StressdFe = tardigradeVectorTools::matrixMultiply( *get_dPK2StressdEe( ), *get_dEedFe( ), sot_dim, sot_dim, sot_dim, sot_dim );
+             const unsigned int fot_dim = hydra->getFOTDimension( );
 
-             set_dPK2StressdFe( dPK2StressdFe );
+             auto dPK2StressdFe = get_setDataStorage_dPK2StressdFe( );
+
+             dPK2StressdFe.zero( fot_dim );
+
+             for ( unsigned int I = 0; I < sot_dim; I++ ){
+
+                 for ( unsigned int J = 0; J < sot_dim; J++ ){
+
+                     for ( unsigned int K = 0; K < sot_dim; K++ ){
+
+                         ( *dPK2StressdFe.value )[ sot_dim * I + K ] += ( *get_dPK2StressdEe( ) )[ sot_dim * I + J ] * ( *get_dEedFe( ) )[ sot_dim * J + K ];
+
+                     }
+
+                 }
+
+             }
 
         }
 
@@ -333,9 +356,10 @@ namespace tardigradeHydra{
              * deformation gradient
              */
 
-             floatVector dPK2StressdPreviousFe( get_PK2Stress( )->size( ) * get_previousEe( )->size( ), 0 );
 
-             set_dPK2StressdPreviousFe( dPK2StressdPreviousFe );
+            auto dPK2StressdPreviousFe = get_setDataStorage_dPK2StressdPreviousFe( );
+
+            dPK2StressdPreviousFe.zero( hydra->getFOTDimension( ) );
 
         }
 
@@ -345,11 +369,25 @@ namespace tardigradeHydra{
              * deformation gradient
              */
 
+             auto previousdPK2StressdFe = get_setDataStorage_previousdPK2StressdFe( );
+
+             previousdPK2StressdFe.zero( hydra->getFOTDimension( ) );
+
              const unsigned int sot_dim = hydra->getSOTDimension( );
 
-             floatVector previousdPK2StressdFe = tardigradeVectorTools::matrixMultiply( *get_previousdPK2StressdEe( ), *get_previousdEedFe( ), sot_dim, sot_dim, sot_dim, sot_dim );
+             for ( unsigned int I = 0; I < sot_dim; I++ ){
 
-             set_previousdPK2StressdFe( previousdPK2StressdFe );
+                 for ( unsigned int J = 0; J < sot_dim; J++ ){
+
+                     for ( unsigned int K = 0; K < sot_dim; K++ ){
+
+                         ( *previousdPK2StressdFe.value )[ sot_dim * I + K ] += ( *get_previousdPK2StressdEe( ) )[ sot_dim * I + J ] * ( *get_previousdEedFe( ) )[ sot_dim * J + K ];
+
+                     }
+
+                 }
+
+             }
 
         }
 
@@ -360,19 +398,33 @@ namespace tardigradeHydra{
              * \param isPrevious: Whether to compute the current (false) or previous (true) Cauchy stress
              */
 
-            unsigned int sot_dim = hydra->getSOTDimension( );
+            constexpr unsigned int dim = 3;
+
+            constexpr unsigned int sot_dim = dim * dim;
+
+            constexpr unsigned int tot_dim = sot_dim * dim;
+
+            constexpr unsigned int fot_dim = tot_dim * dim;
 
             unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            const floatVector *Fe;
+            const secondOrderTensor *Fe;
 
-            const floatVector *dFedF;
+            const fourthOrderTensor *dFedF;
 
             const floatVector *dFedFn;
 
-            const floatVector *PK2Stress;
+            const secondOrderTensor *PK2Stress;
 
-            const floatVector *dPK2StressdFe;
+            const fourthOrderTensor *dPK2StressdFe;
+
+            setDataStorageBase< secondOrderTensor > cauchyStress;
+
+            setDataStorageBase< fourthOrderTensor > dCauchyStressdPK2Stress;
+
+            setDataStorageBase< fourthOrderTensor > dCauchyStressdF;
+
+            setDataStorageBase< floatVector > dCauchyStressdFn;
 
             if ( isPrevious ){
 
@@ -385,6 +437,14 @@ namespace tardigradeHydra{
                 PK2Stress     = get_previousPK2Stress( );
 
                 dPK2StressdFe = get_previousdPK2StressdFe( );
+
+                cauchyStress            = get_setDataStorage_previousCauchyStress( );
+
+                dCauchyStressdPK2Stress = get_setDataStorage_previousdCauchyStressdPK2Stress( );
+
+                dCauchyStressdF         = get_setDataStorage_previousdCauchyStressdF( );
+
+                dCauchyStressdFn        = get_setDataStorage_previousdCauchyStressdFn( );
 
             }
             else{
@@ -399,54 +459,82 @@ namespace tardigradeHydra{
 
                 dPK2StressdFe = get_dPK2StressdFe( );
 
+                cauchyStress             = get_setDataStorage_cauchyStress( );
+
+                dCauchyStressdPK2Stress  = get_setDataStorage_dCauchyStressdPK2Stress( );
+
+                dCauchyStressdF          = get_setDataStorage_dCauchyStressdF( );
+
+                dCauchyStressdFn         = get_setDataStorage_dCauchyStressdFn( );
+
             }
 
             // Compute the Second Piola-Kirchhoff stress and it's gradients
-            floatVector dPK2StressdF = tardigradeVectorTools::matrixMultiply( *dPK2StressdFe, *dFedF, sot_dim, sot_dim, sot_dim, sot_dim );
-    
-            floatVector dPK2StressdFn = tardigradeVectorTools::matrixMultiply( *dPK2StressdFe, *dFedFn, sot_dim, sot_dim, sot_dim, ( num_configs - 1 ) * sot_dim );
-    
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2StressdFe( dPK2StressdFe->data( ), sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dFedF( dFedF->data( ), sot_dim, sot_dim );
+
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dFedFn( dFedFn->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            fourthOrderTensor dPK2StressdF( fot_dim, 0 );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2StressdF( dPK2StressdF.data( ), sot_dim, sot_dim );
+
+            floatVector dPK2StressdFn( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
+
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dPK2StressdFn( dPK2StressdFn.data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+
+            map_dPK2StressdF = ( map_dPK2StressdFe * map_dFedF ).eval( );
+  
+            map_dPK2StressdFn = ( map_dPK2StressdFe * map_dFedFn ).eval( );  
+
             // Map the PK2 stress to the current configuration
-            floatVector cauchyStress;
-            floatVector dCauchyStressdPK2Stress;
-            floatVector dCauchyStressdFe;
+            fourthOrderTensor dCauchyStressdFe;
  
-            TARDIGRADE_ERROR_TOOLS_CATCH_NODE_POINTER( tardigradeConstitutiveTools::pushForwardPK2Stress( *PK2Stress, *Fe, cauchyStress, dCauchyStressdPK2Stress, dCauchyStressdFe ) );
-    
-            floatVector dCauchyStressdF  = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdF, sot_dim, sot_dim, sot_dim, sot_dim )
-                                         + tardigradeVectorTools::matrixMultiply( dCauchyStressdFe, *dFedF, sot_dim, sot_dim, sot_dim, sot_dim );
-    
-            floatVector dCauchyStressdFn = tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdFn, sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) )
-                                         + tardigradeVectorTools::matrixMultiply( dCauchyStressdFe, *dFedFn, sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::pushForwardPK2Stress( *PK2Stress, *Fe, *cauchyStress.value, *dCauchyStressdPK2Stress.value, dCauchyStressdFe ) );
 
-            if ( isPrevious ){
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdPK2Stress( dCauchyStressdPK2Stress.value->data( ), sot_dim, sot_dim );
 
-                set_previousCauchyStress( cauchyStress );
-    
-                set_previousdCauchyStressdPK2Stress( dCauchyStressdPK2Stress );   
+            Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdFe( dCauchyStressdFe.data( ), sot_dim, sot_dim );
 
-                set_previousdCauchyStressdF( dCauchyStressdF );
-    
-                set_previousdCauchyStressdFn( dCauchyStressdFn );
+            dCauchyStressdF.zero( fot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdF( dCauchyStressdF.value->data( ), sot_dim, sot_dim );
+            map_dCauchyStressdF = ( map_dCauchyStressdPK2Stress * map_dPK2StressdF + map_dCauchyStressdFe * map_dFedF ).eval( );
 
-            }
-            else{
+            dCauchyStressdFn.zero( sot_dim * ( num_configs - 1 ) * sot_dim );
+            Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dCauchyStressdFn( dCauchyStressdFn.value->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+            map_dCauchyStressdFn = ( map_dCauchyStressdPK2Stress * map_dPK2StressdFn + map_dCauchyStressdFe * map_dFedFn ).eval( );
 
-                set_cauchyStress( cauchyStress );
-    
-                set_dCauchyStressdPK2Stress( dCauchyStressdPK2Stress );   
+            if ( !isPrevious ){
 
-                set_dCauchyStressdF( dCauchyStressdF );
-    
-                set_dCauchyStressdFn( dCauchyStressdFn );
+                auto dCauchyStressdPreviousF  = get_setDataStorage_dCauchyStressdPreviousF( );
 
-                floatVector dPK2StressdPreviousF  = tardigradeVectorTools::matrixMultiply( *get_dPK2StressdPreviousFe( ), *get_previousdFedF( ), sot_dim, sot_dim, sot_dim, sot_dim );
+                auto dCauchyStressdPreviousFn = get_setDataStorage_dCauchyStressdPreviousFn( );
 
-                floatVector dPK2StressdPreviousFn = tardigradeVectorTools::matrixMultiply( *get_dPK2StressdPreviousFe( ), *get_previousdFedFn( ), sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) );
+                Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2StressdPreviousFe( get_dPK2StressdPreviousFe( )->data( ), sot_dim, sot_dim );
 
-                set_dCauchyStressdPreviousF( tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdPreviousF, sot_dim, sot_dim, sot_dim, sot_dim ) );
+                Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_previousdFedF( get_previousdFedF( )->data( ), sot_dim, sot_dim );
 
-                set_dCauchyStressdPreviousFn( tardigradeVectorTools::matrixMultiply( dCauchyStressdPK2Stress, dPK2StressdPreviousFn, sot_dim, sot_dim, sot_dim, sot_dim * ( num_configs - 1 ) ) );
+                Eigen::Map< const Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_previousdFedFn( get_previousdFedFn( )->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+
+                fourthOrderTensor dPK2StressdPreviousF( fot_dim, 0 );
+                Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2StressdPreviousF( dPK2StressdPreviousF.data( ), sot_dim, sot_dim );
+
+                floatVector dPK2StressdPreviousFn( sot_dim * ( num_configs - 1 ) * sot_dim, 0 );
+                Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dPK2StressdPreviousFn( dPK2StressdPreviousFn.data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+
+                map_dPK2StressdPreviousF  = ( map_dPK2StressdPreviousFe * map_previousdFedF  ).eval( );
+
+                map_dPK2StressdPreviousFn = ( map_dPK2StressdPreviousFe * map_previousdFedFn ).eval( );
+
+                dCauchyStressdPreviousF.zero( fot_dim );
+                Eigen::Map< Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dCauchyStressdPreviousF( dCauchyStressdPreviousF.value->data( ), sot_dim, sot_dim );
+
+                dCauchyStressdPreviousFn.zero( sot_dim * ( num_configs - 1 ) * sot_dim );
+                Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dCauchyStressdPreviousFn( dCauchyStressdPreviousFn.value->data( ), sot_dim, sot_dim * ( num_configs - 1 ) );
+
+                map_dCauchyStressdPreviousF  = ( map_dCauchyStressdPK2Stress * map_dPK2StressdPreviousF  ).eval( );
+
+                map_dCauchyStressdPreviousFn = ( map_dCauchyStressdPK2Stress * map_dPK2StressdPreviousFn ).eval( );
 
             }
 
@@ -479,7 +567,9 @@ namespace tardigradeHydra{
 
             setCauchyStress( false );
 
-            setStress( *get_cauchyStress( ) );
+            auto stress = get_setDataStorage_stress( );
+
+            *stress.value = *get_cauchyStress( );
 
         }
     
@@ -492,7 +582,9 @@ namespace tardigradeHydra{
 
             setCauchyStress( true );
 
-            setPreviousStress( *get_previousCauchyStress( ) );
+            auto previousStress = get_setDataStorage_previousStress( );
+
+            *previousStress.value = *get_previousCauchyStress( );
 
         }
     
@@ -575,10 +667,12 @@ namespace tardigradeHydra{
             /*!
              * Set the residual value
              */
-    
-            const floatVector *cauchyStress = getStress( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( setResidual( *cauchyStress - *hydra->getStress( ) ) );
+            auto residual = get_setDataStorage_residual( );
+
+            const secondOrderTensor *stress = getStress( );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( *residual.value = *stress - *hydra->getStress( ) );
     
         }
     
@@ -598,25 +692,25 @@ namespace tardigradeHydra{
             const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
             // Form the Jacobian
-            floatVector jacobian = floatVector( sot_dim * num_unknowns, 0 );
+            auto jacobian = get_setDataStorage_jacobian( );
+
+            jacobian.zero( sot_dim * num_unknowns );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
                 for ( unsigned int j = 0; j < dim; j++ ){
 
-                    jacobian[ num_unknowns * dim * i + num_unknowns * j + dim * i + j ] = -1;
+                    ( *jacobian.value )[ num_unknowns * dim * i + num_unknowns * j + dim * i + j ] = -1;
 
                     for ( unsigned int I = 0; I < num_unknown_config_vars; I++ ){
 
-                        jacobian[ num_unknowns * dim * i + num_unknowns * j + getStress( )->size( ) + I ] = ( *get_dCauchyStressdFn( ) )[ dim * num_unknown_config_vars * i + num_unknown_config_vars * j + I ];
+                        ( *jacobian.value )[ num_unknowns * dim * i + num_unknowns * j + getStress( )->size( ) + I ] = ( *get_dCauchyStressdFn( ) )[ dim * num_unknown_config_vars * i + num_unknown_config_vars * j + I ];
 
                     }
 
                 }
 
             }
-
-            setJacobian( jacobian );
 
         }
 
@@ -625,7 +719,9 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            setdRdT( floatVector( *getNumEquations( ), 0 ) );
+            auto dRdT = get_setDataStorage_dRdT( );
+
+            dRdT.zero( *getNumEquations( ) );
 
         }
 
@@ -634,7 +730,9 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            setdRdF( *get_dCauchyStressdF( ) );
+            auto dRdF = get_setDataStorage_dRdF( );
+
+            *dRdF.value = *get_dCauchyStressdF( );
 
         }
 

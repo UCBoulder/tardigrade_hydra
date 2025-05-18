@@ -22,6 +22,30 @@
 #endif
 
 /*!
+ * \brief Declares a named setDataStorage getter function
+ * \param getname: The name of the getter function
+ * \param varname: The name of the variable
+ * \param classtype: The type of the class to be defined
+ * \param vartype: The ctype of the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(getname,varname,classtype,vartype,...) \
+    classtype< vartype > getname( ){                                                          \
+        /*!                                                                                         \
+         * Get an object derived from setDataStorageBase to set values                              \
+         */                                                                                         \
+        return classtype< vartype >( &_##varname, ##__VA_ARGS__ );                                  \
+    }
+
+/*!
+ * \brief Declares a setDataStorage getter function
+ * \param varname: The name of the variable
+ * \param classtype: The type of the class to be defined
+ * \param vartype: The ctype of the variable
+ */
+#define TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(varname,classtype,vartype,...) \
+    TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(get_setDataStorage_##varname,varname,classtype,vartype, ##__VA_ARGS__)
+
+/*!
  * \brief Declares a named getter function
  * \param getname: The name of the getter function
  * \param varname: The name of the variable
@@ -81,15 +105,18 @@
  * \param context: The context (public, protected, private) that the macro should return to
  * \param setname: The name of the setter function
  * \param getname: The name of the getter function
+ * \param getsetdatastoragename: The name of the getter function for the setDataStorage object
  * \param varname: The name of the variable
+ * \param classtype: The type of the class for the setDataStorage object
  * \param vartype: The ctype of the variable
  * \param setfun: The class member function that sets the variable
  * \param uncall: The function that is called if the variable is not set
  */
-#define TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,varname,vartype,setfun,uncall) \
+#define TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,getsetdatastoragename,varname,classtype,vartype,setfun,uncall,...) \
     private: dataStorage<vartype> _##varname;                       \
     public: TARDIGRADE_HYDRA_DECLARE_NAMED_SETTER(setname,varname,vartype,setfun) \
     public: TARDIGRADE_HYDRA_DECLARE_NAMED_GETTER(getname,varname,vartype,uncall) \
+    public: TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(getsetdatastoragename,varname,classtype,vartype, ##__VA_ARGS__) \
     context:
 
 /*!
@@ -101,7 +128,7 @@
  * \param uncall: The function that is called if the variable is not set
  */
 #define TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setfun,uncall) \
-    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,varname,vartype,setfun,uncall)
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_setDataStorage_##varname,varname,tardigradeHydra::setDataStorageBase,vartype,setfun,uncall)
 
 /*!
  * \brief Declare a named dataStorage variable that uses setIterationData as the setter function
@@ -113,7 +140,7 @@
  * \param uncall: The function that is called if the variable is not set
  */
 #define TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE(context,setname,getname,varname,vartype,uncall) \
-    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,varname,vartype,setIterationData,uncall)
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,get_setDataStorage_##varname,varname,setDataStorageIteration,vartype,setIterationData,uncall,this)
 
 /*!
  * \brief Declare a dataStorage variable that uses setIterationData as the setter function
@@ -123,7 +150,17 @@
  * \param uncall: The function that is called if the variable is not set
  */
 #define TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(context,varname,vartype,uncall) \
-    TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setIterationData,uncall)
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_setDataStorage_##varname,varname,setDataStorageIteration,vartype,setIterationData,uncall,this)
+
+/*!
+ * \brief Declare a dataStorage variable that uses setNLStepData as the setter function
+ * \param context: The context (public, protected, private) that the macro should return to
+ * \param varname: The name of the variable
+ * \param vartype: The type of the variable
+ * \param uncall: The function that is called if the variable is not set
+ */
+#define TARDIGRADE_HYDRA_DECLARE_NLSTEP_STORAGE(context,varname,vartype,uncall) \
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_setDataStorage_##varname,varname,setDataStorageNLStep,vartype,setNLStepData,uncall,this)
 
 /*!
  * \brief Declare a named dataStorage variable that uses setPreviousData as the setter function
@@ -135,7 +172,7 @@
  * \param uncall: The function that is called if the variable is not set
  */
 #define TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(context,setname,getname,varname,vartype,uncall) \
-    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,varname,vartype,setPreviousData,uncall)
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,get_setDataStorage_##varname,varname,setDataStoragePrevious,vartype,setPreviousData,uncall)
 
 /*!
  * \brief Declare a dataStorage variable that uses setPreviousData as the setter function
@@ -145,7 +182,7 @@
  * \param uncall: The function that is called if the variable is not set
  */
 #define TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(context,varname,vartype,uncall) \
-    TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setPreviousData,uncall)
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_setDataStorage_##varname,varname,setDataStoragePrevious,vartype,setPreviousData,uncall)
 
 /*!
  * \brief Declare a named dataStorage variable that uses setConstantData as the setter function
@@ -157,7 +194,7 @@
  * \param uncall: The function that is called if the variable is not set
  */
 #define TARDIGRADE_HYDRA_DECLARE_NAMED_CONSTANT_STORAGE(context,setname,getname,varname,vartype,uncall) \
-    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,varname,vartype,setConstantData,uncall)
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,get_setDataSTorage_##varname,varname,setDataStorageConstant,vartype,setConstantData,uncall)
 
 /*!
  * \brief Declare a dataStorage variable that uses setContantData as the setter function
@@ -167,12 +204,26 @@
  * \param uncall: The function that is called if the variable is not set
  */
 #define TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(context,varname,vartype,uncall) \
-    TARDIGRADE_HYDRA_DECLARE_STORAGE(context,varname,vartype,setConstantData,uncall)
+    TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_setDataStorage_##varname,varname,setDataStorageConstant,vartype,setConstantData,uncall)
 
 namespace tardigradeHydra{
 
     // forward class definitions
     class hydraBase;
+
+    class residualBase;
+
+    template<typename T>
+    class setDataStorageBase;
+
+    template<typename T>
+    class setDataStorageIteration;
+
+    template<typename T>
+    class setDataStoragePrevious;
+
+    template<typename T>
+    class setDataStorageConstant;
 
     namespace unit_test{
         class hydraBaseTester;
@@ -211,17 +262,133 @@ namespace tardigradeHydra{
     const std::string __BASENAME__ = file_name(__FILE__); //!< The base filename which will be parsed
     const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
 
-    typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
-    typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
     typedef double floatType; //!< Define the float values type.
     typedef std::vector< floatType > floatVector; //!< Define a vector of floats
     typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
+
+    //Define tensors of known size
+    typedef std::vector< floatType > dimVector; //!< Dimension vector
+    typedef std::vector< floatType > secondOrderTensor; //!< Second order tensors
+    typedef std::vector< floatType > thirdOrderTensor; //!< Third order tensors
+    typedef std::vector< floatType > fourthOrderTensor; //!< Fourth order tensors
 
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
     typedef libxsmm_mmfunction<floatType> kernel_type; //!< The libxsmm kernel type
 #endif
 
     typedef void ( hydraBase::*hydraBaseFxn )( ); //!< Typedef for passing pointers to hydraBase functions
+
+    template<typename T, int R, int C>
+    Eigen::Map< Eigen::Matrix< T, R, C, Eigen::RowMajor > > getFixedSizeMatrixMap( T *p ){
+        /*!
+         * Get a matrix of type T with a fixed size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         */
+        return Eigen::Map< Eigen::Matrix< T, R, C, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T, int R>
+    Eigen::Map< Eigen::Matrix< T, R, -1, Eigen::RowMajor > > getDynamicColumnSizeMatrixMap( T *p, int C ){
+        /*!
+         * Get a matrix of type T with a dynamic size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         * \param C: The number of columns in the map
+         */
+        return Eigen::Map< Eigen::Matrix< T, R, -1, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T>
+    Eigen::Map< Eigen::Matrix< T, -1, -1, Eigen::RowMajor > > getDynamicSizeMatrixMap( T *p, int R, int C ){
+        /*!
+         * Get a matrix of type T with a dynamic size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         * \param R: The number of rows in the map
+         * \param C: The number of columns in the map
+         */
+        return Eigen::Map< Eigen::Matrix< T, -1, -1, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T, int R, int C>
+    Eigen::Map< const Eigen::Matrix< T, R, C, Eigen::RowMajor > > getFixedSizeMatrixMap( const T *p ){
+        /*!
+         * Get a matrix of type T with a fixed size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         */
+        return Eigen::Map< const Eigen::Matrix< T, R, C, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T, int R>
+    Eigen::Map< const Eigen::Matrix< T, R, -1, Eigen::RowMajor > > getDynamicColumnSizeMatrixMap( const T *p, int C ){
+        /*!
+         * Get a matrix of type T with a dynamic size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         * \param C: The number of columns in the map
+         */
+        return Eigen::Map< const Eigen::Matrix< T, R, -1, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T>
+    Eigen::Map< const Eigen::Matrix< T, -1, -1, Eigen::RowMajor > > getDynamicSizeMatrixMap( const T *p, int R, int C ){
+        /*!
+         * Get a matrix of type T with a dynamic size of RxC from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         * \param R: The number of rows in the map
+         * \param C: The number of columns in the map
+         */
+        return Eigen::Map< const Eigen::Matrix< T, -1, -1, Eigen::RowMajor > >( p, R, C );
+    }
+
+    template<typename T, int R>
+    Eigen::Map< Eigen::Vector< T, R > > getFixedSizeVectorMap( T *p ){
+        /*!
+         * Get a vector of type T with a fixed size of R from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         */
+
+        return Eigen::Map< Eigen::Vector< T, R > >( p, R );
+    }
+
+    template<typename T, int R>
+    Eigen::Map< const Eigen::Vector< T, R > > getFixedSizeVectorMap( const T *p ){
+        /*!
+         * Get a vector of type T with a fixed size of R from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         */
+
+        return Eigen::Map< const Eigen::Vector< T, R > >( p, R );
+    }
+
+    template<typename T>
+    Eigen::Map< Eigen::Vector< T, -1 > > getDynamicSizeVectorMap( T *p, int R ){
+        /*!
+         * Get a vector of type T with a fixed size of R from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         * \param R: The number of rows in the map
+         */
+
+        return Eigen::Map< Eigen::Vector< T, -1 > >( p, R );
+    }
+
+    template<typename T>
+    Eigen::Map< const Eigen::Vector< T, -1 > > getDynamicSizeVectorMap( const T *p, int R ){
+        /*!
+         * Get a vector of type T with a fixed size of R from the data vector
+         *
+         * \param *p: A pointer to the first value of the array
+         * \param R: The number of rows in the map
+         */
+
+        return Eigen::Map< const Eigen::Vector< T, -1 > >( p, R );
+    }
 
     /*!
      * Base class for data objects which defines the clear command
@@ -274,7 +441,49 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void zero( ){
+                /*!
+                 * The function to set the current values to zero
+                 */
+
+                std::fill( std::begin( second ), std::end( second ), 0 );
+
+            }
+
+            virtual void zero( const unsigned int size ){
+                /*!
+                 * The function to resize second and set the current values to zero
+                 *
+                 * \param size: The size to resize the vector to
+                 */
+
+                second.resize( size );
+
+                zero( );
+
+            }
+
     };
+
+    template <>
+    inline void dataStorage< std::vector< residualBase* > >::zero( ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        throw std::runtime_error( "Zeroing the residualBase pointer vector is not allowed" );
+
+    }
+
+    template <>
+    inline void dataStorage< std::vector< residualBase* > >::zero( const unsigned int size ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        throw std::runtime_error( "Zeroing the residualBase pointer vector is not allowed" );
+
+    }
 
     template <>
     inline void dataStorage< int >::clear( ){
@@ -285,6 +494,26 @@ namespace tardigradeHydra{
         first = false;
 
         second = 0;
+
+    }
+
+    template <>
+    inline void dataStorage< int >::zero( ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        second = 0;
+
+    }
+
+    template <>
+    inline void dataStorage< int >::zero( const unsigned int size ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        throw std::runtime_error( "A scalar value cannot have a size!");
 
     }
 
@@ -301,6 +530,26 @@ namespace tardigradeHydra{
     }
 
     template <>
+    inline void dataStorage< unsigned int >::zero( ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        second = 0;
+
+    }
+
+    template <>
+    inline void dataStorage< unsigned int >::zero( const unsigned int size ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        throw std::runtime_error( "A scalar value cannot have a size!");
+
+    }
+
+    template <>
     inline void dataStorage< floatType >::clear( ){
                 /*!
                  * The function to erase the current values stored by setting first to false and second to zero
@@ -311,6 +560,140 @@ namespace tardigradeHydra{
         second = 0;
 
     }
+
+    template <>
+    inline void dataStorage< floatType >::zero( ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        second = 0;
+
+    }
+
+    template <>
+    inline void dataStorage< floatType >::zero( const unsigned int size ){
+                /*!
+                 * The function to set the value to zero
+                 */
+
+        throw std::runtime_error( "A scalar value cannot have a size!");
+
+    }
+
+    /*!
+     * A custom object that handles setting dataStorage objects in place
+     * When the destructor is run the dataStorage is assumed to be set.
+     */
+    template< typename T >
+    class setDataStorageBase {
+
+        public:
+
+            //! Default constructor which points to no data
+            setDataStorageBase( ) : _ds( NULL ){ }
+
+            //! Constructor that reads in a data storage object and sets the value
+            setDataStorageBase( dataStorage< T > *ds ) : _ds( ds ){
+
+                if ( _ds ){
+
+                    value = &_ds->second;
+
+                }
+
+            }
+
+            //! Destructor which indicates that the data storage object has been set
+            ~setDataStorageBase( ){
+
+                if ( _ds ){
+
+                    _ds->first = true;
+
+                }
+
+            }
+
+            T * value; //!< A pointer to the value of the data storage object
+
+            //! Get the starting iterator of the data storage object
+            auto begin( ){ return std::begin( *value ); }
+
+            //! Get the stopping iterator of the data storage object
+            auto end( ){ return std::end( *value ); }
+
+            //! Initialize the data storage object to zero
+            void zero( ){ _ds->zero( ); }
+
+            void zero( const unsigned int size ){
+                /*!
+                 * Resize (if possible) the data storage object and set to zero
+                 * 
+                 * \param size: The size of the data storage object
+                 */
+
+                _ds->zero( size );
+
+            }
+
+            template< typename X, unsigned int R, unsigned int C >
+            Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > zeroMap( ){
+                /*!
+                 * Create a zeroed Eigen::Map of the quantity
+                 */
+                zero( R * C );
+                return Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > ( value->data( ), R, C );
+            }
+
+            template< typename X, unsigned int R >
+            Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > zeroMap( const unsigned int C ){
+                /*!
+                 * Create a zeroed Eigen::Map of the quantity with dynamic columns
+                 * 
+                 * \param C: The number of columns in the matrix
+                 */
+                zero( R * C );
+                return Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > ( value->data( ), R, C );
+            }
+
+            template< typename X, unsigned int R >
+            Eigen::Map< Eigen::Vector< X, R > > zeroMap( ){
+                /*!
+                 * Create a zeroed Eigen::Map of the quantity with dynamic columns as a vector
+                 */
+                zero( R );
+                return Eigen::Map< Eigen::Vector< X, R > > ( value->data( ), R );
+            }
+
+            template< typename X >
+            Eigen::Map< Eigen::Vector< X, -1 > > zeroMap( const unsigned int R ){
+                /*!
+                 * Create a zeroed Eigen::Map of the quantity with dynamic columns as a vector
+                 * 
+                 * \param R: The number of rows in the vector
+                 */
+                zero( R );
+                return Eigen::Map< Eigen::Vector< X, -1 > > ( value->data( ), R );
+            }
+
+            template< typename X >
+            Eigen::Map< Eigen::Matrix< X, -1, -1, Eigen::RowMajor > > zeroMap( const unsigned int R, const unsigned int C ){
+                /*!
+                 * Create a zeroed Eigen::Map of the quantity with dynamic columns
+                 * 
+                 * \param R: The number of rows in the matrix
+                 * \param C: The number of columns in the matrix
+                 */
+                zero( R * C );
+                return Eigen::Map< Eigen::Matrix< X, -1, -1, Eigen::RowMajor > > ( value->data( ), R, C );
+            }
+
+      protected:
+
+          dataStorage< T > *_ds; //!< Pointer to the data for the data storage object
+
+    };
 
     /*!
      * A custom error for use with failures in convergence of the solver.
@@ -361,7 +744,7 @@ namespace tardigradeHydra{
              * 
              * \param &r: The residual to be copied
              */
-            residualBase( residualBase &r ) : hydra( r.hydra ), _numEquations( *r.getNumEquations( ) ){ }
+            residualBase( residualBase &r ) : hydra( r.hydra ), _numEquations( *r.getNumEquations( ) ), _numConstraints( *r.getNumConstraints( ) ){ }
 
             hydraBase* hydra; //!< The hydra class which owns the residualBase object
 
@@ -442,6 +825,24 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void setConstraints( ){
+                /*!
+                 * Compute the contraints
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the constraints is not implemented" ) );
+
+            }
+
+            virtual void setConstraintJacobians( ){
+                /*!
+                 * Compute the contraint Jacobians
+                 */
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "The calculation of the constraint jacobians is not implemented" ) );
+
+            }
+
             virtual void setCurrentAdditionalStateVariables( ){
                 /*!
                  * Set the current additional state variables
@@ -501,7 +902,87 @@ namespace tardigradeHydra{
 
             }
 
-            //!< Get the flag for whether to use the projection or not
+            virtual bool checkRelaxedConvergence( ){
+                /*!
+                 * When performing a relaxed solve the residuals must return if they are converged or not.
+                 * This function returns true or false (default true)
+                 */
+
+                return true;
+
+            }
+
+            virtual void modifyGlobalResidual( ){
+                /*!
+                 * Function that is called to modify the global residual.
+                 *
+                 * Called after all of the residuals are agglomerated into the whole.
+                 *
+                 * A mutable version of the global residual is accessable with hydra->getMutableResidual( )
+                 */
+            }
+
+            virtual void modifyGlobalJacobian( ){
+                /*!
+                 * Function that is called to modify the global jacobian.
+                 *
+                 * Called after all of the residuals are agglomerated into the whole
+                 *
+                 * A mutable version of the global jacobian is accessable with hydra->getMutableJacobian( )
+                 */
+            }
+
+            virtual void modifyGlobaldRdT( ){
+                /*!
+                 * Function that is called to modify the global derivative of the residual w.r.t. the temperature
+                 *
+                 * Called after all of the residuals are agglomerated into the whole
+                 *
+                 * A mutable version of the global dRdT is accessable with hydra->getMutabledRdT( )
+                 */
+            }
+
+            virtual void modifyGlobaldRdF( ){
+                /*!
+                 * Function that is called to modify the global derivative of the residual w.r.t. the deformation
+                 *
+                 * Called after all of the residuals are agglomerated into the whole
+                 *
+                 * A mutable version of the global dRdF is accessable with hydra->getMutabledRdF( )
+                 */
+            }
+
+            virtual void modifyGlobaldRdAdditionalDOF( ){
+                /*!
+                 * Function that is called to modify the global derivative of the residual w.r.t. the additional DOF
+                 *
+                 * Called after all of the residuals are agglomerated into the whole
+                 *
+                 * A mutable version of the global dRdAdditionalDOF is accessable with hydra->getMutabledRdAdditionalDOF( )
+                 */
+            }
+
+            virtual void preNLSolve( ){
+                /*!
+                 * Function that is called prior to a nonlinear solve
+                 */
+            };
+
+            virtual void postNLSolve( ){
+                /*!
+                 * Function that is called after a nonlinear solve
+                 */
+            };
+
+            virtual void successfulNLStep( ){
+                /*!
+                 * Function that is called whenever a successful nonlinear step is taken
+                 */
+            };
+
+            virtual void setupRelaxedStep( const unsigned int &relaxedStep );
+
+            //! Get the flag for whether to use the projection or not
             const bool *getUseProjection( ){ return &_useProjection; }
 
             // Getter functions
@@ -509,7 +990,12 @@ namespace tardigradeHydra{
             //! Get the number of equations the residual defined
             const unsigned int* getNumEquations( ){ return &_numEquations; }
 
+            //! Get the number of constraints the residual defined
+            const unsigned int* getNumConstraints( ){ return &_numConstraints; }
+
             void addIterationData( dataBase *data );
+
+            void addNLStepData( dataBase *data );
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
@@ -525,6 +1011,23 @@ namespace tardigradeHydra{
                 storage.first = true;
 
                 addIterationData( &storage );
+
+            }
+
+            template<class T>
+            void setNLStepData( const T &data, dataStorage<T> &storage ){
+                /*!
+                 * Template function for adding nonlinear step data
+                 *
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
+
+                storage.second = data;
+
+                storage.first = true;
+
+                addNLStepData( &storage );
 
             }
 
@@ -560,6 +1063,26 @@ namespace tardigradeHydra{
 
         protected:
 
+            void setNumConstraints( const unsigned int numConstraints ){
+                /*!
+                 * Set the number of constraints for the solve
+                 * 
+                 * \param numConstraints: The number of constraints
+                 */
+
+                _numConstraints = numConstraints;
+
+            }
+
+            void setPenaltyIndices( const std::vector< unsigned int > &indices ){
+                /*!
+                 * Set the indices where the penalties are defined
+                 * 
+                 * \param &indices: The indices where the penalty is defined
+                 */
+                _penalty_indices = indices;
+            }
+
             void unexpectedError( ){
                 /*!
                  * Function to throw for an unexpected error. A user should never get here!
@@ -569,11 +1092,110 @@ namespace tardigradeHydra{
 
             }
 
+            //! Class which defines data storage objects which are reset at each iteration
+            template< typename T >
+            class setDataStorageIteration : public setDataStorageBase< T > {
+
+              public:
+
+                  setDataStorageIteration( dataStorage< T > *ds, residualBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
+                      /*!
+                       * Create a data storage object that will be reset at each new iteration
+                       * 
+                       * \param *ds: The data storage object
+                       * \param *rp: The residual class that contains the data storage object
+                       */
+                  }
+
+                  ~setDataStorageIteration( ){
+                      /*!
+                       * Destructor that says the data storage object has been set
+                       */
+
+                      _rp->addIterationData( this->_ds );
+
+                  }
+
+              protected:
+
+                  residualBase *_rp; //!< The containing residual class
+
+            };
+
+            //! Class which defines data storage objects which are reset at each nonlinear step
+            template< typename T >
+            class setDataStorageNLStep : public setDataStorageBase< T > {
+
+              public:
+
+                  setDataStorageNLStep( dataStorage< T > *ds, residualBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
+                      /*!
+                       * Create a data storage object that will be reset at each nonlinear step
+                       * 
+                       * \param *ds: The data storage object
+                       * \param *rp: The residual class that contains the data storage object
+                       */
+                  }
+
+                  ~setDataStorageNLStep( ){
+                      /*!
+                       * Destructor that says the data storage object has been set
+                       */
+
+                      _rp->addNLStepData( this->_ds );
+
+                  }
+
+              protected:
+
+                  residualBase *_rp; //!< The containing residual class
+
+            };
+
+            //! Class which defines data storage objects for values defined at the previous timestep
+            template< typename T >
+            class setDataStoragePrevious : public setDataStorageBase< T > {
+
+                public:
+
+                    setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                        /*!
+                         * Constructor for data storage objects for temporally previous objects
+                         * 
+                         * \param *ds: The data storage object to modify
+                         */
+                    }
+
+            };
+
+            /*!
+             * Class that is a constant data storage object
+             */
+            template< typename T >
+            class setDataStorageConstant : public setDataStorageBase< T > {
+
+                public:
+
+                    setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                        /*!
+                         * Constructor for constant data storage objects
+                         * 
+                         * \param *ds: The data storage object
+                         */
+
+                    }
+
+            };
+
         private:
 
             unsigned int _numEquations; //!< The number of residual equations
 
+            unsigned int _numConstraints = 0; //!< The number of constraint equations
+
             bool _useProjection = false; //!< Flag for whether to use the projection or not
+
+            std::vector< unsigned int > _penalty_indices; //!< The indices of the variables which should be penalized for negative values
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setResidual,                         getResidual,                        residual,                        floatVector, setResidual )
 
@@ -590,6 +1212,10 @@ namespace tardigradeHydra{
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setStress,                           getStress,                          stress,                          floatVector, setStress )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setPreviousStress,                   getPreviousStress,                  previousStress,                  floatVector, setPreviousStress )
+
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraints,                      getConstraints,                     constraints,                     floatVector, setConstraints )
+
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraintJacobians,              getConstraintJacobians,             constraintJacobians,             floatVector, setConstraintJacobians )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setCurrentAdditionalStateVariables,  getCurrentAdditionalStateVariables, currentAdditionalStateVariables, floatVector, setCurrentAdditionalStateVariables )
 
@@ -615,7 +1241,7 @@ namespace tardigradeHydra{
             //! Main constructor for objects of type hydraBase. Sets all quantities required for most solves.
             hydraBase( const floatType &time, const floatType &deltaTime,
                        const floatType &temperature, const floatType &previousTemperature,
-                       const floatVector &deformationGradient, const floatVector &previousDeformationGradient,
+                       const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,
                        const floatVector &additionalDOF, const floatVector &previousAdditionalDOF,
                        const floatVector &previousStateVariables, const floatVector &parameters,
                        const unsigned int numConfigurations, const unsigned int numNonLinearSolveStateVariables,
@@ -632,26 +1258,29 @@ namespace tardigradeHydra{
             //! Get a reference to the number of unknowns in each configuration
             const unsigned int* getConfigurationUnknownCount( ){ return &_configuration_unknown_count; }
 
+            //! Get a reference to the number of components of the stress
+            const unsigned int* getStressSize( ){ return &_stress_size; }
+
             //! Get a reference to the current time
-            const floatType* getTime( ){ return &_time; }
+            const floatType* getTime( ){ return getScaledTime( ); }
 
             //! Get a reference to the change in time
-            const floatType* getDeltaTime( ){ return &_deltaTime; }
+            const floatType* getDeltaTime( ){ return getScaledDeltaTime( ); }
 
             //! Get a reference to the current temperature
-            const floatType* getTemperature( ){ return &_temperature; };
+            const floatType* getTemperature( ){ return getScaledTemperature( ); };
 
             //! Get a reference to the previous temperature
             const floatType* getPreviousTemperature( ){ return &_previousTemperature; };
 
             //! Get a reference to the deformation gradient
-            const floatVector* getDeformationGradient( ){ return &_deformationGradient; }
+            const secondOrderTensor* getDeformationGradient( ){ return getScaledDeformationGradient( ); }
 
             //! Get a reference to the previous deformation gradient
-            const floatVector* getPreviousDeformationGradient( ){ return &_previousDeformationGradient; }
+            const secondOrderTensor* getPreviousDeformationGradient( ){ return &_previousDeformationGradient; }
 
             //! Get a reference to the additional degrees of freedom
-            const floatVector* getAdditionalDOF( ){ return &_additionalDOF; }
+            const floatVector* getAdditionalDOF( ){ return getScaledAdditionalDOF( ); }
 
             //! Get a reference to the previous additional degrees of freedom
             const floatVector* getPreviousAdditionalDOF( ){ return &_previousAdditionalDOF; }
@@ -668,8 +1297,45 @@ namespace tardigradeHydra{
             //! Get a reference to the number of state variables involved in the non-linear solve
             const unsigned int* getNumNonLinearSolveStateVariables( ){ return &_numNonLinearSolveStateVariables; }
 
-            //! Get a reference to the number of terms in the unknown vector
+            //! Get the number of terms in the unknown vector
             virtual const unsigned int getNumUnknowns( ){ return ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( ); }
+
+            //! Get the number of additional degrees of freedom
+            virtual const unsigned int getNumAdditionalDOF( ){ return getAdditionalDOF( )->size( ); }
+
+            //! Get the value of the number of constraint equations
+            virtual const unsigned int getNumConstraints( ){
+
+                unsigned int value = 0;
+
+                for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->end( ); v++ ){
+
+                    value += *( *v )->getNumConstraints( );
+
+                }
+
+                return value;
+
+            }
+
+            //! Get the current residual index
+            const unsigned int getCurrentResidualIndex( ){
+
+                TARDIGRADE_ERROR_TOOLS_CHECK( currentResidualIndexMeaningful( ), "The current residual index isn't meaningful" );
+                return _current_residual_index;
+
+            }
+
+            const unsigned int getCurrentResidualOffset( ){
+                /*!
+                 * Get the offset of the current residual
+                 */
+                unsigned int offset = 0;
+                for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->begin( ) + getCurrentResidualIndex( ); ++v ){
+                    offset += *( *v )->getNumEquations( );
+                }
+                return offset;
+            }
 
             //! Get a reference to the dimension
             constexpr unsigned int getDimension( ){ return _dimension; }
@@ -724,6 +1390,9 @@ namespace tardigradeHydra{
 
             //!< Get a reference to whether the Newton step should be a LevenbergMarquardt step
             const bool* getUseLevenbergMarquardt( ){ return &_use_LM_step; }
+
+            //!< Get a reference to whether the Newton step should be a relaxed solve
+            const bool* getUseRelaxedSolve( ){ return &_use_relaxed_solve; }
 
             //!< Get a reference to whether Gradient descent is allowed
             const bool* getUseGradientDescent( ){ return &_use_gradient_descent; }
@@ -829,6 +1498,18 @@ namespace tardigradeHydra{
 
             }
 
+            //!< Set whether to attempt a Relaxed-solve
+            void setUseRelaxedSolve( const bool &value ){
+                /*!
+                 * Set whether to attempt a relaxed solve
+                 * 
+                 * \param &value: The value of the parameter
+                 */
+
+                _use_relaxed_solve = value;
+
+            }
+
             //!< Set whether to use gradient descent
             void setUseGradientDescent( const bool &value ){
                 /*!
@@ -853,25 +1534,25 @@ namespace tardigradeHydra{
 
             }
 
-            floatVector getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            secondOrderTensor getSubConfiguration( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatVector getSubConfigurationJacobian( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            secondOrderTensor getSubConfigurationJacobian( const floatVector &configurations, const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatVector getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            secondOrderTensor getSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatVector getPrecedingConfiguration( const unsigned int &index );
+            secondOrderTensor getPrecedingConfiguration( const unsigned int &index );
 
-            floatVector getFollowingConfiguration( const unsigned int &index );
+            secondOrderTensor getFollowingConfiguration( const unsigned int &index );
 
-            floatVector getConfiguration( const unsigned int &index );
+            secondOrderTensor getConfiguration( const unsigned int &index );
 
-            floatVector getPreviousSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
+            secondOrderTensor getPreviousSubConfiguration( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
-            floatVector getPreviousPrecedingConfiguration( const unsigned int &index );
+            secondOrderTensor getPreviousPrecedingConfiguration( const unsigned int &index );
 
-            floatVector getPreviousFollowingConfiguration( const unsigned int &index );
+            secondOrderTensor getPreviousFollowingConfiguration( const unsigned int &index );
 
-            floatVector getPreviousConfiguration( const unsigned int &index );
+            secondOrderTensor getPreviousConfiguration( const unsigned int &index );
 
             floatVector getSubConfigurationJacobian( const unsigned int &lowerIndex, const unsigned int &upperIndex );
 
@@ -935,7 +1616,7 @@ namespace tardigradeHydra{
 
             const floatVector* getPreviousStress( );
 
-            virtual void evaluate( );
+            virtual void evaluate( const bool &use_subcycler = false );
 
             virtual void computeTangents( );
 
@@ -946,6 +1627,9 @@ namespace tardigradeHydra{
             const floatVector *getFlatdXdT( );
 
             const floatVector *getFlatdXdAdditionalDOF( );
+
+            //! Return the flag which indicates whether hydra should initialize the unknown vector
+            const bool *getInitializeUnknownVector( ){ return &_initializeUnknownVector; }
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
@@ -959,9 +1643,203 @@ namespace tardigradeHydra{
 
             unsigned int getNumGrad( ){ /*! Get the number of gradient descent steps performed */  return _NUM_GRAD; }
 
+            const bool *getUseSQPSolver( ){ /*! Return a flag for whether to use the SQP solver */ return &_useSQPSolver; }
+
+            const void setMaxRelaxedIterations( const unsigned int &value ){
+                /*!
+                 * Set the maximum allowable number of relaxed iterations
+                 * 
+                 * \param &value: The number of relaxed iterations
+                 */
+
+                _maxRelaxedIterations = value;
+
+            }
+
+            const unsigned int *getMaxRelaxedIterations( ){
+                /*!
+                 * Get the maximum number of relaxed iterations
+                 */
+
+                return &_maxRelaxedIterations;
+
+            }
+
+            void setFailureVerbosityLevel( const unsigned int &value ){
+                /*!
+                 * Set the verbosity level for failures
+                 * 
+                 * \param &value: The verbosity level of the failure (defaults to zero)
+                 */
+
+                _failure_verbosity_level = value;
+
+            }
+
+            //! Set the failure output string to use scientific notation
+            void setFailureOutputScientific( ){ _failure_output << std::scientific; }
+
+            //! Get the verbosity level for failure outputs
+            const unsigned int *getFailureVerbosityLevel( ){ return &_failure_verbosity_level; }
+
+            //! Add a string to the failure output string
+            void addToFailureOutput( const std::string &additional ){ _failure_output << additional; }
+
+            //! Add a floating point vector to the output string
+            void addToFailureOutput( const floatVector &value ){ for ( auto v = value.begin( ); v != value.end( ); v++ ){ _failure_output << *v << ", "; } _failure_output << "\n"; }
+
+            //! Add a floating point value to the output string
+            void addToFailureOutput( const floatType &value ){ _failure_output << value; _failure_output << "\n"; }
+
+            //! Get the failure output string
+            const std::string getFailureOutput( ){ return _failure_output.str( ); }
+
+            //! Get a scale factor for the deformation
+            const floatType *getScaleFactor( ){ return &_scale_factor; }
+
+            //! Set the value of the scale factor. Will automatically re-calculate the deformation and trial stresses
+            void setScaleFactor( const floatType &value );
+
+            const floatType   *getScaledTime( ){ /*! Get the value of the scaled current time */ return &_scaled_time; }
+
+            const floatType   *getScaledDeltaTime( ){ /*! Get the value of the scaled changed in time */ return &_scaled_deltaTime; }
+
+            const floatType   *getScaledTemperature( ){ /*! Get the value of the scaled current temperature */ return &_scaled_temperature; }
+
+            const floatVector *getScaledDeformationGradient( ){ /*! Get the value of the scaled current deformation gradient */ return &_scaled_deformationGradient; }
+
+            const floatVector *getScaledAdditionalDOF( ){ /*! Get the value of the scaled current additional DOF */ return &_scaled_additionalDOF; }
+
+            const floatType *getCutbackFactor( ){ /*! Get the value of the cutback factor */ return &_cutback_factor; }
+
+            const unsigned int *getNumGoodControl( ){ /*! Get the number of good iterations we need to have before increasing the timestep */ return &_num_good_control; }
+
+            const floatType *getGrowthFactor( ){ /*! Get the growth factor for the timestep increase */ return &_growth_factor; }
+
+            const floatType *getMinDS( ){ /*! Get the minimum allowable ratio of the total timestep to the cutback timestep */ return &_minDS; }
+
+            void setCutbackFactor( const floatType &value ){ /*! Get the current value of the cutback factor. \param &value: The value of the cutback */  _cutback_factor = value; }
+
+            void setNumGoodControl( const unsigned int &value ){ /*! Set the number of good iterations that need to happen before the timestep increases. \param &value: The value of the number of good iterations prior to increasing the relative timestep */  _num_good_control = value; }
+
+            void setGrowthFactor( const floatType &value ){ /*! Set the relative growth factor for the local timestep increase \param &value: The new value */ _growth_factor = value; }
+
+            void setMinDS( const floatType &value ){ /*! Set the minimum value of the relative cutback timestep \param &value: The new value */  _minDS = value; }
+
+            const bool allowStepGrowth( const unsigned int &num_good );
+
+            floatVector *getMutableResidual( ){
+                /*! Get a reference to the full residual that is mutable. Returns NULL if it's not allowed.
+                 *
+                 * This should only be called in residual classes that need to modify the full residual in their modifyGlobalResidual methods.
+                 *
+                 * Be careful!
+                 */
+                
+                if ( _allow_modify_global_residual ){
+                    return &_residual.second;
+                }
+
+                return NULL;
+
+            }
+
+            floatVector *getMutableJacobian( ){
+                /*! Get a reference to the full jacobian that is mutable. Returns NULL if it's not allowed.
+                 *
+                 * This should only be called in residual classes that need to modify the full residual in their modifyGlobalJacobian methods.
+                 *
+                 * Be careful!
+                 */
+                
+                if ( _allow_modify_global_jacobian ){
+                    return &_jacobian.second;
+                }
+
+                return NULL;
+
+            }
+
+            floatVector *getMutabledRdT( ){
+                /*! Get a reference to the full dRdT that is mutable. Returns NULL if it's not allowed.
+                 *
+                 * This should only be called in residual classes that need to modify the full residual in their modifyGlobaldRdT methods.
+                 *
+                 * Be careful!
+                 */
+                
+                if ( _allow_modify_global_dRdT ){
+                    return &_dRdT.second;
+                }
+
+                return NULL;
+
+            }
+
+            floatVector *getMutabledRdF( ){
+                /*! Get a reference to the full dRdF that is mutable. Returns NULL if it's not allowed.
+                 *
+                 * This should only be called in residual classes that need to modify the full residual in their modifyGlobaldRdF methods.
+                 *
+                 * Be careful!
+                 */
+                
+                if ( _allow_modify_global_dRdF ){
+                    return &_dRdF.second;
+                }
+
+                return NULL;
+
+            }
+
+            floatVector *getMutabledRdAdditionalDOF( ){
+                /*! Get a reference to the full dRdAdditionalDOF that is mutable. Returns NULL if it's not allowed.
+                 *
+                 * This should only be called in residual classes that need to modify the full residual in their modifyGlobaldRdAdditionalDOF methods.
+                 *
+                 * Be careful!
+                 */
+                
+                if ( _allow_modify_global_dRdAdditionalDOF ){
+                    return &_dRdAdditionalDOF.second;
+                }
+
+                return NULL;
+
+            }
+
+            const bool currentResidualIndexMeaningful( ){
+                /*!
+                 * Return if the current residual index is meaningful or not
+                 */
+                return _current_residual_index_set;
+            }
+
         protected:
 
             // Setters that the user may need to access but not override
+
+            const void setCurrentResidualIndexMeaningful( const bool &value ){
+                /*!
+                 * Set if the current residual index is meaningful
+                 * 
+                 * \param &value: Set if the current residual index is meaningful or not
+                 */
+
+                _current_residual_index_set = value;
+
+            }
+
+            const void setCurrentResidualIndex( const unsigned int value ){
+                /*!
+                 * Set if the current residual index is meaningful
+                 * 
+                 * \param value: Set the value of the current residual index
+                 */
+
+                _current_residual_index = value;
+
+            }
 
             void setStress( const floatVector &stress );
 
@@ -973,11 +1851,15 @@ namespace tardigradeHydra{
 
             virtual void extractStress( );
 
+            virtual void updateConfigurationsFromUnknownVector( );
+
             virtual void decomposeUnknownVector( );
 
             virtual void decomposeStateVariableVector( );
 
-            virtual void formNonLinearProblem( );
+            virtual void formNonLinearResidual( );
+
+            virtual void formNonLinearDerivatives( );
 
             virtual void formPreconditioner( );
 
@@ -991,28 +1873,33 @@ namespace tardigradeHydra{
 
             virtual void initializePreconditioner( );
 
+            virtual void evaluateInternal( );
+
             //! Update the line-search lambda parameter
             virtual void updateLambda( ){ _lambda *= 0.5; }
 
             virtual void updateUnknownVector( const floatVector &newUnknownVector );
 
-            virtual void calculateFirstConfigurationJacobians( const floatVector &configurations, floatVector &dC1dC, floatVector &dC1dCn );
+            virtual void calculateFirstConfigurationJacobians( const floatVector &configurations, fourthOrderTensor &dC1dC, floatVector &dC1dCn );
 
             virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
 
             virtual void performGradientStep( const floatVector &X0 );
 
+            //! Update the scaled quantities
+            virtual void setScaledQuantities( );
+
             const floatType *get_baseResidualNorm( );
 
             const floatVector *get_basedResidualNormdX( );
 
-            dataStorage< floatType > _baseResidualNorm;
+            dataStorage< floatType > _baseResidualNorm; //!< The base value of the norm of the residual
 
-            dataStorage< floatVector > _basedResidualNormdX;
+            dataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
 
-            void set_baseResidualNorm( const floatType &value ){ setNLStepData( value, _baseResidualNorm ); }
+            void set_baseResidualNorm( const floatType &value ){ /*! Set the base value of the residual norm \param &value: The new value */  setNLStepData( value, _baseResidualNorm ); }
 
-            void set_basedResidualNormdX( const floatVector &value ){ setNLStepData( value, _basedResidualNormdX ); }
+            void set_basedResidualNormdX( const floatVector &value ){ /*! Set the base derivative of the residual norm w.r.t. the unknown vector \param &value: The new value */  setNLStepData( value, _basedResidualNormdX ); }
 
             virtual void setBaseQuantities( );
 
@@ -1029,6 +1916,12 @@ namespace tardigradeHydra{
             void incrementNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD++; }
 
             void resetIterations( ){ /*! Reset the number of iterations */ _iteration = 0; }
+
+            virtual void callResidualSuccessfulNLStep( );
+
+            virtual void callResidualPreNLSolve( );
+
+            virtual void callResidualPostNLSolve( );
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
@@ -1128,7 +2021,151 @@ namespace tardigradeHydra{
             std::string build_upper_index_out_of_range_error_string( const unsigned int upperIndex, const unsigned int num_configurations );
             std::string build_lower_index_out_of_range_error_string( const unsigned int lowerIndex, const unsigned int upperIndex );
 
-            floatVector _initialX;
+            floatVector _initialX; //!< The initial value of the unknown vector
+
+            //! A data storage class that resets at every iteration
+            template< typename T >
+            class setDataStorageIteration : public setDataStorageBase< T > {
+
+              public:
+
+                  setDataStorageIteration( dataStorage< T > *ds, hydraBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
+                      /*!
+                       * Create a data storage object that will be reset at each new iteration
+                       * 
+                       * \param *ds: The data storage object
+                       * \param *rp: The base hydra class that contains the data storage object
+                       */ }
+
+                  //! Destructor object that adds the data storage object to the iteration data list
+                  ~setDataStorageIteration( ){
+
+                      _rp->addIterationData( this->_ds );
+
+                  }
+
+              protected:
+
+                  hydraBase *_rp; //!< The containing hydraBase class
+
+            };
+
+            /*!
+             * Class which defines setting values defined at the previous timestep
+             */
+            template< typename T >
+            class setDataStoragePrevious : public setDataStorageBase< T > {
+
+                public:
+
+                    //! Create a data storage object that will be reset whenever the previous value gets reset
+                    setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                        /*!
+                         * Constructor for data storage objects for temporally previous objects
+                         * 
+                         * \param *ds: The data storage object to modify
+                         */
+                    }
+
+            };
+
+            /*!
+             * Class which defines setting constant values regardless of the timestep
+             */
+            template< typename T >
+            class setDataStorageConstant : public setDataStorageBase< T > {
+
+                public:
+
+                    setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                        /*!
+                         * Constructor for constant data storage objects
+                         * 
+                         * \param *ds: The data storage object
+                         */
+                    }
+
+            };
+
+            virtual tardigradeHydra::hydraBase::setDataStorageConstant<floatVector> get_setDataStorage_tolerance( );
+
+            virtual tardigradeHydra::hydraBase::setDataStorageIteration<secondOrderTensor> get_setDataStorage_stress( );
+
+            virtual void assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
+
+            virtual void updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
+
+            virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints );
+
+            virtual void solveConstrainedQP( floatVector &dx, const unsigned int kmax=100 );
+
+            virtual void setConstraints( );
+
+            virtual void setConstraintJacobians( );
+
+            virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
+
+            void setUseSQPSolver( const unsigned int &value ){ /*! Set whether to use the SQP solver \param &value: The updated value */ _useSQPSolver = value; }
+
+            void setInitializeUnknownVector( const bool &value ){
+                /*!
+                 * Set the initialize unknown vector flag
+                 * 
+                 * \param &value: The value of the flag
+                 */
+
+                _initializeUnknownVector = value;
+
+            }
+
+            virtual void performRelaxedSolve( );
+
+            void setAllowModifyGlobalResidual( const bool value){
+                /*!
+                 * Set a flag for if the global residual can be modified
+                 *
+                 * \param value: The updated value
+                 */
+                _allow_modify_global_residual = value;
+            }
+
+            void setAllowModifyGlobalJacobian( const bool value){
+                /*!
+                 * Set a flag for if the global jacobian can be modified
+                 *
+                 * \param value: The updated value
+                 */
+                _allow_modify_global_jacobian = value;
+            }
+
+            void setAllowModifyGlobaldRdT( const bool value){
+                /*!
+                 * Set a flag for if the global dRdT can be modified
+                 *
+                 * \param value: The updated value
+                 */
+                _allow_modify_global_dRdT = value;
+            }
+
+            void setAllowModifyGlobaldRdF( const bool value){
+                /*!
+                 * Set a flag for if the global dRdF can be modified
+                 *
+                 * \param value: The updated value
+                 */
+                _allow_modify_global_dRdF = value;
+
+            }
+
+            void setAllowModifyGlobaldRdAdditionalDOF( const bool value){
+                /*!
+                 * Set a flag for if the global dRdAdditionalDOF can be modified
+                 *
+                 * \param value: The updated value
+                 */
+                _allow_modify_global_dRdAdditionalDOF = value;
+
+            }
 
         private:
 
@@ -1139,6 +2176,8 @@ namespace tardigradeHydra{
 
             unsigned int _configuration_unknown_count; //!< The number of unknowns required for a configuration. Used to ensure that the unknown and state variable vectors are the right size. Must be set by all inheriting classes. For 3D classical continuum this will be 9, for higher order theories this will change.
 
+            unsigned int _stress_size; //!< The number of terms in the stress measures. For 3D classical continuum this will be 9, for higher order theories this will change.
+
             floatType _time; //!< The current time
 
             floatType _deltaTime; //!< The change in time
@@ -1147,9 +2186,9 @@ namespace tardigradeHydra{
 
             floatType _previousTemperature; //!< The previous temperature
 
-            floatVector _deformationGradient; //!< The current deformation gradient
+            secondOrderTensor _deformationGradient; //!< The current deformation gradient
 
-            floatVector _previousDeformationGradient; //!< The previous deformation gradient
+            secondOrderTensor _previousDeformationGradient; //!< The previous deformation gradient
 
             floatVector _additionalDOF; //!< The current additional degrees of freedom
 
@@ -1158,6 +2197,16 @@ namespace tardigradeHydra{
             floatVector _previousStateVariables; //!< The previous state variables
 
             floatVector _parameters; //!< The model parameters
+
+            floatType _scaled_time; //!< The current time scaled by the scaling factor
+
+            floatType _scaled_deltaTime; //!< The change in time scaled by the scaling factor
+
+            floatType _scaled_temperature; //!< The current temperature scaled by the scaling factor
+
+            secondOrderTensor _scaled_deformationGradient; //!< The current deformation gradient scaled by the scaling factor
+
+            floatVector _scaled_additionalDOF; //!< The current additional degrees of freedom scaled by the scaling factor
 
             unsigned int _numConfigurations; //!< The number of configurations
 
@@ -1181,9 +2230,15 @@ namespace tardigradeHydra{
 
             bool _use_LM_step = false; //!< Flag for whether to attempt a Levenberg-Marquardt step
 
+            bool _use_relaxed_solve = true; //!< Flag for whether to attempt a relaxed solve in case of failure
+
             bool _use_gradient_descent = false; //!< Flag for whether to attempt a gradient descent step
 
             bool _rank_deficient_error = true; //!< Flag for whether a rank-deficient LHS will throw a convergence error
+
+            bool _initializeUnknownVector = true; //!< Flag for whether to initialize the unknown vector in the non-linear solve
+
+            unsigned int _maxRelaxedIterations = 5; //!< The number of allowed relaxed iterations
 
             floatType _mu_k = -1; //!< The Levenberg-Marquardt scaling parameter
 
@@ -1253,6 +2308,8 @@ namespace tardigradeHydra{
 
             floatType _lambda = 1;
 
+            bool _useSQPSolver = false;
+
             void setFirstConfigurationJacobians( );
 
             void setPreviousFirstConfigurationJacobians( );
@@ -1263,7 +2320,7 @@ namespace tardigradeHydra{
 
             void setTolerance( const floatVector &tolerance );
 
-            void incrementIteration( ){ _iteration++; }
+            void incrementIteration( ){ _iteration++; resetLSIteration( ); }
 
             void incrementLSIteration( ){ _LSIteration++; }
 
@@ -1287,6 +2344,34 @@ namespace tardigradeHydra{
 
             void resetNLStepData( );
 
+            unsigned int _failure_verbosity_level = 0; //!< The verbosity level for failure.
+
+            std::stringstream _failure_output; //!< Additional failure output information
+
+            floatType _scale_factor = 1.0; //!< A scale factor applied to the incoming loading (deformation, temperature, etc.)
+
+            floatType _cutback_factor = 0.5; //!< The factor by which the pseudo-time will be scaled if a solve fails
+
+            floatType _growth_factor  = 1.2; //!< The factor by which the pseudo-time will be scaled if we can grow the pseudo-timestep
+
+            unsigned int _num_good_control = 2; //!< The number of good iterations we need to have before we try and increase the timestep
+
+            floatType _minDS = 1e-2; //!< The minimum allowable pseudo-timestep
+
+            bool _allow_modify_global_residual = false; //!< Flag for if the global residual can be modified
+
+            bool _allow_modify_global_jacobian = false; //!< Flag for if the global jacobian can be modified
+
+            bool _allow_modify_global_dRdT = false; //!< Flag for if the global dRdT can be modified
+
+            bool _allow_modify_global_dRdF = false; //!< Flag for if the global dRdF can be modified
+
+            bool _allow_modify_global_dRdAdditionalDOF = false; //!< Flag for if the global dRdAdditionalDOF can be modified
+
+            bool _current_residual_index_set = false; //!< Flag for whether the current residual index has been set
+
+            int _current_residual_index = 0; //!< The current residual index
+
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousConfigurations,               floatVector, passThrough )
@@ -1299,7 +2384,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousNonLinearSolveStateVariables, floatVector, passThrough )
 
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, additionalStateVariables,             floatVector, passThrough )
+            TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, additionalStateVariables,             floatVector, passThrough )
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousAdditionalStateVariables,     floatVector, passThrough )
 
@@ -1307,19 +2392,83 @@ namespace tardigradeHydra{
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,          get_dF1dF,          dF1dF,          floatVector, setFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraints,         getConstraints,         constraints,         floatVector,       setConstraints )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dFn,         get_dF1dFn,         dF1dFn,         floatVector, setFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraintJacobians, getConstraintJacobians, constraintJacobians, floatVector,       setConstraintJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dF,  get_previousdF1dF,  previousdF1dF,  floatVector, setPreviousFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dF,              get_dF1dF,              dF1dF,               secondOrderTensor, setFirstConfigurationJacobians )
 
-            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dFn, get_previousdF1dFn, previousdF1dFn, floatVector, setPreviousFirstConfigurationJacobians )
+            TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, set_dF1dFn,             get_dF1dFn,             dF1dFn,              floatVector,       setFirstConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dF,      get_previousdF1dF,      previousdF1dF,       secondOrderTensor, setPreviousFirstConfigurationJacobians )
+
+            TARDIGRADE_HYDRA_DECLARE_NAMED_PREVIOUS_STORAGE(  private, set_previousdF1dFn,     get_previousdF1dFn,     previousdF1dFn,      floatVector,       setPreviousFirstConfigurationJacobians )
+
+    };
+
+    //! A data storage class that updates at every iteration
+    template< typename T >
+    class setDataStorageIteration : public setDataStorageBase< T > {
+
+      public:
+
+          setDataStorageIteration( dataStorage< T > *ds, residualBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
+                      /*!
+                       * Create a data storage object that will be reset at each new iteration
+                       * 
+                       * \param *ds: The data storage object
+                       * \param *rp: The residual class that contains the data storage object
+                       */
+          }
+
+          //! The destructor that says that the data storage object has been set
+          ~setDataStorageIteration( ){
+
+              _rp->addIterationData( this->_ds );
+
+          }
+
+      protected:
+
+          residualBase *_rp; //!< The containing residual base class
+
+    };
+
+    //! A data storage class that updates whenever the previous values change
+    template< typename T >
+    class setDataStoragePrevious : public setDataStorageBase< T > {
+
+        public:
+
+            setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                /*!
+                 * Constructor for data storage objects for temporally previous objects
+                 * 
+                 * \param *ds: The data storage object to modify
+                 */
+            }
+
+    };
+
+    //! A data storage class that is constant
+    template< typename T >
+    class setDataStorageConstant : public setDataStorageBase< T > {
+
+        public:
+
+            setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                /*!
+                 * Constructor for constant data storage objects
+                 * 
+                 * \param *ds: The data storage object
+                 */
+            }
 
     };
 
     /// Say hello
     /// @param message The message to print
-    errorOut sayHello(std::string message);
+    void sayHello(std::string message);
 
     void abaqusInterface( double *STRESS,       double *STATEV,       double *DDSDDE,       double &SSE,          double &SPD,
                           double &SCD,          double &RPL,          double *DDSDDT,       double *DRPLDE,       double &DRPLDT,
@@ -1330,7 +2479,7 @@ namespace tardigradeHydra{
                           const double *DFGRD1, const int &NOEL,      const int &NPT,       const int &LAYER,     const int &KSPT,
                           const int *JSTEP,     const int &KINC );
 
-    errorOut dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,
+    void dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,
                              floatType &SCD,                  floatType &RPL,             floatVector &ddsddt,       floatVector &drplde,       floatType &DRPLDT,
                              const floatVector &strain,       const floatVector &dstrain, const floatVector &time,   const floatType &DTIME,    const floatType &TEMP,
                              const floatType &DTEMP,          const floatVector &predef,  const floatVector &dpred,  const std::string &cmname, const int &NDI,

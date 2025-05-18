@@ -6,8 +6,83 @@ Changelog
 #########
 
 ******************
-0.5.0 (unreleased)
+0.4.6 (unreleased)
 ******************
+
+******************
+0.4.5 (05-17-2025)
+******************
+
+New Features
+============
+- Added a data storage set object that will automatically set an object when the destructor is called (:pull:`143`). By `Nathan Miller`_.
+- Added a setDataStorage to the macros for data storage definitions (:pull:`144`). By `Nathan Miller`_.
+- Added a micromorphic Drucker-Prager plasticity model based on constrained optimization (:pull:`166`). By `Nathan Miller`_.
+- Constrained active set solver added as option for incrementation (:pull:`167`). By `Nathan Miller`_.
+- Added softened cohesion function (:pull:`169`). By `Nathan Miller`_.
+- Added the minimum cohesion and softening ratio as optional parameters to the micromorphic Drucker-Prager plasticity (:pull:`171`). By `Nathan Miller`_.
+- Added a relaxed solver as the default (:pull:`172`). By `Nathan Miller`_.
+- Added ability to turn on additional messages for failed solves (:pull:`177`). By `Nathan Miller`_.
+- Added the ability to scale the incoming load information by a scale factor (:pull:`178`). By `Nathan Miller`_.
+- Added the ability to sub-cycle the analysis to try and improve convergence (:pull:`179`). By `Nathan Miller`_.
+- Added a linear test material for the full material-response vector (:pull:`181`). By `Nathan Miller`_.
+- Added Fourier heat conduction residual (:pull:`184`). By `Nathan Miller`_.
+- Added linear temperature to internal energy relation (:pull:`185`). By `Nathan Miller`_.
+- Added the ability to modify the global residuals and Jacobians (:pull:`186`). By `Nathan Miller`_.
+- Added a micromorphic linear elasticity model that is compatible with radial return algorithms (:pull:`187`). By `Nathan Miller`_.
+- Allow the user to do a complete build of the tardigrade stack (:pull:`188`). By `Nathan Miller`_.
+- Added the active set radial return map approach for micromorphic Drucker-Prager plasticity (:pull:`193`). By `Nathan Miller`_.
+- Added a function that is called after every successful nonlinear step (:pull:`194`). By `Nathan Miller`_.
+- Added functions that are called before every nonlinear solve and after a successful one (:pull:`194`). By `Nathan Miller`_.
+- Added pre and post nonlinear solve function call (:pull:`196`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Working towards removing floatVector in favor of specific sizes (:pull:`142`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for linear elasticity (:pull:`145`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for the classical base classes (:pull:`146`). By `Nathan Miller`_.
+- Removed malloc causing operations in tardigrade_hydra and tardigrade_hydraLinearElasticity (:pull:`147`). By `Nathan Miller`_.
+- Removed additional set_varname like functions in linear elasticity (:pull:`148`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for linear viscoelasticity (:pull:`149`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for thermal expansion (:pull:`150`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra micromorphic (:pull:`151`). By `Nathan Miller`_.
+- Corrected calling the Jacobian with every call to the residual (:pull:`153`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra micromoprhic linear elasticity (:pull:`155`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra micromoprhic Drucker-Prager plasticity (:pull:`157`). By `Nathan Miller`_.
+- Removed calls to old tardigrade error tools catch macro (:pull:`158`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Peryzna visoplasticity (:pull:`159`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Peryzna visodamage (:pull:`160`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Peryzna isotropic-kenmatic J2 visoplasticity (:pull:`161`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra mass-change rate (:pull:`162`). By `Nathan Miller`_.
+- Enabled passing the tests when higher levels of optimization are used (:pull:`163`). By `Nathan Miller`_.
+- Added an active set solver for quadratic problems (:pull:`167`). By `Nathan Miller`_.
+- Allow for initial values to be set for the micromorphic hydra base class (:pull:`168`). By `Nathan Miller`_.
+- Working towards improved convergence (:pull:`170`). By `Nathan Miller`_.
+- Set the initial estimate of the plastic multiplier to be positive in the case of yielding (:pull:`174`). By `Nathan Miller`_.
+- Added additional verbosity for debugging of the solves (:pull:`176`). By `Nathan Miller`_.
+- Changed functions to remove errorOut (:pull:`180`). By `Nathan Miller`_.
+- Added density to the full material-response simulation capability (:pull:`182`). By `Nathan Miller`_.
+- Added some additional information to convergence error messages (:pull:`183`). By `Nathan Miller`_.
+- Moved the update of the active constraints to the end of a successful nonlinear step (:pull:`195`). By `Nathan Miller`_.
+- Changed variables of the internal energy and Fourier heat conduction to not be constants but just private (:pull:`197`). By `Nathan Miller`_.
+- Prepared for conda packaging (:pull:`199`). By `Nathan Miller`_.
+
+Bug Fixes
+=========
+- Corrected issue where the wrong Jacobian was being used in checkDescentDirection (:pull:`156`). By `Nathan Miller`_.
+- Corrected bug when forming an Eigen::Map (:pull:`164`). By `Nathan Miller`_.
+- Corrected bug where the cohesions can go negative (:pull:`165`). By `Nathan Miller`_.
+- Corrected bug where the line search target residual didn't reset (:pull:`173`). By `Nathan Miller`_.
+- Corrected bug where the iteration count wasn't resetting during relaxed iterations (:pull:`175`). By `Nathan Miller`_.
+- Corrected bug in the residuals for the linear internal energy and the Fourier heat transfer (:pull:`198`). By `Nathan Miller`_.
+
+Bug Fixes
+=========
+- Changed the residual of the micromorphic state variables to hopefully prevent negative plastic multipliers (:pull:`154`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version (:pull:`200`). By `Nathan Miller`_.
 
 ******************
 0.4.4 (07-12-2024)
