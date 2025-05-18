@@ -6,7 +6,11 @@ Changelog
 #########
 
 ******************
-0.4.5 (unreleased)
+0.4.6 (unreleased)
+******************
+
+******************
+0.4.5 (05-17-2025)
 ******************
 
 New Features
@@ -61,6 +65,7 @@ Internal Changes
 - Added some additional information to convergence error messages (:pull:`183`). By `Nathan Miller`_.
 - Moved the update of the active constraints to the end of a successful nonlinear step (:pull:`195`). By `Nathan Miller`_.
 - Changed variables of the internal energy and Fourier heat conduction to not be constants but just private (:pull:`197`). By `Nathan Miller`_.
+- Prepared for conda packaging (:pull:`199`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
@@ -74,6 +79,10 @@ Bug Fixes
 Bug Fixes
 =========
 - Changed the residual of the micromorphic state variables to hopefully prevent negative plastic multipliers (:pull:`154`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version (:pull:`200`). By `Nathan Miller`_.
 
 ******************
 0.4.4 (07-12-2024)
