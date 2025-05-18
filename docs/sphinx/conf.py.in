@@ -36,7 +36,7 @@ extlinks = {
      "merge": ("https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra/-/merge_requests/%s", "MERGE-%s"),
      "issue": ("https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra/-/issues/%s", "ISSUE-%s"),
      # Maintain the old Atlassian links until the servers don't exist. Required for changelog entries.
-     "pull": ("https://xcp-stash.lanl.gov/projects/MM/repos/tardigrade-hydra/pull-requests/%s/overview", "PR%s"),
+     "pull": ("https://github.com/UCBoulder/tardigrade_hydra/pull/%s" , "%s"),
      "jira": ("https://xcp-jira.lanl.gov/browse/VIP-%s", "VIP-%s"),
 }
 
