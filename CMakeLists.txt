@@ -60,16 +60,20 @@ if(cmake_build_type_lower STREQUAL "release")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
-    # Find the installed project umat
-    find_file(installed_umat
-              "${UMAT}.o"
-              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
-              NO_CACHE
-              REQUIRED)
+#    # Find the installed project umat
+#    find_file(installed_umat
+#              "${UMAT}.o"
+#              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
+#              NO_CACHE
+#              REQUIRED)
 endif()
 
 # Get version number from Git
 if(${not_conda_test} STREQUAL "true")
+    if (DEFINED ENV{PREFIX})
+        set(Python_ROOT_DIR "$ENV{PREFIX}/bin")
+    endif()
+    set(Python_FIND_STRATEGY LOCATION)
     find_package(Python COMPONENTS Interpreter REQUIRED)
     execute_process(COMMAND ${Python_EXECUTABLE} -m setuptools_scm
                             OUTPUT_VARIABLE ${PROJECT_NAME}_VERSION_STRING_FULL
@@ -186,7 +190,7 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
     # Add c++ tests and docs
     add_subdirectory(${CPP_TEST_PATH})
-    add_subdirectory(${ABAQUS_SRC_PATH})
+#    add_subdirectory(${ABAQUS_SRC_PATH})
     if(${not_conda_test} STREQUAL "true")
         add_subdirectory(${DOXYGEN_SRC_PATH})
         add_subdirectory(${SPHINX_SRC_PATH})
@@ -195,7 +199,7 @@ endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
 if(${not_conda_test} STREQUAL "true")
-    foreach(package ${PROJECT_NAME} ${UMAT})
+    foreach(package ${PROJECT_NAME})# ${UMAT})
         include(CMakePackageConfigHelpers)
         write_basic_package_version_file("${package}ConfigVersion.cmake"
                                          VERSION ${PROJECT_VERSION}
@@ -216,5 +220,11 @@ if(${not_conda_test} STREQUAL "true")
         install(FILES "${PROJECT_BINARY_DIR}/${package}Config.cmake"
                       "${PROJECT_BINARY_DIR}/${package}ConfigVersion.cmake"
                 DESTINATION ${CMAKE_INSTALL_DATAROOTDIR}/${package}/cmake)
+    endforeach(package)
+    install(FILES ${CPP_SRC_PATH}/${PROJECT_NAME}.cpp
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+    foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
+        install(FILES ${CPP_SRC_PATH}/${package}.cpp
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     endforeach(package)
 endif()
