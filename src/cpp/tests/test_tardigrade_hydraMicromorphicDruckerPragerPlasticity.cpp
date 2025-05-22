@@ -12188,6 +12188,335 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChi, * boost::unit_test::toleran
     }
 }
 
+BOOST_AUTO_TEST_CASE( testEvolvePlasticMicroGradChiNew, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+    /*!
+     * Test the evolution of the plastic micro gradient deformation using the new algorithm.
+     *
+     */
+
+    variableType Dt = 1.34;
+    variableType alpha = 0.57;
+
+    variableVector currentPlasticDeformationGradient = {
+        -5.434735382e-01, -4.125719072e-01, +2.619522477e-01,
+        -8.157901201e-01, -1.325976546e-01, -1.382744733e-01,
+        -1.262980470e-02, -1.483394194e-01, -3.754775541e-01
+    };
+
+    variableVector currentPlasticMicroDeformation = {
+        -1.472973861e-01, +7.867783262e-01, +8.883200364e-01,
+        +3.673351769e-03, +2.479059036e-01, -7.687632098e-01,
+        -3.654290364e-01, -1.703475761e-01, +7.326183158e-01
+    };
+
+    variableVector currentPlasticMicroVelocityGradient = {
+        -4.990892692e-01, -3.393147147e-02, +9.711195712e-01,
+        +3.897023852e-02, +2.257890515e-01, -7.587426680e-01,
+        +6.526816010e-01, +2.061202568e-01, +9.013601293e-02
+    };
+
+    variableVector currentGradientPlasticMicroVelocityGradient = {
+        +3.929383712e-01, -4.277213301e-01, -5.462970929e-01,
+        +1.026295382e-01, +4.389379396e-01, -1.537870798e-01,
+        +9.615283968e-01, +3.696594772e-01, -3.813619703e-02,
+        -2.157649636e-01, -3.136439677e-01, +4.580994148e-01,
+        -1.228555106e-01, -8.806442068e-01, -2.039114893e-01,
+        +4.759908115e-01, -6.350165391e-01, -6.490964877e-01,
+        +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
+        +6.988635882e-01, +4.489106497e-01, +2.220470214e-01,
+        +4.448867651e-01, -3.540821723e-01, -2.764226888e-01
+    };
+
+    variableVector previousPlasticDeformationGradient = {
+        +3.839405911e-01, +1.087664994e-01, -2.220988518e-01,
+        +8.502649792e-01, +6.833399938e-01, -2.852048666e-01,
+        -9.128170724e-01, -3.904638532e-01, -2.036286362e-01
+    };
+
+    variableVector previousPlasticMicroDeformation = {
+        +4.099176609e-01, +9.907169641e-01, -2.881702686e-01,
+        +5.250956276e-01, +1.863538331e-01, +3.834035974e-01,
+        -6.977450953e-01, -2.022474145e-01, -5.182882046e-01
+    };
+
+    variableVector previousPlasticMicroVelocityGradient = {
+        -3.130879719e-01, +2.625630840e-02, +3.332491003e-01,
+        -7.881830299e-01, -7.382100987e-01, -3.560387871e-01,
+        +3.231286733e-01, +6.930124505e-01, +1.065146896e-01
+    };
+
+    variableVector previousGradientPlasticMicroVelocityGradient = {
+        -3.144723325e-01, -3.917584219e-01, -1.659555780e-01,
+        +3.626015316e-01, +7.509136836e-01, +2.084467496e-02,
+        +3.386275659e-01, +1.718731051e-01, +2.498070042e-01,
+        +3.493781020e-01, +6.846848752e-01, -8.336100233e-01,
+        +5.273656829e-01, -5.126672509e-01, -6.115540788e-01,
+        +1.449139150e-01, -8.085749668e-01, +7.706536526e-01,
+        +2.544979441e-01, +4.468327164e-01, -9.677415866e-01,
+        +1.888637589e-01, +1.135703848e-01, -6.820807117e-01,
+        -6.938589698e-01, +3.910590575e-01, -3.624671472e-01
+    };
+
+    variableVector previousGradientPlasticMicroDeformation = {
+        +7.089049750e-01, -2.303243774e-01, -3.664242058e-01,
+        -2.914706488e-01, -6.578363416e-01, +6.582252690e-01,
+        -3.226583082e-01, +1.047401506e-01, +1.571029362e-01,
+        +4.306611879e-02, -9.946238709e-01, +9.766908386e-01,
+        +8.106831513e-01, -5.847282776e-01, -4.150211744e-01,
+        +4.002030614e-02, +8.038227453e-01, +9.672617698e-01,
+        -4.849158717e-01, +1.287180858e-01, +6.139373683e-01,
+        -2.112598921e-01, +4.621460717e-01, -6.778619711e-01,
+        +2.013971357e-01, +7.317289166e-01, +9.670432184e-01
+    };
+
+    variableVector answer = {
+        +9.209699212e-01, -5.615755044e-02, +4.547910831e-01,
+        +4.411972176e-01, -1.395453132e-01, +3.110049631e-02,
+        +1.814844905e-01, +9.828245156e-01, +1.731963286e+00,
+        +4.275037871e-01, +1.243111965e-01, -1.912977203e-01,
+        +1.595569949e+00, +3.015366758e-01, -7.250890321e-02,
+        -1.564991918e-02, -7.327884546e-01, -1.137649019e+00,
+        +5.973243064e-01, -1.435752589e-01, +1.161212247e+00,
+        +1.213356281e+00, +4.448332417e-01, -9.038500038e-01,
+        +5.318392565e-01, +1.583318006e+00, +2.329244547e+00
+    };
+
+    variableVector result;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMicroGradChi(
+        Dt,
+        currentPlasticDeformationGradient,   currentPlasticMicroDeformation,
+        currentPlasticMicroVelocityGradient, currentGradientPlasticMicroVelocityGradient,
+        previousPlasticDeformationGradient,   previousPlasticMicroDeformation,
+        previousPlasticMicroVelocityGradient, previousGradientPlasticMicroVelocityGradient,
+        previousGradientPlasticMicroDeformation,
+        result,
+        alpha
+    );
+
+    BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
+
+    variableVector result_J;
+    variableVector dRdFp, dRdChip, dRdMicroLp, dRdGradMicroLp;
+
+    tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMicroGradChi(
+        Dt,
+        currentPlasticDeformationGradient,   currentPlasticMicroDeformation,
+        currentPlasticMicroVelocityGradient, currentGradientPlasticMicroVelocityGradient,
+        previousPlasticDeformationGradient,   previousPlasticMicroDeformation,
+        previousPlasticMicroVelocityGradient, previousGradientPlasticMicroVelocityGradient,
+        previousGradientPlasticMicroDeformation,
+        result_J,
+        dRdFp, dRdChip, dRdMicroLp, dRdGradMicroLp,
+        alpha
+    );
+
+    BOOST_TEST( result_J == answer, CHECK_PER_ELEMENT );
+
+    floatType eps = 1e-5;
+
+    std::vector< variableVector* > inputs = {
+        &currentPlasticDeformationGradient,       &currentPlasticMicroDeformation,
+        &currentPlasticMicroVelocityGradient,     &currentGradientPlasticMicroVelocityGradient,
+        &previousPlasticDeformationGradient,      &previousPlasticMicroDeformation,
+        &previousPlasticMicroVelocityGradient,    &previousGradientPlasticMicroVelocityGradient,
+        &previousGradientPlasticMicroDeformation,
+    };
+
+    std::vector< variableVector* > expected_outputs = {
+        &dRdFp, &dRdChip, &dRdMicroLp, &dRdGradMicroLp
+    };
+
+    {
+
+        unsigned int input_index = 0;
+        unsigned int output_index = 0;
+        constexpr unsigned int VAR_SIZE = 9;
+        constexpr unsigned int OUT_SIZE = 27;
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            floatType delta = eps * std::fabs( ( *inputs[ input_index ] )[ i ] ) + eps;
+
+            // Initialize the input arrays
+            std::vector< variableVector > inputs_p( inputs.size( ) );
+            std::vector< variableVector > inputs_m( inputs.size( ) );
+
+            // Copy over the inputs
+            for ( unsigned int _i = 0; _i < inputs.size( ); ++_i ){
+                inputs_p[ _i ] = variableVector( std::begin( *inputs[ _i ] ), std::end( *inputs[ _i ] ) );
+                inputs_m[ _i ] = variableVector( std::begin( *inputs[ _i ] ), std::end( *inputs[ _i ] ) );
+            }
+
+            // Perturb the inputs
+            inputs_p[ input_index ][ i ] += delta;
+            inputs_m[ input_index ][ i ] -= delta;
+
+            variableVector Rp, Rm;
+
+            tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMicroGradChi(
+                Dt, inputs_p[ 0 ], inputs_p[ 1 ], inputs_p[ 2 ], inputs_p[ 3 ], inputs_p[ 4 ],
+                inputs_p[ 5 ], inputs_p[ 6 ], inputs_p[ 7 ], inputs_p[ 8 ], Rp, alpha
+            );
+
+            tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMicroGradChi(
+                Dt, inputs_m[ 0 ], inputs_m[ 1 ], inputs_m[ 2 ], inputs_m[ 3 ], inputs_m[ 4 ],
+                inputs_m[ 5 ], inputs_m[ 6 ], inputs_m[ 7 ], inputs_m[ 8 ], Rm, alpha
+            );
+
+            for ( unsigned int j = 0; j < OUT_SIZE; ++j ){
+
+                BOOST_TEST( ( *expected_outputs[ output_index ] )[ VAR_SIZE * j + i ] == ( Rp[ j ] - Rm[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
+
+    {
+
+        unsigned int input_index = 1;
+        unsigned int output_index = 1;
+        constexpr unsigned int VAR_SIZE = 9;
+        constexpr unsigned int OUT_SIZE = 27;
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            floatType delta = eps * std::fabs( ( *inputs[ input_index ] )[ i ] ) + eps;
+
+            // Initialize the input arrays
+            std::vector< variableVector > inputs_p( inputs.size( ) );
+            std::vector< variableVector > inputs_m( inputs.size( ) );
+
+            // Copy over the inputs
+            for ( unsigned int _i = 0; _i < inputs.size( ); ++_i ){
+                inputs_p[ _i ] = variableVector( std::begin( *inputs[ _i ] ), std::end( *inputs[ _i ] ) );
+                inputs_m[ _i ] = variableVector( std::begin( *inputs[ _i ] ), std::end( *inputs[ _i ] ) );
+            }
+
+            // Perturb the inputs
+            inputs_p[ input_index ][ i ] += delta;
+            inputs_m[ input_index ][ i ] -= delta;
+
+            variableVector Rp, Rm;
+
+            tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMicroGradChi(
+                Dt, inputs_p[ 0 ], inputs_p[ 1 ], inputs_p[ 2 ], inputs_p[ 3 ], inputs_p[ 4 ],
+                inputs_p[ 5 ], inputs_p[ 6 ], inputs_p[ 7 ], inputs_p[ 8 ], Rp, alpha
+            );
+
+            tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMicroGradChi(
+                Dt, inputs_m[ 0 ], inputs_m[ 1 ], inputs_m[ 2 ], inputs_m[ 3 ], inputs_m[ 4 ],
+                inputs_m[ 5 ], inputs_m[ 6 ], inputs_m[ 7 ], inputs_m[ 8 ], Rm, alpha
+            );
+
+            for ( unsigned int j = 0; j < OUT_SIZE; ++j ){
+
+                BOOST_TEST( ( *expected_outputs[ output_index ] )[ VAR_SIZE * j + i ] == ( Rp[ j ] - Rm[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
+
+    {
+
+        unsigned int input_index = 2;
+        unsigned int output_index = 2;
+        constexpr unsigned int VAR_SIZE = 9;
+        constexpr unsigned int OUT_SIZE = 27;
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            floatType delta = eps * std::fabs( ( *inputs[ input_index ] )[ i ] ) + eps;
+
+            // Initialize the input arrays
+            std::vector< variableVector > inputs_p( inputs.size( ) );
+            std::vector< variableVector > inputs_m( inputs.size( ) );
+
+            // Copy over the inputs
+            for ( unsigned int _i = 0; _i < inputs.size( ); ++_i ){
+                inputs_p[ _i ] = variableVector( std::begin( *inputs[ _i ] ), std::end( *inputs[ _i ] ) );
+                inputs_m[ _i ] = variableVector( std::begin( *inputs[ _i ] ), std::end( *inputs[ _i ] ) );
+            }
+
+            // Perturb the inputs
+            inputs_p[ input_index ][ i ] += delta;
+            inputs_m[ input_index ][ i ] -= delta;
+
+            variableVector Rp, Rm;
+
+            tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMicroGradChi(
+                Dt, inputs_p[ 0 ], inputs_p[ 1 ], inputs_p[ 2 ], inputs_p[ 3 ], inputs_p[ 4 ],
+                inputs_p[ 5 ], inputs_p[ 6 ], inputs_p[ 7 ], inputs_p[ 8 ], Rp, alpha
+            );
+
+            tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMicroGradChi(
+                Dt, inputs_m[ 0 ], inputs_m[ 1 ], inputs_m[ 2 ], inputs_m[ 3 ], inputs_m[ 4 ],
+                inputs_m[ 5 ], inputs_m[ 6 ], inputs_m[ 7 ], inputs_m[ 8 ], Rm, alpha
+            );
+
+            for ( unsigned int j = 0; j < OUT_SIZE; ++j ){
+
+                BOOST_TEST( ( *expected_outputs[ output_index ] )[ VAR_SIZE * j + i ] == ( Rp[ j ] - Rm[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
+
+    {
+
+        unsigned int input_index = 3;
+        unsigned int output_index = 3;
+        constexpr unsigned int VAR_SIZE = 27;
+        constexpr unsigned int OUT_SIZE = 27;
+
+        for ( unsigned int i = 0; i < VAR_SIZE; ++i ){
+
+            floatType delta = eps * std::fabs( ( *inputs[ input_index ] )[ i ] ) + eps;
+
+            // Initialize the input arrays
+            std::vector< variableVector > inputs_p( inputs.size( ) );
+            std::vector< variableVector > inputs_m( inputs.size( ) );
+
+            // Copy over the inputs
+            for ( unsigned int _i = 0; _i < inputs.size( ); ++_i ){
+                inputs_p[ _i ] = variableVector( std::begin( *inputs[ _i ] ), std::end( *inputs[ _i ] ) );
+                inputs_m[ _i ] = variableVector( std::begin( *inputs[ _i ] ), std::end( *inputs[ _i ] ) );
+            }
+
+            // Perturb the inputs
+            inputs_p[ input_index ][ i ] += delta;
+            inputs_m[ input_index ][ i ] -= delta;
+
+            variableVector Rp, Rm;
+
+            tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMicroGradChi(
+                Dt, inputs_p[ 0 ], inputs_p[ 1 ], inputs_p[ 2 ], inputs_p[ 3 ], inputs_p[ 4 ],
+                inputs_p[ 5 ], inputs_p[ 6 ], inputs_p[ 7 ], inputs_p[ 8 ], Rp, alpha
+            );
+
+            tardigradeHydra::micromorphicDruckerPragerPlasticity::computePlasticMicroGradChi(
+                Dt, inputs_m[ 0 ], inputs_m[ 1 ], inputs_m[ 2 ], inputs_m[ 3 ], inputs_m[ 4 ],
+                inputs_m[ 5 ], inputs_m[ 6 ], inputs_m[ 7 ], inputs_m[ 8 ], Rm, alpha
+            );
+
+            for ( unsigned int j = 0; j < OUT_SIZE; ++j ){
+
+                BOOST_TEST( ( *expected_outputs[ output_index ] )[ VAR_SIZE * j + i ] == ( Rp[ j ] - Rm[ j ] ) / ( 2 * delta ) );
+
+            }
+
+        }
+
+    }
+
+}
+
 BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!
      * Evolve the plastic deformation.

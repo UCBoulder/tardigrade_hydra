@@ -9,6 +9,11 @@ Changelog
 0.4.6 (unreleased)
 ******************
 
+New Features
+============
+- Added the evolution of the micro-gradient plasticity for micromorphic Drucker-Prager plasticity that is in the
+  correct configuration. (:pull:`201`). By `Nathan Miller`_.
+
 ******************
 0.4.5 (05-17-2025)
 ******************
