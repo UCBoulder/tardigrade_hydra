@@ -1940,8 +1940,11 @@ namespace tardigradeHydra{
 
                             for ( unsigned int C = 0; C < dim; ++C ){
 
-                                dGradChipdChip[ dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + A ] += temp3[ dim * dim * Ibar + dim * C + Jbar ] * currentPlasticDeformationGradient[ dim * Jbar + B ];
-                                dGradChipdFp[   dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + B ] += temp3[ dim * dim * Ibar + dim * Jbar + C ] * currentPlasticMicroDeformation[    dim * Jbar + A ];
+                                dGradChipdChip[ dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + A ]
+                                    += temp3[ dim * dim * Ibar + dim * C + Jbar ] * currentPlasticDeformationGradient[ dim * Jbar + B ];
+
+                                dGradChipdFp[   dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + B ]
+                                    += temp3[ dim * dim * Ibar + dim * Jbar + C ] * currentPlasticMicroDeformation[    dim * Jbar + A ];
 
                             }
 
@@ -1963,6 +1966,261 @@ namespace tardigradeHydra{
 
                             dGradChipdMicroLp[ sot_dim * dim * dim * Ibar + dim * dim * AB + dim * Kbar + Lbar ]
                                 += invLHS[ dim * Ibar + Kbar ] * implicit_mult * gradientPlasticMicroDeformation[ sot_dim * Lbar + AB ];
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        void computePlasticMicroGradChi(
+            const variableType &Dt,
+            const secondOrderTensor &currentPlasticDeformationGradient,
+            const secondOrderTensor &currentPlasticMicroDeformation,
+            const secondOrderTensor &currentPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &currentGradientPlasticMicroVelocityGradient,
+            const secondOrderTensor &previousPlasticDeformationGradient,
+            const secondOrderTensor &previousPlasticMicroDeformation,
+            const secondOrderTensor &previousPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &previousGradientPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &previousGradientPlasticMicroDeformation,
+            thirdOrderTensor &gradientPlasticMicroDeformation,
+            fifthOrderTensor &dGradChipdFp,
+            fifthOrderTensor &dGradChipdChip,
+            fifthOrderTensor &dGradChipdMicroLp,
+            sixthOrderTensor &dGradChipdGradMicroLp,
+            fifthOrderTensor &dGradChipdPreviousFp,
+            fifthOrderTensor &dGradChipdPreviousChip,
+            fifthOrderTensor &dGradChipdPreviousMicroLp,
+            sixthOrderTensor &dGradChipdPreviousGradMicroLp,
+            sixthOrderTensor &dGradChipdPreviousGradChip,
+            const parameterType alpha
+        ){
+            /*!
+             * Evolve the gradient of the plastic micro-deformation measure in the intermediate configuration.
+             *
+             * \param &Dt: The change in time
+             * \param &currentPlasticDeformationGradient: The current value of the plastic deformation gradient
+             * \param &currentPlasticMicroDeformation: The current value of the plastic micro deformation
+             * \param &currentPlasticMicroVelocityGradient: The current value of the plastic micro-velocity gradient
+             * \param &currentGradientPlasticMicroVelocityGradient: The current value of the micro-gradient velocity gradient
+             * \param &previousPlasticDeformationGradient: The previous value of the plastic deformation gradient
+             * \param &previousPlasticMicroDeformation: The previous value of the plastic micro deformation
+             * \param &previousPlasticMicroVelocityGradient: The previous value of the plastic micro-velocity gradient
+             * \param &previousGradientPlasticMicroVelocityGradient: The previous value of the micro-gradient velocity gradient
+             * \param &previousGradientPlasticMicroDeformation: The previous value of the gradient of the plastic micro-deformation measure
+             *     where the gradient is being taken with respect to the reference configuration of the intermediate configuration
+             * \param &gradientPlasticMicroDeformation: The current value of the gradient of the plastic micro-deformation measure
+             *     where the gradient is being taken with respect to the reference configuration of the intermediate configuration
+             * \param &dGradChipdFp: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic deformation gradient
+             * \param &dGradChipdChip: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic micro deformation
+             * \param &dGradChipdMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic micro velocity gradient
+             * \param &dGradChipdGradMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the gradient of the plastic micro velocity gradient
+             * \param alpha: The integration parameter (0 explicit, 1 implicit, 0.5 second-order accurate trapizoidal rule)
+             */
+
+            const parameterType implicit_mult = Dt * alpha;
+            const parameterType explicit_mult = Dt * ( 1 - alpha );
+
+            constexpr unsigned int dim = 3;
+            constexpr unsigned int sot_dim = dim * dim;
+            constexpr unsigned int tot_dim = dim * dim * dim;
+            constexpr unsigned int fot_dim = dim * dim * dim * dim;
+
+            // Declare the local variables
+            std::array< floatType, sot_dim > LHS, invLHS;
+            std::array< floatType, tot_dim > RHS;
+
+            std::array< floatType, fot_dim > temp1, temp2;
+            std::array< floatType, tot_dim > temp3, temp4;
+
+            // Initialize the local variables
+            std::fill(
+                std::begin( LHS ), std::end( LHS ), 0
+            );
+            std::fill(
+                std::begin( invLHS ), std::end( invLHS ), 0
+            );
+            std::fill(
+                std::begin( RHS ), std::end( RHS ), 0
+            );
+            std::fill(
+                std::begin( temp1 ), std::end( temp1 ), 0
+            );
+            std::fill(
+                std::begin( temp2 ), std::end( temp2 ), 0
+            );
+            std::fill(
+                std::begin( temp3 ), std::end( temp3 ), 0
+            );
+            std::fill(
+                std::begin( temp4 ), std::end( temp4 ), 0
+            );
+
+            // Assemble temporary values
+            for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
+
+                for ( unsigned int Kbar = 0; Kbar < dim; ++Kbar ){
+
+                    for ( unsigned int A = 0; A < dim; ++A ){
+
+                        for ( unsigned int B = 0; B < dim; ++B ){
+
+                            temp1[ dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B ]
+                                += implicit_mult * currentPlasticMicroDeformation[ dim * Jbar + A ] * currentPlasticDeformationGradient[ 3 * Kbar + B ];
+                            temp2[ dim * dim * dim * Jbar + dim * dim * Kbar + dim * A + B ]
+                                += explicit_mult * previousPlasticMicroDeformation[ dim * Jbar + A ] * previousPlasticDeformationGradient[ 3 * Kbar + B ];
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            // Assemble the RHS
+            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
+
+                for ( unsigned int JbarKbar = 0; JbarKbar < sot_dim; ++JbarKbar ){
+
+                    RHS[ sot_dim * Ibar + JbarKbar ] += previousGradientPlasticMicroDeformation[ sot_dim * Ibar + JbarKbar ];
+
+                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
+
+                        RHS[ sot_dim * Ibar + AB ] +=  currentGradientPlasticMicroVelocityGradient[ sot_dim * Ibar + JbarKbar ] * temp1[ sot_dim * JbarKbar + AB ]
+                                                    + previousGradientPlasticMicroVelocityGradient[ sot_dim * Ibar + JbarKbar ] * temp2[ sot_dim * JbarKbar + AB ];
+
+                    }
+
+                }
+
+                for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
+
+                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
+
+                        RHS[ sot_dim * Ibar + AB ] += explicit_mult * previousPlasticMicroVelocityGradient[ 3 * Ibar + Jbar ] * previousGradientPlasticMicroDeformation[ sot_dim * Jbar + AB ];
+
+                    }
+
+                }
+
+            }
+
+            // Assemble the LHS
+            std::transform(
+                std::begin( currentPlasticMicroVelocityGradient ),
+                std::end(   currentPlasticMicroVelocityGradient ),
+                std::begin( LHS ),
+                std::bind(std::multiplies<>(), std::placeholders::_1, -implicit_mult )
+            );
+            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
+                LHS[ dim * Ibar + Ibar ] += 1;
+            }
+
+            // Compute the inverse of the LHS
+            auto map_LHS = getFixedSizeMatrixMap< floatType, dim, dim >( LHS.data( ) );
+            auto map_invLHS = getFixedSizeMatrixMap< floatType, dim, dim >( invLHS.data( ) );
+            map_invLHS = map_LHS.inverse( ).eval( );
+
+            // Assemble term3
+            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
+
+                for ( unsigned int Kbar = 0; Kbar < dim; ++Kbar ){
+
+                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
+
+                        temp3[ sot_dim * Ibar + AB ] += implicit_mult * invLHS[ dim * Ibar + Kbar ] * currentGradientPlasticMicroVelocityGradient[ sot_dim * Kbar + AB ];
+                        temp4[ sot_dim * Ibar + AB ] += explicit_mult * invLHS[ dim * Ibar + Kbar ] * previousGradientPlasticMicroVelocityGradient[ sot_dim * Kbar + AB ];
+
+                    }
+
+                }
+
+            }
+
+            // Update the gradient of the plastic micro deformation
+            gradientPlasticMicroDeformation = thirdOrderTensor( dim * dim * dim, 0 );
+            dGradChipdFp                    = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
+            dGradChipdChip                  = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
+            dGradChipdMicroLp               = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
+            dGradChipdGradMicroLp           = sixthOrderTensor( dim * dim * dim * dim * dim * dim, 0 );
+            dGradChipdPreviousFp            = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
+            dGradChipdPreviousChip          = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
+            dGradChipdPreviousMicroLp       = fifthOrderTensor( dim * dim * dim * dim * dim, 0 );
+            dGradChipdPreviousGradMicroLp   = sixthOrderTensor( dim * dim * dim * dim * dim * dim, 0 );
+            dGradChipdPreviousGradChip      = sixthOrderTensor( dim * dim * dim * dim * dim * dim, 0 );
+            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
+
+                for ( unsigned int Jbar = 0; Jbar < dim; ++Jbar ){
+
+                    for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
+
+                        gradientPlasticMicroDeformation[ sot_dim * Ibar + AB ] += invLHS[ dim * Ibar + Jbar ] * RHS[ sot_dim * Jbar + AB ];
+
+                        dGradChipdPreviousGradChip[ sot_dim * dim * sot_dim * Ibar + dim * sot_dim * AB + sot_dim * Jbar + AB ] += invLHS[ dim * Ibar + Jbar ];
+
+                        for ( unsigned int K = 0; K < dim; ++K ){
+
+                            dGradChipdPreviousGradChip[ dim * dim * dim * sot_dim * Ibar + dim * dim * dim * AB + dim * dim * K + AB ]
+                                += invLHS[ dim * Ibar + Jbar ] * explicit_mult * previousPlasticMicroVelocityGradient[ 3 * Jbar + K ];
+
+                        }
+
+                        for ( unsigned int DE = 0; DE < sot_dim; ++DE ){
+
+                            dGradChipdGradMicroLp[         sot_dim * dim * sot_dim * Ibar + dim * sot_dim * AB + sot_dim * Jbar + DE ] += invLHS[ dim * Ibar + Jbar ] * temp1[ sot_dim * DE + AB ];
+                            dGradChipdPreviousGradMicroLp[ sot_dim * dim * sot_dim * Ibar + dim * sot_dim * AB + sot_dim * Jbar + DE ] += invLHS[ dim * Ibar + Jbar ] * temp2[ sot_dim * DE + AB ];
+
+                        }
+
+                    }
+
+                    for ( unsigned int A = 0; A < dim; ++A ){
+
+                        for ( unsigned int B = 0; B < dim; ++B ){
+
+                            for ( unsigned int C = 0; C < dim; ++C ){
+
+                                dGradChipdChip[ dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + A ]
+                                    += temp3[ dim * dim * Ibar + dim * C + Jbar ] * currentPlasticDeformationGradient[ dim * Jbar + B ];
+
+                                dGradChipdFp[   dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + B ]
+                                    += temp3[ dim * dim * Ibar + dim * Jbar + C ] * currentPlasticMicroDeformation[    dim * Jbar + A ];
+
+                                dGradChipdPreviousChip[ dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + A ]
+                                    += temp4[ dim * dim * Ibar + dim * C + Jbar ] * previousPlasticDeformationGradient[ dim * Jbar + B ];
+
+                                dGradChipdPreviousFp[   dim * dim * dim * dim * Ibar + dim * dim * dim * A + dim * dim * B + dim * C + B ]
+                                    += temp4[ dim * dim * Ibar + dim * Jbar + C ] * previousPlasticMicroDeformation[ dim * Jbar + A ];
+
+                            }
+
+                        }
+
+                    }
+
+                }
+
+            }
+
+            for ( unsigned int Ibar = 0; Ibar < dim; ++Ibar ){
+
+                for ( unsigned int AB = 0; AB < sot_dim; ++AB ){
+
+                    for ( unsigned int Kbar = 0; Kbar < dim; ++Kbar ){
+
+                        for ( unsigned int Lbar = 0; Lbar < dim; ++Lbar ){
+
+                            dGradChipdMicroLp[ sot_dim * dim * dim * Ibar + dim * dim * AB + dim * Kbar + Lbar ]
+                                += invLHS[ dim * Ibar + Kbar ] * implicit_mult * gradientPlasticMicroDeformation[ sot_dim * Lbar + AB ];
+
+                            dGradChipdPreviousMicroLp[ dim * dim * dim * dim * Ibar + dim * dim * AB + dim * Kbar + Lbar ]
+                                += invLHS[ dim * Ibar + Kbar ] * explicit_mult * previousGradientPlasticMicroDeformation[ sot_dim * Lbar + AB ];
 
                         }
 

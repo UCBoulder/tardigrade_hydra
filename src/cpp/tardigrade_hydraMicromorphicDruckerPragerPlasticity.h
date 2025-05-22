@@ -273,6 +273,30 @@ namespace tardigradeHydra{
             const parameterType alpha = 0.5
         );
 
+        void computePlasticMicroGradChi(
+            const variableType &Dt,
+            const secondOrderTensor &currentPlasticDeformationGradient,
+            const secondOrderTensor &currentPlasticMicroDeformation,
+            const secondOrderTensor &currentPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &currentGradientPlasticMicroVelocityGradient,
+            const secondOrderTensor &previousPlasticDeformationGradient,
+            const secondOrderTensor &previousPlasticMicroDeformation,
+            const secondOrderTensor &previousPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &previousGradientPlasticMicroVelocityGradient,
+            const thirdOrderTensor  &previousGradientPlasticMicroDeformation,
+            thirdOrderTensor &gradientPlasticMicroDeformation,
+            fifthOrderTensor &dGradChipdFp,
+            fifthOrderTensor &dGradChipdChip,
+            fifthOrderTensor &dGradChipdMicroLp,
+            sixthOrderTensor &dGradChipdGradMicroLp,
+            fifthOrderTensor &dGradChipdPreviousFp,
+            fifthOrderTensor &dGradChipdPreviousChip,
+            fifthOrderTensor &dGradChipdPreviousMicroLp,
+            sixthOrderTensor &dGradChipdPreviousGradMicroLp,
+            sixthOrderTensor &dGradChipdPreviousGradChip,
+            const parameterType alpha = 0.5
+        );
+
         void evolvePlasticMicroGradChi( const variableType &Dt,
                                         const secondOrderTensor &currentPlasticMicroDeformation,
                                         const secondOrderTensor &currentPlasticMacroVelocityGradient,
