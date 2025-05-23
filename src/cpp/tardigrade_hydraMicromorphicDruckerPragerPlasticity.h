@@ -424,6 +424,7 @@ namespace tardigradeHydra{
                                        fourthOrderTensor &dPlasticFdPreviousPlasticMacroL,
                                        fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
                                        fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                       fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticF,
                                        fifthOrderTensor &dPlasticMicroGradientdPreviousPlasticMicroDeformation,
                                        sixthOrderTensor &dPlasticMicroGradientdPreviousPlasticMicroGradient,
                                        fifthOrderTensor &dPlasticMicroGradientdPreviousPlasticMacroL,

@@ -2019,7 +2019,12 @@ namespace tardigradeHydra{
              * \param &dGradChipdFp: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic deformation gradient
              * \param &dGradChipdChip: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic micro deformation
              * \param &dGradChipdMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the plastic micro velocity gradient
-             * \param &dGradChipdGradMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the gradient of the plastic micro velocity gradient
+             * \param &dGradChipdGradMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the previous gradient of the plastic micro velocity gradient
+             * \param &dGradChipdPreviousFp: The derivative of the gradient of the plastic micro deformation w.r.t. the previous plastic deformation gradient
+             * \param &dGradChipdPreviousChip: The derivative of the gradient of the plastic micro deformation w.r.t. the previous plastic micro deformation
+             * \param &dGradChipdPreviousMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the previous plastic micro velocity gradient
+             * \param &dGradChipdPreviousGradMicroLp: The derivative of the gradient of the plastic micro deformation w.r.t. the previous gradient of the plastic micro velocity gradient
+             * \param &dGradChipdPreviousGradChip: The derivative of the gradient of the plastic micro deformation w.r.t. the previous gradient of the plastic micro deformation
              * \param alpha: The integration parameter (0 explicit, 1 implicit, 0.5 second-order accurate trapizoidal rule)
              */
 
@@ -2825,12 +2830,15 @@ namespace tardigradeHydra{
             )
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
-                                           currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
-                                           previousPlasticMicroDeformation, previousPlasticMicroGradient,
-                                           previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
-                                           previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
-                                           alphaMicroGradient );
+                computePlasticMicroGradChi(
+                    Dt,
+                    currentPlasticDeformationGradient,    currentPlasticMicroDeformation,
+                    currentPlasticMicroVelocityGradient,  currentPlasticMicroGradientVelocityGradient,
+                    previousPlasticDeformationGradient,   previousPlasticMicroDeformation,
+                    previousPlasticMicroVelocityGradient, previousPlasticMicroGradientVelocityGradient,
+                    previousPlasticMicroGradient,         currentPlasticMicroGradient,
+                    alphaMicroGradient
+                );
             )
 
         }
@@ -2916,22 +2924,32 @@ namespace tardigradeHydra{
 //                                                                    dPlasticMicroDeformationdPlasticMicroL, alphaMicro );
             )
 
-            fifthOrderTensor dPlasticMicroGradientdPlasticMicroDeformation;
+            fifthOrderTensor dPlasticMicroGradientdPlasticDeformationGradient, dPlasticMicroGradientdPlasticMicroDeformation;
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
-                                           currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
-                                           previousPlasticMicroDeformation, previousPlasticMicroGradient,
-                                           previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
-                                           previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
-                                           dPlasticMicroGradientdPlasticMicroDeformation,
-                                           dPlasticMicroGradientdPlasticMacroL, dPlasticMicroGradientdPlasticMicroL,
-                                           dPlasticMicroGradientdPlasticMicroGradientL, alphaMicroGradient );
+                computePlasticMicroGradChi(
+                    Dt,
+                    currentPlasticDeformationGradient,    currentPlasticMicroDeformation,
+                    currentPlasticMicroVelocityGradient,  currentPlasticMicroGradientVelocityGradient,
+                    previousPlasticDeformationGradient,   previousPlasticMicroDeformation,
+                    previousPlasticMicroVelocityGradient, previousPlasticMicroGradientVelocityGradient,
+                    previousPlasticMicroGradient,         currentPlasticMicroGradient,
+                    dPlasticMicroGradientdPlasticDeformationGradient,
+                    dPlasticMicroGradientdPlasticMicroDeformation,
+                    dPlasticMicroGradientdPlasticMicroL,  dPlasticMicroGradientdPlasticMicroGradientL,
+                    alphaMicroGradient
+                );
             )
+
+            dPlasticMicroGradientdPlasticMacroL = fifthOrderTensor( tot_dim * sot_dim, 0 );
+            auto map_dPlasticMicroGradientdPlasticDeformationGradient         = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticDeformationGradient.data( ) );
+            auto map_dPlasticDeformationGradientdPlasticMacroL                = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticFdPlasticMacroL.data( ) );
+            auto map_dPlasticMicroGradientdPlasticMacroL                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMacroL.data( ) );
 
             auto map_dPlasticMicroGradientdPlasticMicroDeformation            = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroDeformation.data( ) );
             auto map_dPlasticMicroDeformationdPlasticMicroL                   = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPlasticMicroL.data( ) );
             auto map_dPlasticMicroGradientdPlasticMicroL                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroL.data( ) );
 
+            map_dPlasticMicroGradientdPlasticMacroL = ( map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPlasticMacroL ).eval( );
             map_dPlasticMicroGradientdPlasticMicroL += ( map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPlasticMicroL ).eval( );
 
         }
@@ -2958,6 +2976,7 @@ namespace tardigradeHydra{
                                        fourthOrderTensor &dPlasticFdPreviousPlasticMacroL,
                                        fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
                                        fourthOrderTensor &dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                       fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticF,
                                        fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroDeformation,
                                        fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMicroGradient,
                                        fifthOrderTensor  &dPlasticMicroGradientdPreviousPlasticMacroL,
@@ -3007,6 +3026,8 @@ namespace tardigradeHydra{
              *     plastic micro deformation
              * :param &dPlasticMicroDeformationdPreviousPlasticMicroL: The Jacobian of the plastic micro-deformation w.r.t. 
              *     the previous plastic micro velocity gradient.
+             * :param &dPlasticMicroGradientdPreviousPlasticF: The Jacobian of the plastic micro gradient deformation 
+             *     w.r.t. the previous plastic deformation gradient
              * :param &dPlasticMicroGradientdPreviousPlasticMicroDeformation: The Jacobian of the plastic micro gradient deformation 
              *     w.r.t. the previous plastic micro deformation.
              * :param &dPlasticMicroGradientdPreviousPlasticMicroGradient: The Jacobian of the plastic micro gradient deformation 
@@ -3046,37 +3067,52 @@ namespace tardigradeHydra{
 //                                                                    dPlasticMicroDeformationdPreviousPlasticMicroL, alphaMicro );
             )
 
-            fifthOrderTensor dPlasticMicroGradientdPlasticMicroDeformation;
+            fifthOrderTensor dPlasticMicroGradientdPlasticDeformationGradient, dPlasticMicroGradientdPlasticMicroDeformation;
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                evolvePlasticMicroGradChi( Dt, currentPlasticMicroDeformation, currentPlasticMacroVelocityGradient,
-                                           currentPlasticMicroVelocityGradient, currentPlasticMicroGradientVelocityGradient,
-                                           previousPlasticMicroDeformation, previousPlasticMicroGradient,
-                                           previousPlasticMacroVelocityGradient, previousPlasticMicroVelocityGradient,
-                                           previousPlasticMicroGradientVelocityGradient, currentPlasticMicroGradient,
-                                           dPlasticMicroGradientdPlasticMicroDeformation,
-                                           dPlasticMicroGradientdPlasticMacroL, dPlasticMicroGradientdPlasticMicroL,
-                                           dPlasticMicroGradientdPlasticMicroGradientL,
-                                           dPlasticMicroGradientdPreviousPlasticMicroDeformation,
-                                           dPlasticMicroGradientdPreviousPlasticMicroGradient,
-                                           dPlasticMicroGradientdPreviousPlasticMacroL,
-                                           dPlasticMicroGradientdPreviousPlasticMicroL,
-                                           dPlasticMicroGradientdPreviousPlasticMicroGradientL,
-                                           alphaMicroGradient );
+                computePlasticMicroGradChi(
+                    Dt,
+                    currentPlasticDeformationGradient,    currentPlasticMicroDeformation,
+                    currentPlasticMicroVelocityGradient,  currentPlasticMicroGradientVelocityGradient,
+                    previousPlasticDeformationGradient,   previousPlasticMicroDeformation,
+                    previousPlasticMicroVelocityGradient, previousPlasticMicroGradientVelocityGradient,
+                    previousPlasticMicroGradient,         currentPlasticMicroGradient,
+                    dPlasticMicroGradientdPlasticDeformationGradient,
+                    dPlasticMicroGradientdPlasticMicroDeformation,
+                    dPlasticMicroGradientdPlasticMicroL,
+                    dPlasticMicroGradientdPlasticMicroGradientL,
+                    dPlasticMicroGradientdPreviousPlasticF,
+                    dPlasticMicroGradientdPreviousPlasticMicroDeformation,
+                    dPlasticMicroGradientdPreviousPlasticMicroL,
+                    dPlasticMicroGradientdPreviousPlasticMicroGradientL,
+                    dPlasticMicroGradientdPreviousPlasticMicroGradient,
+                    alphaMicroGradient
+                );
             )
 
+            dPlasticMicroGradientdPlasticMacroL         = fifthOrderTensor( tot_dim * sot_dim, 0 );
+            dPlasticMicroGradientdPreviousPlasticMacroL = fifthOrderTensor( tot_dim * sot_dim, 0 );
+            auto map_dPlasticMicroGradientdPlasticDeformationGradient         = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticDeformationGradient.data( ) );
+            auto map_dPlasticMicroGradientdPreviousPlasticF                   = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPreviousPlasticF.data( ) );
+            auto map_dPlasticDeformationGradientdPlasticMacroL                = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticFdPlasticMacroL.data( ) );
+            auto map_dPlasticDeformationGradientdPreviousPlasticMacroL        = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticFdPreviousPlasticMacroL.data( ) );
+            auto map_dPlasticDeformationGradientdPreviousPlasticF             = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticFdPreviousPlasticF.data( ) );
+            auto map_dPlasticMicroGradientdPlasticMacroL                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMacroL.data( ) );
+            auto map_dPlasticMicroGradientdPreviousPlasticMacroL              = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPreviousPlasticMacroL.data( ) );
+
             auto map_dPlasticMicroGradientdPlasticMicroDeformation            = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroDeformation.data( ) );
-            auto map_dPlasticMicroDeformationdPlasticMicroL                   = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPlasticMicroL.data( ) );
-            auto map_dPlasticMicroGradientdPlasticMicroL                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroL.data( ) );
-            auto map_dPlasticMicroDeformationdPreviousPlasticMicroDeformation = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPreviousPlasticMicroDeformation.data( ) );
             auto map_dPlasticMicroGradientdPreviousPlasticMicroDeformation    = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPreviousPlasticMicroDeformation.data( ) );
+            auto map_dPlasticMicroDeformationdPlasticMicroL                   = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPlasticMicroL.data( ) );
             auto map_dPlasticMicroDeformationdPreviousPlasticMicroL           = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPreviousPlasticMicroL.data( ) );
+            auto map_dPlasticMicroDeformationdPreviousPlasticMicroDeformation = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticMicroDeformationdPreviousPlasticMicroDeformation.data( ) );
+            auto map_dPlasticMicroGradientdPlasticMicroL                      = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPlasticMicroL.data( ) );
             auto map_dPlasticMicroGradientdPreviousPlasticMicroL              = getFixedSizeMatrixMap< floatType, tot_dim, sot_dim >( dPlasticMicroGradientdPreviousPlasticMicroL.data( ) );
 
-            map_dPlasticMicroGradientdPlasticMicroL += ( map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPlasticMicroL ).eval( );
-
-            map_dPlasticMicroGradientdPreviousPlasticMicroDeformation += ( map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPreviousPlasticMicroDeformation ).eval( );
-
-            map_dPlasticMicroGradientdPreviousPlasticMicroL += ( map_dPlasticMicroGradientdPlasticMicroDeformation * map_dPlasticMicroDeformationdPreviousPlasticMicroL ).eval( );
+            map_dPlasticMicroGradientdPlasticMacroL                    = ( map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPlasticMacroL ).eval( );
+            map_dPlasticMicroGradientdPreviousPlasticMacroL            = ( map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPreviousPlasticMacroL ).eval( );
+            map_dPlasticMicroGradientdPreviousPlasticF                += ( map_dPlasticMicroGradientdPlasticDeformationGradient * map_dPlasticDeformationGradientdPreviousPlasticF ).eval( );
+            map_dPlasticMicroGradientdPlasticMicroL                   += ( map_dPlasticMicroGradientdPlasticMicroDeformation    * map_dPlasticMicroDeformationdPlasticMicroL ).eval( );
+            map_dPlasticMicroGradientdPreviousPlasticMicroL           += ( map_dPlasticMicroGradientdPlasticMicroDeformation    * map_dPlasticMicroDeformationdPreviousPlasticMicroL ).eval( );
+            map_dPlasticMicroGradientdPreviousPlasticMicroDeformation += ( map_dPlasticMicroGradientdPlasticMicroDeformation    * map_dPlasticMicroDeformationdPreviousPlasticMicroDeformation ).eval( );
 
         }
 
@@ -8298,6 +8334,7 @@ namespace tardigradeHydra{
                 fourthOrderTensor dPlasticFdPreviousPlasticMacroL;
                 fourthOrderTensor dPlasticMicroDeformationdPreviousPlasticMicroDeformation;
                 fourthOrderTensor dPlasticMicroDeformationdPreviousPlasticMicroL;
+                fifthOrderTensor  dPlasticGradientMicroDeformationdPreviousPlasticF;
                 fifthOrderTensor  dPlasticGradientMicroDeformationdPreviousPlasticMicroDeformation;
                 sixthOrderTensor  dPlasticGradientMicroDeformationdPreviousPlasticMicroGradient;
                 fifthOrderTensor  dPlasticGradientMicroDeformationdPreviousPlasticMacroL;
@@ -8327,6 +8364,7 @@ namespace tardigradeHydra{
                                               dPlasticFdPreviousPlasticMacroL,
                                               dPlasticMicroDeformationdPreviousPlasticMicroDeformation,
                                               dPlasticMicroDeformationdPreviousPlasticMicroL,
+                                              dPlasticGradientMicroDeformationdPreviousPlasticF,
                                               dPlasticGradientMicroDeformationdPreviousPlasticMicroDeformation,
                                               dPlasticGradientMicroDeformationdPreviousPlasticMicroGradient,
                                               dPlasticGradientMicroDeformationdPreviousPlasticMacroL,
@@ -8501,6 +8539,7 @@ namespace tardigradeHydra{
 
                     for ( unsigned int j = 0; j < sot_dim; j++ ){
 
+                        ( *dUpdatedPlasticGradientMicroDeformationdPreviousFn.value )[ ( num_configs - 1 ) * sot_dim * i + j + offset ] += dPlasticGradientMicroDeformationdPreviousPlasticF[ sot_dim * i + j ];
                         ( *dUpdatedPlasticGradientMicroDeformationdPreviousChin.value )[ ( num_configs - 1 ) * sot_dim * i + j + offset ] += dPlasticGradientMicroDeformationdPreviousPlasticMicroDeformation[ sot_dim * i + j ];
 
                     }

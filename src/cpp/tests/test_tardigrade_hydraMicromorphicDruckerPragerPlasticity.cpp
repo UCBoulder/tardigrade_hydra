@@ -12847,14 +12847,22 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
                                    6.78559987, 11.60984671,  7.25516648,
                                    4.74326427,  4.32671877,  6.17698967 };
 
-    variableVector answerMicroGrad = {  0.18184066,   0.06902067,  -4.65044761,  -4.6051252 ,
-                                       -0.67925892,  -5.62411017,  -5.22449727,   0.2149805 ,
-                                       -8.35852814, -14.60027145,  11.46879229,   1.1063327 ,
-                                      -30.40158864,  24.16079446,  -3.60050806, -20.35119344,
-                                       18.13574972,  -5.22922306,   4.00630219,  -2.39707255,
-                                       -7.34817085,   3.12285942,  -6.24320576, -15.1020395 ,
-                                       -5.11190824,   3.50558822,  -4.01621741 };
+    variableVector answerMicroGrad = {   9.59343978,  -8.61460819,  -3.69803444,  11.35253372,
+                                        -9.85041282,  -4.68052525,  18.2412451 , -14.20908559,
+                                        -9.01495942,  25.32832677, -24.76770971, -13.10237932,
+                                        45.422337  , -35.29446535, -18.28688725,  39.35288672,
+                                       -36.71005468, -20.43599253,  11.12634553,  -4.14365426,
+                                        -0.77623494,  22.32040942,  -9.14778608,   0.15522122,
+                                        15.28082209,  -9.9282966 ,  -2.53392176 };
 
+//    variableVector answerMicroGrad = {  0.18184066,   0.06902067,  -4.65044761,  -4.6051252 ,
+//                                       -0.67925892,  -5.62411017,  -5.22449727,   0.2149805 ,
+//                                       -8.35852814, -14.60027145,  11.46879229,   1.1063327 ,
+//                                      -30.40158864,  24.16079446,  -3.60050806, -20.35119344,
+//                                       18.13574972,  -5.22922306,   4.00630219,  -2.39707255,
+//                                       -7.34817085,   3.12285942,  -6.24320576, -15.1020395 ,
+//                                       -5.11190824,   3.50558822,  -4.01621741 };
+//
 //    variableVector answerMacro = { -1.9572735 ,  0.60966488,  0.59517042, -0.44336072,  0.11557451,
 //        -0.04102717, -4.31902521,  1.32203177,  1.08289253 };
 //
@@ -12916,7 +12924,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
     variableVector resultMacroJ2, resultMicroJ2, resultMicroGradJ2;
     variableVector dFdMacroLJ2, dChidMicroLJ2, dGradChidMacroLJ2, dGradChidMicroLJ2, dGradChidMicroGradLJ2,
                    dFdPreviousF, dFdPreviousMacroL, dChidPreviousChi, dChidPreviousMicroL, dGradChidPreviousMacroL,
-                   dGradChidPreviousMicroL, dGradChidPreviousMicroGradL, dGradChidPreviousChi, dGradChidPreviousGradChi;
+                   dGradChidPreviousMicroL, dGradChidPreviousMicroGradL, dGradChidPreviousF, dGradChidPreviousChi, dGradChidPreviousGradChi;
 
     tardigradeHydra::micromorphicDruckerPragerPlasticity::evolvePlasticDeformation( Dt, currentPlasticMacroVelocityGradient,
                                                                                     currentPlasticMicroVelocityGradient,
@@ -12932,7 +12940,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
                                                                                     dGradChidMicroLJ2, dGradChidMicroGradLJ2,
                                                                                     dFdPreviousF, dFdPreviousMacroL,
                                                                                     dChidPreviousChi, dChidPreviousMicroL,
-                                                                                    dGradChidPreviousChi, dGradChidPreviousGradChi,
+                                                                                    dGradChidPreviousF, dGradChidPreviousChi, dGradChidPreviousGradChi,
                                                                                     dGradChidPreviousMacroL, dGradChidPreviousMicroL, dGradChidPreviousMicroGradL,
                                                                                     alphaMacro, alphaMicro, alphaMicroGrad );
 
@@ -13150,7 +13158,7 @@ BOOST_AUTO_TEST_CASE( testEvolvePlasticDeformation, * boost::unit_test::toleranc
         gradCol = ( resultMicroGradP - resultMicroGradM ) / ( 2 * delta[ i ] );
 
         for ( unsigned int j = 0; j < gradCol.size(); j++ ){
-            BOOST_TEST( gradCol[ j ] == 0. );
+            BOOST_TEST( gradCol[ j ] == dGradChidPreviousF[ 9 * j + i ] );
         }
     }
 
@@ -14116,7 +14124,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     // Test the jacobians
 
-    floatType eps = 1e-6;
+    floatType eps = 1e-5;
 
     floatMatrix dUpdatedPlasticFdX(                      9, floatVector( unknownVector.size( ), 0 ) );
 
@@ -14370,7 +14378,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation2, * boost::unit_test::tolerance
 
     BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF ),     *R.get_dUpdatedPlasticMicroDeformationdF( )        , 1e-5, 1e-5 ) );
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ) == *R.get_dUpdatedPlasticGradientMicroDeformationdF( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ), *R.get_dUpdatedPlasticGradientMicroDeformationdF( ), 1e-5, 1e-5 ) );
 
     for ( unsigned int i = 0; i < microDeformation.size( ); i++ ){
 
@@ -15205,7 +15213,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     // Test the jacobians
 
-    floatType eps = 1e-6;
+    floatType eps = 1e-5;
 
     floatMatrix dUpdatedPlasticFdX(                      9, floatVector( unknownVector.size( ), 0 ) );
 
@@ -15459,7 +15467,7 @@ BOOST_AUTO_TEST_CASE( test_setPlasticDeformation3, * boost::unit_test::tolerance
 
     BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticChidF ),      *R.get_dUpdatedPlasticMicroDeformationdF( )        , 1e-5, 1e-5 ) );
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ) == *R.get_dUpdatedPlasticGradientMicroDeformationdF( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dUpdatedPlasticGradChidF ),  *R.get_dUpdatedPlasticGradientMicroDeformationdF( ), 1e-5, 1e-5 ) );
 
     for ( unsigned int i = 0; i < microDeformation.size( ); i++ ){
 
