@@ -20,7 +20,7 @@ set(TARDIGRADE_HYDRA_USE_LIBXSMM OFF CACHE BOOL "Flag for whether to use libxsmm
 set(TARDIGRADE_FULL_BUILD OFF CACHE BOOL "Flag for whether a full build of Tardigrade should be performed (i.e., all repos pulled from git and built)")
 
 # Set the internal support libraries
-set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearTestMaterial" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPeryznaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPeryznaViscodamage" "tardigrade_hydraMicromorphicDruckerPragerPlasticity" "tardigrade_hydraPeryznaJ2Viscoplasticity" "tardigrade_hydraMassChange" "tardigrade_hydraMicromorphicDruckerPragerPlasticityOptimization" "tardigrade_hydraFourierHeatConduction" "tardigrade_hydraLinearInternalEnergy" "tardigrade_hydraMicromorphicRadialReturnLinearElasticity" "tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity")
+set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearTestMaterial" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPeryznaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPeryznaViscodamage" "tardigrade_hydraMicromorphicDruckerPragerPlasticity" "tardigrade_hydraPeryznaJ2Viscoplasticity" "tardigrade_hydraMassChange" "tardigrade_hydraMicromorphicDruckerPragerPlasticityOptimization" "tardigrade_hydraFourierHeatConduction" "tardigrade_hydraLinearInternalEnergy" "tardigrade_hydraMicromorphicRadialReturnLinearElasticity" "tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity" "tardigrade_hydraDOFVelocityGradientDeformation")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
@@ -44,6 +44,7 @@ set(TARDIGRADE_HYDRAMASSCHANGE_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools
 set(TARDIGRADE_HYDRAMICROMORPHICLINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
 set(TARDIGRADE_HYDRAMICROMORPHICLINEARTESTMATERIAL_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
 set(TARDIGRADE_HYDRAMICROMORPHICDRUCKERPRAGERPLASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
+set(TARDIGRADE_HYDRAMASSCHANGEDOF_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
 # Set some Abaqus integration variables
 set(UMAT "${PROJECT_NAME}_umat")
 set(MISSING_INTEGRATION_DEPS_MESSAGE "Abaqus integration tests will be skipped.")

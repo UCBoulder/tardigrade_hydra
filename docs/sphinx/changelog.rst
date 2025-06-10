@@ -6,18 +6,31 @@ Changelog
 #########
 
 ******************
-0.4.6 (unreleased)
+0.5.1 (unreleased)
+******************
+
+New Features
+============
+- Added a DOF velocity gradient driven deformation. (:pull:`204`). By `Nathan Miller`_.
+
+******************
+0.5.0 (05-22-2025)
 ******************
 
 New Features
 ============
 - Added the evolution of the micro-gradient plasticity for micromorphic Drucker-Prager plasticity that is in the
   correct configuration. (:pull:`201`). By `Nathan Miller`_.
+- Added a DOF velocity gradient driven mass-change deformation. (:pull:`204`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
 - Changes to the algorithm for the micro-gradient plasticity will mean that any simulations that evolve the
   micro-gradient plasticity will be different. (:pull:`201`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version (:pull:`203`). By `Nathan Miller`_.
 
 ******************
 0.4.5 (05-17-2025)
