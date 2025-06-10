@@ -1,14 +1,14 @@
 /**
-  * \file test_tardigrade_hydraMassChangeDOF.cpp
+  * \file test_tardigrade_hydraDOFVelocityGradientDeformation.cpp
   *
-  * Tests for tardigrade_hydraMassChangeDOF
+  * Tests for tardigrade_hydraDOFVelocityGradientDeformation
   */
 
 #include<tardigrade_hydraLinearElasticity.h>
-#include<tardigrade_hydraMassChangeDOF.h>
+#include<tardigrade_hydraDOFVelocityGradientDeformation.h>
 #include<tardigrade_constitutive_tools.h>
 
-#define BOOST_TEST_MODULE test_tardigrade_hydraMassChangeDOF
+#define BOOST_TEST_MODULE test_tardigrade_hydraDOFVelocityGradientDeformation
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -17,9 +17,9 @@
 
 typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
-typedef tardigradeHydra::massChangeDOF::floatType floatType; //!< Redefinition of the floating point type
-typedef tardigradeHydra::massChangeDOF::floatVector floatVector; //!< Redefinition of the vector of floating points type
-typedef tardigradeHydra::massChangeDOF::floatMatrix floatMatrix; //!< Redefinition of the matrix of floating points type
+typedef tardigradeHydra::dofVelocityGradientDeformation::floatType floatType; //!< Redefinition of the floating point type
+typedef tardigradeHydra::dofVelocityGradientDeformation::floatVector floatVector; //!< Redefinition of the vector of floating points type
+typedef tardigradeHydra::dofVelocityGradientDeformation::floatMatrix floatMatrix; //!< Redefinition of the matrix of floating points type
 
 
 namespace tardigradeHydra{
@@ -40,7 +40,7 @@ namespace tardigradeHydra{
 
     }
 
-    namespace massChangeDOF{
+    namespace dofVelocityGradientDeformation{
 
         namespace unit_test{
 
@@ -48,15 +48,15 @@ namespace tardigradeHydra{
 
                 public:
 
-                    static void runBasicGetTests( tardigradeHydra::massChangeDOF::residual &R ){
+                    static void runBasicGetTests( tardigradeHydra::dofVelocityGradientDeformation::residual &R ){
 
-                        BOOST_CHECK( R._massChangeConfigurationIndex == R.getMassChangeConfigurationIndex( ) );
+                        BOOST_CHECK( R._dofConfigurationIndex == R.getMassChangeConfigurationIndex( ) );
 
-                        BOOST_CHECK( R._massChangeVelocityGradientIndex == R.getMassChangeVelocityGradientIndex( ) );
+                        BOOST_CHECK( R._dofVelocityGradientIndex == R.getMassChangeVelocityGradientIndex( ) );
 
                         BOOST_CHECK( R._integrationParameter == R.getIntegrationParameter( ) );
 
-                        BOOST_CHECK( &R._massChangeVelocityGradient.second         == R.get_massChangeVelocityGradient( ) );
+                        BOOST_CHECK( &R._dofVelocityGradient.second         == R.get_dofVelocityGradient( ) );
 
                         BOOST_CHECK( &R._previousMassChangeVelocityGradient.second == R.get_previousMassChangeVelocityGradient( ) );
 
@@ -88,11 +88,11 @@ void adaptive_tolerance_test( const floatVector &result, const floatVector &answ
 
 BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::massChangeDOF::residual {
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
 
         public:
 
-            using tardigradeHydra::massChangeDOF::residual::residual;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
 
     };
 
@@ -104,11 +104,11 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
 
             floatVector elasticityParameters = { 123.4, 56.7 };
 
-            floatVector massChangeParameters = { 0.78 };
+            floatVector dofDeformationParameters = { 0.78 };
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
-            residualMock massChange;
+            residualMock dofDeformation;
 
             tardigradeHydra::residualBase remainder;
 
@@ -126,13 +126,13 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
-                massChange = residualMock( this, 9, 1, 3, massChangeParameters );
+                dofDeformation = residualMock( this, 9, 1, 3, dofDeformationParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 3 );
 
                 residuals[ 0 ] = &elasticity;
 
-                residuals[ 1 ] = &massChange;
+                residuals[ 1 ] = &dofDeformation;
 
                 residuals[ 2 ] = &remainder;
 
@@ -186,13 +186,13 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
                          additionalDOF, previousAdditionalDOF,
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    residualMock R( &hydra, 9, 1, 3, hydra.massChangeParameters );
+    residualMock R( &hydra, 9, 1, 3, hydra.dofDeformationParameters );
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    tardigradeHydra::massChangeDOF::unit_test::residualTester::runBasicGetTests( R );
+    tardigradeHydra::dofVelocityGradientDeformation::unit_test::residualTester::runBasicGetTests( R );
 
-    floatVector massChangeVelocityGradientAnswer = {
+    floatVector dofVelocityGradientAnswer = {
         0.44, 0.55, 0.66, 0.77, 0.88, 0.99, 1.11, 1.22, 1.33
     };
 
@@ -200,19 +200,19 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
         -0.44, -0.55, -0.66, -0.77, -0.88, -0.99, -1.11, -1.22, -1.33
     };
 
-    BOOST_TEST( massChangeVelocityGradientAnswer         == *R.get_massChangeVelocityGradient( ),         CHECK_PER_ELEMENT );
+    BOOST_TEST( dofVelocityGradientAnswer         == *R.get_dofVelocityGradient( ),         CHECK_PER_ELEMENT );
 
     BOOST_TEST( previousMassChangeVelocityGradientAnswer == *R.get_previousMassChangeVelocityGradient( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_1, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_residual_dofPrecedingDeformationGradient_1, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::massChangeDOF::residual {
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
 
         public:
 
-            using tardigradeHydra::massChangeDOF::residual::residual;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
 
     };
 
@@ -224,11 +224,11 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_1, * 
 
             floatVector elasticityParameters = { 123.4, 56.7 };
 
-            floatVector massChangeParameters = { 0.78 };
+            floatVector dofDeformationParameters = { 0.78 };
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
-            residualMock massChange;
+            residualMock dofDeformation;
 
             tardigradeHydra::residualBase remainder;
 
@@ -246,13 +246,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_1, * 
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
-                massChange = residualMock( this, 9, 1, 3, massChangeParameters );
+                dofDeformation = residualMock( this, 9, 1, 3, dofDeformationParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 3 );
 
                 residuals[ 0 ] = &elasticity;
 
-                residuals[ 1 ] = &massChange;
+                residuals[ 1 ] = &dofDeformation;
 
                 residuals[ 2 ] = &remainder;
 
@@ -314,9 +314,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_1, * 
     floatVector previousAnswer = { 1.02155172, -0.06034483, -0.14224138, -0.14655172,  0.81034483,
        -0.23275862, -0.31465517, -0.31896552,  0.67672414 };
 
-    residualMock R( &hydra, 9, 1, 3, hydra.massChangeParameters );
+    residualMock R( &hydra, 9, 1, 3, hydra.dofDeformationParameters );
 
-    residualMock Rgrad( &hydra, 9, 1, 3, hydra.massChangeParameters );
+    residualMock Rgrad( &hydra, 9, 1, 3, hydra.dofDeformationParameters );
 
     Rgrad.get_dPrecedingDeformationGradientdDeformationGradient( );
 
@@ -332,13 +332,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_1, * 
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_residual_dofPrecedingDeformationGradient_2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::massChangeDOF::residual {
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
 
         public:
 
-            using tardigradeHydra::massChangeDOF::residual::residual;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
 
             floatVector initializeVector( unsigned int size ){
 
@@ -358,13 +358,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * 
 
             floatVector elasticityParameters = { 123.4, 56.7 };
 
-            floatVector massChangeParameters = { 0.78 };
+            floatVector dofDeformationParameters = { 0.78 };
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
             tardigradeHydra::residualBase plasticity;
 
-            residualMock massChange;
+            residualMock dofDeformation;
 
             tardigradeHydra::residualBase remainder;
 
@@ -384,7 +384,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * 
 
                 plasticity = tardigradeHydra::residualBase( this, 9 );
 
-                massChange = residualMock( this, 9, 2, 3, massChangeParameters );
+                dofDeformation = residualMock( this, 9, 2, 3, dofDeformationParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 3 );
 
@@ -392,7 +392,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * 
 
                 residuals[ 1 ] = &plasticity;
 
-                residuals[ 2 ] = &massChange;
+                residuals[ 2 ] = &dofDeformation;
 
                 residuals[ 3 ] = &remainder;
 
@@ -451,7 +451,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * 
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    residualMock R( &hydra, 9, 2, 3, hydra.massChangeParameters );
+    residualMock R( &hydra, 9, 2, 3, hydra.dofDeformationParameters );
 
     floatType eps = 1e-6;
 
@@ -487,9 +487,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * 
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
         floatVector vp = *Rp.get_precedingDeformationGradient( );
 
@@ -532,9 +532,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * 
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, xm );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
         floatVector vp = *Rp.get_precedingDeformationGradient( );
 
@@ -574,9 +574,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * 
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
         floatVector vp = *Rp.get_previousPrecedingDeformationGradient( );
 
@@ -619,9 +619,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * 
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
         floatVector vp = *Rp.get_previousPrecedingDeformationGradient( );
 
@@ -639,13 +639,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangePrecedingDeformationGradient_2, * 
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_1, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_1, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::massChangeDOF::residual {
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
 
         public:
 
-            using tardigradeHydra::massChangeDOF::residual::residual;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
 
         protected:
 
@@ -659,11 +659,11 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_1, * 
 
             floatVector elasticityParameters = { 123.4, 56.7 };
 
-            floatVector massChangeParameters = { 0.78 };
+            floatVector dofDeformationParameters = { 0.78 };
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
-            residualMock massChange;
+            residualMock dofDeformation;
 
             tardigradeHydra::residualBase remainder;
 
@@ -681,13 +681,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_1, * 
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
-                massChange = residualMock( this, 9, 1, 3, massChangeParameters );
+                dofDeformation = residualMock( this, 9, 1, 3, dofDeformationParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 3 );
 
                 residuals[ 0 ] = &elasticity;
 
-                residuals[ 1 ] = &massChange;
+                residuals[ 1 ] = &dofDeformation;
 
                 residuals[ 2 ] = &remainder;
 
@@ -751,31 +751,31 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_1, * 
                                    0.4, 0.5, 0.6,
                                    0.7, 0.8, 0.9 };
 
-    residualMock R( &hydra, 9, 1, 3, hydra.massChangeParameters );
+    residualMock R( &hydra, 9, 1, 3, hydra.dofDeformationParameters );
 
-    residualMock Rgrad( &hydra, 9, 1, 3, hydra.massChangeParameters );
+    residualMock Rgrad( &hydra, 9, 1, 3, hydra.dofDeformationParameters );
 
     Rgrad.get_dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( );
 
     Rgrad.get_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient( );
 
-    BOOST_TEST( answer == *R.get_massChangeIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( answer == *R.get_dofIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( previousAnswer == *R.get_previousMassChangeIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( answer == *Rgrad.get_massChangeIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( answer == *Rgrad.get_dofIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( previousAnswer == *Rgrad.get_previousMassChangeIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::massChangeDOF::residual {
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
 
         public:
 
-            using tardigradeHydra::massChangeDOF::residual::residual;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
 
             floatVector initializeVector( unsigned int size ){
 
@@ -795,13 +795,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
             floatVector elasticityParameters = { 123.4, 56.7 };
 
-            floatVector massChangeParameters;
+            floatVector dofDeformationParameters;
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
             tardigradeHydra::residualBase plasticity;
 
-            residualMock massChange;
+            residualMock dofDeformation;
 
             tardigradeHydra::residualBase remainder;
 
@@ -821,7 +821,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
                 plasticity = tardigradeHydra::residualBase ( this, 9 );
 
-                massChange = residualMock( this, 9, 2, 3, massChangeParameters );
+                dofDeformation = residualMock( this, 9, 2, 3, dofDeformationParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 3 );
 
@@ -829,7 +829,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
                 residuals[ 1 ] = &plasticity;
 
-                residuals[ 2 ] = &massChange;
+                residuals[ 2 ] = &dofDeformation;
 
                 residuals[ 3 ] = &remainder;
 
@@ -888,7 +888,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    residualMock R( &hydra, 9, 2, 3, hydra.massChangeParameters );
+    residualMock R( &hydra, 9, 2, 3, hydra.dofDeformationParameters );
 
     floatType eps = 1e-6;
 
@@ -930,13 +930,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
-        floatVector vp = *Rp.get_massChangeIntermediateVelocityGradient( );
+        floatVector vp = *Rp.get_dofIntermediateVelocityGradient( );
 
-        floatVector vm = *Rm.get_massChangeIntermediateVelocityGradient( );
+        floatVector vm = *Rm.get_dofIntermediateVelocityGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -974,13 +974,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, xm );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
-        floatVector vp = *Rp.get_massChangeIntermediateVelocityGradient( );
+        floatVector vp = *Rp.get_dofIntermediateVelocityGradient( );
 
-        floatVector vm = *Rm.get_massChangeIntermediateVelocityGradient( );
+        floatVector vm = *Rm.get_dofIntermediateVelocityGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -1018,13 +1018,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
-        floatVector vp = *Rp.get_massChangeIntermediateVelocityGradient( );
+        floatVector vp = *Rp.get_dofIntermediateVelocityGradient( );
 
-        floatVector vm = *Rm.get_massChangeIntermediateVelocityGradient( );
+        floatVector vm = *Rm.get_dofIntermediateVelocityGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -1060,9 +1060,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
         floatVector vp = *Rp.get_previousMassChangeIntermediateVelocityGradient( );
 
@@ -1104,9 +1104,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
         floatVector vp = *Rp.get_previousMassChangeIntermediateVelocityGradient( );
 
@@ -1148,9 +1148,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
         floatVector vp = *Rp.get_previousMassChangeIntermediateVelocityGradient( );
 
@@ -1168,15 +1168,15 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeIntermediateVelocityGradient_2, * 
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_1, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::massChangeDOF::residual {
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
 
         public:
 
-            using tardigradeHydra::massChangeDOF::residual::residual;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
 
-            floatVector massChangeIntermediateVelocityGradient = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+            floatVector dofIntermediateVelocityGradient = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
             floatVector previousMassChangeIntermediateVelocityGradient = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
 
@@ -1200,7 +1200,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1, * boost::un
 
         protected:
 
-            using tardigradeHydra::massChangeDOF::residual::setMassChangeIntermediateVelocityGradient;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::setMassChangeIntermediateVelocityGradient;
 
             virtual void setMassChangeIntermediateVelocityGradient( const bool &isPrevious ) override{
 
@@ -1211,7 +1211,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1, * boost::un
                 }
                 else{
 
-                    set_massChangeIntermediateVelocityGradient( massChangeIntermediateVelocityGradient );
+                    set_dofIntermediateVelocityGradient( dofIntermediateVelocityGradient );
 
                 }
 
@@ -1250,11 +1250,11 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1, * boost::un
 
             floatVector elasticityParameters = { 123.4, 56.7 };
 
-            floatVector massChangeParameters;
+            floatVector dofDeformationParameters;
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
-            residualMock massChange;
+            residualMock dofDeformation;
 
             tardigradeHydra::residualBase remainder;
 
@@ -1272,13 +1272,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1, * boost::un
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
-                massChange = residualMock( this, 9, 1, 3, massChangeParameters );
+                dofDeformation = residualMock( this, 9, 1, 3, dofDeformationParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 3 );
 
                 residuals[ 0 ] = &elasticity;
 
-                residuals[ 1 ] = &massChange;
+                residuals[ 1 ] = &dofDeformation;
 
                 residuals[ 2 ] = &remainder;
 
@@ -1338,27 +1338,27 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_1, * boost::un
        5.44578434e+10, 6.45946624e+10, 6.90708588e+10, 8.48683004e+10,
        1.00665742e+11 };
 
-    residualMock R( &hydra, 9, 1, 3, hydra.massChangeParameters, 0.67 );
+    residualMock R( &hydra, 9, 1, 3, hydra.dofDeformationParameters, 0.67 );
 
-    residualMock Rgrad( &hydra, 9, 1, 3, hydra.massChangeParameters, 0.67 );
+    residualMock Rgrad( &hydra, 9, 1, 3, hydra.dofDeformationParameters, 0.67 );
 
     Rgrad.get_dMassChangeDeformationGradientdMassChangeVelocityGradient( );
 
     Rgrad.get_dMassChangeDeformationGradientdPreviousMassChangeVelocityGradient( );
 
-    BOOST_TEST( answer == *R.get_massChangeDeformationGradient( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( answer == *R.get_dofDeformationGradient( ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( answer == *Rgrad.get_massChangeDeformationGradient( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( answer == *Rgrad.get_dofDeformationGradient( ), CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::massChangeDOF::residual {
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
 
         public:
 
-            using tardigradeHydra::massChangeDOF::residual::residual;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
 
             floatVector initializeVector( unsigned int size ){
 
@@ -1376,13 +1376,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
             floatVector elasticityParameters = { 123.4, 56.7 };
 
-            floatVector massChangeParameters;
+            floatVector dofDeformationParameters;
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
             tardigradeHydra::residualBase plasticity;
 
-            residualMock massChange;
+            residualMock dofDeformation;
 
             tardigradeHydra::residualBase remainder;
 
@@ -1402,7 +1402,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
                 plasticity = tardigradeHydra::residualBase ( this, 9 );
 
-                massChange = residualMock( this, 9, 2, 3, massChangeParameters );
+                dofDeformation = residualMock( this, 9, 2, 3, dofDeformationParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 3 );
 
@@ -1410,7 +1410,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
                 residuals[ 1 ] = &plasticity;
 
-                residuals[ 2 ] = &massChange;
+                residuals[ 2 ] = &dofDeformation;
 
                 residuals[ 3 ] = &remainder;
 
@@ -1471,7 +1471,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
     floatType alpha = 0.67;
 
-    residualMock R( &hydra, 9, 2, 3, hydra.massChangeParameters, alpha );
+    residualMock R( &hydra, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
     floatVector dFmdL( 81, 0 );
 
@@ -1513,13 +1513,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        floatVector vp = *Rp.get_massChangeDeformationGradient( );
+        floatVector vp = *Rp.get_dofDeformationGradient( );
 
-        floatVector vm = *Rm.get_massChangeDeformationGradient( );
+        floatVector vm = *Rm.get_dofDeformationGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -1557,13 +1557,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, xm );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        floatVector vp = *Rp.get_massChangeDeformationGradient( );
+        floatVector vp = *Rp.get_dofDeformationGradient( );
 
-        floatVector vm = *Rm.get_massChangeDeformationGradient( );
+        floatVector vm = *Rm.get_dofDeformationGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -1601,13 +1601,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        floatVector vp = *Rp.get_massChangeDeformationGradient( );
+        floatVector vp = *Rp.get_dofDeformationGradient( );
 
-        floatVector vm = *Rm.get_massChangeDeformationGradient( );
+        floatVector vm = *Rm.get_dofDeformationGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -1643,13 +1643,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        floatVector vp = *Rp.get_massChangeDeformationGradient( );
+        floatVector vp = *Rp.get_dofDeformationGradient( );
 
-        floatVector vm = *Rm.get_massChangeDeformationGradient( );
+        floatVector vm = *Rm.get_dofDeformationGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -1687,13 +1687,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        floatVector vp = *Rp.get_massChangeDeformationGradient( );
+        floatVector vp = *Rp.get_dofDeformationGradient( );
 
-        floatVector vm = *Rm.get_massChangeDeformationGradient( );
+        floatVector vm = *Rm.get_dofDeformationGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -1731,13 +1731,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        floatVector vp = *Rp.get_massChangeDeformationGradient( );
+        floatVector vp = *Rp.get_dofDeformationGradient( );
 
-        floatVector vm = *Rm.get_massChangeDeformationGradient( );
+        floatVector vm = *Rm.get_dofDeformationGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -1750,21 +1750,21 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeDeformationGradient_2, * boost::un
     BOOST_TEST( *R.get_dMassChangeDeformationGradientdPreviousMassChangeVelocityGradient( ) == previousdFmdL, CHECK_PER_ELEMENT );
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_residual_dofResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::massChangeDOF::residual {
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
 
         public:
 
-            using tardigradeHydra::massChangeDOF::residual::residual;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
 
-            floatVector massChangeDeformationGradient = { 0.111, 0.222, 0.333, 0.444, 0.555, 0.666, 0.777, 0.888, 0.999 };
+            floatVector dofDeformationGradient = { 0.111, 0.222, 0.333, 0.444, 0.555, 0.666, 0.777, 0.888, 0.999 };
 
         protected:
 
             virtual void setMassChangeDeformationGradient( ) override{
 
-                set_massChangeDeformationGradient( massChangeDeformationGradient );
+                set_dofDeformationGradient( dofDeformationGradient );
 
             }
 
@@ -1784,13 +1784,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual, * boost::unit_test::tole
 
             floatVector elasticityParameters = { 123.4, 56.7 };
 
-            floatVector massChangeParameters;
+            floatVector dofDeformationParameters;
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
             tardigradeHydra::residualBase plasticity;
 
-            residualMock massChange;
+            residualMock dofDeformation;
 
             tardigradeHydra::residualBase remainder;
 
@@ -1810,7 +1810,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual, * boost::unit_test::tole
 
                 plasticity = tardigradeHydra::residualBase ( this, 9 );
 
-                massChange = residualMock( this, 9, 2, 3, massChangeParameters );
+                dofDeformation = residualMock( this, 9, 2, 3, dofDeformationParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 3 );
 
@@ -1818,7 +1818,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual, * boost::unit_test::tole
 
                 residuals[ 1 ] = &plasticity;
 
-                residuals[ 2 ] = &massChange;
+                residuals[ 2 ] = &dofDeformation;
 
                 residuals[ 3 ] = &remainder;
 
@@ -1879,7 +1879,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual, * boost::unit_test::tole
 
     floatType alpha = 0.67;
 
-    residualMock R( &hydra, 9, 2, 3, hydra.massChangeParameters, alpha );
+    residualMock R( &hydra, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
     floatVector answer = { -1.089,  0.012,  0.043,
                             0.214, -0.345,  0.556,
@@ -1889,13 +1889,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual, * boost::unit_test::tole
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_residual_dofResidual_2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::massChangeDOF::residual {
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
 
         public:
 
-            using tardigradeHydra::massChangeDOF::residual::residual;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
 
         protected:
 
@@ -1915,13 +1915,13 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2, * boost::unit_test::to
 
             floatVector elasticityParameters = { 123.4, 56.7 };
 
-            floatVector massChangeParameters;
+            floatVector dofDeformationParameters;
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
             tardigradeHydra::residualBase plasticity;
 
-            residualMock massChange;
+            residualMock dofDeformation;
 
             tardigradeHydra::residualBase remainder;
 
@@ -1941,7 +1941,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2, * boost::unit_test::to
 
                 plasticity = tardigradeHydra::residualBase ( this, 9 );
 
-                massChange = residualMock( this, 9, 2, 3, massChangeParameters );
+                dofDeformation = residualMock( this, 9, 2, 3, dofDeformationParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 3 );
 
@@ -1949,7 +1949,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2, * boost::unit_test::to
 
                 residuals[ 1 ] = &plasticity;
 
-                residuals[ 2 ] = &massChange;
+                residuals[ 2 ] = &dofDeformation;
 
                 residuals[ 3 ] = &remainder;
 
@@ -2010,7 +2010,7 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2, * boost::unit_test::to
 
     floatType alpha = 0.67;
 
-    residualMock R( &hydra, 9, 2, 3, hydra.massChangeParameters, alpha );
+    residualMock R( &hydra, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
     floatVector jacobian( 9 * unknownVector.size( ), 0 );
 
@@ -2046,9 +2046,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, xm );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
         floatVector vp = *Rp.getResidual( );
 
@@ -2088,9 +2088,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
         floatVector vp = *Rp.getResidual( );
 
@@ -2130,9 +2130,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
         floatVector vp = *Rp.getResidual( );
 
@@ -2174,9 +2174,9 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        residualMock Rp( &hydrap, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rp( &hydrap, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
-        residualMock Rm( &hydram, 9, 2, 3, hydra.massChangeParameters, alpha );
+        residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters, alpha );
 
         floatVector vp = *Rp.getResidual( );
 
@@ -2196,11 +2196,11 @@ BOOST_AUTO_TEST_CASE( test_residual_massChangeResidual_2, * boost::unit_test::to
 
 BOOST_AUTO_TEST_CASE( test_residual_exampleModel, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::massChangeDOF::residual {
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
 
         public:
 
-            using tardigradeHydra::massChangeDOF::residual::residual;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
 
     };
 
@@ -2212,11 +2212,11 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel, * boost::unit_test::tolerance(
 
             floatVector elasticityParameters = { 123.4, 56.7 };
 
-            floatVector massChangeParameters;
+            floatVector dofDeformationParameters;
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
-            residualMock massChange;
+            residualMock dofDeformation;
 
             void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
 
@@ -2232,11 +2232,11 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel, * boost::unit_test::tolerance(
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
-                massChange = residualMock( this, 9, 1, 3, massChangeParameters );
+                dofDeformation = residualMock( this, 9, 1, 3, dofDeformationParameters );
 
                 residuals[ 0 ] = &elasticity;
 
-                residuals[ 1 ] = &massChange;
+                residuals[ 1 ] = &dofDeformation;
 
                 setResidualClasses( residuals );
 
@@ -2424,19 +2424,19 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel, * boost::unit_test::tolerance(
 
 BOOST_AUTO_TEST_CASE( test_residual_suggestInitialIterateValues, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::massChangeDOF::residual {
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
 
         public:
 
-            using tardigradeHydra::massChangeDOF::residual::residual;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
 
-            floatVector massChangeDeformationGradient = { 0.111, 0.222, 0.333, 0.444, 0.555, 0.666, 0.777, 0.888, 0.999 };
+            floatVector dofDeformationGradient = { 0.111, 0.222, 0.333, 0.444, 0.555, 0.666, 0.777, 0.888, 0.999 };
 
         protected:
 
             virtual void setMassChangeDeformationGradient( ) override{
 
-                set_massChangeDeformationGradient( massChangeDeformationGradient );
+                set_dofDeformationGradient( dofDeformationGradient );
 
             }
 
@@ -2456,13 +2456,13 @@ BOOST_AUTO_TEST_CASE( test_residual_suggestInitialIterateValues, * boost::unit_t
 
             floatVector elasticityParameters = { 123.4, 56.7 };
 
-            floatVector massChangeParameters = { 0.78 };
+            floatVector dofDeformationParameters = { 0.78 };
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
             tardigradeHydra::residualBase plasticity;
 
-            residualMock massChange;
+            residualMock dofDeformation;
 
             tardigradeHydra::residualBase remainder;
 
@@ -2482,7 +2482,7 @@ BOOST_AUTO_TEST_CASE( test_residual_suggestInitialIterateValues, * boost::unit_t
 
                 plasticity = tardigradeHydra::residualBase ( this, 9 );
 
-                massChange = residualMock( this, 9, 2, 3, massChangeParameters );
+                dofDeformation = residualMock( this, 9, 2, 3, dofDeformationParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 3 );
 
@@ -2490,7 +2490,7 @@ BOOST_AUTO_TEST_CASE( test_residual_suggestInitialIterateValues, * boost::unit_t
 
                 residuals[ 1 ] = &plasticity;
 
-                residuals[ 2 ] = &massChange;
+                residuals[ 2 ] = &dofDeformation;
 
                 residuals[ 3 ] = &remainder;
 
@@ -2549,7 +2549,7 @@ BOOST_AUTO_TEST_CASE( test_residual_suggestInitialIterateValues, * boost::unit_t
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    residualMock R( &hydra, 9, 2, 3, hydra.massChangeParameters );
+    residualMock R( &hydra, 9, 2, 3, hydra.dofDeformationParameters );
 
     std::vector< unsigned int > indices = { 18, 19, 20, 21, 22, 23, 24, 25, 26 };
 

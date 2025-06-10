@@ -1,18 +1,18 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraMassChangeDOF.cpp
+  * \file tardigrade_hydraDOFVelocityGradientDeformation.cpp
   ******************************************************************************
-  * An implementation of the mass-change residual where the mass change velocity
-  * gradient is a dof vector.
+  * An implementation of a deformation where the velocity gradient is in the
+  * additionalDOF vector.
   ******************************************************************************
   */
 
-#include<tardigrade_hydraMassChangeDOF.h>
+#include<tardigrade_hydraDOFVelocityGradientDeformation.h>
 #include<tardigrade_constitutive_tools.h>
 
 namespace tardigradeHydra{
 
-    namespace massChangeDOF{
+    namespace dofVelocityGradientDeformation{
 
         void residual::decomposeAdditionalDOF( ){
             /*!
@@ -25,11 +25,11 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( hydra->getPreviousAdditionalDOF( )->size( ) >= getMassChangeVelocityGradientIndex( ) + dim * dim, "The additional DOF vector is of size " + std::to_string( hydra->getPreviousAdditionalDOF( )->size( ) ) + " which is less than the required size of " + std::to_string( getMassChangeVelocityGradientIndex( ) + dim * dim ) );
 
-            auto massChangeVelocityGradient         = get_setDataStorage_massChangeVelocityGradient( );
+            auto dofVelocityGradient         = get_setDataStorage_dofVelocityGradient( );
 
             auto previousMassChangeVelocityGradient = get_setDataStorage_previousMassChangeVelocityGradient( );
 
-            *massChangeVelocityGradient.value = secondOrderTensor( hydra->getAdditionalDOF( )->begin( ) + getMassChangeVelocityGradientIndex( ),
+            *dofVelocityGradient.value = secondOrderTensor( hydra->getAdditionalDOF( )->begin( ) + getMassChangeVelocityGradientIndex( ),
                                                                    hydra->getAdditionalDOF( )->begin( ) + getMassChangeVelocityGradientIndex( ) + dim * dim );
 
             *previousMassChangeVelocityGradient.value = secondOrderTensor( hydra->getPreviousAdditionalDOF( )->begin( ) + getMassChangeVelocityGradientIndex( ),
@@ -231,11 +231,11 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_massChangeVelocityGradient( ) )
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_dofVelocityGradient( ) )
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_precedingDeformationGradient( ) )
 
-                intermediateVelocityGradient = get_setDataStorage_massChangeIntermediateVelocityGradient( );
+                intermediateVelocityGradient = get_setDataStorage_dofIntermediateVelocityGradient( );
 
             }
 
@@ -297,11 +297,11 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dPFdFn = get_dPrecedingDeformationGradientdSubDeformationGradients( ) )
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_massChangeVelocityGradient( ) )
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_dofVelocityGradient( ) )
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_precedingDeformationGradient( ) )
 
-                intermediateVelocityGradient = get_setDataStorage_massChangeIntermediateVelocityGradient( );
+                intermediateVelocityGradient = get_setDataStorage_dofIntermediateVelocityGradient( );
 
                 dILdL                        = get_setDataStorage_dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( );
 
@@ -418,17 +418,17 @@ namespace tardigradeHydra{
              * Set the mass-change deformation gradient
              */
 
-            const secondOrderTensor *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
+            const secondOrderTensor *intermediateVelocityGradient = get_dofIntermediateVelocityGradient( );
 
             const secondOrderTensor *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
 
             const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( getMassChangeConfigurationIndex( ) );
 
-            auto massChangeDeformationGradient = get_setDataStorage_massChangeDeformationGradient( );
+            auto dofDeformationGradient = get_setDataStorage_dofDeformationGradient( );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                               *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                              *massChangeDeformationGradient.value,
+                                                                                              *dofDeformationGradient.value,
                                                                                               getIntegrationParameter( ) ) )
 
         }
@@ -446,7 +446,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            const secondOrderTensor *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
+            const secondOrderTensor *intermediateVelocityGradient = get_dofIntermediateVelocityGradient( );
 
             const fourthOrderTensor *dILdL = get_dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( );
 
@@ -458,7 +458,7 @@ namespace tardigradeHydra{
 
             const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( getMassChangeConfigurationIndex( ) );
 
-            auto massChangeDeformationGradient = get_setDataStorage_massChangeDeformationGradient( );
+            auto dofDeformationGradient = get_setDataStorage_dofDeformationGradient( );
 
             fourthOrderTensor dFmdIL;
 
@@ -476,7 +476,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                                   *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                                  *massChangeDeformationGradient.value,
+                                                                                                  *dofDeformationGradient.value,
                                                                                                   dFmdIL, dFmdFp, dFmdILp,
                                                                                                   getIntegrationParameter( ) ) )
 
@@ -519,7 +519,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                                   *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                                  *massChangeDeformationGradient.value,
+                                                                                                  *dofDeformationGradient.value,
                                                                                                   dFmdIL,
                                                                                                   getIntegrationParameter( ) ) )
 
@@ -619,12 +619,12 @@ namespace tardigradeHydra{
              * Defined as the residual's computed thermal deformation gradient minus the value stored in hydra's configurations.
              */
 
-            auto massChangeConfigurationIndex = getMassChangeConfigurationIndex( );
+            auto dofConfigurationIndex = getMassChangeConfigurationIndex( );
 
             auto residual = get_setDataStorage_residual( );
 
-            *residual.value = *get_massChangeDeformationGradient( ) - secondOrderTensor( hydra->get_configurations( )->begin( ) +   massChangeConfigurationIndex * 9,
-                                                                                         hydra->get_configurations( )->begin( ) + ( massChangeConfigurationIndex + 1 ) * 9 );
+            *residual.value = *get_dofDeformationGradient( ) - secondOrderTensor( hydra->get_configurations( )->begin( ) +   dofConfigurationIndex * 9,
+                                                                                         hydra->get_configurations( )->begin( ) + ( dofConfigurationIndex + 1 ) * 9 );
 
         }
 
@@ -726,12 +726,12 @@ namespace tardigradeHydra{
 
             auto configuration = getMassChangeConfigurationIndex( );
 
-            const secondOrderTensor *massChangeDeformationGradient = get_massChangeDeformationGradient( );
+            const secondOrderTensor *dofDeformationGradient = get_dofDeformationGradient( );
 
             indices = std::vector< unsigned int >( sot_dim, sot_dim * configuration );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){ indices[ i ] += i; }
-            values = *massChangeDeformationGradient;
+            values = *dofDeformationGradient;
 
         }
 

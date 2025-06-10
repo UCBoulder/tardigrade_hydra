@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraMassChangeDOF.h
+  * \file tardigrade_hydraDOFVelocityGradientDeformation.h
   ******************************************************************************
-  * An implementation of the mass-change residual where the mass change velocity
+  * An implementation of the evolution of deformation where the velocity
   * gradient is defined via a DOF.
   ******************************************************************************
   */
 
-#ifndef TARDIGRADE_HYDRA_MASS_CHANGE_DOF_H
-#define TARDIGRADE_HYDRA_MASS_CHANGE_DOF_H
+#ifndef TARDIGRADE_HYDRA_DOF_VELOCITY_GRADIENT_DEFORMATION_H
+#define TARDIGRADE_HYDRA_DOF_VELOCITY_GRADIENT_DEFORMATION_H
 
 #define USE_EIGEN
 #include<tardigrade_vector_tools.h>
@@ -16,7 +16,7 @@
 
 namespace tardigradeHydra{
 
-    namespace massChangeDOF{
+    namespace dofVelocityGradientDeformation{
 
         // forward class definitions
         namespace unit_test{
@@ -63,8 +63,8 @@ namespace tardigradeHydra{
         typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
 
         /*!
-         * A class which defines a mass-change residual where the mass change velocity gradient
-         * is defined by a degree of freedom gradient located in the additional DOF vector
+         * A class which defines a deformation where the velocity gradient of that deformation is
+         * defined by the additional dof vector
          */
         class residual : public tardigradeHydra::residualBase{
 
@@ -72,7 +72,7 @@ namespace tardigradeHydra{
 
                 residual(
                     tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations,
-                    const unsigned int massChangeConfigurationIndex, const unsigned int massChangeVelocityGradientIndex,
+                    const unsigned int dofConfigurationIndex, const unsigned int dofVelocityGradientIndex,
                     const floatVector &parameters, const floatType integrationParameter = 0.5
                 ) : tardigradeHydra::residualBase( hydra, numEquations ), _integrationParameter( integrationParameter ){
                     /*!
@@ -81,25 +81,25 @@ namespace tardigradeHydra{
                      * \param *hydra: A reference to the containing hydra object
                      * \param &numEquations: The number of equations to be defined by
                      *     the residual
-                     * \param &massChangeConfigurationIndex: The index of the mass-change configuration
-                     * \param &massChangeVelocityGradientIndex: The index of the current configuration mass-change velocity gradient in the additional dof vector
+                     * \param &dofConfigurationIndex: The index of the mass-change configuration
+                     * \param &dofVelocityGradientIndex: The index of the current configuration velocity gradient in the additional dof vector
                      * \param &parameters: The parameters for the model
                      * \param integrationParameter: The parameter of the integration 0 is explicit, 1 is implicit
                      */
 
-                    _massChangeConfigurationIndex = massChangeConfigurationIndex;
+                    _dofConfigurationIndex = dofConfigurationIndex;
 
-                    _massChangeVelocityGradientIndex = massChangeVelocityGradientIndex;
+                    _dofVelocityGradientIndex = dofVelocityGradientIndex;
 
                     TARDIGRADE_ERROR_TOOLS_CATCH( decomposeAdditionalDOF( ) );
 
                 }
 
                 //! Get the index of the mass-change configuration
-                const unsigned int getMassChangeConfigurationIndex( ){ return _massChangeConfigurationIndex; }
+                const unsigned int getMassChangeConfigurationIndex( ){ return _dofConfigurationIndex; }
 
                 //! Get the index of the velocity gradient in the DOF vector
-                const unsigned int getMassChangeVelocityGradientIndex( ){ return _massChangeVelocityGradientIndex; }
+                const unsigned int getMassChangeVelocityGradientIndex( ){ return _dofVelocityGradientIndex; }
 
                 //! Get the integration parameter 0 for explicit, 1 for implicit
                 const floatType getIntegrationParameter( ){ return _integrationParameter; }
@@ -176,7 +176,7 @@ namespace tardigradeHydra{
             private:
 
                 // Friend classes
-                friend class tardigradeHydra::massChangeDOF::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
+                friend class tardigradeHydra::dofVelocityGradientDeformation::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
                 using tardigradeHydra::residualBase::residualBase;
 
@@ -192,14 +192,14 @@ namespace tardigradeHydra{
 
                 using tardigradeHydra::residualBase::setAdditionalDerivatives;
 
-                unsigned int _massChangeConfigurationIndex;
+                unsigned int _dofConfigurationIndex;
 
-                unsigned int _massChangeVelocityGradientIndex;
+                unsigned int _dofVelocityGradientIndex;
 
                 floatType _integrationParameter;
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(
-                    private, massChangeVelocityGradient,
+                    private, dofVelocityGradient,
                     dimVector, unexpectedError
                 )
 
@@ -239,7 +239,7 @@ namespace tardigradeHydra{
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              massChangeIntermediateVelocityGradient,
+                    private,              dofIntermediateVelocityGradient,
                     secondOrderTensor, setMassChangeIntermediateVelocityGradient
                 )
 
@@ -279,7 +279,7 @@ namespace tardigradeHydra{
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              massChangeDeformationGradient,
+                    private,              dofDeformationGradient,
                     secondOrderTensor, setMassChangeDeformationGradient
                 )
 

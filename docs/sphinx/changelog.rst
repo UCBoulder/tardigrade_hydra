@@ -11,7 +11,7 @@ Changelog
 
 New Features
 ============
-- Added a DOF velocity gradient driven mass-change deformation. (:pull:`204`). By `Nathan Miller`_.
+- Added a DOF velocity gradient driven deformation. (:pull:`204`). By `Nathan Miller`_.
 
 ******************
 0.5.0 (05-22-2025)
