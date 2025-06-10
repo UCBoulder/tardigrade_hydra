@@ -163,15 +163,15 @@ namespace tardigradeHydra{
 
                 virtual void setdMassChangeDeformationGradientdPreviousSubDeformationGradients( );
 
-//                virtual void setResidual( ) override;
-//
-//                virtual void setJacobian( ) override;
-//
-//                virtual void setdRdT( ) override;
-//
-//                virtual void setdRdF( ) override;
-//
-//                virtual void setdRdAdditionalDOF( ) override;
+                virtual void setResidual( ) override;
+
+                virtual void setJacobian( ) override;
+
+                virtual void setdRdT( ) override;
+
+                virtual void setdRdF( ) override;
+
+                virtual void setdRdAdditionalDOF( ) override;
 
             private:
 

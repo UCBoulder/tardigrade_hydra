@@ -612,114 +612,106 @@ namespace tardigradeHydra{
 
         }
 
-//        void residual::setResidual( ){
-//            /*!
-//             * Set the value of the residual
-//             * 
-//             * Defined as the residual's computed thermal deformation gradient minus the value stored in hydra's configurations.
-//             */
-//
-//            const unsigned int massChangeConfigurationIndex = *getMassChangeConfigurationIndex( );
-//
-//            auto residual = get_setDataStorage_residual( );
-//
-//            *residual.value = *get_massChangeDeformationGradient( ) - secondOrderTensor( hydra->get_configurations( )->begin( ) +   massChangeConfigurationIndex * 9,
-//                                                                                         hydra->get_configurations( )->begin( ) + ( massChangeConfigurationIndex + 1 ) * 9 );
-//
-//        }
-//
-//        void residual::setJacobian( ){
-//            /*!
-//             * Set the values of the jacobian
-//             */
-//
-//            const unsigned int sot_dim = hydra->getSOTDimension( );
-//
-//            const unsigned int num_unknowns = hydra->getNumUnknowns( );
-//
-//            const unsigned int num_equations = *getNumEquations( );
-//
-//            const unsigned int num_configs = *hydra->getNumConfigurations( );
-//
-//            auto jacobian = get_setDataStorage_jacobian( );
-//            jacobian.zero( num_equations * num_unknowns );
-//
-//            const floatVector *dFmdFn = get_dMassChangeDeformationGradientdSubDeformationGradients( );
-//
-//            for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
-//
-//                ( *jacobian.value )[ num_unknowns * i + sot_dim * ( *getMassChangeConfigurationIndex( ) ) + i ] += -1;
-//
-//                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
-//
-//                    ( *jacobian.value )[ num_unknowns * i + j + sot_dim ] += ( *dFmdFn )[ ( num_configs - 1 ) * sot_dim * i + j ];
-//
-//                }
-//
-//            }
-//
-//        }
-//
-//        void residual::setdRdT( ){
-//            /*!
-//             * Set the derivative of the residual w.r.t. the temperature
-//             */
-//
-//            const unsigned int sot_dim = hydra->getSOTDimension( );
-//
-//            auto dRdT = get_setDataStorage_dRdT( );
-//
-//            dRdT.zero( sot_dim );
-//
-//        }
-//
-//        void residual::setdRdF( ){
-//            /*!
-//             * Set the derivative of the residual w.r.t. the deformation gradient
-//             */
-//
-//            auto dRdF = get_setDataStorage_dRdF( );
-//            *dRdF.value = *get_dMassChangeDeformationGradientdDeformationGradient( );
-//
-//        }
-//
-//        void residual::setdRdAdditionalDOF( ){
-//            /*!
-//             * Set the additional derivatives
-//             */
-//
-//            const unsigned int dim = hydra->getDimension( );
-//
-//            const unsigned int sot_dim = hydra->getSOTDimension( );
-//
-//            const unsigned int num_equations = *getNumEquations( );
-//
-//            const unsigned int num_additional_dof = hydra->getAdditionalDOF( )->size( );
-//
-//            const secondOrderTensor *dMassChangeDeformationdDensity = get_dMassChangeDeformationGradientdDensity( );
-//
-//            const secondOrderTensor *dMassChangeDeformationdMassChangeRate = get_dMassChangeDeformationGradientdMassChangeRate( );
-//
-//            const thirdOrderTensor  *dMassChangeDeformationdDirectionVector = get_dMassChangeDeformationGradientdDirectionVector( );
-//
-//            auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
-//            dRdAdditionalDOF.zero( num_equations * num_additional_dof );
-//
-//            for ( unsigned int i = 0; i < sot_dim; i++ ){
-//
-//                ( *dRdAdditionalDOF.value )[ num_additional_dof * i + 0 ] = ( *dMassChangeDeformationdDensity )[ i ];
-//
-//                ( *dRdAdditionalDOF.value )[ num_additional_dof * i + 1 ] = ( *dMassChangeDeformationdMassChangeRate )[ i ];
-//
-//                for ( unsigned int j = 0; j < dim; j++ ){
-//
-//                    ( *dRdAdditionalDOF.value )[ num_additional_dof * i + j + 2 ] = ( *dMassChangeDeformationdDirectionVector )[ dim * i + j ];
-//
-//                }
-//
-//            }
-//
-//        }
+        void residual::setResidual( ){
+            /*!
+             * Set the value of the residual
+             * 
+             * Defined as the residual's computed thermal deformation gradient minus the value stored in hydra's configurations.
+             */
+
+            auto massChangeConfigurationIndex = getMassChangeConfigurationIndex( );
+
+            auto residual = get_setDataStorage_residual( );
+
+            *residual.value = *get_massChangeDeformationGradient( ) - secondOrderTensor( hydra->get_configurations( )->begin( ) +   massChangeConfigurationIndex * 9,
+                                                                                         hydra->get_configurations( )->begin( ) + ( massChangeConfigurationIndex + 1 ) * 9 );
+
+        }
+
+        void residual::setJacobian( ){
+            /*!
+             * Set the values of the jacobian
+             */
+
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            const unsigned int num_unknowns = hydra->getNumUnknowns( );
+
+            const unsigned int num_equations = *getNumEquations( );
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            auto jacobian = get_setDataStorage_jacobian( );
+            jacobian.zero( num_equations * num_unknowns );
+
+            const floatVector *dFmdFn = get_dMassChangeDeformationGradientdSubDeformationGradients( );
+
+            for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+
+                ( *jacobian.value )[ num_unknowns * i + sot_dim * getMassChangeConfigurationIndex( ) + i ] += -1;
+
+                for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
+
+                    ( *jacobian.value )[ num_unknowns * i + j + sot_dim ] += ( *dFmdFn )[ ( num_configs - 1 ) * sot_dim * i + j ];
+
+                }
+
+            }
+
+        }
+
+        void residual::setdRdT( ){
+            /*!
+             * Set the derivative of the residual w.r.t. the temperature
+             */
+
+            const unsigned int sot_dim = hydra->getSOTDimension( );
+
+            auto dRdT = get_setDataStorage_dRdT( );
+
+            dRdT.zero( sot_dim );
+
+        }
+
+        void residual::setdRdF( ){
+            /*!
+             * Set the derivative of the residual w.r.t. the deformation gradient
+             */
+
+            auto dRdF = get_setDataStorage_dRdF( );
+            *dRdF.value = *get_dMassChangeDeformationGradientdDeformationGradient( );
+
+        }
+
+        void residual::setdRdAdditionalDOF( ){
+            /*!
+             * Set the additional derivatives
+             */
+
+            auto sot_dim = hydra->getSOTDimension( );
+
+            auto num_equations = *getNumEquations( );
+
+            auto num_additional_dof = hydra->getAdditionalDOF( )->size( );
+
+            const fourthOrderTensor *dMassChangeDeformationdMassChangeVelocityGradient = get_dMassChangeDeformationGradientdMassChangeVelocityGradient( );
+
+            auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
+            dRdAdditionalDOF.zero( num_equations * num_additional_dof );
+
+            auto offset = getMassChangeVelocityGradientIndex( );
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
+
+                    ( *dRdAdditionalDOF.value )[ num_additional_dof * i + j + offset ] = ( *dMassChangeDeformationdMassChangeVelocityGradient )[ sot_dim * i + j ];
+
+                }
+
+            }
+
+        }
 
         void residual::suggestInitialIterateValues( std::vector< unsigned int >   &indices,
                                                     std::vector< floatType > &values ){
@@ -730,16 +722,16 @@ namespace tardigradeHydra{
              * \param &values: The values to suggest
              */
 
-//            auto sot_dim = hydra->getSOTDimension( );
-//
-//            auto configuration = *getMassChangeConfigurationIndex( );
-//
-//            const secondOrderTensor *massChangeDeformationGradient = get_massChangeDeformationGradient( );
-//
-//            indices = std::vector< unsigned int >( sot_dim, sot_dim * configuration );
-//
-//            for ( unsigned int i = 0; i < sot_dim; i++ ){ indices[ i ] += i; }
-//            values = *massChangeDeformationGradient;
+            auto sot_dim = hydra->getSOTDimension( );
+
+            auto configuration = getMassChangeConfigurationIndex( );
+
+            const secondOrderTensor *massChangeDeformationGradient = get_massChangeDeformationGradient( );
+
+            indices = std::vector< unsigned int >( sot_dim, sot_dim * configuration );
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){ indices[ i ] += i; }
+            values = *massChangeDeformationGradient;
 
         }
 
