@@ -13,6 +13,7 @@ New Features
 ============
 - Added the evolution of the micro-gradient plasticity for micromorphic Drucker-Prager plasticity that is in the
   correct configuration. (:pull:`201`). By `Nathan Miller`_.
+- Added a DOF velocity gradient driven mass-change deformation. (:pull:`204`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
