@@ -413,275 +413,205 @@ namespace tardigradeHydra{
 
         }
 
-//        void residual::setMassChangeDeformationGradient( ){
-//            /*!
-//             * Set the mass-change deformation gradient
-//             */
-//
-//            const secondOrderTensor *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
-//
-//            const secondOrderTensor *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
-//
-//            const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
-//
-//            auto massChangeDeformationGradient = get_setDataStorage_massChangeDeformationGradient( );
-//
-//            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
-//                                                                                              *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-//                                                                                              *massChangeDeformationGradient.value,
-//                                                                                              *getIntegrationParameter( ) ) )
-//
-//        }
-//
-//        void residual::setMassChangeDeformationGradientDerivatives( const bool &computePrevious ){
-//            /*!
-//             * Compute the derivatives of the mass-change deformation gradient
-//             *
-//             * \param &computePrevious: Compute the gradients w.r.t. previous values
-//             */
-//
-//            constexpr unsigned int dim = 3;
-//
-//            constexpr unsigned int sot_dim = dim * dim;
-//
-//            constexpr unsigned int tot_dim = sot_dim * dim;
-//
-//            const unsigned int num_configs = *hydra->getNumConfigurations( );
-//
-//            const secondOrderTensor *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
-//
-//            const fourthOrderTensor *dILdL = get_dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( );
-//
-//            const fourthOrderTensor *dILdF = get_dMassChangeIntermediateVelocityGradientdDeformationGradient( );
-//
-//            const floatVector *dILdFn      = get_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( );
-//
-//            const secondOrderTensor *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
-//
-//            const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( *getMassChangeConfigurationIndex( ) );
-//
-//            auto massChangeDeformationGradient = get_setDataStorage_massChangeDeformationGradient( );
-//
-//            fourthOrderTensor dFmdL;
-//
-//            if ( computePrevious ){
-//
-//                const secondOrderTensor *dLpdRho   = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity( );
-//
-//                const secondOrderTensor *dLpdC     = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate( );
-//
-//                const thirdOrderTensor  *dLpdGradC = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector( );
-//
-//                const fourthOrderTensor *dLpdF     = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( );
-//
-//                const floatVector *dLpdFn    = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( );
-//
-//                fourthOrderTensor dFmdFp;
-//
-//                fourthOrderTensor dFmdLp;
-//
-//                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
-//                                                                                                  *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-//                                                                                                  *massChangeDeformationGradient.value,
-//                                                                                                  dFmdL, dFmdFp, dFmdLp,
-//                                                                                                  *getIntegrationParameter( ) ) )
-//
-//                auto dFmdPreviousRho = get_setDataStorage_dMassChangeDeformationGradientdPreviousDensity( );
-//                dFmdPreviousRho.zero( sot_dim );
-//
-//                auto dFmdPreviousC = get_setDataStorage_dMassChangeDeformationGradientdPreviousMassChangeRate( );
-//                dFmdPreviousC.zero( sot_dim );
-//
-//                auto dFmdPreviousGradC = get_setDataStorage_dMassChangeDeformationGradientdPreviousDirectionVector( );
-//                dFmdPreviousGradC.zero( tot_dim );
-//
-//                auto dFmdPreviousF = get_setDataStorage_dMassChangeDeformationGradientdPreviousDeformationGradient( );
-//                dFmdPreviousF.zero( sot_dim * sot_dim );
-//
-//                auto dFmdPreviousFn = get_setDataStorage_dMassChangeDeformationGradientdPreviousSubDeformationGradients( );
-//                dFmdPreviousFn.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
-//
-//                for ( unsigned int i = 0; i < sot_dim; i++ ){
-//
-//                    for ( unsigned int j = 0; j < sot_dim; j++ ){
-//
-//                        ( *dFmdPreviousRho.value )[ i ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdRho )[ j ];
-//
-//                        ( *dFmdPreviousC.value )[ i ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdC )[ j ];
-//
-//                        ( *dFmdPreviousFn.value )[ ( num_configs - 1 ) * sot_dim * i + j + ( ( *getMassChangeConfigurationIndex( ) ) - 1 ) * sot_dim ]
-//                            += dFmdFp[ sot_dim * i + j ];
-//
-//                        for ( unsigned int k = 0; k < dim; k++ ){
-//
-//                            ( *dFmdPreviousGradC.value )[ dim * i + k ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdGradC )[ dim * j + k ];
-//
-//                        }
-//
-//                        for ( unsigned int k = 0; k < sot_dim; k++ ){
-//
-//                            ( *dFmdPreviousF.value )[ sot_dim * i + k ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdF )[ sot_dim * j + k ];
-//
-//                        }
-//
-//                        for ( unsigned int k = 0; k < ( num_configs - 1 ) * sot_dim; k++ ){
-//
-//                            ( *dFmdPreviousFn.value )[ ( num_configs - 1 ) * sot_dim * i + k ] += dFmdLp[ sot_dim * i + j ] * ( *dLpdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
-//
-//                        }
-//
-//                    }
-//
-//                }
-//
-//            }
-//            else{
-//
-//                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
-//                                                                                                  *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-//                                                                                                  *massChangeDeformationGradient.value,
-//                                                                                                  dFmdL,
-//                                                                                                  *getIntegrationParameter( ) ) )
-//
-//            }
-//
-//            auto dFmdRho = get_setDataStorage_dMassChangeDeformationGradientdDensity( );
-//            dFmdRho.zero( sot_dim );
-//
-//            auto dFmdC = get_setDataStorage_dMassChangeDeformationGradientdMassChangeRate( );
-//            dFmdC.zero( sot_dim );
-//
-//            auto dFmdGradC = get_setDataStorage_dMassChangeDeformationGradientdDirectionVector( );
-//            dFmdGradC.zero( tot_dim );
-//
-//            auto dFmdF = get_setDataStorage_dMassChangeDeformationGradientdDeformationGradient( );
-//            dFmdF.zero( sot_dim * sot_dim );
-//
-//            auto dFmdFn = get_setDataStorage_dMassChangeDeformationGradientdSubDeformationGradients( );
-//            dFmdFn.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
-//
-//            for ( unsigned int i = 0; i < sot_dim; i++ ){
-//
-//                for ( unsigned int j = 0; j < sot_dim; j++ ){
-//
-//                    ( *dFmdRho.value )[ i ] += dFmdL[ sot_dim * i + j ] * ( *dLdRho )[ j ];
-//
-//                    ( *dFmdC.value )[ i ] += dFmdL[ sot_dim * i + j ] * ( *dLdC )[ j ];
-//
-//                    for ( unsigned int k = 0; k < dim; k++ ){
-//
-//                        ( *dFmdGradC.value )[ dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdGradC )[ dim * j + k ];
-//
-//                    }
-//
-//                    for ( unsigned int k = 0; k < sot_dim; k++ ){
-//
-//                        ( *dFmdF.value )[ sot_dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdF )[ sot_dim * j + k ];
-//
-//                    }
-//
-//                    for ( unsigned int k = 0; k < ( num_configs - 1 ) * sot_dim; k++ ){
-//
-//                        ( *dFmdFn.value )[ ( num_configs - 1 ) * sot_dim * i + k ] += dFmdL[ sot_dim * i + j ] * ( *dLdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
-//
-//                    }
-//
-//                }
-//
-//            }
-//
-//        }
-//
-//        void residual::setdMassChangeDeformationGradientdDensity( ){
-//            /*!
-//             * Compute the derivative of the mass-change deformation gradient w.r.t. the density
-//             */
-//
-//            setMassChangeDeformationGradientDerivatives( false );
-//
-//        }
-//
-//        void residual::setdMassChangeDeformationGradientdMassChangeRate( ){
-//            /*!
-//             * Compute the derivative of the mass-change deformation gradient w.r.t. the mass change rate
-//             */
-//
-//            setMassChangeDeformationGradientDerivatives( false );
-//
-//        }
-//
-//        void residual::setdMassChangeDeformationGradientdDirectionVector( ){
-//            /*!
-//             * Compute the derivative of the mass-change deformation gradient w.r.t. the mass change rate gradient
-//             */
-//
-//            setMassChangeDeformationGradientDerivatives( false );
-//
-//        }
-//
-//        void residual::setdMassChangeDeformationGradientdDeformationGradient( ){
-//            /*!
-//             * Compute the derivative of the mass-change deformation gradient w.r.t. the deformation gradient
-//             */
-//
-//            setMassChangeDeformationGradientDerivatives( false );
-//
-//        }
-//
-//        void residual::setdMassChangeDeformationGradientdSubDeformationGradients( ){
-//            /*!
-//             * Compute the derivative of the mass-change deformation gradient w.r.t. the sub deformation gradients
-//             */
-//
-//            setMassChangeDeformationGradientDerivatives( false );
-//
-//        }
-//
-//        void residual::setdMassChangeDeformationGradientdPreviousDensity( ){
-//            /*!
-//             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous density
-//             */
-//
-//            setMassChangeDeformationGradientDerivatives( true );
-//
-//        }
-//
-//        void residual::setdMassChangeDeformationGradientdPreviousMassChangeRate( ){
-//            /*!
-//             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous mass change rate
-//             */
-//
-//            setMassChangeDeformationGradientDerivatives( true );
-//
-//        }
-//
-//        void residual::setdMassChangeDeformationGradientdPreviousDirectionVector( ){
-//            /*!
-//             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous mass change rate gradient
-//             */
-//
-//            setMassChangeDeformationGradientDerivatives( true );
-//
-//        }
-//
-//        void residual::setdMassChangeDeformationGradientdPreviousDeformationGradient( ){
-//            /*!
-//             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous deformation gradient
-//             */
-//
-//            setMassChangeDeformationGradientDerivatives( true );
-//
-//        }
-//
-//        void residual::setdMassChangeDeformationGradientdPreviousSubDeformationGradients( ){
-//            /*!
-//             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous sub deformation gradients
-//             */
-//
-//            setMassChangeDeformationGradientDerivatives( true );
-//
-//        }
-//
+        void residual::setMassChangeDeformationGradient( ){
+            /*!
+             * Set the mass-change deformation gradient
+             */
+
+            const secondOrderTensor *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
+
+            const secondOrderTensor *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
+
+            const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( getMassChangeConfigurationIndex( ) );
+
+            auto massChangeDeformationGradient = get_setDataStorage_massChangeDeformationGradient( );
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                                                                                              *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                              *massChangeDeformationGradient.value,
+                                                                                              getIntegrationParameter( ) ) )
+
+        }
+
+        void residual::setMassChangeDeformationGradientDerivatives( const bool &computePrevious ){
+            /*!
+             * Compute the derivatives of the mass-change deformation gradient
+             *
+             * \param &computePrevious: Compute the gradients w.r.t. previous values
+             */
+
+            constexpr unsigned int dim = 3;
+
+            constexpr unsigned int sot_dim = dim * dim;
+
+            const unsigned int num_configs = *hydra->getNumConfigurations( );
+
+            const secondOrderTensor *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
+
+            const fourthOrderTensor *dILdL = get_dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( );
+
+            const fourthOrderTensor *dILdF = get_dMassChangeIntermediateVelocityGradientdDeformationGradient( );
+
+            const floatVector *dILdFn      = get_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( );
+
+            const secondOrderTensor *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
+
+            const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( getMassChangeConfigurationIndex( ) );
+
+            auto massChangeDeformationGradient = get_setDataStorage_massChangeDeformationGradient( );
+
+            fourthOrderTensor dFmdIL;
+
+            if ( computePrevious ){
+
+                const fourthOrderTensor  *dILpdL = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient( );
+
+                const fourthOrderTensor *dILpdF  = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( );
+
+                const floatVector *dILpdFn       = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( );
+
+                fourthOrderTensor dFmdFp;
+
+                fourthOrderTensor dFmdILp;
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                                                                                                  *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                                  *massChangeDeformationGradient.value,
+                                                                                                  dFmdIL, dFmdFp, dFmdILp,
+                                                                                                  getIntegrationParameter( ) ) )
+
+                auto dFmdPreviousL = get_setDataStorage_dMassChangeDeformationGradientdPreviousMassChangeVelocityGradient( );
+                dFmdPreviousL.zero( sot_dim * sot_dim );
+
+                auto dFmdPreviousF = get_setDataStorage_dMassChangeDeformationGradientdPreviousDeformationGradient( );
+                dFmdPreviousF.zero( sot_dim * sot_dim );
+
+                auto dFmdPreviousFn = get_setDataStorage_dMassChangeDeformationGradientdPreviousSubDeformationGradients( );
+                dFmdPreviousFn.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
+
+                for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                    for ( unsigned int j = 0; j < sot_dim; j++ ){
+
+                        ( *dFmdPreviousFn.value )[ ( num_configs - 1 ) * sot_dim * i + j + ( getMassChangeConfigurationIndex( ) - 1 ) * sot_dim ]
+                            += dFmdFp[ sot_dim * i + j ];
+
+                        for ( unsigned int k = 0; k < sot_dim; k++ ){
+
+                            ( *dFmdPreviousL.value )[ sot_dim * i + k ] += dFmdILp[ sot_dim * i + j ] * ( *dILpdL )[ sot_dim * j + k ];
+
+                            ( *dFmdPreviousF.value )[ sot_dim * i + k ] += dFmdILp[ sot_dim * i + j ] * ( *dILpdF )[ sot_dim * j + k ];
+
+                        }
+
+                        for ( unsigned int k = 0; k < ( num_configs - 1 ) * sot_dim; k++ ){
+
+                            ( *dFmdPreviousFn.value )[ ( num_configs - 1 ) * sot_dim * i + k ] += dFmdILp[ sot_dim * i + j ] * ( *dILpdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
+
+                        }
+
+                    }
+
+                }
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                                                                                                  *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                                  *massChangeDeformationGradient.value,
+                                                                                                  dFmdIL,
+                                                                                                  getIntegrationParameter( ) ) )
+
+            }
+
+            auto dFmdL = get_setDataStorage_dMassChangeDeformationGradientdMassChangeVelocityGradient( );
+            dFmdL.zero( sot_dim * sot_dim );
+
+            auto dFmdF = get_setDataStorage_dMassChangeDeformationGradientdDeformationGradient( );
+            dFmdF.zero( sot_dim * sot_dim );
+
+            auto dFmdFn = get_setDataStorage_dMassChangeDeformationGradientdSubDeformationGradients( );
+            dFmdFn.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
+
+            for ( unsigned int i = 0; i < sot_dim; i++ ){
+
+                for ( unsigned int j = 0; j < sot_dim; j++ ){
+
+                    for ( unsigned int k = 0; k < sot_dim; k++ ){
+
+                        ( *dFmdL.value )[ sot_dim * i + k ] += dFmdIL[ sot_dim * i + j ] * ( *dILdL )[ sot_dim * j + k ];
+
+                        ( *dFmdF.value )[ sot_dim * i + k ] += dFmdIL[ sot_dim * i + j ] * ( *dILdF )[ sot_dim * j + k ];
+
+                    }
+
+                    for ( unsigned int k = 0; k < ( num_configs - 1 ) * sot_dim; k++ ){
+
+                        ( *dFmdFn.value )[ ( num_configs - 1 ) * sot_dim * i + k ] += dFmdIL[ sot_dim * i + j ] * ( *dILdFn )[ ( num_configs - 1 ) * sot_dim * j + k ];
+
+                    }
+
+                }
+
+            }
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdMassChangeVelocityGradient( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the mass change velocity gradient
+             */
+
+            setMassChangeDeformationGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdDeformationGradient( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the deformation gradient
+             */
+
+            setMassChangeDeformationGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdSubDeformationGradients( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the sub deformation gradients
+             */
+
+            setMassChangeDeformationGradientDerivatives( false );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdPreviousMassChangeVelocityGradient( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous mass change velocity gradient
+             */
+
+            setMassChangeDeformationGradientDerivatives( true );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdPreviousDeformationGradient( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous deformation gradient
+             */
+
+            setMassChangeDeformationGradientDerivatives( true );
+
+        }
+
+        void residual::setdMassChangeDeformationGradientdPreviousSubDeformationGradients( ){
+            /*!
+             * Compute the derivative of the mass-change deformation gradient w.r.t. the previous sub deformation gradients
+             */
+
+            setMassChangeDeformationGradientDerivatives( true );
+
+        }
+
 //        void residual::setResidual( ){
 //            /*!
 //             * Set the value of the residual
