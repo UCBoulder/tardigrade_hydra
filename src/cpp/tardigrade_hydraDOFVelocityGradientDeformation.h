@@ -96,10 +96,10 @@ namespace tardigradeHydra{
                 }
 
                 //! Get the index of the mass-change configuration
-                const unsigned int getMassChangeConfigurationIndex( ){ return _dofConfigurationIndex; }
+                const unsigned int getDOFConfigurationIndex( ){ return _dofConfigurationIndex; }
 
                 //! Get the index of the velocity gradient in the DOF vector
-                const unsigned int getMassChangeVelocityGradientIndex( ){ return _dofVelocityGradientIndex; }
+                const unsigned int getDOFVelocityGradientIndex( ){ return _dofVelocityGradientIndex; }
 
                 //! Get the integration parameter 0 for explicit, 1 for implicit
                 const floatType getIntegrationParameter( ){ return _integrationParameter; }
@@ -127,41 +127,41 @@ namespace tardigradeHydra{
 
                 virtual void setdPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( );
 
-                virtual void setMassChangeIntermediateVelocityGradient( const bool &isPrevious );
+                virtual void setDOFIntermediateVelocityGradient( const bool &isPrevious );
 
-                virtual void setMassChangeIntermediateVelocityGradientDerivatives( const bool &isPrevious );
+                virtual void setDOFIntermediateVelocityGradientDerivatives( const bool &isPrevious );
 
-                virtual void setMassChangeIntermediateVelocityGradient( );
+                virtual void setDOFIntermediateVelocityGradient( );
 
-                virtual void setdMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( );
+                virtual void setdDOFIntermediateVelocityGradientdDOFVelocityGradient( );
 
-                virtual void setdMassChangeIntermediateVelocityGradientdDeformationGradient( );
+                virtual void setdDOFIntermediateVelocityGradientdDeformationGradient( );
 
-                virtual void setdMassChangeIntermediateVelocityGradientdSubDeformationGradients( );
+                virtual void setdDOFIntermediateVelocityGradientdSubDeformationGradients( );
 
-                virtual void setPreviousMassChangeIntermediateVelocityGradient( );
+                virtual void setPreviousDOFIntermediateVelocityGradient( );
 
-                virtual void setdPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient( );
+                virtual void setdPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient( );
 
-                virtual void setdPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( );
+                virtual void setdPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient( );
 
-                virtual void setdPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( );
+                virtual void setdPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients( );
 
-                virtual void setMassChangeDeformationGradient( );
+                virtual void setDOFDeformationGradient( );
 
-                virtual void setMassChangeDeformationGradientDerivatives( const bool &computePrevious );
+                virtual void setDOFDeformationGradientDerivatives( const bool &computePrevious );
 
-                virtual void setdMassChangeDeformationGradientdMassChangeVelocityGradient( );
+                virtual void setdDOFDeformationGradientdDOFVelocityGradient( );
 
-                virtual void setdMassChangeDeformationGradientdDeformationGradient( );
+                virtual void setdDOFDeformationGradientdDeformationGradient( );
 
-                virtual void setdMassChangeDeformationGradientdSubDeformationGradients( );
+                virtual void setdDOFDeformationGradientdSubDeformationGradients( );
 
-                virtual void setdMassChangeDeformationGradientdPreviousMassChangeVelocityGradient( );
+                virtual void setdDOFDeformationGradientdPreviousDOFVelocityGradient( );
 
-                virtual void setdMassChangeDeformationGradientdPreviousDeformationGradient( );
+                virtual void setdDOFDeformationGradientdPreviousDeformationGradient( );
 
-                virtual void setdMassChangeDeformationGradientdPreviousSubDeformationGradients( );
+                virtual void setdDOFDeformationGradientdPreviousSubDeformationGradients( );
 
                 virtual void setResidual( ) override;
 
@@ -204,7 +204,7 @@ namespace tardigradeHydra{
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(
-                    private, previousMassChangeVelocityGradient,
+                    private, previousDOFVelocityGradient,
                     dimVector, unexpectedError
                 )
 
@@ -240,77 +240,77 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
                     private,              dofIntermediateVelocityGradient,
-                    secondOrderTensor, setMassChangeIntermediateVelocityGradient
+                    secondOrderTensor, setDOFIntermediateVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient,
-                    fourthOrderTensor, setdMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient
+                    private,              dDOFIntermediateVelocityGradientdDOFVelocityGradient,
+                    fourthOrderTensor, setdDOFIntermediateVelocityGradientdDOFVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dMassChangeIntermediateVelocityGradientdDeformationGradient,
-                    fourthOrderTensor, setdMassChangeIntermediateVelocityGradientdDeformationGradient
+                    private,              dDOFIntermediateVelocityGradientdDeformationGradient,
+                    fourthOrderTensor, setdDOFIntermediateVelocityGradientdDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,        dMassChangeIntermediateVelocityGradientdSubDeformationGradients,
-                    floatVector, setdMassChangeIntermediateVelocityGradientdSubDeformationGradients
+                    private,        dDOFIntermediateVelocityGradientdSubDeformationGradients,
+                    floatVector, setdDOFIntermediateVelocityGradientdSubDeformationGradients
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,              previousMassChangeIntermediateVelocityGradient,
-                    secondOrderTensor, setPreviousMassChangeIntermediateVelocityGradient
+                    private,              previousDOFIntermediateVelocityGradient,
+                    secondOrderTensor, setPreviousDOFIntermediateVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,              dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient,
-                    fourthOrderTensor, setdPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient
+                    private,              dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient,
+                    fourthOrderTensor, setdPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient,
-                    fourthOrderTensor, setdPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient
+                    private,              dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient,
+                    fourthOrderTensor, setdPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,        dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients,
-                    floatVector, setdPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients
+                    private,        dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients,
+                    floatVector, setdPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
                     private,              dofDeformationGradient,
-                    secondOrderTensor, setMassChangeDeformationGradient
+                    secondOrderTensor, setDOFDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dMassChangeDeformationGradientdMassChangeVelocityGradient,
-                    fourthOrderTensor, setdMassChangeDeformationGradientdMassChangeVelocityGradient
+                    private,              dDOFDeformationGradientdDOFVelocityGradient,
+                    fourthOrderTensor, setdDOFDeformationGradientdDOFVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dMassChangeDeformationGradientdDeformationGradient,
-                    fourthOrderTensor, setdMassChangeDeformationGradientdDeformationGradient
+                    private,              dDOFDeformationGradientdDeformationGradient,
+                    fourthOrderTensor, setdDOFDeformationGradientdDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,        dMassChangeDeformationGradientdSubDeformationGradients,
-                    floatVector, setdMassChangeDeformationGradientdSubDeformationGradients
+                    private,        dDOFDeformationGradientdSubDeformationGradients,
+                    floatVector, setdDOFDeformationGradientdSubDeformationGradients
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,              dMassChangeDeformationGradientdPreviousMassChangeVelocityGradient,
-                    fourthOrderTensor, setdMassChangeDeformationGradientdPreviousMassChangeVelocityGradient
+                    private,              dDOFDeformationGradientdPreviousDOFVelocityGradient,
+                    fourthOrderTensor, setdDOFDeformationGradientdPreviousDOFVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,              dMassChangeDeformationGradientdPreviousDeformationGradient,
-                    fourthOrderTensor, setdMassChangeDeformationGradientdPreviousDeformationGradient
+                    private,              dDOFDeformationGradientdPreviousDeformationGradient,
+                    fourthOrderTensor, setdDOFDeformationGradientdPreviousDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,        dMassChangeDeformationGradientdPreviousSubDeformationGradients,
-                    floatVector, setdMassChangeDeformationGradientdPreviousSubDeformationGradients
+                    private,        dDOFDeformationGradientdPreviousSubDeformationGradients,
+                    floatVector, setdDOFDeformationGradientdPreviousSubDeformationGradients
                 )
 
         };

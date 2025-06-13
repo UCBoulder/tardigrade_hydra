@@ -21,19 +21,19 @@ namespace tardigradeHydra{
 
             constexpr unsigned int dim = 3;
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( hydra->getAdditionalDOF( )->size( ) >= getMassChangeVelocityGradientIndex( ) + dim * dim, "The additional DOF vector is of size " + std::to_string( hydra->getAdditionalDOF( )->size( ) ) + " which is less than the required size of " + std::to_string( getMassChangeVelocityGradientIndex( ) + dim * dim ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK( hydra->getAdditionalDOF( )->size( ) >= getDOFVelocityGradientIndex( ) + dim * dim, "The additional DOF vector is of size " + std::to_string( hydra->getAdditionalDOF( )->size( ) ) + " which is less than the required size of " + std::to_string( getDOFVelocityGradientIndex( ) + dim * dim ) );
 
-            TARDIGRADE_ERROR_TOOLS_CHECK( hydra->getPreviousAdditionalDOF( )->size( ) >= getMassChangeVelocityGradientIndex( ) + dim * dim, "The additional DOF vector is of size " + std::to_string( hydra->getPreviousAdditionalDOF( )->size( ) ) + " which is less than the required size of " + std::to_string( getMassChangeVelocityGradientIndex( ) + dim * dim ) );
+            TARDIGRADE_ERROR_TOOLS_CHECK( hydra->getPreviousAdditionalDOF( )->size( ) >= getDOFVelocityGradientIndex( ) + dim * dim, "The additional DOF vector is of size " + std::to_string( hydra->getPreviousAdditionalDOF( )->size( ) ) + " which is less than the required size of " + std::to_string( getDOFVelocityGradientIndex( ) + dim * dim ) );
 
             auto dofVelocityGradient         = get_setDataStorage_dofVelocityGradient( );
 
-            auto previousMassChangeVelocityGradient = get_setDataStorage_previousMassChangeVelocityGradient( );
+            auto previousDOFVelocityGradient = get_setDataStorage_previousDOFVelocityGradient( );
 
-            *dofVelocityGradient.value = secondOrderTensor( hydra->getAdditionalDOF( )->begin( ) + getMassChangeVelocityGradientIndex( ),
-                                                                   hydra->getAdditionalDOF( )->begin( ) + getMassChangeVelocityGradientIndex( ) + dim * dim );
+            *dofVelocityGradient.value = secondOrderTensor( hydra->getAdditionalDOF( )->begin( ) + getDOFVelocityGradientIndex( ),
+                                                                   hydra->getAdditionalDOF( )->begin( ) + getDOFVelocityGradientIndex( ) + dim * dim );
 
-            *previousMassChangeVelocityGradient.value = secondOrderTensor( hydra->getPreviousAdditionalDOF( )->begin( ) + getMassChangeVelocityGradientIndex( ),
-                                                                           hydra->getPreviousAdditionalDOF( )->begin( ) + getMassChangeVelocityGradientIndex( ) + dim * dim );
+            *previousDOFVelocityGradient.value = secondOrderTensor( hydra->getPreviousAdditionalDOF( )->begin( ) + getDOFVelocityGradientIndex( ),
+                                                                           hydra->getPreviousAdditionalDOF( )->begin( ) + getDOFVelocityGradientIndex( ) + dim * dim );
 
         }
 
@@ -47,13 +47,13 @@ namespace tardigradeHydra{
             if ( isPrevious ){
 
                 auto precedingDeformationGradient = get_setDataStorage_previousPrecedingDeformationGradient( );
-                *precedingDeformationGradient.value = hydra->getPreviousPrecedingConfiguration( getMassChangeConfigurationIndex( ) );
+                *precedingDeformationGradient.value = hydra->getPreviousPrecedingConfiguration( getDOFConfigurationIndex( ) );
 
             }
             else{
 
                 auto precedingDeformationGradient = get_setDataStorage_precedingDeformationGradient( );
-                *precedingDeformationGradient.value = hydra->getPrecedingConfiguration( getMassChangeConfigurationIndex( ) );
+                *precedingDeformationGradient.value = hydra->getPrecedingConfiguration( getDOFConfigurationIndex( ) );
 
             }
 
@@ -90,10 +90,10 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dF1dFn = hydra->get_previousdF1dFn( ) )
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dpFdFs = hydra->getPreviousPrecedingConfigurationJacobian( getMassChangeConfigurationIndex( ) ) )
+                TARDIGRADE_ERROR_TOOLS_CATCH( dpFdFs = hydra->getPreviousPrecedingConfigurationJacobian( getDOFConfigurationIndex( ) ) )
 
                 auto precedingDeformationGradient = get_setDataStorage_previousPrecedingDeformationGradient( );
-                *precedingDeformationGradient.value = hydra->getPreviousPrecedingConfiguration( getMassChangeConfigurationIndex( ) );
+                *precedingDeformationGradient.value = hydra->getPreviousPrecedingConfiguration( getDOFConfigurationIndex( ) );
 
                 dpFdF = get_setDataStorage_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient( );
 
@@ -106,10 +106,10 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dF1dFn = hydra->get_dF1dFn( ) )
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( dpFdFs = hydra->getPrecedingConfigurationJacobian( getMassChangeConfigurationIndex( ) ) )
+                TARDIGRADE_ERROR_TOOLS_CATCH( dpFdFs = hydra->getPrecedingConfigurationJacobian( getDOFConfigurationIndex( ) ) )
 
                 auto precedingDeformationGradient = get_setDataStorage_precedingDeformationGradient( );
-                *precedingDeformationGradient.value = hydra->getPrecedingConfiguration( getMassChangeConfigurationIndex( ) );
+                *precedingDeformationGradient.value = hydra->getPrecedingConfiguration( getDOFConfigurationIndex( ) );
 
                 dpFdF = get_setDataStorage_dPrecedingDeformationGradientdDeformationGradient( );
 
@@ -207,7 +207,7 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setMassChangeIntermediateVelocityGradient( const bool &isPrevious ){
+        void residual::setDOFIntermediateVelocityGradient( const bool &isPrevious ){
             /*!
              * Set the velocity gradient in the intermediate configuration
              *
@@ -222,11 +222,11 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_previousMassChangeVelocityGradient( ) )
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_previousDOFVelocityGradient( ) )
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_previousPrecedingDeformationGradient( ) )
 
-                intermediateVelocityGradient = get_setDataStorage_previousMassChangeIntermediateVelocityGradient( );
+                intermediateVelocityGradient = get_setDataStorage_previousDOFIntermediateVelocityGradient( );
 
             }
             else{
@@ -243,7 +243,7 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setMassChangeIntermediateVelocityGradientDerivatives( const bool &isPrevious ){
+        void residual::setDOFIntermediateVelocityGradientDerivatives( const bool &isPrevious ){
             /*!
              * Set the derivatives of the velocity gradient in the intermediate configuration
              *
@@ -278,17 +278,17 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dPFdFn = get_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( ) )
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_previousMassChangeVelocityGradient( ) )
+                TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_previousDOFVelocityGradient( ) )
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_previousPrecedingDeformationGradient( ) )
 
-                intermediateVelocityGradient = get_setDataStorage_previousMassChangeIntermediateVelocityGradient( );
+                intermediateVelocityGradient = get_setDataStorage_previousDOFIntermediateVelocityGradient( );
 
-                dILdL                        = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient( );
+                dILdL                        = get_setDataStorage_dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient( );
 
-                dILdF                        = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( );
+                dILdF                        = get_setDataStorage_dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient( );
 
-                dILdFn                       = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( );
+                dILdFn                       = get_setDataStorage_dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients( );
 
             }
             else{
@@ -303,11 +303,11 @@ namespace tardigradeHydra{
 
                 intermediateVelocityGradient = get_setDataStorage_dofIntermediateVelocityGradient( );
 
-                dILdL                        = get_setDataStorage_dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( );
+                dILdL                        = get_setDataStorage_dDOFIntermediateVelocityGradientdDOFVelocityGradient( );
 
-                dILdF                        = get_setDataStorage_dMassChangeIntermediateVelocityGradientdDeformationGradient( );
+                dILdF                        = get_setDataStorage_dDOFIntermediateVelocityGradientdDeformationGradient( );
 
-                dILdFn                       = get_setDataStorage_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( );
+                dILdFn                       = get_setDataStorage_dDOFIntermediateVelocityGradientdSubDeformationGradients( );
 
             }
 
@@ -341,99 +341,99 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setMassChangeIntermediateVelocityGradient( ){
+        void residual::setDOFIntermediateVelocityGradient( ){
             /*!
              * Set the current intermediate velocity gradient
              */
 
-            setMassChangeIntermediateVelocityGradient( false );
+            setDOFIntermediateVelocityGradient( false );
 
         }
 
-        void residual::setPreviousMassChangeIntermediateVelocityGradient( ){
+        void residual::setPreviousDOFIntermediateVelocityGradient( ){
             /*!
              * Set the previous intermediate velocity gradient
              */
 
-            setMassChangeIntermediateVelocityGradient( true );
+            setDOFIntermediateVelocityGradient( true );
 
         }
 
-        void residual::setdMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( ){
+        void residual::setdDOFIntermediateVelocityGradientdDOFVelocityGradient( ){
             /*!
              * Set the derivative of the current intermediate velocity gradient w.r.t. the mass change velocity gradient
              */
 
-            setMassChangeIntermediateVelocityGradientDerivatives( false );
+            setDOFIntermediateVelocityGradientDerivatives( false );
 
         }
 
-        void residual::setdMassChangeIntermediateVelocityGradientdDeformationGradient( ){
+        void residual::setdDOFIntermediateVelocityGradientdDeformationGradient( ){
             /*!
              * Set the derivative of the current intermediate velocity gradient w.r.t. the deformation gradient
              */
 
-            setMassChangeIntermediateVelocityGradientDerivatives( false );
+            setDOFIntermediateVelocityGradientDerivatives( false );
 
         }
 
-        void residual::setdMassChangeIntermediateVelocityGradientdSubDeformationGradients( ){
+        void residual::setdDOFIntermediateVelocityGradientdSubDeformationGradients( ){
             /*!
              * Set the derivative of the current intermediate velocity gradient w.r.t. the sub-deformation gradients
              */
 
-            setMassChangeIntermediateVelocityGradientDerivatives( false );
+            setDOFIntermediateVelocityGradientDerivatives( false );
 
         }
 
-        void residual::setdPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient( ){
+        void residual::setdPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient( ){
             /*!
              * Set the derivative of the previous intermediate velocity gradient w.r.t. the previous mass change velocity gradient
              */
 
-            setMassChangeIntermediateVelocityGradientDerivatives( true );
+            setDOFIntermediateVelocityGradientDerivatives( true );
 
         }
 
-        void residual::setdPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( ){
+        void residual::setdPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient( ){
             /*!
              * Set the derivative of the previous intermediate velocity gradient w.r.t. the previous deformation gradient
              */
 
-            setMassChangeIntermediateVelocityGradientDerivatives( true );
+            setDOFIntermediateVelocityGradientDerivatives( true );
 
         }
 
-        void residual::setdPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( ){
+        void residual::setdPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients( ){
             /*!
              * Set the derivative of the previous intermediate velocity gradient w.r.t. the previous sub-deformation gradients
              */
 
-            setMassChangeIntermediateVelocityGradientDerivatives( true );
+            setDOFIntermediateVelocityGradientDerivatives( true );
 
         }
 
-        void residual::setMassChangeDeformationGradient( ){
+        void residual::setDOFDeformationGradient( ){
             /*!
              * Set the mass-change deformation gradient
              */
 
             const secondOrderTensor *intermediateVelocityGradient = get_dofIntermediateVelocityGradient( );
 
-            const secondOrderTensor *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
+            const secondOrderTensor *previousIntermediateVelocityGradient = get_previousDOFIntermediateVelocityGradient( );
 
-            const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( getMassChangeConfigurationIndex( ) );
+            const secondOrderTensor previousDOFDeformationGradient = hydra->getPreviousConfiguration( getDOFConfigurationIndex( ) );
 
             auto dofDeformationGradient = get_setDataStorage_dofDeformationGradient( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
                                                                                               *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                                                               *dofDeformationGradient.value,
                                                                                               getIntegrationParameter( ) ) )
 
         }
 
-        void residual::setMassChangeDeformationGradientDerivatives( const bool &computePrevious ){
+        void residual::setDOFDeformationGradientDerivatives( const bool &computePrevious ){
             /*!
              * Compute the derivatives of the mass-change deformation gradient
              *
@@ -448,15 +448,15 @@ namespace tardigradeHydra{
 
             const secondOrderTensor *intermediateVelocityGradient = get_dofIntermediateVelocityGradient( );
 
-            const fourthOrderTensor *dILdL = get_dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( );
+            const fourthOrderTensor *dILdL = get_dDOFIntermediateVelocityGradientdDOFVelocityGradient( );
 
-            const fourthOrderTensor *dILdF = get_dMassChangeIntermediateVelocityGradientdDeformationGradient( );
+            const fourthOrderTensor *dILdF = get_dDOFIntermediateVelocityGradientdDeformationGradient( );
 
-            const floatVector *dILdFn      = get_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( );
+            const floatVector *dILdFn      = get_dDOFIntermediateVelocityGradientdSubDeformationGradients( );
 
-            const secondOrderTensor *previousIntermediateVelocityGradient = get_previousMassChangeIntermediateVelocityGradient( );
+            const secondOrderTensor *previousIntermediateVelocityGradient = get_previousDOFIntermediateVelocityGradient( );
 
-            const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( getMassChangeConfigurationIndex( ) );
+            const secondOrderTensor previousDOFDeformationGradient = hydra->getPreviousConfiguration( getDOFConfigurationIndex( ) );
 
             auto dofDeformationGradient = get_setDataStorage_dofDeformationGradient( );
 
@@ -464,36 +464,36 @@ namespace tardigradeHydra{
 
             if ( computePrevious ){
 
-                const fourthOrderTensor  *dILpdL = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient( );
+                const fourthOrderTensor  *dILpdL = get_dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient( );
 
-                const fourthOrderTensor *dILpdF  = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( );
+                const fourthOrderTensor *dILpdF  = get_dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient( );
 
-                const floatVector *dILpdFn       = get_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( );
+                const floatVector *dILpdFn       = get_dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients( );
 
                 fourthOrderTensor dFmdFp;
 
                 fourthOrderTensor dFmdILp;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
                                                                                                   *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                                                                   *dofDeformationGradient.value,
                                                                                                   dFmdIL, dFmdFp, dFmdILp,
                                                                                                   getIntegrationParameter( ) ) )
 
-                auto dFmdPreviousL = get_setDataStorage_dMassChangeDeformationGradientdPreviousMassChangeVelocityGradient( );
+                auto dFmdPreviousL = get_setDataStorage_dDOFDeformationGradientdPreviousDOFVelocityGradient( );
                 dFmdPreviousL.zero( sot_dim * sot_dim );
 
-                auto dFmdPreviousF = get_setDataStorage_dMassChangeDeformationGradientdPreviousDeformationGradient( );
+                auto dFmdPreviousF = get_setDataStorage_dDOFDeformationGradientdPreviousDeformationGradient( );
                 dFmdPreviousF.zero( sot_dim * sot_dim );
 
-                auto dFmdPreviousFn = get_setDataStorage_dMassChangeDeformationGradientdPreviousSubDeformationGradients( );
+                auto dFmdPreviousFn = get_setDataStorage_dDOFDeformationGradientdPreviousSubDeformationGradients( );
                 dFmdPreviousFn.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
 
                 for ( unsigned int i = 0; i < sot_dim; i++ ){
 
                     for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                        ( *dFmdPreviousFn.value )[ ( num_configs - 1 ) * sot_dim * i + j + ( getMassChangeConfigurationIndex( ) - 1 ) * sot_dim ]
+                        ( *dFmdPreviousFn.value )[ ( num_configs - 1 ) * sot_dim * i + j + ( getDOFConfigurationIndex( ) - 1 ) * sot_dim ]
                             += dFmdFp[ sot_dim * i + j ];
 
                         for ( unsigned int k = 0; k < sot_dim; k++ ){
@@ -517,7 +517,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
                                                                                                   *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                                                                   *dofDeformationGradient.value,
                                                                                                   dFmdIL,
@@ -525,13 +525,13 @@ namespace tardigradeHydra{
 
             }
 
-            auto dFmdL = get_setDataStorage_dMassChangeDeformationGradientdMassChangeVelocityGradient( );
+            auto dFmdL = get_setDataStorage_dDOFDeformationGradientdDOFVelocityGradient( );
             dFmdL.zero( sot_dim * sot_dim );
 
-            auto dFmdF = get_setDataStorage_dMassChangeDeformationGradientdDeformationGradient( );
+            auto dFmdF = get_setDataStorage_dDOFDeformationGradientdDeformationGradient( );
             dFmdF.zero( sot_dim * sot_dim );
 
-            auto dFmdFn = get_setDataStorage_dMassChangeDeformationGradientdSubDeformationGradients( );
+            auto dFmdFn = get_setDataStorage_dDOFDeformationGradientdSubDeformationGradients( );
             dFmdFn.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
@@ -558,57 +558,57 @@ namespace tardigradeHydra{
 
         }
 
-        void residual::setdMassChangeDeformationGradientdMassChangeVelocityGradient( ){
+        void residual::setdDOFDeformationGradientdDOFVelocityGradient( ){
             /*!
              * Compute the derivative of the mass-change deformation gradient w.r.t. the mass change velocity gradient
              */
 
-            setMassChangeDeformationGradientDerivatives( false );
+            setDOFDeformationGradientDerivatives( false );
 
         }
 
-        void residual::setdMassChangeDeformationGradientdDeformationGradient( ){
+        void residual::setdDOFDeformationGradientdDeformationGradient( ){
             /*!
              * Compute the derivative of the mass-change deformation gradient w.r.t. the deformation gradient
              */
 
-            setMassChangeDeformationGradientDerivatives( false );
+            setDOFDeformationGradientDerivatives( false );
 
         }
 
-        void residual::setdMassChangeDeformationGradientdSubDeformationGradients( ){
+        void residual::setdDOFDeformationGradientdSubDeformationGradients( ){
             /*!
              * Compute the derivative of the mass-change deformation gradient w.r.t. the sub deformation gradients
              */
 
-            setMassChangeDeformationGradientDerivatives( false );
+            setDOFDeformationGradientDerivatives( false );
 
         }
 
-        void residual::setdMassChangeDeformationGradientdPreviousMassChangeVelocityGradient( ){
+        void residual::setdDOFDeformationGradientdPreviousDOFVelocityGradient( ){
             /*!
              * Compute the derivative of the mass-change deformation gradient w.r.t. the previous mass change velocity gradient
              */
 
-            setMassChangeDeformationGradientDerivatives( true );
+            setDOFDeformationGradientDerivatives( true );
 
         }
 
-        void residual::setdMassChangeDeformationGradientdPreviousDeformationGradient( ){
+        void residual::setdDOFDeformationGradientdPreviousDeformationGradient( ){
             /*!
              * Compute the derivative of the mass-change deformation gradient w.r.t. the previous deformation gradient
              */
 
-            setMassChangeDeformationGradientDerivatives( true );
+            setDOFDeformationGradientDerivatives( true );
 
         }
 
-        void residual::setdMassChangeDeformationGradientdPreviousSubDeformationGradients( ){
+        void residual::setdDOFDeformationGradientdPreviousSubDeformationGradients( ){
             /*!
              * Compute the derivative of the mass-change deformation gradient w.r.t. the previous sub deformation gradients
              */
 
-            setMassChangeDeformationGradientDerivatives( true );
+            setDOFDeformationGradientDerivatives( true );
 
         }
 
@@ -619,7 +619,7 @@ namespace tardigradeHydra{
              * Defined as the residual's computed thermal deformation gradient minus the value stored in hydra's configurations.
              */
 
-            auto dofConfigurationIndex = getMassChangeConfigurationIndex( );
+            auto dofConfigurationIndex = getDOFConfigurationIndex( );
 
             auto residual = get_setDataStorage_residual( );
 
@@ -644,11 +644,11 @@ namespace tardigradeHydra{
             auto jacobian = get_setDataStorage_jacobian( );
             jacobian.zero( num_equations * num_unknowns );
 
-            const floatVector *dFmdFn = get_dMassChangeDeformationGradientdSubDeformationGradients( );
+            const floatVector *dFmdFn = get_dDOFDeformationGradientdSubDeformationGradients( );
 
             for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
 
-                ( *jacobian.value )[ num_unknowns * i + sot_dim * getMassChangeConfigurationIndex( ) + i ] += -1;
+                ( *jacobian.value )[ num_unknowns * i + sot_dim * getDOFConfigurationIndex( ) + i ] += -1;
 
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
@@ -679,7 +679,7 @@ namespace tardigradeHydra{
              */
 
             auto dRdF = get_setDataStorage_dRdF( );
-            *dRdF.value = *get_dMassChangeDeformationGradientdDeformationGradient( );
+            *dRdF.value = *get_dDOFDeformationGradientdDeformationGradient( );
 
         }
 
@@ -694,18 +694,18 @@ namespace tardigradeHydra{
 
             auto num_additional_dof = hydra->getAdditionalDOF( )->size( );
 
-            const fourthOrderTensor *dMassChangeDeformationdMassChangeVelocityGradient = get_dMassChangeDeformationGradientdMassChangeVelocityGradient( );
+            const fourthOrderTensor *dDOFDeformationdDOFVelocityGradient = get_dDOFDeformationGradientdDOFVelocityGradient( );
 
             auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
             dRdAdditionalDOF.zero( num_equations * num_additional_dof );
 
-            auto offset = getMassChangeVelocityGradientIndex( );
+            auto offset = getDOFVelocityGradientIndex( );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
                 for ( unsigned int j = 0; j < sot_dim; j++ ){
 
-                    ( *dRdAdditionalDOF.value )[ num_additional_dof * i + j + offset ] = ( *dMassChangeDeformationdMassChangeVelocityGradient )[ sot_dim * i + j ];
+                    ( *dRdAdditionalDOF.value )[ num_additional_dof * i + j + offset ] = ( *dDOFDeformationdDOFVelocityGradient )[ sot_dim * i + j ];
 
                 }
 
@@ -724,7 +724,7 @@ namespace tardigradeHydra{
 
             auto sot_dim = hydra->getSOTDimension( );
 
-            auto configuration = getMassChangeConfigurationIndex( );
+            auto configuration = getDOFConfigurationIndex( );
 
             const secondOrderTensor *dofDeformationGradient = get_dofDeformationGradient( );
 

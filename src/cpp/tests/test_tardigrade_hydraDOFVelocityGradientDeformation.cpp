@@ -50,15 +50,15 @@ namespace tardigradeHydra{
 
                     static void runBasicGetTests( tardigradeHydra::dofVelocityGradientDeformation::residual &R ){
 
-                        BOOST_CHECK( R._dofConfigurationIndex == R.getMassChangeConfigurationIndex( ) );
+                        BOOST_CHECK( R._dofConfigurationIndex == R.getDOFConfigurationIndex( ) );
 
-                        BOOST_CHECK( R._dofVelocityGradientIndex == R.getMassChangeVelocityGradientIndex( ) );
+                        BOOST_CHECK( R._dofVelocityGradientIndex == R.getDOFVelocityGradientIndex( ) );
 
                         BOOST_CHECK( R._integrationParameter == R.getIntegrationParameter( ) );
 
                         BOOST_CHECK( &R._dofVelocityGradient.second         == R.get_dofVelocityGradient( ) );
 
-                        BOOST_CHECK( &R._previousMassChangeVelocityGradient.second == R.get_previousMassChangeVelocityGradient( ) );
+                        BOOST_CHECK( &R._previousDOFVelocityGradient.second == R.get_previousDOFVelocityGradient( ) );
 
                     }
 
@@ -196,13 +196,13 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
         0.44, 0.55, 0.66, 0.77, 0.88, 0.99, 1.11, 1.22, 1.33
     };
 
-    floatVector previousMassChangeVelocityGradientAnswer = {
+    floatVector previousDOFVelocityGradientAnswer = {
         -0.44, -0.55, -0.66, -0.77, -0.88, -0.99, -1.11, -1.22, -1.33
     };
 
     BOOST_TEST( dofVelocityGradientAnswer         == *R.get_dofVelocityGradient( ),         CHECK_PER_ELEMENT );
 
-    BOOST_TEST( previousMassChangeVelocityGradientAnswer == *R.get_previousMassChangeVelocityGradient( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( previousDOFVelocityGradientAnswer == *R.get_previousDOFVelocityGradient( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -755,17 +755,17 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_1, * boost::
 
     residualMock Rgrad( &hydra, 9, 1, 3, hydra.dofDeformationParameters );
 
-    Rgrad.get_dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( );
+    Rgrad.get_dDOFIntermediateVelocityGradientdDOFVelocityGradient( );
 
-    Rgrad.get_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient( );
+    Rgrad.get_dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient( );
 
     BOOST_TEST( answer == *R.get_dofIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( previousAnswer == *R.get_previousMassChangeIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( previousAnswer == *R.get_previousDOFIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( answer == *Rgrad.get_dofIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( previousAnswer == *Rgrad.get_previousMassChangeIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( previousAnswer == *Rgrad.get_previousDOFIntermediateVelocityGradient( ), CHECK_PER_ELEMENT );
 
 }
 
@@ -946,7 +946,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
 
     }
 
-    BOOST_TEST( dILdF == *R.get_dMassChangeIntermediateVelocityGradientdDeformationGradient( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( dILdF == *R.get_dDOFIntermediateVelocityGradientdDeformationGradient( ), CHECK_PER_ELEMENT );
 
     offset = 9;
 
@@ -990,7 +990,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
 
     }
 
-    adaptive_tolerance_test( *R.get_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( ), dILdFn );
+    adaptive_tolerance_test( *R.get_dDOFIntermediateVelocityGradientdSubDeformationGradients( ), dILdFn );
 
     offset = 3;
 
@@ -1034,7 +1034,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
 
     }
 
-    BOOST_TEST( *R.get_dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( ) == dILdL, CHECK_PER_ELEMENT );
+    BOOST_TEST( *R.get_dDOFIntermediateVelocityGradientdDOFVelocityGradient( ) == dILdL, CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -1064,9 +1064,9 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
 
         residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
-        floatVector vp = *Rp.get_previousMassChangeIntermediateVelocityGradient( );
+        floatVector vp = *Rp.get_previousDOFIntermediateVelocityGradient( );
 
-        floatVector vm = *Rm.get_previousMassChangeIntermediateVelocityGradient( );
+        floatVector vm = *Rm.get_previousDOFIntermediateVelocityGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -1076,7 +1076,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
 
     }
 
-    BOOST_TEST( previousdILdF == *R.get_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( previousdILdF == *R.get_dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient( ), CHECK_PER_ELEMENT );
 
     offset = 0;
 
@@ -1108,9 +1108,9 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
 
         residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
-        floatVector vp = *Rp.get_previousMassChangeIntermediateVelocityGradient( );
+        floatVector vp = *Rp.get_previousDOFIntermediateVelocityGradient( );
 
-        floatVector vm = *Rm.get_previousMassChangeIntermediateVelocityGradient( );
+        floatVector vm = *Rm.get_previousDOFIntermediateVelocityGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -1120,7 +1120,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
 
     }
 
-    adaptive_tolerance_test( *R.get_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( ), previousdILdFn );
+    adaptive_tolerance_test( *R.get_dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients( ), previousdILdFn );
 
     offset = 3;
 
@@ -1152,9 +1152,9 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
 
         residualMock Rm( &hydram, 9, 2, 3, hydra.dofDeformationParameters );
 
-        floatVector vp = *Rp.get_previousMassChangeIntermediateVelocityGradient( );
+        floatVector vp = *Rp.get_previousDOFIntermediateVelocityGradient( );
 
-        floatVector vm = *Rm.get_previousMassChangeIntermediateVelocityGradient( );
+        floatVector vm = *Rm.get_previousDOFIntermediateVelocityGradient( );
 
         for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -1164,7 +1164,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofIntermediateVelocityGradient_2, * boost::
 
     }
 
-    BOOST_TEST( *R.get_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient( ) == previousdILdL, CHECK_PER_ELEMENT );
+    BOOST_TEST( *R.get_dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient( ) == previousdILdL, CHECK_PER_ELEMENT );
 
 }
 
@@ -1178,19 +1178,19 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_1, * boost::unit_test
 
             floatVector dofIntermediateVelocityGradient = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            floatVector previousMassChangeIntermediateVelocityGradient = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+            floatVector previousDOFIntermediateVelocityGradient = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
 
-            floatVector dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient              = initializeVector( 81 );
+            floatVector dDOFIntermediateVelocityGradientdDOFVelocityGradient              = initializeVector( 81 );
 
-            floatVector dMassChangeIntermediateVelocityGradientdDeformationGradient                     = initializeVector( 81 );
+            floatVector dDOFIntermediateVelocityGradientdDeformationGradient                     = initializeVector( 81 );
 
-            floatVector dMassChangeIntermediateVelocityGradientdSubDeformationGradients                 = initializeVector( 81 );
+            floatVector dDOFIntermediateVelocityGradientdSubDeformationGradients                 = initializeVector( 81 );
 
-            floatVector dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient = initializeVector( 81 );
+            floatVector dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient = initializeVector( 81 );
 
-            floatVector dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient        = initializeVector( 81 );
+            floatVector dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient        = initializeVector( 81 );
 
-            floatVector dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients    = initializeVector( 81 );
+            floatVector dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients    = initializeVector( 81 );
 
             floatVector initializeVector( unsigned int size ){
 
@@ -1200,13 +1200,13 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_1, * boost::unit_test
 
         protected:
 
-            using tardigradeHydra::dofVelocityGradientDeformation::residual::setMassChangeIntermediateVelocityGradient;
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::setDOFIntermediateVelocityGradient;
 
-            virtual void setMassChangeIntermediateVelocityGradient( const bool &isPrevious ) override{
+            virtual void setDOFIntermediateVelocityGradient( const bool &isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    set_previousMassChangeIntermediateVelocityGradient( previousMassChangeIntermediateVelocityGradient );
+                    set_previousDOFIntermediateVelocityGradient( previousDOFIntermediateVelocityGradient );
 
                 }
                 else{
@@ -1217,24 +1217,24 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_1, * boost::unit_test
 
             }
 
-            virtual void setMassChangeIntermediateVelocityGradientDerivatives( const bool &isPrevious ) override{
+            virtual void setDOFIntermediateVelocityGradientDerivatives( const bool &isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    set_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient( dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeVelocityGradient );
+                    set_dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient( dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient );
 
-                    set_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient );
+                    set_dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient( dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient );
 
-                    set_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients );
+                    set_dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients( dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients );
 
                 }
                 else{
 
-                    set_dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient( dMassChangeIntermediateVelocityGradientdMassChangeVelocityGradient );
+                    set_dDOFIntermediateVelocityGradientdDOFVelocityGradient( dDOFIntermediateVelocityGradientdDOFVelocityGradient );
 
-                    set_dMassChangeIntermediateVelocityGradientdDeformationGradient( dMassChangeIntermediateVelocityGradientdDeformationGradient );
+                    set_dDOFIntermediateVelocityGradientdDeformationGradient( dDOFIntermediateVelocityGradientdDeformationGradient );
 
-                    set_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( dMassChangeIntermediateVelocityGradientdSubDeformationGradients );
+                    set_dDOFIntermediateVelocityGradientdSubDeformationGradients( dDOFIntermediateVelocityGradientdSubDeformationGradients );
 
                 }
 
@@ -1342,9 +1342,9 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_1, * boost::unit_test
 
     residualMock Rgrad( &hydra, 9, 1, 3, hydra.dofDeformationParameters, 0.67 );
 
-    Rgrad.get_dMassChangeDeformationGradientdMassChangeVelocityGradient( );
+    Rgrad.get_dDOFDeformationGradientdDOFVelocityGradient( );
 
-    Rgrad.get_dMassChangeDeformationGradientdPreviousMassChangeVelocityGradient( );
+    Rgrad.get_dDOFDeformationGradientdPreviousDOFVelocityGradient( );
 
     BOOST_TEST( answer == *R.get_dofDeformationGradient( ), CHECK_PER_ELEMENT );
 
@@ -1529,7 +1529,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
 
     }
 
-    BOOST_TEST( dFmdF == *R.get_dMassChangeDeformationGradientdDeformationGradient( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( dFmdF == *R.get_dDOFDeformationGradientdDeformationGradient( ), CHECK_PER_ELEMENT );
 
     offset = 9;
 
@@ -1573,7 +1573,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
 
     }
 
-    adaptive_tolerance_test( *R.get_dMassChangeDeformationGradientdSubDeformationGradients( ), dFmdFn, 1e-8 );
+    adaptive_tolerance_test( *R.get_dDOFDeformationGradientdSubDeformationGradients( ), dFmdFn, 1e-8 );
 
     offset = 3;
 
@@ -1617,7 +1617,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
 
     }
 
-    BOOST_TEST( *R.get_dMassChangeDeformationGradientdMassChangeVelocityGradient( ) == dFmdL, CHECK_PER_ELEMENT );
+    BOOST_TEST( *R.get_dDOFDeformationGradientdDOFVelocityGradient( ) == dFmdL, CHECK_PER_ELEMENT );
 
     for ( unsigned int i = 0; i < 9; i++ ){
 
@@ -1659,7 +1659,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
 
     }
 
-    BOOST_TEST( previousdFmdF == *R.get_dMassChangeDeformationGradientdPreviousDeformationGradient( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( previousdFmdF == *R.get_dDOFDeformationGradientdPreviousDeformationGradient( ), CHECK_PER_ELEMENT );
 
     offset = 0;
 
@@ -1703,7 +1703,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
 
     }
 
-    adaptive_tolerance_test( *R.get_dMassChangeDeformationGradientdPreviousSubDeformationGradients( ), previousdFmdFn, 1e-7 );
+    adaptive_tolerance_test( *R.get_dDOFDeformationGradientdPreviousSubDeformationGradients( ), previousdFmdFn, 1e-7 );
 
     offset = 3;
 
@@ -1747,7 +1747,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
 
     }
 
-    BOOST_TEST( *R.get_dMassChangeDeformationGradientdPreviousMassChangeVelocityGradient( ) == previousdFmdL, CHECK_PER_ELEMENT );
+    BOOST_TEST( *R.get_dDOFDeformationGradientdPreviousDOFVelocityGradient( ) == previousdFmdL, CHECK_PER_ELEMENT );
 }
 
 BOOST_AUTO_TEST_CASE( test_residual_dofResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
@@ -1762,7 +1762,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofResidual, * boost::unit_test::tolerance( 
 
         protected:
 
-            virtual void setMassChangeDeformationGradient( ) override{
+            virtual void setDOFDeformationGradient( ) override{
 
                 set_dofDeformationGradient( dofDeformationGradient );
 
@@ -2434,7 +2434,7 @@ BOOST_AUTO_TEST_CASE( test_residual_suggestInitialIterateValues, * boost::unit_t
 
         protected:
 
-            virtual void setMassChangeDeformationGradient( ) override{
+            virtual void setDOFDeformationGradient( ) override{
 
                 set_dofDeformationGradient( dofDeformationGradient );
 
