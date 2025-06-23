@@ -304,11 +304,11 @@ namespace tardigradeHydra{
 
                 using tardigradeHydra::linearElasticity::residual::residual;
 
-                const unsigned int _viscoelasticISVLowerIndex; //!< The lower index of the viscoelastic ISVs
+                unsigned int _viscoelasticISVLowerIndex; //!< The lower index of the viscoelastic ISVs
 
-                const unsigned int _viscoelasticISVUpperIndex; //!< The not-included upper index of the viscoelastic ISVs
+                unsigned int _viscoelasticISVUpperIndex; //!< The not-included upper index of the viscoelastic ISVs
 
-                const floatType _integrationAlpha; //!< The parameter for implicit (0) vs explicit (1) integration. Defaults to 0.
+                floatType _integrationAlpha; //!< The parameter for implicit (0) vs explicit (1) integration. Defaults to 0.
 
                 unsigned int _numVolumetricViscousTerms; //!< The number of volumetric viscous terms
 

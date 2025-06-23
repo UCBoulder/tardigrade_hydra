@@ -13,6 +13,10 @@ New Features
 ============
 - Added a DOF velocity gradient driven deformation. (:pull:`204`). By `Nathan Miller`_.
 
+Bug Fixes
+=========
+- Fixed error where the default constructor couldn't be used for the linear viscoelastic residual (:pull:`206`). By `Nathan Miller`_.
+
 Breaking Changes
 ================
 - Changed MassChange to DOF in the dof velocity gradient driven deformation. (:pull:`205`). By `Nathan Miller`_.
