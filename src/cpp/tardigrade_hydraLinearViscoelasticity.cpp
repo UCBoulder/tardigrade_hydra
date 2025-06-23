@@ -19,7 +19,12 @@ namespace tardigradeHydra{
             /*!
              * Decompose the parameter vector
              * 
-             * \param &parameters: The paramter vector. Assumed to be a vector of length 2 which defines lambda and mu.
+             * \param &parameters: The parameter vector. Assumed to be a vector of at least length 10 which defines
+             *   num_volumetric_terms, num_isochoric_terms, Kinf, Ginf, volumetric_temperature_terms, isochoric_temperature_terms, Ks, Ktaus, Gs, Gtaus
+             *   where num_volumetric_terms and num_isochoric_terms are the number of volumetric and isochoric Maxwell elements respectively, Kinf and Ginf
+             *   are the infinite bulk and shear moduli, volumetric_temperature_terms and isochoric_temperature_terms are the volumetric reference temperature,
+             *   \f$ C_1 \f$ and \f$ C_2 \f$ terms for the WLF shift, Ks are the bulk moduli, Ktaus are the volumetric time constants, Gs are the shear moduli,
+             *   and Gtaus are the isochoric time constants,
              */
    
             const unsigned int sot_dim = hydra->getSOTDimension( );
