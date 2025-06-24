@@ -6,7 +6,7 @@ Changelog
 #########
 
 ******************
-0.5.1 (unreleased)
+0.6.0 (unreleased)
 ******************
 
 New Features
@@ -20,6 +20,7 @@ Bug Fixes
 Breaking Changes
 ================
 - Changed MassChange to DOF in the dof velocity gradient driven deformation. (:pull:`205`). By `Nathan Miller`_.
+- Changed peryzna to perzyna (:pull:`208`). By `Nathan Miller`_.
 
 ******************
 0.5.0 (05-22-2025)
@@ -81,9 +82,9 @@ Internal Changes
 - Removed set_varname and replaced with setDataStorage for hydra micromoprhic linear elasticity (:pull:`155`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for hydra micromoprhic Drucker-Prager plasticity (:pull:`157`). By `Nathan Miller`_.
 - Removed calls to old tardigrade error tools catch macro (:pull:`158`). By `Nathan Miller`_.
-- Removed set_varname and replaced with setDataStorage for hydra Peryzna visoplasticity (:pull:`159`). By `Nathan Miller`_.
-- Removed set_varname and replaced with setDataStorage for hydra Peryzna visodamage (:pull:`160`). By `Nathan Miller`_.
-- Removed set_varname and replaced with setDataStorage for hydra Peryzna isotropic-kenmatic J2 visoplasticity (:pull:`161`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Perzyna visoplasticity (:pull:`159`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Perzyna visodamage (:pull:`160`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Perzyna isotropic-kenmatic J2 visoplasticity (:pull:`161`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for hydra mass-change rate (:pull:`162`). By `Nathan Miller`_.
 - Enabled passing the tests when higher levels of optimization are used (:pull:`163`). By `Nathan Miller`_.
 - Added an active set solver for quadratic problems (:pull:`167`). By `Nathan Miller`_.
@@ -332,8 +333,8 @@ Internal Changes
 - Added initial micromorphic linear elastic residual (:pull:`18`). By `Nathan Miller`_.
 - Added the calculation of the micromorphic linear elastic derived deformation measures (:pull:`19`). By `Nathan Miller`_.
 - Added the calculation of the micromorphic linear elastic reference stress measures (:pull:`20`). By `Nathan Miller`_.
-- Added the calculation of the Peryzna-based damage and the Jacobians (:pull:`30`). By `Nathan Miller`_.
-- Added the calculation of the Peryzna-based damage deformation gradient's Jacobians (:pull:`31`). By `Nathan Miller`_.
+- Added the calculation of the Perzyna-based damage and the Jacobians (:pull:`30`). By `Nathan Miller`_.
+- Added the calculation of the Perzyna-based damage deformation gradient's Jacobians (:pull:`31`). By `Nathan Miller`_.
 
 ******************
 0.2.0 (12-11-2023)
@@ -383,7 +384,7 @@ New Features
 - Added the evaluation of hydra to compute the required quantities (:merge:`18`). By `Nathan Miller`_.
 - Added a linear viscoelastic implementation of a residual (:merge:`20`). By `Nathan Miller`_.
 - Added the residual for a thermal expansion model (:merge:`21`). By `Nathan Miller`_.
-- Added the residual for a Peryzna viscoplasticity model (:merge:`24`). By `Nathan Miller`_. 
+- Added the residual for a Perzyna viscoplasticity model (:merge:`24`). By `Nathan Miller`_. 
 
 Internal Changes
 ================

@@ -1,14 +1,14 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraPeryznaViscoplasticity.h
+  * \file tardigrade_hydraPerzynaViscoplasticity.h
   ******************************************************************************
-  * An implementation of peryznaViscoplasticity using the hydra framework. Used
+  * An implementation of perzynaViscoplasticity using the hydra framework. Used
   * as an example and as the basis for more complex models.
   ******************************************************************************
   */
 
-#ifndef TARDIGRADE_HYDRA_PERYZNA_VISCOPLASTICITY_H
-#define TARDIGRADE_HYDRA_PERYZNA_VISCOPLASTICITY_H
+#ifndef TARDIGRADE_HYDRA_PERZYNA_VISCOPLASTICITY_H
+#define TARDIGRADE_HYDRA_PERZYNA_VISCOPLASTICITY_H
 
 #define USE_EIGEN
 #include<tardigrade_vector_tools.h>
@@ -16,7 +16,7 @@
 
 namespace tardigradeHydra{
 
-    namespace peryznaViscoplasticity{
+    namespace perzynaViscoplasticity{
 
         // forward class definitions
         namespace unit_test{
@@ -96,7 +96,7 @@ namespace tardigradeHydra{
             public:
 
                  // Friend classes
-                friend class tardigradeHydra::peryznaViscoplasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
+                friend class tardigradeHydra::perzynaViscoplasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
                 using tardigradeHydra::residualBase::residualBase;
 
@@ -425,8 +425,8 @@ namespace tardigradeHydra{
                 //! Get a reference to the parameter vector
                 const floatVector * getParameters( ){ return &_parameters; }
 
-                //! Set the Peryzna parameters
-                virtual void setPeryznaParameters( ){ decomposeParameters( *getParameters( ) ); }
+                //! Set the Perzyna parameters
+                virtual void setPerzynaParameters( ){ decomposeParameters( *getParameters( ) ); }
 
                 //! Set the drag stress parameters
                 virtual void setDragStressParameters( ){ decomposeParameters( *getParameters( ) ); }
@@ -649,7 +649,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousStateVariables,                                      floatVector, setPreviousStateVariables                                      )
 
-                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, peryznaParameters,                                           floatVector, setPeryznaParameters                                           )
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, perzynaParameters,                                           floatVector, setPerzynaParameters                                           )
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, dragStressParameters,                                        floatVector, setDragStressParameters                                        )
 
