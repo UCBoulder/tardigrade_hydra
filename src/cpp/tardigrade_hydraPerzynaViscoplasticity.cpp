@@ -1,19 +1,19 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraPeryznaViscoplasticity.h
+  * \file tardigrade_hydraPerzynaViscoplasticity.h
   ******************************************************************************
-  * An implementation of peryznaViscoplasticity using the hydra framework. Used
+  * An implementation of perzynaViscoplasticity using the hydra framework. Used
   * as an example and as the basis for more complex models.
   ******************************************************************************
   */
 
-#include<tardigrade_hydraPeryznaViscoplasticity.h>
+#include<tardigrade_hydraPerzynaViscoplasticity.h>
 #include<tardigrade_constitutive_tools.h>
 #include<tardigrade_stress_tools.h>
 
 namespace tardigradeHydra{
 
-    namespace peryznaViscoplasticity{
+    namespace perzynaViscoplasticity{
 
         void residual::setDrivingStress( ){
             /*!
@@ -1543,7 +1543,7 @@ namespace tardigradeHydra{
 
             const floatType *plasticThermalMultiplier;
 
-            const floatVector *peryznaParameters;
+            const floatVector *perzynaParameters;
 
             setDataStorageBase< floatType > plasticMultiplier;
 
@@ -1570,9 +1570,9 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( peryznaParameters = get_peryznaParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( perzynaParameters = get_perzynaParameters( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::peryznaModel( *yieldFunction, *dragStress, *plasticThermalMultiplier, ( *peryznaParameters )[ 0 ], *plasticMultiplier.value ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::perzynaModel( *yieldFunction, *dragStress, *plasticThermalMultiplier, ( *perzynaParameters )[ 0 ], *plasticMultiplier.value ) );
 
         }
 
@@ -1591,7 +1591,7 @@ namespace tardigradeHydra{
 
             const floatType *plasticThermalMultiplier;
 
-            const floatVector *peryznaParameters;
+            const floatVector *perzynaParameters;
 
             const floatVector *dYieldFunctiondCauchyStress;
 
@@ -1684,7 +1684,7 @@ namespace tardigradeHydra{
 
             }
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( peryznaParameters = get_peryznaParameters( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( perzynaParameters = get_perzynaParameters( ) );
 
             floatType dPlasticMultiplierdYieldFunction;
 
@@ -1692,7 +1692,7 @@ namespace tardigradeHydra{
 
             floatType dPlasticMultiplierdPlasticThermalMultiplier;
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::peryznaModel( *yieldFunction, *dragStress, *plasticThermalMultiplier, ( *peryznaParameters )[ 0 ], *plasticMultiplier.value, dPlasticMultiplierdYieldFunction, dPlasticMultiplierdDragStress, dPlasticMultiplierdPlasticThermalMultiplier ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeStressTools::perzynaModel( *yieldFunction, *dragStress, *plasticThermalMultiplier, ( *perzynaParameters )[ 0 ], *plasticMultiplier.value, dPlasticMultiplierdYieldFunction, dPlasticMultiplierdDragStress, dPlasticMultiplierdPlasticThermalMultiplier ) );
 
             *dPlasticMultiplierdCauchyStress.value = dPlasticMultiplierdYieldFunction * ( *dYieldFunctiondCauchyStress );
 
@@ -3229,10 +3229,10 @@ namespace tardigradeHydra{
              * Decompose the incoming parameter vector
              * 
              * \param &parameters: The incoming parameter vector. We assume a
-             *     Peryzna viscoplastic driving stress with a Drucker-Prager
+             *     Perzyna viscoplastic driving stress with a Drucker-Prager
              *     yield and flow potential surface. The parameters are
              *     [ n, q0, q1, C1, C2, Tref, Y, A, B, h0, h1 ] where n is the
-             *     Peryzna exponent, q0 is the initial drag stress, q1 is the
+             *     Perzyna exponent, q0 is the initial drag stress, q1 is the
              *     drag modulus, C1, C2, and Tref are the temperature effect
              *     parameters, Y is the yield stress for the Drucker-Prager equation,
              *     A is the pressure term of the yield equation, B is the flow parameter,
@@ -3244,7 +3244,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( parameters.size( ) == expectedSize, "The parameters vector is not the correct length.\n  parameters: " + std::to_string( parameters.size( ) ) + "\n  required:   " + std::to_string( expectedSize ) + "\n" );
 
-            set_peryznaParameters( { parameters[ 0 ] } );
+            set_perzynaParameters( { parameters[ 0 ] } );
 
             set_dragStressParameters( { parameters[ 1 ], parameters[ 2 ] } );
 

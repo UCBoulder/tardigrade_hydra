@@ -1,10 +1,10 @@
 /**
-  * \file test_tardigrade_hydraPeryznaViscodamage.cpp
+  * \file test_tardigrade_hydraPerzynaViscodamage.cpp
   *
-  * Tests for tardigrade_hydraPeryznaViscodamage
+  * Tests for tardigrade_hydraPerzynaViscodamage
   */
 
-#include<tardigrade_hydraPeryznaViscodamage.h>
+#include<tardigrade_hydraPerzynaViscodamage.h>
 #include<sstream>
 #include<fstream>
 
@@ -118,15 +118,15 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates, * boost::unit_test::t
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscodamage::residual{
+    class residualMock : public tardigradeHydra::perzynaViscodamage::residual{
 
         public:
 
-            residualMock( ) : tardigradeHydra::peryznaViscodamage::residual( ){ }
+            residualMock( ) : tardigradeHydra::perzynaViscodamage::residual( ){ }
 
             residualMock( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations,
                           const unsigned int &damageConfigurationIndex, const std::vector< unsigned int > &stateVariableIndices,
-                          const floatVector &parameters ) : tardigradeHydra::peryznaViscodamage::residual( hydra, numEquations, damageConfigurationIndex, stateVariableIndices, parameters ){ }
+                          const floatVector &parameters ) : tardigradeHydra::perzynaViscodamage::residual( hydra, numEquations, damageConfigurationIndex, stateVariableIndices, parameters ){ }
 
             floatVector stateVariableEvolutionRates = { 0.78 };
 
@@ -182,21 +182,21 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates, * boost::unit_test::t
 
         protected:
 
-            using tardigradeHydra::peryznaViscodamage::residual::setHardeningFunction;
+            using tardigradeHydra::perzynaViscodamage::residual::setHardeningFunction;
 
-            using tardigradeHydra::peryznaViscodamage::residual::setStateVariables;
-            using tardigradeHydra::peryznaViscodamage::residual::setdStateVariableEvolutionRatesdCauchyStress;
-            using tardigradeHydra::peryznaViscodamage::residual::setdStateVariableEvolutionRatesdF;
-            using tardigradeHydra::peryznaViscodamage::residual::setdStateVariableEvolutionRatesdSubFs;
-            using tardigradeHydra::peryznaViscodamage::residual::setdStateVariableEvolutionRatesdT;
-            using tardigradeHydra::peryznaViscodamage::residual::setdStateVariableEvolutionRatesdStateVariables;
+            using tardigradeHydra::perzynaViscodamage::residual::setStateVariables;
+            using tardigradeHydra::perzynaViscodamage::residual::setdStateVariableEvolutionRatesdCauchyStress;
+            using tardigradeHydra::perzynaViscodamage::residual::setdStateVariableEvolutionRatesdF;
+            using tardigradeHydra::perzynaViscodamage::residual::setdStateVariableEvolutionRatesdSubFs;
+            using tardigradeHydra::perzynaViscodamage::residual::setdStateVariableEvolutionRatesdT;
+            using tardigradeHydra::perzynaViscodamage::residual::setdStateVariableEvolutionRatesdStateVariables;
 
-            using tardigradeHydra::peryznaViscodamage::residual::setPlasticMultiplier;
-            using tardigradeHydra::peryznaViscodamage::residual::setdPlasticMultiplierdCauchyStress;
-            using tardigradeHydra::peryznaViscodamage::residual::setdPlasticMultiplierdF;
-            using tardigradeHydra::peryznaViscodamage::residual::setdPlasticMultiplierdSubFs;
-            using tardigradeHydra::peryznaViscodamage::residual::setdPlasticMultiplierdT;
-            using tardigradeHydra::peryznaViscodamage::residual::setdPlasticMultiplierdStateVariables;
+            using tardigradeHydra::perzynaViscodamage::residual::setPlasticMultiplier;
+            using tardigradeHydra::perzynaViscodamage::residual::setdPlasticMultiplierdCauchyStress;
+            using tardigradeHydra::perzynaViscodamage::residual::setdPlasticMultiplierdF;
+            using tardigradeHydra::perzynaViscodamage::residual::setdPlasticMultiplierdSubFs;
+            using tardigradeHydra::perzynaViscodamage::residual::setdPlasticMultiplierdT;
+            using tardigradeHydra::perzynaViscodamage::residual::setdPlasticMultiplierdStateVariables;
 
             virtual void setHardeningFunction( ) override{
 
@@ -507,7 +507,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
             stressMock elasticity;
 
-            tardigradeHydra::peryznaViscodamage::residual damage;
+            tardigradeHydra::perzynaViscodamage::residual damage;
 
             tardigradeHydra::residualBase remainder;
 
@@ -527,7 +527,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
                 elasticity.previousCauchyStress += _local_deltaPreviousCauchyStress;
 
-                damage = tardigradeHydra::peryznaViscodamage::residual( this, 11, 1, stateVariableIndices, viscoDamageParameters );
+                damage = tardigradeHydra::perzynaViscodamage::residual( this, 11, 1, stateVariableIndices, viscoDamageParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 12 );
 
@@ -586,7 +586,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    tardigradeHydra::peryznaViscodamage::residual R( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+    tardigradeHydra::perzynaViscodamage::residual R( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
     // Test the computation of the Jacobians
     unsigned int nvals = 2;
@@ -630,9 +630,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_stateVariableEvolutionRates( );
 
@@ -666,9 +666,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_stateVariableEvolutionRates( );
 
@@ -704,9 +704,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_stateVariableEvolutionRates( );
 
@@ -740,9 +740,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_stateVariableEvolutionRates( );
 
@@ -778,9 +778,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_stateVariableEvolutionRates( );
 
@@ -818,9 +818,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_previousStateVariableEvolutionRates( );
 
@@ -854,9 +854,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_previousStateVariableEvolutionRates( );
 
@@ -892,9 +892,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_previousStateVariableEvolutionRates( );
 
@@ -928,9 +928,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_previousStateVariableEvolutionRates( );
 
@@ -966,9 +966,9 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableEvolutionRates2, * boost::unit_test::
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_previousStateVariableEvolutionRates( );
 
@@ -1006,15 +1006,15 @@ BOOST_AUTO_TEST_CASE( test_setDamage, * boost::unit_test::tolerance( DEFAULT_TES
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscodamage::residual{
+    class residualMock : public tardigradeHydra::perzynaViscodamage::residual{
 
         public:
 
-            residualMock( ) : tardigradeHydra::peryznaViscodamage::residual( ){ }
+            residualMock( ) : tardigradeHydra::perzynaViscodamage::residual( ){ }
 
             residualMock( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations,
                           const unsigned int &damageConfigurationIndex, const std::vector< unsigned int > &stateVariableIndices,
-                          const floatVector &parameters ) : tardigradeHydra::peryznaViscodamage::residual( hydra, numEquations, damageConfigurationIndex, stateVariableIndices, parameters ){ }
+                          const floatVector &parameters ) : tardigradeHydra::perzynaViscodamage::residual( hydra, numEquations, damageConfigurationIndex, stateVariableIndices, parameters ){ }
 
             floatType plasticMultiplier = 1.2;
 
@@ -1050,9 +1050,9 @@ BOOST_AUTO_TEST_CASE( test_setDamage, * boost::unit_test::tolerance( DEFAULT_TES
 
         protected:
 
-            using tardigradeHydra::peryznaViscodamage::residual::setStateVariables;
-            using tardigradeHydra::peryznaViscodamage::residual::setHardeningFunction;
-            using tardigradeHydra::peryznaViscodamage::residual::setPlasticMultiplier;
+            using tardigradeHydra::perzynaViscodamage::residual::setStateVariables;
+            using tardigradeHydra::perzynaViscodamage::residual::setHardeningFunction;
+            using tardigradeHydra::perzynaViscodamage::residual::setPlasticMultiplier;
 
             virtual void setPlasticMultiplier( ) override{
 
@@ -1265,7 +1265,7 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
             stressMock elasticity;
 
-            tardigradeHydra::peryznaViscodamage::residual damage;
+            tardigradeHydra::perzynaViscodamage::residual damage;
 
             tardigradeHydra::residualBase remainder;
 
@@ -1285,7 +1285,7 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
                 elasticity.previousCauchyStress += _local_deltaPreviousCauchyStress;
 
-                damage = tardigradeHydra::peryznaViscodamage::residual( this, 11, 1, stateVariableIndices, viscoDamageParameters );
+                damage = tardigradeHydra::perzynaViscodamage::residual( this, 11, 1, stateVariableIndices, viscoDamageParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 12 );
 
@@ -1344,7 +1344,7 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    tardigradeHydra::peryznaViscodamage::residual R( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+    tardigradeHydra::perzynaViscodamage::residual R( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
     // Test the computation of the Jacobians
     unsigned int nvals = 1;
@@ -1388,9 +1388,9 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatType vp = *Rp.get_damage( );
 
@@ -1424,9 +1424,9 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatType vp = *Rp.get_damage( );
 
@@ -1460,9 +1460,9 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatType vp = *Rp.get_damage( );
 
@@ -1496,9 +1496,9 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatType vp = *Rp.get_damage( );
 
@@ -1532,9 +1532,9 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatType vp = *Rp.get_damage( );
 
@@ -1572,9 +1572,9 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatType vp = *Rp.get_damage( );
 
@@ -1608,9 +1608,9 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatType vp = *Rp.get_damage( );
 
@@ -1644,9 +1644,9 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatType vp = *Rp.get_damage( );
 
@@ -1680,9 +1680,9 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatType vp = *Rp.get_damage( );
 
@@ -1716,9 +1716,9 @@ BOOST_AUTO_TEST_CASE( test_setDamage2, * boost::unit_test::tolerance( DEFAULT_TE
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatType vp = *Rp.get_damage( );
 
@@ -1764,15 +1764,15 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient, * boost::unit_test::tol
 
     }
 ;
-    class residualMock : public tardigradeHydra::peryznaViscodamage::residual{
+    class residualMock : public tardigradeHydra::perzynaViscodamage::residual{
 
         public:
 
-            residualMock( ) : tardigradeHydra::peryznaViscodamage::residual( ){ }
+            residualMock( ) : tardigradeHydra::perzynaViscodamage::residual( ){ }
 
             residualMock( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations,
                           const unsigned int &damageConfigurationIndex, const std::vector< unsigned int > &stateVariableIndices,
-                          const floatVector &parameters ) : tardigradeHydra::peryznaViscodamage::residual( hydra, numEquations, damageConfigurationIndex, stateVariableIndices, parameters ){ }
+                          const floatVector &parameters ) : tardigradeHydra::perzynaViscodamage::residual( hydra, numEquations, damageConfigurationIndex, stateVariableIndices, parameters ){ }
 
             floatType damage = 0.3;
 
@@ -1941,7 +1941,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
             stressMock elasticity;
 
-            tardigradeHydra::peryznaViscodamage::residual damage;
+            tardigradeHydra::perzynaViscodamage::residual damage;
 
             tardigradeHydra::residualBase remainder;
 
@@ -1961,7 +1961,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
                 elasticity.previousCauchyStress += _local_deltaPreviousCauchyStress;
 
-                damage = tardigradeHydra::peryznaViscodamage::residual( this, 11, 1, stateVariableIndices, viscoDamageParameters );
+                damage = tardigradeHydra::perzynaViscodamage::residual( this, 11, 1, stateVariableIndices, viscoDamageParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 12 );
 
@@ -2020,7 +2020,7 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    tardigradeHydra::peryznaViscodamage::residual R( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+    tardigradeHydra::perzynaViscodamage::residual R( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
     // Test the computation of the Jacobians
     unsigned int nvals = 9;
@@ -2064,9 +2064,9 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_damageDeformationGradient( );
 
@@ -2100,9 +2100,9 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_damageDeformationGradient( );
 
@@ -2136,9 +2136,9 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_damageDeformationGradient( );
 
@@ -2172,9 +2172,9 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_damageDeformationGradient( );
 
@@ -2208,9 +2208,9 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_damageDeformationGradient( );
 
@@ -2248,9 +2248,9 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_damageDeformationGradient( );
 
@@ -2284,9 +2284,9 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_damageDeformationGradient( );
 
@@ -2320,9 +2320,9 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_damageDeformationGradient( );
 
@@ -2356,9 +2356,9 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_damageDeformationGradient( );
 
@@ -2392,9 +2392,9 @@ BOOST_AUTO_TEST_CASE( test_setDamageDeformationGradient2, * boost::unit_test::to
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.get_damageDeformationGradient( );
 
@@ -2440,15 +2440,15 @@ BOOST_AUTO_TEST_CASE( test_setResidual, * boost::unit_test::tolerance( DEFAULT_T
 
     }
 ;
-    class residualMock : public tardigradeHydra::peryznaViscodamage::residual{
+    class residualMock : public tardigradeHydra::perzynaViscodamage::residual{
 
         public:
 
-            residualMock( ) : tardigradeHydra::peryznaViscodamage::residual( ){ }
+            residualMock( ) : tardigradeHydra::perzynaViscodamage::residual( ){ }
 
             residualMock( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations,
                           const unsigned int &damageConfigurationIndex, const std::vector< unsigned int > &stateVariableIndices,
-                          const floatVector &parameters ) : tardigradeHydra::peryznaViscodamage::residual( hydra, numEquations, damageConfigurationIndex, stateVariableIndices, parameters ){ }
+                          const floatVector &parameters ) : tardigradeHydra::perzynaViscodamage::residual( hydra, numEquations, damageConfigurationIndex, stateVariableIndices, parameters ){ }
 
             floatVector damageDeformationGradient = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -2458,7 +2458,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual, * boost::unit_test::tolerance( DEFAULT_T
 
         protected:
 
-            using tardigradeHydra::peryznaViscodamage::residual::setStateVariables;
+            using tardigradeHydra::perzynaViscodamage::residual::setStateVariables;
 
             virtual void setDamageDeformationGradient( ) override{
 
@@ -2623,7 +2623,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
 
             stressMock elasticity;
 
-            tardigradeHydra::peryznaViscodamage::residual damage;
+            tardigradeHydra::perzynaViscodamage::residual damage;
 
             tardigradeHydra::residualBase remainder;
 
@@ -2643,7 +2643,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
 
                 elasticity.previousCauchyStress += _local_deltaPreviousCauchyStress;
 
-                damage = tardigradeHydra::peryznaViscodamage::residual( this, 11, 1, stateVariableIndices, viscoDamageParameters );
+                damage = tardigradeHydra::perzynaViscodamage::residual( this, 11, 1, stateVariableIndices, viscoDamageParameters );
 
                 remainder = tardigradeHydra::residualBase( this, 12 );
 
@@ -2702,7 +2702,7 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    tardigradeHydra::peryznaViscodamage::residual R( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+    tardigradeHydra::perzynaViscodamage::residual R( &hydra, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
     // Test the computation of the Jacobians
     unsigned int nvals = 11;
@@ -2732,9 +2732,9 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector - delta );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.getResidual( );
 
@@ -2768,9 +2768,9 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.getResidual( );
 
@@ -2804,9 +2804,9 @@ BOOST_AUTO_TEST_CASE( test_setResidual2, * boost::unit_test::tolerance( DEFAULT_
 
         tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
 
-        tardigradeHydra::peryznaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rp( &hydrap, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
-        tardigradeHydra::peryznaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
+        tardigradeHydra::perzynaViscodamage::residual Rm( &hydram, 11, 1, hydra.stateVariableIndices, hydra.viscoDamageParameters );
 
         floatVector vp = *Rp.getResidual( );
 

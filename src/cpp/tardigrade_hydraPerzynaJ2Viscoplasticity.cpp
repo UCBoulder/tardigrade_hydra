@@ -1,19 +1,19 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraPeryznaJ2Viscoplasticity.cpp
+  * \file tardigrade_hydraPerzynaJ2Viscoplasticity.cpp
   ******************************************************************************
-  * An implementation of peryznaJ2Viscoplasticity using the hydra framework.
+  * An implementation of perzynaJ2Viscoplasticity using the hydra framework.
   * Used as an example and as the basis for more complex models.
   ******************************************************************************
   */
 
-#include<tardigrade_hydraPeryznaJ2Viscoplasticity.h>
+#include<tardigrade_hydraPerzynaJ2Viscoplasticity.h>
 
 #include<tardigrade_stress_tools.h>
 
 namespace tardigradeHydra{
 
-    namespace peryznaJ2Viscoplasticity{
+    namespace perzynaJ2Viscoplasticity{
 
         void residual::setSignTerm( ){
             /*!
@@ -351,10 +351,10 @@ namespace tardigradeHydra{
              * Decompose the incoming parameter vector
              * 
              * \param &parameters: The incoming parameter vector. We assume a
-             *     Peryzna viscoplastic driving stress with a Drucker-Prager
+             *     Perzyna viscoplastic driving stress with a Drucker-Prager
              *     yield and flow potential surface. The parameters are
              *     [ n, q0, C1, C2, Tref, Y, Ei, Ek, hi0, hi1, hk0, hk1 ] where n is the
-             *     Peryzna exponent, q0 is the initial drag stress,
+             *     Perzyna exponent, q0 is the initial drag stress,
              *     C1, C2, and Tref are the temperature effect
              *     parameters, Y is the yield stress for the yield equation,
              *     Ei is the isotroping hardening modulus, Ek is the kinematic hardening
@@ -367,7 +367,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( parameters.size( ) == expectedSize, "The parameters vector is not the correct length.\n  parameters: " + std::to_string( parameters.size( ) ) + "\n  required:   " + std::to_string( expectedSize ) + "\n" );
 
-            set_peryznaParameters( { parameters[ 0 ] } );
+            set_perzynaParameters( { parameters[ 0 ] } );
 
             set_dragStressParameters( { parameters[ 1 ] } );
 

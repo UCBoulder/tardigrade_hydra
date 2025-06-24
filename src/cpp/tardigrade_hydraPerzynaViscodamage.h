@@ -1,22 +1,22 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraPeryznaViscodamage.h
+  * \file tardigrade_hydraPerzynaViscodamage.h
   ******************************************************************************
-  * An implementation of peryznaViscodamage using the hydra framework. Used
+  * An implementation of perzynaViscodamage using the hydra framework. Used
   * as an example and as the basis for more complex models.
   ******************************************************************************
   */
 
-#ifndef TARDIGRADE_HYDRA_PERYZNA_VISCODAMAGE_H
-#define TARDIGRADE_HYDRA_PERYZNA_VISCODAMAGE_H
+#ifndef TARDIGRADE_HYDRA_PERZYNA_VISCODAMAGE_H
+#define TARDIGRADE_HYDRA_PERZYNA_VISCODAMAGE_H
 
 #define USE_EIGEN
 #include<tardigrade_vector_tools.h>
-#include<tardigrade_hydraPeryznaViscoplasticity.h>
+#include<tardigrade_hydraPerzynaViscoplasticity.h>
 
 namespace tardigradeHydra{
 
-    namespace peryznaViscodamage{
+    namespace perzynaViscodamage{
 
         // forward class definitions
         namespace unit_test{
@@ -65,14 +65,14 @@ namespace tardigradeHydra{
         /*!
          * A class which defines a viscodamage residual
          */
-        class residual : public tardigradeHydra::peryznaViscoplasticity::residual{
+        class residual : public tardigradeHydra::perzynaViscoplasticity::residual{
 
             public:
 
                 //! Default constructor
-                residual( ) : tardigradeHydra::peryznaViscoplasticity::residual( ), _elasticConfigurationIndex( 0 ){ }
+                residual( ) : tardigradeHydra::perzynaViscoplasticity::residual( ), _elasticConfigurationIndex( 0 ){ }
 
-                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int &damageConfigurationIndex, const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const unsigned int &elasticConfigurationIndex = 0, const floatType integrationParameter = 0.5 ) : tardigradeHydra::peryznaViscoplasticity::residual( hydra, numEquations, damageConfigurationIndex, stateVariableIndices, parameters, integrationParameter ),
+                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int &damageConfigurationIndex, const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const unsigned int &elasticConfigurationIndex = 0, const floatType integrationParameter = 0.5 ) : tardigradeHydra::perzynaViscoplasticity::residual( hydra, numEquations, damageConfigurationIndex, stateVariableIndices, parameters, integrationParameter ),
                     _elasticConfigurationIndex( elasticConfigurationIndex ){
                     /*!
                      * The main constructor function
@@ -99,21 +99,21 @@ namespace tardigradeHydra{
             public:
 
                  // Friend classes
-                friend class tardigradeHydra::peryznaViscoplasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
+                friend class tardigradeHydra::perzynaViscoplasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
-                using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+                using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
-                using tardigradeHydra::peryznaViscoplasticity::residual::setResidual;
+                using tardigradeHydra::perzynaViscoplasticity::residual::setResidual;
 
-                using tardigradeHydra::peryznaViscoplasticity::residual::setJacobian;
+                using tardigradeHydra::perzynaViscoplasticity::residual::setJacobian;
 
-                using tardigradeHydra::peryznaViscoplasticity::residual::setdRdF;
+                using tardigradeHydra::perzynaViscoplasticity::residual::setdRdF;
 
-                using tardigradeHydra::peryznaViscoplasticity::residual::setdRdT;
+                using tardigradeHydra::perzynaViscoplasticity::residual::setdRdT;
 
-                using tardigradeHydra::peryznaViscoplasticity::residual::setAdditionalDerivatives;
+                using tardigradeHydra::perzynaViscoplasticity::residual::setAdditionalDerivatives;
 
-                using tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRates;
+                using tardigradeHydra::perzynaViscoplasticity::residual::setStateVariableEvolutionRates;
 
                 //! Get the configuration of the damage
                 const unsigned int *getDamageConfigurationIndex( ){ return &( *getPlasticConfigurationIndex( ) ); }

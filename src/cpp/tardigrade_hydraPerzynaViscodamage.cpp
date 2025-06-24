@@ -1,18 +1,18 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraPeryznaViscodamage.cpp
+  * \file tardigrade_hydraPerzynaViscodamage.cpp
   ******************************************************************************
-  * An implementation of peryznaViscodamage using the hydra framework. Used
+  * An implementation of perzynaViscodamage using the hydra framework. Used
   * as an example and as the basis for more complex models.
   ******************************************************************************
   */
 
-#include<tardigrade_hydraPeryznaViscodamage.h>
+#include<tardigrade_hydraPerzynaViscodamage.h>
 #include<tardigrade_constitutive_tools.h>
 
 namespace tardigradeHydra{
 
-    namespace peryznaViscodamage{
+    namespace perzynaViscodamage{
 
 
         void residual::setDamage( ){
@@ -371,7 +371,7 @@ namespace tardigradeHydra{
              * \param &isPrevious: Whether to compute the previous values or not
              */
 
-            tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRates( isPrevious );
+            tardigradeHydra::perzynaViscoplasticity::residual::setStateVariableEvolutionRates( isPrevious );
 
             const floatVector *stateVariableEvolutionRates;
 
@@ -415,7 +415,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRateDerivatives( isPrevious );
+            tardigradeHydra::perzynaViscoplasticity::residual::setStateVariableEvolutionRateDerivatives( isPrevious );
 
             const floatVector *stateVariableEvolutionRates;
 
@@ -710,7 +710,7 @@ namespace tardigradeHydra{
              * variable which we account for here.
              */
 
-            tardigradeHydra::peryznaViscoplasticity::residual::decomposeParameters( parameters );
+            tardigradeHydra::perzynaViscoplasticity::residual::decomposeParameters( parameters );
 
             //Setting the contribution of damage to the calculation of the drag stress to zero
             set_dragStressParameters( { parameters[ 1 ], parameters[  2 ], 0. } );

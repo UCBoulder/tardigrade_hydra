@@ -1,16 +1,16 @@
 /**
-  * \file test_tardigrade_hydraPeryznaViscoplasticity.cpp
+  * \file test_tardigrade_hydraPerzynaViscoplasticity.cpp
   *
-  * Tests for tardigrade_hydraPeryznaViscoplasticity
+  * Tests for tardigrade_hydraPerzynaViscoplasticity
   */
 
-#include<tardigrade_hydraPeryznaViscoplasticity.h>
+#include<tardigrade_hydraPerzynaViscoplasticity.h>
 #include<tardigrade_hydraThermalExpansion.h>
 #include<tardigrade_hydraLinearElasticity.h>
 #include<tardigrade_constitutive_tools.h>
 #include<tardigrade_stress_tools.h>
 
-#define BOOST_TEST_MODULE test_tardigrade_hydraPeryznaViscoplasticity
+#define BOOST_TEST_MODULE test_tardigrade_hydraPerzynaViscoplasticity
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -19,9 +19,9 @@
 
 typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
 typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
-typedef tardigradeHydra::peryznaViscoplasticity::floatType floatType; //!< Redefinition of the floating point type
-typedef tardigradeHydra::peryznaViscoplasticity::floatVector floatVector; //!< Redefinition of the vector of floating points type
-typedef tardigradeHydra::peryznaViscoplasticity::floatMatrix floatMatrix; //!< Redefinition of the matrix of floating points type
+typedef tardigradeHydra::perzynaViscoplasticity::floatType floatType; //!< Redefinition of the floating point type
+typedef tardigradeHydra::perzynaViscoplasticity::floatVector floatVector; //!< Redefinition of the vector of floating points type
+typedef tardigradeHydra::perzynaViscoplasticity::floatMatrix floatMatrix; //!< Redefinition of the matrix of floating points type
 
 namespace tardigradeHydra{
 
@@ -41,7 +41,7 @@ namespace tardigradeHydra{
 
     }
 
-    namespace peryznaViscoplasticity{
+    namespace perzynaViscoplasticity{
 
         namespace unit_test{
 
@@ -49,7 +49,7 @@ namespace tardigradeHydra{
 
                 public:
 
-                    static void runBasicGetTests( tardigradeHydra::peryznaViscoplasticity::residual &R ){
+                    static void runBasicGetTests( tardigradeHydra::perzynaViscoplasticity::residual &R ){
 
                         try{
     
@@ -95,7 +95,7 @@ namespace tardigradeHydra{
         
                             BOOST_CHECK( &R._stateVariables.second == R.get_stateVariables( ) );
         
-                            BOOST_CHECK( &R._peryznaParameters.second == R.get_peryznaParameters( ) );
+                            BOOST_CHECK( &R._perzynaParameters.second == R.get_perzynaParameters( ) );
         
                             BOOST_CHECK( &R._dragStressParameters.second == R.get_dragStressParameters( ) );
         
@@ -353,11 +353,11 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -463,7 +463,7 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
     
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
     
-    tardigradeHydra::peryznaViscoplasticity::unit_test::residualTester::runBasicGetTests( R );
+    tardigradeHydra::perzynaViscoplasticity::unit_test::residualTester::runBasicGetTests( R );
 
 }
 
@@ -490,11 +490,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress, * boost::unit_test::toler
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -867,11 +867,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection, * boost::unit_test::toler
      * Test of computing the driving stress
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatVector drivingStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -881,7 +881,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection, * boost::unit_test::toler
 
         private:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setDrivingStress;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setDrivingStress;
 
             virtual void setDrivingStress( const bool isPrevious ) override{
 
@@ -889,12 +889,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection, * boost::unit_test::toler
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousDrivingStress( previousDrivingStress );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousDrivingStress( previousDrivingStress );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_drivingStress( drivingStress );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_drivingStress( drivingStress );
 
                 }
 
@@ -1047,11 +1047,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian, * boost::unit_te
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -1410,11 +1410,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction, * boost::unit_test::toler
      * Test of computing the yield function
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatVector drivingStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -1424,7 +1424,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction, * boost::unit_test::toler
 
         private:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setDrivingStress;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setDrivingStress;
 
             virtual void setDrivingStress( const bool isPrevious ) override{
 
@@ -1432,12 +1432,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction, * boost::unit_test::toler
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousDrivingStress( previousDrivingStress );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousDrivingStress( previousDrivingStress );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_drivingStress( drivingStress );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_drivingStress( drivingStress );
 
                 }
 
@@ -1585,11 +1585,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian, * boost::unit_te
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -1923,11 +1923,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticThermalMultiplier, * boost::unit_
      * Test of computing the plastic thermal multiplier
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -2121,11 +2121,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress, * boost::unit_test::toleranc
      * Test of computing the drag stress
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatVector stateVariables = { 0.6 };
 
@@ -2133,18 +2133,18 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress, * boost::unit_test::toleranc
 
         private:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setStateVariables;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setStateVariables;
 
             virtual void setStateVariables( const bool isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousStateVariables( previousStateVariables );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousStateVariables( previousStateVariables );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_stateVariables( stateVariables );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_stateVariables( stateVariables );
 
                 }
 
@@ -2272,11 +2272,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress_jacobian, * boost::unit_test:
      * Test of computing the drag stress
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatVector stateVariables = { 0.6 };
 
@@ -2284,18 +2284,18 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress_jacobian, * boost::unit_test:
 
         private:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setStateVariables;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setStateVariables;
 
             virtual void setStateVariables( const bool isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousStateVariables( previousStateVariables );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousStateVariables( previousStateVariables );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_stateVariables( stateVariables );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_stateVariables( stateVariables );
 
                 }
 
@@ -2508,11 +2508,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction, * boost::unit_test::t
      * Test of computing the hardening function
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatVector stateVariables = { 0.6 };
 
@@ -2520,18 +2520,18 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction, * boost::unit_test::t
 
         private:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setStateVariables;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setStateVariables;
 
             virtual void setStateVariables( const bool isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousStateVariables( previousStateVariables );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousStateVariables( previousStateVariables );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_stateVariables( stateVariables );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_stateVariables( stateVariables );
 
                 }
 
@@ -2740,11 +2740,11 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters, * boost::unit_test::tol
      * Test of decomposing the parameter vector
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatVector stateVariables = { 0.6 };
 
@@ -2856,7 +2856,7 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters, * boost::unit_test::tol
 
     residualMock R( &hydra, 9, 1, hydra.stateVariableIndices, hydra.viscoPlasticParameters );
 
-    floatVector answer_peryznaParameters = floatVector( hydra.viscoPlasticParameters.begin( ), hydra.viscoPlasticParameters.begin( ) + 1 );
+    floatVector answer_perzynaParameters = floatVector( hydra.viscoPlasticParameters.begin( ), hydra.viscoPlasticParameters.begin( ) + 1 );
 
     floatVector answer_dragStressParameters = floatVector( hydra.viscoPlasticParameters.begin( ) + 1, hydra.viscoPlasticParameters.begin( ) + 3 );
 
@@ -2868,7 +2868,7 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters, * boost::unit_test::tol
 
     floatVector answer_hardeningParameters = { hydra.viscoPlasticParameters[ 9 ], hydra.viscoPlasticParameters[ 10 ] };
 
-    BOOST_TEST( answer_peryznaParameters == *R.get_peryznaParameters( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( answer_perzynaParameters == *R.get_perzynaParameters( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( answer_dragStressParameters == *R.get_dragStressParameters( ), CHECK_PER_ELEMENT );
 
@@ -2887,11 +2887,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariableIndices, * boost::unit_test:
      * Test getting the state variable indices
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatVector stateVariables = { 0.6 };
 
@@ -3015,11 +3015,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariables, * boost::unit_test::tole
      * Test of decomposing the parameter vector
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
         private:
 
@@ -3165,11 +3165,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatType n = 3.2;
 
@@ -3215,28 +3215,28 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
         private:
 
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setDragStress;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdDragStressdStateVariables;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setPlasticThermalMultiplier;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticThermalMultiplierdT;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setYieldFunction;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdYieldFunctiondStateVariables;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdYieldFunctiondSubFs;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdYieldFunctiondF;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdYieldFunctiondCauchyStress;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setDragStress;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdDragStressdStateVariables;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setPlasticThermalMultiplier;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdPlasticThermalMultiplierdT;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setYieldFunction;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdYieldFunctiondStateVariables;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdYieldFunctiondSubFs;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdYieldFunctiondF;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdYieldFunctiondCauchyStress;
 
             virtual void setYieldFunction( const bool isPrevious ) override{
 
-                set_peryznaParameters( { n } );
+                set_perzynaParameters( { n } );
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousYieldFunction( previousf );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousYieldFunction( previousf );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_yieldFunction( f );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_yieldFunction( f );
 
                 }
 
@@ -3244,16 +3244,16 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
             virtual void setdYieldFunctiondCauchyStress( const bool isPrevious ) override{
 
-                set_peryznaParameters( { n } );
+                set_perzynaParameters( { n } );
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousYieldFunctiondPreviousCauchyStress( dPreviousfdPreviousCauchy );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousYieldFunctiondPreviousCauchyStress( dPreviousfdPreviousCauchy );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dYieldFunctiondCauchyStress( dfdCauchy );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dYieldFunctiondCauchyStress( dfdCauchy );
 
                 }
 
@@ -3261,16 +3261,16 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
             virtual void setdYieldFunctiondF( const bool isPrevious ) override{
 
-                set_peryznaParameters( { n } );
+                set_perzynaParameters( { n } );
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousYieldFunctiondPreviousF( dPreviousfdPreviousF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousYieldFunctiondPreviousF( dPreviousfdPreviousF );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dYieldFunctiondF( dfdF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dYieldFunctiondF( dfdF );
 
                 }
 
@@ -3278,16 +3278,16 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
             virtual void setdYieldFunctiondSubFs( const bool isPrevious ) override{
 
-                set_peryznaParameters( { n } );
+                set_perzynaParameters( { n } );
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousYieldFunctiondPreviousSubFs( dPreviousfdPreviousSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousYieldFunctiondPreviousSubFs( dPreviousfdPreviousSubFs );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dYieldFunctiondSubFs( dfdSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dYieldFunctiondSubFs( dfdSubFs );
 
                 }
 
@@ -3295,16 +3295,16 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
             virtual void setdYieldFunctiondStateVariables( const bool isPrevious ) override{
 
-                set_peryznaParameters( { n } );
+                set_perzynaParameters( { n } );
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousYieldFunctiondPreviousStateVariables( dPreviousfdPreviousStateVariables );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousYieldFunctiondPreviousStateVariables( dPreviousfdPreviousStateVariables );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dYieldFunctiondStateVariables( dfdStateVariables );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dYieldFunctiondStateVariables( dfdStateVariables );
 
                 }
 
@@ -3314,12 +3314,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousDragStress( previousq );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousDragStress( previousq );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dragStress( q );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dragStress( q );
 
                 }
 
@@ -3329,12 +3329,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousDragStressdPreviousStateVariables( dPreviousqdPreviousXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousDragStressdPreviousStateVariables( dPreviousqdPreviousXi );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dDragStressdStateVariables( dqdXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dDragStressdStateVariables( dqdXi );
 
                 }
 
@@ -3344,12 +3344,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousPlasticThermalMultiplier( previousA );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousPlasticThermalMultiplier( previousA );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_plasticThermalMultiplier( A );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_plasticThermalMultiplier( A );
 
                 }
 
@@ -3359,12 +3359,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousPlasticThermalMultiplierdPreviousT( dPreviousAdPreviousT );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousPlasticThermalMultiplierdPreviousT( dPreviousAdPreviousT );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPlasticThermalMultiplierdT( dAdT );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPlasticThermalMultiplierdT( dAdT );
 
                 }
 
@@ -3522,11 +3522,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian, * boost::uni
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -3997,11 +3997,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
      * Test of computing the velocity gradient
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatType gamma = 2.4;
 
@@ -4077,28 +4077,28 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
             }
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setPlasticMultiplier;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdCauchyStress;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdF;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdSubFs;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdT;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdStateVariables;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setPlasticMultiplier;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdPlasticMultiplierdCauchyStress;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdPlasticMultiplierdF;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdPlasticMultiplierdSubFs;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdPlasticMultiplierdT;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdPlasticMultiplierdStateVariables;
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setFlowDirection;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdFlowDirectiondCauchyStress;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdFlowDirectiondF;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdFlowDirectiondSubFs;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setFlowDirection;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdFlowDirectiondCauchyStress;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdFlowDirectiondF;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdFlowDirectiondSubFs;
 
             virtual void setPlasticMultiplier( const bool isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousPlasticMultiplier( previousGamma );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousPlasticMultiplier( previousGamma );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_plasticMultiplier( gamma );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_plasticMultiplier( gamma );
 
                 }
 
@@ -4108,12 +4108,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousCauchyStress( dPreviousGammadPreviousCauchy );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousCauchyStress( dPreviousGammadPreviousCauchy );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPlasticMultiplierdCauchyStress( dGammadCauchy );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPlasticMultiplierdCauchyStress( dGammadCauchy );
 
                 }
 
@@ -4123,12 +4123,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousF( dPreviousGammadPreviousF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousF( dPreviousGammadPreviousF );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPlasticMultiplierdF( dGammadF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPlasticMultiplierdF( dGammadF );
 
                 }
 
@@ -4138,12 +4138,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousSubFs( dPreviousGammadPreviousSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousSubFs( dPreviousGammadPreviousSubFs );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPlasticMultiplierdSubFs( dGammadSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPlasticMultiplierdSubFs( dGammadSubFs );
 
                 }
 
@@ -4153,12 +4153,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousT( dPreviousGammadPreviousT );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousT( dPreviousGammadPreviousT );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPlasticMultiplierdT( dGammadT );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPlasticMultiplierdT( dGammadT );
 
                 }
 
@@ -4168,12 +4168,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousStateVariables( dPreviousGammadPreviousXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousStateVariables( dPreviousGammadPreviousXi );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPlasticMultiplierdStateVariables( dGammadXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPlasticMultiplierdStateVariables( dGammadXi );
 
                 }
 
@@ -4183,12 +4183,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousFlowDirection( previousNhat );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousFlowDirection( previousNhat );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_flowDirection( nhat );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_flowDirection( nhat );
 
                 }
 
@@ -4198,12 +4198,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousFlowDirectiondPreviousCauchyStress( dPreviousNhatdPreviousCauchy );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousFlowDirectiondPreviousCauchyStress( dPreviousNhatdPreviousCauchy );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dFlowDirectiondCauchyStress( dNhatdCauchy );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dFlowDirectiondCauchyStress( dNhatdCauchy );
 
                 }
 
@@ -4213,12 +4213,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousFlowDirectiondPreviousF( dPreviousNhatdPreviousF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousFlowDirectiondPreviousF( dPreviousNhatdPreviousF );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dFlowDirectiondF( dNhatdF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dFlowDirectiondF( dNhatdF );
 
                 }
 
@@ -4228,12 +4228,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousFlowDirectiondPreviousSubFs( dPreviousNhatdPreviousSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousFlowDirectiondPreviousSubFs( dPreviousNhatdPreviousSubFs );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dFlowDirectiondSubFs( dNhatdSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dFlowDirectiondSubFs( dNhatdSubFs );
 
                 }
 
@@ -4389,11 +4389,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian, * boost::unit
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -4904,11 +4904,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
      * Test of computing the velocity gradient
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatType gamma = 2.4;
 
@@ -4977,26 +4977,26 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
             }
         private:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setPlasticMultiplier;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdCauchyStress;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdF;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdSubFs;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdT;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdPlasticMultiplierdStateVariables;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setPlasticMultiplier;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdPlasticMultiplierdCauchyStress;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdPlasticMultiplierdF;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdPlasticMultiplierdSubFs;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdPlasticMultiplierdT;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdPlasticMultiplierdStateVariables;
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setHardeningFunction;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdHardeningFunctiondStateVariables;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setHardeningFunction;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdHardeningFunctiondStateVariables;
 
             virtual void setPlasticMultiplier( const bool isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousPlasticMultiplier( previousGamma );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousPlasticMultiplier( previousGamma );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_plasticMultiplier( gamma );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_plasticMultiplier( gamma );
 
                 }
 
@@ -5006,12 +5006,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousCauchyStress( dPreviousGammadPreviousCauchy );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousCauchyStress( dPreviousGammadPreviousCauchy );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPlasticMultiplierdCauchyStress( dGammadCauchy );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPlasticMultiplierdCauchyStress( dGammadCauchy );
 
                 }
 
@@ -5021,12 +5021,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousF( dPreviousGammadPreviousF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousF( dPreviousGammadPreviousF );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPlasticMultiplierdF( dGammadF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPlasticMultiplierdF( dGammadF );
 
                 }
 
@@ -5036,12 +5036,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousSubFs( dPreviousGammadPreviousSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousSubFs( dPreviousGammadPreviousSubFs );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPlasticMultiplierdSubFs( dGammadSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPlasticMultiplierdSubFs( dGammadSubFs );
 
                 }
 
@@ -5051,12 +5051,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousT( dPreviousGammadPreviousT );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousT( dPreviousGammadPreviousT );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPlasticMultiplierdT( dGammadT );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPlasticMultiplierdT( dGammadT );
 
                 }
 
@@ -5066,12 +5066,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousStateVariables( dPreviousGammadPreviousXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousPlasticMultiplierdPreviousStateVariables( dPreviousGammadPreviousXi );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPlasticMultiplierdStateVariables( dGammadXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPlasticMultiplierdStateVariables( dGammadXi );
 
                 }
 
@@ -5081,12 +5081,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousHardeningFunction( previousHardeningFunction );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousHardeningFunction( previousHardeningFunction );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_hardeningFunction( hardeningFunction );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_hardeningFunction( hardeningFunction );
 
                 }
 
@@ -5096,12 +5096,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousHardeningFunctiondPreviousStateVariables( dPreviousHardeningFunctiondPreviousXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousHardeningFunctiondPreviousStateVariables( dPreviousHardeningFunctiondPreviousXi );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dHardeningFunctiondStateVariables( dHardeningFunctiondXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dHardeningFunctiondStateVariables( dHardeningFunctiondXi );
 
                 }
 
@@ -5256,11 +5256,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian, * 
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -5773,11 +5773,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
      * Test of computing the plastic deformation gradient
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatVector velocityGradient = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -5805,12 +5805,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
 
         private:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setVelocityGradient;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdVelocityGradientdCauchyStress;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdVelocityGradientdF;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdVelocityGradientdSubFs;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdVelocityGradientdT;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdVelocityGradientdStateVariables;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setVelocityGradient;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdVelocityGradientdCauchyStress;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdVelocityGradientdF;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdVelocityGradientdSubFs;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdVelocityGradientdT;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdVelocityGradientdStateVariables;
 
             floatVector initializeVector( int nvals, floatType val_0 ){
 
@@ -5848,12 +5848,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousVelocityGradient( previousVelocityGradient );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousVelocityGradient( previousVelocityGradient );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_velocityGradient( velocityGradient );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_velocityGradient( velocityGradient );
 
                 }
 
@@ -5863,12 +5863,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousVelocityGradientdPreviousCauchyStress( dPreviousLdPreviousCauchy );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousVelocityGradientdPreviousCauchyStress( dPreviousLdPreviousCauchy );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dVelocityGradientdCauchyStress( dLdCauchy );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dVelocityGradientdCauchyStress( dLdCauchy );
 
                 }
 
@@ -5878,12 +5878,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousVelocityGradientdPreviousF( dPreviousLdPreviousF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousVelocityGradientdPreviousF( dPreviousLdPreviousF );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dVelocityGradientdF( dLdF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dVelocityGradientdF( dLdF );
 
                 }
 
@@ -5893,12 +5893,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousVelocityGradientdPreviousSubFs( dPreviousLdPreviousSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousVelocityGradientdPreviousSubFs( dPreviousLdPreviousSubFs );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dVelocityGradientdSubFs( dLdSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dVelocityGradientdSubFs( dLdSubFs );
 
                 }
 
@@ -5908,12 +5908,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousVelocityGradientdPreviousT( dPreviousLdPreviousT );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousVelocityGradientdPreviousT( dPreviousLdPreviousT );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dVelocityGradientdT( dLdT );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dVelocityGradientdT( dLdT );
 
                 }
 
@@ -5923,12 +5923,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousVelocityGradientdPreviousStateVariables( dPreviousLdPreviousXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousVelocityGradientdPreviousStateVariables( dPreviousLdPreviousXi );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dVelocityGradientdStateVariables( dLdXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dVelocityGradientdStateVariables( dLdXi );
 
                 }
 
@@ -6083,11 +6083,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian, * b
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -6600,11 +6600,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
      * Test of computing the plastic state variables
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatVector stateVariableEvolutionRates = { 2.3, 1.78 };
 
@@ -6666,23 +6666,23 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
 
             }
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRates;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdStateVariableEvolutionRatesdCauchyStress;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdStateVariableEvolutionRatesdF;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdStateVariableEvolutionRatesdSubFs;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdStateVariableEvolutionRatesdT;
-            using tardigradeHydra::peryznaViscoplasticity::residual::setdStateVariableEvolutionRatesdStateVariables;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setStateVariableEvolutionRates;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdStateVariableEvolutionRatesdCauchyStress;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdStateVariableEvolutionRatesdF;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdStateVariableEvolutionRatesdSubFs;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdStateVariableEvolutionRatesdT;
+            using tardigradeHydra::perzynaViscoplasticity::residual::setdStateVariableEvolutionRatesdStateVariables;
 
             virtual void setStateVariableEvolutionRates( const bool isPrevious ) override{
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_previousStateVariableEvolutionRates( previousStateVariableEvolutionRates );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_previousStateVariableEvolutionRates( previousStateVariableEvolutionRates );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_stateVariableEvolutionRates( stateVariableEvolutionRates );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_stateVariableEvolutionRates( stateVariableEvolutionRates );
 
                 }
 
@@ -6692,12 +6692,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( dPreviousXidotdPreviousC );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( dPreviousXidotdPreviousC );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dStateVariableEvolutionRatesdCauchyStress( dXidotdC );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dStateVariableEvolutionRatesdCauchyStress( dXidotdC );
 
                 }
 
@@ -6707,12 +6707,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousStateVariableEvolutionRatesdPreviousF( dPreviousXidotdPreviousF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousStateVariableEvolutionRatesdPreviousF( dPreviousXidotdPreviousF );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dStateVariableEvolutionRatesdF( dXidotdF );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dStateVariableEvolutionRatesdF( dXidotdF );
 
                 }
 
@@ -6722,12 +6722,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousStateVariableEvolutionRatesdPreviousSubFs( dPreviousXidotdPreviousSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousStateVariableEvolutionRatesdPreviousSubFs( dPreviousXidotdPreviousSubFs );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dStateVariableEvolutionRatesdSubFs( dXidotdSubFs );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dStateVariableEvolutionRatesdSubFs( dXidotdSubFs );
 
                 }
 
@@ -6737,12 +6737,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousStateVariableEvolutionRatesdPreviousT( dPreviousXidotdPreviousT );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousStateVariableEvolutionRatesdPreviousT( dPreviousXidotdPreviousT );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dStateVariableEvolutionRatesdT( dXidotdT );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dStateVariableEvolutionRatesdT( dXidotdT );
 
                 }
 
@@ -6752,12 +6752,12 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
 
                 if ( isPrevious ){
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( dPreviousXidotdPreviousXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( dPreviousXidotdPreviousXi );
 
                 }
                 else{
 
-                    tardigradeHydra::peryznaViscoplasticity::residual::set_dStateVariableEvolutionRatesdStateVariables( dXidotdXi );
+                    tardigradeHydra::perzynaViscoplasticity::residual::set_dStateVariableEvolutionRatesdStateVariables( dXidotdXi );
 
                 }
 
@@ -6765,7 +6765,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
 
             virtual void setPreviousStateVariables( ) override{
 
-                tardigradeHydra::peryznaViscoplasticity::residual::set_previousStateVariables( previousStateVariables );
+                tardigradeHydra::perzynaViscoplasticity::residual::set_previousStateVariables( previousStateVariables );
 
             }
 
@@ -6916,11 +6916,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian, * boost:
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -7433,11 +7433,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
      * Test of computing the plastic state variables
      */
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
             floatVector plasticDeformationGradient = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -7447,13 +7447,13 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
             virtual void setPlasticDeformationGradient( ) override{
 
-                tardigradeHydra::peryznaViscoplasticity::residual::set_plasticDeformationGradient( plasticDeformationGradient );
+                tardigradeHydra::perzynaViscoplasticity::residual::set_plasticDeformationGradient( plasticDeformationGradient );
 
             }
 
             virtual void setPlasticStateVariables( ) override{
 
-                tardigradeHydra::peryznaViscoplasticity::residual::set_plasticStateVariables( plasticStateVariables );
+                tardigradeHydra::perzynaViscoplasticity::residual::set_plasticStateVariables( plasticStateVariables );
 
             }
 
@@ -7594,11 +7594,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian, * boost::unit_test::tolerance( 
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -7770,11 +7770,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT, * boost::unit_test::tolerance( DEFA
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
@@ -7952,11 +7952,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF, * boost::unit_test::tolerance( DEFA
 
     };
 
-    class residualMock : public tardigradeHydra::peryznaViscoplasticity::residual {
+    class residualMock : public tardigradeHydra::perzynaViscoplasticity::residual {
 
         public:
 
-            using tardigradeHydra::peryznaViscoplasticity::residual::residual;
+            using tardigradeHydra::perzynaViscoplasticity::residual::residual;
 
     };
 
