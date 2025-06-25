@@ -1061,6 +1061,21 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void addParameterizationInfo( std::string &parameterization_info ){
+                /*!
+                 * Add parameterization information to the provided docstring
+                 * 
+                 * Information on the current parameters and their values should be added to the
+                 * incoming string.
+                 * 
+                 * \param &parameterization_info: The parameterization information string. Append
+                 *     this class' information
+                 */
+
+                parameterization_info += "NO INFORMATION DEFINED FOR CLASS\n";
+
+            }
+
         protected:
 
             void setNumConstraints( const unsigned int numConstraints ){
@@ -1813,6 +1828,27 @@ namespace tardigradeHydra{
                  * Return if the current residual index is meaningful or not
                  */
                 return _current_residual_index_set;
+            }
+
+            std::string getResidualParameterizationInfo( ){
+                /*!
+                 * Get the parameterization information of the residual classes
+                 */
+
+                std::string parameterization_info = "########################################\n# RESIDUAL PARAMETERIZATION INFORMATION#\n########################################\n\n";
+
+                for ( auto v = std::begin( *getResidualClasses( ) ); v != std::end( *getResidualClasses( ) ); ++v ){
+
+                    parameterization_info += "RESIDUAL CLASS: " + std::to_string( ( unsigned int )( v - std::begin( *getResidualClasses( ) ) ) ) + "\n\n";
+
+                    ( *v )->addParameterizationInfo( parameterization_info );
+
+                    parameterization_info += "\n";
+
+                }
+
+                return parameterization_info;
+
             }
 
         protected:
