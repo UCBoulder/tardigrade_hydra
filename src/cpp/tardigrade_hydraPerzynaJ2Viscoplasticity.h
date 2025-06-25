@@ -122,6 +122,8 @@ namespace tardigradeHydra{
                 //! The index of the scalar damage
                 unsigned int damageISVIndex = 1;
 
+                void addParameterizationInfo( std::string &parameterization_info ) override;
+
             protected:
 
                 using tardigradeHydra::perzynaViscoplasticity::residual::setHardeningFunction;
