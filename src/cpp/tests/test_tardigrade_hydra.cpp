@@ -8284,6 +8284,12 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getResidualParameterizationInfo, * boost::u
 
             }
 
+            virtual void addParameterizationInfo( std::string &parameterization_info ){
+
+                parameterization_info += "Changing the information\n";
+
+            }
+
         protected:
 
     };
