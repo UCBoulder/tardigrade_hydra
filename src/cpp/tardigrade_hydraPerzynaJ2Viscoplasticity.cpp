@@ -389,18 +389,18 @@ namespace tardigradeHydra{
              */
 
             parameterization_info += "name,                             description,       units, current value\n";
-            parameterization_info += "   n,            the Perzyna exponential term,        none, " + ( *get_perzynaParameteres( ) )[ 0 ] + "\n";
-            parameterization_info += "  q0,                         the drag stress,      stress, " + ( *get_dragStressParameters( ) )[ 0 ] + "\n";
-            parameterization_info += "  C1,                    the WLF C1 parameter,        none, " + ( *get_thermalParameters( ) )[ 0 ] + "\n";
-            parameterization_info += "  C2,                    the WLF C2 parameter, temperature, " + ( *get_thermalParameters( ) )[ 1 ] + "\n";
-            parameterization_info += "Tref,           the WLF reference temperature, temperature, " + ( *get_thermalParameters( ) )[ 2 ] + "\n";
-            parameterization_info += "   Y,                    initial yield stress,      stress, " + ( *get_yieldParameters( ) )[ 0 ] + "\n";
-            parameterization_info += "  Ei,             isotropic hardening modulus,      stress, " + ( *get_yieldParameters( ) )[ 1 ] + "\n";
-            parameterization_info += "  Ek,             kinematic hardening modulus,      stress, " + ( *get_yieldParameters( ) )[ 2 ] + "\n";
-            parameterization_info += " hi0,    isotropic isv initial evolution rate,        none, " + ( *get_hardeningParameters( ) )[ 0 ] + "\n";
-            parameterization_info += " hi0,     isotropic isv linear evolution rate,        none, " + ( *get_hardeningParameters( ) )[ 1 ] + "\n";
-            parameterization_info += " hi0,    kinematic isv initial evolution rate,        none, " + ( *get_hardeningParameters( ) )[ 2 ] + "\n";
-            parameterization_info += " hi0,     kinematic isv linear evolution rate,        none, " + ( *get_hardeningParameters( ) )[ 3 ] + "\n";
+            parameterization_info += "   n,            the Perzyna exponential term,        none, " + std::to_string(    ( *get_perzynaParameters( ) )[ 0 ] ) + "\n";
+            parameterization_info += "  q0,                         the drag stress,      stress, " + std::to_string( ( *get_dragStressParameters( ) )[ 0 ] ) + "\n";
+            parameterization_info += "  C1,                    the WLF C1 parameter,        none, " + std::to_string(    ( *get_thermalParameters( ) )[ 0 ] ) + "\n";
+            parameterization_info += "  C2,                    the WLF C2 parameter, temperature, " + std::to_string(    ( *get_thermalParameters( ) )[ 1 ] ) + "\n";
+            parameterization_info += "Tref,           the WLF reference temperature, temperature, " + std::to_string(    ( *get_thermalParameters( ) )[ 2 ] ) + "\n";
+            parameterization_info += "   Y,                    initial yield stress,      stress, " + std::to_string(      ( *get_yieldParameters( ) )[ 0 ] ) + "\n";
+            parameterization_info += "  Ei,             isotropic hardening modulus,      stress, " + std::to_string(      ( *get_yieldParameters( ) )[ 1 ] ) + "\n";
+            parameterization_info += "  Ek,             kinematic hardening modulus,      stress, " + std::to_string(      ( *get_yieldParameters( ) )[ 2 ] ) + "\n";
+            parameterization_info += " hi0,    isotropic isv initial evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 0 ] ) + "\n";
+            parameterization_info += " hi0,     isotropic isv linear evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 1 ] ) + "\n";
+            parameterization_info += " hi0,    kinematic isv initial evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 2 ] ) + "\n";
+            parameterization_info += " hi0,     kinematic isv linear evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 3 ] ) + "\n";
 
         }
 

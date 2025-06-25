@@ -23,6 +23,10 @@ Breaking Changes
 - Changed MassChange to DOF in the dof velocity gradient driven deformation. (:pull:`205`). By `Nathan Miller`_.
 - Changed peryzna to perzyna (:pull:`209`). By `Nathan Miller`_.
 
+Internal Changes
+================
+- Added parameterization information for the perzynaJ2Viscoplasticity residual (:pull:`211`). By `Nathan Miller`_.
+
 ******************
 0.5.0 (05-22-2025)
 ******************
