@@ -398,9 +398,9 @@ namespace tardigradeHydra{
             parameterization_info += "  Ei,             isotropic hardening modulus,      stress, " + std::to_string(      ( *get_yieldParameters( ) )[ 1 ] ) + "\n";
             parameterization_info += "  Ek,             kinematic hardening modulus,      stress, " + std::to_string(      ( *get_yieldParameters( ) )[ 2 ] ) + "\n";
             parameterization_info += " hi0,    isotropic isv initial evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 0 ] ) + "\n";
-            parameterization_info += " hi0,     isotropic isv linear evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 1 ] ) + "\n";
-            parameterization_info += " hi0,    kinematic isv initial evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 2 ] ) + "\n";
-            parameterization_info += " hi0,     kinematic isv linear evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 3 ] ) + "\n";
+            parameterization_info += " hi1,     isotropic isv linear evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 1 ] ) + "\n";
+            parameterization_info += " hk0,    kinematic isv initial evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 2 ] ) + "\n";
+            parameterization_info += " hk1,     kinematic isv linear evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 3 ] ) + "\n";
 
         }
 
