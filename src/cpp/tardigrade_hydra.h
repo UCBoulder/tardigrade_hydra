@@ -1839,7 +1839,8 @@ namespace tardigradeHydra{
 
                 for ( auto v = std::begin( *getResidualClasses( ) ); v != std::end( *getResidualClasses( ) ); ++v ){
 
-                    parameterization_info += "RESIDUAL CLASS: " + std::to_string( ( unsigned int )( v - std::begin( *getResidualClasses( ) ) ) ) + "\n\n";
+                    parameterization_info += "RESIDUAL CLASS:";
+                    parameterization_info += " " + std::to_string( ( unsigned int )( v - std::begin( *getResidualClasses( ) ) ) ) + "\n\n";
 
                     ( *v )->addParameterizationInfo( parameterization_info );
 
