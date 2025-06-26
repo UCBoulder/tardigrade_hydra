@@ -381,6 +381,29 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::addParameterizationInfo( std::string &parameterization_info ){
+            /*!
+             * Add the information about the parameterization to the incoming string
+             * 
+             * \param &parameterization_info: The incoming parameterization string
+             */
+
+            parameterization_info += "name,                             description,       units, current value\n";
+            parameterization_info += "   n,            the Perzyna exponential term,        none, " + std::to_string(    ( *get_perzynaParameters( ) )[ 0 ] ) + "\n";
+            parameterization_info += "  q0,                         the drag stress,      stress, " + std::to_string( ( *get_dragStressParameters( ) )[ 0 ] ) + "\n";
+            parameterization_info += "  C1,                    the WLF C1 parameter,        none, " + std::to_string(    ( *get_thermalParameters( ) )[ 0 ] ) + "\n";
+            parameterization_info += "  C2,                    the WLF C2 parameter, temperature, " + std::to_string(    ( *get_thermalParameters( ) )[ 1 ] ) + "\n";
+            parameterization_info += "Tref,           the WLF reference temperature, temperature, " + std::to_string(    ( *get_thermalParameters( ) )[ 2 ] ) + "\n";
+            parameterization_info += "   Y,                    initial yield stress,      stress, " + std::to_string(      ( *get_yieldParameters( ) )[ 0 ] ) + "\n";
+            parameterization_info += "  Ei,             isotropic hardening modulus,      stress, " + std::to_string(      ( *get_yieldParameters( ) )[ 1 ] ) + "\n";
+            parameterization_info += "  Ek,             kinematic hardening modulus,      stress, " + std::to_string(      ( *get_yieldParameters( ) )[ 2 ] ) + "\n";
+            parameterization_info += " hi0,    isotropic isv initial evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 0 ] ) + "\n";
+            parameterization_info += " hi0,     isotropic isv linear evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 1 ] ) + "\n";
+            parameterization_info += " hi0,    kinematic isv initial evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 2 ] ) + "\n";
+            parameterization_info += " hi0,     kinematic isv linear evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 3 ] ) + "\n";
+
+        }
+
     }
 
 }
