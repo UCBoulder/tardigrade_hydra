@@ -388,6 +388,7 @@ namespace tardigradeHydra{
              * \param &parameterization_info: The incoming parameterization string
              */
 
+            parameterization_info += "class: tardigradeHydra::perzynaJ2Viscoplasticity::residual\n\n";
             parameterization_info += "name,                             description,       units, current value\n";
             parameterization_info += "   n,            the Perzyna exponential term,        none, " + std::to_string(    ( *get_perzynaParameters( ) )[ 0 ] ) + "\n";
             parameterization_info += "  q0,                         the drag stress,      stress, " + std::to_string( ( *get_dragStressParameters( ) )[ 0 ] ) + "\n";
