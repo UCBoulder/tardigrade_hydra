@@ -116,6 +116,8 @@ namespace tardigradeHydra{
 
                 const floatType* getIntegrationParameter( );
 
+                virtual void addParameterizationInfo( std::string &parameterization_info ) override;
+
             protected:
 
                 virtual void setDrivingStress( );
