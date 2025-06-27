@@ -106,6 +106,8 @@ namespace tardigradeHydra{
                 //! Get the quadratic parameters for the thermal expansion
                 const floatVector* getQuadraticParameters( ){ return &_quadraticParameters; }
 
+                virtual void addParameterizationInfo( std::string &parameterization_info ) override;
+
             protected:
 
                 virtual void setThermalGreenLagrangeStrain( );
