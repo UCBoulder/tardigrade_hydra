@@ -168,6 +168,8 @@ namespace tardigradeHydra{
 
                 void setdRdT( const floatVector &dRdT );
 
+                virtual void addParameterizationInfo( std::string &parameterization_info ) override;
+
             protected:
 
                 using tardigradeHydra::linearElasticity::residual::setPK2Stress;

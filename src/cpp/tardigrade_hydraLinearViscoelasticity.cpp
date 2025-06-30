@@ -108,6 +108,54 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::addParameterizationInfo( std::string &parameterization_info ){
+            /*!
+             * Add parameterization info to the incoming string
+             * 
+             * \param &parameterization_info: The incoming string
+             */
+
+            std::stringstream ss;
+
+            ss << "class: tardigradeHydra::linearViscoelasticity::residual\n\n";
+            ss << "     name,                               description,       units, current value\n";
+            ss << "    n_vol, The number of volumetric Maxwell elements,        none, " << *getNumVolumetricViscousTerms( ) << "\n";
+            ss << "    n_iso,  The number of isochoric Maxwell elements,        none, " << *getNumIsochoricViscousTerms( ) << "\n";
+            ss.precision(9);
+            ss << std::scientific;
+            ss << "     Kinf,           The infinite volumetric modulus,      stress, " << *getKinf( ) << "\n";
+            ss << "     Ginf,            The infinite isochoric modulus,      stress, " << *getGinf( ) << "\n";
+            ss << " Tref_vol,      The volumetric reference temperature, temperature, " << ( *getVolumetricTemperatureParameters( ) )[ 0 ] << "\n";
+            ss << "   C1_vol,           The volumetric WLF C1 parameter,        none, " << ( *getVolumetricTemperatureParameters( ) )[ 1 ] << "\n";
+            ss << "   C2_vol,           The volumetric WLF C2 parameter, temperature, " << ( *getVolumetricTemperatureParameters( ) )[ 2 ] << "\n";
+            ss << " Tref_iso,       The isochoric reference temperature, temperature, " << ( *getIsochoricTemperatureParameters( ) )[ 0 ] << "\n";
+            ss << "   C1_iso,            The isochoric WLF C1 parameter,        none, " << ( *getIsochoricTemperatureParameters( ) )[ 1 ] << "\n";
+            ss << "   C2_iso,            The isochoric WLF C2 parameter, temperature, " << ( *getIsochoricTemperatureParameters( ) )[ 2 ] << "\n";
+            ss << "\nVolumetric Maxwell elements tau (time), K (stress):\n";
+
+            for (
+                auto v = std::begin( *getVolumetricModuli( ) );
+                v != std::end( *getVolumetricModuli( ) );
+                ++v )
+            {
+                ss << ( *getVolumetricTaus( ) )[ ( unsigned int )( v - std::begin( *getVolumetricModuli( ) ) ) ] << ", " << *v << "\n";
+            }
+            ss << "\nIsochoric Maxwell elements tau (time), G (stress):\n";
+
+            for (
+                auto v = std::begin( *getIsochoricModuli( ) );
+                v != std::end( *getIsochoricModuli( ) );
+                ++v )
+            {
+                ss << ( *getIsochoricTaus( ) )[ ( unsigned int )( v - std::begin( *getIsochoricModuli( ) ) ) ] << ", " << *v << "\n";
+            }
+
+            ss.unsetf(std::ios_base::floatfield);
+
+            parameterization_info.append(ss.str());
+
+        }
+
         void residual::setNumVolumetricViscousTerms( const unsigned int &num ){
             /*!
              * Set the number of volumetric prony-series viscous terms
