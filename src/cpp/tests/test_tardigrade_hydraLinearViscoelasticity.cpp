@@ -2627,6 +2627,5 @@ BOOST_AUTO_TEST_CASE( test_addParameterizationInfo, * boost::unit_test::toleranc
 
     std::string output;
     R.addParameterizationInfo( output );
-    std::cerr << "output:\n" << output << "\n";
 
 }
