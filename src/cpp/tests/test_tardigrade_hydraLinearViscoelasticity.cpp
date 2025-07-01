@@ -2545,3 +2545,87 @@ BOOST_AUTO_TEST_CASE( test_residual_evaluate, * boost::unit_test::tolerance( DEF
     }
 
 }
+
+BOOST_AUTO_TEST_CASE( test_addParameterizationInfo, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class residualMock : public tardigradeHydra::linearViscoelasticity::residual {
+
+        public:
+
+            using tardigradeHydra::linearViscoelasticity::residual::residual;
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            residualMock elasticity;
+
+            unsigned int ISVlb = 2;
+
+            unsigned int ISVub = 31;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+        private:
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 1 );
+
+                elasticity = residualMock( this, 9, *getParameters( ), ISVlb, ISVub, 0.5 );
+
+                residuals[ 0 ] = &elasticity;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector previousStateVariables = { -1, 0, 1e-3, 1e-1,
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0,
+                                           0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    floatVector parameters = { 2, 3, 123.4, 56.7, 10.0, 5.0, 293.15, 2, 3, 293.15, 23.4, 25.6, 0.1, 0.2, 12.3, 13.4, 14.5, 0.1, 1.0, 10.0 };
+
+    unsigned int numConfigurations = 1;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    unsigned int ISVlb = 2;
+
+    unsigned int ISVub = 31;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    residualMock R( &hydra, 9, parameters, ISVlb, ISVub, 0.5 );
+
+    std::string output;
+    R.addParameterizationInfo( output );
+
+}

@@ -29,6 +29,7 @@ Internal Changes
 - Added parameterization information for the perzynaViscoplasticity residual (:pull:`212`). By `Nathan Miller`_.
 - Added parameterization information for the perzynaViscodamage residual (:pull:`213`). By `Nathan Miller`_.
 - Added parameterization information for the thermal expansion residual (:pull:`214`). By `Nathan Miller`_.
+- Added parameterization information for the linear viscoelasticity residual (:pull:`215`). By `Nathan Miller`_.
 
 ******************
 0.5.0 (05-22-2025)
