@@ -727,18 +727,25 @@ namespace tardigradeHydra{
              * \param &parameterization_info: The incoming string
              */
 
-            parameterization_info += "class: tardigradeHydra::perzynaViscodamage::residual\n\n";
-            parameterization_info += "Getting information from parent class\n\n";
+            std::stringstream ss;
+
+            ss << "class: tardigradeHydra::perzynaViscodamage::residual\n\n";
+            ss << "Getting information from parent class\n\n";
             tardigradeHydra::perzynaViscoplasticity::residual::addParameterizationInfo( parameterization_info );
-            parameterization_info += "\n\n";
-            parameterization_info += "Modifying the drag-stress and hardening parameters\n\n";
-            parameterization_info += "name,                              description,  units, current value\n";
-            parameterization_info += "  q0,                  the initial drag stress, stress, " + std::to_string( ( *get_dragStressParameters( ) )[ 0 ] ) + "\n";
-            parameterization_info += "  Ei,    the drag stress isv hardening modulus, stress, " + std::to_string( ( *get_dragStressParameters( ) )[ 1 ] ) + "\n";
-            parameterization_info += "  ED, the drag stress damage hardening modulus, stress, " + std::to_string( ( *get_dragStressParameters( ) )[ 2 ] ) + "\n";
-            parameterization_info += " hi0,               isv initial evolution rate,   none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 0 ] ) + "\n";
-            parameterization_info += " hi1,            isv linear isv evolution rate,   none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 1 ] ) + "\n"; 
-            parameterization_info += " hd1,         isv linear damage evolution rate,   none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 2 ] ) + "\n";
+            ss.precision(9);
+            ss << std::scientific;
+            ss << "\n\n";
+            ss << "Modifying the drag-stress and hardening parameters\n\n";
+            ss << "name,                              description,  units, current value\n";
+            ss << "  q0,                  the initial drag stress, stress, " << ( *get_dragStressParameters( ) )[ 0 ] << "\n";
+            ss << "  Ei,    the drag stress isv hardening modulus, stress, " << ( *get_dragStressParameters( ) )[ 1 ] << "\n";
+            ss << "  ED, the drag stress damage hardening modulus, stress, " << ( *get_dragStressParameters( ) )[ 2 ] << "\n";
+            ss << " hi0,               isv initial evolution rate,   none, " <<  ( *get_hardeningParameters( ) )[ 0 ] << "\n";
+            ss << " hi1,            isv linear isv evolution rate,   none, " <<  ( *get_hardeningParameters( ) )[ 1 ] << "\n"; 
+            ss << " hd1,         isv linear damage evolution rate,   none, " <<  ( *get_hardeningParameters( ) )[ 2 ] << "\n";
+
+            ss.unsetf(std::ios_base::floatfield);
+            parameterization_info.append(ss.str());
 
         }
 

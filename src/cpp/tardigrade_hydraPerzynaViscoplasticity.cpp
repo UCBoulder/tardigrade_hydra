@@ -3265,19 +3265,26 @@ namespace tardigradeHydra{
              * \param &parameterization_info: The parameterization info string
              */
 
-            parameterization_info += "class: tardigradeHydra::perzynaViscoplasticity::residual\n\n";
-            parameterization_info += "name,                       description,       units, current value\n";
-            parameterization_info += "   n,      the Perzyna exponential term,        none, " + std::to_string(    ( *get_perzynaParameters( ) )[ 0 ] ) + "\n";
-            parameterization_info += "  q0,           the initial drag stress,      stress, " + std::to_string( ( *get_dragStressParameters( ) )[ 0 ] ) + "\n";
-            parameterization_info += "  Ep, the drag stress hardening modulus,      stress, " + std::to_string( ( *get_dragStressParameters( ) )[ 1 ] ) + "\n";
-            parameterization_info += "  C1,              the WLF C1 parameter,        none, " + std::to_string(    ( *get_thermalParameters( ) )[ 0 ] ) + "\n";
-            parameterization_info += "  C2,              the WLF C2 parameter, temperature, " + std::to_string(    ( *get_thermalParameters( ) )[ 1 ] ) + "\n";
-            parameterization_info += "Tref,     the WLF reference temperature, temperature, " + std::to_string(    ( *get_thermalParameters( ) )[ 2 ] ) + "\n";
-            parameterization_info += "   Y,              initial yield stress,      stress, " + std::to_string(      ( *get_yieldParameters( ) )[ 0 ] ) + "\n";
-            parameterization_info += "   A,        yield pressure sensitivity,        none, " + std::to_string(      ( *get_yieldParameters( ) )[ 1 ] ) + "\n";
-            parameterization_info += "   B,         flow pressure sensitivity,        none, " + std::to_string(       ( *get_flowParameters( ) )[ 1 ] ) + "\n";
-            parameterization_info += " hi0,        isv initial evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 0 ] ) + "\n";
-            parameterization_info += " hi1,         isv linear evolution rate,        none, " + std::to_string(  ( *get_hardeningParameters( ) )[ 1 ] ) + "\n";
+            std::stringstream ss;
+            ss.precision(9);
+            ss << std::scientific;
+
+            ss << "class: tardigradeHydra::perzynaViscoplasticity::residual\n\n";
+            ss << "name,                       description,       units, current value\n";
+            ss << "   n,      the Perzyna exponential term,        none, " <<    ( *get_perzynaParameters( ) )[ 0 ] << "\n";
+            ss << "  q0,           the initial drag stress,      stress, " << ( *get_dragStressParameters( ) )[ 0 ] << "\n";
+            ss << "  Ep, the drag stress hardening modulus,      stress, " << ( *get_dragStressParameters( ) )[ 1 ] << "\n";
+            ss << "  C1,              the WLF C1 parameter,        none, " <<    ( *get_thermalParameters( ) )[ 0 ] << "\n";
+            ss << "  C2,              the WLF C2 parameter, temperature, " <<    ( *get_thermalParameters( ) )[ 1 ] << "\n";
+            ss << "Tref,     the WLF reference temperature, temperature, " <<    ( *get_thermalParameters( ) )[ 2 ] << "\n";
+            ss << "   Y,              initial yield stress,      stress, " <<      ( *get_yieldParameters( ) )[ 0 ] << "\n";
+            ss << "   A,        yield pressure sensitivity,        none, " <<      ( *get_yieldParameters( ) )[ 1 ] << "\n";
+            ss << "   B,         flow pressure sensitivity,        none, " <<       ( *get_flowParameters( ) )[ 1 ] << "\n";
+            ss << " hi0,        isv initial evolution rate,        none, " <<  ( *get_hardeningParameters( ) )[ 0 ] << "\n";
+            ss << " hi1,         isv linear evolution rate,        none, " <<  ( *get_hardeningParameters( ) )[ 1 ] << "\n";
+
+            ss.unsetf(std::ios_base::floatfield);
+            parameterization_info.append(ss.str());
 
         }
 
