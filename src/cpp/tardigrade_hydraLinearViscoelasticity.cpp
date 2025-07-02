@@ -46,7 +46,7 @@ namespace tardigradeHydra{
                 std::string message = "The number of state variables required by the parameterization is not equal to the number of state variables indicated by the ISV bounds\n";
                 message            += "   required # ISVs: " + std::to_string( *getNumStateVariables( ) ) + "\n";
                 message            += "   ISV Lower Bound: " + std::to_string( *getViscoelasticISVLowerIndex( ) ) + "\n";
-                message            += "   ISV UPper Bound: " + std::to_string( *getViscoelasticISVLowerIndex( ) ) + "\n";
+                message            += "   ISV Upper Bound: " + std::to_string( *getViscoelasticISVUpperIndex( ) ) + "\n";
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
