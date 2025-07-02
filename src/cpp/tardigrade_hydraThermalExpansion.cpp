@@ -248,8 +248,8 @@ namespace tardigradeHydra{
              */
 
             std::stringstream ss;
-            ss.unsetf(std::ios_base::floatfield);
-            parameterization_info.append(ss.str());
+            ss.precision(9);
+            ss << std::scientific;
 
             ss << "class: tardigradeHydra::thermalExpansion::residual\n\n";
             ss << "name,                                    description,       units, current value\n";
