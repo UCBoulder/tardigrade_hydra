@@ -34,6 +34,7 @@ Internal Changes
 - Added parameterization information for the linear viscoelasticity residual (:pull:`215`). By `Nathan Miller`_.
 - Made the outputs use scientific notation (:pull:`217`). By `Nathan Miller`_.
 - Fixed a formatting bug in perzynaJ2Viscoplasticity parameterization information output (:pull:`218`). By `Nathan Miller`_.
+- Fixed an issue where a test would fail due to a 1e-11 difference in value (:pull:`219`). By `Nathan Miller`_.
 
 ******************
 0.5.0 (05-22-2025)

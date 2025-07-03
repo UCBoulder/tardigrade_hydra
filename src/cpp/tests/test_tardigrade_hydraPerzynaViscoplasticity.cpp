@@ -1328,7 +1328,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian, * boost::unit_te
 
     }
 
-    BOOST_TEST( tardigradeVectorTools::appendVectors( dPreviousFlowDirectiondPreviousCauchyStress ) == *R.get_dPreviousFlowDirectiondPreviousCauchyStress( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( tolerantCheck( tardigradeVectorTools::appendVectors( dPreviousFlowDirectiondPreviousCauchyStress ), *R.get_dPreviousFlowDirectiondPreviousCauchyStress( ) ) );
 
     // Jacobians w.r.t. the previous deformation gradient
     for ( unsigned int i = 0; i < 9; i++ ){
