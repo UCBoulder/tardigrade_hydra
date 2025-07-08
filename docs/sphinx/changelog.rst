@@ -19,6 +19,8 @@ Bug Fixes
 - Fixed error where the default constructor couldn't be used for the linear viscoelastic residual (:pull:`206`). By `Nathan Miller`_.
 - Fixed error in the output string for the linear viscoelastic residual if there was a mismatch between the number of ISVS
   and the bounds (:pull:`216`). By `Nathan Miller`_.
+- Fixed error in the perzynaViscodamage parameterization information call (:pull:`220`). By `Nathan Miller`_.
+- Fixed error in the perzynaViscoplastic Jacobian (:pull:`221`). By `Nathan Miller`_.
 
 Breaking Changes
 ================

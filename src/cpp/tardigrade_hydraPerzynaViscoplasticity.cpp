@@ -3075,7 +3075,7 @@ namespace tardigradeHydra{
                 }
 
                 // Set the Jacobian with respect to the sub-configurations
-                ( *jacobian.value )[ num_unknowns * i + sot_dim + i ] -= 1;
+                ( *jacobian.value )[ num_unknowns * i + ( *getPlasticConfigurationIndex( ) ) * sot_dim + i ] -= 1;
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
                     unsigned int col = sot_dim + j;
