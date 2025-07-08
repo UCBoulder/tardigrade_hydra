@@ -13,6 +13,7 @@ New Features
 ============
 - Added a DOF velocity gradient driven deformation. (:pull:`204`). By `Nathan Miller`_.
 - Added the ability for residuals to output parameterization information. (:pull:`210`). By `Nathan Miller`_.
+- Added the ability for residuals to update the additional dof vector (:pull:`222`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
