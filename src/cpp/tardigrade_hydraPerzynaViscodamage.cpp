@@ -729,8 +729,8 @@ namespace tardigradeHydra{
 
             std::stringstream ss;
 
-            ss << "class: tardigradeHydra::perzynaViscodamage::residual\n\n";
-            ss << "Getting information from parent class\n\n";
+            parameterization_info += "class: tardigradeHydra::perzynaViscodamage::residual\n\n";
+            parameterization_info += "Getting information from parent class\n\n";
             tardigradeHydra::perzynaViscoplasticity::residual::addParameterizationInfo( parameterization_info );
             ss.precision(9);
             ss << std::scientific;
