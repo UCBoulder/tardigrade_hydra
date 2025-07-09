@@ -443,6 +443,26 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::updateAdditionalStateVariables( floatVector &additionalStateVariables ){
+            /*!
+             * Update the additional state variables with the values stored in the volumetric and
+             * isochoric state variable arrays
+             */
+
+            std::copy(
+                std::begin( *get_volumetricViscoelasticStateVariables( ) ),
+                std::end( *get_volumetricViscoelasticStateVariables( ) ),
+                std::begin( additionalStateVariables ) + *getViscoelasticISVLowerIndex( )
+            );
+
+            std::copy(
+                std::begin( *get_isochoricViscoelasticStateVariables( ) ),
+                std::end( *get_isochoricViscoelasticStateVariables( ) ),
+                std::begin( additionalStateVariables ) + *getViscoelasticISVLowerIndex( ) + *getNumVolumetricViscousTerms( )
+            );
+
+        }
+
         void residual::setNumStateVariables( const unsigned int numStateVariables ){
             /*!
              * Set the number of state variables

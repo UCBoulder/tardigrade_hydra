@@ -1076,6 +1076,15 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void updateAdditionalStateVariables( floatVector &additionalStateVariables ){
+                /*!
+                 * Update the additional state variable vector
+                 *
+                 * \param &additionalStateVariables: The additional state variable vector
+                 */
+
+            }
+
         protected:
 
             void setNumConstraints( const unsigned int numConstraints ){
@@ -1849,6 +1858,19 @@ namespace tardigradeHydra{
                 }
 
                 return parameterization_info;
+
+            }
+
+            void updateAdditionalStateVariables( ){
+                /*!
+                 * Update the additional state variable vector
+                 */
+
+                for ( auto v = std::begin( *getResidualClasses( ) ); v != std::end( *getResidualClasses( ) ); ++v ){
+
+                    ( *v )->updateAdditionalStateVariables( _additionalStateVariables.second );
+
+                }
 
             }
 

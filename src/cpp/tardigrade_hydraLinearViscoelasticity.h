@@ -170,6 +170,8 @@ namespace tardigradeHydra{
 
                 virtual void addParameterizationInfo( std::string &parameterization_info ) override;
 
+                virtual void updateAdditionalStateVariables( floatVector &additionalStateVariables ) override;
+
             protected:
 
                 using tardigradeHydra::linearElasticity::residual::setPK2Stress;
