@@ -72,8 +72,10 @@ namespace tardigradeHydra{
 
                 residual(
                     tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations,
-                    const unsigned int dofConfigurationIndex, const unsigned int dofVelocityGradientIndex,
-                    const floatVector &parameters, const floatType integrationParameter = 0.5
+                    const unsigned int dofConfigurationIndex,
+                    const unsigned int densityIndex, const unsigned int internalEnergyIndex, const unsigned int dofVelocityGradientIndex,
+                    const bool internalEnergyScaledByDensity,
+                    std::vector< unsigned int > stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5
                 ) : tardigradeHydra::residualBase( hydra, numEquations ), _integrationParameter( integrationParameter ){
                     /*!
                      * The main constructor function
@@ -82,14 +84,30 @@ namespace tardigradeHydra{
                      * \param &numEquations: The number of equations to be defined by
                      *     the residual
                      * \param &dofConfigurationIndex: The index of the mass-change configuration
+                     * \param &densityIndex: The index of the current-configuration density in the additional dof vector
+                     * \param &internalEnergyIndex: The index of the current-configuration internal energy in the additional dof vector
                      * \param &dofVelocityGradientIndex: The index of the current configuration velocity gradient in the additional dof vector
+                     * \param &internalEnergyScaledByDensity: Flag for if the internal energy is scaled by density (i.e., is internal energy per unit volume) or not
+                     * \param &stateVariableIndices: The state variable indices which hold the mass-change rate and the internal heat generation rate
                      * \param &parameters: The parameters for the model
                      * \param integrationParameter: The parameter of the integration 0 is explicit, 1 is implicit
                      */
 
+                    if ( numEquations != 11 ){ throw std::runtime_error( "derp" ); }
+
                     _dofConfigurationIndex = dofConfigurationIndex;
 
                     _dofVelocityGradientIndex = dofVelocityGradientIndex;
+
+                    _densityIndex = densityIndex;
+
+                    _internalEnergyIndex = internalEnergyIndex;
+
+                    _internalEnergyScaledByDensity = internalEnergyScaledByDensity;
+
+                    _stateVariableIndices = stateVariableIndices;
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameters( parameters.data( ), parameters.size( ) ) );
 
                     TARDIGRADE_ERROR_TOOLS_CATCH( decomposeAdditionalDOF( ) );
 
@@ -101,13 +119,26 @@ namespace tardigradeHydra{
                 //! Get the index of the velocity gradient in the DOF vector
                 const unsigned int getDOFVelocityGradientIndex( ){ return _dofVelocityGradientIndex; }
 
+                //! Get the index of the density in the DOF vector
+                const unsigned int getDensityIndex( ){ return _densityIndex; }
+
+                //! Get the index of the internal energy in the DOF vector
+                const unsigned int getInternalEnergyIndex( ){ return _internalEnergyIndex; }
+
+                //! Get whether the internal energy is scaled by the density or not
+                const bool getInternalEnergyScaledByDensity( ){ return _internalEnergyScaledByDensity; }
+
                 //! Get the integration parameter 0 for explicit, 1 for implicit
                 const floatType getIntegrationParameter( ){ return _integrationParameter; }
 
                 virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
                                                           std::vector< floatType > &values ) override;
 
+                const std::vector< unsigned int >* getStateVariableIndices( ){ /*! Get the indices of the nonlinear state variables for the model */ return &_stateVariableIndices; }
+
             protected:
+
+                virtual void decomposeParameters( const floatType *parameters, const unsigned int parameters_size );
 
                 virtual void decomposeAdditionalDOF( );
 
@@ -163,6 +194,14 @@ namespace tardigradeHydra{
 
                 virtual void setdDOFDeformationGradientdPreviousSubDeformationGradients( );
 
+                virtual void setMassChangeRate( );
+
+                virtual void setMassChangeRateGradients( );
+
+                virtual void setInternalHeatGenerationRate( );
+
+                virtual void setInternalHeatGenerationRateGradients( );
+
                 virtual void setResidual( ) override;
 
                 virtual void setJacobian( ) override;
@@ -196,121 +235,184 @@ namespace tardigradeHydra{
 
                 unsigned int _dofVelocityGradientIndex;
 
+                unsigned int _densityIndex;
+
+                unsigned int _internalEnergyIndex;
+
+                bool _internalEnergyScaledByDensity;
+
                 floatType _integrationParameter;
 
+                std::vector< unsigned int > _stateVariableIndices;
+
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(
-                    private, dofVelocityGradient,
+                    private,   massChangeRateFactor,
+                    floatType, unexpectedError
+                )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(
+                    private,   internalHeatGenerationRateFactor,
+                    floatType, unexpectedError
+                )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(
+                    private,   density,
+                    floatType, unexpectedError
+                )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(
+                    private,   internalEnergy,
+                    floatType, unexpectedError
+                )
+
+                TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(
+                    private,   dofVelocityGradient,
                     dimVector, unexpectedError
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(
-                    private, previousDOFVelocityGradient,
+                    private,   previousDOFVelocityGradient,
                     dimVector, unexpectedError
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              precedingDeformationGradient,
+                    private,           precedingDeformationGradient,
                     secondOrderTensor, setPrecedingDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dPrecedingDeformationGradientdDeformationGradient,
+                    private,           dPrecedingDeformationGradientdDeformationGradient,
                     fourthOrderTensor, setdPrecedingDeformationGradientdDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,        dPrecedingDeformationGradientdSubDeformationGradients,
+                    private,     dPrecedingDeformationGradientdSubDeformationGradients,
                     floatVector, setdPrecedingDeformationGradientdSubDeformationGradients
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,              previousPrecedingDeformationGradient,
+                    private,           previousPrecedingDeformationGradient,
                     secondOrderTensor, setPreviousPrecedingDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,              dPreviousPrecedingDeformationGradientdPreviousDeformationGradient,
+                    private,           dPreviousPrecedingDeformationGradientdPreviousDeformationGradient,
                     fourthOrderTensor, setdPreviousPrecedingDeformationGradientdPreviousDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,        dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients,
+                    private,     dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients,
                     floatVector, setdPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dofIntermediateVelocityGradient,
+                    private,           dofIntermediateVelocityGradient,
                     secondOrderTensor, setDOFIntermediateVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dDOFIntermediateVelocityGradientdDOFVelocityGradient,
+                    private,           dDOFIntermediateVelocityGradientdDOFVelocityGradient,
                     fourthOrderTensor, setdDOFIntermediateVelocityGradientdDOFVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dDOFIntermediateVelocityGradientdDeformationGradient,
+                    private,           dDOFIntermediateVelocityGradientdDeformationGradient,
                     fourthOrderTensor, setdDOFIntermediateVelocityGradientdDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,        dDOFIntermediateVelocityGradientdSubDeformationGradients,
+                    private,     dDOFIntermediateVelocityGradientdSubDeformationGradients,
                     floatVector, setdDOFIntermediateVelocityGradientdSubDeformationGradients
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,              previousDOFIntermediateVelocityGradient,
+                    private,           previousDOFIntermediateVelocityGradient,
                     secondOrderTensor, setPreviousDOFIntermediateVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,              dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient,
+                    private,           dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient,
                     fourthOrderTensor, setdPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient,
+                    private,           dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient,
                     fourthOrderTensor, setdPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,        dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients,
+                    private,     dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients,
                     floatVector, setdPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dofDeformationGradient,
+                    private,           dofDeformationGradient,
                     secondOrderTensor, setDOFDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dDOFDeformationGradientdDOFVelocityGradient,
+                    private,           dDOFDeformationGradientdDOFVelocityGradient,
                     fourthOrderTensor, setdDOFDeformationGradientdDOFVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,              dDOFDeformationGradientdDeformationGradient,
+                    private,           dDOFDeformationGradientdDeformationGradient,
                     fourthOrderTensor, setdDOFDeformationGradientdDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
-                    private,        dDOFDeformationGradientdSubDeformationGradients,
+                    private,     dDOFDeformationGradientdSubDeformationGradients,
                     floatVector, setdDOFDeformationGradientdSubDeformationGradients
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,              dDOFDeformationGradientdPreviousDOFVelocityGradient,
+                    private,           dDOFDeformationGradientdPreviousDOFVelocityGradient,
                     fourthOrderTensor, setdDOFDeformationGradientdPreviousDOFVelocityGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,              dDOFDeformationGradientdPreviousDeformationGradient,
+                    private,           dDOFDeformationGradientdPreviousDeformationGradient,
                     fourthOrderTensor, setdDOFDeformationGradientdPreviousDeformationGradient
                 )
 
                 TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(
-                    private,        dDOFDeformationGradientdPreviousSubDeformationGradients,
+                    private,     dDOFDeformationGradientdPreviousSubDeformationGradients,
                     floatVector, setdDOFDeformationGradientdPreviousSubDeformationGradients
+                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
+                    private,   massChangeRate,
+                    floatType, setMassChangeRate
+                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
+                    private,   dMassChangeRatedDensity,
+                    floatType, setMassChangeRateGradients
+                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
+                    private,           dMassChangeRatedDOFVelocityGradient,
+                    secondOrderTensor, setMassChangeRateGradients
+                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
+                    private,   internalHeatGenerationRate,
+                    floatType, setInternalHeatGenerationRate
+                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
+                    private,   dInternalHeatGenerationRatedDensity,
+                    floatType, setInternalHeatGenerationRateGradients
+                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
+                    private,   dInternalHeatGenerationRatedInternalEnergy,
+                    floatType, setInternalHeatGenerationRateGradients
+                )
+
+                TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE(
+                    private,           dInternalHeatGenerationRatedDOFVelocityGradient,
+                    secondOrderTensor, setInternalHeatGenerationRateGradients
                 )
 
         };
