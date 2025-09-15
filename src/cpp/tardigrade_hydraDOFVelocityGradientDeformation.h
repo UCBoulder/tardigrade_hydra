@@ -75,7 +75,7 @@ namespace tardigradeHydra{
                     const unsigned int dofConfigurationIndex,
                     const unsigned int densityIndex, const unsigned int internalEnergyIndex, const unsigned int dofVelocityGradientIndex,
                     const bool internalEnergyScaledByDensity,
-                    const floatVector &parameters, const floatType integrationParameter = 0.5
+                    std::vector< unsigned int > stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5
                 ) : tardigradeHydra::residualBase( hydra, numEquations ), _integrationParameter( integrationParameter ){
                     /*!
                      * The main constructor function
@@ -88,9 +88,12 @@ namespace tardigradeHydra{
                      * \param &internalEnergyIndex: The index of the current-configuration internal energy in the additional dof vector
                      * \param &dofVelocityGradientIndex: The index of the current configuration velocity gradient in the additional dof vector
                      * \param &internalEnergyScaledByDensity: Flag for if the internal energy is scaled by density (i.e., is internal energy per unit volume) or not
+                     * \param &stateVariableIndices: The state variable indices which hold the mass-change rate and the internal heat generation rate
                      * \param &parameters: The parameters for the model
                      * \param integrationParameter: The parameter of the integration 0 is explicit, 1 is implicit
                      */
+
+                    if ( numEquations != 11 ){ throw std::runtime_error( "derp" ); }
 
                     _dofConfigurationIndex = dofConfigurationIndex;
 
@@ -101,6 +104,8 @@ namespace tardigradeHydra{
                     _internalEnergyIndex = internalEnergyIndex;
 
                     _internalEnergyScaledByDensity = internalEnergyScaledByDensity;
+
+                    _stateVariableIndices = stateVariableIndices;
 
                     TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameters( parameters.data( ), parameters.size( ) ) );
 
@@ -128,6 +133,8 @@ namespace tardigradeHydra{
 
                 virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
                                                           std::vector< floatType > &values ) override;
+
+                const std::vector< unsigned int >* getStateVariableIndices( ){ /*! Get the indices of the nonlinear state variables for the model */ return &_stateVariableIndices; }
 
             protected:
 
@@ -235,6 +242,8 @@ namespace tardigradeHydra{
                 bool _internalEnergyScaledByDensity;
 
                 floatType _integrationParameter;
+
+                std::vector< unsigned int > _stateVariableIndices;
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(
                     private,   massChangeRateFactor,
