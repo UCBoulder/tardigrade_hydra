@@ -3250,233 +3250,253 @@ BOOST_AUTO_TEST_CASE( test_residual_dofResidual_2, * boost::unit_test::tolerance
 
 }
 
-//BOOST_AUTO_TEST_CASE( test_residual_exampleModel, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-//
-//    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
-//
-//        public:
-//
-//            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
-//
-//    };
-//
-//    class hydraBaseMock : public tardigradeHydra::hydraBase {
-//
-//        public:
-//
-//            using tardigradeHydra::hydraBase::hydraBase;
-//
-//            floatVector elasticityParameters = { 123.4, 56.7 };
-//
-//            floatVector dofDeformationParameters = { 0.78, 0.89 };
-//
-//            tardigradeHydra::linearElasticity::residual elasticity;
-//
-//            residualMock dofDeformation;
-//
-//            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
-//
-//                tardigradeHydra::hydraBase::setResidualClasses( residuals );
-//
-//            }
-//
-//        private:
-//
-//            virtual void setResidualClasses( ){
-//
-//                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
-//
-//                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
-//
-//                dofDeformation = residualMock( this, 11, 1, 1, 12, 3, true, dofDeformationParameters );
-//
-//                residuals[ 0 ] = &elasticity;
-//
-//                residuals[ 1 ] = &dofDeformation;
-//
-//                setResidualClasses( residuals );
-//
-//            }
-//
-//    };
-//
-//    floatType time = 1.1;
-//
-//    floatType deltaTime = 2.2;
-//
-//    floatType temperature = 300.0;
-//
-//    floatType previousTemperature = 320.4;
-//
-//    floatVector deformationGradient = { 1.1, 0.1, 0.0,
-//                                        0.0, 1.0, 0.0,
-//                                        0.0, 0.0, 1.0 };
-//
-//    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
-//                                                0.0, 1.0, 0.0,
-//                                                0.0, 0.0, 1.0 };
-//
-//    floatVector additionalDOF = {
-//        0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77, 0.88, 0.99,
-//        1.11, 1.22, 1.33, 1.44, 1.55, 1.66, 1.77, 1.88, 1.99
-//    };
-//
-//    floatVector previousAdditionalDOF = {
-//        -0.11, -0.22, -0.33, -0.44, -0.55, -0.66, -0.77, -0.88, -0.99,
-//        -1.11, -1.22, -1.33, -1.44, -1.55, -1.66, -1.77, -1.88, -1.99
-//    };
-//
-//    floatVector previousStateVariables = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
-//
-//    floatVector parameters = { 123.4, 56.7, 0.78 };
-//
-//    unsigned int numConfigurations = 2;
-//
-//    unsigned int numNonLinearSolveStateVariables = 0;
-//
-//    unsigned int dimension = 3;
-//
-//    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-//                         additionalDOF, previousAdditionalDOF,
-//                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-//
-//    floatVector dStressdF( 9 * 9, 0 );
-//
-//    floatVector dStressdT(     9, 0 );
-//
-//    floatVector dStressdAdditionalDOF( 18 * 9, 0 );
-//
-//    hydra.evaluate( );
-//
-//    floatType eps = 1e-6;
-//
-//    for ( unsigned int i = 0; i < 9; i++ ){
-//
-//        floatType delta = eps * std::fabs( deformationGradient[ i ] ) + eps;
-//
-//        floatVector xp = deformationGradient;
-//
-//        floatVector xm = deformationGradient;
-//
-//        xp[ i ] += delta;
-//
-//        xm[ i ] -= delta;
-//
-//        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, xp, previousDeformationGradient,
-//                              additionalDOF, previousAdditionalDOF,
-//                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-//
-//        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, xm, previousDeformationGradient,
-//                              additionalDOF, previousAdditionalDOF,
-//                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-//
-//        hydrap.evaluate( );
-//
-//        hydram.evaluate( );
-//
-//        floatVector vp = *hydrap.getStress( );
-//
-//        floatVector vm = *hydram.getStress( );
-//
-//        for ( unsigned int j = 0; j < 9; j++ ){
-//
-//            dStressdF[ 9 * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
-//
-//        }
-//
-//    }
-//
-//    floatVector RdStressdF( hydra.getFlatdXdF( )->begin( ), hydra.getFlatdXdF( )->begin( ) + 81 );
-//
-//    BOOST_TEST( dStressdF.size( ) == RdStressdF.size( ) );
-//    for ( unsigned int i = 0; i < dStressdF.size( ); i++ ){
-//        BOOST_TEST( dStressdF[ i ] == RdStressdF[ i ], boost::test_tools::tolerance( 1e-5 ) );
-//    }
-//
-//    for ( unsigned int i = 0; i < 1; i++ ){
-//
-//        floatType delta = eps * std::fabs( deformationGradient[ i ] ) + eps;
-//
-//        floatType xp = temperature;
-//
-//        floatType xm = temperature;
-//
-//        xp += delta;
-//
-//        xm -= delta;
-//
-//        hydraBaseMock hydrap( time, deltaTime, xp, previousTemperature, deformationGradient, previousDeformationGradient,
-//                              additionalDOF, previousAdditionalDOF,
-//                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-//
-//        hydraBaseMock hydram( time, deltaTime, xm, previousTemperature, deformationGradient, previousDeformationGradient,
-//                              additionalDOF, previousAdditionalDOF,
-//                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-//
-//        hydrap.evaluate( );
-//
-//        hydram.evaluate( );
-//
-//        floatVector vp = *hydrap.getStress( );
-//
-//        floatVector vm = *hydram.getStress( );
-//
-//        for ( unsigned int j = 0; j < 9; j++ ){
-//
-//            dStressdT[ 1 * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
-//
-//        }
-//
-//    }
-//
-//    floatVector RdStressdT( hydra.getFlatdXdT( )->begin( ), hydra.getFlatdXdT( )->begin( ) + 9 );
-//
-//    BOOST_TEST( dStressdT == RdStressdT, CHECK_PER_ELEMENT );
-//
-//    for ( unsigned int i = 0; i < 18; i++ ){
-//
-//        floatType delta = eps * std::fabs( additionalDOF[ i ] ) + eps;
-//
-//        floatVector xp = additionalDOF;
-//
-//        floatVector xm = additionalDOF;
-//
-//        xp[ i ] += delta;
-//
-//        xm[ i ] -= delta;
-//
-//        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-//                              xp, previousAdditionalDOF,
-//                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-//
-//        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-//                              xm, previousAdditionalDOF,
-//                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-//
-//        hydrap.evaluate( );
-//
-//        hydram.evaluate( );
-//
-//        floatVector vp = *hydrap.getStress( );
-//
-//        floatVector vm = *hydram.getStress( );
-//
-//        for ( unsigned int j = 0; j < 9; j++ ){
-//
-//            dStressdAdditionalDOF[ 18 * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
-//
-//        }
-//
-//    }
-//
-//    floatVector RdStressdAdditionalDOF( hydra.getFlatdXdAdditionalDOF( )->begin( ), hydra.getFlatdXdAdditionalDOF( )->begin( ) + 9 * 18 );
-//
-//    BOOST_TEST( dStressdAdditionalDOF.size( ) == RdStressdAdditionalDOF.size( ) );
-//    for ( unsigned int i = 0; i < dStressdAdditionalDOF.size( ); i++ ){
-//        BOOST_TEST( dStressdAdditionalDOF[ i ] == RdStressdAdditionalDOF[ i ], boost::test_tools::tolerance( 1e-5 ) );
-//    }
-//
-//}
+BOOST_AUTO_TEST_CASE( test_residual_exampleModel, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
+
+        public:
+
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            floatVector elasticityParameters = { 123.4, 56.7 };
+
+            floatVector dofDeformationParameters = { 0.78, 0.89 };
+
+            std::vector< unsigned int > stateVariableIndices = { 0, 1 };
+
+            tardigradeHydra::linearElasticity::residual elasticity;
+
+            residualMock dofDeformation;
+
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+
+            }
+
+        private:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+
+                dofDeformation = residualMock( this, 11, 1, 1, 12, 3, true, stateVariableIndices, dofDeformationParameters );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &dofDeformation;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector additionalDOF = {
+        0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77, 0.88, 0.99,
+        1.11, 1.22, 1.33, 1.44, 1.55, 1.66, 1.77, 1.88, 1.99
+    };
+
+    floatVector previousAdditionalDOF = {
+        -0.11, -0.22, -0.33, -0.44, -0.55, -0.66, -0.77, -0.88, -0.99,
+        -1.11, -1.22, -1.33, -1.44, -1.55, -1.66, -1.77, -1.88, -1.99
+    };
+
+    floatVector previousStateVariables = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+
+    floatVector parameters = { 123.4, 56.7, 0.78, 0.89 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 2;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         additionalDOF, previousAdditionalDOF,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    floatVector dXdF( 20 * 9, 0 );
+
+    floatVector dXdT(     20, 0 );
+
+    floatVector dXdAdditionalDOF( 20 * 18, 0 );
+
+    hydra.evaluate( );
+
+    floatType eps = 1e-6;
+
+    {
+
+        constexpr unsigned int VAR_SIZE = 9;
+
+        constexpr unsigned int OUT_SIZE = 20;
+
+        std::vector<double> X( std::begin( deformationGradient ), std::end( deformationGradient ) );
+
+        for ( unsigned int i = 0; i < VAR_SIZE; i++ ){
+
+            floatType delta = eps * std::fabs( X[ i ] ) + eps;
+
+            floatVector xp = X;
+
+            floatVector xm = X;
+
+            xp[ i ] += delta;
+
+            xm[ i ] -= delta;
+
+            hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, xp, previousDeformationGradient,
+                                  additionalDOF, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, xm, previousDeformationGradient,
+                                  additionalDOF, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.evaluate( );
+
+            hydram.evaluate( );
+
+            floatVector vp = *hydrap.getUnknownVector( );
+
+            floatVector vm = *hydram.getUnknownVector( );
+
+            for ( unsigned int j = 0; j < OUT_SIZE; j++ ){
+
+                dXdF[ VAR_SIZE * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+            }
+
+        }
+
+    }
+
+    BOOST_TEST( *hydra.getFlatdXdF( ) == dXdF, CHECK_PER_ELEMENT );
+
+    {
+
+        constexpr unsigned int VAR_SIZE = 1;
+
+        constexpr unsigned int OUT_SIZE = 20;
+
+        std::vector<double> X = { temperature };
+
+        for ( unsigned int i = 0; i < VAR_SIZE; i++ ){
+
+            floatType delta = eps * std::fabs( X[ i ] ) + eps;
+
+            floatVector xp = X;
+
+            floatVector xm = X;
+
+            xp[ i ] += delta;
+
+            xm[ i ] -= delta;
+
+            hydraBaseMock hydrap( time, deltaTime, xp[ 0 ], previousTemperature, deformationGradient, previousDeformationGradient,
+                                  additionalDOF, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydraBaseMock hydram( time, deltaTime, xm[ 0 ], previousTemperature, deformationGradient, previousDeformationGradient,
+                                  additionalDOF, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.evaluate( );
+
+            hydram.evaluate( );
+
+            floatVector vp = *hydrap.getUnknownVector( );
+
+            floatVector vm = *hydram.getUnknownVector( );
+
+            for ( unsigned int j = 0; j < OUT_SIZE; j++ ){
+
+                dXdT[ VAR_SIZE * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+            }
+
+        }
+
+    }
+
+    BOOST_TEST( *hydra.getFlatdXdT( ) == dXdT, CHECK_PER_ELEMENT );
+
+    {
+
+        constexpr unsigned int VAR_SIZE = 18;
+
+        constexpr unsigned int OUT_SIZE = 20;
+
+        std::vector<double> X = additionalDOF;
+
+        for ( unsigned int i = 0; i < VAR_SIZE; i++ ){
+
+            floatType delta = eps * std::fabs( X[ i ] ) + eps;
+
+            floatVector xp = X;
+
+            floatVector xm = X;
+
+            xp[ i ] += delta;
+
+            xm[ i ] -= delta;
+
+            hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                  xp, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                  xm, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.evaluate( );
+
+            hydram.evaluate( );
+
+            floatVector vp = *hydrap.getUnknownVector( );
+
+            floatVector vm = *hydram.getUnknownVector( );
+
+            for ( unsigned int j = 0; j < OUT_SIZE; j++ ){
+
+                dXdAdditionalDOF[ VAR_SIZE * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+            }
+
+        }
+
+    }
+
+    BOOST_TEST( *hydra.getFlatdXdAdditionalDOF( ) == dXdAdditionalDOF, CHECK_PER_ELEMENT );
+
+}
 
 BOOST_AUTO_TEST_CASE( test_residual_suggestInitialIterateValues, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
