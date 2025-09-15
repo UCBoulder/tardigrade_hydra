@@ -3629,9 +3629,9 @@ BOOST_AUTO_TEST_CASE( test_residual_suggestInitialIterateValues, * boost::unit_t
 
     residualMock R( &hydra, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters );
 
-    std::vector< unsigned int > indices = { 18, 19, 20, 21, 22, 23, 24, 25, 26 };
+    std::vector< unsigned int > indices = { 18, 19, 20, 21, 22, 23, 24, 25, 26, 30, 31 };
 
-    floatVector values = { 0.111, 0.222, 0.333, 0.444, 0.555, 0.666, 0.777, 0.888, 0.999 };
+    floatVector values = { 0.111, 0.222, 0.333, 0.444, 0.555, 0.666, 0.777, 0.888, 0.999, 0.45474, 15.437454545 };
 
     std::vector< unsigned int > result_1;
     std::vector< floatType > result_2;

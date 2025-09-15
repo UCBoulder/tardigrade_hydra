@@ -803,14 +803,27 @@ namespace tardigradeHydra{
 
             auto configuration = getDOFConfigurationIndex( );
 
-            auto num_configurations = hydra->getNumConfigurations( );
+            auto num_configurations = *hydra->getNumConfigurations( );
 
             const secondOrderTensor *dofDeformationGradient = get_dofDeformationGradient( );
 
-            indices = std::vector< unsigned int >( sot_dim, sot_dim * configuration );
+            indices = std::vector< unsigned int >( sot_dim + 2, sot_dim * configuration );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){ indices[ i ] += i; }
-            values = *dofDeformationGradient;
+
+            indices[ sot_dim + 0 ] = sot_dim * num_configurations + ( *getStateVariableIndices( ) )[ 0 ];
+            indices[ sot_dim + 1 ] = sot_dim * num_configurations + ( *getStateVariableIndices( ) )[ 1 ];
+
+            values = std::vector< floatType >( sot_dim + 2, 0 );
+            
+            std::copy(
+                std::begin( *dofDeformationGradient ),
+                std::end(   *dofDeformationGradient ),
+                std::begin( values )
+            );
+
+            values[ sot_dim + 0 ] = *get_massChangeRate( );
+            values[ sot_dim + 1 ] = *get_internalHeatGenerationRate( );
 
         }
 
