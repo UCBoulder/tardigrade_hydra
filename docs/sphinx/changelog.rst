@@ -15,6 +15,7 @@ New Features
 - Added the ability for residuals to output parameterization information. (:pull:`210`). By `Nathan Miller`_.
 - Added the ability for residuals to update the additional dof vector (:pull:`222`). By `Nathan Miller`_.
 - Added the mass change and internal heat generation calculation to the calculation of a deformation from an external dof velocity gradient (:pull:`223`). By `Nathan Miller`_.
+- Added the ability to integrate deformation from an external dof velocity gradient (:pull:`224`). By `Nathan Miller`_.
 
 Bug Fixes
 =========

@@ -136,6 +136,19 @@ namespace tardigradeHydra{
 
                 const std::vector< unsigned int >* getStateVariableIndices( ){ /*! Get the indices of the nonlinear state variables for the model */ return &_stateVariableIndices; }
 
+                virtual void setUseTrapezoidalIntegration( const bool &value ){
+                    /*!
+                     * Set the flag for whether to use trapezoidal integration or not
+                     *
+                     * \param value: The value for the flag
+                     */
+
+                    _use_trapezoidal_integration = value;
+
+                }
+
+                const bool getUseTrapezoidalIntegration( ){ /*! Get the current value of whether to use trapezoidal integration */  return _use_trapezoidal_integration; }
+
             protected:
 
                 virtual void decomposeParameters( const floatType *parameters, const unsigned int parameters_size );
@@ -240,6 +253,8 @@ namespace tardigradeHydra{
                 unsigned int _internalEnergyIndex;
 
                 bool _internalEnergyScaledByDensity;
+
+                bool _use_trapezoidal_integration = false;
 
                 floatType _integrationParameter;
 

@@ -1784,6 +1784,621 @@ BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_2, * boost::unit_test
     BOOST_TEST( *R.get_dDOFDeformationGradientdPreviousDOFVelocityGradient( ) == previousdFmdL, CHECK_PER_ELEMENT );
 }
 
+BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_3, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
+
+        public:
+
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
+
+            floatVector dofIntermediateVelocityGradient = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            floatVector previousDOFIntermediateVelocityGradient = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+
+            floatVector dDOFIntermediateVelocityGradientdDOFVelocityGradient              = initializeVector( 81 );
+
+            floatVector dDOFIntermediateVelocityGradientdDeformationGradient                     = initializeVector( 81 );
+
+            floatVector dDOFIntermediateVelocityGradientdSubDeformationGradients                 = initializeVector( 81 );
+
+            floatVector dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient = initializeVector( 81 );
+
+            floatVector dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient        = initializeVector( 81 );
+
+            floatVector dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients    = initializeVector( 81 );
+
+            floatVector initializeVector( unsigned int size ){
+
+                return floatVector( size, 0 );
+
+            }
+
+        protected:
+
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::setDOFIntermediateVelocityGradient;
+
+            virtual void setDOFIntermediateVelocityGradient( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_previousDOFIntermediateVelocityGradient( previousDOFIntermediateVelocityGradient );
+
+                }
+                else{
+
+                    set_dofIntermediateVelocityGradient( dofIntermediateVelocityGradient );
+
+                }
+
+            }
+
+            virtual void setDOFIntermediateVelocityGradientDerivatives( const bool &isPrevious ) override{
+
+                if ( isPrevious ){
+
+                    set_dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient( dPreviousDOFIntermediateVelocityGradientdPreviousDOFVelocityGradient );
+
+                    set_dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient( dPreviousDOFIntermediateVelocityGradientdPreviousDeformationGradient );
+
+                    set_dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients( dPreviousDOFIntermediateVelocityGradientdPreviousSubDeformationGradients );
+
+                }
+                else{
+
+                    set_dDOFIntermediateVelocityGradientdDOFVelocityGradient( dDOFIntermediateVelocityGradientdDOFVelocityGradient );
+
+                    set_dDOFIntermediateVelocityGradientdDeformationGradient( dDOFIntermediateVelocityGradientdDeformationGradient );
+
+                    set_dDOFIntermediateVelocityGradientdSubDeformationGradients( dDOFIntermediateVelocityGradientdSubDeformationGradients );
+
+                }
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            floatVector elasticityParameters = { 123.4, 56.7 };
+
+            floatVector dofDeformationParameters = { 0.78, 0.89 };
+
+            std::vector< unsigned int > stateVariableIndices = { 3, 4 };
+
+            tardigradeHydra::linearElasticity::residual elasticity;
+
+            residualMock dofDeformation;
+
+            tardigradeHydra::residualBase remainder;
+
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+
+            }
+
+        private:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+
+                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+
+                dofDeformation = residualMock( this, 11, 1, 1, 12, 3, true, stateVariableIndices, dofDeformationParameters );
+                dofDeformation.setUseTrapezoidalIntegration( true );
+
+                remainder = tardigradeHydra::residualBase( this, 3 );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &dofDeformation;
+
+                residuals[ 2 ] = &remainder;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector additionalDOF = {
+        0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77, 0.88, 0.99,
+        1.11, 1.22, 1.33, 1.44, 1.55, 1.66, 1.77, 1.88, 1.99
+    };
+
+    floatVector previousAdditionalDOF = {
+        -0.11, -0.22, -0.33, -0.44, -0.55, -0.66, -0.77, -0.88, -0.99,
+        -1.11, -1.22, -1.33, -1.44, -1.55, -1.66, -1.77, -1.88, -1.99
+    };
+
+    floatVector previousStateVariables = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, -1, -2, -3, -4, -5 };
+
+    floatVector parameters = { 123.4, 56.7, 0.78 };
+
+    floatVector unknownVector = { 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                  1.2, 0.21, 0.29, 0.23, 0.9, 0.11, 0.30, 0.25, 1.1,
+                                  3, 4, 5, 6, 7 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         additionalDOF, previousAdditionalDOF,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
+    floatVector answer = { 3.612667141e-01, -3.072550304e-01, 2.422322512e-02, -3.719571754e-01, 5.956917520e-01, -4.366593205e-01, -1.051810650e-01, -5.013614655e-01, 1.024581339e-01 };
+
+    residualMock R( &hydra, 11, 1, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, 0.67 );
+
+    residualMock Rgrad( &hydra, 11, 1, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, 0.67 );
+
+    R.setUseTrapezoidalIntegration( true );
+    Rgrad.setUseTrapezoidalIntegration( true );
+
+    Rgrad.get_dDOFDeformationGradientdDOFVelocityGradient( );
+
+    Rgrad.get_dDOFDeformationGradientdPreviousDOFVelocityGradient( );
+
+    BOOST_TEST( answer == *R.get_dofDeformationGradient( ), CHECK_PER_ELEMENT );
+
+    BOOST_TEST( answer == *Rgrad.get_dofDeformationGradient( ), CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_dofDeformationGradient_4, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
+
+        public:
+
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
+
+            floatVector initializeVector( unsigned int size ){
+
+                return floatVector( size, 0 );
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            floatVector elasticityParameters = { 123.4, 56.7 };
+
+            floatVector dofDeformationParameters = { 0.78, 0.89 };
+
+            std::vector< unsigned int > stateVariableIndices = { 3, 4 };
+
+            tardigradeHydra::linearElasticity::residual elasticity;
+
+            tardigradeHydra::residualBase plasticity;
+
+            residualMock dofDeformation;
+
+            tardigradeHydra::residualBase remainder;
+
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+
+            }
+
+        private:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 4 );
+
+                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+
+                plasticity = tardigradeHydra::residualBase ( this, 9 );
+
+                dofDeformation = residualMock( this, 11, 2, 1, 12, 3, true, stateVariableIndices, dofDeformationParameters );
+
+                remainder = tardigradeHydra::residualBase( this, 3 );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &plasticity;
+
+                residuals[ 2 ] = &dofDeformation;
+                dofDeformation.setUseTrapezoidalIntegration( true );
+
+                residuals[ 3 ] = &remainder;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector additionalDOF = {
+        0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77, 0.88, 0.99,
+        1.11, 1.22, 1.33, 1.44, 1.55, 1.66, 1.77, 1.88, 1.99
+    };
+
+    floatVector previousAdditionalDOF = {
+        -0.11, -0.22, -0.33, -0.44, -0.55, -0.66, -0.77, -0.88, -0.99,
+        -1.11, -1.22, -1.33, -1.44, -1.55, -1.66, -1.77, -1.88, -1.99
+    };
+
+    floatVector previousStateVariables = { 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1, 0.1,
+                                           0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9,
+                                           -1, -2, -3, -4, -5 };
+
+    floatVector parameters = { 123.4, 56.7, 0.78 };
+
+    floatVector unknownVector = { 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                  1.1, 0.12, 0.13, 0.14, 1.3, 0.15, 0.16, 0.17, 1.4,
+                                  1.2, 0.21, 0.29, 0.23, 0.9, 0.11, 0.30, 0.25, 1.1,
+                                  3, 4, 5, 6, 7 };
+
+    unsigned int numConfigurations = 3;
+
+    unsigned int numNonLinearSolveStateVariables = 5;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         additionalDOF, previousAdditionalDOF,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+
+    floatType alpha = 0.67;
+
+    residualMock R( &hydra, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+    R.setUseTrapezoidalIntegration( true );
+
+    floatVector dFmdL( 81, 0 );
+
+    floatVector dFmdF( 81, 0 );
+
+    floatVector dFmdFn( 81 * 2, 0 );
+
+    floatVector previousdFmdL( 81, 0 );
+
+    floatVector previousdFmdF( 81, 0 );
+
+    floatVector previousdFmdFn( 81 * 2, 0 );
+
+    floatType eps = 1e-6;
+
+    unsigned int offset = 0;
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatType delta = eps * std::fabs( deformationGradient[ i ] ) + eps;
+
+        floatVector Fp = deformationGradient;
+
+        floatVector Fm = deformationGradient;
+
+        Fp[ i ] += delta;
+
+        Fm[ i ] -= delta;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, Fp, previousDeformationGradient,
+                              additionalDOF, previousAdditionalDOF,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, Fm, previousDeformationGradient,
+                              additionalDOF, previousAdditionalDOF,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        residualMock Rm( &hydram, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        Rp.setUseTrapezoidalIntegration( true );
+
+        Rm.setUseTrapezoidalIntegration( true );
+
+        floatVector vp = *Rp.get_dofDeformationGradient( );
+
+        floatVector vm = *Rm.get_dofDeformationGradient( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            dFmdF[ 9 * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    BOOST_TEST( dFmdF == *R.get_dDOFDeformationGradientdDeformationGradient( ), CHECK_PER_ELEMENT );
+
+    offset = 9;
+
+    for ( unsigned int i = 0; i < 18; i++ ){
+
+        floatType delta = eps * std::fabs( unknownVector[ i + offset ] ) + eps;
+
+        floatVector xp = unknownVector;
+
+        floatVector xm = unknownVector;
+
+        xp[ i + offset ] += delta;
+
+        xm[ i + offset ] -= delta;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              additionalDOF, previousAdditionalDOF,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              additionalDOF, previousAdditionalDOF,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, xp );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, xm );
+
+        residualMock Rp( &hydrap, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        residualMock Rm( &hydram, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        Rp.setUseTrapezoidalIntegration( true );
+
+        Rm.setUseTrapezoidalIntegration( true );
+
+        floatVector vp = *Rp.get_dofDeformationGradient( );
+
+        floatVector vm = *Rm.get_dofDeformationGradient( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            dFmdFn[ 18 * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    adaptive_tolerance_test( *R.get_dDOFDeformationGradientdSubDeformationGradients( ), dFmdFn, 1e-8 );
+
+    offset = 3;
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatType delta = eps * std::fabs( additionalDOF[ i + offset ] ) + eps;
+
+        floatVector xp = additionalDOF;
+
+        floatVector xm = additionalDOF;
+
+        xp[ i + offset ] += delta;
+
+        xm[ i + offset ] -= delta;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              xp, previousAdditionalDOF,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              xm, previousAdditionalDOF,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        residualMock Rm( &hydram, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        Rp.setUseTrapezoidalIntegration( true );
+
+        Rm.setUseTrapezoidalIntegration( true );
+
+        floatVector vp = *Rp.get_dofDeformationGradient( );
+
+        floatVector vm = *Rm.get_dofDeformationGradient( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            dFmdL[ 9 * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    BOOST_TEST( *R.get_dDOFDeformationGradientdDOFVelocityGradient( ) == dFmdL, CHECK_PER_ELEMENT );
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatType delta = eps * std::fabs( deformationGradient[ i ] ) + eps;
+
+        floatVector Fp = previousDeformationGradient;
+
+        floatVector Fm = previousDeformationGradient;
+
+        Fp[ i ] += delta;
+
+        Fm[ i ] -= delta;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, Fp,
+                              additionalDOF, previousAdditionalDOF,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, Fm,
+                              additionalDOF, previousAdditionalDOF,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        residualMock Rm( &hydram, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        Rp.setUseTrapezoidalIntegration( true );
+
+        Rm.setUseTrapezoidalIntegration( true );
+
+        floatVector vp = *Rp.get_dofDeformationGradient( );
+
+        floatVector vm = *Rm.get_dofDeformationGradient( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            previousdFmdF[ 9 * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    BOOST_TEST( previousdFmdF == *R.get_dDOFDeformationGradientdPreviousDeformationGradient( ), CHECK_PER_ELEMENT );
+
+    offset = 0;
+
+    for ( unsigned int i = 0; i < 18; i++ ){
+
+        floatType delta = eps * std::fabs( previousStateVariables[ i + offset ] ) + eps;
+
+        floatVector xp = previousStateVariables;
+
+        floatVector xm = previousStateVariables;
+
+        xp[ i + offset ] += delta;
+
+        xm[ i + offset ] -= delta;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              additionalDOF, previousAdditionalDOF,
+                              xp, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              additionalDOF, previousAdditionalDOF,
+                              xm, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        residualMock Rm( &hydram, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        Rp.setUseTrapezoidalIntegration( true );
+
+        Rm.setUseTrapezoidalIntegration( true );
+
+        floatVector vp = *Rp.get_dofDeformationGradient( );
+
+        floatVector vm = *Rm.get_dofDeformationGradient( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            previousdFmdFn[ 18 * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    adaptive_tolerance_test( *R.get_dDOFDeformationGradientdPreviousSubDeformationGradients( ), previousdFmdFn, 1e-7 );
+
+    offset = 3;
+
+    for ( unsigned int i = 0; i < 9; i++ ){
+
+        floatType delta = eps * std::fabs( previousAdditionalDOF[ i + offset ] ) + eps;
+
+        floatVector xp = previousAdditionalDOF;
+
+        floatVector xm = previousAdditionalDOF;
+
+        xp[ i + offset ] += delta;
+
+        xm[ i + offset ] -= delta;
+
+        hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              additionalDOF, xp,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                              additionalDOF, xm,
+                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydrap, unknownVector );
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydram, unknownVector );
+
+        residualMock Rp( &hydrap, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        residualMock Rm( &hydram, 11, 2, 1, 12, 3, true, hydra.stateVariableIndices, hydra.dofDeformationParameters, alpha );
+
+        Rp.setUseTrapezoidalIntegration( true );
+
+        Rm.setUseTrapezoidalIntegration( true );
+
+        floatVector vp = *Rp.get_dofDeformationGradient( );
+
+        floatVector vm = *Rm.get_dofDeformationGradient( );
+
+        for ( unsigned int j = 0; j < 9; j++ ){
+
+            previousdFmdL[ 9 * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+        }
+
+    }
+
+    adaptive_tolerance_test( *R.get_dDOFDeformationGradientdPreviousDOFVelocityGradient( ), previousdFmdL, 1e-7 );
+}
+
+
 BOOST_AUTO_TEST_CASE( test_residual_massChangeRate_1, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
@@ -3291,6 +3906,255 @@ BOOST_AUTO_TEST_CASE( test_residual_exampleModel, * boost::unit_test::tolerance(
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
                 dofDeformation = residualMock( this, 11, 1, 1, 12, 3, true, stateVariableIndices, dofDeformationParameters );
+
+                residuals[ 0 ] = &elasticity;
+
+                residuals[ 1 ] = &dofDeformation;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector additionalDOF = {
+        0.11, 0.22, 0.33, 0.44, 0.55, 0.66, 0.77, 0.88, 0.99,
+        1.11, 1.22, 1.33, 1.44, 1.55, 1.66, 1.77, 1.88, 1.99
+    };
+
+    floatVector previousAdditionalDOF = {
+        -0.11, -0.22, -0.33, -0.44, -0.55, -0.66, -0.77, -0.88, -0.99,
+        -1.11, -1.22, -1.33, -1.44, -1.55, -1.66, -1.77, -1.88, -1.99
+    };
+
+    floatVector previousStateVariables = { 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0 };
+
+    floatVector parameters = { 123.4, 56.7, 0.78, 0.89 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 2;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         additionalDOF, previousAdditionalDOF,
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    floatVector dXdF( 20 * 9, 0 );
+
+    floatVector dXdT(     20, 0 );
+
+    floatVector dXdAdditionalDOF( 20 * 18, 0 );
+
+    hydra.evaluate( );
+
+    floatType eps = 1e-6;
+
+    {
+
+        constexpr unsigned int VAR_SIZE = 9;
+
+        constexpr unsigned int OUT_SIZE = 20;
+
+        std::vector<double> X( std::begin( deformationGradient ), std::end( deformationGradient ) );
+
+        for ( unsigned int i = 0; i < VAR_SIZE; i++ ){
+
+            floatType delta = eps * std::fabs( X[ i ] ) + eps;
+
+            floatVector xp = X;
+
+            floatVector xm = X;
+
+            xp[ i ] += delta;
+
+            xm[ i ] -= delta;
+
+            hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, xp, previousDeformationGradient,
+                                  additionalDOF, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, xm, previousDeformationGradient,
+                                  additionalDOF, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.evaluate( );
+
+            hydram.evaluate( );
+
+            floatVector vp = *hydrap.getUnknownVector( );
+
+            floatVector vm = *hydram.getUnknownVector( );
+
+            for ( unsigned int j = 0; j < OUT_SIZE; j++ ){
+
+                dXdF[ VAR_SIZE * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+            }
+
+        }
+
+    }
+
+    BOOST_TEST( *hydra.getFlatdXdF( ) == dXdF, CHECK_PER_ELEMENT );
+
+    {
+
+        constexpr unsigned int VAR_SIZE = 1;
+
+        constexpr unsigned int OUT_SIZE = 20;
+
+        std::vector<double> X = { temperature };
+
+        for ( unsigned int i = 0; i < VAR_SIZE; i++ ){
+
+            floatType delta = eps * std::fabs( X[ i ] ) + eps;
+
+            floatVector xp = X;
+
+            floatVector xm = X;
+
+            xp[ i ] += delta;
+
+            xm[ i ] -= delta;
+
+            hydraBaseMock hydrap( time, deltaTime, xp[ 0 ], previousTemperature, deformationGradient, previousDeformationGradient,
+                                  additionalDOF, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydraBaseMock hydram( time, deltaTime, xm[ 0 ], previousTemperature, deformationGradient, previousDeformationGradient,
+                                  additionalDOF, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.evaluate( );
+
+            hydram.evaluate( );
+
+            floatVector vp = *hydrap.getUnknownVector( );
+
+            floatVector vm = *hydram.getUnknownVector( );
+
+            for ( unsigned int j = 0; j < OUT_SIZE; j++ ){
+
+                dXdT[ VAR_SIZE * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+            }
+
+        }
+
+    }
+
+    BOOST_TEST( *hydra.getFlatdXdT( ) == dXdT, CHECK_PER_ELEMENT );
+
+    {
+
+        constexpr unsigned int VAR_SIZE = 18;
+
+        constexpr unsigned int OUT_SIZE = 20;
+
+        std::vector<double> X = additionalDOF;
+
+        for ( unsigned int i = 0; i < VAR_SIZE; i++ ){
+
+            floatType delta = eps * std::fabs( X[ i ] ) + eps;
+
+            floatVector xp = X;
+
+            floatVector xm = X;
+
+            xp[ i ] += delta;
+
+            xm[ i ] -= delta;
+
+            hydraBaseMock hydrap( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                  xp, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydraBaseMock hydram( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                                  xm, previousAdditionalDOF,
+                                  previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+            hydrap.evaluate( );
+
+            hydram.evaluate( );
+
+            floatVector vp = *hydrap.getUnknownVector( );
+
+            floatVector vm = *hydram.getUnknownVector( );
+
+            for ( unsigned int j = 0; j < OUT_SIZE; j++ ){
+
+                dXdAdditionalDOF[ VAR_SIZE * j + i ] = ( vp[ j ] - vm[ j ] ) / ( 2 * delta );
+
+            }
+
+        }
+
+    }
+
+    BOOST_TEST( *hydra.getFlatdXdAdditionalDOF( ) == dXdAdditionalDOF, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_residual_exampleModel2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class residualMock : public tardigradeHydra::dofVelocityGradientDeformation::residual {
+
+        public:
+
+            using tardigradeHydra::dofVelocityGradientDeformation::residual::residual;
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            floatVector elasticityParameters = { 123.4, 56.7 };
+
+            floatVector dofDeformationParameters = { 0.78, 0.89 };
+
+            std::vector< unsigned int > stateVariableIndices = { 0, 1 };
+
+            tardigradeHydra::linearElasticity::residual elasticity;
+
+            residualMock dofDeformation;
+
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+
+            }
+
+        private:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
+
+                dofDeformation = residualMock( this, 11, 1, 1, 12, 3, true, stateVariableIndices, dofDeformationParameters );
+                dofDeformation.setUseTrapezoidalIntegration( true );
 
                 residuals[ 0 ] = &elasticity;
 
