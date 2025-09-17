@@ -452,10 +452,28 @@ namespace tardigradeHydra{
 
             auto dofDeformationGradient = get_setDataStorage_dofDeformationGradient( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
-                                                                                              *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                              *dofDeformationGradient.value,
-                                                                                              getIntegrationParameter( ) ) )
+            if ( getUseTrapezoidalIntegration( ) ){
+
+                secondOrderTensor temp;
+
+                TARDIGRADE_ERROR_TOOLS_CATCH(
+                    tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                                                          *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                          temp, *dofDeformationGradient.value, 1 - getIntegrationParameter( ) )
+
+                )
+
+            }
+            else{
+
+                TARDIGRADE_ERROR_TOOLS_CATCH(
+                    tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                                                                        *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                        *dofDeformationGradient.value,
+                                                                        getIntegrationParameter( ) )
+                )
+
+            }
 
         }
 
@@ -500,11 +518,30 @@ namespace tardigradeHydra{
 
                 fourthOrderTensor dFmdILp;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
-                                                                                                  *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                                  *dofDeformationGradient.value,
-                                                                                                  dFmdIL, dFmdFp, dFmdILp,
-                                                                                                  getIntegrationParameter( ) ) )
+                if ( getUseTrapezoidalIntegration( ) ){
+
+                    secondOrderTensor temp;
+                    fourthOrderTensor temp2;
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH(
+                        tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                                                                   *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                   temp, *dofDeformationGradient.value,
+                                                                   dFmdIL, temp2, dFmdFp, dFmdILp,
+                                                                   1 - getIntegrationParameter( ) )
+                    )
+
+                }
+                else{
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH(
+                        tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                                                                            *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                            *dofDeformationGradient.value,
+                                                                            dFmdIL, dFmdFp, dFmdILp,
+                                                                            getIntegrationParameter( ) )
+                    )
+                }
 
                 auto dFmdPreviousL = get_setDataStorage_dDOFDeformationGradientdPreviousDOFVelocityGradient( );
                 dFmdPreviousL.zero( sot_dim * sot_dim );
@@ -543,11 +580,26 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
-                                                                                                  *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
-                                                                                                  *dofDeformationGradient.value,
-                                                                                                  dFmdIL,
-                                                                                                  getIntegrationParameter( ) ) )
+                if ( getUseTrapezoidalIntegration( ) ){
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                                                                                             *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                             *dofDeformationGradient.value,
+                                                                                             dFmdIL,
+                                                                                             1 - getIntegrationParameter( ) )
+                    )
+
+                }
+                else{
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                                                                                                      *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
+                                                                                                      *dofDeformationGradient.value,
+                                                                                                      dFmdIL,
+                                                                                                      getIntegrationParameter( ) )
+                    )
+
+                }
 
             }
 
