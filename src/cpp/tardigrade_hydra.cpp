@@ -1611,7 +1611,7 @@ namespace tardigradeHydra{
          * Check the line-search convergence
          */
 
-        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < ( 1 - *getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
+        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < getToleranceScaleFactor( ) * ( 1 - *getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
 
             return true;
 
@@ -1770,9 +1770,13 @@ namespace tardigradeHydra{
 
         if ( !checkLSConvergence( ) ){
 
+            resetToleranceScaleFactor( );
+
             throw convergence_error( "Failure in line search:\n  scale factor: " + std::to_string( *getScaleFactor( ) ) + "\n" );
 
         }
+
+        resetToleranceScaleFactor( );
 
         incrementNumLS( );
 
@@ -1829,7 +1833,7 @@ namespace tardigradeHydra{
 
         }
 
-        return ( *get_residualNorm( ) ) < RHS;
+        return ( *get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
 
     }
 
@@ -1863,6 +1867,8 @@ namespace tardigradeHydra{
             incrementGradientIteration( );
 
         }
+
+        resetToleranceScaleFactor( );
 
         if ( l >= maxiter ){
 
