@@ -2058,6 +2058,8 @@ namespace tardigradeHydra{
             }
             else{
 
+                resetToleranceScaleFactor( );
+
                 incrementNumNewton( );
 
             }
