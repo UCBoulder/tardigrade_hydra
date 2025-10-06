@@ -1712,8 +1712,15 @@ namespace tardigradeHydra{
             //! Add a floating point vector to the output string
             void addToFailureOutput( const floatVector &value ){ for ( auto v = value.begin( ); v != value.end( ); v++ ){ _failure_output << *v << ", "; } _failure_output << "\n"; }
 
+            //! Add a boolean vector to the output string
+            void addToFailureOutput( const std::vector<bool> &value ){ for ( auto v = value.begin( ); v != value.end( ); v++ ){ _failure_output << *v << ", "; } _failure_output << "\n"; }
+
             //! Add a floating point value to the output string
             void addToFailureOutput( const floatType &value ){ _failure_output << value; _failure_output << "\n"; }
+
+            //! Add a general iterable object to the output string
+            template< class v_iterator >
+            void addToFailureOutput( const v_iterator &v_begin, const v_iterator &v_end ){ for ( auto v = v_begin; v != v_end; ++v ){ _failure_output << *v << ", "; } _failure_output << "\n"; }
 
             //! Get the failure output string
             const std::string getFailureOutput( ){ return _failure_output.str( ); }
@@ -1874,6 +1881,31 @@ namespace tardigradeHydra{
 
             }
 
+            void setToleranceScaleFactor( floatType factor ){
+                /*!
+                 * Loosen the convergence tolerance for the next iteration
+                 * Useful if a Residual's form is changing in a non-smooth way
+                 *
+                 * \param factor: The scale factor to be applied to the current tolerance
+                 */
+
+                if ( factor > _residual_scale_factor ){
+
+                    _residual_scale_factor = factor;
+
+                }
+
+            }
+
+            const floatType getToleranceScaleFactor( ){
+                /*!
+                 * Get the scale factor for the tolerance
+                 */
+
+                return _residual_scale_factor;
+
+            }
+
         protected:
 
             // Setters that the user may need to access but not override
@@ -1897,6 +1929,15 @@ namespace tardigradeHydra{
                  */
 
                 _current_residual_index = value;
+
+            }
+
+            const void resetToleranceScaleFactor( ){
+                /*!
+                 * Reset the tolerance scale factor to 1
+                 */
+
+                _residual_scale_factor = 1.0;
 
             }
 
@@ -2270,6 +2311,8 @@ namespace tardigradeHydra{
             unsigned int _numConfigurations; //!< The number of configurations
 
             unsigned int _numNonLinearSolveStateVariables; //!< The number of state variables which will be solved in the Newton-Raphson loop
+
+            floatType _residual_scale_factor = 1; //!< A scale factor for the residual which can be used to loosen the tolerance by a Residual
 
             floatType _tolr; //!< The relative tolerance
 
