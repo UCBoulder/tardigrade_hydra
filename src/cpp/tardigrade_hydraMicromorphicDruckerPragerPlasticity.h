@@ -1150,7 +1150,7 @@ namespace tardigradeHydra{
 
                 void setMinMicroGradientCohesion( const floatType &value ){
                     /*!
-                     * Set the minimum micro cohesion
+                     * Set the minimum micro gradient cohesion
                      * 
                      * \param &value: The value of the cohesion
                      */
@@ -1336,6 +1336,18 @@ namespace tardigradeHydra{
                 floatType _minMicroCohesion = 1e-2; //!< The minimum allowable value of the micro cohesion
 
                 floatType _minMicroGradientCohesion = 1e-2; //!< The minimum allowable value of the micro gradient cohesion
+
+                floatType   _macroC0 = 0; //!< The initial value of the macro cohesion
+
+                floatType   _microC0 = 0; //!< The initial value of the micro cohesion
+
+                floatVector _microGradientC0 = { 0, 0, 0 }; //!< The initial value of the micro gradient cohesion
+
+                floatType   _macroA = 0; //!< The value of the macro hardening
+
+                floatType   _microA = 0; //!< The value of the micro hardening
+
+                floatVector _microGradientA = { 0, 0, 0 }; //!< The value of the micro gradient hardening
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroHardeningParameters,                             floatVector,       unexpectedError                                         )
 
