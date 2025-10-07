@@ -2064,14 +2064,14 @@ namespace tardigradeHydra{
 
             }
 
+            // Call residual end of a successful nonlinear step functions
+            callResidualSuccessfulNLStep( );
+
             // Increment the iteration count
             incrementIteration( );
 
             // Reset the nonlinear step data
             resetNLStepData( );
-
-            // Call residual end of a successful nonlinear step functions
-            callResidualSuccessfulNLStep( );
 
             if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
                 addToFailureOutput( "  final residual: " );
