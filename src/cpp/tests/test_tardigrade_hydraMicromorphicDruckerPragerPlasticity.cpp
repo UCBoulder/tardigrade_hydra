@@ -841,9 +841,9 @@ BOOST_AUTO_TEST_CASE( test_extractParameters2, * boost::unit_test::tolerance( DE
 
     BOOST_TEST( answer3  == *R.get_microGradientHardeningParameters( ) , CHECK_PER_ELEMENT );
 
-    BOOST_TEST( floatVector( 3, answer2[ 0 ] ) == R.public_getMicroGradientC0( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( floatVector( 3, answer3[ 0 ] ) == R.public_getMicroGradientC0( ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( floatVector( 3, answer2[ 1 ] ) == R.public_getMicroGradientA( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( floatVector( 3, answer3[ 1 ] ) == R.public_getMicroGradientA( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( answer4  == *R.get_macroFlowParameters( )              , CHECK_PER_ELEMENT );
 

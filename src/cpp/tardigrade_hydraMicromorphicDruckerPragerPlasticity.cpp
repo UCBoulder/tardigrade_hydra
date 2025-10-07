@@ -3867,8 +3867,8 @@ namespace tardigradeHydra{
 
             }
 
-            setMicroGradientC0( floatVector( hydra->getDimension( ), ( *get_microHardeningParameters( ) )[ 0 ] ) );
-            setMicroGradientA(  floatVector( hydra->getDimension( ), ( *get_microHardeningParameters( ) )[ 1 ] ) );
+            setMicroGradientC0( floatVector( hydra->getDimension( ), ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
+            setMicroGradientA(  floatVector( hydra->getDimension( ), ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
         
             set_macroFlowParameters(              outputs[ 3 ] );
         
