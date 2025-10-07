@@ -2098,6 +2098,7 @@ namespace tardigradeHydra{
          */
 
         unsigned int relaxedIteration = 0;
+        setRelaxedIteration( relaxedIteration );
 
         // Initialize the residuals
         setCurrentResidualIndexMeaningful( true );
@@ -2150,6 +2151,7 @@ namespace tardigradeHydra{
             }
 
             relaxedIteration++;
+            setRelaxedIteration( relaxedIteration );
 
             // Initialize the residuals
             setCurrentResidualIndexMeaningful( true );
