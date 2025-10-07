@@ -1130,7 +1130,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the minimum macro cohesion
                      * 
-                     * \param &value: The vaue of the cohesion
+                     * \param &value: The value of the cohesion
                      */
 
                     _minMacroCohesion = value;
@@ -1141,7 +1141,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the minimum micro cohesion
                      * 
-                     * \param &value: The vaue of the cohesion
+                     * \param &value: The value of the cohesion
                      */
 
                     _minMicroCohesion = value;
@@ -1152,7 +1152,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the minimum micro cohesion
                      * 
-                     * \param &value: The vaue of the cohesion
+                     * \param &value: The value of the cohesion
                      */
 
                     _minMicroGradientCohesion = value;
@@ -1163,7 +1163,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the value of the macro smoothing ratio
                      * 
-                     * \param &value: The vlaue of the smoothing ratio
+                     * \param &value: The value of the smoothing ratio
                      */
 
                     _macroSmoothingRatio = value;
@@ -1174,7 +1174,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the value of the micro smoothing ratio
                      * 
-                     * \param &value: The vlaue of the smoothing ratio
+                     * \param &value: The value of the smoothing ratio
                      */
 
                     _microSmoothingRatio = value;
@@ -1185,7 +1185,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the value of the micro gradient smoothing ratio
                      * 
-                     * \param &value: The vlaue of the smoothing ratio
+                     * \param &value: The value of the smoothing ratio
                      */
 
                     constexpr unsigned int dim = 3;
@@ -1198,7 +1198,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the value of the micro gradient smoothing ratio
                      * 
-                     * \param &value: The vlaue of the smoothing ratio
+                     * \param &value: The value of the smoothing ratio
                      */
 
                     _microGradientSmoothingRatio = value;
