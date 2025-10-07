@@ -3830,7 +3830,10 @@ namespace tardigradeHydra{
                 set_macroHardeningParameters(         outputs[ 0 ] );
 
             }
- 
+
+            setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
+            setMacroA(  ( *get_macroHardeningParameters( ) )[ 1 ] );
+
             if ( outputs[ 1 ].size( ) == 4 ){
 
                 setMinMicroCohesion(    outputs[ 1 ][ 2 ] );
@@ -3846,6 +3849,9 @@ namespace tardigradeHydra{
 
             }
 
+            setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
+            setMicroA(  ( *get_microHardeningParameters( ) )[ 1 ] );
+
             if ( outputs[ 2 ].size( ) == 4 ){
  
                 setMinMicroGradientCohesion(    outputs[ 2 ][ 2 ] );
@@ -3860,6 +3866,9 @@ namespace tardigradeHydra{
                 set_microGradientHardeningParameters( outputs[ 2 ] );
 
             }
+
+            setMicroGradientC0( floatVector( hydra->getDimension( ), ( *get_microHardeningParameters( ) )[ 0 ] ) );
+            setMicroGradientA(  floatVector( hydra->getDimension( ), ( *get_microHardeningParameters( ) )[ 1 ] ) );
         
             set_macroFlowParameters(              outputs[ 3 ] );
         
