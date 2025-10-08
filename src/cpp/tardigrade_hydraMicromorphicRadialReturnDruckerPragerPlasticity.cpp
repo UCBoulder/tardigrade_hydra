@@ -15,6 +15,18 @@ namespace tardigradeHydra{
 
     namespace micromorphicRadialReturnDruckerPragerPlasticity{
 
+        void residual::setupRelaxedStep( const unsigned int &relaxedStep ){
+            /*!
+             * Set up the relaxed step
+             *
+             * \param &relaxedStep: The index of the relaxed step
+             */
+
+            setActiveConstraints( );
+            micromorphicDruckerPragerPlasticity::residual::setupRelaxedStep( relaxedStep );
+
+        }
+
         void residual::projectSuggestedX( std::vector< floatType > &trialX,    
                                           const std::vector< floatType > &Xp ){
             /*!

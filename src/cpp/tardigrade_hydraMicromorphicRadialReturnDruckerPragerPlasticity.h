@@ -125,6 +125,8 @@ namespace tardigradeHydra{
 
                 virtual void postNLSolve( ) override;
 
+                virtual void setupRelaxedStep( const unsigned int &relaxedStep ) override;
+
             protected:
 
                 virtual void setActiveConstraints( );
