@@ -1754,10 +1754,9 @@ namespace tardigradeHydra{
 
             if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
                 addToFailureOutput( "    lambda, |R|: " );
-                addToFailureOutput( *getLambda( ) );
+                addToFailureOutput( *getLambda( ), false );
                 addToFailureOutput( ", " );
                 addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
-                addToFailureOutput( "\n" );
             }
 
             updateLambda( );
@@ -1766,6 +1765,13 @@ namespace tardigradeHydra{
 
             updateUnknownVector( X0 + *getLambda( ) * deltaX );
 
+        }
+
+        if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+            addToFailureOutput( "    lambda, |R|: " );
+            addToFailureOutput( *getLambda( ), false );
+            addToFailureOutput( ", " );
+            addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
         }
 
         if ( !checkLSConvergence( ) ){
@@ -2064,14 +2070,14 @@ namespace tardigradeHydra{
 
             }
 
+            // Call residual end of a successful nonlinear step functions
+            callResidualSuccessfulNLStep( );
+
             // Increment the iteration count
             incrementIteration( );
 
             // Reset the nonlinear step data
             resetNLStepData( );
-
-            // Call residual end of a successful nonlinear step functions
-            callResidualSuccessfulNLStep( );
 
             if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
                 addToFailureOutput( "  final residual: " );
@@ -2098,6 +2104,7 @@ namespace tardigradeHydra{
          */
 
         unsigned int relaxedIteration = 0;
+        setRelaxedIteration( relaxedIteration );
 
         // Initialize the residuals
         setCurrentResidualIndexMeaningful( true );
@@ -2150,6 +2157,7 @@ namespace tardigradeHydra{
             }
 
             relaxedIteration++;
+            setRelaxedIteration( relaxedIteration );
 
             // Initialize the residuals
             setCurrentResidualIndexMeaningful( true );

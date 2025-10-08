@@ -125,6 +125,8 @@ namespace tardigradeHydra{
 
                 virtual void postNLSolve( ) override;
 
+                virtual void setupRelaxedStep( const unsigned int &relaxedStep ) override;
+
             protected:
 
                 virtual void setActiveConstraints( );
@@ -163,7 +165,7 @@ namespace tardigradeHydra{
                      * Get the scale factor for the global tolerance if the constraints have changed
                      */
 
-                    return 10;
+                    return 10.0;
 
                 }
 
