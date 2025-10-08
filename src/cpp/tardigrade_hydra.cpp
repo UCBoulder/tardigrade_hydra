@@ -1753,7 +1753,10 @@ namespace tardigradeHydra{
         while ( !checkLSConvergence( ) && checkLSIteration( ) ){
 
             if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
-                addToFailureOutput( "    lambda, |R|: " + std::to_string( *getLambda( ) ) + ", " + std::to_string( tardigradeVectorTools::l2norm( *getResidual( ) ) ) + "\n" );
+                addToFailureOutput( "    lambda, |R|: " );
+                addToFailureOutput( *getLambda( ), false );
+                addToFailureOutput( ", " );
+                addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
             }
 
             updateLambda( );
@@ -1765,7 +1768,10 @@ namespace tardigradeHydra{
         }
 
         if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
-            addToFailureOutput( "    lambda, |R|: " + std::to_string( *getLambda( ) ) + ", " + std::to_string( tardigradeVectorTools::l2norm( *getResidual( ) ) ) + "\n" );
+            addToFailureOutput( "    lambda, |R|: " );
+            addToFailureOutput( *getLambda( ), false );
+            addToFailureOutput( ", " );
+            addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
         }
 
         if ( !checkLSConvergence( ) ){

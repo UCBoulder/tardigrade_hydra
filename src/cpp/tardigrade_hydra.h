@@ -1710,17 +1710,17 @@ namespace tardigradeHydra{
             void addToFailureOutput( const std::string &additional ){ _failure_output << additional; }
 
             //! Add a floating point vector to the output string
-            void addToFailureOutput( const floatVector &value ){ for ( auto v = value.begin( ); v != value.end( ); v++ ){ _failure_output << *v << ", "; } _failure_output << "\n"; }
+            void addToFailureOutput( const floatVector &value, bool add_endline = true ){ for ( auto v = value.begin( ); v != value.end( ); v++ ){ _failure_output << *v << ", "; } if ( add_endline ){_failure_output << "\n"; } }
 
             //! Add a boolean vector to the output string
-            void addToFailureOutput( const std::vector<bool> &value ){ for ( auto v = value.begin( ); v != value.end( ); v++ ){ _failure_output << *v << ", "; } _failure_output << "\n"; }
+            void addToFailureOutput( const std::vector<bool> &value, bool add_endline = true ){ for ( auto v = value.begin( ); v != value.end( ); v++ ){ _failure_output << *v << ", "; } if ( add_endline ){_failure_output << "\n"; } }
 
             //! Add a floating point value to the output string
-            void addToFailureOutput( const floatType &value ){ _failure_output << value; _failure_output << "\n"; }
+            void addToFailureOutput( const floatType &value, bool add_endline = true ){ _failure_output << value; if ( add_endline ){_failure_output << "\n"; } }
 
             //! Add a general iterable object to the output string
             template< class v_iterator >
-            void addToFailureOutput( const v_iterator &v_begin, const v_iterator &v_end ){ for ( auto v = v_begin; v != v_end; ++v ){ _failure_output << *v << ", "; } _failure_output << "\n"; }
+            void addToFailureOutput( const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true ){ for ( auto v = v_begin; v != v_end; ++v ){ _failure_output << *v << ", "; } if ( add_endline ){_failure_output << "\n"; } }
 
             //! Get the failure output string
             const std::string getFailureOutput( ){ return _failure_output.str( ); }
