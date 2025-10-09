@@ -165,7 +165,7 @@ namespace tardigradeHydra{
                      * Get the scale factor for the global tolerance if the constraints have changed
                      */
 
-                    return 10.0;
+                    return 1.0;
 
                 }
 
