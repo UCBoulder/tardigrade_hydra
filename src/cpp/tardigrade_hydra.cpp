@@ -1978,7 +1978,18 @@ namespace tardigradeHydra{
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
             setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
-            ( *residual_ptr )->postNLSolve( );
+            try{
+                ( *residual_ptr )->postNLSolve( );
+            }
+            catch(std::exception &e){
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions(e, message);
+                    addToFailureOutput( message );
+                }
+                throw;
+            }
 
         }
         setCurrentResidualIndexMeaningful( false );
@@ -1999,6 +2010,8 @@ namespace tardigradeHydra{
 
         floatVector deltaX( getNumUnknowns( ), 0 );
 
+        callResidualPreNLSolve( );
+
         resetLSIteration( );
 
         resetGradientIteration( );
@@ -2007,8 +2020,6 @@ namespace tardigradeHydra{
             addToFailureOutput( "Initial Unknown:\n" );
             addToFailureOutput( *getUnknownVector( ) );
         }
-
-        callResidualPreNLSolve( );
 
         while( !checkConvergence( ) && checkIteration( ) ){
 
@@ -2374,6 +2385,10 @@ namespace tardigradeHydra{
         catch( const convergence_error &e ){
 
             if ( *getUseRelaxedSolve( ) ){
+
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                    addToFailureOutput( "Failure in conventional solve. Starting relaxed solve.\n" );
+                }
 
                 try{
 
