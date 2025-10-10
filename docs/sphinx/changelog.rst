@@ -28,6 +28,7 @@ Bug Fixes
 - Fixed error where the adaptive tolerance wasn't being reset (:pull:`226`). By `Nathan Miller`_.
 - Fixed error where the line search tolerance was not consistent with the residual modified quantities (:pull:`228`). By `Nathan Miller`_.
 - Fixed error where the subcycler was not being initialized with a clean step if a relaxation step had been attempted (:pull:`229`). By `Nathan Miller`_.
+- Fixed error where if a relaxation step was performed when the subcycler is controlling the solution it wouldn't be initialized correctly (:pull:`230`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
