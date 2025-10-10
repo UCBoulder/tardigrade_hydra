@@ -27,6 +27,7 @@ Bug Fixes
 - Fixed error in the perzynaViscoplastic Jacobian (:pull:`221`). By `Nathan Miller`_.
 - Fixed error where the adaptive tolerance wasn't being reset (:pull:`226`). By `Nathan Miller`_.
 - Fixed error where the line search tolerance was not consistent with the residual modified quantities (:pull:`228`). By `Nathan Miller`_.
+- Fixed error where the subcycler was not being initialized with a clean step if a relaxation step had been attempted (:pull:`229`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
