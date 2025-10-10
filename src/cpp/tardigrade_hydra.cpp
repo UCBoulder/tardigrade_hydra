@@ -2357,6 +2357,12 @@ namespace tardigradeHydra{
 
                     ds *= ( *getCutbackFactor( ) );
 
+                    if ( *getUseRelaxedSolve( ) ){
+
+                        _initialX = _prerelaxed_initialX;
+
+                    }
+
                     setX( _initialX ); // Reset X to the last good point
 
                     if ( ds < *getMinDS( ) ){
@@ -2403,6 +2409,7 @@ namespace tardigradeHydra{
                 try{
 
                     resetIterations( );
+                    _prerelaxed_initialX = _initialX;
                     updateUnknownVector( _initialX );
                     performRelaxedSolve( );
 
