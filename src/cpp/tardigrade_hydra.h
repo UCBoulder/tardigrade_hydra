@@ -2226,6 +2226,8 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void resetProblem( );
+
             virtual void performRelaxedSolve( );
 
             void setAllowModifyGlobalResidual( const bool value){

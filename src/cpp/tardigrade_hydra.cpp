@@ -1424,6 +1424,17 @@ namespace tardigradeHydra{
 
     }
 
+    void hydraBase::resetProblem( ){
+        /*!
+         * Reset the problem to the initial state
+         */
+
+        decomposeStateVariableVector( );
+
+        initializeUnknownVector( );
+
+    }
+
     void hydraBase::initializeUnknownVector( ){
         /*!
          * Initialize the unknown vector for the non-linear solve.
@@ -2301,8 +2312,7 @@ namespace tardigradeHydra{
 
             unsigned int num_good = 0;
 
-            // Set the unknown vector to the initial unknown. We're using setX because we call setScaleFactor right away which will update the unknown vector
-            setX( _initialX );
+            resetProblem( );
 
             while ( sp < 1.0 ){
 
