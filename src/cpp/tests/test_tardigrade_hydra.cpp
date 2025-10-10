@@ -6565,6 +6565,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
             virtual void evaluateInternal( ) override{
 
+                _prerelaxed_initialX = *getUnknownVector( );
+
                 _initialX = *getUnknownVector( );
 
                 BOOST_TEST( ( *getScaleFactor( ) ) == expected_scale_factors[ num_evaluateInternalCalls ] );
