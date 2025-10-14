@@ -3831,6 +3831,7 @@ namespace tardigradeHydra{
 
             }
 
+            setBaseMacroSmoothingRatio( *getMacroSmoothingRatio( ) );
             setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
             setMacroA(  ( *get_macroHardeningParameters( ) )[ 1 ] );
 
@@ -3849,6 +3850,7 @@ namespace tardigradeHydra{
 
             }
 
+            setBaseMicroSmoothingRatio( *getMicroSmoothingRatio( ) );
             setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
             setMicroA(  ( *get_microHardeningParameters( ) )[ 1 ] );
 
@@ -3867,6 +3869,7 @@ namespace tardigradeHydra{
 
             }
 
+            setBaseMicroGradientSmoothingRatio( *getMicroGradientSmoothingRatio( ) );
             setMicroGradientC0( floatVector( hydra->getDimension( ), ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
             setMicroGradientA(  floatVector( hydra->getDimension( ), ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
         
@@ -9897,6 +9900,28 @@ namespace tardigradeHydra{
 
             }
 
+            if ( isConverged ){
+
+                setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
+
+                setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
+
+                setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+
+                setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
+
+                setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
+
+                setMicroGradientC0( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
+
+                setMacroA( ( *get_macroHardeningParameters( ) )[ 1 ] );
+
+                setMicroA( ( *get_microHardeningParameters( ) )[ 1 ] );
+
+                setMicroGradientA( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
+
+            }
+
             return isConverged;
 
         }
@@ -9913,11 +9938,11 @@ namespace tardigradeHydra{
             // Save the base smoothing ratios
             if ( relaxedStep == 0 ){
 
-                setBaseMacroSmoothingRatio(                 *getMacroSmoothingRatio( ) );
+                setMacroSmoothingRatio(                 *getBaseMacroSmoothingRatio( ) );
 
-                setBaseMicroSmoothingRatio(                 *getMicroSmoothingRatio( ) );
+                setMicroSmoothingRatio(                 *getBaseMicroSmoothingRatio( ) );
 
-                setBaseMicroGradientSmoothingRatio( *getMicroGradientSmoothingRatio( ) );
+                setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
 
             }
 
@@ -10043,6 +10068,59 @@ namespace tardigradeHydra{
                                                                    ( *get_microGradientHardeningParameters( ) )[ 0 ], microGradientSmoothingRatio[ i ], *getMinMicroGradientCohesion( ) );
 
             }
+
+        }
+
+        void residual::preSubcycler( ){
+            /*!
+             * Function that gets called prior to the subcycler
+             */
+
+            setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
+            setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
+            setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+
+            setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
+            setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
+            setMicroGradientC0( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
+            setMacroA( ( *get_macroHardeningParameters( ) )[ 1 ] );
+            setMicroA( ( *get_microHardeningParameters( ) )[ 1 ] );
+            setMicroGradientA( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
+        }
+
+        void residual::postSubcyclerSuccess( ){
+            /*!
+             * Function that gets called when the subcycler succeeds
+             */
+
+            setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
+            setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
+            setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+
+            setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
+            setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
+            setMicroGradientC0( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
+            setMacroA( ( *get_macroHardeningParameters( ) )[ 1 ] );
+            setMicroA( ( *get_microHardeningParameters( ) )[ 1 ] );
+            setMicroGradientA( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
+
+        }
+
+        void residual::postSubcyclerFailure( ){
+            /*!
+             * Function that gets called when the subcycler fails
+             */
+
+            setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
+            setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
+            setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+
+            setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
+            setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
+            setMicroGradientC0( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
+            setMacroA( ( *get_macroHardeningParameters( ) )[ 1 ] );
+            setMicroA( ( *get_microHardeningParameters( ) )[ 1 ] );
+            setMicroGradientA( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
 
         }
 

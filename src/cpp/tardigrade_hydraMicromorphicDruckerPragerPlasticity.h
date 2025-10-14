@@ -566,6 +566,12 @@ namespace tardigradeHydra{
 
                 virtual void setupRelaxedStep( const unsigned int &relaxedStep ) override;
 
+                virtual void preSubcycler( ) override;
+
+                virtual void postSubcyclerSuccess( ) override;
+
+                virtual void postSubcyclerFailure( ) override;
+
             protected:
 
                 bool _useWeakenedMacaulay; //!< Flag for whether to use the weak Macaulay brackets or not
