@@ -6647,6 +6647,117 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
 }
 
+BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            unsigned int num_evaluateInternalCalls = 0;
+
+            unsigned int num_updateUnknownVectorCalls = 0;
+
+            unsigned int num_callResidualPreSubcyclerCalls = 0;
+
+            unsigned int num_resetProblemCalls = 0;
+
+            unsigned int num_callResidualPostSubcyclerSuccessCalls = 0;
+
+            unsigned int num_callResidualPostSubcyclerFailureCalls = 0;
+
+            unsigned int num_setScaleFactorCalls = 0;
+
+            floatVector X = { 1, 2, 3 };
+
+            unsigned int n_failure = 3;
+
+        protected:
+
+            virtual void updateUnknownVector( const floatVector &newX ) override{
+                num_updateUnknownVectorCalls++;
+            }
+
+            virtual void callResidualPreSubcycler( ) override{
+                num_callResidualPreSubcyclerCalls++;
+
+            }
+
+            virtual void resetProblem( ) override{
+                num_resetProblemCalls++;
+            }
+
+            virtual void evaluateInternal( ) override{
+                if ( num_evaluateInternalCalls < n_failure ){
+                    num_evaluateInternalCalls++;
+                    throw std::runtime_error( "less than n_failure" );
+                }
+                num_evaluateInternalCalls++;
+            }
+
+            virtual void callResidualPostSubcyclerSuccess( ) override{
+                num_callResidualPostSubcyclerSuccessCalls++;
+            }
+
+            virtual void callResidualPostSubcyclerFailure( ) override{
+                num_callResidualPostSubcyclerFailureCalls++;
+            }
+
+            virtual void setScaleFactor( const floatType &value ) override{
+
+                num_setScaleFactorCalls++;
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 5.3;
+
+    floatType previousTemperature = 23.4;
+
+    floatVector deformationGradient = { 1.05, 0, 0,
+                                        0.00, 1, 0,
+                                        0.00, 1, 1};
+
+    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    floatVector parameters = { 123.4, 56.7 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra.evaluate( true );
+
+    BOOST_TEST( hydra.num_evaluateInternalCalls == 9 );
+
+    BOOST_TEST( hydra.num_callResidualPreSubcyclerCalls == 1 );
+
+    BOOST_TEST( hydra.num_resetProblemCalls == 1 );
+
+    BOOST_TEST( hydra.num_setScaleFactorCalls == 8 );
+
+    BOOST_TEST( hydra.num_callResidualPostSubcyclerSuccessCalls == 6 );
+
+    BOOST_TEST( hydra.num_callResidualPostSubcyclerFailureCalls == 2 );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_setDataStorageBase, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::residualBase{

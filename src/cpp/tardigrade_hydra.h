@@ -1747,7 +1747,7 @@ namespace tardigradeHydra{
             const floatType *getScaleFactor( ){ return &_scale_factor; }
 
             //! Set the value of the scale factor. Will automatically re-calculate the deformation and trial stresses
-            void setScaleFactor( const floatType &value );
+            virtual void setScaleFactor( const floatType &value );
 
             const floatType   *getScaledTime( ){ /*! Get the value of the scaled current time */ return &_scaled_time; }
 
