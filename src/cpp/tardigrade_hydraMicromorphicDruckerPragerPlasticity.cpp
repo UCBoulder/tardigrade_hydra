@@ -9908,19 +9908,11 @@ namespace tardigradeHydra{
 
                 setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
 
-                setPreviousRelaxedPerfectlyPlastic( false );
-
                 setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
 
                 setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
 
                 setMicroGradientC0( floatVector( 3, ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
-
-                setMacroCf( *getMinMacroCohesion( ) );
-
-                setMicroCf( *getMinMicroCohesion( ) );
-
-                setMicroGradientCf( floatVector( 3, *getMinMicroGradientCohesion( ) ) );
 
                 setMacroA( ( *get_macroHardeningParameters( ) )[ 1 ] );
 
