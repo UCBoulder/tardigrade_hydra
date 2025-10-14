@@ -980,6 +980,24 @@ namespace tardigradeHydra{
                  */
             };
 
+            virtual void preSubcycler( ){
+                /*!
+                 * Function that is called prior to entering the subcycler
+                 */
+            }
+
+            virtual void postSubcyclerSuccess( ){
+                /*!
+                 * Function that is called whenever the subcycler succeeds
+                 */
+            }
+
+            virtual void postSubcyclerFailure( ){
+                /*!
+                 * Function that is called whenever the subcycler fails
+                 */
+            }
+
             virtual void setupRelaxedStep( const unsigned int &relaxedStep );
 
             //! Get the flag for whether to use the projection or not
@@ -2030,6 +2048,12 @@ namespace tardigradeHydra{
             virtual void callResidualPreNLSolve( );
 
             virtual void callResidualPostNLSolve( );
+
+            virtual void callResidualPreSubcycler( );
+
+            virtual void callResidualPostSubcyclerSuccess( );
+
+            virtual void callResidualPostSubcyclerFailure( );
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
