@@ -1952,14 +1952,19 @@ namespace tardigradeHydra{
          */
 
         setAllowModifyGlobalResidual( true );
+
         setCurrentResidualIndexMeaningful( true );
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
             setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
             ( *residual_ptr )->successfulNLStep( );
 
         }
+
         setCurrentResidualIndexMeaningful( false );
+
         setAllowModifyGlobalResidual( false );
 
     }
@@ -1970,12 +1975,15 @@ namespace tardigradeHydra{
          */
 
         setCurrentResidualIndexMeaningful( true );
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
             setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
             ( *residual_ptr )->preNLSolve( );
 
         }
+
         setCurrentResidualIndexMeaningful( false );
 
     }
@@ -1986,23 +1994,144 @@ namespace tardigradeHydra{
          */
 
         setCurrentResidualIndexMeaningful( true );
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
             setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
             try{
+
                 ( *residual_ptr )->postNLSolve( );
+
             }
-            catch(std::exception &e){
+            catch( std::exception &e ){
+
                 if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+
                     addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
                     std::string message;
                     tardigradeErrorTools::captureNestedExceptions(e, message);
                     addToFailureOutput( message );
+
                 }
+
                 throw;
+
             }
 
         }
+
+        setCurrentResidualIndexMeaningful( false );
+
+    }
+
+    void hydraBase::callResidualPreSubcycler( ){
+        /*!
+         * Signal to the residuals that we are entering the subcycler
+         */
+
+        setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+
+            try{
+
+                ( *residual_ptr )->preSubcycler( );
+
+            }
+            catch( std::exception &e ){
+
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions( e, message );
+                    addToFailureOutput( message );
+
+                }
+
+                throw;
+
+            }
+
+        }
+
+        setCurrentResidualIndexMeaningful( false );
+
+    }
+
+    void hydraBase::callResidualPostSubcyclerSuccess( ){
+        /*!
+         * Signal to the residuals that we have a successful subcycle increment
+         */
+
+        setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+
+            try{
+
+                ( *residual_ptr )->postSubcyclerSuccess( );
+
+            }
+            catch( std::exception &e ){
+
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions( e, message );
+                    addToFailureOutput( message );
+
+                }
+
+                throw;
+
+            }
+
+        }
+
+        setCurrentResidualIndexMeaningful( false );
+
+    }
+
+    void hydraBase::callResidualPostSubcyclerFailure( ){
+        /*!
+         * Signal to the residuals that we have a failed subcycle increment
+         */
+
+        setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+
+            try{
+
+                ( *residual_ptr )->postSubcyclerFailure( );
+
+            }
+            catch( std::exception &e ){
+
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions( e, message );
+                    addToFailureOutput( message );
+
+                }
+
+                throw;
+
+            }
+
+        }
+
         setCurrentResidualIndexMeaningful( false );
 
     }
@@ -2312,6 +2441,8 @@ namespace tardigradeHydra{
 
             unsigned int num_good = 0;
 
+            callResidualPreSubcycler( );
+
             resetProblem( );
 
             while ( sp < 1.0 ){
@@ -2330,6 +2461,8 @@ namespace tardigradeHydra{
                     resetIterations( ); // Reset the non-linear iteration count
 
                     evaluateInternal( ); // Try to solve the non-linear problem
+
+                    callResidualPostSubcyclerSuccess( ); // Let the residuals know the subcycle step was successful
 
                     sp += ds; // Update the pseudo-time
 
@@ -2351,6 +2484,8 @@ namespace tardigradeHydra{
 
                 }
                 catch( std::exception &e ){
+
+                    callResidualPostSubcyclerFailure( ); // Let the residuals know the subcycle step failed
 
                     // Reduce the time-step and try again
                     num_good = 0;

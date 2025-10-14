@@ -46,7 +46,7 @@ namespace tardigradeHydra{
 
             activeConstraints.value->resize( 5 );
 
-	    // Check the yield stress constraint
+            // Check the yield stress constraint
             ( *activeConstraints.value )[ 0 ] = ( ( *get_macroYield( ) ) > 0. );
 
             ( *activeConstraints.value )[ 1 ] = ( ( *get_microYield( ) ) > 0. );
