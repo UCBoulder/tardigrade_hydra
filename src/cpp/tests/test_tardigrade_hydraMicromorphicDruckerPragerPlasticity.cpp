@@ -22100,11 +22100,11 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep, * boost::unit_test::tolerance( DEFA
 
     R.setupRelaxedStep( 0 );
 
-    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == macroS );
+    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
 
-    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == microS );
+    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
 
-    floatVector answer1 = { 0.1, 0.1, 0.1 };
+    floatVector answer1 = { 1e-2, 1e-2, 1e-2 };
     BOOST_TEST( *R.public_getBaseMicroGradientSmoothingRatio( ) == answer1, CHECK_PER_ELEMENT );
 
     BOOST_TEST( *R.public_getMacroSmoothingRatio( ) == ( 0.17 / 0.53895133 ) );
@@ -22404,11 +22404,11 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep2, * boost::unit_test::tolerance( DEF
 
     const floatType microGradientS = 0.82;
 
-    R.public_setMacroSmoothingRatio( macroS );
+    R.public_setBaseMacroSmoothingRatio( macroS );
 
-    R.public_setMicroSmoothingRatio( microS );
+    R.public_setBaseMicroSmoothingRatio( microS );
 
-    R.public_setMicroGradientSmoothingRatio( microGradientS );
+    R.public_setBaseMicroGradientSmoothingRatio( microGradientS );
 
     R.setupRelaxedStep( 0 );
 
@@ -22733,11 +22733,11 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep3, * boost::unit_test::tolerance( DEF
 
     R.setupRelaxedStep( 0 );
 
-    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == macroS );
+    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
 
-    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == microS );
+    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
 
-    floatVector answer1 = { microGradientS, microGradientS, microGradientS };
+    floatVector answer1 = { 1e-2, 1e-2, 1e-2 };
     BOOST_TEST( *R.public_getBaseMicroGradientSmoothingRatio( ) == answer1, CHECK_PER_ELEMENT );
 
     BOOST_TEST( *R.public_getMacroSmoothingRatio( ) == 0.91 );
@@ -23096,11 +23096,11 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep4, * boost::unit_test::tolerance( DEF
 
     R.setupRelaxedStep( 0 );
 
-    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == macroS );
+    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
 
-    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == microS );
+    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
 
-    floatVector answer1 = { microGradientS, microGradientS, microGradientS };
+    floatVector answer1 = { 1e-2, 1e-2, 1e-2 };
     BOOST_TEST( *R.public_getBaseMicroGradientSmoothingRatio( ) == answer1, CHECK_PER_ELEMENT );
 
     BOOST_TEST( *R.public_getMacroSmoothingRatio( ) == 1.0 );
@@ -23130,11 +23130,11 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep4, * boost::unit_test::tolerance( DEF
 
     R.setupRelaxedStep( 1 );
 
-    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == macroS );
+    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
 
-    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == microS );
+    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
 
-    floatVector answer5 = { microGradientS, microGradientS, microGradientS };
+    floatVector answer5 = { 1e-2, 1e-2, 1e-2 };
     BOOST_TEST( *R.public_getBaseMicroGradientSmoothingRatio( ) == answer5, CHECK_PER_ELEMENT );
 
     BOOST_TEST( *R.public_getMacroSmoothingRatio( ) == 1.0 );
