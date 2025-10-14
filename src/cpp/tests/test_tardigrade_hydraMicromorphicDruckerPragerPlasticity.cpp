@@ -23308,6 +23308,48 @@ BOOST_AUTO_TEST_CASE( test_checkRelaxedConvergence, * boost::unit_test::toleranc
 
             }
 
+            virtual void public_setPostRelaxedState( ){
+
+                setMacroSmoothingRatio( 0.11 );
+                setMicroSmoothingRatio( 0.22 );
+                setMicroGradientSmoothingRatio( 0.33 );
+                setMacroC0( 0.44 );
+                setMicroC0( 0.55 );
+                setMicroGradientC0( floatVector( 3, 0.66 ) );
+                setMacroA( 0.77 );
+                setMicroA( 0.88 );
+                setMicroGradientA( floatVector( 3, 0.99 ) );
+
+            }
+
+            virtual void public_checkStateNotReset( ){
+
+                BOOST_TEST( *getMacroSmoothingRatio( ) == 0.11 );
+                BOOST_TEST( *getMicroSmoothingRatio( ) == 0.22 );
+                BOOST_TEST( *getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.33 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroC0( ) == 0.44 );
+                BOOST_TEST( getMicroC0( ) == 0.55 );
+                BOOST_TEST( getMicroGradientC0( ) == floatVector( 3, 0.66 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroA( ) == 0.77 );
+                BOOST_TEST( getMicroA( ) == 0.88 );
+                BOOST_TEST( getMicroGradientA( ) == floatVector( 3, 0.99 ), CHECK_PER_ELEMENT );
+
+            }
+
+            virtual void public_checkStateReset( ){
+
+                BOOST_TEST( *getMacroSmoothingRatio( ) == 0.01 );
+                BOOST_TEST( *getMicroSmoothingRatio( ) == 0.01 );
+                BOOST_TEST( *getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.01 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroC0( ) == 0.5389513 );
+                BOOST_TEST( getMicroC0( ) == 0.37773052 );
+                BOOST_TEST( getMicroGradientC0( ) == floatVector( 3, 0.53186824 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroA( ) == -3.7172145 );
+                BOOST_TEST( getMicroA( ) == -9.2739145 );
+                BOOST_TEST( getMicroGradientA( ) == floatVector( 3, -7.5454313 ), CHECK_PER_ELEMENT );
+
+            }
+
     };
 
     class hydraBaseMicromorphicMock : public tardigradeHydra::hydraBaseMicromorphic{
@@ -23365,27 +23407,34 @@ BOOST_AUTO_TEST_CASE( test_checkRelaxedConvergence, * boost::unit_test::toleranc
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
     residualMock R(  &hydra, 55, 1, stateVariableIndices, parameters );
+    R.public_setPostRelaxedState( );
 
     BOOST_TEST( !R.checkRelaxedConvergence( ) );
+    R.public_checkStateNotReset( );
 
     R.temp_base_macroC = R.temp_macroC;
 
     BOOST_TEST( !R.checkRelaxedConvergence( ) );
+    R.public_checkStateNotReset( );
 
     R.temp_base_microC = R.temp_microC;
 
     BOOST_TEST( !R.checkRelaxedConvergence( ) );
+    R.public_checkStateNotReset( );
 
     R.temp_base_microGradientC[ 0 ] = R.temp_microGradientC[ 0 ];
 
     BOOST_TEST( !R.checkRelaxedConvergence( ) );
+    R.public_checkStateNotReset( );
 
     R.temp_base_microGradientC[ 1 ] = R.temp_microGradientC[ 1 ];
 
     BOOST_TEST( !R.checkRelaxedConvergence( ) );
+    R.public_checkStateNotReset( );
 
     R.temp_base_microGradientC[ 2 ] = R.temp_microGradientC[ 2 ];
 
     BOOST_TEST( R.checkRelaxedConvergence( ) );
+    R.public_checkStateReset( );
 
 }
