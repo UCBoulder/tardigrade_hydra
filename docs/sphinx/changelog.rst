@@ -31,6 +31,7 @@ Bug Fixes
 - Fixed error where the subcycler was not being initialized with a clean step if a relaxation step had been attempted (:pull:`229`). By `Nathan Miller`_.
 - Fixed error where if a relaxation step was performed when the subcycler is controlling the solution it wouldn't be initialized correctly (:pull:`230`). By `Nathan Miller`_.
 - Fixed error where the initial state for the subcycler wasn't being fully initialized for the micromorphic drucker prager plasticity (:pull:`232`). By `Nathan Miller`_.
+- Fixed error where negative internal state variable values (observed during iteration) could have cohesion values different than the initial yield (:pull:`233`). By `Nathan Miller`_.
 
 Breaking Changes
 ================

@@ -21508,6 +21508,14 @@ BOOST_AUTO_TEST_CASE( test_smoothCohesion, * boost::unit_test::tolerance( DEFAUL
 
     BOOST_TEST( ( Rp - Rm ) / ( 2 * delta ) == R.public_smoothLinearCohesionDerivative( 7.5, 1.3, 3.4, 0.1, 1e-2 ) );
 
+    BOOST_TEST( R.public_smoothLinearCohesion( -1, 1.3, 3.4, 0.1, 1e-2 ) == 3.4 );
+
+    Rp = R.public_smoothLinearCohesion( -1 + delta, 1.3, 3.4, 0.1, 1e-2 );
+
+    Rm = R.public_smoothLinearCohesion( -1 - delta, 1.3, 3.4, 0.1, 1e-2 );
+
+    BOOST_TEST( ( Rp - Rm ) / ( 2 * delta ) == R.public_smoothLinearCohesionDerivative( -1, 1.3, 3.4, 0.1, 1e-2 ) );
+
 }
 
 BOOST_AUTO_TEST_CASE( test_computeCohesion, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){

@@ -9823,7 +9823,12 @@ namespace tardigradeHydra{
 
             floatType Z0 = c0 * ( rc - 1 ) / A;
 
-            if ( ( A < 0 ) && ( Z > Z0 ) ){
+            if ( Z < 0 ){
+
+                return c0;
+
+            }
+            else if ( ( A < 0 ) && ( Z > Z0 ) ){
 
                 return a * std::exp( b * ( Z - Z0 ) ) + c;
 
@@ -9861,7 +9866,12 @@ namespace tardigradeHydra{
 
             floatType Z0 = c0 * ( rc - 1 ) / A;
 
-            if ( ( A < 0 ) && ( Z > Z0 ) ){
+            if ( Z < 0 ){
+
+                return 0;
+
+            }
+            else if ( ( A < 0 ) && ( Z > Z0 ) ){
 
                 return a * b * std::exp( b * ( Z - Z0 ) );
 
