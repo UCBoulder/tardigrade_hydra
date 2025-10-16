@@ -2136,6 +2136,50 @@ namespace tardigradeHydra{
 
     }
 
+    bool hydraBase::callResidualRelaxedStepFailure( ){
+        /*!
+         * Signal to the residuals that we have a failed relaxed solve step and
+         * determine if a new relaxed step should be taken
+         */
+
+        bool attempt_relaxed_step = false;
+
+        setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+
+            try{
+
+                auto val = ( *residual_ptr )->relaxedStepFailure( );
+
+                attempt_relaxed_step = attempt_relaxed_step || val;
+
+            }
+            catch( std::exception &e ){
+
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions( e, message );
+                    addToFailureOutput( message );
+
+                }
+
+                throw;
+
+            }
+
+        }
+
+        setCurrentResidualIndexMeaningful( false );
+
+        return attempt_relaxed_step;
+
+    }
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
@@ -2276,27 +2320,45 @@ namespace tardigradeHydra{
                 addToFailureOutput( "\n\n" );
             }
             // Solve the non-linear problem
-            TARDIGRADE_ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
+            try{
 
-            // Check if the relaxation has converged
-            bool relaxedConverged = true;
-            setCurrentResidualIndexMeaningful( true );
-            for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
-                setCurrentResidualIndex( residual - getResidualClasses( )->begin( ) );
+                solveNonLinearProblem( );
 
-                if ( !( *residual )->checkRelaxedConvergence( ) ){
+                // Check if the relaxation has converged
+                bool relaxedConverged = true;
+                setCurrentResidualIndexMeaningful( true );
+                for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
+                    setCurrentResidualIndex( residual - getResidualClasses( )->begin( ) );
 
-                    relaxedConverged = false;
-                    break;
+                    if ( !( *residual )->checkRelaxedConvergence( ) ){
+
+                        relaxedConverged = false;
+                        break;
+
+                    }
+
+                }
+                setCurrentResidualIndexMeaningful( false );
+
+                if ( relaxedConverged ){
+
+                    return;
 
                 }
 
             }
-            setCurrentResidualIndexMeaningful( false );
+            catch( convergence_error &e ){
 
-            if ( relaxedConverged ){
+                if ( !callResidualRelaxedStepFailure( ) ){
 
-                return;
+                    throw;
+
+                }
+
+            }
+            catch( std::exception &e ){
+
+                throw;
 
             }
 
