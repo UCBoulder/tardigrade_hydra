@@ -998,6 +998,17 @@ namespace tardigradeHydra{
                  */
             }
 
+            virtual bool relaxedStepFailure( ){
+                /*!
+                 * Function that is called whenever the relaxed solve fails in a step
+                 *
+                 * Should return true if it is desirable to try another relaxed step
+                 */
+
+                return false;
+
+            }
+
             virtual void setupRelaxedStep( const unsigned int &relaxedStep );
 
             //! Get the flag for whether to use the projection or not
@@ -2054,6 +2065,8 @@ namespace tardigradeHydra{
             virtual void callResidualPostSubcyclerSuccess( );
 
             virtual void callResidualPostSubcyclerFailure( );
+
+            virtual bool callResidualRelaxedStepFailure( );
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
