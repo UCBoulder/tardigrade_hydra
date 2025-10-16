@@ -1669,6 +1669,16 @@ namespace tardigradeHydra{
 
             const floatVector* getPreviousStress( );
 
+            const floatVector* getPreviouslyConvergedStress( );
+
+            void setViscoplasticDamping( const floatType &factor );
+
+            void clearViscoplasticDamping( );
+
+            const floatType* getViscoplasticDamping( ){ /*! Get the value of the viscoplastic damping */ return &_viscoplastic_damping_factor; }
+
+            const bool getViscoplasticDampingSet( );
+
             virtual void evaluate( const bool &use_subcycler = false );
 
             virtual void computeTangents( );
@@ -2316,6 +2326,18 @@ namespace tardigradeHydra{
 
             }
 
+            void setPreviouslyConvergedStress( const floatVector &value ){
+                /*!
+                 * Set the value of the previously converged stress.
+                 *
+                 * \param &value: The incoming value
+                 */
+
+                _previouslyConvergedStress.second = value;
+                _previouslyConvergedStress.first  = true;
+
+            }
+
         private:
 
             // Friend classes
@@ -2410,6 +2432,8 @@ namespace tardigradeHydra{
             dataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
             dataStorage< floatVector > _preconditioner; //!< The pre-conditioner matrix in row-major form for the global solve
+
+            dataStorage< floatVector > _previouslyConvergedStress; //!< The previously converged stress
 
             bool _use_preconditioner; //!< Flag for whether to pre-condition the Jacobian or not
 
@@ -2533,6 +2557,10 @@ namespace tardigradeHydra{
             bool _current_residual_index_set = false; //!< Flag for whether the current residual index has been set
 
             int _current_residual_index = 0; //!< The current residual index
+
+            floatType _viscoplastic_damping_factor = 0; //!< The fraction of the difference between the trial stress and the stress that will be suppressed to assist in convergence
+
+            bool _viscoplastic_damping_set = false; //!< Flag for whether the viscoplastic damping factor has been set
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 

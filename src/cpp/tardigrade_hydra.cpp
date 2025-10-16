@@ -1391,6 +1391,18 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( _stress.second = *( *getResidualClasses( ) )[ 0 ]->getStress( ) );
 
+            if ( getViscoplasticDampingSet( ) ){
+
+                auto previouslyConvergedStress = getPreviouslyConvergedStress( );
+
+                for ( auto v = std::begin( *previouslyConvergedStress ); v != std::end( *previouslyConvergedStress ); ++v ){
+
+                    _stress.second[ v - std::begin( *previouslyConvergedStress ) ] -= *getViscoplasticDamping( ) * ( *v );
+
+                }
+
+            }
+
             _stress.first = true;
 
             addIterationData( &_stress );
@@ -1421,6 +1433,56 @@ namespace tardigradeHydra{
         }
 
         return &_previousStress.second;
+
+    }
+
+    const floatVector* hydraBase::getPreviouslyConvergedStress( ){
+        /*!
+         * Get the previously converged stress value
+         */
+
+        if ( !_previouslyConvergedStress.first ){
+
+            setPreviouslyConvergedStress( *getPreviousStress( ) );
+
+        }
+
+        return &_previouslyConvergedStress.second;
+
+    }
+
+    void hydraBase::setViscoplasticDamping( const floatType &factor ){
+        /*!
+         * Use viscoplastic damping to reduce the current stress levels
+         *
+         * This should be used with care and likely only in the context of a
+         * relaxed solve where it will be removed as the solution is obtained.
+         *
+         * \param &factor: The fraction of the difference between the last converged
+         *     stress (which may be the previous stress) and the trial stress which
+         *     will be suppressed
+         */
+
+        _viscoplastic_damping_factor = factor;
+        _viscoplastic_damping_set    = true;
+
+    }
+
+    void hydraBase::clearViscoplasticDamping( ){
+        /*!
+         * Clear the viscoplastic damping
+         */
+
+        _viscoplastic_damping_factor = 0.;
+        _viscoplastic_damping_set    = false;
+    }
+
+    const bool hydraBase::getViscoplasticDampingSet( ){
+        /*!
+         * Get whether the viscoplastic damping has been set or not
+         */
+
+        return _viscoplastic_damping_set;
 
     }
 
