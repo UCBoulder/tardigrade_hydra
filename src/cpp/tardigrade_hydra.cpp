@@ -2586,6 +2586,8 @@ namespace tardigradeHydra{
 
                     evaluateInternal( ); // Try to solve the non-linear problem
 
+                    setPreviouslyConvergedStress( *getStress( ) ); // Set the previously converged stress
+
                     callResidualPostSubcyclerSuccess( ); // Let the residuals know the subcycle step was successful
 
                     sp += ds; // Update the pseudo-time

@@ -6778,11 +6778,43 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
+    class residualBaseMock : public tardigradeHydra::residualBase{
+
+        using tardigradeHydra::residualBase::residualBase;
+
+    };
+
+    class residualBaseMockStress : public tardigradeHydra::residualBase{
+
+       public:
+
+            using tardigradeHydra::residualBase::residualBase;
+    
+            using tardigradeHydra::residualBase::setStress;
+    
+            floatVector cauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            unsigned int num_setStressCalls = 0;
+    
+        private:
+
+            virtual void setStress( ) override{
+
+                setStress( cauchyStress + ( *hydra->getDeformationGradient( ) ) );
+
+                num_setStressCalls++;
+
+            }
+
+    };
+
     class hydraBaseMock : public tardigradeHydra::hydraBase{
 
         public:
 
             using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
 
             unsigned int num_evaluateInternalCalls = 0;
 
@@ -6801,6 +6833,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( D
             floatVector X = { 1, 2, 3 };
 
             unsigned int n_failure = 3;
+
+            residualBaseMockStress r1;
+        
+            residualBaseMock r2;
+        
+            unsigned int s1 = 9;
+
+            unsigned int s2 = 9;
 
         protected:
 
@@ -6836,6 +6876,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( D
             virtual void setScaleFactor( const floatType &value ) override{
 
                 num_setScaleFactorCalls++;
+
+            }
+
+            virtual void setResidualClasses( ){
+
+                r1 = residualBaseMockStress( this, s1 );
+
+                r2 = residualBaseMock( this, s2 );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                residuals[ 0 ] = &r1;
+
+                residuals[ 1 ] = &r2;
+
+                setResidualClasses( residuals );
 
             }
 
