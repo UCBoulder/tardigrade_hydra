@@ -4179,6 +4179,12 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getStress, * boost::unit_test::tolerance( D
 
             }
 
+            virtual void public_setViscoplasticDamping( const floatType &value ){
+
+                setViscoplasticDamping( value );
+
+            }
+
         private:
 
             virtual void setResidualClasses( ){
@@ -4198,12 +4204,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getStress, * boost::unit_test::tolerance( D
                 residuals[ 2 ] = &remainder;
 
                 setResidualClasses( residuals );
-
-            }
-
-            virtual void public_setViscoplasticDamping( const floatType &value ){
-
-                setViscoplasticDamping( value );
 
             }
 
@@ -4248,6 +4248,16 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getStress, * boost::unit_test::tolerance( D
     floatVector answer = { .1, .2, .3, .4, .5, .6, .7, .8, .9 };
 
     BOOST_TEST( answer == *hydra.getStress( ), CHECK_PER_ELEMENT );
+
+    hydraBaseMock hydra2( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra2.public_setViscoplasticDamping(0.3);
+
+    answer = { -0.2, -0.4, -0.6, -0.8, -1. , -1.2, -1.4, -1.6, -1.8 };
+
+    BOOST_TEST( answer == *hydra2.getStress( ), CHECK_PER_ELEMENT );
 
 }
 
