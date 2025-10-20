@@ -4132,6 +4132,135 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkLSConvergence, * boost::unit_test::tol
 
 }
 
+BOOST_AUTO_TEST_CASE( test_hydraBase_getStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+
+    class residualMockGood : public tardigradeHydra::residualBase {
+
+        public:
+
+            using tardigradeHydra::residualBase::residualBase;
+
+            floatVector cauchyStress = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
+
+            floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+        private:
+
+            virtual void setStress( ){
+
+                tardigradeHydra::residualBase::setStress( cauchyStress );
+
+            }
+
+            virtual void setPreviousStress( ){
+
+                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            residualMockGood residual1;
+
+            tardigradeHydra::residualBase residual2;
+
+            tardigradeHydra::residualBase remainder;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+
+                tardigradeHydra::hydraBase::setResidualClasses( residuals );
+
+            }
+
+            virtual void public_setViscoplasticDamping( const floatType &value ){
+
+                setViscoplasticDamping( value );
+
+            }
+
+        private:
+
+            virtual void setResidualClasses( ){
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+
+                residual1 = residualMockGood( this, 9 );
+
+                residual2 = tardigradeHydra::residualBase( this, 9 );
+
+                remainder = tardigradeHydra::residualBase( this, 3 );
+
+                residuals[ 0 ] = &residual1;
+
+                residuals[ 1 ] = &residual2;
+
+                residuals[ 2 ] = &remainder;
+
+                setResidualClasses( residuals );
+
+            }
+
+    };
+
+    floatType time = 1.1;
+
+    floatType deltaTime = 2.2;
+
+    floatType temperature = 300.0;
+
+    floatType previousTemperature = 320.4;
+
+    floatVector deformationGradient = { 1.1, 0.1, 0.0,
+                                        0.0, 1.0, 0.0,
+                                        0.0, 0.0, 1.0 };
+
+    floatVector previousDeformationGradient = { 1.0, 0.0, 0.0,
+                                                0.0, 1.0, 0.0,
+                                                0.0, 0.0, 1.0 };
+
+    floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0, 0.01, 0.02, 0.03 };
+
+    floatVector parameters = { 123.4, 56.7, 293.15, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12 };
+
+    floatVector unknownVector = { 1, 1, 1, 1, 1, 1, 1, 1, 1,
+                                  1.2, 0.0, 0.0,
+                                  0.0, 1.0, 0.0,
+                                  0.0, 0.0, 1.0,
+                                  4, 5, 6 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 3;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    floatVector answer = { .1, .2, .3, .4, .5, .6, .7, .8, .9 };
+
+    BOOST_TEST( answer == *hydra.getStress( ), CHECK_PER_ELEMENT );
+
+    hydraBaseMock hydra2( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    hydra2.public_setViscoplasticDamping(0.3);
+
+    answer = { -0.2, -0.4, -0.6, -0.8, -1. , -1.2, -1.4, -1.6, -1.8 };
+
+    BOOST_TEST( answer == *hydra2.getStress( ), CHECK_PER_ELEMENT );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
 
@@ -6649,11 +6778,43 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
+    class residualBaseMock : public tardigradeHydra::residualBase{
+
+        using tardigradeHydra::residualBase::residualBase;
+
+    };
+
+    class residualBaseMockStress : public tardigradeHydra::residualBase{
+
+       public:
+
+            using tardigradeHydra::residualBase::residualBase;
+    
+            using tardigradeHydra::residualBase::setStress;
+    
+            floatVector cauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            unsigned int num_setStressCalls = 0;
+    
+        private:
+
+            virtual void setStress( ) override{
+
+                setStress( cauchyStress + ( *hydra->getDeformationGradient( ) ) );
+
+                num_setStressCalls++;
+
+            }
+
+    };
+
     class hydraBaseMock : public tardigradeHydra::hydraBase{
 
         public:
 
             using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
 
             unsigned int num_evaluateInternalCalls = 0;
 
@@ -6672,6 +6833,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( D
             floatVector X = { 1, 2, 3 };
 
             unsigned int n_failure = 3;
+
+            residualBaseMockStress r1;
+        
+            residualBaseMock r2;
+        
+            unsigned int s1 = 9;
+
+            unsigned int s2 = 9;
 
         protected:
 
@@ -6707,6 +6876,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( D
             virtual void setScaleFactor( const floatType &value ) override{
 
                 num_setScaleFactorCalls++;
+
+            }
+
+            virtual void setResidualClasses( ){
+
+                r1 = residualBaseMockStress( this, s1 );
+
+                r2 = residualBaseMock( this, s2 );
+
+                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+
+                residuals[ 0 ] = &r1;
+
+                residuals[ 1 ] = &r2;
+
+                setResidualClasses( residuals );
 
             }
 

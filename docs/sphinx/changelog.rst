@@ -19,6 +19,7 @@ New Features
 - Added ability for Residuals to request a tolerance increase (:pull:`225`). By `Nathan Miller`_.
 - Added calls to the residuals prior to and during the evaluation of the subcycler (:pull:`231`). By `Nathan Miller`_.
 - Added call to the residual in the case that a relaxed step fails to allow the residual to attempt to recover (:pull:`234`). By `Nathan Miller`_.
+- Added ability for viscoplastic stabilization to be used to try and enable relaxed solves (:pull:`235`). By `Nathan Miller`_.
 
 Bug Fixes
 =========
