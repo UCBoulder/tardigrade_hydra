@@ -294,13 +294,13 @@ namespace tardigradeHydra{
 
                 static void checkUsePreconditioner( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._use_preconditioner == hydra.getUsePreconditioner( ) );
+                    BOOST_CHECK( hydra._use_preconditioner == hydra.getUsePreconditioner( ) );
 
                 }
 
                 static void checkPreconditionerType( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._preconditioner_type == hydra.getPreconditionerType( ) );
+                    BOOST_CHECK( hydra._preconditioner_type == hydra.getPreconditionerType( ) );
 
                 }
 

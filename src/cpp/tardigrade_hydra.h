@@ -1403,22 +1403,22 @@ namespace tardigradeHydra{
             constexpr unsigned int getFOTDimension( ){ return _dimension * _dimension * _dimension * _dimension; }
 
             //! Get a reference to the relative tolerance
-            const floatType getRelativeTolerance( ){ return _tolr; }
+            constexpr floatType getRelativeTolerance( ){ return _tolr; }
 
             //! Get a reference to the absolute tolerance
-            const floatType getAbsoluteTolerance( ){ return _tola; }
+            constexpr floatType getAbsoluteTolerance( ){ return _tola; }
 
             //! Get a reference to the line-search alpha
-            const floatType getLSAlpha( ){ return _lsAlpha; }
+            constexpr floatType getLSAlpha( ){ return _lsAlpha; }
 
             //! Get a reference to whether to use a preconditioner
-            const bool* getUsePreconditioner( ){ return &_use_preconditioner; }
+            constexpr bool getUsePreconditioner( ){ return _use_preconditioner; }
 
             //! Get a reference to the preconditioner type
-            const unsigned int* getPreconditionerType( ){ return &_preconditioner_type; }
+            constexpr unsigned int getPreconditionerType( ){ return _preconditioner_type; }
 
             //! Get whether the preconditioner is diagonal or not
-            const bool* getPreconditionerIsDiagonal( ){ return &_preconditioner_is_diagonal; }
+            constexpr bool getPreconditionerIsDiagonal( ){ return _preconditioner_is_diagonal; }
 
             //!< Get a reference to the gradient descent sigma parameter
             const floatType* getGradientSigma( ){ return &_gradientSigma; }

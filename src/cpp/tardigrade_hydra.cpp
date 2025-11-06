@@ -1751,7 +1751,7 @@ namespace tardigradeHydra{
 
         Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
 
-        if( *getPreconditionerIsDiagonal( ) ){
+        if( getPreconditionerIsDiagonal( ) ){
 
             Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
 
@@ -1787,7 +1787,7 @@ namespace tardigradeHydra{
          * \param &deltaX_tr: The trial change in the unknown vector
          */
 
-        if ( *getUsePreconditioner( ) ){
+        if ( getUsePreconditioner( ) ){
 
             performPreconditionedSolve( deltaX_tr );
 
@@ -2756,9 +2756,9 @@ namespace tardigradeHydra{
         // Solve
         tardigradeVectorTools::solverType< floatType > solver;
 
-        if ( *getUsePreconditioner( ) ){
+        if ( getUsePreconditioner( ) ){
 
-            if( *getPreconditionerIsDiagonal( ) ){
+            if( getPreconditionerIsDiagonal( ) ){
 
                 Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
 
@@ -2827,9 +2827,9 @@ namespace tardigradeHydra{
         // Solve
         tardigradeVectorTools::solverType< floatType > solver;
 
-        if ( *getUsePreconditioner( ) ){
+        if ( getUsePreconditioner( ) ){
 
-            if( *getPreconditionerIsDiagonal( ) ){
+            if( getPreconditionerIsDiagonal( ) ){
 
                 Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
 
