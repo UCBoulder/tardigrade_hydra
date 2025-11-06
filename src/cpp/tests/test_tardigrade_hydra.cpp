@@ -234,55 +234,55 @@ namespace tardigradeHydra{
 
                 static void checkGradientSigma( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._gradientSigma == hydra.getGradientSigma( ) );
+                    BOOST_CHECK( hydra._gradientSigma == hydra.getGradientSigma( ) );
 
                 }
 
                 static void checkGradientBeta( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._gradientBeta == hydra.getGradientBeta( ) );
+                    BOOST_CHECK( hydra._gradientBeta == hydra.getGradientBeta( ) );
 
                 }
 
                 static void checkMaxGradientIterations( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._maxGradientIterations == hydra.getMaxGradientIterations( ) );
+                    BOOST_CHECK( hydra._maxGradientIterations == hydra.getMaxGradientIterations( ) );
 
                 }
 
                 static void checkGradientRho( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._gradientRho == hydra.getGradientRho( ) );
+                    BOOST_CHECK( hydra._gradientRho == hydra.getGradientRho( ) );
 
                 }
 
                 static void checkGradientP( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._gradientP == hydra.getGradientP( ) );
+                    BOOST_CHECK( hydra._gradientP == hydra.getGradientP( ) );
 
                 }
 
                 static void checkLMMu( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._lm_mu == hydra.getLMMu( ) );
+                    BOOST_CHECK( hydra._lm_mu == hydra.getLMMu( ) );
 
                 }
 
                 static void checkMuk( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._mu_k == hydra.getMuk( ) );
+                    BOOST_CHECK( hydra._mu_k == hydra.getMuk( ) );
 
                 }
 
                 static void checkUseLevenbergMarquardt( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._use_LM_step == hydra.getUseLevenbergMarquardt( ) );
+                    BOOST_CHECK( hydra._use_LM_step == hydra.getUseLevenbergMarquardt( ) );
 
                 }
 
                 static void checkUseGradientDescent( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._use_gradient_descent == hydra.getUseGradientDescent( ) );
+                    BOOST_CHECK( hydra._use_gradient_descent == hydra.getUseGradientDescent( ) );
 
                 }
 
@@ -885,7 +885,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientSigma, * boost::unit_test::toler
 
     hydra.setGradientSigma( 123.4 );
 
-    BOOST_TEST( 123.4 == *hydra.getGradientSigma( ) );
+    BOOST_TEST( 123.4 == hydra.getGradientSigma( ) );
 
 }
 
@@ -895,7 +895,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientBeta, * boost::unit_test::tolera
 
     hydra.setGradientBeta( 123.4 );
 
-    BOOST_TEST( 123.4 == *hydra.getGradientBeta( ) );
+    BOOST_TEST( 123.4 == hydra.getGradientBeta( ) );
 
 }
 
@@ -905,7 +905,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setMaxGradientIterations, * boost::unit_tes
 
     hydra.setMaxGradientIterations( 123 );
 
-    BOOST_TEST( 123 == *hydra.getMaxGradientIterations( ) );
+    BOOST_TEST( 123 == hydra.getMaxGradientIterations( ) );
 
 }
 
@@ -915,7 +915,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientRho, * boost::unit_test::toleran
 
     hydra.setGradientRho( 123.4 );
 
-    BOOST_TEST( 123.4 == *hydra.getGradientRho( ) );
+    BOOST_TEST( 123.4 == hydra.getGradientRho( ) );
 
 }
 
@@ -925,7 +925,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientP, * boost::unit_test::tolerance
 
     hydra.setGradientP( 123.4 );
 
-    BOOST_TEST( 123.4 == *hydra.getGradientP( ) );
+    BOOST_TEST( 123.4 == hydra.getGradientP( ) );
 
 }
 
@@ -935,7 +935,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setLMMu, * boost::unit_test::tolerance( DEF
 
     hydra.setLMMu( 123.4 );
 
-    BOOST_TEST( 123.4 == *hydra.getLMMu( ) );
+    BOOST_TEST( 123.4 == hydra.getLMMu( ) );
 
 }
 
@@ -945,7 +945,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setMuk, * boost::unit_test::tolerance( DEFA
 
     hydra.setMuk( 123.4 );
 
-    BOOST_TEST( 123.4 == *hydra.getMuk( ) );
+    BOOST_TEST( 123.4 == hydra.getMuk( ) );
 
 }
 
@@ -955,9 +955,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setUseLevenbergMarquardt, * boost::unit_tes
 
     hydra.setUseLevenbergMarquardt( true );
 
-    BOOST_TEST( true == *hydra.getUseLevenbergMarquardt( ) );
+    BOOST_TEST( true == hydra.getUseLevenbergMarquardt( ) );
 
-    BOOST_TEST( true == *hydra.getUseGradientDescent( ) );
+    BOOST_TEST( true == hydra.getUseGradientDescent( ) );
 
 }
 
@@ -967,7 +967,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setUseGradientDescent, * boost::unit_test::
 
     hydra.setUseGradientDescent( true );
 
-    BOOST_TEST( true == *hydra.getUseGradientDescent( ) );
+    BOOST_TEST( true == hydra.getUseGradientDescent( ) );
 
 }
 
@@ -4866,7 +4866,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                 BOOST_TEST( expectedBasedResidualNormdXs[ iteration ] == *get_basedResidualNormdX( ), CHECK_PER_ELEMENT );
 
-                BOOST_TEST( expectedMuk[ iteration ] == *getMuk( ) );
+                BOOST_TEST( expectedMuk[ iteration ] == getMuk( ) );
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, newUnknownVector );
 
@@ -6159,7 +6159,7 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
 
     hydra.runSetBaseQuantities( );
 
-    BOOST_TEST( answer1 == *hydra.getMuk( ) );
+    BOOST_TEST( answer1 == hydra.getMuk( ) );
 
     BOOST_TEST( hydra.rnorm == *hydra.getBaseResidualNorm( ) );
 
@@ -6171,7 +6171,7 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
 
     hydra.runSetBaseQuantities( );
 
-    BOOST_TEST( hydra.rnorm == *hydra.getMuk( ) );
+    BOOST_TEST( hydra.rnorm == hydra.getMuk( ) );
 
 }
 
@@ -6408,7 +6408,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
 
     BOOST_CHECK_THROW( hydra.public_evaluateInternal( ), tardigradeHydra::convergence_error );
 
-    BOOST_TEST( ( *hydra.getUseLevenbergMarquardt( ) ) );
+    BOOST_TEST( hydra.getUseLevenbergMarquardt( ) );
 
     BOOST_TEST( !( *hydra.getRankDeficientError( ) ) );
 
@@ -6512,7 +6512,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
     hydra.public_evaluateInternal( );
 
-    BOOST_TEST( !( *hydra.getUseLevenbergMarquardt( ) ) );
+    BOOST_TEST( !hydra.getUseLevenbergMarquardt( ) );
 
     BOOST_TEST( !( *hydra.getRankDeficientError( ) ) );
 

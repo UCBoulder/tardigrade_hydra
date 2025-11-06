@@ -1420,35 +1420,35 @@ namespace tardigradeHydra{
             //! Get whether the preconditioner is diagonal or not
             constexpr bool getPreconditionerIsDiagonal( ){ return _preconditioner_is_diagonal; }
 
-            //!< Get a reference to the gradient descent sigma parameter
-            const floatType* getGradientSigma( ){ return &_gradientSigma; }
+            //!< Get the gradient descent sigma parameter
+            const floatType getGradientSigma( ){ return _gradientSigma; }
 
-            //!< Get a reference to the gradient descent beta parameter
-            const floatType* getGradientBeta( ){ return &_gradientBeta; }
+            //!< Get the gradient descent beta parameter
+            const floatType getGradientBeta( ){ return _gradientBeta; }
 
-            //!< Get a reference to the max allowable number of gradient iterations
-            const unsigned int* getMaxGradientIterations( ){ return &_maxGradientIterations; }
+            //!< Get the max allowable number of gradient iterations
+            const unsigned int getMaxGradientIterations( ){ return _maxGradientIterations; }
 
-            //!< Get a reference to the gradient descent rho parameter
-            const floatType* getGradientRho( ){ return &_gradientRho; }
+            //!< Get the gradient descent rho parameter
+            const floatType getGradientRho( ){ return _gradientRho; }
 
-            //!< Get a reference to the gradient descent p parameter
-            const floatType* getGradientP( ){ return &_gradientP; }
+            //!< Get the gradient descent p parameter
+            const floatType getGradientP( ){ return _gradientP; }
 
-            //!< Get a reference to the Levenberg-Marquardt mu parameter
-            const floatType* getLMMu( ){ return &_lm_mu; }
+            //!< Get the Levenberg-Marquardt mu parameter
+            const floatType getLMMu( ){ return _lm_mu; }
 
-            //!< Get a reference to the current value of mu_k
-            const floatType* getMuk( ){ return &_mu_k; }
+            //!< Get the current value of mu_k
+            const floatType getMuk( ){ return _mu_k; }
 
-            //!< Get a reference to whether the Newton step should be a LevenbergMarquardt step
-            const bool* getUseLevenbergMarquardt( ){ return &_use_LM_step; }
+            //!< Get the Newton step should be a LevenbergMarquardt step
+            const bool getUseLevenbergMarquardt( ){ return _use_LM_step; }
 
             //!< Get a reference to whether the Newton step should be a relaxed solve
             const bool* getUseRelaxedSolve( ){ return &_use_relaxed_solve; }
 
             //!< Get a reference to whether Gradient descent is allowed
-            const bool* getUseGradientDescent( ){ return &_use_gradient_descent; }
+            const bool getUseGradientDescent( ){ return _use_gradient_descent; }
 
             //!< Get a reference to the flag for whether to throw an error if the LHS matrix is rank-deficient
             const bool* getRankDeficientError( ){ return &_rank_deficient_error; }

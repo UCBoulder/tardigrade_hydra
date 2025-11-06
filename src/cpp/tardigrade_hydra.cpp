@@ -1238,7 +1238,7 @@ namespace tardigradeHydra{
                 LHSmap = ( Jmap.transpose( ) * Jmap ).eval( );
 
                 for ( unsigned int i = 0; i < xsize; i++ ){
-                    _flatNonlinearLHS.second[ xsize * i + i ] += *getMuk( );
+                    _flatNonlinearLHS.second[ xsize * i + i ] += getMuk( );
                 }
 
                 addIterationData( &_flatNonlinearLHS );
@@ -1908,7 +1908,7 @@ namespace tardigradeHydra{
 
         for ( unsigned int i = 0; i < xsize; i++ ){
 
-            RHS += ( *getGradientSigma( ) ) * ( *get_basedResidualNormdX( ) )[ i ] * dx[ i ];
+            RHS += getGradientSigma( ) * ( *get_basedResidualNormdX( ) )[ i ] * dx[ i ];
 
         }
 
@@ -1927,11 +1927,11 @@ namespace tardigradeHydra{
 
         unsigned int l                     = 0;
 
-        const unsigned int maxiter         = *getMaxGradientIterations( );
+        const unsigned int maxiter         = getMaxGradientIterations( );
 
         while( checkGradientIteration( ) ){
 
-            floatType t = std::pow( *getGradientBeta( ), l );
+            floatType t = std::pow( getGradientBeta( ), l );
 
             updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
 
@@ -1970,7 +1970,7 @@ namespace tardigradeHydra{
 
         const unsigned int xsize = getNumUnknowns( );
 
-        const floatType RHS = -( *getGradientRho( ) ) * std::pow( tardigradeVectorTools::l2norm( dx ), *getGradientP( ) );
+        const floatType RHS = -getGradientRho( ) * std::pow( tardigradeVectorTools::l2norm( dx ), getGradientP( ) );
 
         floatType LHS = 0;
 
@@ -1997,7 +1997,7 @@ namespace tardigradeHydra{
 
         if ( _mu_k < 0 ){
 
-            setMuk( 0.5 * ( *getLMMu( ) ) * ( *get_baseResidualNorm( ) ) );
+            setMuk( 0.5 * getLMMu( ) * ( *get_baseResidualNorm( ) ) );
 
         }
         else{
@@ -2305,7 +2305,7 @@ namespace tardigradeHydra{
             // Refine the estimate if the new point has a higher residual
             if ( !checkLSConvergence( ) ){
 
-                if ( checkDescentDirection( deltaX ) || !( *getUseGradientDescent( ) ) ){
+                if ( checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
 
                     // Perform an Armijo type line search when the search direction is aligned with the gradient
                     performArmijoTypeLineSearch( X0, deltaX );
@@ -2993,7 +2993,7 @@ namespace tardigradeHydra{
 
         for ( unsigned int I = 0; I < numUnknowns; I++ ){
 
-            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] += ( *getMuk( ) );
+            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] += getMuk( );
 
         }
 
@@ -3084,7 +3084,7 @@ namespace tardigradeHydra{
 
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 
-        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + ( *getMuk( ) ) * _dx ).eval( );
+        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + getMuk( ) * _dx ).eval( );
 
         for ( unsigned int i = 0; i < numConstraints; i++ ){
 
