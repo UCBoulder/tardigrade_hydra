@@ -6,7 +6,16 @@ Changelog
 #########
 
 ******************
-0.6.0 (unreleased)
+0.7.0 (unreleased)
+******************
+
+Breaking Changes
+================
+- Changed scalar return pointers to return values instead for consistency and to prepare
+  for refactor with constexpr where possible (:pull:`237`). By `Nathan Miller`_.
+
+******************
+0.6.0 (11-06-2025)
 ******************
 
 New Features

@@ -57,7 +57,7 @@ namespace tardigradeHydra{
 
             auto internal_energy = get_setDataStorage_internalEnergy( );
 
-            ( *internal_energy.value ) = ( *get_specificHeat( ) ) * ( *hydra->getTemperature( ) );
+            ( *internal_energy.value ) = ( *get_specificHeat( ) ) * hydra->getTemperature( );
 
         }
 
@@ -68,7 +68,7 @@ namespace tardigradeHydra{
 
             auto internal_energy = get_setDataStorage_previousInternalEnergy( );
 
-            ( *internal_energy.value ) = ( *get_specificHeat( ) ) * ( *hydra->getPreviousTemperature( ) );
+            ( *internal_energy.value ) = ( *get_specificHeat( ) ) * hydra->getPreviousTemperature( );
 
         }
 

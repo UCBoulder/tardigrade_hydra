@@ -1025,7 +1025,7 @@ namespace tardigradeHydra{
              * \param isPrevious: A flag for if the values are to be computed for the previous (True) or current (False) plastic thermal multiplier
              */
 
-            const floatType *temperature;
+            floatType temperature;
 
             const floatVector *temperatureParameters;
 
@@ -1048,7 +1048,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( temperatureParameters = get_thermalParameters( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::WLF( *temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] },
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::WLF( temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] },
                                           *plasticThermalMultiplier.value ) ); 
 
         }
@@ -1060,7 +1060,7 @@ namespace tardigradeHydra{
              * \param isPrevious: A flag for if the values are to be computed for the previous (True) or current (False) plastic thermal multiplier
              */
 
-            const floatType *temperature;
+            floatType temperature;
 
             const floatVector *temperatureParameters;
 
@@ -1089,7 +1089,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( temperatureParameters = get_thermalParameters( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::WLF( *temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] },
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::WLF( temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] },
                                           *plasticThermalMultiplier.value, *dPlasticThermalMultiplierdT.value ) ); 
 
         }

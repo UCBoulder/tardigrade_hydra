@@ -1321,10 +1321,10 @@ namespace tardigradeHydra{
             const floatType getDeltaTime( ){ return getScaledDeltaTime( ); }
 
             //! Get a reference to the current temperature
-            const floatType* getTemperature( ){ return getScaledTemperature( ); };
+            const floatType getTemperature( ){ return getScaledTemperature( ); };
 
             //! Get a reference to the previous temperature
-            const floatType* getPreviousTemperature( ){ return &_previousTemperature; };
+            const floatType getPreviousTemperature( ){ return _previousTemperature; };
 
             //! Get a reference to the deformation gradient
             const secondOrderTensor* getDeformationGradient( ){ return getScaledDeformationGradient( ); }
@@ -1774,7 +1774,7 @@ namespace tardigradeHydra{
 
             const floatType   getScaledDeltaTime( ){ /*! Get the value of the scaled changed in time */ return _scaled_deltaTime; }
 
-            const floatType   *getScaledTemperature( ){ /*! Get the value of the scaled current temperature */ return &_scaled_temperature; }
+            const floatType   getScaledTemperature( ){ /*! Get the value of the scaled current temperature */ return _scaled_temperature; }
 
             const floatVector *getScaledDeformationGradient( ){ /*! Get the value of the scaled current deformation gradient */ return &_scaled_deformationGradient; }
 

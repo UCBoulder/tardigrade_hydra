@@ -533,7 +533,7 @@ namespace tardigradeHydra{
 
             auto rateMultiplier = get_setDataStorage_volumetricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { hydra->getTemperature( ) },
                                                                                            *getVolumetricTemperatureParameters( ) ) );
 
         }
@@ -545,7 +545,7 @@ namespace tardigradeHydra{
 
             auto rateMultiplier = get_setDataStorage_previousVolumetricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { hydra->getPreviousTemperature( ) },
                                                                                            *getVolumetricTemperatureParameters( ) ) );
 
         }
@@ -557,7 +557,7 @@ namespace tardigradeHydra{
 
             auto rateMultiplier = get_setDataStorage_isochoricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { hydra->getTemperature( ) },
                                                                                            *getIsochoricTemperatureParameters( ) ) );
 
         }
@@ -569,7 +569,7 @@ namespace tardigradeHydra{
 
             auto rateMultiplier = get_setDataStorage_previousIsochoricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { hydra->getPreviousTemperature( ) },
                                                                                            *getIsochoricTemperatureParameters( ) ) );
 
         }
@@ -582,7 +582,7 @@ namespace tardigradeHydra{
 
             auto dRateMultiplierdT = get_setDataStorage_dVolumetricRateMultiplierdT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { hydra->getTemperature( ) },
                                                                                                          *getVolumetricTemperatureParameters( ) )[ 0 ] );
 
         }
@@ -595,7 +595,7 @@ namespace tardigradeHydra{
 
             auto dRateMultiplierdT = get_setDataStorage_dPreviousVolumetricRateMultiplierdPreviousT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { hydra->getPreviousTemperature( ) },
                                                                                                          *getVolumetricTemperatureParameters( ) )[ 0 ] );
 
         }
@@ -608,7 +608,7 @@ namespace tardigradeHydra{
 
             auto dRateMultiplierdT = get_setDataStorage_dIsochoricRateMultiplierdT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { hydra->getTemperature( ) },
                                                                                                          *getIsochoricTemperatureParameters( ) )[ 0 ] );
 
         }
@@ -620,7 +620,7 @@ namespace tardigradeHydra{
 
             auto dRateMultiplierdT = get_setDataStorage_dPreviousIsochoricRateMultiplierdPreviousT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { hydra->getPreviousTemperature( ) },
                                                                                                          *getIsochoricTemperatureParameters( ) )[ 0 ] );
 
         }

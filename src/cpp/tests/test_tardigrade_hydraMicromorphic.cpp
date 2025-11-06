@@ -191,9 +191,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor, * boost
 
     BOOST_TEST( deltaTime == hydra.getDeltaTime( ) );
 
-    BOOST_TEST( temperature == *hydra.getTemperature( ) );
+    BOOST_TEST( temperature == hydra.getTemperature( ) );
 
-    BOOST_TEST( previousTemperature == *hydra.getPreviousTemperature( ) );
+    BOOST_TEST( previousTemperature == hydra.getPreviousTemperature( ) );
 
     BOOST_TEST( deformationGradient == *hydra.getDeformationGradient( ), CHECK_PER_ELEMENT );
 
@@ -378,9 +378,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor2, * boos
 
     BOOST_TEST( deltaTime == hydra.getDeltaTime( ) );
 
-    BOOST_TEST( temperature == *hydra.getTemperature( ) );
+    BOOST_TEST( temperature == hydra.getTemperature( ) );
 
-    BOOST_TEST( previousTemperature == *hydra.getPreviousTemperature( ) );
+    BOOST_TEST( previousTemperature == hydra.getPreviousTemperature( ) );
 
     BOOST_TEST( deformationGradient == *hydra.getDeformationGradient( ), CHECK_PER_ELEMENT );
 
@@ -438,9 +438,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor2, * boos
 
     BOOST_TEST( scaled_deltaTime == hydra.getDeltaTime( ) );
 
-    BOOST_TEST( scaled_temperature == *hydra.getTemperature( ) );
+    BOOST_TEST( scaled_temperature == hydra.getTemperature( ) );
 
-    BOOST_TEST( previousTemperature == *hydra.getPreviousTemperature( ) );
+    BOOST_TEST( previousTemperature == hydra.getPreviousTemperature( ) );
 
     BOOST_TEST( scaled_deformationGradient == *hydra.getDeformationGradient( ), CHECK_PER_ELEMENT );
 

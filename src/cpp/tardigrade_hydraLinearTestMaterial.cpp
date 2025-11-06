@@ -82,7 +82,7 @@ namespace tardigradeHydra{
                 }
 
                 // Add the contributions from the temperature
-                *xi += ( *T_params )[ i ] * ( *( hydra->getTemperature( ) ) );
+                *xi += ( *T_params )[ i ] * ( hydra->getTemperature( ) );
 
                 // Add the contributions from the additional degrees of freedom
                 j = 0;
