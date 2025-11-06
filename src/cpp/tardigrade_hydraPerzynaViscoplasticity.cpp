@@ -2433,7 +2433,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( previousPlasticDeformationGradient = hydra->getPreviousConfiguration( *getPlasticConfigurationIndex( ) ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveF( hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
                                           *plasticDeformationGradient.value, 1 - ( *getIntegrationParameter( ) ), 1 ) );
 
         }
@@ -2571,7 +2571,7 @@ namespace tardigradeHydra{
 
                 fourthOrderTensor dFdPreviousL;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
                                               *plasticDeformationGradient.value, dFdL, ddFdPreviousF, dFdPreviousF, dFdPreviousL, 1 - ( *getIntegrationParameter( ) ), 1 ) );
 
                 auto map_dFdPreviousL = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dFdPreviousL.data( ) );
@@ -2622,7 +2622,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
                                               *plasticDeformationGradient.value, dFdL, 1 - ( *getIntegrationParameter( ) ), 1 ) );
 
             }
@@ -2685,7 +2685,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariables = get_previousStateVariables( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, ( 1 - *getIntegrationParameter( ) ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolution( hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, ( 1 - *getIntegrationParameter( ) ) ) );
 
         }
 
@@ -2856,7 +2856,7 @@ namespace tardigradeHydra{
 
                 floatVector dXidXidotp;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, dXidXidot, dXidXidotp, ( 1 - *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, dXidXidot, dXidXidotp, ( 1 - *getIntegrationParameter( ) ) ) );
 
                 auto map_dXidXidotp = getDynamicSizeMatrixMap< floatType >( dXidXidot.data( ), num_isvs, num_isvs );
 
@@ -2900,7 +2900,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, dXidXidot, ( 1 - *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, dXidXidot, ( 1 - *getIntegrationParameter( ) ) ) );
 
             }
 

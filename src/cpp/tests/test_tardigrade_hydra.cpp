@@ -46,13 +46,13 @@ namespace tardigradeHydra{
 
                 static void checkTime( hydraBase &hydra ){
     
-                    BOOST_CHECK( &hydra._scaled_time == hydra.getScaledTime( ) );
+                    BOOST_CHECK( hydra._scaled_time == hydra.getScaledTime( ) );
     
                 }
     
                 static void checkDeltaTime( hydraBase &hydra ){
     
-                    BOOST_CHECK( &hydra._scaled_deltaTime == hydra.getScaledDeltaTime( ) );
+                    BOOST_CHECK( hydra._scaled_deltaTime == hydra.getScaledDeltaTime( ) );
     
                 }
     
@@ -1333,9 +1333,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector2, * boost::uni
 
     BOOST_TEST( previousAdditionalStateVariablesAnswer == *hydra.get_previousAdditionalStateVariables( ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( scaled_time == *hydra.getTime( ) );
+    BOOST_TEST( scaled_time == hydra.getTime( ) );
 
-    BOOST_TEST( scaled_deltaTime == *hydra.getDeltaTime( ) );
+    BOOST_TEST( scaled_deltaTime == hydra.getDeltaTime( ) );
 
     BOOST_TEST( scaled_temperature == *hydra.getTemperature( ) );
 

@@ -723,7 +723,7 @@ namespace tardigradeHydra{
 
             floatType time;
 
-            floatType previousTime = *hydra->getTime( ) - *hydra->getDeltaTime( );
+            floatType previousTime = hydra->getTime( ) - hydra->getDeltaTime( );
 
             const floatType *volumetricRateMultiplier;
 
@@ -758,7 +758,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                time                     = *hydra->getTime( );
+                time                     = hydra->getTime( );
 
                 Je                       = get_Je( );
 
@@ -1065,7 +1065,7 @@ namespace tardigradeHydra{
 
             floatType time;
 
-            floatType previousTime = *hydra->getTime( ) - *hydra->getDeltaTime( );
+            floatType previousTime = hydra->getTime( ) - hydra->getDeltaTime( );
 
             const floatType *isochoricRateMultiplier;
 
@@ -1100,7 +1100,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                time                       = *hydra->getTime( );
+                time                       = hydra->getTime( );
 
                 Fehat                      = get_Fehat( );
 

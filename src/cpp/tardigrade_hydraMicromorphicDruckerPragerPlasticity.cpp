@@ -5311,7 +5311,7 @@ namespace tardigradeHydra{
             floatVector dISVs;
             auto updatedISVs = get_setDataStorage_updatedPlasticStrainLikeISVs( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, 1 - ( *getIntegrationParameter( ) ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolution( hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, 1 - ( *getIntegrationParameter( ) ) ) );
 
         }
 
@@ -5363,7 +5363,7 @@ namespace tardigradeHydra{
 
                 auto dISVsdStateVariables = get_setDataStorage_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables( );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, dISVsdPreviousEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, dISVsdPreviousEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
 
                 Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dISVsdPreviousEvolutionRates( dISVsdPreviousEvolutionRates.data( ), num_isvs, num_isvs );
                 Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( get_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( )->data( ), num_isvs, num_psvs );
@@ -5382,7 +5382,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
 
             }
 
@@ -7898,7 +7898,7 @@ namespace tardigradeHydra{
                                                                                                 hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim * ( plasticConfigurationIndex + 1 ) );
 
             TARDIGRADE_ERROR_TOOLS_CATCH(
-                evolvePlasticDeformation( *hydra->getDeltaTime( ),
+                evolvePlasticDeformation( hydra->getDeltaTime( ),
                                           *get_plasticMacroVelocityGradient( ),
                                           *get_plasticMicroVelocityGradient( ),
                                           *get_plasticGradientMicroVelocityGradient( ),
@@ -8354,7 +8354,7 @@ namespace tardigradeHydra{
                 sixthOrderTensor  dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL;
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(
-                    evolvePlasticDeformation( *hydra->getDeltaTime( ),
+                    evolvePlasticDeformation( hydra->getDeltaTime( ),
                                               *get_plasticMacroVelocityGradient( ),
                                               *get_plasticMicroVelocityGradient( ),
                                               *get_plasticGradientMicroVelocityGradient( ),
@@ -8581,7 +8581,7 @@ namespace tardigradeHydra{
             }
             else{
                 TARDIGRADE_ERROR_TOOLS_CATCH(
-                    evolvePlasticDeformation( *hydra->getDeltaTime( ),
+                    evolvePlasticDeformation( hydra->getDeltaTime( ),
                                               *get_plasticMacroVelocityGradient( ),
                                               *get_plasticMicroVelocityGradient( ),
                                               *get_plasticGradientMicroVelocityGradient( ),

@@ -1094,7 +1094,7 @@ namespace tardigradeHydra{
 
             auto massChangeDeformationGradient = get_setDataStorage_massChangeDeformationGradient( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                               *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                                                               *massChangeDeformationGradient.value,
                                                                                               *getIntegrationParameter( ) ) )
@@ -1152,7 +1152,7 @@ namespace tardigradeHydra{
 
                 fourthOrderTensor dFmdLp;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                                   *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                                                                   *massChangeDeformationGradient.value,
                                                                                                   dFmdL, dFmdFp, dFmdLp,
@@ -1209,7 +1209,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                                   *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                                                                   *massChangeDeformationGradient.value,
                                                                                                   dFmdL,

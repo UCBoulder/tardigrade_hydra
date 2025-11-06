@@ -1315,10 +1315,10 @@ namespace tardigradeHydra{
             const unsigned int* getStressSize( ){ return &_stress_size; }
 
             //! Get a reference to the current time
-            const floatType* getTime( ){ return getScaledTime( ); }
+            const floatType getTime( ){ return getScaledTime( ); }
 
             //! Get a reference to the change in time
-            const floatType* getDeltaTime( ){ return getScaledDeltaTime( ); }
+            const floatType getDeltaTime( ){ return getScaledDeltaTime( ); }
 
             //! Get a reference to the current temperature
             const floatType* getTemperature( ){ return getScaledTemperature( ); };
@@ -1770,9 +1770,9 @@ namespace tardigradeHydra{
             //! Set the value of the scale factor. Will automatically re-calculate the deformation and trial stresses
             virtual void setScaleFactor( const floatType &value );
 
-            const floatType   *getScaledTime( ){ /*! Get the value of the scaled current time */ return &_scaled_time; }
+            const floatType   getScaledTime( ){ /*! Get the value of the scaled current time */ return _scaled_time; }
 
-            const floatType   *getScaledDeltaTime( ){ /*! Get the value of the scaled changed in time */ return &_scaled_deltaTime; }
+            const floatType   getScaledDeltaTime( ){ /*! Get the value of the scaled changed in time */ return _scaled_deltaTime; }
 
             const floatType   *getScaledTemperature( ){ /*! Get the value of the scaled current temperature */ return &_scaled_temperature; }
 
