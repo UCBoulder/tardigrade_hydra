@@ -1409,7 +1409,7 @@ namespace tardigradeHydra{
             const floatType getAbsoluteTolerance( ){ return _tola; }
 
             //! Get a reference to the line-search alpha
-            const floatType* getLSAlpha( ){ return &_lsAlpha; }
+            const floatType getLSAlpha( ){ return _lsAlpha; }
 
             //! Get a reference to whether to use a preconditioner
             const bool* getUsePreconditioner( ){ return &_use_preconditioner; }

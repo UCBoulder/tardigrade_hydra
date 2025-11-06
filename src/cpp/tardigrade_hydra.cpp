@@ -1684,7 +1684,7 @@ namespace tardigradeHydra{
          * Check the line-search convergence
          */
 
-        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < getToleranceScaleFactor( ) * ( 1 - *getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
+        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < getToleranceScaleFactor( ) * ( 1 - getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
 
             return true;
 

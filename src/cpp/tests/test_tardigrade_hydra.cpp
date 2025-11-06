@@ -228,7 +228,7 @@ namespace tardigradeHydra{
 
                 static void checkLSAlpha( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._lsAlpha == hydra.getLSAlpha( ) );
+                    BOOST_CHECK( hydra._lsAlpha == hydra.getLSAlpha( ) );
 
                 }
 
