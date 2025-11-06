@@ -188,7 +188,7 @@ namespace tardigradeHydra{
 
             auto num_plastic_state_variables = ( const unsigned int )( std::end( *plasticStrainLikeISVs ) - std::begin( *plasticStrainLikeISVs ) );
 
-            auto num_configurations = *hydra->getNumConfigurations( );
+            auto num_configurations = hydra->getNumConfigurations( );
 
             jacobian.zero( num_ISVS * num_unknowns );
 

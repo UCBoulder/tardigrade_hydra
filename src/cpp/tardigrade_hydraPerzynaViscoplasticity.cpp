@@ -152,7 +152,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int fot_dim = tot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const secondOrderTensor *cauchyStress;
 
@@ -606,7 +606,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const floatVector *drivingStress;
 
@@ -879,7 +879,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const floatVector* drivingStress;
 
@@ -1938,7 +1938,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const floatType *plasticMultiplier;
 
@@ -2283,7 +2283,7 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const unsigned int num_stateVariables = get_stateVariables( )->size( );
 
@@ -2539,7 +2539,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const unsigned int plastic_config_index = *getPlasticConfigurationIndex( );
 
@@ -2786,7 +2786,7 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
@@ -3023,7 +3023,7 @@ namespace tardigradeHydra{
             const unsigned int num_isvs = get_stateVariables( )->size( );
 
             auto residual = get_setDataStorage_residual( );
-            residual.zero( *getNumEquations( ) );
+            residual.zero( getNumEquations( ) );
 
             // Set the residual for the plastic deformation gradient
             for ( unsigned int i = 0; i < sot_dim; i++ ){
@@ -3048,14 +3048,14 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
             const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
             auto jacobian = get_setDataStorage_jacobian( );
-            jacobian.zero( *getNumEquations( ) * num_unknowns );
+            jacobian.zero( getNumEquations( ) * num_unknowns );
 
             // Set the derivatives
             get_dPlasticDeformationGradientdCauchyStress( );
@@ -3133,7 +3133,7 @@ namespace tardigradeHydra{
              */
 
             auto dRdT = get_setDataStorage_dRdT( );
-            dRdT.zero( *getNumEquations( ) );
+            dRdT.zero( getNumEquations( ) );
 
             // Set the derivatives
             get_dPlasticDeformationGradientdT( );
@@ -3166,7 +3166,7 @@ namespace tardigradeHydra{
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
             auto dRdF = get_setDataStorage_dRdF( );
-            dRdF.zero( sot_dim * ( *getNumEquations( ) ) );
+            dRdF.zero( sot_dim * ( getNumEquations( ) ) );
 
             // Set the derivatives
             get_dPlasticDeformationGradientdF( );

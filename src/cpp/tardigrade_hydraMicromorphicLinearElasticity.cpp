@@ -2295,7 +2295,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int siot_dim = fiot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const variableVector *C;
 
@@ -3309,7 +3309,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int siot_dim = fiot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const secondOrderTensor *PK2Stress;
 
@@ -3749,7 +3749,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int siot_dim = fiot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             floatVector deformationGradient1;
 
@@ -4050,16 +4050,16 @@ namespace tardigradeHydra{
              * Set the Jacobian w.r.t. the unknown vector
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            auto tot_dim = hydra->getTOTDimension( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
-            const unsigned int num_unknowns = hydra->getNumUnknowns( );
+            auto num_unknowns = hydra->getNumUnknowns( );
 
             auto jacobian = get_setDataStorage_jacobian( );
-            jacobian.zero( *getNumEquations( ) * num_unknowns );
+            jacobian.zero( getNumEquations( ) * num_unknowns );
 
             //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
             const floatVector *dS1dFn       = get_dPK2dFn( );
@@ -4099,7 +4099,7 @@ namespace tardigradeHydra{
                     ( *jacobian.value )[ num_unknowns * row + row ] += 1;
 
                     // Jacobians w.r.t. the sub configurations
-                    col = *hydra->getConfigurationUnknownCount( );
+                    col = hydra->getConfigurationUnknownCount( );
 
                     for ( auto Sn = S->begin( ); Sn != S->end( ); Sn++ ){
 
@@ -4126,13 +4126,13 @@ namespace tardigradeHydra{
              * Set the Jacobian w.r.t. the deformation
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            auto tot_dim = hydra->getTOTDimension( );
 
-            const unsigned int num_equations = *getNumEquations( );
+            auto num_equations = getNumEquations( );
 
-            const unsigned int num_configurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto num_configurationUnknowns = hydra->getConfigurationUnknownCount( );
 
             auto dRdD = get_setDataStorage_dRdD( );
 
@@ -4246,7 +4246,7 @@ namespace tardigradeHydra{
              */
 
             auto dRdT = get_setDataStorage_dRdT( );
-            dRdT.zero( *getNumEquations( ) );
+            dRdT.zero( getNumEquations( ) );
 
         }
 

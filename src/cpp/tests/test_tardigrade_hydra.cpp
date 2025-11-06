@@ -106,13 +106,13 @@ namespace tardigradeHydra{
 
                 static void checkNumConfigurations( hydraBase &hydra ){
     
-                    BOOST_CHECK( &hydra._numConfigurations == hydra.getNumConfigurations( ) );
+                    BOOST_CHECK( hydra._numConfigurations == hydra.getNumConfigurations( ) );
     
                 }
 
                 static void checkNumNonLinearSolveStateVariables( hydraBase &hydra ){
     
-                    BOOST_CHECK( &hydra._numNonLinearSolveStateVariables == hydra.getNumNonLinearSolveStateVariables( ) );
+                    BOOST_CHECK( hydra._numNonLinearSolveStateVariables == hydra.getNumNonLinearSolveStateVariables( ) );
     
                 }
 
@@ -288,7 +288,7 @@ namespace tardigradeHydra{
 
                 static void checkRankDeficientError( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._rank_deficient_error == hydra.getRankDeficientError( ) );
+                    BOOST_CHECK( hydra._rank_deficient_error == hydra.getRankDeficientError( ) );
 
                 }
 
@@ -977,7 +977,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setRankDeficientError, * boost::unit_test::
 
     hydra.setRankDeficientError( false );
 
-    BOOST_TEST( false == *hydra.getRankDeficientError( ) );
+    BOOST_TEST( false == hydra.getRankDeficientError( ) );
 
 }
 
@@ -2698,9 +2698,9 @@ BOOST_AUTO_TEST_CASE( test_residualBase_residualBase, * boost::unit_test::tolera
 
     BOOST_CHECK( residual.hydra == &hydra );
 
-    BOOST_CHECK( *residual.getNumEquations( ) == numEquations );
+    BOOST_CHECK( residual.getNumEquations( ) == numEquations );
 
-    BOOST_CHECK( *residual.getNumConstraints( ) == numConstraints );
+    BOOST_CHECK( residual.getNumConstraints( ) == numConstraints );
 
 }
 
@@ -3049,11 +3049,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses, * boost::unit_test::tol
 
     BOOST_CHECK_NO_THROW( hydra.setResidualClasses( ) );
 
-    BOOST_CHECK( *( *hydra.getResidualClasses( ) )[ 0 ]->getNumEquations( ) == hydra.s1 );
+    BOOST_CHECK( ( *hydra.getResidualClasses( ) )[ 0 ]->getNumEquations( ) == hydra.s1 );
 
-    BOOST_CHECK( *( *hydra.getResidualClasses( ) )[ 1 ]->getNumEquations( ) == hydra.s2 );
+    BOOST_CHECK( ( *hydra.getResidualClasses( ) )[ 1 ]->getNumEquations( ) == hydra.s2 );
 
-    BOOST_CHECK( *( *hydra.getResidualClasses( ) )[ 2 ]->getNumEquations( ) == hydra.s3 );
+    BOOST_CHECK( ( *hydra.getResidualClasses( ) )[ 2 ]->getNumEquations( ) == hydra.s3 );
 
 }
 
@@ -3176,9 +3176,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             virtual void setResidual( ){
 
-                floatVector residual( *getNumEquations( ), 0 );
+                floatVector residual( getNumEquations( ), 0 );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     residual[ i ] = i;
 
@@ -3190,9 +3190,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             virtual void setJacobian( ){
 
-                floatMatrix jacobian( *getNumEquations( ), floatVector( numVariables, 0 ) );
+                floatMatrix jacobian( getNumEquations( ), floatVector( numVariables, 0 ) );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     for ( unsigned int j = 0; j < numVariables; j++ ){
 
@@ -3208,9 +3208,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             virtual void setdRdF( ){
 
-                floatMatrix dRdF( *getNumEquations( ), floatVector( 9, 0 ) );
+                floatMatrix dRdF( getNumEquations( ), floatVector( 9, 0 ) );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -3226,9 +3226,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             virtual void setdRdT( ){
 
-                floatVector dRdT( *getNumEquations( ), 0 );
+                floatVector dRdT( getNumEquations( ), 0 );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     dRdT[ i ] = 0.3 * i;
 
@@ -3240,9 +3240,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             virtual void setdRdAdditionalDOF( ){
 
-                floatVector dRdAdditionalDOF( ( *getNumEquations( ) ) * ( hydra->getAdditionalDOF( )->size( ) ), 0 );
+                floatVector dRdAdditionalDOF( getNumEquations( ) * ( hydra->getAdditionalDOF( )->size( ) ), 0 );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     for ( unsigned int j = 0; j < hydra->getAdditionalDOF( )->size( ); j++ ){
 
@@ -3258,9 +3258,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             virtual void setAdditionalDerivatives( ){
 
-                floatMatrix additionalDerivatives( *getNumEquations( ), floatVector( 4,  0 ) );
+                floatMatrix additionalDerivatives( getNumEquations( ), floatVector( 4,  0 ) );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     for ( unsigned int j = 0; j < 4; j++ ){
 
@@ -3507,9 +3507,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector, * boost::unit_test
 
             virtual void setResidual( ){
 
-                floatVector residual( *getNumEquations( ), 0 );
+                floatVector residual( getNumEquations( ), 0 );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     residual[ i ] = i;
 
@@ -3521,9 +3521,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector, * boost::unit_test
 
             virtual void setJacobian( ){
 
-                floatMatrix jacobian( *getNumEquations( ), floatVector( numVariables, 0 ) );
+                floatMatrix jacobian( getNumEquations( ), floatVector( numVariables, 0 ) );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     for ( unsigned int j = 0; j < numVariables; j++ ){
 
@@ -3539,9 +3539,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector, * boost::unit_test
 
             virtual void setdRdF( ){
 
-                floatMatrix dRdF( *getNumEquations( ), floatVector( 9, 0 ) );
+                floatMatrix dRdF( getNumEquations( ), floatVector( 9, 0 ) );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -3557,9 +3557,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector, * boost::unit_test
 
             virtual void setdRdT( ){
 
-                floatVector dRdT( *getNumEquations( ), 0 );
+                floatVector dRdT( getNumEquations( ), 0 );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     dRdT[ i ] = 0.3 * i;
 
@@ -3715,9 +3715,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector_2, * boost::unit_te
 
             virtual void setResidual( ){
 
-                floatVector residual( *getNumEquations( ), 0 );
+                floatVector residual( getNumEquations( ), 0 );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     residual[ i ] = i;
 
@@ -3729,9 +3729,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector_2, * boost::unit_te
 
             virtual void setJacobian( ){
 
-                floatMatrix jacobian( *getNumEquations( ), floatVector( numVariables, 0 ) );
+                floatMatrix jacobian( getNumEquations( ), floatVector( numVariables, 0 ) );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     for ( unsigned int j = 0; j < numVariables; j++ ){
 
@@ -3747,9 +3747,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector_2, * boost::unit_te
 
             virtual void setdRdF( ){
 
-                floatMatrix dRdF( *getNumEquations( ), floatVector( 9, 0 ) );
+                floatMatrix dRdF( getNumEquations( ), floatVector( 9, 0 ) );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     for ( unsigned int j = 0; j < 9; j++ ){
 
@@ -3765,9 +3765,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector_2, * boost::unit_te
 
             virtual void setdRdT( ){
 
-                floatVector dRdT( *getNumEquations( ), 0 );
+                floatVector dRdT( getNumEquations( ), 0 );
 
-                for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+                for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                     dRdT[ i ] = 0.3 * i;
 
@@ -6410,7 +6410,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
 
     BOOST_TEST( hydra.getUseLevenbergMarquardt( ) );
 
-    BOOST_TEST( !( *hydra.getRankDeficientError( ) ) );
+    BOOST_TEST( !hydra.getRankDeficientError( ) );
 
     BOOST_TEST( hydra.num_calls == 2 );
 
@@ -6514,7 +6514,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
     BOOST_TEST( !hydra.getUseLevenbergMarquardt( ) );
 
-    BOOST_TEST( !( *hydra.getRankDeficientError( ) ) );
+    BOOST_TEST( !hydra.getRankDeficientError( ) );
 
     BOOST_TEST( hydra.num_calls == 1 );
 
@@ -6698,7 +6698,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
                 _initialX = *getUnknownVector( );
 
-                BOOST_TEST( ( *getScaleFactor( ) ) == expected_scale_factors[ num_evaluateInternalCalls ] );
+                BOOST_TEST( getScaleFactor( ) == expected_scale_factors[ num_evaluateInternalCalls ] );
 
                 BOOST_TEST( ( *getUnknownVector( ) ) == expected_unknownVectors[ num_evaluateInternalCalls ], CHECK_PER_ELEMENT );
 
@@ -7215,11 +7215,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setConstraints, * boost::unit_test::toleran
 
                 auto constraints = get_setDataStorage_constraints( );
 
-                constraints.zero( *getNumConstraints( ) );
+                constraints.zero( getNumConstraints( ) );
 
-                for ( unsigned int i = 0; i < *getNumConstraints( ); i++ ){
+                for ( unsigned int i = 0; i < getNumConstraints( ); i++ ){
 
-                    ( *constraints.value )[ i ] = ( *getNumConstraints( ) ) + 0.1 * i;
+                    ( *constraints.value )[ i ] = getNumConstraints( ) + 0.1 * i;
 
                 }
 
@@ -7231,13 +7231,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setConstraints, * boost::unit_test::toleran
 
                 auto constraintJacobians = get_setDataStorage_constraintJacobians( );
 
-                constraintJacobians.zero( ( *getNumConstraints( ) ) * numUnknowns );
+                constraintJacobians.zero( getNumConstraints( ) * numUnknowns );
 
-                for ( unsigned int i = 0; i < *getNumConstraints( ); i++ ){
+                for ( unsigned int i = 0; i < getNumConstraints( ); i++ ){
 
                     for ( unsigned int j = 0; j < numUnknowns; j++ ){
 
-                        ( *constraintJacobians.value )[ numUnknowns * i + j ] = ( *getNumConstraints( ) ) + 0.1 * ( i + j );
+                        ( *constraintJacobians.value )[ numUnknowns * i + j ] = getNumConstraints( ) + 0.1 * ( i + j );
 
                     }
 

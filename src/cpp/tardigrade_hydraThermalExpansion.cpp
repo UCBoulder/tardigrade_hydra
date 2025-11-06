@@ -152,9 +152,9 @@ namespace tardigradeHydra{
             const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
             auto jacobian = get_setDataStorage_jacobian( );
-            jacobian.zero( *getNumEquations( ) * num_unknowns );
+            jacobian.zero( getNumEquations( ) * num_unknowns );
 
-            for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+            for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                 ( *jacobian.value )[ num_unknowns * i + sot_dim * ( *getThermalConfigurationIndex( ) ) + i ] = -1;
 
@@ -178,7 +178,7 @@ namespace tardigradeHydra{
              */
 
             auto dRdF = get_setDataStorage_dRdF( );
-            dRdF.zero( *getNumEquations( ) * hydra->getDeformationGradient( )->size( ) );
+            dRdF.zero( getNumEquations( ) * hydra->getDeformationGradient( )->size( ) );
 
         }
 

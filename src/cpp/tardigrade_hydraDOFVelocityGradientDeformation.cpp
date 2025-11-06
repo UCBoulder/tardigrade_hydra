@@ -96,7 +96,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const fourthOrderTensor *dF1dF;
 
@@ -280,7 +280,7 @@ namespace tardigradeHydra{
 
             auto sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const secondOrderTensor *velocityGradient;
 
@@ -488,7 +488,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const secondOrderTensor *intermediateVelocityGradient = get_dofIntermediateVelocityGradient( );
 
@@ -728,13 +728,13 @@ namespace tardigradeHydra{
              * Set the values of the jacobian
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_unknowns = hydra->getNumUnknowns( );
+            auto num_unknowns = hydra->getNumUnknowns( );
 
-            const unsigned int num_equations = *getNumEquations( );
+            auto num_equations = getNumEquations( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             auto jacobian = get_setDataStorage_jacobian( );
             jacobian.zero( num_equations * num_unknowns );
@@ -781,7 +781,7 @@ namespace tardigradeHydra{
 
             auto sot_dim = hydra->getSOTDimension( );
             auto dRdF = get_setDataStorage_dRdF( );
-            dRdF.zero( ( *getNumEquations( ) ) * sot_dim );
+            dRdF.zero( getNumEquations( ) * sot_dim );
             std::copy(
                 std::begin( *get_dDOFDeformationGradientdDeformationGradient( ) ),
                 std::end(   *get_dDOFDeformationGradientdDeformationGradient( ) ),
@@ -797,7 +797,7 @@ namespace tardigradeHydra{
 
             auto sot_dim = hydra->getSOTDimension( );
 
-            auto num_equations = *getNumEquations( );
+            auto num_equations = getNumEquations( );
 
             auto num_additional_dof = hydra->getAdditionalDOF( )->size( );
 
@@ -855,7 +855,7 @@ namespace tardigradeHydra{
 
             auto configuration = getDOFConfigurationIndex( );
 
-            auto num_configurations = *hydra->getNumConfigurations( );
+            auto num_configurations = hydra->getNumConfigurations( );
 
             const secondOrderTensor *dofDeformationGradient = get_dofDeformationGradient( );
 

@@ -3510,7 +3510,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const floatVector *stress;
 
@@ -4516,7 +4516,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int fot_dim = tot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const floatType   *macroCohesion;
 
@@ -5809,7 +5809,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
@@ -6251,9 +6251,9 @@ namespace tardigradeHydra{
              * \param isPrevious: Whether to set the current (false) or previous (true) preceding deformation gradient
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             floatVector dPrecedingFdSubFs;
 
@@ -6411,9 +6411,9 @@ namespace tardigradeHydra{
              * \param isPrevious: Whether to set the current (false) or previous (true) preceding micro deformation
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             floatVector dPrecedingChidSubChis;
 
@@ -7222,7 +7222,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int siot_dim = fiot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
@@ -8309,7 +8309,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
@@ -8880,13 +8880,13 @@ namespace tardigradeHydra{
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            const unsigned int dim = hydra->getDimension( );
+            auto dim = hydra->getDimension( );
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            auto numSecondOrderTensor = hydra->getSOTDimension( );
 
-            const unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+            auto numThirdOrderTensor  = hydra->getTOTDimension( );
 
-            unsigned int numConfigurations = *hydra->getNumConfigurations( );
+            auto numConfigurations    = hydra->getNumConfigurations( );
 
             const floatVector *plasticMultipliers = get_plasticMultipliers( );
 
@@ -9126,11 +9126,11 @@ namespace tardigradeHydra{
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount( );
 
-            const unsigned int dim = hydra->getDimension( );
+            auto dim = hydra->getDimension( );
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            auto numSecondOrderTensor = hydra->getSOTDimension( );
 
             const floatVector *plasticMultipliers = get_plasticMultipliers( );
 
@@ -9262,11 +9262,11 @@ namespace tardigradeHydra{
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            auto numSecondOrderTensor = hydra->getSOTDimension( );
 
-            unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+            auto numThirdOrderTensor  = hydra->getTOTDimension( );
 
-            unsigned int numConfigurations = *hydra->getNumConfigurations( );
+            auto numConfigurations = hydra->getNumConfigurations( );
 
             const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
 
@@ -9362,13 +9362,13 @@ namespace tardigradeHydra{
              * Set the Jacobian
              */
 
-            const unsigned int numEquations = *getNumEquations( );
+            auto numEquations = getNumEquations( );
 
-            const unsigned int numUnknowns  = hydra->getNumUnknowns( );
+            auto numUnknowns  = hydra->getNumUnknowns( );
 
-            const unsigned int numConfigurations = *hydra->getNumConfigurations( );
+            auto numConfigurations = hydra->getNumConfigurations( );
 
-            const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount( );
 
             const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
 
@@ -9587,11 +9587,11 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation
              */
 
-            const unsigned int numEquations = *getNumEquations( );
+            auto numEquations = getNumEquations( );
 
-            const unsigned int numConfigurations = *hydra->getNumConfigurations( );
+            auto numConfigurations = hydra->getNumConfigurations( );
 
-            const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount( );
 
             const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
 
@@ -9702,7 +9702,7 @@ namespace tardigradeHydra{
              */
 
             auto dRdT = get_setDataStorage_dRdT( );
-            dRdT.zero( *getNumEquations( ) );
+            dRdT.zero( getNumEquations( ) );
 
         }
 
@@ -9725,9 +9725,9 @@ namespace tardigradeHydra{
 
             const unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
 
-            const unsigned int numConfigurations         = *hydra->getNumConfigurations( );
+            auto numConfigurations         = hydra->getNumConfigurations( );
 
-            const unsigned int numConfigurationUnknowns  = *hydra->getConfigurationUnknownCount( );
+            auto numConfigurationUnknowns  = hydra->getConfigurationUnknownCount( );
 
             const std::vector< unsigned int > *stateVariableIndices = getStateVariableIndices( );
 

@@ -654,7 +654,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const fourthOrderTensor *dF1dF;
 
@@ -840,7 +840,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const secondOrderTensor *velocityGradient;
 
@@ -1114,7 +1114,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const secondOrderTensor *intermediateVelocityGradient = get_massChangeIntermediateVelocityGradient( );
 
@@ -1375,20 +1375,20 @@ namespace tardigradeHydra{
              * Set the values of the jacobian
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_unknowns = hydra->getNumUnknowns( );
+            auto num_unknowns = hydra->getNumUnknowns( );
 
-            const unsigned int num_equations = *getNumEquations( );
+            auto num_equations = getNumEquations( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             auto jacobian = get_setDataStorage_jacobian( );
             jacobian.zero( num_equations * num_unknowns );
 
             const floatVector *dFmdFn = get_dMassChangeDeformationGradientdSubDeformationGradients( );
 
-            for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+            for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
                 ( *jacobian.value )[ num_unknowns * i + sot_dim * ( *getMassChangeConfigurationIndex( ) ) + i ] += -1;
 
@@ -1430,11 +1430,11 @@ namespace tardigradeHydra{
              * Set the additional derivatives
              */
 
-            const unsigned int dim = hydra->getDimension( );
+            auto dim = hydra->getDimension( );
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_equations = *getNumEquations( );
+            auto num_equations = getNumEquations( );
 
             const unsigned int num_additional_dof = hydra->getAdditionalDOF( )->size( );
 

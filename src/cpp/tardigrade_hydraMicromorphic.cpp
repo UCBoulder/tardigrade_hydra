@@ -75,9 +75,9 @@ namespace tardigradeHydra{
 
         hydraBase::hydraBase::setScaledQuantities( );
 
-        _scaled_microDeformation = ( *getScaleFactor( ) ) * ( _microDeformation - _previousMicroDeformation ) + _previousMicroDeformation;
+        _scaled_microDeformation = getScaleFactor( ) * ( _microDeformation - _previousMicroDeformation ) + _previousMicroDeformation;
 
-        _scaled_gradientMicroDeformation = ( *getScaleFactor( ) ) * ( _gradientMicroDeformation - _previousGradientMicroDeformation ) + _previousGradientMicroDeformation;
+        _scaled_gradientMicroDeformation = getScaleFactor( ) * ( _gradientMicroDeformation - _previousGradientMicroDeformation ) + _previousGradientMicroDeformation;
 
     }
 
@@ -258,8 +258,8 @@ namespace tardigradeHydra{
          * \param &gradientMicroConfigurations: The resulting gradients of the micro configurations
          */
 
-        const unsigned int tot_dim = getTOTDimension( );
-        const unsigned int num_configs = *getNumConfigurations( );
+        auto tot_dim = getTOTDimension( );
+        auto num_configs = getNumConfigurations( );
 
         gradientMicroConfigurations = tardigradeVectorTools::appendVectors( { thirdOrderTensor( tot_dim, 0 ),
                                                                               floatVector( data_vector->begin( ) + start_index,
@@ -274,10 +274,10 @@ namespace tardigradeHydra{
          * Decompose the micro-deformation parts of the unknown vector
          */
 
-        const unsigned int sot_dim = getSOTDimension( );
-        const unsigned int num_configs = *getNumConfigurations( );
+        auto sot_dim = getSOTDimension( );
+        auto num_configs = getNumConfigurations( );
 
-        unsigned int start_index = ( *getStressSize( ) ) + ( num_configs - 1 ) * sot_dim;
+        unsigned int start_index = getStressSize( ) + ( num_configs - 1 ) * sot_dim;
 
         auto microConfigurations         = get_setDataStorage_microConfigurations( );
 
@@ -301,8 +301,8 @@ namespace tardigradeHydra{
          * Decompose the micro-deformation parts of the state variable vector
          */
 
-        const unsigned int sot_dim = getSOTDimension( );
-        const unsigned int num_configs = *getNumConfigurations( );
+        auto sot_dim = getSOTDimension( );
+        auto num_configs = getNumConfigurations( );
 
         unsigned int start_index = ( num_configs - 1 ) * sot_dim;
 
@@ -366,7 +366,7 @@ namespace tardigradeHydra{
          * \param &index: The index of the current configuration immediately before the sub-micro configuration
          */
 
-        return getSubMicroConfiguration( index + 1, *getNumConfigurations( ) );
+        return getSubMicroConfiguration( index + 1, getNumConfigurations( ) );
 
     }
 
@@ -413,7 +413,7 @@ namespace tardigradeHydra{
          * \param &index: The index of the current configuration immediately before the sub-micro configuration
          */
 
-        return getPreviousSubMicroConfiguration( index + 1, *getNumConfigurations( ) );
+        return getPreviousSubMicroConfiguration( index + 1, getNumConfigurations( ) );
 
     }
 
@@ -463,7 +463,7 @@ namespace tardigradeHydra{
          * \param &index: The index of the current configuration immediately before the sub-configuration
          */
 
-        return getSubMicroConfigurationJacobian( index + 1, *getNumConfigurations( ) );
+        return getSubMicroConfigurationJacobian( index + 1, getNumConfigurations( ) );
 
     }
 
@@ -502,7 +502,7 @@ namespace tardigradeHydra{
          * \param &index: The index of the current configuration immediately before the sub-configuration
          */
 
-        return getPreviousSubMicroConfigurationJacobian( index + 1, *getNumConfigurations( ) );
+        return getPreviousSubMicroConfigurationJacobian( index + 1, getNumConfigurations( ) );
 
     }
 
@@ -590,10 +590,10 @@ namespace tardigradeHydra{
          * \param &gradientMicroConfigurations: The matrix of gradients of the micro-configurations in their reference configurations
          */
 
-        const unsigned int dim = getDimension( );
-        const unsigned int sot_dim = getSOTDimension( );
-        const unsigned int tot_dim = getTOTDimension( );
-        const unsigned int num_configs = *getNumConfigurations( );
+        auto dim = getDimension( );
+        auto sot_dim = getSOTDimension( );
+        auto tot_dim = getTOTDimension( );
+        auto num_configs = getNumConfigurations( );
 
         // Compute the gradient in the reference configuration
         thirdOrderTensor gradientChi1Reference( tot_dim, 0 );// = gradientMicroConfiguration; // Initialize to the total gradient in the reference configuration
@@ -636,7 +636,7 @@ namespace tardigradeHydra{
 //            std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot1.begin( ) );
             std::fill( temp_tot1.begin( ), temp_tot1.end( ), 0 );
 
-            secondOrderTensor chiFollow  = getSubConfiguration( microConfigurations, index + 1, *getNumConfigurations( ) );
+            secondOrderTensor chiFollow  = getSubConfiguration( microConfigurations, index + 1, getNumConfigurations( ) );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
@@ -660,7 +660,7 @@ namespace tardigradeHydra{
 //            std::copy( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), temp_tot1.begin( ) );
             std::fill( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), 0 );
 
-            secondOrderTensor FFollow = getSubConfiguration( configurations, index + 1, *getNumConfigurations( ) );
+            secondOrderTensor FFollow = getSubConfiguration( configurations, index + 1, getNumConfigurations( ) );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
@@ -760,10 +760,10 @@ namespace tardigradeHydra{
          * \param &dGradChi1dGradChin: The Jacobian of the gradient of the first micro-configuration w.r.t. the gradient of the remaining sub micro-configurations
          */
 
-        const unsigned int dim = getDimension( );
-        const unsigned int sot_dim = getSOTDimension( );
-        const unsigned int tot_dim = getTOTDimension( );
-        const unsigned int num_configs = *getNumConfigurations( );
+        auto dim = getDimension( );
+        auto sot_dim = getSOTDimension( );
+        auto tot_dim = getTOTDimension( );
+        auto num_configs = getNumConfigurations( );
 
         // Compute the gradient in the reference configuration
         thirdOrderTensor gradientChi1Reference( tot_dim, 0 );
@@ -856,7 +856,7 @@ namespace tardigradeHydra{
                 std::fill( gradientChi1Reference.begin( ), gradientChi1Reference.end( ), 0 );
                 std::fill( temp_tot2.begin( ), temp_tot2.end( ), 0 );
 
-                chiFollow  = getSubConfiguration( microConfigurations, index + 1, *getNumConfigurations( ) );
+                chiFollow  = getSubConfiguration( microConfigurations, index + 1, getNumConfigurations( ) );
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
@@ -884,7 +884,7 @@ namespace tardigradeHydra{
                 std::fill( temp_tot2a.begin( ), temp_tot2a.end( ), 0 );
                 std::fill( temp_tot3a.begin( ), temp_tot3a.end( ), 0 );
 
-                FFollow = getSubConfiguration( configurations, index + 1, *getNumConfigurations( ) );
+                FFollow = getSubConfiguration( configurations, index + 1, getNumConfigurations( ) );
 
                 for ( unsigned int i = 0; i < dim; i++ ){
 
