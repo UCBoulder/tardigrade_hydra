@@ -6,18 +6,70 @@ Changelog
 #########
 
 ******************
-0.4.6 (unreleased)
+0.6.0 (unreleased)
+******************
+
+New Features
+============
+- Added a DOF velocity gradient driven deformation. (:pull:`204`). By `Nathan Miller`_.
+- Added the ability for residuals to output parameterization information. (:pull:`210`). By `Nathan Miller`_.
+- Added the ability for residuals to update the additional dof vector (:pull:`222`). By `Nathan Miller`_.
+- Added the mass change and internal heat generation calculation to the calculation of a deformation from an external dof velocity gradient (:pull:`223`). By `Nathan Miller`_.
+- Added the ability to integrate deformation from an external dof velocity gradient (:pull:`224`). By `Nathan Miller`_.
+- Added ability for Residuals to request a tolerance increase (:pull:`225`). By `Nathan Miller`_.
+- Added calls to the residuals prior to and during the evaluation of the subcycler (:pull:`231`). By `Nathan Miller`_.
+- Added call to the residual in the case that a relaxed step fails to allow the residual to attempt to recover (:pull:`234`). By `Nathan Miller`_.
+- Added ability for viscoplastic stabilization to be used to try and enable relaxed solves (:pull:`235`). By `Nathan Miller`_.
+
+Bug Fixes
+=========
+- Fixed error where the default constructor couldn't be used for the linear viscoelastic residual (:pull:`206`). By `Nathan Miller`_.
+- Fixed error in the output string for the linear viscoelastic residual if there was a mismatch between the number of ISVS
+  and the bounds (:pull:`216`). By `Nathan Miller`_.
+- Fixed error in the perzynaViscodamage parameterization information call (:pull:`220`). By `Nathan Miller`_.
+- Fixed error in the perzynaViscoplastic Jacobian (:pull:`221`). By `Nathan Miller`_.
+- Fixed error where the adaptive tolerance wasn't being reset (:pull:`226`). By `Nathan Miller`_.
+- Fixed error where the line search tolerance was not consistent with the residual modified quantities (:pull:`228`). By `Nathan Miller`_.
+- Fixed error where the subcycler was not being initialized with a clean step if a relaxation step had been attempted (:pull:`229`). By `Nathan Miller`_.
+- Fixed error where if a relaxation step was performed when the subcycler is controlling the solution it wouldn't be initialized correctly (:pull:`230`). By `Nathan Miller`_.
+- Fixed error where the initial state for the subcycler wasn't being fully initialized for the micromorphic drucker prager plasticity (:pull:`232`). By `Nathan Miller`_.
+- Fixed error where negative internal state variable values (observed during iteration) could have cohesion values different than the initial yield (:pull:`233`). By `Nathan Miller`_.
+
+Breaking Changes
+================
+- Changed MassChange to DOF in the dof velocity gradient driven deformation. (:pull:`205`). By `Nathan Miller`_.
+- Changed peryzna to perzyna (:pull:`209`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Added parameterization information for the perzynaJ2Viscoplasticity residual (:pull:`211`). By `Nathan Miller`_.
+- Added parameterization information for the perzynaViscoplasticity residual (:pull:`212`). By `Nathan Miller`_.
+- Added parameterization information for the perzynaViscodamage residual (:pull:`213`). By `Nathan Miller`_.
+- Added parameterization information for the thermal expansion residual (:pull:`214`). By `Nathan Miller`_.
+- Added parameterization information for the linear viscoelasticity residual (:pull:`215`). By `Nathan Miller`_.
+- Made the outputs use scientific notation (:pull:`217`). By `Nathan Miller`_.
+- Fixed a formatting bug in perzynaJ2Viscoplasticity parameterization information output (:pull:`218`). By `Nathan Miller`_.
+- Fixed an issue where a test would fail due to a 1e-11 difference in value (:pull:`219`). By `Nathan Miller`_.
+- Improved stability of the micromorphic radial return plasticity undergoing softening (:pull:`227`). By `Nathan Miller`_.
+
+******************
+0.5.0 (05-22-2025)
 ******************
 
 New Features
 ============
 - Added the evolution of the micro-gradient plasticity for micromorphic Drucker-Prager plasticity that is in the
   correct configuration. (:pull:`201`). By `Nathan Miller`_.
+- Added a DOF velocity gradient driven mass-change deformation. (:pull:`204`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
 - Changes to the algorithm for the micro-gradient plasticity will mean that any simulations that evolve the
   micro-gradient plasticity will be different. (:pull:`201`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version (:pull:`203`). By `Nathan Miller`_.
 
 ******************
 0.4.5 (05-17-2025)
@@ -60,9 +112,9 @@ Internal Changes
 - Removed set_varname and replaced with setDataStorage for hydra micromoprhic linear elasticity (:pull:`155`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for hydra micromoprhic Drucker-Prager plasticity (:pull:`157`). By `Nathan Miller`_.
 - Removed calls to old tardigrade error tools catch macro (:pull:`158`). By `Nathan Miller`_.
-- Removed set_varname and replaced with setDataStorage for hydra Peryzna visoplasticity (:pull:`159`). By `Nathan Miller`_.
-- Removed set_varname and replaced with setDataStorage for hydra Peryzna visodamage (:pull:`160`). By `Nathan Miller`_.
-- Removed set_varname and replaced with setDataStorage for hydra Peryzna isotropic-kenmatic J2 visoplasticity (:pull:`161`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Perzyna visoplasticity (:pull:`159`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Perzyna visodamage (:pull:`160`). By `Nathan Miller`_.
+- Removed set_varname and replaced with setDataStorage for hydra Perzyna isotropic-kenmatic J2 visoplasticity (:pull:`161`). By `Nathan Miller`_.
 - Removed set_varname and replaced with setDataStorage for hydra mass-change rate (:pull:`162`). By `Nathan Miller`_.
 - Enabled passing the tests when higher levels of optimization are used (:pull:`163`). By `Nathan Miller`_.
 - Added an active set solver for quadratic problems (:pull:`167`). By `Nathan Miller`_.
@@ -311,8 +363,8 @@ Internal Changes
 - Added initial micromorphic linear elastic residual (:pull:`18`). By `Nathan Miller`_.
 - Added the calculation of the micromorphic linear elastic derived deformation measures (:pull:`19`). By `Nathan Miller`_.
 - Added the calculation of the micromorphic linear elastic reference stress measures (:pull:`20`). By `Nathan Miller`_.
-- Added the calculation of the Peryzna-based damage and the Jacobians (:pull:`30`). By `Nathan Miller`_.
-- Added the calculation of the Peryzna-based damage deformation gradient's Jacobians (:pull:`31`). By `Nathan Miller`_.
+- Added the calculation of the Perzyna-based damage and the Jacobians (:pull:`30`). By `Nathan Miller`_.
+- Added the calculation of the Perzyna-based damage deformation gradient's Jacobians (:pull:`31`). By `Nathan Miller`_.
 
 ******************
 0.2.0 (12-11-2023)
@@ -362,7 +414,7 @@ New Features
 - Added the evaluation of hydra to compute the required quantities (:merge:`18`). By `Nathan Miller`_.
 - Added a linear viscoelastic implementation of a residual (:merge:`20`). By `Nathan Miller`_.
 - Added the residual for a thermal expansion model (:merge:`21`). By `Nathan Miller`_.
-- Added the residual for a Peryzna viscoplasticity model (:merge:`24`). By `Nathan Miller`_. 
+- Added the residual for a Perzyna viscoplasticity model (:merge:`24`). By `Nathan Miller`_. 
 
 Internal Changes
 ================

@@ -566,6 +566,12 @@ namespace tardigradeHydra{
 
                 virtual void setupRelaxedStep( const unsigned int &relaxedStep ) override;
 
+                virtual void preSubcycler( ) override;
+
+                virtual void postSubcyclerSuccess( ) override;
+
+                virtual void postSubcyclerFailure( ) override;
+
             protected:
 
                 bool _useWeakenedMacaulay; //!< Flag for whether to use the weak Macaulay brackets or not
@@ -1130,7 +1136,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the minimum macro cohesion
                      * 
-                     * \param &value: The vaue of the cohesion
+                     * \param &value: The value of the cohesion
                      */
 
                     _minMacroCohesion = value;
@@ -1141,7 +1147,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the minimum micro cohesion
                      * 
-                     * \param &value: The vaue of the cohesion
+                     * \param &value: The value of the cohesion
                      */
 
                     _minMicroCohesion = value;
@@ -1150,12 +1156,132 @@ namespace tardigradeHydra{
 
                 void setMinMicroGradientCohesion( const floatType &value ){
                     /*!
-                     * Set the minimum micro cohesion
+                     * Set the minimum micro gradient cohesion
                      * 
-                     * \param &value: The vaue of the cohesion
+                     * \param &value: The value of the cohesion
                      */
 
                     _minMicroGradientCohesion = value;
+
+                }
+
+                void setMacroC0( const floatType &value ){
+                    /*!
+                     * Set the initial value of the macro cohesion
+                     * 
+                     * \param &value: The incoming value
+                     */
+
+                    _macroC0 = value;
+
+                }
+
+                void setMicroC0( const floatType &value ){
+                    /*!
+                     * Set the initial value of the micro cohesion
+                     * 
+                     * \param &value: The incoming value
+                     */
+
+                    _microC0 = value;
+
+                }
+
+                void setMicroGradientC0( const floatVector &value ){
+                    /*!
+                     * Set the initial value of the micro gradient cohesion
+                     * 
+                     * \param &value: The incoming value
+                     */
+
+                    _microGradientC0 = value;
+
+                }
+
+                void setMacroA( const floatType &value ){
+                    /*!
+                     * Set the value of the macro hardening
+                     * 
+                     * \param &value: The incoming value
+                     */
+
+                    _macroA = value;
+
+                }
+
+                void setMicroA( const floatType &value ){
+                    /*!
+                     * Set the value of the micro hardening
+                     * 
+                     * \param &value: The incoming value
+                     */
+
+                    _microA = value;
+
+                }
+
+                void setMicroGradientA( const floatVector &value ){
+                    /*!
+                     * Set the value of the micro gradient hardening
+                     * 
+                     * \param &value: The incoming value
+                     */
+
+                    _microGradientA = value;
+
+                }
+
+                const floatType getMacroC0( ){
+                    /*!
+                     * Get the initial value of the macro cohesion
+                     */
+
+                    return _macroC0;
+
+                }
+
+                const floatType getMicroC0( ){
+                    /*!
+                     * Get the initial value of the micro cohesion
+                     */
+
+                    return _microC0;
+
+                }
+
+                const floatVector getMicroGradientC0( ){
+                    /*!
+                     * Get the initial value of the micro gradient cohesion
+                     */
+
+                    return _microGradientC0;
+
+                }
+
+                const floatType getMacroA( ){
+                    /*!
+                     * Get the value of the macro hardening
+                     */
+
+                    return _macroA;
+
+                }
+
+                const floatType getMicroA( ){
+                    /*!
+                     * Get the value of the micro hardening
+                     */
+
+                    return _microA;
+
+                }
+
+                const floatVector getMicroGradientA( ){
+                    /*!
+                     * Get the value of the micro gradient hardening
+                     */
+
+                    return _microGradientA;
 
                 }
 
@@ -1163,7 +1289,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the value of the macro smoothing ratio
                      * 
-                     * \param &value: The vlaue of the smoothing ratio
+                     * \param &value: The value of the smoothing ratio
                      */
 
                     _macroSmoothingRatio = value;
@@ -1174,7 +1300,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the value of the micro smoothing ratio
                      * 
-                     * \param &value: The vlaue of the smoothing ratio
+                     * \param &value: The value of the smoothing ratio
                      */
 
                     _microSmoothingRatio = value;
@@ -1185,7 +1311,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the value of the micro gradient smoothing ratio
                      * 
-                     * \param &value: The vlaue of the smoothing ratio
+                     * \param &value: The value of the smoothing ratio
                      */
 
                     constexpr unsigned int dim = 3;
@@ -1198,7 +1324,7 @@ namespace tardigradeHydra{
                     /*!
                      * Set the value of the micro gradient smoothing ratio
                      * 
-                     * \param &value: The vlaue of the smoothing ratio
+                     * \param &value: The value of the smoothing ratio
                      */
 
                     _microGradientSmoothingRatio = value;
@@ -1336,6 +1462,18 @@ namespace tardigradeHydra{
                 floatType _minMicroCohesion = 1e-2; //!< The minimum allowable value of the micro cohesion
 
                 floatType _minMicroGradientCohesion = 1e-2; //!< The minimum allowable value of the micro gradient cohesion
+
+                floatType   _macroC0 = 0; //!< The initial value of the macro cohesion
+
+                floatType   _microC0 = 0; //!< The initial value of the micro cohesion
+
+                floatVector _microGradientC0 = { 0, 0, 0 }; //!< The initial value of the micro gradient cohesion
+
+                floatType   _macroA = 0; //!< The value of the macro hardening
+
+                floatType   _microA = 0; //!< The value of the micro hardening
+
+                floatVector _microGradientA = { 0, 0, 0 }; //!< The value of the micro gradient hardening
 
                 TARDIGRADE_HYDRA_DECLARE_CONSTANT_STORAGE(  private, macroHardeningParameters,                             floatVector,       unexpectedError                                         )
 

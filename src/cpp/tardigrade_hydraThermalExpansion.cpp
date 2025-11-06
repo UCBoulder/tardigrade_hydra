@@ -240,6 +240,44 @@ namespace tardigradeHydra{
 
         }
 
+        void residual::addParameterizationInfo( std::string &parameterization_info ){
+            /*!
+             * Add the parameterization information to the incoming string
+             * 
+             * \param &parameterization_info: The incoming string
+             */
+
+            std::stringstream ss;
+            ss.precision(9);
+            ss << std::scientific;
+
+            ss << "class: tardigradeHydra::thermalExpansion::residual\n\n";
+            ss << "name,                                    description,       units, current value\n";
+            ss << "Tref,                      The reference temperature, temperature, " << *getReferenceTemperature( ) << "\n";
+            ss << "l_11,    The 11 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 0 ] << "\n";
+            ss << "l_12,    The 12 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 1 ] << "\n";
+            ss << "l_13,    The 13 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 2 ] << "\n";
+            ss << "l_21,    The 21 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 3 ] << "\n";
+            ss << "l_22,    The 22 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 4 ] << "\n";
+            ss << "l_23,    The 23 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 5 ] << "\n";
+            ss << "l_31,    The 31 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 6 ] << "\n";
+            ss << "l_32,    The 32 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 7 ] << "\n";
+            ss << "l_33,    The 33 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 8 ] << "\n";
+            ss << "q_11, The 11 quadratic thermal expansion coefficient,        none, " << ( *getQuadraticParameters( ) )[ 0 ] << "\n";
+            ss << "q_12, The 12 quadratic thermal expansion coefficient,        none, " << ( *getQuadraticParameters( ) )[ 1 ] << "\n";
+            ss << "q_13, The 13 quadratic thermal expansion coefficient,        none, " << ( *getQuadraticParameters( ) )[ 2 ] << "\n";
+            ss << "q_21, The 21 quadratic thermal expansion coefficient,        none, " << ( *getQuadraticParameters( ) )[ 3 ] << "\n";
+            ss << "q_22, The 22 quadratic thermal expansion coefficient,        none, " << ( *getQuadraticParameters( ) )[ 4 ] << "\n";
+            ss << "q_23, The 23 quadratic thermal expansion coefficient,        none, " << ( *getQuadraticParameters( ) )[ 5 ] << "\n";
+            ss << "q_31, The 31 quadratic thermal expansion coefficient,        none, " << ( *getQuadraticParameters( ) )[ 6 ] << "\n";
+            ss << "q_32, The 32 quadratic thermal expansion coefficient,        none, " << ( *getQuadraticParameters( ) )[ 7 ] << "\n";
+            ss << "q_33, The 33 quadratic thermal expansion coefficient,        none, " << ( *getQuadraticParameters( ) )[ 8 ] << "\n";
+
+            ss.unsetf(std::ios_base::floatfield);
+            parameterization_info.append(ss.str());
+
+        }
+
     }
 
 }

@@ -19,7 +19,12 @@ namespace tardigradeHydra{
             /*!
              * Decompose the parameter vector
              * 
-             * \param &parameters: The paramter vector. Assumed to be a vector of length 2 which defines lambda and mu.
+             * \param &parameters: The parameter vector. Assumed to be a vector of at least length 10 which defines
+             *   num_volumetric_terms, num_isochoric_terms, Kinf, Ginf, volumetric_temperature_terms, isochoric_temperature_terms, Ks, Ktaus, Gs, Gtaus
+             *   where num_volumetric_terms and num_isochoric_terms are the number of volumetric and isochoric Maxwell elements respectively, Kinf and Ginf
+             *   are the infinite bulk and shear moduli, volumetric_temperature_terms and isochoric_temperature_terms are the volumetric reference temperature,
+             *   \f$ C_1 \f$ and \f$ C_2 \f$ terms for the WLF shift, Ks are the bulk moduli, Ktaus are the volumetric time constants, Gs are the shear moduli,
+             *   and Gtaus are the isochoric time constants,
              */
    
             const unsigned int sot_dim = hydra->getSOTDimension( );
@@ -41,7 +46,7 @@ namespace tardigradeHydra{
                 std::string message = "The number of state variables required by the parameterization is not equal to the number of state variables indicated by the ISV bounds\n";
                 message            += "   required # ISVs: " + std::to_string( *getNumStateVariables( ) ) + "\n";
                 message            += "   ISV Lower Bound: " + std::to_string( *getViscoelasticISVLowerIndex( ) ) + "\n";
-                message            += "   ISV UPper Bound: " + std::to_string( *getViscoelasticISVLowerIndex( ) ) + "\n";
+                message            += "   ISV Upper Bound: " + std::to_string( *getViscoelasticISVUpperIndex( ) ) + "\n";
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
@@ -100,6 +105,54 @@ namespace tardigradeHydra{
             setIsochoricModuli( Gs );
 
             setIsochoricTaus( Gtaus );
+
+        }
+
+        void residual::addParameterizationInfo( std::string &parameterization_info ){
+            /*!
+             * Add parameterization info to the incoming string
+             * 
+             * \param &parameterization_info: The incoming string
+             */
+
+            std::stringstream ss;
+
+            ss << "class: tardigradeHydra::linearViscoelasticity::residual\n\n";
+            ss << "     name,                               description,       units, current value\n";
+            ss << "    n_vol, The number of volumetric Maxwell elements,        none, " << *getNumVolumetricViscousTerms( ) << "\n";
+            ss << "    n_iso,  The number of isochoric Maxwell elements,        none, " << *getNumIsochoricViscousTerms( ) << "\n";
+            ss.precision(9);
+            ss << std::scientific;
+            ss << "     Kinf,           The infinite volumetric modulus,      stress, " << *getKinf( ) << "\n";
+            ss << "     Ginf,            The infinite isochoric modulus,      stress, " << *getGinf( ) << "\n";
+            ss << " Tref_vol,      The volumetric reference temperature, temperature, " << ( *getVolumetricTemperatureParameters( ) )[ 0 ] << "\n";
+            ss << "   C1_vol,           The volumetric WLF C1 parameter,        none, " << ( *getVolumetricTemperatureParameters( ) )[ 1 ] << "\n";
+            ss << "   C2_vol,           The volumetric WLF C2 parameter, temperature, " << ( *getVolumetricTemperatureParameters( ) )[ 2 ] << "\n";
+            ss << " Tref_iso,       The isochoric reference temperature, temperature, " << ( *getIsochoricTemperatureParameters( ) )[ 0 ] << "\n";
+            ss << "   C1_iso,            The isochoric WLF C1 parameter,        none, " << ( *getIsochoricTemperatureParameters( ) )[ 1 ] << "\n";
+            ss << "   C2_iso,            The isochoric WLF C2 parameter, temperature, " << ( *getIsochoricTemperatureParameters( ) )[ 2 ] << "\n";
+            ss << "\nVolumetric Maxwell elements tau (time), K (stress):\n";
+
+            for (
+                auto v = std::begin( *getVolumetricModuli( ) );
+                v != std::end( *getVolumetricModuli( ) );
+                ++v )
+            {
+                ss << ( *getVolumetricTaus( ) )[ ( unsigned int )( v - std::begin( *getVolumetricModuli( ) ) ) ] << ", " << *v << "\n";
+            }
+            ss << "\nIsochoric Maxwell elements tau (time), G (stress):\n";
+
+            for (
+                auto v = std::begin( *getIsochoricModuli( ) );
+                v != std::end( *getIsochoricModuli( ) );
+                ++v )
+            {
+                ss << ( *getIsochoricTaus( ) )[ ( unsigned int )( v - std::begin( *getIsochoricModuli( ) ) ) ] << ", " << *v << "\n";
+            }
+
+            ss.unsetf(std::ios_base::floatfield);
+
+            parameterization_info.append(ss.str());
 
         }
 
@@ -387,6 +440,26 @@ namespace tardigradeHydra{
 
             isochoricStateVariables = floatVector( hydra->get_additionalStateVariables( )->begin( ) + lb,
                                                    hydra->get_additionalStateVariables( )->begin( ) + ub );
+
+        }
+
+        void residual::updateAdditionalStateVariables( floatVector &additionalStateVariables ){
+            /*!
+             * Update the additional state variables with the values stored in the volumetric and
+             * isochoric state variable arrays
+             */
+
+            std::copy(
+                std::begin( *get_volumetricViscoelasticStateVariables( ) ),
+                std::end( *get_volumetricViscoelasticStateVariables( ) ),
+                std::begin( additionalStateVariables ) + *getViscoelasticISVLowerIndex( )
+            );
+
+            std::copy(
+                std::begin( *get_isochoricViscoelasticStateVariables( ) ),
+                std::end( *get_isochoricViscoelasticStateVariables( ) ),
+                std::begin( additionalStateVariables ) + *getViscoelasticISVLowerIndex( ) + *getNumVolumetricViscousTerms( )
+            );
 
         }
 

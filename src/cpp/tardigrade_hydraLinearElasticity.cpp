@@ -18,7 +18,7 @@ namespace tardigradeHydra{
             /*!
              * Decompose the parameter vector
              * 
-             * \param &parameters: The paramter vector. Assumed to be a vector of length 2 which defines lambda and mu.
+             * \param &parameters: The parameter vector. Assumed to be a vector of length 2 which defines lambda and mu.
              */
     
             if ( parameters.size( ) != 2 ){

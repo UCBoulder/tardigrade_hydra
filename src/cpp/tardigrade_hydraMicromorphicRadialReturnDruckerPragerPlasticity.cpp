@@ -15,6 +15,18 @@ namespace tardigradeHydra{
 
     namespace micromorphicRadialReturnDruckerPragerPlasticity{
 
+        void residual::setupRelaxedStep( const unsigned int &relaxedStep ){
+            /*!
+             * Set up the relaxed step
+             *
+             * \param &relaxedStep: The index of the relaxed step
+             */
+
+            setActiveConstraints( );
+            micromorphicDruckerPragerPlasticity::residual::setupRelaxedStep( relaxedStep );
+
+        }
+
         void residual::projectSuggestedX( std::vector< floatType > &trialX,    
                                           const std::vector< floatType > &Xp ){
             /*!
@@ -34,7 +46,7 @@ namespace tardigradeHydra{
 
             activeConstraints.value->resize( 5 );
 
-	    // Check the yield stress constraint
+            // Check the yield stress constraint
             ( *activeConstraints.value )[ 0 ] = ( ( *get_macroYield( ) ) > 0. );
 
             ( *activeConstraints.value )[ 1 ] = ( ( *get_microYield( ) ) > 0. );
@@ -51,18 +63,40 @@ namespace tardigradeHydra{
             /*!
              * Update the active constraints based on the plastic multipliers
              */
-        
+
+            // Set the current active constraints
+            std::array< bool, 5 > initialActiveConstraints;
             get_activeConstraints( ); // Initializes the active constraints if they haven't been yet
+            std::copy(
+                std::begin( *get_activeConstraints( ) ), std::end( *get_activeConstraints( ) ), std::begin( initialActiveConstraints )
+            );
+
             auto activeConstraints = get_setDataStorage_activeConstraints( );
-        
+
             TARDIGRADE_ERROR_TOOLS_CHECK( activeConstraints.value->size( ) == get_plasticMultipliers( )->size( ), "The active constraints must be the same size as the plastic multipliers\n  activeConstraints size : " + std::to_string( activeConstraints.value->size( ) ) + "\n  plasticMultipliers size: " + std::to_string( get_plasticMultipliers( )->size( ) ) + "\n" )
-        
+
+            // Form the current yield stresses
+            std::array< floatType, 5 > yieldSurfaceValues = {
+                *get_macroYield( ), *get_microYield( ),
+                ( *get_microGradientYield( ) )[ 0 ], ( *get_microGradientYield( ) )[ 1 ], ( *get_microGradientYield( ) )[ 2 ]
+            };
+
             for ( auto v = activeConstraints.begin( ); v != activeConstraints.end( ); ++v ){
         
-                *v = ( *v ) && ( ( *get_plasticMultipliers( ) )[ v - activeConstraints.begin( ) ] > *getPlasticMultiplierTolerance( ) );
+                *v = ( ( *v ) && ( ( *get_plasticMultipliers( ) )[ v - activeConstraints.begin( ) ] > *getPlasticMultiplierTolerance( ) ) ) || ( yieldSurfaceValues[ v - activeConstraints.begin( ) ]> *getYieldTolerance( ) );
         
             }
-        
+
+            bool change_in_constraints = false;
+            for ( unsigned int i = 0; i < 5; ++i ){
+                change_in_constraints = ( initialActiveConstraints[ i ] != ( *( activeConstraints.begin( ) + i ) ) );
+                if ( change_in_constraints ){
+                    break;
+                }
+            }
+
+            setChangeInConstraints( change_in_constraints );
+
         }
 
         void residual::setStateVariableResiduals( ){
@@ -439,6 +473,11 @@ namespace tardigradeHydra{
 
             updateActiveConstraints( );
             correctResiduals( );            
+            if ( getChangeInConstraints( ) ){
+
+                hydra->setToleranceScaleFactor( getConstraintChangeToleranceScaleFactor( ) );
+
+            }
 
         }
 

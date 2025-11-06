@@ -980,6 +980,35 @@ namespace tardigradeHydra{
                  */
             };
 
+            virtual void preSubcycler( ){
+                /*!
+                 * Function that is called prior to entering the subcycler
+                 */
+            }
+
+            virtual void postSubcyclerSuccess( ){
+                /*!
+                 * Function that is called whenever the subcycler succeeds
+                 */
+            }
+
+            virtual void postSubcyclerFailure( ){
+                /*!
+                 * Function that is called whenever the subcycler fails
+                 */
+            }
+
+            virtual bool relaxedStepFailure( ){
+                /*!
+                 * Function that is called whenever the relaxed solve fails in a step
+                 *
+                 * Should return true if it is desirable to try another relaxed step
+                 */
+
+                return false;
+
+            }
+
             virtual void setupRelaxedStep( const unsigned int &relaxedStep );
 
             //! Get the flag for whether to use the projection or not
@@ -1058,6 +1087,30 @@ namespace tardigradeHydra{
                 storage.second = data;
 
                 storage.first = true;
+
+            }
+
+            virtual void addParameterizationInfo( std::string &parameterization_info ){
+                /*!
+                 * Add parameterization information to the provided docstring
+                 * 
+                 * Information on the current parameters and their values should be added to the
+                 * incoming string.
+                 * 
+                 * \param &parameterization_info: The parameterization information string. Append
+                 *     this class' information
+                 */
+
+                parameterization_info += "NO INFORMATION DEFINED FOR CLASS\n";
+
+            }
+
+            virtual void updateAdditionalStateVariables( floatVector &additionalStateVariables ){
+                /*!
+                 * Update the additional state variable vector
+                 *
+                 * \param &additionalStateVariables: The additional state variable vector
+                 */
 
             }
 
@@ -1616,6 +1669,16 @@ namespace tardigradeHydra{
 
             const floatVector* getPreviousStress( );
 
+            const floatVector* getPreviouslyConvergedStress( );
+
+            void setViscoplasticDamping( const floatType &factor );
+
+            void clearViscoplasticDamping( );
+
+            const floatType* getViscoplasticDamping( ){ /*! Get the value of the viscoplastic damping */ return &_viscoplastic_damping_factor; }
+
+            const bool getViscoplasticDampingSet( );
+
             virtual void evaluate( const bool &use_subcycler = false );
 
             virtual void computeTangents( );
@@ -1686,10 +1749,17 @@ namespace tardigradeHydra{
             void addToFailureOutput( const std::string &additional ){ _failure_output << additional; }
 
             //! Add a floating point vector to the output string
-            void addToFailureOutput( const floatVector &value ){ for ( auto v = value.begin( ); v != value.end( ); v++ ){ _failure_output << *v << ", "; } _failure_output << "\n"; }
+            void addToFailureOutput( const floatVector &value, bool add_endline = true ){ for ( auto v = value.begin( ); v != value.end( ); v++ ){ _failure_output << *v << ", "; } if ( add_endline ){_failure_output << "\n"; } }
+
+            //! Add a boolean vector to the output string
+            void addToFailureOutput( const std::vector<bool> &value, bool add_endline = true ){ for ( auto v = value.begin( ); v != value.end( ); v++ ){ _failure_output << *v << ", "; } if ( add_endline ){_failure_output << "\n"; } }
 
             //! Add a floating point value to the output string
-            void addToFailureOutput( const floatType &value ){ _failure_output << value; _failure_output << "\n"; }
+            void addToFailureOutput( const floatType &value, bool add_endline = true ){ _failure_output << value; if ( add_endline ){_failure_output << "\n"; } }
+
+            //! Add a general iterable object to the output string
+            template< class v_iterator >
+            void addToFailureOutput( const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true ){ for ( auto v = v_begin; v != v_end; ++v ){ _failure_output << *v << ", "; } if ( add_endline ){_failure_output << "\n"; } }
 
             //! Get the failure output string
             const std::string getFailureOutput( ){ return _failure_output.str( ); }
@@ -1698,7 +1768,7 @@ namespace tardigradeHydra{
             const floatType *getScaleFactor( ){ return &_scale_factor; }
 
             //! Set the value of the scale factor. Will automatically re-calculate the deformation and trial stresses
-            void setScaleFactor( const floatType &value );
+            virtual void setScaleFactor( const floatType &value );
 
             const floatType   *getScaledTime( ){ /*! Get the value of the scaled current time */ return &_scaled_time; }
 
@@ -1815,6 +1885,74 @@ namespace tardigradeHydra{
                 return _current_residual_index_set;
             }
 
+            std::string getResidualParameterizationInfo( ){
+                /*!
+                 * Get the parameterization information of the residual classes
+                 */
+
+                std::string parameterization_info = "########################################\n# RESIDUAL PARAMETERIZATION INFORMATION#\n########################################\n\n";
+
+                for ( auto v = std::begin( *getResidualClasses( ) ); v != std::end( *getResidualClasses( ) ); ++v ){
+
+                    parameterization_info += "RESIDUAL CLASS:";
+                    parameterization_info += " " + std::to_string( ( unsigned int )( v - std::begin( *getResidualClasses( ) ) ) ) + "\n\n";
+
+                    ( *v )->addParameterizationInfo( parameterization_info );
+
+                    parameterization_info += "\n";
+
+                }
+
+                return parameterization_info;
+
+            }
+
+            void updateAdditionalStateVariables( ){
+                /*!
+                 * Update the additional state variable vector
+                 */
+
+                for ( auto v = std::begin( *getResidualClasses( ) ); v != std::end( *getResidualClasses( ) ); ++v ){
+
+                    ( *v )->updateAdditionalStateVariables( _additionalStateVariables.second );
+
+                }
+
+            }
+
+            void setToleranceScaleFactor( floatType factor ){
+                /*!
+                 * Loosen the convergence tolerance for the next iteration
+                 * Useful if a Residual's form is changing in a non-smooth way
+                 *
+                 * \param factor: The scale factor to be applied to the current tolerance
+                 */
+
+                if ( factor > _residual_scale_factor ){
+
+                    _residual_scale_factor = factor;
+
+                }
+
+            }
+
+            const floatType getToleranceScaleFactor( ){
+                /*!
+                 * Get the scale factor for the tolerance
+                 */
+
+                return _residual_scale_factor;
+
+            }
+
+            const unsigned int getRelaxedIteration( ){
+                /*!
+                 * Get the current relaxed iteration
+                 */
+
+                return _relaxedIteration;
+            }
+
         protected:
 
             // Setters that the user may need to access but not override
@@ -1838,6 +1976,15 @@ namespace tardigradeHydra{
                  */
 
                 _current_residual_index = value;
+
+            }
+
+            const void resetToleranceScaleFactor( ){
+                /*!
+                 * Reset the tolerance scale factor to 1
+                 */
+
+                _residual_scale_factor = 1.0;
 
             }
 
@@ -1922,6 +2069,14 @@ namespace tardigradeHydra{
             virtual void callResidualPreNLSolve( );
 
             virtual void callResidualPostNLSolve( );
+
+            virtual void callResidualPreSubcycler( );
+
+            virtual void callResidualPostSubcyclerSuccess( );
+
+            virtual void callResidualPostSubcyclerFailure( );
+
+            virtual bool callResidualRelaxedStepFailure( );
 
             template<class T>
             void setIterationData( const T &data, dataStorage<T> &storage ){
@@ -2021,6 +2176,8 @@ namespace tardigradeHydra{
             std::string build_upper_index_out_of_range_error_string( const unsigned int upperIndex, const unsigned int num_configurations );
             std::string build_lower_index_out_of_range_error_string( const unsigned int lowerIndex, const unsigned int upperIndex );
 
+            floatVector _prerelaxed_initialX; //!< The initial value of the unknown vector prior to a relaxed step
+
             floatVector _initialX; //!< The initial value of the unknown vector
 
             //! A data storage class that resets at every iteration
@@ -2118,6 +2275,8 @@ namespace tardigradeHydra{
 
             }
 
+            virtual void resetProblem( );
+
             virtual void performRelaxedSolve( );
 
             void setAllowModifyGlobalResidual( const bool value){
@@ -2167,6 +2326,18 @@ namespace tardigradeHydra{
 
             }
 
+            void setPreviouslyConvergedStress( const floatVector &value ){
+                /*!
+                 * Set the value of the previously converged stress.
+                 *
+                 * \param &value: The incoming value
+                 */
+
+                _previouslyConvergedStress.second = value;
+                _previouslyConvergedStress.first  = true;
+
+            }
+
         private:
 
             // Friend classes
@@ -2211,6 +2382,8 @@ namespace tardigradeHydra{
             unsigned int _numConfigurations; //!< The number of configurations
 
             unsigned int _numNonLinearSolveStateVariables; //!< The number of state variables which will be solved in the Newton-Raphson loop
+
+            floatType _residual_scale_factor = 1; //!< A scale factor for the residual which can be used to loosen the tolerance by a Residual
 
             floatType _tolr; //!< The relative tolerance
 
@@ -2260,6 +2433,8 @@ namespace tardigradeHydra{
 
             dataStorage< floatVector > _preconditioner; //!< The pre-conditioner matrix in row-major form for the global solve
 
+            dataStorage< floatVector > _previouslyConvergedStress; //!< The previously converged stress
+
             bool _use_preconditioner; //!< Flag for whether to pre-condition the Jacobian or not
 
             unsigned int _preconditioner_type; //<! The type of preconditioner to use
@@ -2306,6 +2481,8 @@ namespace tardigradeHydra{
 
             unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
 
+            unsigned int _relaxedIteration = 0; //!< The current relaxed iteration of the non-linear problem
+
             floatType _lambda = 1;
 
             bool _useSQPSolver = false;
@@ -2344,6 +2521,15 @@ namespace tardigradeHydra{
 
             void resetNLStepData( );
 
+            void setRelaxedIteration( const unsigned int &value ){
+                /*! Set the relaxed iteration number
+                 * \param &value: The incoming value
+                 */
+
+                _relaxedIteration = value;
+
+            }
+
             unsigned int _failure_verbosity_level = 0; //!< The verbosity level for failure.
 
             std::stringstream _failure_output; //!< Additional failure output information
@@ -2371,6 +2557,10 @@ namespace tardigradeHydra{
             bool _current_residual_index_set = false; //!< Flag for whether the current residual index has been set
 
             int _current_residual_index = 0; //!< The current residual index
+
+            floatType _viscoplastic_damping_factor = 0; //!< The fraction of the difference between the trial stress and the stress that will be suppressed to assist in convergence
+
+            bool _viscoplastic_damping_set = false; //!< Flag for whether the viscoplastic damping factor has been set
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, configurations,                       floatVector, passThrough )
 

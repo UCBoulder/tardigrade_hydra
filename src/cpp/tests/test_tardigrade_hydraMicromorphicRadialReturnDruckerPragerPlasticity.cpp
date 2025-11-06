@@ -427,6 +427,28 @@ BOOST_AUTO_TEST_CASE( test_updateActiveConstraints, * boost::unit_test::toleranc
 
             }
 
+            const void invertMacYield( ){
+
+                _macYield *= -1;
+                setMacroYield( );
+
+            }
+
+            const void invertMicYield( ){
+
+                _micYield *= -1;
+                setMicroYield( );
+
+            }
+
+            const void invertMicGradYield( unsigned int index ){
+
+                _micGradYield[ index ] *= -1;
+
+                setMicroGradientYield( );
+
+            }
+
         protected:
 
             using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setMacroYield;
@@ -515,7 +537,29 @@ BOOST_AUTO_TEST_CASE( test_updateActiveConstraints, * boost::unit_test::toleranc
 
         residual.publicUpdateActiveConstraints( );
 
+        BOOST_TEST( answer == *residual.publicGetActiveConstraints( ), CHECK_PER_ELEMENT );
+        BOOST_TEST( residual._setActiveConstraints_calls == 1 );
+
+        if ( ( v - std::begin( residual._pMult ) ) == 0 ){
+
+            residual.invertMacYield( );
+
+        }
+        else if ( ( v - std::begin( residual._pMult ) ) == 1 ){
+
+            residual.invertMicYield( );
+
+        }
+        else{
+
+            residual.invertMicGradYield( ( v - std::begin( residual._pMult ) ) - 2 );
+
+        }
+
         answer[ v - std::begin( residual._pMult ) ] = false;
+
+        tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
+        residual.publicUpdateActiveConstraints( );
 
         BOOST_TEST( answer == *residual.publicGetActiveConstraints( ), CHECK_PER_ELEMENT );
         BOOST_TEST( residual._setActiveConstraints_calls == 1 );

@@ -1391,6 +1391,18 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( _stress.second = *( *getResidualClasses( ) )[ 0 ]->getStress( ) );
 
+            if ( getViscoplasticDampingSet( ) ){
+
+                auto previouslyConvergedStress = getPreviouslyConvergedStress( );
+
+                for ( auto v = std::begin( *previouslyConvergedStress ); v != std::end( *previouslyConvergedStress ); ++v ){
+
+                    _stress.second[ v - std::begin( *previouslyConvergedStress ) ] -= *getViscoplasticDamping( ) * ( *v );
+
+                }
+
+            }
+
             _stress.first = true;
 
             addIterationData( &_stress );
@@ -1421,6 +1433,67 @@ namespace tardigradeHydra{
         }
 
         return &_previousStress.second;
+
+    }
+
+    const floatVector* hydraBase::getPreviouslyConvergedStress( ){
+        /*!
+         * Get the previously converged stress value
+         */
+
+        if ( !_previouslyConvergedStress.first ){
+
+            setPreviouslyConvergedStress( *getPreviousStress( ) );
+
+        }
+
+        return &_previouslyConvergedStress.second;
+
+    }
+
+    void hydraBase::setViscoplasticDamping( const floatType &factor ){
+        /*!
+         * Use viscoplastic damping to reduce the current stress levels
+         *
+         * This should be used with care and likely only in the context of a
+         * relaxed solve where it will be removed as the solution is obtained.
+         *
+         * \param &factor: The fraction of the difference between the last converged
+         *     stress (which may be the previous stress) and the trial stress which
+         *     will be suppressed
+         */
+
+        _viscoplastic_damping_factor = factor;
+        _viscoplastic_damping_set    = true;
+
+    }
+
+    void hydraBase::clearViscoplasticDamping( ){
+        /*!
+         * Clear the viscoplastic damping
+         */
+
+        _viscoplastic_damping_factor = 0.;
+        _viscoplastic_damping_set    = false;
+    }
+
+    const bool hydraBase::getViscoplasticDampingSet( ){
+        /*!
+         * Get whether the viscoplastic damping has been set or not
+         */
+
+        return _viscoplastic_damping_set;
+
+    }
+
+    void hydraBase::resetProblem( ){
+        /*!
+         * Reset the problem to the initial state
+         */
+
+        decomposeStateVariableVector( );
+
+        initializeUnknownVector( );
 
     }
 
@@ -1611,7 +1684,7 @@ namespace tardigradeHydra{
          * Check the line-search convergence
          */
 
-        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < ( 1 - *getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
+        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < getToleranceScaleFactor( ) * ( 1 - *getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
 
             return true;
 
@@ -1754,10 +1827,9 @@ namespace tardigradeHydra{
 
             if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
                 addToFailureOutput( "    lambda, |R|: " );
-                addToFailureOutput( *getLambda( ) );
+                addToFailureOutput( *getLambda( ), false );
                 addToFailureOutput( ", " );
                 addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
-                addToFailureOutput( "\n" );
             }
 
             updateLambda( );
@@ -1768,11 +1840,22 @@ namespace tardigradeHydra{
 
         }
 
+        if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+            addToFailureOutput( "    lambda, |R|: " );
+            addToFailureOutput( *getLambda( ), false );
+            addToFailureOutput( ", " );
+            addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
+        }
+
         if ( !checkLSConvergence( ) ){
+
+            resetToleranceScaleFactor( );
 
             throw convergence_error( "Failure in line search:\n  scale factor: " + std::to_string( *getScaleFactor( ) ) + "\n" );
 
         }
+
+        resetToleranceScaleFactor( );
 
         incrementNumLS( );
 
@@ -1829,7 +1912,7 @@ namespace tardigradeHydra{
 
         }
 
-        return ( *get_residualNorm( ) ) < RHS;
+        return ( *get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
 
     }
 
@@ -1863,6 +1946,8 @@ namespace tardigradeHydra{
             incrementGradientIteration( );
 
         }
+
+        resetToleranceScaleFactor( );
 
         if ( l >= maxiter ){
 
@@ -1929,14 +2014,19 @@ namespace tardigradeHydra{
          */
 
         setAllowModifyGlobalResidual( true );
+
         setCurrentResidualIndexMeaningful( true );
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
             setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
             ( *residual_ptr )->successfulNLStep( );
 
         }
+
         setCurrentResidualIndexMeaningful( false );
+
         setAllowModifyGlobalResidual( false );
 
     }
@@ -1947,12 +2037,15 @@ namespace tardigradeHydra{
          */
 
         setCurrentResidualIndexMeaningful( true );
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
             setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
             ( *residual_ptr )->preNLSolve( );
 
         }
+
         setCurrentResidualIndexMeaningful( false );
 
     }
@@ -1963,13 +2056,189 @@ namespace tardigradeHydra{
          */
 
         setCurrentResidualIndexMeaningful( true );
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
             setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
 
-            ( *residual_ptr )->postNLSolve( );
+            try{
+
+                ( *residual_ptr )->postNLSolve( );
+
+            }
+            catch( std::exception &e ){
+
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions(e, message);
+                    addToFailureOutput( message );
+
+                }
+
+                throw;
+
+            }
 
         }
+
         setCurrentResidualIndexMeaningful( false );
+
+    }
+
+    void hydraBase::callResidualPreSubcycler( ){
+        /*!
+         * Signal to the residuals that we are entering the subcycler
+         */
+
+        setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+
+            try{
+
+                ( *residual_ptr )->preSubcycler( );
+
+            }
+            catch( std::exception &e ){
+
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions( e, message );
+                    addToFailureOutput( message );
+
+                }
+
+                throw;
+
+            }
+
+        }
+
+        setCurrentResidualIndexMeaningful( false );
+
+    }
+
+    void hydraBase::callResidualPostSubcyclerSuccess( ){
+        /*!
+         * Signal to the residuals that we have a successful subcycle increment
+         */
+
+        setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+
+            try{
+
+                ( *residual_ptr )->postSubcyclerSuccess( );
+
+            }
+            catch( std::exception &e ){
+
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions( e, message );
+                    addToFailureOutput( message );
+
+                }
+
+                throw;
+
+            }
+
+        }
+
+        setCurrentResidualIndexMeaningful( false );
+
+    }
+
+    void hydraBase::callResidualPostSubcyclerFailure( ){
+        /*!
+         * Signal to the residuals that we have a failed subcycle increment
+         */
+
+        setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+
+            try{
+
+                ( *residual_ptr )->postSubcyclerFailure( );
+
+            }
+            catch( std::exception &e ){
+
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions( e, message );
+                    addToFailureOutput( message );
+
+                }
+
+                throw;
+
+            }
+
+        }
+
+        setCurrentResidualIndexMeaningful( false );
+
+    }
+
+    bool hydraBase::callResidualRelaxedStepFailure( ){
+        /*!
+         * Signal to the residuals that we have a failed relaxed solve step and
+         * determine if a new relaxed step should be taken
+         */
+
+        bool attempt_relaxed_step = false;
+
+        setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+
+            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+
+            try{
+
+                auto val = ( *residual_ptr )->relaxedStepFailure( );
+
+                attempt_relaxed_step = attempt_relaxed_step || val;
+
+            }
+            catch( std::exception &e ){
+
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions( e, message );
+                    addToFailureOutput( message );
+
+                }
+
+                throw;
+
+            }
+
+        }
+
+        setCurrentResidualIndexMeaningful( false );
+
+        return attempt_relaxed_step;
 
     }
 
@@ -1987,6 +2256,8 @@ namespace tardigradeHydra{
 
         floatVector deltaX( getNumUnknowns( ), 0 );
 
+        callResidualPreNLSolve( );
+
         resetLSIteration( );
 
         resetGradientIteration( );
@@ -1995,8 +2266,6 @@ namespace tardigradeHydra{
             addToFailureOutput( "Initial Unknown:\n" );
             addToFailureOutput( *getUnknownVector( ) );
         }
-
-        callResidualPreNLSolve( );
 
         while( !checkConvergence( ) && checkIteration( ) ){
 
@@ -2052,18 +2321,20 @@ namespace tardigradeHydra{
             }
             else{
 
+                resetToleranceScaleFactor( );
+
                 incrementNumNewton( );
 
             }
+
+            // Call residual end of a successful nonlinear step functions
+            callResidualSuccessfulNLStep( );
 
             // Increment the iteration count
             incrementIteration( );
 
             // Reset the nonlinear step data
             resetNLStepData( );
-
-            // Call residual end of a successful nonlinear step functions
-            callResidualSuccessfulNLStep( );
 
             if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
                 addToFailureOutput( "  final residual: " );
@@ -2090,6 +2361,7 @@ namespace tardigradeHydra{
          */
 
         unsigned int relaxedIteration = 0;
+        setRelaxedIteration( relaxedIteration );
 
         // Initialize the residuals
         setCurrentResidualIndexMeaningful( true );
@@ -2110,27 +2382,45 @@ namespace tardigradeHydra{
                 addToFailureOutput( "\n\n" );
             }
             // Solve the non-linear problem
-            TARDIGRADE_ERROR_TOOLS_CATCH( solveNonLinearProblem( ) );
+            try{
 
-            // Check if the relaxation has converged
-            bool relaxedConverged = true;
-            setCurrentResidualIndexMeaningful( true );
-            for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
-                setCurrentResidualIndex( residual - getResidualClasses( )->begin( ) );
+                solveNonLinearProblem( );
 
-                if ( !( *residual )->checkRelaxedConvergence( ) ){
+                // Check if the relaxation has converged
+                bool relaxedConverged = true;
+                setCurrentResidualIndexMeaningful( true );
+                for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
+                    setCurrentResidualIndex( residual - getResidualClasses( )->begin( ) );
 
-                    relaxedConverged = false;
-                    break;
+                    if ( !( *residual )->checkRelaxedConvergence( ) ){
+
+                        relaxedConverged = false;
+                        break;
+
+                    }
+
+                }
+                setCurrentResidualIndexMeaningful( false );
+
+                if ( relaxedConverged ){
+
+                    return;
 
                 }
 
             }
-            setCurrentResidualIndexMeaningful( false );
+            catch( convergence_error &e ){
 
-            if ( relaxedConverged ){
+                if ( !callResidualRelaxedStepFailure( ) ){
 
-                return;
+                    throw;
+
+                }
+
+            }
+            catch( std::exception &e ){
+
+                throw;
 
             }
 
@@ -2142,6 +2432,7 @@ namespace tardigradeHydra{
             }
 
             relaxedIteration++;
+            setRelaxedIteration( relaxedIteration );
 
             // Initialize the residuals
             setCurrentResidualIndexMeaningful( true );
@@ -2274,8 +2565,9 @@ namespace tardigradeHydra{
 
             unsigned int num_good = 0;
 
-            // Set the unknown vector to the initial unknown. We're using setX because we call setScaleFactor right away which will update the unknown vector
-            setX( _initialX );
+            callResidualPreSubcycler( );
+
+            resetProblem( );
 
             while ( sp < 1.0 ){
 
@@ -2293,6 +2585,10 @@ namespace tardigradeHydra{
                     resetIterations( ); // Reset the non-linear iteration count
 
                     evaluateInternal( ); // Try to solve the non-linear problem
+
+                    setPreviouslyConvergedStress( *getStress( ) ); // Set the previously converged stress
+
+                    callResidualPostSubcyclerSuccess( ); // Let the residuals know the subcycle step was successful
 
                     sp += ds; // Update the pseudo-time
 
@@ -2315,10 +2611,18 @@ namespace tardigradeHydra{
                 }
                 catch( std::exception &e ){
 
+                    callResidualPostSubcyclerFailure( ); // Let the residuals know the subcycle step failed
+
                     // Reduce the time-step and try again
                     num_good = 0;
 
                     ds *= ( *getCutbackFactor( ) );
+
+                    if ( *getUseRelaxedSolve( ) ){
+
+                        _initialX = _prerelaxed_initialX;
+
+                    }
 
                     setX( _initialX ); // Reset X to the last good point
 
@@ -2359,9 +2663,14 @@ namespace tardigradeHydra{
 
             if ( *getUseRelaxedSolve( ) ){
 
+                if ( ( *getFailureVerbosityLevel( ) ) > 0 ){
+                    addToFailureOutput( "Failure in conventional solve. Starting relaxed solve.\n" );
+                }
+
                 try{
 
                     resetIterations( );
+                    _prerelaxed_initialX = _initialX;
                     updateUnknownVector( _initialX );
                     performRelaxedSolve( );
 

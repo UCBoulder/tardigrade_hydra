@@ -125,9 +125,31 @@ namespace tardigradeHydra{
 
                 virtual void postNLSolve( ) override;
 
+                virtual void setupRelaxedStep( const unsigned int &relaxedStep ) override;
+
             protected:
 
                 virtual void setActiveConstraints( );
+
+                virtual void setChangeInConstraints( const bool value ){
+                    /*!
+                     * Set whether there has been a change in the constraints
+                     *
+                     * \param value: The incoming value
+                     */
+
+                    _change_in_constraints = value;
+
+                }
+
+                virtual bool getChangeInConstraints( ){
+                    /*!
+                     * Get whether there has been a change in the constraints
+                     */
+
+                    return _change_in_constraints;
+
+                }
 
                 std::vector< bool > *getMutableActiveConstraints( ){
                     /*!
@@ -135,6 +157,15 @@ namespace tardigradeHydra{
                      */
 
                     return &_activeConstraints.second;
+
+                }
+
+                virtual floatType getConstraintChangeToleranceScaleFactor( ){
+                    /*!
+                     * Get the scale factor for the global tolerance if the constraints have changed
+                     */
+
+                    return 1.0;
 
                 }
 
@@ -176,6 +207,8 @@ namespace tardigradeHydra{
                 double _yieldTolerance;
 
                 double _plasticMultiplierTolerance;
+
+                bool   _change_in_constraints;
 
         };
 

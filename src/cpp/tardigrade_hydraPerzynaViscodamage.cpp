@@ -1,18 +1,18 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraPeryznaViscodamage.cpp
+  * \file tardigrade_hydraPerzynaViscodamage.cpp
   ******************************************************************************
-  * An implementation of peryznaViscodamage using the hydra framework. Used
+  * An implementation of perzynaViscodamage using the hydra framework. Used
   * as an example and as the basis for more complex models.
   ******************************************************************************
   */
 
-#include<tardigrade_hydraPeryznaViscodamage.h>
+#include<tardigrade_hydraPerzynaViscodamage.h>
 #include<tardigrade_constitutive_tools.h>
 
 namespace tardigradeHydra{
 
-    namespace peryznaViscodamage{
+    namespace perzynaViscodamage{
 
 
         void residual::setDamage( ){
@@ -371,7 +371,7 @@ namespace tardigradeHydra{
              * \param &isPrevious: Whether to compute the previous values or not
              */
 
-            tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRates( isPrevious );
+            tardigradeHydra::perzynaViscoplasticity::residual::setStateVariableEvolutionRates( isPrevious );
 
             const floatVector *stateVariableEvolutionRates;
 
@@ -415,7 +415,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_configs = *hydra->getNumConfigurations( );
 
-            tardigradeHydra::peryznaViscoplasticity::residual::setStateVariableEvolutionRateDerivatives( isPrevious );
+            tardigradeHydra::perzynaViscoplasticity::residual::setStateVariableEvolutionRateDerivatives( isPrevious );
 
             const floatVector *stateVariableEvolutionRates;
 
@@ -710,13 +710,42 @@ namespace tardigradeHydra{
              * variable which we account for here.
              */
 
-            tardigradeHydra::peryznaViscoplasticity::residual::decomposeParameters( parameters );
+            tardigradeHydra::perzynaViscoplasticity::residual::decomposeParameters( parameters );
 
             //Setting the contribution of damage to the calculation of the drag stress to zero
             set_dragStressParameters( { parameters[ 1 ], parameters[  2 ], 0. } );
 
             //Setting the contribution of damage to the hardening of the damage state variable to zero
             set_hardeningParameters(  { parameters[ 9 ], parameters[ 10 ], 0. } );
+
+        }
+
+        void residual::addParameterizationInfo( std::string &parameterization_info ){
+            /*!
+             * Add the parameterization info to the incoming string
+             * 
+             * \param &parameterization_info: The incoming string
+             */
+
+            std::stringstream ss;
+
+            parameterization_info += "class: tardigradeHydra::perzynaViscodamage::residual\n\n";
+            parameterization_info += "Getting information from parent class\n\n";
+            tardigradeHydra::perzynaViscoplasticity::residual::addParameterizationInfo( parameterization_info );
+            ss.precision(9);
+            ss << std::scientific;
+            ss << "\n\n";
+            ss << "Modifying the drag-stress and hardening parameters\n\n";
+            ss << "name,                              description,  units, current value\n";
+            ss << "  q0,                  the initial drag stress, stress, " << ( *get_dragStressParameters( ) )[ 0 ] << "\n";
+            ss << "  Ei,    the drag stress isv hardening modulus, stress, " << ( *get_dragStressParameters( ) )[ 1 ] << "\n";
+            ss << "  ED, the drag stress damage hardening modulus, stress, " << ( *get_dragStressParameters( ) )[ 2 ] << "\n";
+            ss << " hi0,               isv initial evolution rate,   none, " <<  ( *get_hardeningParameters( ) )[ 0 ] << "\n";
+            ss << " hi1,            isv linear isv evolution rate,   none, " <<  ( *get_hardeningParameters( ) )[ 1 ] << "\n"; 
+            ss << " hd1,         isv linear damage evolution rate,   none, " <<  ( *get_hardeningParameters( ) )[ 2 ] << "\n";
+
+            ss.unsetf(std::ios_base::floatfield);
+            parameterization_info.append(ss.str());
 
         }
 

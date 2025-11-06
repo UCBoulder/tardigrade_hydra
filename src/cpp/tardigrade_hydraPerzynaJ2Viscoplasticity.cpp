@@ -1,19 +1,19 @@
 /**
   ******************************************************************************
-  * \file tardigrade_hydraPeryznaJ2Viscoplasticity.cpp
+  * \file tardigrade_hydraPerzynaJ2Viscoplasticity.cpp
   ******************************************************************************
-  * An implementation of peryznaJ2Viscoplasticity using the hydra framework.
+  * An implementation of perzynaJ2Viscoplasticity using the hydra framework.
   * Used as an example and as the basis for more complex models.
   ******************************************************************************
   */
 
-#include<tardigrade_hydraPeryznaJ2Viscoplasticity.h>
+#include<tardigrade_hydraPerzynaJ2Viscoplasticity.h>
 
 #include<tardigrade_stress_tools.h>
 
 namespace tardigradeHydra{
 
-    namespace peryznaJ2Viscoplasticity{
+    namespace perzynaJ2Viscoplasticity{
 
         void residual::setSignTerm( ){
             /*!
@@ -351,10 +351,10 @@ namespace tardigradeHydra{
              * Decompose the incoming parameter vector
              * 
              * \param &parameters: The incoming parameter vector. We assume a
-             *     Peryzna viscoplastic driving stress with a Drucker-Prager
+             *     Perzyna viscoplastic driving stress with a Drucker-Prager
              *     yield and flow potential surface. The parameters are
              *     [ n, q0, C1, C2, Tref, Y, Ei, Ek, hi0, hi1, hk0, hk1 ] where n is the
-             *     Peryzna exponent, q0 is the initial drag stress,
+             *     Perzyna exponent, q0 is the initial drag stress,
              *     C1, C2, and Tref are the temperature effect
              *     parameters, Y is the yield stress for the yield equation,
              *     Ei is the isotroping hardening modulus, Ek is the kinematic hardening
@@ -367,7 +367,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( parameters.size( ) == expectedSize, "The parameters vector is not the correct length.\n  parameters: " + std::to_string( parameters.size( ) ) + "\n  required:   " + std::to_string( expectedSize ) + "\n" );
 
-            set_peryznaParameters( { parameters[ 0 ] } );
+            set_perzynaParameters( { parameters[ 0 ] } );
 
             set_dragStressParameters( { parameters[ 1 ] } );
 
@@ -378,6 +378,37 @@ namespace tardigradeHydra{
             set_flowParameters( { 0., 0. } );
 
             set_hardeningParameters( { parameters[ 8 ], parameters[ 9 ], parameters[ 10 ], parameters[ 11 ] } );
+
+        }
+
+        void residual::addParameterizationInfo( std::string &parameterization_info ){
+            /*!
+             * Add the information about the parameterization to the incoming string
+             * 
+             * \param &parameterization_info: The incoming parameterization string
+             */
+
+            std::stringstream ss;
+            ss.precision(9);
+            ss << std::scientific;
+
+            ss << "class: tardigradeHydra::perzynaJ2Viscoplasticity::residual\n\n";
+            ss << "name,                          description,       units, current value\n";
+            ss << "   n,         the Perzyna exponential term,        none, " <<    ( *get_perzynaParameters( ) )[ 0 ] << "\n";
+            ss << "  q0,                      the drag stress,      stress, " << ( *get_dragStressParameters( ) )[ 0 ] << "\n";
+            ss << "  C1,                 the WLF C1 parameter,        none, " <<    ( *get_thermalParameters( ) )[ 0 ] << "\n";
+            ss << "  C2,                 the WLF C2 parameter, temperature, " <<    ( *get_thermalParameters( ) )[ 1 ] << "\n";
+            ss << "Tref,        the WLF reference temperature, temperature, " <<    ( *get_thermalParameters( ) )[ 2 ] << "\n";
+            ss << "   Y,                 initial yield stress,      stress, " <<      ( *get_yieldParameters( ) )[ 0 ] << "\n";
+            ss << "  Ei,          isotropic hardening modulus,      stress, " <<      ( *get_yieldParameters( ) )[ 1 ] << "\n";
+            ss << "  Ek,          kinematic hardening modulus,      stress, " <<      ( *get_yieldParameters( ) )[ 2 ] << "\n";
+            ss << " hi0, isotropic isv initial evolution rate,        none, " <<  ( *get_hardeningParameters( ) )[ 0 ] << "\n";
+            ss << " hi1,  isotropic isv linear evolution rate,        none, " <<  ( *get_hardeningParameters( ) )[ 1 ] << "\n";
+            ss << " hk0, kinematic isv initial evolution rate,        none, " <<  ( *get_hardeningParameters( ) )[ 2 ] << "\n";
+            ss << " hk1,  kinematic isv linear evolution rate,        none, " <<  ( *get_hardeningParameters( ) )[ 3 ] << "\n";
+
+            ss.unsetf(std::ios_base::floatfield);
+            parameterization_info.append(ss.str());
 
         }
 
