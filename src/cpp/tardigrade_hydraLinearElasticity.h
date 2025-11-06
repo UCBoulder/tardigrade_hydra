@@ -83,10 +83,10 @@ namespace tardigradeHydra{
     
                 }
                 //! Get a pointer to the value of the lambda Lame parameter
-                const floatType* getLambda( ){ return &_lambda; }
+                const floatType getLambda( ){ return _lambda; }
 
                 //! Get a pointer to the value of the mu Lame parameter
-                const floatType* getMu( ){ return &_mu; }
+                const floatType getMu( ){ return _mu; }
         
                 /*!
                  * Set the value of the lambda Lame parameter

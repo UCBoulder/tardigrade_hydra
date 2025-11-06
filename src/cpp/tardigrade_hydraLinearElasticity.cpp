@@ -250,11 +250,11 @@ namespace tardigradeHydra{
 
             }
 
-            *PK2Stress.value = 2 * ( *getMu( ) ) * ( *Ee );
+            *PK2Stress.value = 2 * getMu( ) * ( *Ee );
 
             floatType trace_Ee = tardigradeVectorTools::trace( *Ee );            
 
-            for ( unsigned int i = 0; i < dim; i++ ){ ( *PK2Stress.value )[ dim * i + i ] += ( *getLambda( ) ) * trace_Ee; }
+            for ( unsigned int i = 0; i < dim; i++ ){ ( *PK2Stress.value )[ dim * i + i ] += getLambda( ) * trace_Ee; }
 
         }
     
@@ -293,8 +293,8 @@ namespace tardigradeHydra{
             dPK2StressdEe.zero( fot_dim );
             for ( unsigned int i = 0; i < dim; i++ ){
                 for ( unsigned int j = 0; j < dim; j++ ){
-                    ( *dPK2StressdEe.value )[ dim * dim * ( dim * i + j ) + ( dim * i + j ) ] += 2 * ( *getMu( ) );
-                    ( *dPK2StressdEe.value )[ dim * dim * dim * i + dim * dim * i + dim * j + j ] += ( *getLambda( ) );
+                    ( *dPK2StressdEe.value )[ dim * dim * ( dim * i + j ) + ( dim * i + j ) ] += 2 * getMu( );
+                    ( *dPK2StressdEe.value )[ dim * dim * dim * i + dim * dim * i + dim * j + j ] += getLambda( );
                 }
             }
 
