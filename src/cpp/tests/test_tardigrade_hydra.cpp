@@ -216,13 +216,13 @@ namespace tardigradeHydra{
 
                 static void checkRelativeTolerance( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._tolr == hydra.getRelativeTolerance( ) );
+                    BOOST_CHECK( hydra._tolr == hydra.getRelativeTolerance( ) );
 
                 }
 
                 static void checkAbsoluteTolerance( hydraBase &hydra ){
 
-                    BOOST_CHECK( &hydra._tola == hydra.getAbsoluteTolerance( ) );
+                    BOOST_CHECK( hydra._tola == hydra.getAbsoluteTolerance( ) );
 
                 }
 

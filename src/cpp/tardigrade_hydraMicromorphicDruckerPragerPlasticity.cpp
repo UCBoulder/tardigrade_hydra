@@ -9810,7 +9810,7 @@ namespace tardigradeHydra{
 
             floatType a = rc * c0 - c;
 
-            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( c ) + ( *hydra->getAbsoluteTolerance( ) );
+            floatType tol = hydra->getRelativeTolerance( ) * std::fabs( c ) + hydra->getAbsoluteTolerance( );
 
             floatType b;
             if ( a < tol ){
@@ -9853,7 +9853,7 @@ namespace tardigradeHydra{
 
             floatType a = rc * c0 - c;
 
-            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( c ) + ( *hydra->getAbsoluteTolerance( ) );
+            floatType tol = hydra->getRelativeTolerance( ) * std::fabs( c ) + hydra->getAbsoluteTolerance( );
 
             floatType b;
             if ( a < tol ){
@@ -9894,17 +9894,17 @@ namespace tardigradeHydra{
 
             computeBaseCohesion( baseMacroCohesion, baseMicroCohesion, baseMicroGradientCohesion ); 
 
-            floatType tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMacroCohesion ) + ( *hydra->getAbsoluteTolerance( ) );
+            floatType tol = hydra->getRelativeTolerance( ) * std::fabs( baseMacroCohesion ) + hydra->getAbsoluteTolerance( );
 
             isConverged = ( isConverged ) && ( std::fabs( baseMacroCohesion - *get_macroCohesion( ) ) <= tol );
 
-            tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMicroCohesion ) + ( *hydra->getAbsoluteTolerance( ) );
+            tol = hydra->getRelativeTolerance( ) * std::fabs( baseMicroCohesion ) + hydra->getAbsoluteTolerance( );
 
             isConverged = ( isConverged ) && ( std::fabs( baseMicroCohesion - *get_microCohesion( ) ) <= tol );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
-                tol = ( *hydra->getRelativeTolerance( ) ) * std::fabs( baseMicroGradientCohesion[ i ] ) + ( *hydra->getAbsoluteTolerance( ) );
+                tol = hydra->getRelativeTolerance( ) * std::fabs( baseMicroGradientCohesion[ i ] ) + hydra->getAbsoluteTolerance( );
 
                 isConverged = ( isConverged ) && ( std::fabs( baseMicroGradientCohesion[ i ] - ( *get_microGradientCohesion( ) )[ i ] ) <= tol );
 

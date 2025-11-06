@@ -1403,10 +1403,10 @@ namespace tardigradeHydra{
             constexpr unsigned int getFOTDimension( ){ return _dimension * _dimension * _dimension * _dimension; }
 
             //! Get a reference to the relative tolerance
-            const floatType* getRelativeTolerance( ){ return &_tolr; }
+            const floatType getRelativeTolerance( ){ return _tolr; }
 
             //! Get a reference to the absolute tolerance
-            const floatType* getAbsoluteTolerance( ){ return &_tola; }
+            const floatType getAbsoluteTolerance( ){ return _tola; }
 
             //! Get a reference to the line-search alpha
             const floatType* getLSAlpha( ){ return &_lsAlpha; }

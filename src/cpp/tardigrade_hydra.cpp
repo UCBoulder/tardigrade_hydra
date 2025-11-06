@@ -1592,7 +1592,7 @@ namespace tardigradeHydra{
 
         *tolerance.value = tardigradeVectorTools::abs( *getResidual( ) ) + tardigradeVectorTools::abs( *getUnknownVector( ) );
 
-        *tolerance.value = *getRelativeTolerance( ) * ( *tolerance.value ) + *getAbsoluteTolerance( );
+        *tolerance.value = getRelativeTolerance( ) * ( *tolerance.value ) + getAbsoluteTolerance( );
 
     }
 
@@ -3146,7 +3146,7 @@ namespace tardigradeHydra{
 
         assembleKKTMatrix( K, active_constraints );
 
-        floatType tol = ( *getRelativeTolerance( ) ) * ( tardigradeVectorTools::l2norm( RHS ) ) + ( *getAbsoluteTolerance( ) );
+        floatType tol = getRelativeTolerance( ) * ( tardigradeVectorTools::l2norm( RHS ) ) + getAbsoluteTolerance( );
 
         unsigned int k = 0;
 
