@@ -1012,7 +1012,7 @@ namespace tardigradeHydra{
             virtual void setupRelaxedStep( const unsigned int &relaxedStep );
 
             //! Get the flag for whether to use the projection or not
-            const bool *getUseProjection( ){ return &_useProjection; }
+            const bool getUseProjection( ){ return _useProjection; }
 
             // Getter functions
 
@@ -1692,7 +1692,7 @@ namespace tardigradeHydra{
             const floatVector *getFlatdXdAdditionalDOF( );
 
             //! Return the flag which indicates whether hydra should initialize the unknown vector
-            const bool *getInitializeUnknownVector( ){ return &_initializeUnknownVector; }
+            const bool getInitializeUnknownVector( ){ return _initializeUnknownVector; }
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
@@ -1706,7 +1706,7 @@ namespace tardigradeHydra{
 
             unsigned int getNumGrad( ){ /*! Get the number of gradient descent steps performed */  return _NUM_GRAD; }
 
-            const bool *getUseSQPSolver( ){ /*! Return a flag for whether to use the SQP solver */ return &_useSQPSolver; }
+            const bool getUseSQPSolver( ){ /*! Return a flag for whether to use the SQP solver */ return _useSQPSolver; }
 
             const void setMaxRelaxedIterations( const unsigned int &value ){
                 /*!
@@ -1719,12 +1719,12 @@ namespace tardigradeHydra{
 
             }
 
-            const unsigned int *getMaxRelaxedIterations( ){
+            const unsigned int getMaxRelaxedIterations( ){
                 /*!
                  * Get the maximum number of relaxed iterations
                  */
 
-                return &_maxRelaxedIterations;
+                return _maxRelaxedIterations;
 
             }
 

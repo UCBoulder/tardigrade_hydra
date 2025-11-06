@@ -1719,7 +1719,7 @@ namespace tardigradeHydra{
         setCurrentResidualIndexMeaningful( true );
         for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
             setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
-            if ( *( *residual_ptr )->getUseProjection( ) ){
+            if ( ( *residual_ptr )->getUseProjection( ) ){
                 ( *residual_ptr )->projectSuggestedX( trialX, Xp );
             }
         }
@@ -2282,7 +2282,7 @@ namespace tardigradeHydra{
             }
             setBaseQuantities( );
 
-            if ( *getUseSQPSolver( ) ){
+            if ( getUseSQPSolver( ) ){
 
                 std::fill( deltaX.begin( ), deltaX.end( ), 0 );
 
@@ -2374,7 +2374,7 @@ namespace tardigradeHydra{
         }
         setCurrentResidualIndexMeaningful( false );
 
-        while ( relaxedIteration < *getMaxRelaxedIterations( ) ){
+        while ( relaxedIteration < getMaxRelaxedIterations( ) ){
 
             if ( getFailureVerbosityLevel( ) > 0 ){
                 addToFailureOutput( "\n\n###  relaxed iteration: " );
@@ -2425,7 +2425,7 @@ namespace tardigradeHydra{
             }
 
             // Use the current unknown vector as the initial estimate
-            if ( *getInitializeUnknownVector( ) ){
+            if ( getInitializeUnknownVector( ) ){
 
                 setInitializeUnknownVector( false );
 
@@ -2451,7 +2451,7 @@ namespace tardigradeHydra{
 
         }
 
-        if ( relaxedIteration >= *getMaxRelaxedIterations( ) ){
+        if ( relaxedIteration >= getMaxRelaxedIterations( ) ){
 
             throw convergence_error( "Failure in relaxed solve:\n  scale_factor: " + std::to_string( getScaleFactor( ) ) );
 
