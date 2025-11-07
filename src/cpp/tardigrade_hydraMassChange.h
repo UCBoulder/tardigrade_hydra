@@ -94,10 +94,10 @@ namespace tardigradeHydra{
                 }
 
                 //! Get the index of the mass-change configuration
-                const unsigned int *getMassChangeConfigurationIndex( ){ return &_massChangeConfigurationIndex; }
+                const unsigned int getMassChangeConfigurationIndex( ){ return _massChangeConfigurationIndex; }
 
                 //! Get the integration parameter 0 for explicit, 1 for implicit
-                const floatType *getIntegrationParameter( ){ return &_integrationParameter; }
+                const floatType getIntegrationParameter( ){ return _integrationParameter; }
 
                 virtual void suggestInitialIterateValues( std::vector< unsigned int >   &indices,
                                                           std::vector< floatType > &values ) override;
