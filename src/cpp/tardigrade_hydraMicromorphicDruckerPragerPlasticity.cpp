@@ -3218,9 +3218,9 @@ namespace tardigradeHydra{
 
                 stress = hydra->getPreviousStress( );
 
-                Fp     = hydra->getPreviousFollowingConfiguration(      ( *getPlasticConfigurationIndex( ) ) - 1 );
+                Fp     = hydra->getPreviousFollowingConfiguration(      getPlasticConfigurationIndex( ) - 1 );
 
-                chip   = hydra->getPreviousFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                chip   = hydra->getPreviousFollowingMicroConfiguration( getPlasticConfigurationIndex( ) - 1 );
 
                 macroDrivingStress          = get_setDataStorage_previousMacroDrivingStress( );
 
@@ -3233,9 +3233,9 @@ namespace tardigradeHydra{
 
                 stress = hydra->getStress( );
 
-                Fp     = hydra->getFollowingConfiguration(      ( *getPlasticConfigurationIndex( ) ) - 1 );
+                Fp     = hydra->getFollowingConfiguration(      getPlasticConfigurationIndex( ) - 1 );
 
-                chip   = hydra->getFollowingMicroConfiguration( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                chip   = hydra->getFollowingMicroConfiguration( getPlasticConfigurationIndex( ) - 1 );
 
                 macroDrivingStress          = get_setDataStorage_macroDrivingStress( );
 
@@ -3562,17 +3562,17 @@ namespace tardigradeHydra{
 
                 dF1dFn        = hydra->get_previousdF1dFn( );
 
-                dFpdSubFs     = hydra->getPreviousFollowingConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                dFpdSubFs     = hydra->getPreviousFollowingConfigurationJacobian( getPlasticConfigurationIndex( ) - 1 );
 
                 dChi1dChi     = hydra->get_previousdChi1dChi( );
 
                 dChi1dChin    = hydra->get_previousdChi1dChin( );
 
-                dChipdSubChis = hydra->getPreviousFollowingMicroConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                dChipdSubChis = hydra->getPreviousFollowingMicroConfigurationJacobian( getPlasticConfigurationIndex( ) - 1 );
 
-                Fp            = hydra->getPreviousFollowingConfiguration(         ( *getPlasticConfigurationIndex( ) ) - 1 );
+                Fp            = hydra->getPreviousFollowingConfiguration(         getPlasticConfigurationIndex( ) - 1 );
 
-                chip          = hydra->getPreviousFollowingMicroConfiguration(    ( *getPlasticConfigurationIndex( ) ) - 1 );
+                chip          = hydra->getPreviousFollowingMicroConfiguration(    getPlasticConfigurationIndex( ) - 1 );
 
                 macroDrivingStress          = get_setDataStorage_previousMacroDrivingStress( );
 
@@ -3611,17 +3611,17 @@ namespace tardigradeHydra{
 
                 dF1dFn        = hydra->get_dF1dFn( );
 
-                dFpdSubFs     = hydra->getFollowingConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                dFpdSubFs     = hydra->getFollowingConfigurationJacobian( getPlasticConfigurationIndex( ) - 1 );
 
                 dChi1dChi     = hydra->get_dChi1dChi( );
 
                 dChi1dChin    = hydra->get_dChi1dChin( );
 
-                dChipdSubChis = hydra->getFollowingMicroConfigurationJacobian( ( *getPlasticConfigurationIndex( ) ) - 1 );
+                dChipdSubChis = hydra->getFollowingMicroConfigurationJacobian( getPlasticConfigurationIndex( ) - 1 );
 
-                Fp            = hydra->getFollowingConfiguration(         ( *getPlasticConfigurationIndex( ) ) - 1 );
+                Fp            = hydra->getFollowingConfiguration(         getPlasticConfigurationIndex( ) - 1 );
 
-                chip          = hydra->getFollowingMicroConfiguration(    ( *getPlasticConfigurationIndex( ) ) - 1 );
+                chip          = hydra->getFollowingMicroConfiguration(    getPlasticConfigurationIndex( ) - 1 );
 
                 macroDrivingStress          = get_setDataStorage_macroDrivingStress( );
 
@@ -3831,7 +3831,7 @@ namespace tardigradeHydra{
 
             }
 
-            setBaseMacroSmoothingRatio( *getMacroSmoothingRatio( ) );
+            setBaseMacroSmoothingRatio( getMacroSmoothingRatio( ) );
             setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
             setMacroA(  ( *get_macroHardeningParameters( ) )[ 1 ] );
 
@@ -3850,7 +3850,7 @@ namespace tardigradeHydra{
 
             }
 
-            setBaseMicroSmoothingRatio( *getMicroSmoothingRatio( ) );
+            setBaseMicroSmoothingRatio( getMicroSmoothingRatio( ) );
             setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
             setMicroA(  ( *get_microHardeningParameters( ) )[ 1 ] );
 
@@ -3869,7 +3869,7 @@ namespace tardigradeHydra{
 
             }
 
-            setBaseMicroGradientSmoothingRatio( *getMicroGradientSmoothingRatio( ) );
+            setBaseMicroGradientSmoothingRatio( getMicroGradientSmoothingRatio( ) );
             setMicroGradientC0( floatVector( hydra->getDimension( ), ( *get_microGradientHardeningParameters( ) )[ 0 ] ) );
             setMicroGradientA(  floatVector( hydra->getDimension( ), ( *get_microGradientHardeningParameters( ) )[ 1 ] ) );
         
@@ -3887,12 +3887,12 @@ namespace tardigradeHydra{
         
         }
 
-        const unsigned int* residual::getPlasticConfigurationIndex( ){
+        const unsigned int residual::getPlasticConfigurationIndex( ){
             /*!
              * Get plastic configuration index
              */
 
-            return &_plasticConfigurationIndex;
+            return _plasticConfigurationIndex;
 
         }
 
@@ -3905,12 +3905,12 @@ namespace tardigradeHydra{
 
         }
 
-        const floatType* residual::getIntegrationParameter( ){
+        const floatType residual::getIntegrationParameter( ){
             /*!
              * Get the integration parameter
              */
 
-            return &_integrationParameter;
+            return _integrationParameter;
 
         }
 
@@ -3994,9 +3994,9 @@ namespace tardigradeHydra{
 
             }
 
-            plasticMultipliers.zero( *getNumPlasticMultipliers( ) );
+            plasticMultipliers.zero( getNumPlasticMultipliers( ) );
 
-            for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ); ind++ ){
+            for ( auto ind = getStateVariableIndices( )->begin( ); ind != getStateVariableIndices( )->begin( ) + getNumPlasticMultipliers( ); ind++ ){
 
                 ( *plasticMultipliers.value )[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) ] = ( *nonlinearISVs )[ *ind ];
 
@@ -4048,11 +4048,11 @@ namespace tardigradeHydra{
 
             }
 
-            plasticStrainLikeISVs.zero( *getNumStrainLikePlasticStateVariables( ) );
+            plasticStrainLikeISVs.zero( getNumStrainLikePlasticStateVariables( ) );
 
-            for ( auto ind = getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ); ind != getStateVariableIndices( )->begin( ) + *getNumPlasticMultipliers( ) + *getNumStrainLikePlasticStateVariables( ); ind++ ){
+            for ( auto ind = getStateVariableIndices( )->begin( ) + getNumPlasticMultipliers( ); ind != getStateVariableIndices( )->begin( ) + getNumPlasticMultipliers( ) + getNumStrainLikePlasticStateVariables( ); ind++ ){
 
-                ( *plasticStrainLikeISVs.value )[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) - *getNumPlasticMultipliers( ) ] = ( *nonlinearISVs )[ *ind ];
+                ( *plasticStrainLikeISVs.value )[ ( unsigned int )( ind - getStateVariableIndices( )->begin( ) ) - getNumPlasticMultipliers( ) ] = ( *nonlinearISVs )[ *ind ];
 
             }
 
@@ -4947,16 +4947,16 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( get_microGradientHardeningParameters( )->size( ) == 2, "The micro hardening parameters must have a length of 2 rather than " + std::to_string( get_microGradientHardeningParameters( )->size( ) ) );
 
-            *macroCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], getMacroA( ), getMacroC0( ), *getMacroSmoothingRatio( ), *getMinMacroCohesion( ) );
+            *macroCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], getMacroA( ), getMacroC0( ), getMacroSmoothingRatio( ), getMinMacroCohesion( ) );
 
-            *microCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], getMicroA( ), getMicroC0( ), *getMicroSmoothingRatio( ), *getMinMicroCohesion( ) );
+            *microCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], getMicroA( ), getMicroC0( ), getMicroSmoothingRatio( ), getMinMicroCohesion( ) );
                 
             microGradientCohesion.zero( dim );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
                 ( *microGradientCohesion.value )[ i ] = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ i + 2 ], getMicroGradientA( )[ i ],
-                                                                              getMicroGradientC0( )[ i ], ( *getMicroGradientSmoothingRatio( ) )[ i ], *getMinMicroGradientCohesion( ) );
+                                                                              getMicroGradientC0( )[ i ], getMicroGradientSmoothingRatio( )[ i ], getMinMicroGradientCohesion( ) );
 
             }
 
@@ -5092,26 +5092,26 @@ namespace tardigradeHydra{
 
             dMicroGradientCohesiondISVs.zero( ( get_plasticStrainLikeISVs( )->size( ) - 2 ) * num_pisvs );
 
-            *macroCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], getMacroA( ), getMacroC0( ), *getMacroSmoothingRatio( ), *getMinMacroCohesion( ) );
+            *macroCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 0 ], getMacroA( ), getMacroC0( ), getMacroSmoothingRatio( ), getMinMacroCohesion( ) );
 
             ( *dMacroCohesiondISVs.value )[ num_pms + 0 ] = smoothLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ 0 ], getMacroA( ), getMacroC0( ),
-                                                                                            *getMacroSmoothingRatio( ), *getMinMacroCohesion( ) );
+                                                                                            getMacroSmoothingRatio( ), getMinMacroCohesion( ) );
 
-            *microCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], getMicroA( ), getMicroC0( ), *getMicroSmoothingRatio( ), *getMinMicroCohesion( ) );
+            *microCohesion.value = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ 1 ], getMicroA( ), getMicroC0( ), getMicroSmoothingRatio( ), getMinMicroCohesion( ) );
 
             ( *dMicroCohesiondISVs.value )[ num_pms + 1 ] = smoothLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ 1 ], getMicroA( ), getMicroC0( ),
-                                                                                            *getMicroSmoothingRatio( ), *getMinMicroCohesion( ) );
+                                                                                            getMicroSmoothingRatio( ), getMinMicroCohesion( ) );
 
             microGradientCohesion.zero( dim );
 
             for ( unsigned int i = 2; i < num_psisvs; i++ ){
 
                 ( *microGradientCohesion.value )[ i - 2 ] = smoothLinearCohesion( ( *plasticStrainLikeISVs )[ i ], getMicroGradientA( )[ i - 2 ], getMicroGradientC0( )[ i - 2 ],
-                                                                                  ( *getMicroGradientSmoothingRatio( ) )[ i - 2 ], *getMinMicroGradientCohesion( ) );
+                                                                                  getMicroGradientSmoothingRatio( )[ i - 2 ], getMinMicroGradientCohesion( ) );
 
                 ( *dMicroGradientCohesiondISVs.value )[ num_pisvs * ( i - 2 ) + get_plasticMultipliers( )->size( ) + i ]
                     = smoothLinearCohesionDerivative( ( *plasticStrainLikeISVs )[ i ], getMicroGradientA( )[ i - 2 ], getMicroGradientC0( )[ i - 2 ],
-                                                      ( *getMicroGradientSmoothingRatio( ) )[ i - 2 ], *getMinMicroGradientCohesion( ) );
+                                                      getMicroGradientSmoothingRatio( )[ i - 2 ], getMinMicroGradientCohesion( ) );
 
             }
 
@@ -5311,7 +5311,7 @@ namespace tardigradeHydra{
             floatVector dISVs;
             auto updatedISVs = get_setDataStorage_updatedPlasticStrainLikeISVs( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolution( hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, 1 - ( *getIntegrationParameter( ) ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolution( hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, 1 - getIntegrationParameter( ) ) );
 
         }
 
@@ -5363,7 +5363,7 @@ namespace tardigradeHydra{
 
                 auto dISVsdStateVariables = get_setDataStorage_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables( );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, dISVsdPreviousEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, dISVsdPreviousEvolutionRates, 1 - getIntegrationParameter( ) ) );
 
                 Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_dISVsdPreviousEvolutionRates( dISVsdPreviousEvolutionRates.data( ), num_isvs, num_isvs );
                 Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > map_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( get_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( )->data( ), num_isvs, num_psvs );
@@ -5375,14 +5375,14 @@ namespace tardigradeHydra{
 
                 for ( unsigned int i = 0; i < num_isvs; i++ ){
 
-                    ( *dISVsdStateVariables.value )[ num_psvs * i  + i + ( *getNumPlasticMultipliers( ) ) ] += 1;
+                    ( *dISVsdStateVariables.value )[ num_psvs * i  + i + getNumPlasticMultipliers( ) ] += 1;
 
                 }
 
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, 1 - ( *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, 1 - getIntegrationParameter( ) ) );
 
             }
 
@@ -6197,12 +6197,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+                set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( getPlasticConfigurationIndex( ) ) );
 
             }
             else{
 
-                set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+                set_precedingDeformationGradient( hydra->getPrecedingConfiguration( getPlasticConfigurationIndex( ) ) );
 
             }
 
@@ -6267,9 +6267,9 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+                set_previousPrecedingDeformationGradient( hydra->getPreviousPrecedingConfiguration( getPlasticConfigurationIndex( ) ) );
 
-                dPrecedingFdSubFs = hydra->getPreviousPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dPrecedingFdSubFs = hydra->getPreviousPrecedingConfigurationJacobian( getPlasticConfigurationIndex( ) );
 
                 dF1dF  = hydra->get_previousdF1dF( );
 
@@ -6282,9 +6282,9 @@ namespace tardigradeHydra{
             }
             else{
 
-                set_precedingDeformationGradient( hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+                set_precedingDeformationGradient( hydra->getPrecedingConfiguration( getPlasticConfigurationIndex( ) ) );
 
-                dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dPrecedingFdSubFs = hydra->getPrecedingConfigurationJacobian( getPlasticConfigurationIndex( ) );
 
                 dF1dF  = hydra->get_dF1dF( );
 
@@ -6357,12 +6357,12 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousPrecedingMicroDeformation( hydra->getPreviousPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
+                set_previousPrecedingMicroDeformation( hydra->getPreviousPrecedingMicroConfiguration( getPlasticConfigurationIndex( ) ) );
 
             }
             else{
 
-                set_precedingMicroDeformation( hydra->getPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
+                set_precedingMicroDeformation( hydra->getPrecedingMicroConfiguration( getPlasticConfigurationIndex( ) ) );
 
             }
 
@@ -6427,9 +6427,9 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                set_previousPrecedingMicroDeformation( hydra->getPreviousPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
+                set_previousPrecedingMicroDeformation( hydra->getPreviousPrecedingMicroConfiguration( getPlasticConfigurationIndex( ) ) );
 
-                dPrecedingChidSubChis = hydra->getPreviousPrecedingMicroConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dPrecedingChidSubChis = hydra->getPreviousPrecedingMicroConfigurationJacobian( getPlasticConfigurationIndex( ) );
 
                 dChi1dChi  = hydra->get_previousdChi1dChi( );
 
@@ -6442,9 +6442,9 @@ namespace tardigradeHydra{
             }
             else{
 
-                set_precedingMicroDeformation( hydra->getPrecedingMicroConfiguration( *getPlasticConfigurationIndex( ) ) );
+                set_precedingMicroDeformation( hydra->getPrecedingMicroConfiguration( getPlasticConfigurationIndex( ) ) );
 
-                dPrecedingChidSubChis = hydra->getPrecedingMicroConfigurationJacobian( *getPlasticConfigurationIndex( ) );
+                dPrecedingChidSubChis = hydra->getPrecedingMicroConfigurationJacobian( getPlasticConfigurationIndex( ) );
 
                 dChi1dChi  = hydra->get_dChi1dChi( );
 
@@ -7876,11 +7876,11 @@ namespace tardigradeHydra{
              * Set all of the plastic deformations
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int tot_dim = hydra->getTOTDimension( );
+            auto tot_dim = hydra->getTOTDimension( );
 
-            const unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+            auto plasticConfigurationIndex = getPlasticConfigurationIndex( );
 
             auto updatedPlasticDeformationGradient = get_setDataStorage_updatedPlasticDeformationGradient( );
 
@@ -7911,9 +7911,9 @@ namespace tardigradeHydra{
                                           *updatedPlasticDeformationGradient.value,
                                           *updatedPlasticMicroDeformation.value,
                                           *updatedPlasticGradientMicroDeformation.value,
-                                          *getIntegrationParameter( ),
-                                          *getIntegrationParameter( ),
-                                          *getIntegrationParameter( ) );
+                                          getIntegrationParameter( ),
+                                          getIntegrationParameter( ),
+                                          getIntegrationParameter( ) );
             )
 
         }
@@ -8313,7 +8313,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
-            const unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+            auto plasticConfigurationIndex = getPlasticConfigurationIndex( );
 
             auto updatedPlasticDeformationGradient = get_setDataStorage_updatedPlasticDeformationGradient( );
 
@@ -8382,9 +8382,9 @@ namespace tardigradeHydra{
                                               dPlasticGradientMicroDeformationdPreviousPlasticMacroL,
                                               dPlasticGradientMicroDeformationdPreviousPlasticMicroL,
                                               dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL,
-                                              *getIntegrationParameter( ),
-                                              *getIntegrationParameter( ),
-                                              *getIntegrationParameter( ) );
+                                              getIntegrationParameter( ),
+                                              getIntegrationParameter( ),
+                                              getIntegrationParameter( ) );
                 )
 
                 auto map_dPlasticFdPreviousPlasticMacroL                                  = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dPlasticFdPreviousPlasticMacroL.data( ) );
@@ -8485,7 +8485,7 @@ namespace tardigradeHydra{
 
                 map_dUpdatedPlasticFdPreviousFn = ( map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdFn ).eval( );
 
-                unsigned int offset = ( ( *getPlasticConfigurationIndex( ) ) - 1 ) * sot_dim;
+                unsigned int offset = ( getPlasticConfigurationIndex( ) - 1 ) * sot_dim;
 
                 for ( unsigned int i = 0; i < sot_dim; i++ ){
 
@@ -8509,7 +8509,7 @@ namespace tardigradeHydra{
 
                 map_dUpdatedPlasticMicroDeformationdPreviousChin = ( map_dPlasticMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdChin ).eval( );
 
-                offset = ( ( *getPlasticConfigurationIndex( ) ) - 1 ) * sot_dim;
+                offset = ( getPlasticConfigurationIndex( ) - 1 ) * sot_dim;
 
                 for ( unsigned int i = 0; i < sot_dim; i++ ){
 
@@ -8545,7 +8545,7 @@ namespace tardigradeHydra{
                 map_dUpdatedPlasticGradientMicroDeformationdPreviousChin  = ( map_dPlasticGradientMicroDeformationdPreviousPlasticMicroL * map_previousdPlasticMicroVelocityGradientdChin ).eval( );
                 map_dUpdatedPlasticGradientMicroDeformationdPreviousChin += ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdChin ).eval( );
 
-                offset = ( ( *getPlasticConfigurationIndex( ) ) - 1 ) * sot_dim;
+                offset = ( getPlasticConfigurationIndex( ) - 1 ) * sot_dim;
 
                 for ( unsigned int i = 0; i < tot_dim; i++ ){
 
@@ -8562,7 +8562,7 @@ namespace tardigradeHydra{
 
                 map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin = ( map_dPlasticGradientMicroDeformationdPreviousPlasticGradientMicroL * map_previousdPlasticGradientMicroVelocityGradientdGradChin ).eval( );
 
-                offset = ( ( *getPlasticConfigurationIndex( ) ) - 1 ) * tot_dim;
+                offset = ( getPlasticConfigurationIndex( ) - 1 ) * tot_dim;
 
                 for ( unsigned int i = 0; i < tot_dim; i++ ){
 
@@ -8599,9 +8599,9 @@ namespace tardigradeHydra{
                                               dPlasticGradientMicroDeformationdPlasticMacroL,
                                               dPlasticGradientMicroDeformationdPlasticMicroL,
                                               dPlasticGradientMicroDeformationdPlasticGradientMicroL,
-                                              *getIntegrationParameter( ),
-                                              *getIntegrationParameter( ),
-                                              *getIntegrationParameter( ) );
+                                              getIntegrationParameter( ),
+                                              getIntegrationParameter( ),
+                                              getIntegrationParameter( ) );
                 )
             }
 
@@ -8774,7 +8774,7 @@ namespace tardigradeHydra{
 
             const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
 
@@ -8800,23 +8800,23 @@ namespace tardigradeHydra{
 
             floatVector macNegMicroGradientGamma( 3, 0 );
 
-            floatVector consistencyConditionModuli( 5, *getConsistencyConditionModulus( ) );
+            floatVector consistencyConditionModuli( 5, getConsistencyConditionModulus( ) );
 
-            if ( *useWeakenedMacaulay( ) ){
+            if ( useWeakenedMacaulay( ) ){
 
-                macroMac  = weakMac( *macroYield, *getWeakenedMacaulayParameter( ) );
-                weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ) );
+                macroMac  = weakMac( *macroYield, getWeakenedMacaulayParameter( ) );
+                weakMac( -( *macroYield ), getWeakenedMacaulayParameter( ) );
 
-                microMac  = weakMac( *microYield, *getWeakenedMacaulayParameter( ) );
-                weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ) );
+                microMac  = weakMac( *microYield, getWeakenedMacaulayParameter( ) );
+                weakMac( -( *microYield ), getWeakenedMacaulayParameter( ) );
 
-                macNegMacroGamma = weakMac( -( *plasticMultipliers )[ 0 ] , *getWeakenedMacaulayParameter( ) );
-                macNegMicroGamma = weakMac( -( *plasticMultipliers )[ 1 ] , *getWeakenedMacaulayParameter( ) );
+                macNegMacroGamma = weakMac( -( *plasticMultipliers )[ 0 ] , getWeakenedMacaulayParameter( ) );
+                macNegMicroGamma = weakMac( -( *plasticMultipliers )[ 1 ] , getWeakenedMacaulayParameter( ) );
 
                 for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
                     unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
-                    microGradientMac[ index ]  = weakMac( *y, *getWeakenedMacaulayParameter( ) );
-                    macNegMicroGradientGamma[ index ] = weakMac( -( *plasticMultipliers )[ index + 2 ], *getWeakenedMacaulayParameter( ) );
+                    microGradientMac[ index ]  = weakMac( *y, getWeakenedMacaulayParameter( ) );
+                    macNegMicroGradientGamma[ index ] = weakMac( -( *plasticMultipliers )[ index + 2 ], getWeakenedMacaulayParameter( ) );
                 }
             }
             else{
@@ -8839,16 +8839,16 @@ namespace tardigradeHydra{
             }
 
             // Set the terms associated with the yield surface
-            ( *residual.value )[ 0 ] = macroMac + consistencyConditionModuli[ 0 ] * std::fabs( ( *plasticMultipliers )[ 0 ] * ( *macroYield ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMacroGamma;
+            ( *residual.value )[ 0 ] = macroMac + consistencyConditionModuli[ 0 ] * std::fabs( ( *plasticMultipliers )[ 0 ] * ( *macroYield ) ) + getPlasticMultiplierBarrierModulus( ) * macNegMacroGamma;
 
-            ( *residual.value )[ 1 ] = microMac + consistencyConditionModuli[ 1 ] * std::fabs( ( *plasticMultipliers )[ 1 ] * ( *microYield ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGamma;
+            ( *residual.value )[ 1 ] = microMac + consistencyConditionModuli[ 1 ] * std::fabs( ( *plasticMultipliers )[ 1 ] * ( *microYield ) ) + getPlasticMultiplierBarrierModulus( ) * macNegMicroGamma;
 
             for ( auto y = microGradientYield->begin( ); y != microGradientYield->end( ); y++ ){
 
                 unsigned int index = ( unsigned int )( y - microGradientYield->begin( ) );
 
                 ( *residual.value )[ index + 2 ]
-                    = microGradientMac[ index ] + consistencyConditionModuli[ index + 2 ] * std::fabs( ( *plasticMultipliers )[ index + 2 ] * ( *y ) ) + ( *getPlasticMultiplierBarrierModulus( ) ) * macNegMicroGradientGamma[ index ];
+                    = microGradientMac[ index ] + consistencyConditionModuli[ index + 2 ] * std::fabs( ( *plasticMultipliers )[ index + 2 ] * ( *y ) ) + getPlasticMultiplierBarrierModulus( ) * macNegMicroGradientGamma[ index ];
 
             }
 
@@ -8892,7 +8892,7 @@ namespace tardigradeHydra{
 
             const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
 
@@ -8939,7 +8939,7 @@ namespace tardigradeHydra{
                 signs[ i + 2 ] = sgn( ( *plasticMultipliers )[ i + 2 ] * ( *microGradientYield )[ i ] );
             }
 
-            floatVector consistencyConditionModuli( 5, *getConsistencyConditionModulus( ) );
+            floatVector consistencyConditionModuli( 5, getConsistencyConditionModulus( ) );
 
             // Stress Jacobians
             floatType dMacroMacdx, dMicroMacdx;
@@ -8956,27 +8956,27 @@ namespace tardigradeHydra{
 
             floatVector dMacNegMicroGradientGammadGamma( 3, 0 );
 
-            if ( *useWeakenedMacaulay( ) ){
+            if ( useWeakenedMacaulay( ) ){
 
-                weakMac( *macroYield, *getWeakenedMacaulayParameter( ), dMacroMacdx );
+                weakMac( *macroYield, getWeakenedMacaulayParameter( ), dMacroMacdx );
 
-                weakMac( *microYield, *getWeakenedMacaulayParameter( ), dMicroMacdx );
+                weakMac( *microYield, getWeakenedMacaulayParameter( ), dMicroMacdx );
 
-                weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ), ndMacroMacdx );
+                weakMac( -( *macroYield ), getWeakenedMacaulayParameter( ), ndMacroMacdx );
 
-                weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ), ndMicroMacdx );
+                weakMac( -( *microYield ), getWeakenedMacaulayParameter( ), ndMicroMacdx );
 
-                weakMac( -( *plasticMultipliers )[ 0 ], *getWeakenedMacaulayParameter( ), dMacNegMacroGammadGamma );
+                weakMac( -( *plasticMultipliers )[ 0 ], getWeakenedMacaulayParameter( ), dMacNegMacroGammadGamma );
 
-                weakMac( -( *plasticMultipliers )[ 1 ], *getWeakenedMacaulayParameter( ), dMacNegMicroGammadGamma );
+                weakMac( -( *plasticMultipliers )[ 1 ], getWeakenedMacaulayParameter( ), dMacNegMicroGammadGamma );
 
                 for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
 
-                    microGradientMac[ i ]  = weakMac(  ( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ), dMicroGradientMacdx[ i ] );
+                    microGradientMac[ i ]  = weakMac(  ( *microGradientYield )[ i ], getWeakenedMacaulayParameter( ), dMicroGradientMacdx[ i ] );
 
-                    nMicroGradientMac[ i ] = weakMac( -( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ), ndMicroGradientMacdx[ i ] );
+                    nMicroGradientMac[ i ] = weakMac( -( *microGradientYield )[ i ], getWeakenedMacaulayParameter( ), ndMicroGradientMacdx[ i ] );
 
-                    weakMac( -( *plasticMultipliers )[ i + 2 ], *getWeakenedMacaulayParameter( ), dMacNegMicroGradientGammadGamma[ i ] );
+                    weakMac( -( *plasticMultipliers )[ i + 2 ], getWeakenedMacaulayParameter( ), dMacNegMicroGradientGammadGamma[ i ] );
 
                 }
 
@@ -9063,13 +9063,13 @@ namespace tardigradeHydra{
             // State Variable Jacobians
             offset = numConfigurations * ( 2 * numSecondOrderTensor + numThirdOrderTensor );
 
-            ( *jacobian.value )[ numUnknowns * 0 + offset + 0 ] += consistencyConditionModuli[ 0 ] * signs[ 0 ] * ( *macroYield ) - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMacroGammadGamma;
+            ( *jacobian.value )[ numUnknowns * 0 + offset + 0 ] += consistencyConditionModuli[ 0 ] * signs[ 0 ] * ( *macroYield ) - getPlasticMultiplierBarrierModulus( ) * dMacNegMacroGammadGamma;
 
-            ( *jacobian.value )[ numUnknowns * 1 + offset + 1 ] += consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *microYield ) - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMicroGammadGamma;
+            ( *jacobian.value )[ numUnknowns * 1 + offset + 1 ] += consistencyConditionModuli[ 1 ] * signs[ 1 ] * ( *microYield ) - getPlasticMultiplierBarrierModulus( ) * dMacNegMicroGammadGamma;
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
-                ( *jacobian.value )[ numUnknowns * ( i + 2 ) + offset + i + 2 ] += consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *microGradientYield )[ i ] - ( *getPlasticMultiplierBarrierModulus( ) ) * dMacNegMicroGradientGammadGamma[ i ];
+                ( *jacobian.value )[ numUnknowns * ( i + 2 ) + offset + i + 2 ] += consistencyConditionModuli[ i + 2 ] * signs[ i + 2 ] * ( *microGradientYield )[ i ] - getPlasticMultiplierBarrierModulus( ) * dMacNegMicroGradientGammadGamma[ i ];
 
             }
 
@@ -9134,7 +9134,7 @@ namespace tardigradeHydra{
 
             const floatVector *plasticMultipliers = get_plasticMultipliers( );
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             const secondOrderTensor *dMacroYielddF                      = get_dMacroYielddF( );
 
@@ -9161,7 +9161,7 @@ namespace tardigradeHydra{
                 signs[ i + 2 ] = sgn( ( *plasticMultipliers )[ i + 2 ] * ( *microGradientYield )[ i ] );
             }
 
-            floatVector consistencyConditionModuli( 5, *getConsistencyConditionModulus( ) );
+            floatVector consistencyConditionModuli( 5, getConsistencyConditionModulus( ) );
 
             // Deformation gradient jacobians
             floatType dMacroMacdx, dMicroMacdx;
@@ -9171,21 +9171,21 @@ namespace tardigradeHydra{
 
             floatVector ndMicroGradientMacdx( numPlasticMultipliers - 2 );
 
-            if ( *useWeakenedMacaulay( ) ){
+            if ( useWeakenedMacaulay( ) ){
 
-                weakMac( *macroYield, *getWeakenedMacaulayParameter( ), dMacroMacdx );
+                weakMac( *macroYield, getWeakenedMacaulayParameter( ), dMacroMacdx );
 
-                weakMac( *microYield, *getWeakenedMacaulayParameter( ), dMicroMacdx );
+                weakMac( *microYield, getWeakenedMacaulayParameter( ), dMicroMacdx );
 
-                weakMac( -( *macroYield ), *getWeakenedMacaulayParameter( ), ndMacroMacdx );
+                weakMac( -( *macroYield ), getWeakenedMacaulayParameter( ), ndMacroMacdx );
 
-                weakMac( -( *microYield ), *getWeakenedMacaulayParameter( ), ndMicroMacdx );
+                weakMac( -( *microYield ), getWeakenedMacaulayParameter( ), ndMicroMacdx );
 
                 for ( unsigned int i = 0; i < ( numPlasticMultipliers - 2 ); i++ ){
 
-                    weakMac(  ( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ), dMicroGradientMacdx[ i ] );
+                    weakMac(  ( *microGradientYield )[ i ], getWeakenedMacaulayParameter( ), dMicroGradientMacdx[ i ] );
 
-                    weakMac( -( *microGradientYield )[ i ], *getWeakenedMacaulayParameter( ),ndMicroGradientMacdx[ i ] );
+                    weakMac( -( *microGradientYield )[ i ], getWeakenedMacaulayParameter( ), ndMicroGradientMacdx[ i ] );
 
                 }
 
@@ -9272,7 +9272,7 @@ namespace tardigradeHydra{
 
             const floatVector *dUpdatedPlasticStrainLikeISVsdStateVariables = get_dUpdatedPlasticStrainLikeISVsdStateVariables( );
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
 
@@ -9307,9 +9307,9 @@ namespace tardigradeHydra{
              * Set the residual equation
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
  
-            const unsigned int tot_dim = hydra->getTOTDimension( ); 
+            auto tot_dim = hydra->getTOTDimension( ); 
 
             const secondOrderTensor *updatedPlasticDeformationGradient;
 
@@ -9320,7 +9320,7 @@ namespace tardigradeHydra{
             const floatVector *stateVariableResiduals;
 
             // Get the trial plastic deformation measures
-            unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+            auto plasticConfigurationIndex = getPlasticConfigurationIndex( );
 
             const secondOrderTensor plasticDeformationGradient      = secondOrderTensor( hydra->get_configurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
                                                                                          hydra->get_configurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
@@ -9719,11 +9719,11 @@ namespace tardigradeHydra{
              * \param &Xp: The previously accepted value of X
              */
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            auto numSecondOrderTensor = hydra->getSOTDimension( );
 
-            const unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+            auto numThirdOrderTensor  = hydra->getTOTDimension( );
 
-            const unsigned int plasticConfigurationIndex = *getPlasticConfigurationIndex( );
+            auto plasticConfigurationIndex = getPlasticConfigurationIndex( );
 
             auto numConfigurations         = hydra->getNumConfigurations( );
 
@@ -9744,7 +9744,7 @@ namespace tardigradeHydra{
             floatType norm = tardigradeVectorTools::l2norm( secondOrderTensor( deltaPlasticDeformations.begin( ),
                                                                                deltaPlasticDeformations.begin( ) + numSecondOrderTensor ) );
 
-            if ( norm > *getMaxMacroPlasticDeltaNorm( ) ){
+            if ( norm > getMaxMacroPlasticDeltaNorm( ) ){
 
                 for ( unsigned int i = 0; i < numSecondOrderTensor; i++ ){
 
@@ -9758,7 +9758,7 @@ namespace tardigradeHydra{
             norm = tardigradeVectorTools::l2norm( secondOrderTensor( deltaPlasticDeformations.begin( ) + numSecondOrderTensor,
                                                                      deltaPlasticDeformations.begin( ) + 2 * numSecondOrderTensor ) );
 
-            if ( norm > *getMaxMicroPlasticDeltaNorm( ) ){
+            if ( norm > getMaxMicroPlasticDeltaNorm( ) ){
 
                 for ( unsigned int i = 0; i < numSecondOrderTensor; i++ ){
 
@@ -9772,7 +9772,7 @@ namespace tardigradeHydra{
             norm = tardigradeVectorTools::l2norm( thirdOrderTensor( deltaPlasticDeformations.begin( ) + 2 * numSecondOrderTensor,
                                                                     deltaPlasticDeformations.begin( ) + 2 * numSecondOrderTensor + numThirdOrderTensor ) );
 
-            if ( norm > *getMaxMicroGradientPlasticDeltaNorm( ) ){
+            if ( norm > getMaxMicroGradientPlasticDeltaNorm( ) ){
 
                 for ( unsigned int i = 0; i < numThirdOrderTensor; i++ ){
 
@@ -9912,11 +9912,11 @@ namespace tardigradeHydra{
 
             if ( isConverged ){
 
-                setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
+                setMacroSmoothingRatio( getBaseMacroSmoothingRatio( ) );
 
-                setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
+                setMicroSmoothingRatio( getBaseMicroSmoothingRatio( ) );
 
-                setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+                setMicroGradientSmoothingRatio( getBaseMicroGradientSmoothingRatio( ) );
 
                 setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
 
@@ -9948,11 +9948,11 @@ namespace tardigradeHydra{
             // Save the base smoothing ratios
             if ( relaxedStep == 0 ){
 
-                setMacroSmoothingRatio(                 *getBaseMacroSmoothingRatio( ) );
+                setMacroSmoothingRatio(                 getBaseMacroSmoothingRatio( ) );
 
-                setMicroSmoothingRatio(                 *getBaseMicroSmoothingRatio( ) );
+                setMicroSmoothingRatio(                 getBaseMicroSmoothingRatio( ) );
 
-                setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+                setMicroGradientSmoothingRatio( getBaseMicroGradientSmoothingRatio( ) );
 
             }
 
@@ -9962,20 +9962,20 @@ namespace tardigradeHydra{
 
             trial_r = ( *get_macroCohesion( ) ) / ( *get_macroHardeningParameters( ) )[ 0 ];
 
-            setMacroSmoothingRatio( std::fmax( std::fmax( trial_r, ( *getMinMacroCohesion( ) ) / ( *get_macroHardeningParameters( ) )[ 0 ] ), *getBaseMacroSmoothingRatio( ) ) );
-            trial_rs[ 0 ] = *getMacroSmoothingRatio( );
+            setMacroSmoothingRatio( std::fmax( std::fmax( trial_r, getMinMacroCohesion( ) / ( *get_macroHardeningParameters( ) )[ 0 ] ), getBaseMacroSmoothingRatio( ) ) );
+            trial_rs[ 0 ] = getMacroSmoothingRatio( );
 
             trial_r = ( *get_microCohesion( ) ) / ( *get_microHardeningParameters( ) )[ 0 ];
 
-            setMicroSmoothingRatio( std::fmax( std::fmax( trial_r, ( *getMinMicroCohesion( ) ) / ( *get_microHardeningParameters( ) )[ 0 ] ), *getBaseMicroSmoothingRatio( ) ) );
-            trial_rs[ 1 ] = *getMicroSmoothingRatio( );
+            setMicroSmoothingRatio( std::fmax( std::fmax( trial_r, getMinMicroCohesion( ) / ( *get_microHardeningParameters( ) )[ 0 ] ), getBaseMicroSmoothingRatio( ) ) );
+            trial_rs[ 1 ] = getMicroSmoothingRatio( );
 
-            floatVector microGradientSmoothingRatio( dim, ( *getMinMicroGradientCohesion( ) ) );
+            floatVector microGradientSmoothingRatio( dim, getMinMicroGradientCohesion( ) );
             for ( unsigned int i = 0; i < dim; i++ ){
 
                 trial_r = ( *get_microGradientCohesion( ) )[ i ] / ( *get_microGradientHardeningParameters( ) )[ 0 ];
 
-                microGradientSmoothingRatio[ i ] = std::fmax( std::fmax( trial_r, ( *getMinMicroGradientCohesion( ) ) / ( *get_microGradientHardeningParameters( ) )[ 0 ] ), ( *getBaseMicroGradientSmoothingRatio( ) )[ i ] );
+                microGradientSmoothingRatio[ i ] = std::fmax( std::fmax( trial_r, getMinMicroGradientCohesion( ) / ( *get_microGradientHardeningParameters( ) )[ 0 ] ), getBaseMicroGradientSmoothingRatio( )[ i ] );
                 trial_rs[ i + 2 ] = microGradientSmoothingRatio[ i ];
 
             }
@@ -10034,7 +10034,7 @@ namespace tardigradeHydra{
              * \param &microGradientCohesion: The micro-gradient cohesion
              */
 
-            computeCohesion( macroCohesion, microCohesion, microGradientCohesion, *getBaseMacroSmoothingRatio( ), *getBaseMicroSmoothingRatio( ), *getBaseMicroGradientSmoothingRatio( ) );
+            computeCohesion( macroCohesion, microCohesion, microGradientCohesion, getBaseMacroSmoothingRatio( ), getBaseMicroSmoothingRatio( ), getBaseMicroGradientSmoothingRatio( ) );
 
         }
 
@@ -10047,7 +10047,7 @@ namespace tardigradeHydra{
              * \param &microGradientCohesion: The micro-gradient cohesion
              */
 
-            computeCohesion( macroCohesion, microCohesion, microGradientCohesion, *getMacroSmoothingRatio( ), *getMicroSmoothingRatio( ), *getMicroGradientSmoothingRatio( ) );
+            computeCohesion( macroCohesion, microCohesion, microGradientCohesion, getMacroSmoothingRatio( ), getMicroSmoothingRatio( ), getMicroGradientSmoothingRatio( ) );
 
         }
 
@@ -10066,16 +10066,16 @@ namespace tardigradeHydra{
 
             constexpr unsigned int dim = 3;
 
-            macroCohesion = smoothLinearCohesion( ( *get_plasticStrainLikeISVs( ) )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ], ( *get_macroHardeningParameters( ) )[ 0 ], macroSmoothingRatio, *getMinMacroCohesion( ) );
+            macroCohesion = smoothLinearCohesion( ( *get_plasticStrainLikeISVs( ) )[ 0 ], ( *get_macroHardeningParameters( ) )[ 1 ], ( *get_macroHardeningParameters( ) )[ 0 ], macroSmoothingRatio, getMinMacroCohesion( ) );
 
-            microCohesion = smoothLinearCohesion( ( *get_plasticStrainLikeISVs( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 0 ], microSmoothingRatio, *getMinMicroCohesion( ) );
+            microCohesion = smoothLinearCohesion( ( *get_plasticStrainLikeISVs( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 1 ], ( *get_microHardeningParameters( ) )[ 0 ], microSmoothingRatio, getMinMicroCohesion( ) );
                 
             microGradientCohesion = dimVector( dim, 0 );
 
             for ( unsigned int i = 0; i < dim; i++ ){
 
                 microGradientCohesion[ i ] = smoothLinearCohesion( ( *get_plasticStrainLikeISVs( ) )[ i + 2 ], ( *get_microGradientHardeningParameters( ) )[ 1 ],
-                                                                   ( *get_microGradientHardeningParameters( ) )[ 0 ], microGradientSmoothingRatio[ i ], *getMinMicroGradientCohesion( ) );
+                                                                   ( *get_microGradientHardeningParameters( ) )[ 0 ], microGradientSmoothingRatio[ i ], getMinMicroGradientCohesion( ) );
 
             }
 
@@ -10086,9 +10086,9 @@ namespace tardigradeHydra{
              * Function that gets called prior to the subcycler
              */
 
-            setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
-            setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
-            setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+            setMacroSmoothingRatio( getBaseMacroSmoothingRatio( ) );
+            setMicroSmoothingRatio( getBaseMicroSmoothingRatio( ) );
+            setMicroGradientSmoothingRatio( getBaseMicroGradientSmoothingRatio( ) );
 
             setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
             setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
@@ -10103,9 +10103,9 @@ namespace tardigradeHydra{
              * Function that gets called when the subcycler succeeds
              */
 
-            setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
-            setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
-            setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+            setMacroSmoothingRatio( getBaseMacroSmoothingRatio( ) );
+            setMicroSmoothingRatio( getBaseMicroSmoothingRatio( ) );
+            setMicroGradientSmoothingRatio( getBaseMicroGradientSmoothingRatio( ) );
 
             setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
             setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );
@@ -10121,9 +10121,9 @@ namespace tardigradeHydra{
              * Function that gets called when the subcycler fails
              */
 
-            setMacroSmoothingRatio( *getBaseMacroSmoothingRatio( ) );
-            setMicroSmoothingRatio( *getBaseMicroSmoothingRatio( ) );
-            setMicroGradientSmoothingRatio( *getBaseMicroGradientSmoothingRatio( ) );
+            setMacroSmoothingRatio( getBaseMacroSmoothingRatio( ) );
+            setMicroSmoothingRatio( getBaseMicroSmoothingRatio( ) );
+            setMicroGradientSmoothingRatio( getBaseMicroGradientSmoothingRatio( ) );
 
             setMacroC0( ( *get_macroHardeningParameters( ) )[ 0 ] );
             setMicroC0( ( *get_microHardeningParameters( ) )[ 0 ] );

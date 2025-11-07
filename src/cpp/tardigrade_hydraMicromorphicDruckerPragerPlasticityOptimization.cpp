@@ -34,7 +34,7 @@ namespace tardigradeHydra{
 
             const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
 
@@ -114,7 +114,7 @@ namespace tardigradeHydra{
 
             const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
 
@@ -283,7 +283,7 @@ namespace tardigradeHydra{
 
             auto numSecondOrderTensor = hydra->getSOTDimension( );
 
-            auto numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
 
@@ -342,7 +342,7 @@ namespace tardigradeHydra{
              * Where \f$f\f$ is the yield surface and \f$s\f$ is the slack variable.
              */
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
 
@@ -383,7 +383,7 @@ namespace tardigradeHydra{
 
             auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount( );
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
 
@@ -425,7 +425,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int dim = 3;
 
-            const unsigned int numPlasticMultipliers   = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             const unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
 

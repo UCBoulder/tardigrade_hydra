@@ -494,40 +494,40 @@ namespace tardigradeHydra{
                 }
 
                 //!Get the number of plastic multipliers expected for the problem
-                const unsigned int* getNumPlasticMultipliers( ){ return &_numPlasticMultipliers; }
+                const unsigned int getNumPlasticMultipliers( ){ return _numPlasticMultipliers; }
 
                 //!Get the number of plastic multipliers expected for the problem
-                const unsigned int* getNumStrainLikePlasticStateVariables( ){ return &_numPlasticStrainLikeStateVariables; }
+                const unsigned int getNumStrainLikePlasticStateVariables( ){ return _numPlasticStrainLikeStateVariables; }
 
-                const unsigned int* getPlasticConfigurationIndex( );
+                const unsigned int getPlasticConfigurationIndex( );
 
                 const std::vector< unsigned int >* getStateVariableIndices( );
 
-                const floatType* getIntegrationParameter( );
+                const floatType getIntegrationParameter( );
 
                 //!Return the flag for whether to use the weakened Macaulay bracket or not
-                const bool *useWeakenedMacaulay( ){ return &_useWeakenedMacaulay; }
+                const bool useWeakenedMacaulay( ){ return _useWeakenedMacaulay; }
 
                 //!Return the value of the Weakened Macaulay parameter
-                const floatType *getWeakenedMacaulayParameter( ){ return &_weakenedMacaulayParameter; }
+                const floatType getWeakenedMacaulayParameter( ){ return _weakenedMacaulayParameter; }
 
                 //!Return the value of the barrier modulus to prevent the plastic multipliers from becoming negative
-                const floatType *getPlasticMultiplierBarrierModulus( ){ return &_plasticMultiplierBarrierModulus; }
+                const floatType getPlasticMultiplierBarrierModulus( ){ return _plasticMultiplierBarrierModulus; }
 
                 //!Return the value of the consistency condition modulus
-                const floatType *getConsistencyConditionModulus( ){ return &_consistencyConditionModulus; }
+                const floatType getConsistencyConditionModulus( ){ return _consistencyConditionModulus; }
 
                 virtual void projectSuggestedX( std::vector< floatType > &trialX,
                                                 const std::vector< floatType > &Xp ) override;
 
                 //!Get the maximum allowable value for the norm of the change in macro plastic deformation for a single nonlinear increment
-                const floatType* getMaxMacroPlasticDeltaNorm( ){ return &_maxMacroPlasticDeltaNorm; }
+                const floatType getMaxMacroPlasticDeltaNorm( ){ return _maxMacroPlasticDeltaNorm; }
 
                 //!Get the maximum allowable value for the norm of the change in micro plastic deformation for a single nonlinear increment
-                const floatType* getMaxMicroPlasticDeltaNorm( ){ return &_maxMicroPlasticDeltaNorm; }
+                const floatType getMaxMicroPlasticDeltaNorm( ){ return _maxMicroPlasticDeltaNorm; }
 
                 //!Get the maximum allowable value for the norm of the change in micro gradient plastic deformation for a single nonlinear increment
-                const floatType* getMaxMicroGradientPlasticDeltaNorm( ){ return &_maxMicroGradientPlasticDeltaNorm; }
+                const floatType getMaxMicroGradientPlasticDeltaNorm( ){ return _maxMicroGradientPlasticDeltaNorm; }
 
                 void setMaxMacroPlasticDeltaNorm( const floatType &value ){
                     /*!
@@ -1332,22 +1332,22 @@ namespace tardigradeHydra{
                 }
 
                 //! Get the minimum macro cohesion
-                const floatType *getMinMacroCohesion( ){ return &_minMacroCohesion; }
+                const floatType getMinMacroCohesion( ){ return _minMacroCohesion; }
 
                 //! Get the minimum micro cohesion
-                const floatType *getMinMicroCohesion( ){ return &_minMicroCohesion; }
+                const floatType getMinMicroCohesion( ){ return _minMicroCohesion; }
 
                 //! Get the minimum macro gradient cohesion
-                const floatType *getMinMicroGradientCohesion( ){ return &_minMicroGradientCohesion; }
+                const floatType getMinMicroGradientCohesion( ){ return _minMicroGradientCohesion; }
 
                 //! Get the minimum macro smooth ratio
-                const floatType *getMacroSmoothingRatio( ){ return &_macroSmoothingRatio; };
+                const floatType getMacroSmoothingRatio( ){ return _macroSmoothingRatio; };
 
                 //! Get the minimum micro smooth ratio
-                const floatType *getMicroSmoothingRatio( ){ return &_microSmoothingRatio; };
+                const floatType getMicroSmoothingRatio( ){ return _microSmoothingRatio; };
 
                 //! Get the minimum micro gradient smooth ratio
-                const floatVector *getMicroGradientSmoothingRatio( ){ return &_microGradientSmoothingRatio; };
+                const floatVector getMicroGradientSmoothingRatio( ){ return _microGradientSmoothingRatio; };
 
                 virtual double smoothLinearCohesion( const floatType &Z, const floatType &A, const floatType &c0, const floatType &rc, const floatType &cf );
 
@@ -1397,30 +1397,30 @@ namespace tardigradeHydra{
 
                 }
 
-                const floatType *getBaseMacroSmoothingRatio( ){
+                const floatType getBaseMacroSmoothingRatio( ){
                     /*!
                      * Get the base macro smoothing ratio
                      */
 
-                    return &_baseMacroSmoothingRatio;
+                    return _baseMacroSmoothingRatio;
 
                 }
 
-                const floatType *getBaseMicroSmoothingRatio( ){
+                const floatType getBaseMicroSmoothingRatio( ){
                     /*!
                      * Get the base micro smoothing ratio
                      */
 
-                    return &_baseMicroSmoothingRatio;
+                    return _baseMicroSmoothingRatio;
 
                 }
 
-                const floatVector *getBaseMicroGradientSmoothingRatio( ){
+                const floatVector getBaseMicroGradientSmoothingRatio( ){
                     /*!
                      * Get the base micro gradient smoothing ratio
                      */
 
-                    return &_baseMicroGradientSmoothingRatio;
+                    return _baseMicroGradientSmoothingRatio;
 
                 }
 
