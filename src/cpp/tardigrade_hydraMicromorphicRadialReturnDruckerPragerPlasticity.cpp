@@ -83,7 +83,7 @@ namespace tardigradeHydra{
 
             for ( auto v = activeConstraints.begin( ); v != activeConstraints.end( ); ++v ){
         
-                *v = ( ( *v ) && ( ( *get_plasticMultipliers( ) )[ v - activeConstraints.begin( ) ] > *getPlasticMultiplierTolerance( ) ) ) || ( yieldSurfaceValues[ v - activeConstraints.begin( ) ]> *getYieldTolerance( ) );
+                *v = ( ( *v ) && ( ( *get_plasticMultipliers( ) )[ v - activeConstraints.begin( ) ] > getPlasticMultiplierTolerance( ) ) ) || ( yieldSurfaceValues[ v - activeConstraints.begin( ) ]> getYieldTolerance( ) );
         
             }
 
@@ -503,7 +503,7 @@ namespace tardigradeHydra{
 
             for ( auto v = std::begin( yieldSurfaceValues ); v != std::end( yieldSurfaceValues ); ++v ){
 
-                if ( ( *v ) > *getYieldTolerance( ) ){
+                if ( ( *v ) > getYieldTolerance( ) ){
 
                     throw convergence_error( "A yield surface is larger than the yield surface tolerance" );
 
