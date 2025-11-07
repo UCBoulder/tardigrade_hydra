@@ -107,7 +107,7 @@ namespace tardigradeHydra{
         
                             BOOST_CHECK( &R._hardeningParameters.second == R.get_hardeningParameters( ) );
 
-                            BOOST_CHECK( &R._integrationParameter == R.getIntegrationParameter( ) );
+                            BOOST_CHECK( R._integrationParameter == R.getIntegrationParameter( ) );
 
                             BOOST_CHECK( &R._dDrivingStressdCauchyStress.second == R.get_dDrivingStressdCauchyStress( ) );
 

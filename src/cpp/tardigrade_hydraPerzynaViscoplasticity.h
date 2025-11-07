@@ -110,11 +110,11 @@ namespace tardigradeHydra{
 
                 using tardigradeHydra::residualBase::setAdditionalDerivatives;
 
-                const unsigned int* getPlasticConfigurationIndex( );
+                const unsigned int getPlasticConfigurationIndex( );
 
                 const std::vector< unsigned int >* getStateVariableIndices( );
 
-                const floatType* getIntegrationParameter( );
+                const floatType getIntegrationParameter( );
 
                 virtual void addParameterizationInfo( std::string &parameterization_info ) override;
 

@@ -125,9 +125,9 @@ namespace tardigradeHydra{
              * knowledge of the elastic configuration.
              */
 
-            const unsigned int dim = hydra->getDimension( );
-            const unsigned int sot_dim = hydra->getSOTDimension( );
-            const unsigned int elastic_config_index = *getElasticConfigurationIndex( );
+            auto dim = hydra->getDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
+            auto elastic_config_index = getElasticConfigurationIndex( );
 
             auto Fd = get_setDataStorage_damageDeformationGradient( );
 
@@ -199,7 +199,7 @@ namespace tardigradeHydra{
 
             auto num_configs = hydra->getNumConfigurations( );
 
-            const unsigned int elastic_config_index = *getElasticConfigurationIndex( );
+            auto elastic_config_index = getElasticConfigurationIndex( );
     
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
@@ -554,7 +554,7 @@ namespace tardigradeHydra{
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                ( *residual.value )[ i ] = hydra->getConfiguration( *getDamageConfigurationIndex( ) )[ i ] - ( *get_damageDeformationGradient( ) )[ i ];
+                ( *residual.value )[ i ] = hydra->getConfiguration( getDamageConfigurationIndex( ) )[ i ] - ( *get_damageDeformationGradient( ) )[ i ];
 
             }
 
@@ -575,9 +575,9 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
-            const unsigned int damage_configuration_index = *getDamageConfigurationIndex( );
+            auto damage_configuration_index = getDamageConfigurationIndex( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
