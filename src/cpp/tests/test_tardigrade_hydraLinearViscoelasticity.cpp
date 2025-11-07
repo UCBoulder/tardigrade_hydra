@@ -48,17 +48,17 @@ namespace tardigradeHydra{
     
                     static void runBasicGetTests( tardigradeHydra::linearViscoelasticity::residual &R ){
 
-                        BOOST_CHECK( &R._viscoelasticISVLowerIndex == R.getViscoelasticISVLowerIndex( ) );
+                        BOOST_CHECK( R._viscoelasticISVLowerIndex == R.getViscoelasticISVLowerIndex( ) );
 
-                        BOOST_CHECK( &R._viscoelasticISVUpperIndex == R.getViscoelasticISVUpperIndex( ) );
+                        BOOST_CHECK( R._viscoelasticISVUpperIndex == R.getViscoelasticISVUpperIndex( ) );
 
-                        BOOST_CHECK( &R._numVolumetricViscousTerms == R.getNumVolumetricViscousTerms( ) );
+                        BOOST_CHECK( R._numVolumetricViscousTerms == R.getNumVolumetricViscousTerms( ) );
 
-                        BOOST_CHECK( &R._numIsochoricViscousTerms == R.getNumIsochoricViscousTerms( ) );
+                        BOOST_CHECK( R._numIsochoricViscousTerms == R.getNumIsochoricViscousTerms( ) );
 
-                        BOOST_CHECK( &R._Kinf == R.getKinf( ) );
+                        BOOST_CHECK( R._Kinf == R.getKinf( ) );
     
-                        BOOST_CHECK( &R._Ginf == R.getGinf( ) );
+                        BOOST_CHECK( R._Ginf == R.getGinf( ) );
     
                         BOOST_CHECK( &R._Ks == R.getVolumetricModuli( ) );
 
@@ -76,7 +76,7 @@ namespace tardigradeHydra{
 
                         BOOST_CHECK( &R._previousFehat.second == R.get_previousFehat( ) );
 
-                        BOOST_CHECK( &R._numStateVariables == R.getNumStateVariables( ) );
+                        BOOST_CHECK( R._numStateVariables == R.getNumStateVariables( ) );
 
                         BOOST_CHECK( &R._volumetricTemperatureParameters == R.getVolumetricTemperatureParameters( ) );
 
@@ -98,7 +98,7 @@ namespace tardigradeHydra{
 
                         BOOST_CHECK( &R._dPreviousIsochoricRateMultiplierdPreviousT.second == R.get_dPreviousIsochoricRateMultiplierdPreviousT( ) );
 
-                        BOOST_CHECK( &R._integrationAlpha == R.getIntegrationAlpha( ) );
+                        BOOST_CHECK( R._integrationAlpha == R.getIntegrationAlpha( ) );
 
                         BOOST_CHECK( &R._PK2MeanStress.second == R.get_PK2MeanStress( ) );
 
@@ -250,17 +250,17 @@ BOOST_AUTO_TEST_CASE( test_residual_runBasicGetTests_and_decomposeParameters, * 
 
     BOOST_CHECK_NO_THROW( tardigradeHydra::linearViscoelasticity::unit_test::residualTester::runBasicGetTests( R ) );
 
-    BOOST_TEST( ISVlb == *R.getViscoelasticISVLowerIndex( ) );
+    BOOST_TEST( ISVlb == R.getViscoelasticISVLowerIndex( ) );
 
-    BOOST_TEST( ISVub == *R.getViscoelasticISVUpperIndex( ) );
+    BOOST_TEST( ISVub == R.getViscoelasticISVUpperIndex( ) );
 
-    BOOST_TEST( numVolumetricViscousTermsAnswer == *R.getNumVolumetricViscousTerms( ) );
+    BOOST_TEST( numVolumetricViscousTermsAnswer == R.getNumVolumetricViscousTerms( ) );
 
-    BOOST_TEST( numIsochoricViscousTermsAnswer == *R.getNumIsochoricViscousTerms( ) );
+    BOOST_TEST( numIsochoricViscousTermsAnswer == R.getNumIsochoricViscousTerms( ) );
 
-    BOOST_TEST( KinfAnswer == *R.getKinf( ) );
+    BOOST_TEST( KinfAnswer == R.getKinf( ) );
 
-    BOOST_TEST( GinfAnswer == *R.getGinf( ) );
+    BOOST_TEST( GinfAnswer == R.getGinf( ) );
 
     BOOST_TEST( Ks == *R.getVolumetricModuli( ), CHECK_PER_ELEMENT );
 

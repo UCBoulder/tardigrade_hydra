@@ -54,7 +54,7 @@ namespace tardigradeHydra{
         //Return filename for constructing debugging messages
         //https://stackoverflow.com/questions/31050113/how-to-extract-the-source-filename-without-path-and-suffix-at-compile-time
         const std::string __BASENAME__ = file_name(__FILE__); //!< The base filename which will be parsed
-    const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
+        const std::string __FILENAME__ = __BASENAME__.substr(0, __BASENAME__.find_last_of(".")); //!< The parsed filename for error handling
     
         typedef tardigradeErrorTools::Node errorNode; //!< Redefinition for the error node
         typedef errorNode* errorOut; //!< Redefinition for a pointer to the error node
@@ -91,25 +91,25 @@ namespace tardigradeHydra{
                 }
 
                 //! Get the lower index of the viscoelastic ISVs from the non-nonlinear solve state variable vector
-                const unsigned int* getViscoelasticISVLowerIndex( ){ return &_viscoelasticISVLowerIndex; }
+                const unsigned int getViscoelasticISVLowerIndex( ){ return _viscoelasticISVLowerIndex; }
 
                 //! Get the upper (but not including) index of the viscoelastic ISVs from the non-nonlinear solve state variable vector
-                const unsigned int* getViscoelasticISVUpperIndex( ){ return &_viscoelasticISVUpperIndex; }
+                const unsigned int getViscoelasticISVUpperIndex( ){ return _viscoelasticISVUpperIndex; }
 
                 //! Get the integration alpha parameter (0 is implicit, 1 is explicit)
-                const floatType* getIntegrationAlpha( ){ return &_integrationAlpha; }
+                const floatType getIntegrationAlpha( ){ return _integrationAlpha; }
 
                 //! Get the number of volumetric viscous terms
-                const unsigned int* getNumVolumetricViscousTerms( ){ return &_numVolumetricViscousTerms; }
+                const unsigned int getNumVolumetricViscousTerms( ){ return _numVolumetricViscousTerms; }
 
                 //! Get the number of isochoric viscous terms
-                const unsigned int* getNumIsochoricViscousTerms( ){ return &_numIsochoricViscousTerms; }
+                const unsigned int getNumIsochoricViscousTerms( ){ return _numIsochoricViscousTerms; }
 
                 //! Get the infinite bulk modulus
-                const floatType* getKinf( ){ return &_Kinf; }
+                const floatType getKinf( ){ return _Kinf; }
 
                 //! Get the infinite shear modulus
-                const floatType* getGinf( ){ return &_Ginf; }
+                const floatType getGinf( ){ return _Ginf; }
 
                 //! Get the bulk moduli
                 const floatVector* getVolumetricModuli( ){ return &_Ks; }
@@ -150,7 +150,7 @@ namespace tardigradeHydra{
                 void setNumStateVariables( const unsigned int numStateVariables );
 
                 //! Get a pointer to the number of state variables
-                unsigned int *getNumStateVariables( ){ return &_numStateVariables; }
+                unsigned int getNumStateVariables( ){ return _numStateVariables; }
 
                 virtual void decomposeStateVariableVector( floatVector &volumetricStateVariables, floatVector &isochoricStateVariables );
 
