@@ -115,7 +115,7 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPreviousPrecedingConfiguration( getPlasticConfigurationIndex( ) ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getPreviousStress( ) );
 
@@ -124,7 +124,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPrecedingConfiguration( getPlasticConfigurationIndex( ) ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getStress( ) );
 
@@ -152,7 +152,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int fot_dim = tot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const secondOrderTensor *cauchyStress;
 
@@ -174,9 +174,9 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPreviousPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPreviousPrecedingConfiguration( getPlasticConfigurationIndex( ) ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfigurationJacobian = hydra->getPreviousPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfigurationJacobian = hydra->getPreviousPrecedingConfigurationJacobian( getPlasticConfigurationIndex( ) ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getPreviousStress( ) );
 
@@ -195,9 +195,9 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPrecedingConfiguration( *getPlasticConfigurationIndex( ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfiguration = hydra->getPrecedingConfiguration( getPlasticConfigurationIndex( ) ) );
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfigurationJacobian = hydra->getPrecedingConfigurationJacobian( *getPlasticConfigurationIndex( ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( precedingConfigurationJacobian = hydra->getPrecedingConfigurationJacobian( getPlasticConfigurationIndex( ) ) );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getStress( ) );
 
@@ -606,7 +606,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const floatVector *drivingStress;
 
@@ -879,7 +879,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const floatVector* drivingStress;
 
@@ -1025,7 +1025,7 @@ namespace tardigradeHydra{
              * \param isPrevious: A flag for if the values are to be computed for the previous (True) or current (False) plastic thermal multiplier
              */
 
-            const floatType *temperature;
+            floatType temperature;
 
             const floatVector *temperatureParameters;
 
@@ -1048,7 +1048,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( temperatureParameters = get_thermalParameters( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::WLF( *temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] },
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::WLF( temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] },
                                           *plasticThermalMultiplier.value ) ); 
 
         }
@@ -1060,7 +1060,7 @@ namespace tardigradeHydra{
              * \param isPrevious: A flag for if the values are to be computed for the previous (True) or current (False) plastic thermal multiplier
              */
 
-            const floatType *temperature;
+            floatType temperature;
 
             const floatVector *temperatureParameters;
 
@@ -1089,7 +1089,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( temperatureParameters = get_thermalParameters( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::WLF( *temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] },
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::WLF( temperature, { ( *temperatureParameters )[ 2 ], ( *temperatureParameters )[ 0 ], ( *temperatureParameters )[ 1 ] },
                                           *plasticThermalMultiplier.value, *dPlasticThermalMultiplierdT.value ) ); 
 
         }
@@ -1938,7 +1938,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const floatType *plasticMultiplier;
 
@@ -2283,7 +2283,7 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const unsigned int num_stateVariables = get_stateVariables( )->size( );
 
@@ -2431,10 +2431,10 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( previousVelocityGradient = get_previousVelocityGradient( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( previousPlasticDeformationGradient = hydra->getPreviousConfiguration( *getPlasticConfigurationIndex( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousPlasticDeformationGradient = hydra->getPreviousConfiguration( getPlasticConfigurationIndex( ) ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
-                                          *plasticDeformationGradient.value, 1 - ( *getIntegrationParameter( ) ), 1 ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveF( hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
+                                          *plasticDeformationGradient.value, 1 - getIntegrationParameter( ), 1 ) );
 
         }
 
@@ -2539,9 +2539,9 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
-            const unsigned int plastic_config_index = *getPlasticConfigurationIndex( );
+            const unsigned int plastic_config_index = getPlasticConfigurationIndex( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
@@ -2561,7 +2561,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( previousVelocityGradient = get_previousVelocityGradient( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( previousPlasticDeformationGradient = hydra->getPreviousConfiguration( *getPlasticConfigurationIndex( ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( previousPlasticDeformationGradient = hydra->getPreviousConfiguration( getPlasticConfigurationIndex( ) ) );
 
             if ( setPreviousDerivatives ){
 
@@ -2571,8 +2571,8 @@ namespace tardigradeHydra{
 
                 fourthOrderTensor dFdPreviousL;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
-                                              *plasticDeformationGradient.value, dFdL, ddFdPreviousF, dFdPreviousF, dFdPreviousL, 1 - ( *getIntegrationParameter( ) ), 1 ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
+                                              *plasticDeformationGradient.value, dFdL, ddFdPreviousF, dFdPreviousF, dFdPreviousL, 1 - getIntegrationParameter( ), 1 ) );
 
                 auto map_dFdPreviousL = getFixedSizeMatrixMap< floatType, sot_dim, sot_dim >( dFdPreviousL.data( ) );
 
@@ -2622,8 +2622,8 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
-                                              *plasticDeformationGradient.value, dFdL, 1 - ( *getIntegrationParameter( ) ), 1 ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( hydra->getDeltaTime( ), previousPlasticDeformationGradient, *previousVelocityGradient, *velocityGradient, dFp,
+                                              *plasticDeformationGradient.value, dFdL, 1 - getIntegrationParameter( ), 1 ) );
 
             }
 
@@ -2685,7 +2685,7 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CATCH( previousStateVariables = get_previousStateVariables( ) );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolution( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, ( 1 - *getIntegrationParameter( ) ) ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolution( hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, 1 - getIntegrationParameter( ) ) );
 
         }
 
@@ -2786,7 +2786,7 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
@@ -2856,7 +2856,7 @@ namespace tardigradeHydra{
 
                 floatVector dXidXidotp;
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, dXidXidot, dXidXidotp, ( 1 - *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, dXidXidot, dXidXidotp, 1 - getIntegrationParameter( ) ) );
 
                 auto map_dXidXidotp = getDynamicSizeMatrixMap< floatType >( dXidXidot.data( ), num_isvs, num_isvs );
 
@@ -2900,7 +2900,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( *hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, dXidXidot, ( 1 - *getIntegrationParameter( ) ) ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( hydra->getDeltaTime( ), *previousStateVariables, *previousStateVariableEvolutionRates, *stateVariableEvolutionRates, deltaPlasticStateVariables, *plasticStateVariables.value, dXidXidot, 1 - getIntegrationParameter( ) ) );
 
             }
 
@@ -3023,12 +3023,12 @@ namespace tardigradeHydra{
             const unsigned int num_isvs = get_stateVariables( )->size( );
 
             auto residual = get_setDataStorage_residual( );
-            residual.zero( *getNumEquations( ) );
+            residual.zero( getNumEquations( ) );
 
             // Set the residual for the plastic deformation gradient
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                ( *residual.value )[ i ] = ( *get_plasticDeformationGradient( ) )[ i ] - hydra->getConfiguration( *getPlasticConfigurationIndex( ) )[ i ];
+                ( *residual.value )[ i ] = ( *get_plasticDeformationGradient( ) )[ i ] - hydra->getConfiguration( getPlasticConfigurationIndex( ) )[ i ];
     
             }
 
@@ -3048,14 +3048,14 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            const unsigned int num_configs = hydra->getNumConfigurations( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
             const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
             auto jacobian = get_setDataStorage_jacobian( );
-            jacobian.zero( *getNumEquations( ) * num_unknowns );
+            jacobian.zero( getNumEquations( ) * num_unknowns );
 
             // Set the derivatives
             get_dPlasticDeformationGradientdCauchyStress( );
@@ -3075,7 +3075,7 @@ namespace tardigradeHydra{
                 }
 
                 // Set the Jacobian with respect to the sub-configurations
-                ( *jacobian.value )[ num_unknowns * i + ( *getPlasticConfigurationIndex( ) ) * sot_dim + i ] -= 1;
+                ( *jacobian.value )[ num_unknowns * i + getPlasticConfigurationIndex( ) * sot_dim + i ] -= 1;
                 for ( unsigned int j = 0; j < ( num_configs - 1 ) * sot_dim; j++ ){
 
                     unsigned int col = sot_dim + j;
@@ -3133,7 +3133,7 @@ namespace tardigradeHydra{
              */
 
             auto dRdT = get_setDataStorage_dRdT( );
-            dRdT.zero( *getNumEquations( ) );
+            dRdT.zero( getNumEquations( ) );
 
             // Set the derivatives
             get_dPlasticDeformationGradientdT( );
@@ -3166,7 +3166,7 @@ namespace tardigradeHydra{
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
             auto dRdF = get_setDataStorage_dRdF( );
-            dRdF.zero( sot_dim * ( *getNumEquations( ) ) );
+            dRdF.zero( sot_dim * ( getNumEquations( ) ) );
 
             // Set the derivatives
             get_dPlasticDeformationGradientdF( );
@@ -3197,12 +3197,12 @@ namespace tardigradeHydra{
 
         }
 
-        const unsigned int* residual::getPlasticConfigurationIndex( ){
+        const unsigned int residual::getPlasticConfigurationIndex( ){
             /*!
              * Get plastic configuration index
              */
 
-            return &_plasticConfigurationIndex;
+            return _plasticConfigurationIndex;
 
         }
 
@@ -3215,12 +3215,12 @@ namespace tardigradeHydra{
 
         }
 
-        const floatType* residual::getIntegrationParameter( ){
+        const floatType residual::getIntegrationParameter( ){
             /*!
              * Get the integration parameter
              */
 
-            return &_integrationParameter;
+            return _integrationParameter;
 
         }
 

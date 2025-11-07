@@ -187,13 +187,13 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor, * boost
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-    BOOST_TEST( time == *hydra.getTime( ) );
+    BOOST_TEST( time == hydra.getTime( ) );
 
-    BOOST_TEST( deltaTime == *hydra.getDeltaTime( ) );
+    BOOST_TEST( deltaTime == hydra.getDeltaTime( ) );
 
-    BOOST_TEST( temperature == *hydra.getTemperature( ) );
+    BOOST_TEST( temperature == hydra.getTemperature( ) );
 
-    BOOST_TEST( previousTemperature == *hydra.getPreviousTemperature( ) );
+    BOOST_TEST( previousTemperature == hydra.getPreviousTemperature( ) );
 
     BOOST_TEST( deformationGradient == *hydra.getDeformationGradient( ), CHECK_PER_ELEMENT );
 
@@ -374,13 +374,13 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor2, * boos
                                      dimension, configuration_unknown_count,
                                      tolr, tola, maxIterations, maxLSIterations, lsAlpha );
 
-    BOOST_TEST( time == *hydra.getTime( ) );
+    BOOST_TEST( time == hydra.getTime( ) );
 
-    BOOST_TEST( deltaTime == *hydra.getDeltaTime( ) );
+    BOOST_TEST( deltaTime == hydra.getDeltaTime( ) );
 
-    BOOST_TEST( temperature == *hydra.getTemperature( ) );
+    BOOST_TEST( temperature == hydra.getTemperature( ) );
 
-    BOOST_TEST( previousTemperature == *hydra.getPreviousTemperature( ) );
+    BOOST_TEST( previousTemperature == hydra.getPreviousTemperature( ) );
 
     BOOST_TEST( deformationGradient == *hydra.getDeformationGradient( ), CHECK_PER_ELEMENT );
 
@@ -434,13 +434,13 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor2, * boos
 
     inverseMicroConfigurationsAnswer[ 0 ] = { -1.2869465 ,  1.28214968, -0.13007957,  1.36076467, -2.41554301, 1.11945836, -0.14539197,  1.1729392 , -0.93868068 };
 
-    BOOST_TEST( scaled_time == *hydra.getTime( ) );
+    BOOST_TEST( scaled_time == hydra.getTime( ) );
 
-    BOOST_TEST( scaled_deltaTime == *hydra.getDeltaTime( ) );
+    BOOST_TEST( scaled_deltaTime == hydra.getDeltaTime( ) );
 
-    BOOST_TEST( scaled_temperature == *hydra.getTemperature( ) );
+    BOOST_TEST( scaled_temperature == hydra.getTemperature( ) );
 
-    BOOST_TEST( previousTemperature == *hydra.getPreviousTemperature( ) );
+    BOOST_TEST( previousTemperature == hydra.getPreviousTemperature( ) );
 
     BOOST_TEST( scaled_deformationGradient == *hydra.getDeformationGradient( ), CHECK_PER_ELEMENT );
 

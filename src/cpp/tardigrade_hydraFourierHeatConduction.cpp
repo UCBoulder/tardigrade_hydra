@@ -160,7 +160,7 @@ namespace tardigradeHydra{
 
             auto residual = get_setDataStorage_residual( );
 
-            residual.zero( *getNumEquations( ) );
+            residual.zero( getNumEquations( ) );
 
             for ( unsigned int i = 0; i < dim; ++i ){
 
@@ -182,7 +182,7 @@ namespace tardigradeHydra{
             // Form the Jacobian
             auto jacobian = get_setDataStorage_jacobian( );
 
-            jacobian.zero( ( *getNumEquations( ) ) * num_unknowns );
+            jacobian.zero( getNumEquations( ) * num_unknowns );
 
             for ( unsigned int i = 0; i < dim; ++i ){
 
@@ -199,7 +199,7 @@ namespace tardigradeHydra{
 
             auto dRdT = get_setDataStorage_dRdT( );
 
-            dRdT.zero( *getNumEquations( ) );
+            dRdT.zero( getNumEquations( ) );
 
         }
 
@@ -210,7 +210,7 @@ namespace tardigradeHydra{
 
             auto dRdF = get_setDataStorage_dRdF( );
 
-            dRdF.zero( ( *getNumEquations( ) ) * hydra->getDimension( ) * hydra->getDimension( ) );
+            dRdF.zero( getNumEquations( ) * hydra->getDimension( ) * hydra->getDimension( ) );
 
         }
 
@@ -223,7 +223,7 @@ namespace tardigradeHydra{
 
             auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
 
-            dRdAdditionalDOF.zero( ( *getNumEquations( ) ) * hydra->getNumAdditionalDOF( ) );
+            dRdAdditionalDOF.zero( getNumEquations( ) * hydra->getNumAdditionalDOF( ) );
 
             for ( unsigned int i = 0; i < dim; ++i ){
 

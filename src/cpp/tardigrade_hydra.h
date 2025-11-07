@@ -744,7 +744,7 @@ namespace tardigradeHydra{
              * 
              * \param &r: The residual to be copied
              */
-            residualBase( residualBase &r ) : hydra( r.hydra ), _numEquations( *r.getNumEquations( ) ), _numConstraints( *r.getNumConstraints( ) ){ }
+            residualBase( residualBase &r ) : hydra( r.hydra ), _numEquations( r.getNumEquations( ) ), _numConstraints( r.getNumConstraints( ) ){ }
 
             hydraBase* hydra; //!< The hydra class which owns the residualBase object
 
@@ -1012,15 +1012,15 @@ namespace tardigradeHydra{
             virtual void setupRelaxedStep( const unsigned int &relaxedStep );
 
             //! Get the flag for whether to use the projection or not
-            const bool *getUseProjection( ){ return &_useProjection; }
+            const bool getUseProjection( ){ return _useProjection; }
 
             // Getter functions
 
             //! Get the number of equations the residual defined
-            const unsigned int* getNumEquations( ){ return &_numEquations; }
+            const unsigned int getNumEquations( ){ return _numEquations; }
 
             //! Get the number of constraints the residual defined
-            const unsigned int* getNumConstraints( ){ return &_numConstraints; }
+            const unsigned int getNumConstraints( ){ return _numConstraints; }
 
             void addIterationData( dataBase *data );
 
@@ -1309,22 +1309,22 @@ namespace tardigradeHydra{
 
             // Getter functions
             //! Get a reference to the number of unknowns in each configuration
-            const unsigned int* getConfigurationUnknownCount( ){ return &_configuration_unknown_count; }
+            constexpr unsigned int getConfigurationUnknownCount( ){ return _configuration_unknown_count; }
 
             //! Get a reference to the number of components of the stress
-            const unsigned int* getStressSize( ){ return &_stress_size; }
+            constexpr unsigned int getStressSize( ){ return _stress_size; }
 
             //! Get a reference to the current time
-            const floatType* getTime( ){ return getScaledTime( ); }
+            const floatType getTime( ){ return getScaledTime( ); }
 
             //! Get a reference to the change in time
-            const floatType* getDeltaTime( ){ return getScaledDeltaTime( ); }
+            const floatType getDeltaTime( ){ return getScaledDeltaTime( ); }
 
             //! Get a reference to the current temperature
-            const floatType* getTemperature( ){ return getScaledTemperature( ); };
+            const floatType getTemperature( ){ return getScaledTemperature( ); };
 
             //! Get a reference to the previous temperature
-            const floatType* getPreviousTemperature( ){ return &_previousTemperature; };
+            const floatType getPreviousTemperature( ){ return _previousTemperature; };
 
             //! Get a reference to the deformation gradient
             const secondOrderTensor* getDeformationGradient( ){ return getScaledDeformationGradient( ); }
@@ -1345,13 +1345,13 @@ namespace tardigradeHydra{
             const floatVector* getParameters( ){ return &_parameters; }
 
             //! Get a reference to the number of configurations
-            const unsigned int* getNumConfigurations( ){ return &_numConfigurations; }
+            constexpr unsigned int getNumConfigurations( ){ return _numConfigurations; }
 
             //! Get a reference to the number of state variables involved in the non-linear solve
-            const unsigned int* getNumNonLinearSolveStateVariables( ){ return &_numNonLinearSolveStateVariables; }
+            constexpr unsigned int getNumNonLinearSolveStateVariables( ){ return _numNonLinearSolveStateVariables; }
 
             //! Get the number of terms in the unknown vector
-            virtual const unsigned int getNumUnknowns( ){ return ( *getNumConfigurations( ) ) * ( *getConfigurationUnknownCount( ) ) + *getNumNonLinearSolveStateVariables( ); }
+            virtual const unsigned int getNumUnknowns( ){ return getNumConfigurations( ) * getConfigurationUnknownCount( ) + getNumNonLinearSolveStateVariables( ); }
 
             //! Get the number of additional degrees of freedom
             virtual const unsigned int getNumAdditionalDOF( ){ return getAdditionalDOF( )->size( ); }
@@ -1363,7 +1363,7 @@ namespace tardigradeHydra{
 
                 for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->end( ); v++ ){
 
-                    value += *( *v )->getNumConstraints( );
+                    value += ( *v )->getNumConstraints( );
 
                 }
 
@@ -1385,73 +1385,73 @@ namespace tardigradeHydra{
                  */
                 unsigned int offset = 0;
                 for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->begin( ) + getCurrentResidualIndex( ); ++v ){
-                    offset += *( *v )->getNumEquations( );
+                    offset += ( *v )->getNumEquations( );
                 }
                 return offset;
             }
 
-            //! Get a reference to the dimension
+            //! Get the dimension
             constexpr unsigned int getDimension( ){ return _dimension; }
 
-            //! Get a reference to a second order tensor's dimension
+            //! Get a second order tensor's dimension
             constexpr unsigned int getSOTDimension( ){ return _dimension * _dimension; }
 
-            //! Get a reference to a third order tensor's dimension
+            //! Get a third order tensor's dimension
             constexpr unsigned int getTOTDimension( ){ return _dimension * _dimension * _dimension; }
 
-            //! Get a reference to a fourth order tensor's dimension
+            //! Get a fourth order tensor's dimension
             constexpr unsigned int getFOTDimension( ){ return _dimension * _dimension * _dimension * _dimension; }
 
-            //! Get a reference to the relative tolerance
-            const floatType* getRelativeTolerance( ){ return &_tolr; }
+            //! Get the relative tolerance
+            constexpr floatType getRelativeTolerance( ){ return _tolr; }
 
-            //! Get a reference to the absolute tolerance
-            const floatType* getAbsoluteTolerance( ){ return &_tola; }
+            //! Get the absolute tolerance
+            constexpr floatType getAbsoluteTolerance( ){ return _tola; }
 
-            //! Get a reference to the line-search alpha
-            const floatType* getLSAlpha( ){ return &_lsAlpha; }
+            //! Get the line-search alpha
+            constexpr floatType getLSAlpha( ){ return _lsAlpha; }
 
-            //! Get a reference to whether to use a preconditioner
-            const bool* getUsePreconditioner( ){ return &_use_preconditioner; }
+            //! Get whether to use a preconditioner
+            constexpr bool getUsePreconditioner( ){ return _use_preconditioner; }
 
-            //! Get a reference to the preconditioner type
-            const unsigned int* getPreconditionerType( ){ return &_preconditioner_type; }
+            //! Get the preconditioner type
+            constexpr unsigned int getPreconditionerType( ){ return _preconditioner_type; }
 
             //! Get whether the preconditioner is diagonal or not
-            const bool* getPreconditionerIsDiagonal( ){ return &_preconditioner_is_diagonal; }
+            constexpr bool getPreconditionerIsDiagonal( ){ return _preconditioner_is_diagonal; }
 
-            //!< Get a reference to the gradient descent sigma parameter
-            const floatType* getGradientSigma( ){ return &_gradientSigma; }
+            //!< Get the gradient descent sigma parameter
+            const floatType getGradientSigma( ){ return _gradientSigma; }
 
-            //!< Get a reference to the gradient descent beta parameter
-            const floatType* getGradientBeta( ){ return &_gradientBeta; }
+            //!< Get the gradient descent beta parameter
+            const floatType getGradientBeta( ){ return _gradientBeta; }
 
-            //!< Get a reference to the max allowable number of gradient iterations
-            const unsigned int* getMaxGradientIterations( ){ return &_maxGradientIterations; }
+            //!< Get the max allowable number of gradient iterations
+            const unsigned int getMaxGradientIterations( ){ return _maxGradientIterations; }
 
-            //!< Get a reference to the gradient descent rho parameter
-            const floatType* getGradientRho( ){ return &_gradientRho; }
+            //!< Get the gradient descent rho parameter
+            const floatType getGradientRho( ){ return _gradientRho; }
 
-            //!< Get a reference to the gradient descent p parameter
-            const floatType* getGradientP( ){ return &_gradientP; }
+            //!< Get the gradient descent p parameter
+            const floatType getGradientP( ){ return _gradientP; }
 
-            //!< Get a reference to the Levenberg-Marquardt mu parameter
-            const floatType* getLMMu( ){ return &_lm_mu; }
+            //!< Get the Levenberg-Marquardt mu parameter
+            const floatType getLMMu( ){ return _lm_mu; }
 
-            //!< Get a reference to the current value of mu_k
-            const floatType* getMuk( ){ return &_mu_k; }
+            //!< Get the current value of mu_k
+            const floatType getMuk( ){ return _mu_k; }
 
-            //!< Get a reference to whether the Newton step should be a LevenbergMarquardt step
-            const bool* getUseLevenbergMarquardt( ){ return &_use_LM_step; }
+            //!< Get the Newton step should be a LevenbergMarquardt step
+            const bool getUseLevenbergMarquardt( ){ return _use_LM_step; }
 
             //!< Get a reference to whether the Newton step should be a relaxed solve
-            const bool* getUseRelaxedSolve( ){ return &_use_relaxed_solve; }
+            const bool getUseRelaxedSolve( ){ return _use_relaxed_solve; }
 
             //!< Get a reference to whether Gradient descent is allowed
-            const bool* getUseGradientDescent( ){ return &_use_gradient_descent; }
+            const bool getUseGradientDescent( ){ return _use_gradient_descent; }
 
             //!< Get a reference to the flag for whether to throw an error if the LHS matrix is rank-deficient
-            const bool* getRankDeficientError( ){ return &_rank_deficient_error; }
+            const bool getRankDeficientError( ){ return _rank_deficient_error; }
 
             //!< Set the gradient descent sigma parameter
             void setGradientSigma( const floatType &value ){
@@ -1675,7 +1675,7 @@ namespace tardigradeHydra{
 
             void clearViscoplasticDamping( );
 
-            const floatType* getViscoplasticDamping( ){ /*! Get the value of the viscoplastic damping */ return &_viscoplastic_damping_factor; }
+            const floatType getViscoplasticDamping( ){ /*! Get the value of the viscoplastic damping */ return _viscoplastic_damping_factor; }
 
             const bool getViscoplasticDampingSet( );
 
@@ -1692,7 +1692,7 @@ namespace tardigradeHydra{
             const floatVector *getFlatdXdAdditionalDOF( );
 
             //! Return the flag which indicates whether hydra should initialize the unknown vector
-            const bool *getInitializeUnknownVector( ){ return &_initializeUnknownVector; }
+            const bool getInitializeUnknownVector( ){ return _initializeUnknownVector; }
 
             //! Add data to the vector of values which will be cleared after each iteration
             void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
@@ -1706,7 +1706,7 @@ namespace tardigradeHydra{
 
             unsigned int getNumGrad( ){ /*! Get the number of gradient descent steps performed */  return _NUM_GRAD; }
 
-            const bool *getUseSQPSolver( ){ /*! Return a flag for whether to use the SQP solver */ return &_useSQPSolver; }
+            const bool getUseSQPSolver( ){ /*! Return a flag for whether to use the SQP solver */ return _useSQPSolver; }
 
             const void setMaxRelaxedIterations( const unsigned int &value ){
                 /*!
@@ -1719,12 +1719,12 @@ namespace tardigradeHydra{
 
             }
 
-            const unsigned int *getMaxRelaxedIterations( ){
+            const unsigned int getMaxRelaxedIterations( ){
                 /*!
                  * Get the maximum number of relaxed iterations
                  */
 
-                return &_maxRelaxedIterations;
+                return _maxRelaxedIterations;
 
             }
 
@@ -1743,7 +1743,7 @@ namespace tardigradeHydra{
             void setFailureOutputScientific( ){ _failure_output << std::scientific; }
 
             //! Get the verbosity level for failure outputs
-            const unsigned int *getFailureVerbosityLevel( ){ return &_failure_verbosity_level; }
+            const unsigned int getFailureVerbosityLevel( ){ return _failure_verbosity_level; }
 
             //! Add a string to the failure output string
             void addToFailureOutput( const std::string &additional ){ _failure_output << additional; }
@@ -1765,28 +1765,28 @@ namespace tardigradeHydra{
             const std::string getFailureOutput( ){ return _failure_output.str( ); }
 
             //! Get a scale factor for the deformation
-            const floatType *getScaleFactor( ){ return &_scale_factor; }
+            const floatType getScaleFactor( ){ return _scale_factor; }
 
             //! Set the value of the scale factor. Will automatically re-calculate the deformation and trial stresses
             virtual void setScaleFactor( const floatType &value );
 
-            const floatType   *getScaledTime( ){ /*! Get the value of the scaled current time */ return &_scaled_time; }
+            const floatType   getScaledTime( ){ /*! Get the value of the scaled current time */ return _scaled_time; }
 
-            const floatType   *getScaledDeltaTime( ){ /*! Get the value of the scaled changed in time */ return &_scaled_deltaTime; }
+            const floatType   getScaledDeltaTime( ){ /*! Get the value of the scaled changed in time */ return _scaled_deltaTime; }
 
-            const floatType   *getScaledTemperature( ){ /*! Get the value of the scaled current temperature */ return &_scaled_temperature; }
+            const floatType   getScaledTemperature( ){ /*! Get the value of the scaled current temperature */ return _scaled_temperature; }
 
             const floatVector *getScaledDeformationGradient( ){ /*! Get the value of the scaled current deformation gradient */ return &_scaled_deformationGradient; }
 
             const floatVector *getScaledAdditionalDOF( ){ /*! Get the value of the scaled current additional DOF */ return &_scaled_additionalDOF; }
 
-            const floatType *getCutbackFactor( ){ /*! Get the value of the cutback factor */ return &_cutback_factor; }
+            const floatType getCutbackFactor( ){ /*! Get the value of the cutback factor */ return _cutback_factor; }
 
-            const unsigned int *getNumGoodControl( ){ /*! Get the number of good iterations we need to have before increasing the timestep */ return &_num_good_control; }
+            const unsigned int getNumGoodControl( ){ /*! Get the number of good iterations we need to have before increasing the timestep */ return _num_good_control; }
 
-            const floatType *getGrowthFactor( ){ /*! Get the growth factor for the timestep increase */ return &_growth_factor; }
+            const floatType getGrowthFactor( ){ /*! Get the growth factor for the timestep increase */ return _growth_factor; }
 
-            const floatType *getMinDS( ){ /*! Get the minimum allowable ratio of the total timestep to the cutback timestep */ return &_minDS; }
+            const floatType getMinDS( ){ /*! Get the minimum allowable ratio of the total timestep to the cutback timestep */ return _minDS; }
 
             void setCutbackFactor( const floatType &value ){ /*! Get the current value of the cutback factor. \param &value: The value of the cutback */  _cutback_factor = value; }
 
@@ -2509,7 +2509,7 @@ namespace tardigradeHydra{
 
             void resetGradientIteration( ){ _gradientIteration = 0; }
 
-            const floatType* getLambda( ){ return &_lambda; }
+            const floatType getLambda( ){ return _lambda; }
 
             bool checkIteration( ){ return _iteration < _maxIterations; }
 

@@ -34,7 +34,7 @@ namespace tardigradeHydra{
 
             const floatVector *updatedPlasticStrainLikeISVs = get_updatedPlasticStrainLikeISVs( );
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
 
@@ -102,19 +102,19 @@ namespace tardigradeHydra{
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            const unsigned int dim = hydra->getDimension( );
+            auto dim = hydra->getDimension( );
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            auto numSecondOrderTensor = hydra->getSOTDimension( );
 
-            const unsigned int numThirdOrderTensor  = hydra->getTOTDimension( );
+            auto numThirdOrderTensor  = hydra->getTOTDimension( );
 
-            unsigned int numConfigurations = *hydra->getNumConfigurations( );
+            auto numConfigurations = hydra->getNumConfigurations( );
 
-            const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount( );
 
             const floatVector *plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = plasticStrainLikeISVs->size( );
 
@@ -277,13 +277,13 @@ namespace tardigradeHydra{
              * We may include the ability to weaken the Macaulay bracket to hopefully improve convergence.
              */
 
-            const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount( );
 
-            const unsigned int dim = hydra->getDimension( );
+            auto dim = hydra->getDimension( );
 
-            const unsigned int numSecondOrderTensor = hydra->getSOTDimension( );
+            auto numSecondOrderTensor = hydra->getSOTDimension( );
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
 
@@ -342,7 +342,7 @@ namespace tardigradeHydra{
              * Where \f$f\f$ is the yield surface and \f$s\f$ is the slack variable.
              */
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
 
@@ -377,13 +377,13 @@ namespace tardigradeHydra{
              * Where \f$f\f$ is the yield surface and \f$s\f$ is the slack variable.
              */
 
-            const unsigned int numUnknowns = hydra->getNumUnknowns( );
+            auto numUnknowns = hydra->getNumUnknowns( );
 
-            const unsigned int numConfigurations = *hydra->getNumConfigurations( );
+            auto numConfigurations = hydra->getNumConfigurations( );
 
-            const unsigned int numConfigurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto numConfigurationUnknowns = hydra->getConfigurationUnknownCount( );
 
-            const unsigned int numPlasticMultipliers = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
 
@@ -425,7 +425,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int dim = 3;
 
-            const unsigned int numPlasticMultipliers   = *getNumPlasticMultipliers( );
+            auto numPlasticMultipliers = getNumPlasticMultipliers( );
 
             const unsigned int numPlasticStrainLikeISVs = get_plasticStrainLikeISVs( )->size( );
 
@@ -441,7 +441,7 @@ namespace tardigradeHydra{
             if ( ( *get_macroYield( ) ) > 0 ){
 
                 // Perturb the plastic multiplier
-                floatType delta = std::fmax( ( *get_plasticMultipliers( ) )[ 0 ], ( *hydra->getRelativeTolerance( ) ) * ( *get_macroYield( ) ) + ( *hydra->getAbsoluteTolerance( ) ) );
+                floatType delta = std::fmax( ( *get_plasticMultipliers( ) )[ 0 ], hydra->getRelativeTolerance( ) * ( *get_macroYield( ) ) + hydra->getAbsoluteTolerance( ) );
                 indices.push_back( ( *getStateVariableIndices( ) )[ 0 ] );
                 values.push_back( delta );
 
@@ -452,7 +452,7 @@ namespace tardigradeHydra{
             if ( ( *get_microYield( ) ) > 0 ){
 
                 // Perturb the plastic multiplier
-                floatType delta = std::fmax( ( *get_plasticMultipliers( ) )[ 1 ], ( *hydra->getRelativeTolerance( ) ) * ( *get_microYield( ) ) + ( *hydra->getAbsoluteTolerance( ) ) );
+                floatType delta = std::fmax( ( *get_plasticMultipliers( ) )[ 1 ], hydra->getRelativeTolerance( ) * ( *get_microYield( ) ) + hydra->getAbsoluteTolerance( ) );
                 indices.push_back( ( *getStateVariableIndices( ) )[ 1 ] );
                 values.push_back( delta );
 
@@ -465,7 +465,7 @@ namespace tardigradeHydra{
                 if ( ( *get_microGradientYield( ) )[ i ] > 0 ){
     
                     // Perturb the plastic multiplier
-                    floatType delta = std::fmax( ( *get_plasticMultipliers( ) )[ i + 2 ], ( *hydra->getRelativeTolerance( ) ) * ( *get_microGradientYield( ) )[ i ] + ( *hydra->getAbsoluteTolerance( ) ) );
+                    floatType delta = std::fmax( ( *get_plasticMultipliers( ) )[ i + 2 ], hydra->getRelativeTolerance( ) * ( *get_microGradientYield( ) )[ i ] + hydra->getAbsoluteTolerance( ) );
                     indices.push_back( ( *getStateVariableIndices( ) )[ i + 2 ] );
                     values.push_back( delta );
     
@@ -473,7 +473,7 @@ namespace tardigradeHydra{
 
             }
 
-            indices += ( *hydra->getNumConfigurations( ) ) * ( *hydra->getConfigurationUnknownCount( ) );
+            indices += hydra->getNumConfigurations( ) * hydra->getConfigurationUnknownCount( );
 
         }
 

@@ -50,9 +50,9 @@ namespace tardigradeHydra{
 
                     static void runBasicGetTests( tardigradeHydra::massChange::residual &R ){
 
-                        BOOST_CHECK( &R._massChangeConfigurationIndex == R.getMassChangeConfigurationIndex( ) );
+                        BOOST_CHECK( R._massChangeConfigurationIndex == R.getMassChangeConfigurationIndex( ) );
 
-                        BOOST_CHECK( &R._integrationParameter == R.getIntegrationParameter( ) );
+                        BOOST_CHECK( R._integrationParameter == R.getIntegrationParameter( ) );
 
                         BOOST_CHECK( &R._density.second         == R.get_density( ) );
 

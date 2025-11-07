@@ -39,14 +39,14 @@ namespace tardigradeHydra{
 
             setNumIsochoricViscousTerms( ( unsigned int )( parameters[ 1 ] + 0.5 ) );
 
-            setNumStateVariables( *getNumVolumetricViscousTerms( ) + sot_dim * ( *getNumIsochoricViscousTerms( ) ) );
+            setNumStateVariables( getNumVolumetricViscousTerms( ) + sot_dim * getNumIsochoricViscousTerms( ) );
 
-            if ( *getNumStateVariables( ) != ( *getViscoelasticISVUpperIndex( ) - *getViscoelasticISVLowerIndex( ) ) ){
+            if ( getNumStateVariables( ) != ( getViscoelasticISVUpperIndex( ) - getViscoelasticISVLowerIndex( ) ) ){
 
                 std::string message = "The number of state variables required by the parameterization is not equal to the number of state variables indicated by the ISV bounds\n";
-                message            += "   required # ISVs: " + std::to_string( *getNumStateVariables( ) ) + "\n";
-                message            += "   ISV Lower Bound: " + std::to_string( *getViscoelasticISVLowerIndex( ) ) + "\n";
-                message            += "   ISV Upper Bound: " + std::to_string( *getViscoelasticISVUpperIndex( ) ) + "\n";
+                message            += "   required # ISVs: " + std::to_string( getNumStateVariables( ) ) + "\n";
+                message            += "   ISV Lower Bound: " + std::to_string( getViscoelasticISVLowerIndex( ) ) + "\n";
+                message            += "   ISV Upper Bound: " + std::to_string( getViscoelasticISVUpperIndex( ) ) + "\n";
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
 
@@ -62,15 +62,15 @@ namespace tardigradeHydra{
             setIsochoricTemperatureParameters( floatVector( parameters.begin( ) +  7,
                                                             parameters.begin( ) + 10 ) );
 
-            unsigned int parameterCount = 10 + 2 * ( *getNumVolumetricViscousTerms( ) )
-                                        + 2 * ( *getNumIsochoricViscousTerms( ) );
+            unsigned int parameterCount = 10 + 2 * getNumVolumetricViscousTerms( )
+                                        + 2 * getNumIsochoricViscousTerms( );
 
             if ( parameters.size( ) != parameterCount ){
 
                 std::string message = "The number of parameters provided is not consistent with the parameter counts\n";
                 message            += "  num parameters:      " + std::to_string( parameters.size( ) ) + "\n";
-                message            += "  num viscous terms:   " + std::to_string( *getNumVolumetricViscousTerms( ) ) + "\n";
-                message            += "  num isochoric terms: " + std::to_string( *getNumIsochoricViscousTerms( ) ) + "\n";
+                message            += "  num viscous terms:   " + std::to_string( getNumVolumetricViscousTerms( ) ) + "\n";
+                message            += "  num isochoric terms: " + std::to_string( getNumIsochoricViscousTerms( ) ) + "\n";
                 message            += "The number of parameters is 4 + 2 * ( numVolumetricViscousTerms + numIsochoricViscousTerms )\n";
                 message            += "  required parameter count: " + std::to_string( parameterCount ) + "\n";
 
@@ -79,22 +79,22 @@ namespace tardigradeHydra{
             }
 
             unsigned int lb = 10;
-            unsigned int ub = lb + *getNumVolumetricViscousTerms( );
+            unsigned int ub = lb + getNumVolumetricViscousTerms( );
 
             floatVector Ks( parameters.begin( ) + lb, parameters.begin( ) + ub );
 
             lb = ub;
-            ub = lb + *getNumVolumetricViscousTerms( );
+            ub = lb + getNumVolumetricViscousTerms( );
 
             floatVector Ktaus( parameters.begin( ) + lb, parameters.begin( ) + ub );
 
             lb = ub;
-            ub = lb + *getNumIsochoricViscousTerms( );
+            ub = lb + getNumIsochoricViscousTerms( );
 
             floatVector Gs( parameters.begin( ) + lb, parameters.begin( ) + ub );
 
             lb = ub;
-            ub = lb + *getNumIsochoricViscousTerms( );
+            ub = lb + getNumIsochoricViscousTerms( );
 
             floatVector Gtaus( parameters.begin( ) + lb, parameters.begin( ) + ub );
 
@@ -119,12 +119,12 @@ namespace tardigradeHydra{
 
             ss << "class: tardigradeHydra::linearViscoelasticity::residual\n\n";
             ss << "     name,                               description,       units, current value\n";
-            ss << "    n_vol, The number of volumetric Maxwell elements,        none, " << *getNumVolumetricViscousTerms( ) << "\n";
-            ss << "    n_iso,  The number of isochoric Maxwell elements,        none, " << *getNumIsochoricViscousTerms( ) << "\n";
+            ss << "    n_vol, The number of volumetric Maxwell elements,        none, " << getNumVolumetricViscousTerms( ) << "\n";
+            ss << "    n_iso,  The number of isochoric Maxwell elements,        none, " << getNumIsochoricViscousTerms( ) << "\n";
             ss.precision(9);
             ss << std::scientific;
-            ss << "     Kinf,           The infinite volumetric modulus,      stress, " << *getKinf( ) << "\n";
-            ss << "     Ginf,            The infinite isochoric modulus,      stress, " << *getGinf( ) << "\n";
+            ss << "     Kinf,           The infinite volumetric modulus,      stress, " << getKinf( ) << "\n";
+            ss << "     Ginf,            The infinite isochoric modulus,      stress, " << getGinf( ) << "\n";
             ss << " Tref_vol,      The volumetric reference temperature, temperature, " << ( *getVolumetricTemperatureParameters( ) )[ 0 ] << "\n";
             ss << "   C1_vol,           The volumetric WLF C1 parameter,        none, " << ( *getVolumetricTemperatureParameters( ) )[ 1 ] << "\n";
             ss << "   C2_vol,           The volumetric WLF C2 parameter, temperature, " << ( *getVolumetricTemperatureParameters( ) )[ 2 ] << "\n";
@@ -428,15 +428,15 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            unsigned int lb = *getViscoelasticISVLowerIndex( );
-            unsigned int ub = lb + *getNumVolumetricViscousTerms( );
+            unsigned int lb = getViscoelasticISVLowerIndex( );
+            unsigned int ub = lb + getNumVolumetricViscousTerms( );
 
             volumetricStateVariables = floatVector( hydra->get_additionalStateVariables( )->begin( ) + lb,
                                                     hydra->get_additionalStateVariables( )->begin( ) + ub );
 
             lb = ub;
 
-            ub = lb + sot_dim * *getNumIsochoricViscousTerms( );
+            ub = lb + sot_dim * getNumIsochoricViscousTerms( );
 
             isochoricStateVariables = floatVector( hydra->get_additionalStateVariables( )->begin( ) + lb,
                                                    hydra->get_additionalStateVariables( )->begin( ) + ub );
@@ -452,13 +452,13 @@ namespace tardigradeHydra{
             std::copy(
                 std::begin( *get_volumetricViscoelasticStateVariables( ) ),
                 std::end( *get_volumetricViscoelasticStateVariables( ) ),
-                std::begin( additionalStateVariables ) + *getViscoelasticISVLowerIndex( )
+                std::begin( additionalStateVariables ) + getViscoelasticISVLowerIndex( )
             );
 
             std::copy(
                 std::begin( *get_isochoricViscoelasticStateVariables( ) ),
                 std::end( *get_isochoricViscoelasticStateVariables( ) ),
-                std::begin( additionalStateVariables ) + *getViscoelasticISVLowerIndex( ) + *getNumVolumetricViscousTerms( )
+                std::begin( additionalStateVariables ) + getViscoelasticISVLowerIndex( ) + getNumVolumetricViscousTerms( )
             );
 
         }
@@ -533,7 +533,7 @@ namespace tardigradeHydra{
 
             auto rateMultiplier = get_setDataStorage_volumetricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { hydra->getTemperature( ) },
                                                                                            *getVolumetricTemperatureParameters( ) ) );
 
         }
@@ -545,7 +545,7 @@ namespace tardigradeHydra{
 
             auto rateMultiplier = get_setDataStorage_previousVolumetricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { hydra->getPreviousTemperature( ) },
                                                                                            *getVolumetricTemperatureParameters( ) ) );
 
         }
@@ -557,7 +557,7 @@ namespace tardigradeHydra{
 
             auto rateMultiplier = get_setDataStorage_isochoricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { hydra->getTemperature( ) },
                                                                                            *getIsochoricTemperatureParameters( ) ) );
 
         }
@@ -569,7 +569,7 @@ namespace tardigradeHydra{
 
             auto rateMultiplier = get_setDataStorage_previousIsochoricRateMultiplier( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *rateMultiplier.value = computeRateMultiplier( { hydra->getPreviousTemperature( ) },
                                                                                            *getIsochoricTemperatureParameters( ) ) );
 
         }
@@ -582,7 +582,7 @@ namespace tardigradeHydra{
 
             auto dRateMultiplierdT = get_setDataStorage_dVolumetricRateMultiplierdT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { hydra->getTemperature( ) },
                                                                                                          *getVolumetricTemperatureParameters( ) )[ 0 ] );
 
         }
@@ -595,7 +595,7 @@ namespace tardigradeHydra{
 
             auto dRateMultiplierdT = get_setDataStorage_dPreviousVolumetricRateMultiplierdPreviousT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { hydra->getPreviousTemperature( ) },
                                                                                                          *getVolumetricTemperatureParameters( ) )[ 0 ] );
 
         }
@@ -608,7 +608,7 @@ namespace tardigradeHydra{
 
             auto dRateMultiplierdT = get_setDataStorage_dIsochoricRateMultiplierdT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { hydra->getTemperature( ) },
                                                                                                          *getIsochoricTemperatureParameters( ) )[ 0 ] );
 
         }
@@ -620,7 +620,7 @@ namespace tardigradeHydra{
 
             auto dRateMultiplierdT = get_setDataStorage_dPreviousIsochoricRateMultiplierdPreviousT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { *hydra->getPreviousTemperature( ) },
+            TARDIGRADE_ERROR_TOOLS_CATCH( *dRateMultiplierdT.value = computedRateMultiplierdVariables( { hydra->getPreviousTemperature( ) },
                                                                                                          *getIsochoricTemperatureParameters( ) )[ 0 ] );
 
         }
@@ -652,14 +652,14 @@ namespace tardigradeHydra{
              * Get the volumetric viscoelastic parameters prepared for tardigradeStressTools::linearViscoelasticity
              */
 
-            floatVector parameters( 1 + 2 * *getNumVolumetricViscousTerms( ), 0 );
+            floatVector parameters( 1 + 2 * getNumVolumetricViscousTerms( ), 0 );
 
-            parameters[ 0 ] = *getKinf( );
+            parameters[ 0 ] = getKinf( );
 
-            for ( unsigned int i = 1; i <= *getNumVolumetricViscousTerms( ); i++ ){
+            for ( unsigned int i = 1; i <= getNumVolumetricViscousTerms( ); i++ ){
 
                 parameters[ i ] = ( *getVolumetricTaus( ) )[ i - 1 ];
-                parameters[ i + *getNumVolumetricViscousTerms( ) ] = ( *getVolumetricModuli( ) )[ i - 1 ];
+                parameters[ i + getNumVolumetricViscousTerms( ) ] = ( *getVolumetricModuli( ) )[ i - 1 ];
 
             }
 
@@ -672,14 +672,14 @@ namespace tardigradeHydra{
              * Get the isochoric viscoelastic parameters prepared for tardigradeStressTools::linearViscoelasticity
              */
 
-            floatVector parameters( 1 + 2 * *getNumIsochoricViscousTerms( ), 0 );
+            floatVector parameters( 1 + 2 * getNumIsochoricViscousTerms( ), 0 );
 
-            parameters[ 0 ] = 2 * ( *getGinf( ) );
+            parameters[ 0 ] = 2 * getGinf( );
 
-            for ( unsigned int i = 1; i <= *getNumIsochoricViscousTerms( ); i++ ){
+            for ( unsigned int i = 1; i <= getNumIsochoricViscousTerms( ); i++ ){
 
                 parameters[ i ] = ( *getIsochoricTaus( ) )[ i - 1 ];
-                parameters[ i + *getNumIsochoricViscousTerms( ) ] = 2 * ( *getIsochoricModuli( ) )[ i - 1 ];
+                parameters[ i + getNumIsochoricViscousTerms( ) ] = 2 * ( *getIsochoricModuli( ) )[ i - 1 ];
 
             }
 
@@ -723,7 +723,7 @@ namespace tardigradeHydra{
 
             floatType time;
 
-            floatType previousTime = *hydra->getTime( ) - *hydra->getDeltaTime( );
+            floatType previousTime = hydra->getTime( ) - hydra->getDeltaTime( );
 
             const floatType *volumetricRateMultiplier;
 
@@ -758,7 +758,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                time                     = *hydra->getTime( );
+                time                     = hydra->getTime( );
 
                 Je                       = get_Je( );
 
@@ -837,7 +837,7 @@ namespace tardigradeHydra{
                                                                                         *previousVolumetricRateMultiplier,
                                                                                         previousVolumetricStateVariables,
                                                                                         getVolumetricViscoelasticParameters( ),
-                                                                                        *getIntegrationAlpha( ), deltaPK2MeanStress,
+                                                                                        getIntegrationAlpha( ), deltaPK2MeanStress,
                                                                                         _PK2MeanStress, currentVolumetricStateVariables,
                                                                                         _dPK2MeanStressdJe, dPK2MeanStressdRateModifier,
                                                                                         _dPK2MeanStressdPreviousJe, dPK2MeanStressdPreviousRateModifier,
@@ -1065,7 +1065,7 @@ namespace tardigradeHydra{
 
             floatType time;
 
-            floatType previousTime = *hydra->getTime( ) - *hydra->getDeltaTime( );
+            floatType previousTime = hydra->getTime( ) - hydra->getDeltaTime( );
 
             const floatType *isochoricRateMultiplier;
 
@@ -1100,7 +1100,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                time                       = *hydra->getTime( );
+                time                       = hydra->getTime( );
 
                 Fehat                      = get_Fehat( );
 
@@ -1186,7 +1186,7 @@ namespace tardigradeHydra{
                                                                                         *previousIsochoricRateMultiplier,
                                                                                         previousIsochoricStateVariables,
                                                                                         getIsochoricViscoelasticParameters( ),
-                                                                                        *getIntegrationAlpha( ),
+                                                                                        getIntegrationAlpha( ),
                                                                                         deltaPK2IsochoricStress, *PK2IsochoricStress.value, currentIsochoricStateVariables,
                                                                                         _dPK2IsochoricStressdEe,         dPK2IsochoricStressdRateMultiplier,
                                                                                         _dPK2IsochoricStressdPreviousEe, dPK2IsochoricStressdPreviousRateMultiplier,

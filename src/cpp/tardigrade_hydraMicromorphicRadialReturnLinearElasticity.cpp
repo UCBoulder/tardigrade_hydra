@@ -45,9 +45,9 @@ namespace tardigradeHydra{
 
             auto tot_dim = hydra->getTOTDimension( );
 
-            auto num_equations = *getNumEquations( );
+            auto num_equations = getNumEquations( );
 
-            auto num_configurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto num_configurationUnknowns = hydra->getConfigurationUnknownCount( );
 
             dTrialStressdD.zero( num_equations * num_configurationUnknowns );
 
@@ -119,7 +119,7 @@ namespace tardigradeHydra{
 
             auto residual = get_setDataStorage_residual( );
 
-            residual.zero( *getNumEquations( ) );
+            residual.zero( getNumEquations( ) );
 
             std::transform(
                 std::begin( *hydra->getStress( ) ),
@@ -140,7 +140,7 @@ namespace tardigradeHydra{
 
             auto jacobian = get_setDataStorage_jacobian( );
 
-            auto num_equations = *getNumEquations( );
+            auto num_equations = getNumEquations( );
 
             auto num_unknowns = hydra->getNumUnknowns( );
 
@@ -161,9 +161,9 @@ namespace tardigradeHydra{
 
             auto dRdD = get_setDataStorage_dRdD( );
 
-            auto num_equations = *getNumEquations( );
+            auto num_equations = getNumEquations( );
 
-            auto num_configurationUnknowns = *hydra->getConfigurationUnknownCount( );
+            auto num_configurationUnknowns = hydra->getConfigurationUnknownCount( );
 
             dRdD.zero( num_equations * num_configurationUnknowns );
 

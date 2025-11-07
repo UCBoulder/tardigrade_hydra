@@ -57,7 +57,7 @@ namespace tardigradeHydra{
 
             auto internal_energy = get_setDataStorage_internalEnergy( );
 
-            ( *internal_energy.value ) = ( *get_specificHeat( ) ) * ( *hydra->getTemperature( ) );
+            ( *internal_energy.value ) = ( *get_specificHeat( ) ) * hydra->getTemperature( );
 
         }
 
@@ -68,7 +68,7 @@ namespace tardigradeHydra{
 
             auto internal_energy = get_setDataStorage_previousInternalEnergy( );
 
-            ( *internal_energy.value ) = ( *get_specificHeat( ) ) * ( *hydra->getPreviousTemperature( ) );
+            ( *internal_energy.value ) = ( *get_specificHeat( ) ) * hydra->getPreviousTemperature( );
 
         }
 
@@ -90,7 +90,7 @@ namespace tardigradeHydra{
 
             auto residual = get_setDataStorage_residual( );
 
-            residual.zero( *getNumEquations( ) );
+            residual.zero( getNumEquations( ) );
 
             ( *residual.value )[ 0 ] = ( *hydra->getUnknownVector( ) )[ get_internalEnergyIndex( ) ] - ( *get_internalEnergy( ) );
 
@@ -106,7 +106,7 @@ namespace tardigradeHydra{
             // Form the Jacobian
             auto jacobian = get_setDataStorage_jacobian( );
 
-            jacobian.zero( ( *getNumEquations( ) ) * num_unknowns );
+            jacobian.zero( getNumEquations( ) * num_unknowns );
 
             ( *jacobian.value )[ 0 + get_internalEnergyIndex( ) ] = 1.;
 
@@ -119,7 +119,7 @@ namespace tardigradeHydra{
 
             auto dRdT = get_setDataStorage_dRdT( );
 
-            dRdT.zero( *getNumEquations( ) );
+            dRdT.zero( getNumEquations( ) );
 
             ( *dRdT.value )[ 0 ] -= ( *get_dInternalEnergydT( ) );
 
@@ -132,7 +132,7 @@ namespace tardigradeHydra{
 
             auto dRdF = get_setDataStorage_dRdF( );
 
-            dRdF.zero( ( *getNumEquations( ) ) * hydra->getDimension( ) * hydra->getDimension( ) );
+            dRdF.zero( getNumEquations( ) * hydra->getDimension( ) * hydra->getDimension( ) );
 
         }
 
@@ -143,7 +143,7 @@ namespace tardigradeHydra{
 
             auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
 
-            dRdAdditionalDOF.zero( ( *getNumEquations( ) ) * hydra->getNumAdditionalDOF( ) );
+            dRdAdditionalDOF.zero( getNumEquations( ) * hydra->getNumAdditionalDOF( ) );
 
         }
 

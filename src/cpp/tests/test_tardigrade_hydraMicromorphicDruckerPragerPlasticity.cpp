@@ -305,11 +305,11 @@ BOOST_AUTO_TEST_CASE( test_maxDeltaPlasticDeformation, * boost::unit_test::toler
 
     residualMock R( &hydra, 55, 1, stateVariableIndices, parameters );
 
-    BOOST_TEST( 1 == *R.getMaxMacroPlasticDeltaNorm( ) );
+    BOOST_TEST( 1 == R.getMaxMacroPlasticDeltaNorm( ) );
 
-    BOOST_TEST( 1 == *R.getMaxMicroPlasticDeltaNorm( ) );
+    BOOST_TEST( 1 == R.getMaxMicroPlasticDeltaNorm( ) );
 
-    BOOST_TEST( 1 == *R.getMaxMicroGradientPlasticDeltaNorm( ) );
+    BOOST_TEST( 1 == R.getMaxMicroGradientPlasticDeltaNorm( ) );
 
     R.setMaxMacroPlasticDeltaNorm( 1.1 );
 
@@ -317,11 +317,11 @@ BOOST_AUTO_TEST_CASE( test_maxDeltaPlasticDeformation, * boost::unit_test::toler
 
     R.setMaxMicroGradientPlasticDeltaNorm( 3.3 );
 
-    BOOST_TEST( 1.1 == *R.getMaxMacroPlasticDeltaNorm( ) );
+    BOOST_TEST( 1.1 == R.getMaxMacroPlasticDeltaNorm( ) );
 
-    BOOST_TEST( 2.2 == *R.getMaxMicroPlasticDeltaNorm( ) );
+    BOOST_TEST( 2.2 == R.getMaxMicroPlasticDeltaNorm( ) );
 
-    BOOST_TEST( 3.3 == *R.getMaxMicroGradientPlasticDeltaNorm( ) );
+    BOOST_TEST( 3.3 == R.getMaxMicroGradientPlasticDeltaNorm( ) );
 
 }
 
@@ -696,7 +696,7 @@ BOOST_AUTO_TEST_CASE( test_extractParameters2, * boost::unit_test::tolerance( DE
 
             floatVector public_getMinCohesions( ){
 
-                floatVector result = { *getMinMacroCohesion( ), *getMinMicroCohesion( ), *getMinMicroGradientCohesion( ) };
+                floatVector result = { getMinMacroCohesion( ), getMinMicroCohesion( ), getMinMicroGradientCohesion( ) };
 
                 return result;
 
@@ -704,8 +704,8 @@ BOOST_AUTO_TEST_CASE( test_extractParameters2, * boost::unit_test::tolerance( DE
 
             floatVector public_getSmoothingRatios( ){
 
-                floatVector result = { *getMacroSmoothingRatio( ), *getMicroSmoothingRatio( ), ( *getMicroGradientSmoothingRatio( ) )[ 0 ],
-                                       ( *getMicroGradientSmoothingRatio( ) )[ 1 ], ( *getMicroGradientSmoothingRatio( ) )[ 2 ] };
+                floatVector result = { getMacroSmoothingRatio( ), getMicroSmoothingRatio( ), getMicroGradientSmoothingRatio( )[ 0 ],
+                                       getMicroGradientSmoothingRatio( )[ 1 ], getMicroGradientSmoothingRatio( )[ 2 ] };
 
                 return result;
 
@@ -16916,11 +16916,11 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals2, * boost::unit_test::toler
     R2.microGradientYield = -R.microGradientYield;
 
     floatVector answer1( 10, 0 );
-    answer1[ 0 ] = R.macroYield              + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 0 ] * R.macroYield ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 0 ] );
-    answer1[ 1 ] = R.microYield              + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 1 ] * R.microYield ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 1 ] );
-    answer1[ 2 ] = R.microGradientYield[ 0 ] + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 2 ] * R.microGradientYield[ 0 ] ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 2 ] );
-    answer1[ 3 ] = R.microGradientYield[ 1 ] + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 3 ] * R.microGradientYield[ 1 ] ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 3 ] );
-    answer1[ 4 ] = R.microGradientYield[ 2 ] + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 4 ] * R.microGradientYield[ 2 ] ) + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 4 ] );
+    answer1[ 0 ] = R.macroYield              + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 0 ] * R.macroYield ) + R.getPlasticMultiplierBarrierModulus( ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 0 ] );
+    answer1[ 1 ] = R.microYield              + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 1 ] * R.microYield ) + R.getPlasticMultiplierBarrierModulus( ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 1 ] );
+    answer1[ 2 ] = R.microGradientYield[ 0 ] + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 2 ] * R.microGradientYield[ 0 ] ) + R.getPlasticMultiplierBarrierModulus( ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 2 ] );
+    answer1[ 3 ] = R.microGradientYield[ 1 ] + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 3 ] * R.microGradientYield[ 1 ] ) + R.getPlasticMultiplierBarrierModulus( ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 3 ] );
+    answer1[ 4 ] = R.microGradientYield[ 2 ] + 0.1 * std::fabs( unknownVector[ 2 * configuration_unknown_count + 4 ] * R.microGradientYield[ 2 ] ) + R.getPlasticMultiplierBarrierModulus( ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 4 ] );
     answer1[ 5 ] = R.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 0 ];
     answer1[ 6 ] = R.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 1 ];
     answer1[ 7 ] = R.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 2 ];
@@ -16928,11 +16928,11 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals2, * boost::unit_test::toler
     answer1[ 9 ] = R.updatedPlasticStrainLikeISVs[ 4 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 4 ];
 
     floatVector answer2( 10, 0 );
-    answer2[ 0 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 0 ] * R2.macroYield + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 0 ] );
-    answer2[ 1 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 1 ] * R2.microYield + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 1 ] );
-    answer2[ 2 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 2 ] * R2.microGradientYield[ 0 ] + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 2 ] );
-    answer2[ 3 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 3 ] * R2.microGradientYield[ 1 ] + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 3 ] );
-    answer2[ 4 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 4 ] * R2.microGradientYield[ 2 ] + ( *R.getPlasticMultiplierBarrierModulus( ) ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 4 ] );
+    answer2[ 0 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 0 ] * R2.macroYield + R.getPlasticMultiplierBarrierModulus( ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 0 ] );
+    answer2[ 1 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 1 ] * R2.microYield + R.getPlasticMultiplierBarrierModulus( ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 1 ] );
+    answer2[ 2 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 2 ] * R2.microGradientYield[ 0 ] + R.getPlasticMultiplierBarrierModulus( ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 2 ] );
+    answer2[ 3 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 3 ] * R2.microGradientYield[ 1 ] + R.getPlasticMultiplierBarrierModulus( ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 3 ] );
+    answer2[ 4 ] = 0.1 * unknownVector[ 2 * configuration_unknown_count + 4 ] * R2.microGradientYield[ 2 ] + R.getPlasticMultiplierBarrierModulus( ) * tardigradeConstitutiveTools::mac( -unknownVector[ 2 * configuration_unknown_count + 4 ] );
     answer2[ 5 ] = R2.updatedPlasticStrainLikeISVs[ 0 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 0 ];
     answer2[ 6 ] = R2.updatedPlasticStrainLikeISVs[ 1 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 1 ];
     answer2[ 7 ] = R2.updatedPlasticStrainLikeISVs[ 2 ] - unknownVector[ 2 * configuration_unknown_count + 5 + 2 ];
@@ -21964,37 +21964,37 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep, * boost::unit_test::tolerance( DEFA
 
             }
 
-            virtual const floatType *public_getBaseMacroSmoothingRatio( ){
+            virtual const floatType public_getBaseMacroSmoothingRatio( ){
 
                 return getBaseMacroSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getBaseMicroSmoothingRatio( ){
+            virtual const floatType public_getBaseMicroSmoothingRatio( ){
 
                 return getBaseMicroSmoothingRatio( );
 
             }
 
-            virtual const floatVector *public_getBaseMicroGradientSmoothingRatio( ){
+            virtual const floatVector public_getBaseMicroGradientSmoothingRatio( ){
 
                 return getBaseMicroGradientSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getMacroSmoothingRatio( ){
+            virtual const floatType public_getMacroSmoothingRatio( ){
 
                 return getMacroSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getMicroSmoothingRatio( ){
+            virtual const floatType public_getMicroSmoothingRatio( ){
 
                 return getMicroSmoothingRatio( );
 
             }
 
-            virtual const floatVector *public_getMicroGradientSmoothingRatio( ){
+            virtual const floatVector public_getMicroGradientSmoothingRatio( ){
 
                 return getMicroGradientSmoothingRatio( );
 
@@ -22108,19 +22108,19 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep, * boost::unit_test::tolerance( DEFA
 
     R.setupRelaxedStep( 0 );
 
-    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
+    BOOST_TEST( R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
 
-    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
+    BOOST_TEST( R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
 
     floatVector answer1 = { 1e-2, 1e-2, 1e-2 };
-    BOOST_TEST( *R.public_getBaseMicroGradientSmoothingRatio( ) == answer1, CHECK_PER_ELEMENT );
+    BOOST_TEST( R.public_getBaseMicroGradientSmoothingRatio( ) == answer1, CHECK_PER_ELEMENT );
 
-    BOOST_TEST( *R.public_getMacroSmoothingRatio( ) == ( 0.17 / 0.53895133 ) );
+    BOOST_TEST( R.public_getMacroSmoothingRatio( ) == ( 0.17 / 0.53895133 ) );
 
-    BOOST_TEST( *R.public_getMicroSmoothingRatio( ) == ( 0.28 / 0.37773052 ) );
+    BOOST_TEST( R.public_getMicroSmoothingRatio( ) == ( 0.28 / 0.37773052 ) );
 
     floatVector answer2 = { 0.23 / 0.53186824, 0.36 / 0.53186824, 0.1 / 0.53186824 };
-    BOOST_TEST( *R.public_getMicroGradientSmoothingRatio( ) == answer2, CHECK_PER_ELEMENT );
+    BOOST_TEST( R.public_getMicroGradientSmoothingRatio( ) == answer2, CHECK_PER_ELEMENT );
 
     R.public_setBaseMacroSmoothingRatio( -1 );
 
@@ -22130,12 +22130,12 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep, * boost::unit_test::tolerance( DEFA
 
     R.setupRelaxedStep( 23 );
 
-    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == -1 );
+    BOOST_TEST( R.public_getBaseMacroSmoothingRatio( ) == -1 );
 
-    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == -2 );
+    BOOST_TEST( R.public_getBaseMicroSmoothingRatio( ) == -2 );
 
     floatVector answer3 = { -3, -3, -3 };
-    BOOST_TEST( *R.public_getBaseMicroGradientSmoothingRatio( ) == answer3, CHECK_PER_ELEMENT );
+    BOOST_TEST( R.public_getBaseMicroGradientSmoothingRatio( ) == answer3, CHECK_PER_ELEMENT );
 
 }
 
@@ -22276,37 +22276,37 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep2, * boost::unit_test::tolerance( DEF
 
             }
 
-            virtual const floatType *public_getBaseMacroSmoothingRatio( ){
+            virtual const floatType public_getBaseMacroSmoothingRatio( ){
 
                 return getBaseMacroSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getBaseMicroSmoothingRatio( ){
+            virtual const floatType public_getBaseMicroSmoothingRatio( ){
 
                 return getBaseMicroSmoothingRatio( );
 
             }
 
-            virtual const floatVector *public_getBaseMicroGradientSmoothingRatio( ){
+            virtual const floatVector public_getBaseMicroGradientSmoothingRatio( ){
 
                 return getBaseMicroGradientSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getMacroSmoothingRatio( ){
+            virtual const floatType public_getMacroSmoothingRatio( ){
 
                 return getMacroSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getMicroSmoothingRatio( ){
+            virtual const floatType public_getMicroSmoothingRatio( ){
 
                 return getMicroSmoothingRatio( );
 
             }
 
-            virtual const floatVector *public_getMicroGradientSmoothingRatio( ){
+            virtual const floatVector public_getMicroGradientSmoothingRatio( ){
 
                 return getMicroGradientSmoothingRatio( );
 
@@ -22420,19 +22420,19 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep2, * boost::unit_test::tolerance( DEF
 
     R.setupRelaxedStep( 0 );
 
-    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == macroS );
+    BOOST_TEST( R.public_getBaseMacroSmoothingRatio( ) == macroS );
 
-    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == microS );
+    BOOST_TEST( R.public_getBaseMicroSmoothingRatio( ) == microS );
 
     floatVector answer1 = { microGradientS, microGradientS, microGradientS };
-    BOOST_TEST( *R.public_getBaseMicroGradientSmoothingRatio( ) == answer1, CHECK_PER_ELEMENT );
+    BOOST_TEST( R.public_getBaseMicroGradientSmoothingRatio( ) == answer1, CHECK_PER_ELEMENT );
 
-    BOOST_TEST( *R.public_getMacroSmoothingRatio( ) == macroS );
+    BOOST_TEST( R.public_getMacroSmoothingRatio( ) == macroS );
 
-    BOOST_TEST( *R.public_getMicroSmoothingRatio( ) == microS );
+    BOOST_TEST( R.public_getMicroSmoothingRatio( ) == microS );
 
     floatVector answer2 = { microGradientS, microGradientS, microGradientS };
-    BOOST_TEST( *R.public_getMicroGradientSmoothingRatio( ) == answer2, CHECK_PER_ELEMENT );
+    BOOST_TEST( R.public_getMicroGradientSmoothingRatio( ) == answer2, CHECK_PER_ELEMENT );
 
 }
 
@@ -22573,37 +22573,37 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep3, * boost::unit_test::tolerance( DEF
 
             }
 
-            virtual const floatType *public_getBaseMacroSmoothingRatio( ){
+            virtual const floatType public_getBaseMacroSmoothingRatio( ){
 
                 return getBaseMacroSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getBaseMicroSmoothingRatio( ){
+            virtual const floatType public_getBaseMicroSmoothingRatio( ){
 
                 return getBaseMicroSmoothingRatio( );
 
             }
 
-            virtual const floatVector *public_getBaseMicroGradientSmoothingRatio( ){
+            virtual const floatVector public_getBaseMicroGradientSmoothingRatio( ){
 
                 return getBaseMicroGradientSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getMacroSmoothingRatio( ){
+            virtual const floatType public_getMacroSmoothingRatio( ){
 
                 return getMacroSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getMicroSmoothingRatio( ){
+            virtual const floatType public_getMicroSmoothingRatio( ){
 
                 return getMicroSmoothingRatio( );
 
             }
 
-            virtual const floatVector *public_getMicroGradientSmoothingRatio( ){
+            virtual const floatVector public_getMicroGradientSmoothingRatio( ){
 
                 return getMicroGradientSmoothingRatio( );
 
@@ -22741,19 +22741,19 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep3, * boost::unit_test::tolerance( DEF
 
     R.setupRelaxedStep( 0 );
 
-    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
+    BOOST_TEST( R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
 
-    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
+    BOOST_TEST( R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
 
     floatVector answer1 = { 1e-2, 1e-2, 1e-2 };
-    BOOST_TEST( *R.public_getBaseMicroGradientSmoothingRatio( ) == answer1, CHECK_PER_ELEMENT );
+    BOOST_TEST( R.public_getBaseMicroGradientSmoothingRatio( ) == answer1, CHECK_PER_ELEMENT );
 
-    BOOST_TEST( *R.public_getMacroSmoothingRatio( ) == 0.91 );
+    BOOST_TEST( R.public_getMacroSmoothingRatio( ) == 0.91 );
 
-    BOOST_TEST( *R.public_getMicroSmoothingRatio( ) == 0.92 );
+    BOOST_TEST( R.public_getMicroSmoothingRatio( ) == 0.92 );
 
     floatVector answer2 = { 0.93, 0.93, 0.93 };
-    BOOST_TEST( *R.public_getMicroGradientSmoothingRatio( ) == answer2, CHECK_PER_ELEMENT );
+    BOOST_TEST( R.public_getMicroGradientSmoothingRatio( ) == answer2, CHECK_PER_ELEMENT );
 
 }
 
@@ -22900,37 +22900,37 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep4, * boost::unit_test::tolerance( DEF
 
             }
 
-            virtual const floatType *public_getBaseMacroSmoothingRatio( ){
+            virtual const floatType public_getBaseMacroSmoothingRatio( ){
 
                 return getBaseMacroSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getBaseMicroSmoothingRatio( ){
+            virtual const floatType public_getBaseMicroSmoothingRatio( ){
 
                 return getBaseMicroSmoothingRatio( );
 
             }
 
-            virtual const floatVector *public_getBaseMicroGradientSmoothingRatio( ){
+            virtual const floatVector public_getBaseMicroGradientSmoothingRatio( ){
 
                 return getBaseMicroGradientSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getMacroSmoothingRatio( ){
+            virtual const floatType public_getMacroSmoothingRatio( ){
 
                 return getMacroSmoothingRatio( );
 
             }
 
-            virtual const floatType *public_getMicroSmoothingRatio( ){
+            virtual const floatType public_getMicroSmoothingRatio( ){
 
                 return getMicroSmoothingRatio( );
 
             }
 
-            virtual const floatVector *public_getMicroGradientSmoothingRatio( ){
+            virtual const floatVector public_getMicroGradientSmoothingRatio( ){
 
                 return getMicroGradientSmoothingRatio( );
 
@@ -23104,19 +23104,19 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep4, * boost::unit_test::tolerance( DEF
 
     R.setupRelaxedStep( 0 );
 
-    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
+    BOOST_TEST( R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
 
-    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
+    BOOST_TEST( R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
 
     floatVector answer1 = { 1e-2, 1e-2, 1e-2 };
-    BOOST_TEST( *R.public_getBaseMicroGradientSmoothingRatio( ) == answer1, CHECK_PER_ELEMENT );
+    BOOST_TEST( R.public_getBaseMicroGradientSmoothingRatio( ) == answer1, CHECK_PER_ELEMENT );
 
-    BOOST_TEST( *R.public_getMacroSmoothingRatio( ) == 1.0 );
+    BOOST_TEST( R.public_getMacroSmoothingRatio( ) == 1.0 );
 
-    BOOST_TEST( *R.public_getMicroSmoothingRatio( ) == 1.0 );
+    BOOST_TEST( R.public_getMicroSmoothingRatio( ) == 1.0 );
 
     floatVector answer2 = { 1.0, 1.0, 1.0 };
-    BOOST_TEST( *R.public_getMicroGradientSmoothingRatio( ) == answer2, CHECK_PER_ELEMENT );
+    BOOST_TEST( R.public_getMicroGradientSmoothingRatio( ) == answer2, CHECK_PER_ELEMENT );
 
     BOOST_TEST( R.public_getMacroC0( ) == 0.17 );
 
@@ -23138,19 +23138,19 @@ BOOST_AUTO_TEST_CASE( test_setupRelaxedStep4, * boost::unit_test::tolerance( DEF
 
     R.setupRelaxedStep( 1 );
 
-    BOOST_TEST( *R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
+    BOOST_TEST( R.public_getBaseMacroSmoothingRatio( ) == 1e-2 );
 
-    BOOST_TEST( *R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
+    BOOST_TEST( R.public_getBaseMicroSmoothingRatio( ) == 1e-2 );
 
     floatVector answer5 = { 1e-2, 1e-2, 1e-2 };
-    BOOST_TEST( *R.public_getBaseMicroGradientSmoothingRatio( ) == answer5, CHECK_PER_ELEMENT );
+    BOOST_TEST( R.public_getBaseMicroGradientSmoothingRatio( ) == answer5, CHECK_PER_ELEMENT );
 
-    BOOST_TEST( *R.public_getMacroSmoothingRatio( ) == 1.0 );
+    BOOST_TEST( R.public_getMacroSmoothingRatio( ) == 1.0 );
 
-    BOOST_TEST( *R.public_getMicroSmoothingRatio( ) == 1.0 );
+    BOOST_TEST( R.public_getMicroSmoothingRatio( ) == 1.0 );
 
     floatVector answer6 = { 1.0, 1.0, 1.0 };
-    BOOST_TEST( *R.public_getMicroGradientSmoothingRatio( ) == answer6, CHECK_PER_ELEMENT );
+    BOOST_TEST( R.public_getMicroGradientSmoothingRatio( ) == answer6, CHECK_PER_ELEMENT );
 
     BOOST_TEST( R.public_getMacroC0( ) == 0.17 );
 
@@ -23332,9 +23332,9 @@ BOOST_AUTO_TEST_CASE( test_checkRelaxedConvergence, * boost::unit_test::toleranc
 
             virtual void public_checkStateNotReset( ){
 
-                BOOST_TEST( *getMacroSmoothingRatio( ) == 0.11 );
-                BOOST_TEST( *getMicroSmoothingRatio( ) == 0.22 );
-                BOOST_TEST( *getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.33 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroSmoothingRatio( ) == 0.11 );
+                BOOST_TEST( getMicroSmoothingRatio( ) == 0.22 );
+                BOOST_TEST( getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.33 ), CHECK_PER_ELEMENT );
                 BOOST_TEST( getMacroC0( ) == 0.44 );
                 BOOST_TEST( getMicroC0( ) == 0.55 );
                 BOOST_TEST( getMicroGradientC0( ) == floatVector( 3, 0.66 ), CHECK_PER_ELEMENT );
@@ -23346,9 +23346,9 @@ BOOST_AUTO_TEST_CASE( test_checkRelaxedConvergence, * boost::unit_test::toleranc
 
             virtual void public_checkStateReset( ){
 
-                BOOST_TEST( *getMacroSmoothingRatio( ) == 0.01 );
-                BOOST_TEST( *getMicroSmoothingRatio( ) == 0.01 );
-                BOOST_TEST( *getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.01 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroSmoothingRatio( ) == 0.01 );
+                BOOST_TEST( getMicroSmoothingRatio( ) == 0.01 );
+                BOOST_TEST( getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.01 ), CHECK_PER_ELEMENT );
                 BOOST_TEST( getMacroC0( ) == 0.5389513 );
                 BOOST_TEST( getMicroC0( ) == 0.37773052 );
                 BOOST_TEST( getMicroGradientC0( ) == floatVector( 3, 0.53186824 ), CHECK_PER_ELEMENT );
@@ -23611,9 +23611,9 @@ BOOST_AUTO_TEST_CASE( test_preSubCycler, * boost::unit_test::tolerance( DEFAULT_
 
             virtual void public_checkStateNotReset( ){
 
-                BOOST_TEST( *getMacroSmoothingRatio( ) == 0.11 );
-                BOOST_TEST( *getMicroSmoothingRatio( ) == 0.22 );
-                BOOST_TEST( *getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.33 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroSmoothingRatio( ) == 0.11 );
+                BOOST_TEST( getMicroSmoothingRatio( ) == 0.22 );
+                BOOST_TEST( getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.33 ), CHECK_PER_ELEMENT );
                 BOOST_TEST( getMacroC0( ) == 0.44 );
                 BOOST_TEST( getMicroC0( ) == 0.55 );
                 BOOST_TEST( getMicroGradientC0( ) == floatVector( 3, 0.66 ), CHECK_PER_ELEMENT );
@@ -23625,9 +23625,9 @@ BOOST_AUTO_TEST_CASE( test_preSubCycler, * boost::unit_test::tolerance( DEFAULT_
 
             virtual void public_checkStateReset( ){
 
-                BOOST_TEST( *getMacroSmoothingRatio( ) == 0.01 );
-                BOOST_TEST( *getMicroSmoothingRatio( ) == 0.01 );
-                BOOST_TEST( *getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.01 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroSmoothingRatio( ) == 0.01 );
+                BOOST_TEST( getMicroSmoothingRatio( ) == 0.01 );
+                BOOST_TEST( getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.01 ), CHECK_PER_ELEMENT );
                 BOOST_TEST( getMacroC0( ) == 0.5389513 );
                 BOOST_TEST( getMicroC0( ) == 0.37773052 );
                 BOOST_TEST( getMicroGradientC0( ) == floatVector( 3, 0.53186824 ), CHECK_PER_ELEMENT );
@@ -23870,9 +23870,9 @@ BOOST_AUTO_TEST_CASE( test_postSubcyclerSuccess, * boost::unit_test::tolerance( 
 
             virtual void public_checkStateNotReset( ){
 
-                BOOST_TEST( *getMacroSmoothingRatio( ) == 0.11 );
-                BOOST_TEST( *getMicroSmoothingRatio( ) == 0.22 );
-                BOOST_TEST( *getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.33 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroSmoothingRatio( ) == 0.11 );
+                BOOST_TEST( getMicroSmoothingRatio( ) == 0.22 );
+                BOOST_TEST( getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.33 ), CHECK_PER_ELEMENT );
                 BOOST_TEST( getMacroC0( ) == 0.44 );
                 BOOST_TEST( getMicroC0( ) == 0.55 );
                 BOOST_TEST( getMicroGradientC0( ) == floatVector( 3, 0.66 ), CHECK_PER_ELEMENT );
@@ -23884,9 +23884,9 @@ BOOST_AUTO_TEST_CASE( test_postSubcyclerSuccess, * boost::unit_test::tolerance( 
 
             virtual void public_checkStateReset( ){
 
-                BOOST_TEST( *getMacroSmoothingRatio( ) == 0.01 );
-                BOOST_TEST( *getMicroSmoothingRatio( ) == 0.01 );
-                BOOST_TEST( *getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.01 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroSmoothingRatio( ) == 0.01 );
+                BOOST_TEST( getMicroSmoothingRatio( ) == 0.01 );
+                BOOST_TEST( getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.01 ), CHECK_PER_ELEMENT );
                 BOOST_TEST( getMacroC0( ) == 0.5389513 );
                 BOOST_TEST( getMicroC0( ) == 0.37773052 );
                 BOOST_TEST( getMicroGradientC0( ) == floatVector( 3, 0.53186824 ), CHECK_PER_ELEMENT );
@@ -24129,9 +24129,9 @@ BOOST_AUTO_TEST_CASE( test_postSubcyclerFailure, * boost::unit_test::tolerance( 
 
             virtual void public_checkStateNotReset( ){
 
-                BOOST_TEST( *getMacroSmoothingRatio( ) == 0.11 );
-                BOOST_TEST( *getMicroSmoothingRatio( ) == 0.22 );
-                BOOST_TEST( *getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.33 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroSmoothingRatio( ) == 0.11 );
+                BOOST_TEST( getMicroSmoothingRatio( ) == 0.22 );
+                BOOST_TEST( getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.33 ), CHECK_PER_ELEMENT );
                 BOOST_TEST( getMacroC0( ) == 0.44 );
                 BOOST_TEST( getMicroC0( ) == 0.55 );
                 BOOST_TEST( getMicroGradientC0( ) == floatVector( 3, 0.66 ), CHECK_PER_ELEMENT );
@@ -24143,9 +24143,9 @@ BOOST_AUTO_TEST_CASE( test_postSubcyclerFailure, * boost::unit_test::tolerance( 
 
             virtual void public_checkStateReset( ){
 
-                BOOST_TEST( *getMacroSmoothingRatio( ) == 0.01 );
-                BOOST_TEST( *getMicroSmoothingRatio( ) == 0.01 );
-                BOOST_TEST( *getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.01 ), CHECK_PER_ELEMENT );
+                BOOST_TEST( getMacroSmoothingRatio( ) == 0.01 );
+                BOOST_TEST( getMicroSmoothingRatio( ) == 0.01 );
+                BOOST_TEST( getMicroGradientSmoothingRatio( ) == floatVector( 3, 0.01 ), CHECK_PER_ELEMENT );
                 BOOST_TEST( getMacroC0( ) == 0.5389513 );
                 BOOST_TEST( getMicroC0( ) == 0.37773052 );
                 BOOST_TEST( getMicroGradientC0( ) == floatVector( 3, 0.53186824 ), CHECK_PER_ELEMENT );

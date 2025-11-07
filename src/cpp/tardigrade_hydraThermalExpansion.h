@@ -95,10 +95,10 @@ namespace tardigradeHydra{
                 void setQuadraticParameters( const floatVector &quadraticParameters );
 
                 //! Get the index of the thermal deformation configuration
-                const unsigned int* getThermalConfigurationIndex( ){ return &_thermalConfigurationIndex; };
+                const unsigned int getThermalConfigurationIndex( ){ return _thermalConfigurationIndex; };
 
                 //! Get the reference temperature for the thermal expansion
-                const floatType* getReferenceTemperature( ){ return &_referenceTemperature; }
+                const floatType getReferenceTemperature( ){ return _referenceTemperature; }
 
                 //! Get the linear parameters for the thermal expansion
                 const floatVector* getLinearParameters( ){ return &_linearParameters; }

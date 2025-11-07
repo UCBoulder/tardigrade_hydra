@@ -32,9 +32,9 @@ namespace tardigradeHydra{
              * \param withPrevious: Flag for whether to include the derivatives w.r.t. the previous values.
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
@@ -125,9 +125,9 @@ namespace tardigradeHydra{
              * knowledge of the elastic configuration.
              */
 
-            const unsigned int dim = hydra->getDimension( );
-            const unsigned int sot_dim = hydra->getSOTDimension( );
-            const unsigned int elastic_config_index = *getElasticConfigurationIndex( );
+            auto dim = hydra->getDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
+            auto elastic_config_index = getElasticConfigurationIndex( );
 
             auto Fd = get_setDataStorage_damageDeformationGradient( );
 
@@ -197,9 +197,9 @@ namespace tardigradeHydra{
 
             constexpr unsigned int fot_dim = tot_dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
-            const unsigned int elastic_config_index = *getElasticConfigurationIndex( );
+            auto elastic_config_index = getElasticConfigurationIndex( );
     
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
@@ -413,7 +413,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             tardigradeHydra::perzynaViscoplasticity::residual::setStateVariableEvolutionRateDerivatives( isPrevious );
 
@@ -550,11 +550,11 @@ namespace tardigradeHydra{
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
             auto residual = get_setDataStorage_residual( );
-            residual.zero( *getNumEquations( ) );
+            residual.zero( getNumEquations( ) );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
-                ( *residual.value )[ i ] = hydra->getConfiguration( *getDamageConfigurationIndex( ) )[ i ] - ( *get_damageDeformationGradient( ) )[ i ];
+                ( *residual.value )[ i ] = hydra->getConfiguration( getDamageConfigurationIndex( ) )[ i ] - ( *get_damageDeformationGradient( ) )[ i ];
 
             }
 
@@ -575,16 +575,16 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
-            const unsigned int damage_configuration_index = *getDamageConfigurationIndex( );
+            auto damage_configuration_index = getDamageConfigurationIndex( );
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
             const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
             auto jacobian = get_setDataStorage_jacobian( );
-            jacobian.zero( *getNumEquations( ) * num_unknowns );
+            jacobian.zero( getNumEquations( ) * num_unknowns );
 
             // Jacobians of the damage deformation gradient
             for ( unsigned int i = 0; i < sot_dim; i++ ){
@@ -664,7 +664,7 @@ namespace tardigradeHydra{
 
             auto dRdT = get_setDataStorage_dRdT( );
 
-            dRdT.zero( *getNumEquations( ) );
+            dRdT.zero( getNumEquations( ) );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
 
@@ -690,7 +690,7 @@ namespace tardigradeHydra{
             constexpr unsigned int sot_dim = dim * dim;
 
             auto dRdF = get_setDataStorage_dRdF( );
-            dRdF.zero( ( *getNumEquations( ) ) * sot_dim );
+            dRdF.zero( getNumEquations( ) * sot_dim );
 
             *dRdF.value = tardigradeVectorTools::appendVectors( { *get_dDamageDeformationGradientdF( ),
                                                                   *get_dPlasticStateVariablesdF( ) } );

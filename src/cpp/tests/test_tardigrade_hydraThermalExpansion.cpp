@@ -50,9 +50,9 @@ namespace tardigradeHydra{
 
                     static void runBasicGetTests( tardigradeHydra::thermalExpansion::residual &R ){
 
-                        BOOST_CHECK( &R._thermalConfigurationIndex == R.getThermalConfigurationIndex( ) );
+                        BOOST_CHECK( R._thermalConfigurationIndex == R.getThermalConfigurationIndex( ) );
 
-                        BOOST_CHECK( &R._referenceTemperature == R.getReferenceTemperature( ) );
+                        BOOST_CHECK( R._referenceTemperature == R.getReferenceTemperature( ) );
 
                         BOOST_CHECK( &R._linearParameters == R.getLinearParameters( ) );
 
@@ -324,9 +324,9 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters, * boost::unit_test::tol
 
     tardigradeHydra::unit_test::hydraBaseTester::updateUnknownVector( hydra, unknownVector );
 
-    BOOST_TEST( thermalConfigurationIndex == *R.getThermalConfigurationIndex( ) );
+    BOOST_TEST( thermalConfigurationIndex == R.getThermalConfigurationIndex( ) );
 
-    BOOST_TEST( Tref == *R.getReferenceTemperature( ) );
+    BOOST_TEST( Tref == R.getReferenceTemperature( ) );
 
     BOOST_TEST( linearParameters == *R.getLinearParameters( ), CHECK_PER_ELEMENT );
 

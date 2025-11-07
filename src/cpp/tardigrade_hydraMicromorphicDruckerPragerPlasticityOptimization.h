@@ -107,7 +107,7 @@ namespace tardigradeHydra{
                      * \param &integrationParameter: The integration parameter for the function. 0 is explicit, 1 is implicit.
                      */
 
-                    const unsigned int offset = ( *hydra->getNumConfigurations( ) ) * ( *hydra->getConfigurationUnknownCount( ) );
+                    const unsigned int offset = hydra->getNumConfigurations( ) * hydra->getConfigurationUnknownCount( );
 
                     std::vector< unsigned int > positive_indices = { 0, 1, 2, 3, 4, 10, 11, 12, 13, 14 };
 

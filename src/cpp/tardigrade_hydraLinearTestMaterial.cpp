@@ -22,7 +22,7 @@ namespace tardigradeHydra{
              */
 
             TARDIGRADE_ERROR_TOOLS_EVAL(
-                const unsigned int expected_parameter_size = ( *getNumEquations( ) ) * ( hydra->getNumAdditionalDOF( ) + 9 + 1 )
+                const unsigned int expected_parameter_size = getNumEquations( ) * ( hydra->getNumAdditionalDOF( ) + 9 + 1 )
             )
 
             TARDIGRADE_ERROR_TOOLS_CHECK(
@@ -31,11 +31,11 @@ namespace tardigradeHydra{
             );
 
             // Decompose the parameter vector
-            set_F_params( floatVector( std::begin( parameters ), std::begin( parameters ) + ( *getNumEquations( ) ) * ( 9 ) ) );
+            set_F_params( floatVector( std::begin( parameters ), std::begin( parameters ) + getNumEquations( ) * ( 9 ) ) );
     
-            set_T_params( floatVector( std::begin( parameters ) + ( *getNumEquations( ) ) * ( 9 ), std::begin( parameters ) + ( *getNumEquations( ) ) * ( 9 + 1 ) ) );
+            set_T_params( floatVector( std::begin( parameters ) + getNumEquations( ) * ( 9 ), std::begin( parameters ) + getNumEquations( ) * ( 9 + 1 ) ) );
     
-            set_add_dof_params( floatVector( std::begin( parameters ) + ( *getNumEquations( ) ) * ( 9 + 1 ), std::end( parameters ) ) );
+            set_add_dof_params( floatVector( std::begin( parameters ) + getNumEquations( ) * ( 9 + 1 ), std::end( parameters ) ) );
 
         }
 
@@ -54,7 +54,7 @@ namespace tardigradeHydra{
 
             auto XPred = get_setDataStorage_XPred( );
 
-            XPred.zero( *getNumEquations( ) );
+            XPred.zero( getNumEquations( ) );
 
             unsigned int i = 0;
 
@@ -82,7 +82,7 @@ namespace tardigradeHydra{
                 }
 
                 // Add the contributions from the temperature
-                *xi += ( *T_params )[ i ] * ( *( hydra->getTemperature( ) ) );
+                *xi += ( *T_params )[ i ] * ( hydra->getTemperature( ) );
 
                 // Add the contributions from the additional degrees of freedom
                 j = 0;
@@ -141,7 +141,7 @@ namespace tardigradeHydra{
 
             auto residual = get_setDataStorage_residual( );
 
-            residual.zero( *getNumEquations( ) );
+            residual.zero( getNumEquations( ) );
 
             std::transform(
                 std::begin( *get_XPred( ) ),
@@ -160,16 +160,16 @@ namespace tardigradeHydra{
 
             auto jacobian = get_setDataStorage_jacobian( );
 
-            jacobian.zero( ( *getNumEquations( ) ) * hydra->getNumUnknowns( ) );
+            jacobian.zero( getNumEquations( ) * hydra->getNumUnknowns( ) );
 
             for
             (
                 unsigned int i = 0;
-                i < std::min( ( *getNumEquations( ) ), hydra->getNumUnknowns( ) );
+                i < std::min( getNumEquations( ), hydra->getNumUnknowns( ) );
                 ++i
             )
             {
-                ( *jacobian.value )[ ( *getNumEquations( ) ) * i + i ] = -1;
+                ( *jacobian.value )[ getNumEquations( ) * i + i ] = -1;
             }
 
         }
@@ -181,7 +181,7 @@ namespace tardigradeHydra{
 
             auto dRdT = get_setDataStorage_dRdT( );
 
-            dRdT.zero( ( *getNumEquations( ) ) );
+            dRdT.zero( getNumEquations( ) );
 
             std::copy(
                 std::begin( *get_T_params( ) ),
@@ -200,7 +200,7 @@ namespace tardigradeHydra{
 
             auto dRdF = get_setDataStorage_dRdF( );
 
-            dRdF.zero( ( *getNumEquations( ) ) * dim * dim );
+            dRdF.zero( getNumEquations( ) * dim * dim );
 
             std::copy(
                 std::begin( *get_F_params( ) ),
@@ -217,7 +217,7 @@ namespace tardigradeHydra{
 
             auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
 
-            dRdAdditionalDOF.zero( ( *getNumEquations( ) ) * ( hydra->getNumAdditionalDOF( ) ) );
+            dRdAdditionalDOF.zero( getNumEquations( ) * hydra->getNumAdditionalDOF( ) );
 
             std::copy(
                 std::begin( *get_add_dof_params( ) ),

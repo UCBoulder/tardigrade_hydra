@@ -3022,7 +3022,7 @@ BOOST_AUTO_TEST_CASE( test_correctResiduals, * boost::unit_test::tolerance( DEFA
             virtual void setResidual( ) override{
 
                 auto residual = get_setDataStorage_residual( );
-                residual.zero( *getNumEquations( ) );
+                residual.zero( getNumEquations( ) );
                 for ( auto v = residual.begin( ); v != residual.end( ); ++v ){
                     *v = -0.125 * ( v - residual.begin( ) );
                 }
@@ -3323,7 +3323,7 @@ BOOST_AUTO_TEST_CASE( test_successfulNLStep, * boost::unit_test::tolerance( DEFA
             virtual void setResidual( ) override{
 
                 auto residual = get_setDataStorage_residual( );
-                residual.zero( *getNumEquations( ) );
+                residual.zero( getNumEquations( ) );
                 for ( auto v = residual.begin( ); v != residual.end( ); ++v ){
                     *v = -0.125 * ( v - residual.begin( ) );
                 }
@@ -3538,7 +3538,7 @@ BOOST_AUTO_TEST_CASE( test_preNLSolve, * boost::unit_test::tolerance( DEFAULT_TE
             virtual void setResidual( ) override{
 
                 auto residual = get_setDataStorage_residual( );
-                residual.zero( *getNumEquations( ) );
+                residual.zero( getNumEquations( ) );
                 for ( auto v = residual.begin( ); v != residual.end( ); ++v ){
                     *v = -0.125 * ( v - residual.begin( ) );
                 }

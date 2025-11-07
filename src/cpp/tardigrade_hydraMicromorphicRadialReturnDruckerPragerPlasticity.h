@@ -182,21 +182,21 @@ namespace tardigradeHydra{
 
                 virtual void correctResiduals( );
 
-                const double *getYieldTolerance( ){
+                const double getYieldTolerance( ){
                     /*!
                      * Return the yield tolerance
                      */
 
-                    return &_yieldTolerance;
+                    return _yieldTolerance;
 
                 }
 
-                const double *getPlasticMultiplierTolerance( ){
+                const double getPlasticMultiplierTolerance( ){
                     /*!
                      * Return the plastic multiplier tolerance
                      */
 
-                    return &_plasticMultiplierTolerance;
+                    return _plasticMultiplierTolerance;
 
                 }
 

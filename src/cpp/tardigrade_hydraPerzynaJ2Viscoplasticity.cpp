@@ -98,7 +98,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const floatVector* drivingStress;
 

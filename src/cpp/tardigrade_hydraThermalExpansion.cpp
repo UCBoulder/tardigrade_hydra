@@ -60,7 +60,7 @@ namespace tardigradeHydra{
 
             auto dThermalGreenLagrangeStraindT = get_setDataStorage_dThermalGreenLagrangeStraindT( );
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::quadraticThermalExpansion( *hydra->getTemperature( ), *getReferenceTemperature( ), *getLinearParameters( ), *getQuadraticParameters( ), *thermalGreenLagrangeStrain.value, *dThermalGreenLagrangeStraindT.value ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::quadraticThermalExpansion( hydra->getTemperature( ), getReferenceTemperature( ), *getLinearParameters( ), *getQuadraticParameters( ), *thermalGreenLagrangeStrain.value, *dThermalGreenLagrangeStraindT.value ) );
 
         }
 
@@ -134,7 +134,7 @@ namespace tardigradeHydra{
              * Defined as the residual's computed thermal deformation gradient minus the value stored in hydra's configurations.
              */
 
-            const unsigned int thermalConfigurationIndex = *getThermalConfigurationIndex( );
+            const unsigned int thermalConfigurationIndex = getThermalConfigurationIndex( );
 
             auto residual = get_setDataStorage_residual( );
             *residual.value = *get_thermalDeformationGradient( ) - floatVector( hydra->get_configurations( )->begin( ) +   thermalConfigurationIndex * 9,
@@ -152,11 +152,11 @@ namespace tardigradeHydra{
             const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
             auto jacobian = get_setDataStorage_jacobian( );
-            jacobian.zero( *getNumEquations( ) * num_unknowns );
+            jacobian.zero( getNumEquations( ) * num_unknowns );
 
-            for ( unsigned int i = 0; i < *getNumEquations( ); i++ ){
+            for ( unsigned int i = 0; i < getNumEquations( ); i++ ){
 
-                ( *jacobian.value )[ num_unknowns * i + sot_dim * ( *getThermalConfigurationIndex( ) ) + i ] = -1;
+                ( *jacobian.value )[ num_unknowns * i + sot_dim * getThermalConfigurationIndex( ) + i ] = -1;
 
             }
 
@@ -178,7 +178,7 @@ namespace tardigradeHydra{
              */
 
             auto dRdF = get_setDataStorage_dRdF( );
-            dRdF.zero( *getNumEquations( ) * hydra->getDeformationGradient( )->size( ) );
+            dRdF.zero( getNumEquations( ) * hydra->getDeformationGradient( )->size( ) );
 
         }
 
@@ -253,7 +253,7 @@ namespace tardigradeHydra{
 
             ss << "class: tardigradeHydra::thermalExpansion::residual\n\n";
             ss << "name,                                    description,       units, current value\n";
-            ss << "Tref,                      The reference temperature, temperature, " << *getReferenceTemperature( ) << "\n";
+            ss << "Tref,                      The reference temperature, temperature, " << getReferenceTemperature( ) << "\n";
             ss << "l_11,    The 11 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 0 ] << "\n";
             ss << "l_12,    The 12 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 1 ] << "\n";
             ss << "l_13,    The 13 linear thermal expansion coefficient,        none, " << ( *getLinearParameters( ) )[ 2 ] << "\n";

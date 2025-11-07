@@ -48,9 +48,9 @@ namespace tardigradeHydra{
     
                     static void runBasicGetTests( tardigradeHydra::linearElasticity::residual &R ){
     
-                        BOOST_CHECK( &R._lambda == R.getLambda( ) );
+                        BOOST_CHECK( R._lambda == R.getLambda( ) );
     
-                        BOOST_CHECK( &R._mu == R.getMu( ) );
+                        BOOST_CHECK( R._mu == R.getMu( ) );
     
                         BOOST_CHECK( &R._Ee.second == R.get_Ee( ) );
 
@@ -176,9 +176,9 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameterVector, * boost::unit_test
 
     tardigradeHydra::linearElasticity::residual R( &hydra, 9, parameters );
 
-    BOOST_TEST( parameters[ 0 ] == *R.getLambda( ) );
+    BOOST_TEST( parameters[ 0 ] == R.getLambda( ) );
 
-    BOOST_TEST( parameters[ 1 ] == *R.getMu( ) );
+    BOOST_TEST( parameters[ 1 ] == R.getMu( ) );
 
 }
 

@@ -96,7 +96,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const fourthOrderTensor *dF1dF;
 
@@ -280,7 +280,7 @@ namespace tardigradeHydra{
 
             auto sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const secondOrderTensor *velocityGradient;
 
@@ -457,7 +457,7 @@ namespace tardigradeHydra{
                 secondOrderTensor temp;
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(
-                    tardigradeConstitutiveTools::evolveF( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                    tardigradeConstitutiveTools::evolveF( hydra->getDeltaTime( ), previousDOFDeformationGradient,
                                                           *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                           temp, *dofDeformationGradient.value, 1 - getIntegrationParameter( ) )
 
@@ -467,7 +467,7 @@ namespace tardigradeHydra{
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH(
-                    tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                    tardigradeConstitutiveTools::evolveFExponentialMap( hydra->getDeltaTime( ), previousDOFDeformationGradient,
                                                                         *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                                         *dofDeformationGradient.value,
                                                                         getIntegrationParameter( ) )
@@ -488,7 +488,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int sot_dim = dim * dim;
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const secondOrderTensor *intermediateVelocityGradient = get_dofIntermediateVelocityGradient( );
 
@@ -524,7 +524,7 @@ namespace tardigradeHydra{
                     fourthOrderTensor temp2;
 
                     TARDIGRADE_ERROR_TOOLS_CATCH(
-                        tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                        tardigradeConstitutiveTools::evolveFFlatJ( hydra->getDeltaTime( ), previousDOFDeformationGradient,
                                                                    *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                                    temp, *dofDeformationGradient.value,
                                                                    dFmdIL, temp2, dFmdFp, dFmdILp,
@@ -535,7 +535,7 @@ namespace tardigradeHydra{
                 else{
 
                     TARDIGRADE_ERROR_TOOLS_CATCH(
-                        tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                        tardigradeConstitutiveTools::evolveFExponentialMap( hydra->getDeltaTime( ), previousDOFDeformationGradient,
                                                                             *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                                             *dofDeformationGradient.value,
                                                                             dFmdIL, dFmdFp, dFmdILp,
@@ -582,7 +582,7 @@ namespace tardigradeHydra{
 
                 if ( getUseTrapezoidalIntegration( ) ){
 
-                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFFlatJ( hydra->getDeltaTime( ), previousDOFDeformationGradient,
                                                                                              *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                                                              *dofDeformationGradient.value,
                                                                                              dFmdIL,
@@ -592,7 +592,7 @@ namespace tardigradeHydra{
                 }
                 else{
 
-                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( *hydra->getDeltaTime( ), previousDOFDeformationGradient,
+                    TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( hydra->getDeltaTime( ), previousDOFDeformationGradient,
                                                                                                       *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
                                                                                                       *dofDeformationGradient.value,
                                                                                                       dFmdIL,
@@ -728,13 +728,13 @@ namespace tardigradeHydra{
              * Set the values of the jacobian
              */
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_unknowns = hydra->getNumUnknowns( );
+            auto num_unknowns = hydra->getNumUnknowns( );
 
-            const unsigned int num_equations = *getNumEquations( );
+            auto num_equations = getNumEquations( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             auto jacobian = get_setDataStorage_jacobian( );
             jacobian.zero( num_equations * num_unknowns );
@@ -781,7 +781,7 @@ namespace tardigradeHydra{
 
             auto sot_dim = hydra->getSOTDimension( );
             auto dRdF = get_setDataStorage_dRdF( );
-            dRdF.zero( ( *getNumEquations( ) ) * sot_dim );
+            dRdF.zero( getNumEquations( ) * sot_dim );
             std::copy(
                 std::begin( *get_dDOFDeformationGradientdDeformationGradient( ) ),
                 std::end(   *get_dDOFDeformationGradientdDeformationGradient( ) ),
@@ -797,7 +797,7 @@ namespace tardigradeHydra{
 
             auto sot_dim = hydra->getSOTDimension( );
 
-            auto num_equations = *getNumEquations( );
+            auto num_equations = getNumEquations( );
 
             auto num_additional_dof = hydra->getAdditionalDOF( )->size( );
 
@@ -855,7 +855,7 @@ namespace tardigradeHydra{
 
             auto configuration = getDOFConfigurationIndex( );
 
-            auto num_configurations = *hydra->getNumConfigurations( );
+            auto num_configurations = hydra->getNumConfigurations( );
 
             const secondOrderTensor *dofDeformationGradient = get_dofDeformationGradient( );
 
@@ -968,6 +968,9 @@ namespace tardigradeHydra{
         }
 
         void residual::setInternalHeatGenerationRateGradients( ){
+            /*!
+             * Set the gradients of the internal heat generation rate
+             */
 
             auto internal_heat_generation_rate_factor = get_internalHeatGenerationRateFactor( );
 

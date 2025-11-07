@@ -250,11 +250,11 @@ namespace tardigradeHydra{
 
             }
 
-            *PK2Stress.value = 2 * ( *getMu( ) ) * ( *Ee );
+            *PK2Stress.value = 2 * getMu( ) * ( *Ee );
 
             floatType trace_Ee = tardigradeVectorTools::trace( *Ee );            
 
-            for ( unsigned int i = 0; i < dim; i++ ){ ( *PK2Stress.value )[ dim * i + i ] += ( *getLambda( ) ) * trace_Ee; }
+            for ( unsigned int i = 0; i < dim; i++ ){ ( *PK2Stress.value )[ dim * i + i ] += getLambda( ) * trace_Ee; }
 
         }
     
@@ -293,8 +293,8 @@ namespace tardigradeHydra{
             dPK2StressdEe.zero( fot_dim );
             for ( unsigned int i = 0; i < dim; i++ ){
                 for ( unsigned int j = 0; j < dim; j++ ){
-                    ( *dPK2StressdEe.value )[ dim * dim * ( dim * i + j ) + ( dim * i + j ) ] += 2 * ( *getMu( ) );
-                    ( *dPK2StressdEe.value )[ dim * dim * dim * i + dim * dim * i + dim * j + j ] += ( *getLambda( ) );
+                    ( *dPK2StressdEe.value )[ dim * dim * ( dim * i + j ) + ( dim * i + j ) ] += 2 * getMu( );
+                    ( *dPK2StressdEe.value )[ dim * dim * dim * i + dim * dim * i + dim * j + j ] += getLambda( );
                 }
             }
 
@@ -406,7 +406,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int fot_dim = tot_dim * dim;
 
-            unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
             const secondOrderTensor *Fe;
 
@@ -681,15 +681,15 @@ namespace tardigradeHydra{
              * Set the Jacobian value
              */
 
-            const unsigned int dim = hydra->getDimension( );
+            auto dim = hydra->getDimension( );
 
-            const unsigned int sot_dim = hydra->getSOTDimension( );
+            auto sot_dim = hydra->getSOTDimension( );
 
-            const unsigned int num_configs = *hydra->getNumConfigurations( );
+            auto num_configs = hydra->getNumConfigurations( );
 
-            const unsigned int num_unknown_config_vars = ( num_configs - 1 ) * sot_dim;
+            auto num_unknown_config_vars = ( num_configs - 1 ) * sot_dim;
 
-            const unsigned int num_unknowns = hydra->getNumUnknowns( );
+            auto num_unknowns = hydra->getNumUnknowns( );
 
             // Form the Jacobian
             auto jacobian = get_setDataStorage_jacobian( );
@@ -721,7 +721,7 @@ namespace tardigradeHydra{
 
             auto dRdT = get_setDataStorage_dRdT( );
 
-            dRdT.zero( *getNumEquations( ) );
+            dRdT.zero( getNumEquations( ) );
 
         }
 
