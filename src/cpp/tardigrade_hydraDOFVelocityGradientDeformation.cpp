@@ -968,6 +968,9 @@ namespace tardigradeHydra{
         }
 
         void residual::setInternalHeatGenerationRateGradients( ){
+            /*!
+             * Set the gradients of the internal heat generation rate
+             */
 
             auto internal_heat_generation_rate_factor = get_internalHeatGenerationRateFactor( );
 
