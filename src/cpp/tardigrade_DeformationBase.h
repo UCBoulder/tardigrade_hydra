@@ -38,6 +38,40 @@ namespace tardigradeHydra{
                 output_iterator output_begin, output_iterator output_end
             );
 
+            template<
+                unsigned int size,
+                class configuration_iterator,
+                class output_iterator
+            >
+            void getLeadingSubConfigurationJacobian(
+                const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
+            template<
+                unsigned int size,
+                class configuration_iterator,
+                class output_iterator
+            >
+            void getTrailingSubConfigurationJacobian(
+                const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
+        protected:
+
+            template<
+                unsigned int rows,
+                unsigned int columns,
+                unsigned int inner,
+                class A_iterator, class B_iterator, class C_iterator
+            >
+            void _denseMatrixMultiply(
+                const A_iterator &A_begin, const A_iterator &A_end,
+                const B_iterator &B_begin, const B_iterator &B_end,
+                C_iterator C_begin, C_iterator C_end
+            );
+
     };
 
 }

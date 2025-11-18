@@ -60,7 +60,62 @@ bool tolerantCheck( const std::vector< double > &v1, const std::vector< double >
 
 }
 
-BOOST_AUTO_TEST_CASE( test_placeholder, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_denseMatrixMultiply, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class DeformationBase_mock : public tardigradeHydra::DeformationBase{
+
+        public:
+
+            DeformationBase_mock( ){ }
+
+            void public_denseMatrixMultiply(
+                const std::vector<double> &A,
+                const std::vector<double> &B,
+                std::vector<double> &C
+            ){
+
+                _denseMatrixMultiply<2, 3, 4>(
+                    std::begin( A ), std::end( A ),
+                    std::begin( B ), std::end( B ),
+                    std::begin( C ), std::end( C )
+                );
+
+            }
+
+    };
+
+    std::vector< double > A = {
+        1, 2, 3,
+        4, 5, 6
+    };
+
+    std::vector< double > B = {
+         4,  5,  6,  7,
+         8,  9, 10, 11,
+        12, 13, 14, 15
+    };
+
+    std::vector< double > answer = {
+         56,  62,  68,  74,
+         128, 143, 158, 173
+    };
+
+    std::vector< double > result( 8, -1 );
+
+    DeformationBase_mock deformation;
+
+    try{
+    deformation.public_denseMatrixMultiply(
+        A, B, result
+    );
+    }
+    catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e), throw;}
+
+    BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_getSubConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
