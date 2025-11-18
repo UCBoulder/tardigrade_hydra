@@ -21,6 +21,7 @@ set(TARDIGRADE_FULL_BUILD OFF CACHE BOOL "Flag for whether a full build of Tardi
 
 # Set the internal support libraries
 set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearTestMaterial" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPerzynaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPerzynaViscodamage" "tardigrade_hydraMicromorphicDruckerPragerPlasticity" "tardigrade_hydraPerzynaJ2Viscoplasticity" "tardigrade_hydraMassChange" "tardigrade_hydraMicromorphicDruckerPragerPlasticityOptimization" "tardigrade_hydraFourierHeatConduction" "tardigrade_hydraLinearInternalEnergy" "tardigrade_hydraMicromorphicRadialReturnLinearElasticity" "tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity" "tardigrade_hydraDOFVelocityGradientDeformation")
+set(ADDITIONAL_HEADER_ONLY_LIBRARIES "tardigrade_DeformationBase")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
@@ -67,6 +68,12 @@ elseif(cmake_build_type_lower STREQUAL "conda-test")
 #              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
 #              NO_CACHE
 #              REQUIRED)
+endif()
+
+if(${not_conda_test} STREQUAL "true")
+    foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
+        add_library(${package} INTERFACE "${CPP_SRC_PATH}/${package}.cpp" "${CPP_SRC_PATH}/${package}.h")
+    endforeach(package)
 endif()
 
 # Get version number from Git
