@@ -68,6 +68,19 @@ namespace tardigradeHydra{
                 const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end
             );
 
+            template<
+                unsigned int size,
+                unsigned int dim,
+                class configuration_iterator,
+                class configuration_gradient_iterator,
+                class output_iterator
+            >
+            void getSubConfigurationGradient(
+                const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+                const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
         protected:
 
             template<

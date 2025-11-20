@@ -326,4 +326,82 @@ namespace tardigradeHydra{
 
     }
 
+    template<
+        unsigned int size,
+        unsigned int dim,
+        class configuration_iterator,
+        class configuration_gradient_iterator,
+        class output_iterator
+    >
+    void DeformationBase::getSubConfigurationGradient(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Compute the gradient of a sub configuration e.g., given a configuration
+         *
+         * \f$ [A] = [B][C][D] \f$
+         *
+         * compute
+         *
+         * \f$ \frac{\partial [A]}{\partial X} = \frac{\partial [B]}{\partial X} [C][D] + [B]\frac{\partial [C]}{\partial X} [D] + [B][C]\frac{\partial [D]}{\partial X} \f$
+         *
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) == ( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) ),
+            "The number of configurations from the sub configurations is " + std::to_string( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) + " but the number of configurations from the gradients is " + std::to_string( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) )
+        );
+
+        if ( configurations_end != ( configurations_begin + size * size ) ){
+
+            std::fill( output_begin, output_end, output_type( ) );
+
+            // Get the following configuration and its gradient
+            std::array< output_type, size * size > Aminus;
+            std::array< output_type, size * size * dim > dAminusdX;
+
+            getSubConfiguration<size>(
+                configurations_begin + size * size, configurations_end,
+                std::begin( Aminus ), std::end( Aminus )
+            );
+
+            getSubConfigurationGradient<size,dim>(
+                configurations_begin + size * size, configurations_end,
+                configuration_gradients_begin + size * size * dim, configuration_gradients_end,
+                std::begin( dAminusdX ), std::end( dAminusdX )
+            );
+
+            // Assemble the configuration gradient
+            for ( unsigned int i = 0; i < size; ++i ){
+                for ( unsigned int j = 0; j < size; ++j ){
+                    for ( unsigned int a = 0; a < dim; ++a ){
+                        for ( unsigned int l = 0; l < size; ++l ){
+                            *( output_begin + size * dim * i + dim * j + a ) += ( *( configuration_gradients_begin + size * dim * i + dim * l + a ) ) * Aminus[ size * l + j ]
+                                                                              + ( *( configurations_begin + size * i + l ) ) * dAminusdX[ size * dim * l + dim * j + a ];
+                        }
+                    }
+                }
+            }
+
+        }
+        else{
+
+            std::copy(
+                configuration_gradients_begin, configuration_gradients_end, output_begin
+            );
+
+        }
+
+    }
+
 }
