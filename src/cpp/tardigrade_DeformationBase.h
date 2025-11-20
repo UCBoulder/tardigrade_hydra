@@ -58,6 +58,16 @@ namespace tardigradeHydra{
                 output_iterator output_begin, output_iterator output_end
             );
 
+            template<
+                unsigned int size,
+                class configuration_iterator,
+                class output_iterator
+            >
+            void getSubConfigurationJacobian(
+                const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+                const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end
+            );
+
         protected:
 
             template<

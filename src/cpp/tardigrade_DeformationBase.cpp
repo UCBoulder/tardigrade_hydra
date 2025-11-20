@@ -236,4 +236,94 @@ namespace tardigradeHydra{
             }
         }
     }
+
+    template<
+        unsigned int size,
+        class configuration_iterator,
+        class output_iterator
+    >
+    void DeformationBase::getSubConfigurationJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Compute the Jacobian of a sub-configuration with respect to an internal configuration e.g.,
+         *
+         * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [C] \f$
+         *
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configuration_index: The index of the configuration to compute the Jacobian for
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) == ( size * size * size * size ),
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should have a size of " + std::to_string( size * size * size * size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            configurations_end != configurations_begin,
+            "The configurations vector has no size"
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( configurations_end - configurations_begin ) % ( size * size ) == 0,
+            "The configurations iterator has a size of " + std::to_string( ( unsigned int )( configurations_end - configurations_begin ) ) + " which is not a multiple of " + std::to_string( size * size )
+        )
+
+        const unsigned int num_configurations = ( unsigned int )( configurations_end - configurations_begin ) / ( size * size );
+
+        if ( configuration_index == 0 ){
+
+            getLeadingSubConfigurationJacobian<size>(
+                configurations_begin, configurations_end, output_begin, output_end
+            );
+
+        }
+        else if ( ( configuration_index + 1 ) == num_configurations ){
+
+            getTrailingSubConfigurationJacobian<size>(
+                configurations_begin, configurations_end, output_begin, output_end
+            );
+
+        }
+        else if ( ( 0 < configuration_index ) && ( configuration_index < ( num_configurations - 1 ) ) ){
+
+            std::fill( output_begin, output_end, output_type( ) );
+            
+            // Get the prior and previous configurations
+            std::array< output_type, size * size > Aplus, Aminus;
+            getSubConfiguration<size>(
+                configurations_begin, configurations_begin + size * size * configuration_index,
+                std::begin( Aplus ), std::end( Aplus )
+            );
+            getSubConfiguration<size>(
+                configurations_begin + size * size * ( configuration_index + 1 ), configurations_end,
+                std::begin( Aminus ), std::end( Aminus )
+            );
+            
+            // Assemble the Jacobian
+            for ( unsigned int i = 0; i < size; ++i ){
+                for ( unsigned int j = 0; j < size; ++j ){
+                    for ( unsigned int k = 0; k < size; ++k ){
+                        for ( unsigned int l = 0; l < size; ++l ){
+                            *( output_begin + size * size * size * i + size * size * j + size * k + l ) += Aplus[ size * i + k ] * Aminus[ size * l + j ];
+                        }
+                    }
+                }
+            }
+
+        }
+        else{
+
+            std::fill( output_begin, output_end, output_type( ) );
+
+        }
+
+    }
+
 }
