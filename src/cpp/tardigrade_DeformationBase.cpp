@@ -165,7 +165,7 @@ namespace tardigradeHydra{
 
         std::array< output_type, size * size > Aminus;
 
-        getSubConfiguration(
+        getSubConfiguration<size>(
             configurations_begin + size * size, configurations_end,
             std::begin( Aminus ), std::end( Aminus )
         );
@@ -223,7 +223,7 @@ namespace tardigradeHydra{
 
         std::array< output_type, size * size > Aplus;
 
-        getSubConfiguration(
+        getSubConfiguration<size>(
             configurations_begin, configurations_end - size * size,
             std::begin( Aplus ), std::end( Aplus )
         );
