@@ -8,6 +8,7 @@
 
 #include "tardigrade_DeformationBase.h"
 #include "tardigrade_error_tools.h"
+#include "Eigen/Dense"
 
 namespace tardigradeHydra{
 
@@ -888,6 +889,87 @@ namespace tardigradeHydra{
 
             std::fill( output_begin, output_end, output_type( ) );
 
+        }
+
+    }
+
+    template<
+        unsigned int size,
+        class deformation_iterator,
+        class configuration_iterator,
+        class output_iterator
+    >
+    void DeformationBase::solveForLeadingConfiguration(
+        const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Solve for the leading configuration which would be required to achieve the total deformation i.e., if
+         * the total deformation is \f$ [A] \f$ and we know the net deformation from the subsequent deformations
+         * in the form of the configurations, then
+         * 
+         * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
+         *
+         * \param &deformation_begin: The starting iterator of the total deformation
+         * \param &deformation_end: The stopping iterator of the total deformation
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( deformation_end - deformation_begin ) == ( unsigned int )( output_end - output_begin ),
+            "The total deformation has a size of " + std::to_string( ( unsigned int )( deformation_end - deformation_begin ) ) + " but the output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) >= size,
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but it needs a size of at least " + std::to_string( size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) % size == 0,
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but it must be a scalar multiple of the configuration size " + std::to_string( size )
+        );
+
+        if ( configurations_end == ( configurations_begin + size * size ) ){
+
+            std::copy(
+                deformation_begin, deformation_end, output_begin
+            );
+
+        }
+        else{
+
+            std::array< output_type, size * size > Aminus, Aminus_inverse;
+
+            getSubConfiguration<size>(
+                configurations_begin, configurations_end,
+                std::begin( Aminus ), std::end( Aminus )
+            );
+
+            // TODO: Generalize this to a matrix solve rather than computing an inverse
+            Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
+            Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( Aminus_inverse.data( ), size, size );
+            _Aminus_inverse = _Aminus.inverse( );
+
+//            D_ik A_kj = B_ij
+
+            std::fill(
+                output_begin, output_end, output_type( )
+            );
+
+            for ( unsigned int i = 0; deformation_begin + size * i != deformation_end; ++i ){
+                for ( unsigned int k = 0; k < size; ++k ){
+                    for ( unsigned int j = 0; j < size; ++j ){
+                        *( output_begin + size * i + j ) += ( *( deformation_begin + size * i + k ) ) * Aminus_inverse[ size * k + j ];
+                    }
+                }
+            }
         }
 
     }
