@@ -447,7 +447,7 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             ( unsigned int )( output_end - output_begin ) == ( size * size * dim * size * size ),
-            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim )
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim * size * size )
         );
 
         // Initialize the output vector
@@ -516,7 +516,7 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             ( unsigned int )( output_end - output_begin ) == ( size * size * dim * size * size ),
-            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim )
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim * size * size )
         );
 
         // Initialize the output vector
@@ -587,7 +587,7 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             ( unsigned int )( output_end - output_begin ) == ( size * size * dim * size * size ),
-            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim )
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim * size * size )
         );
 
         const unsigned int num_configurations = ( unsigned int )( configurations_end - configurations_begin ) / ( size * size );
@@ -647,6 +647,236 @@ namespace tardigradeHydra{
                                 *( output_begin + size * dim * size * size * i + dim * size * size * j + size * size * a + bc )
                                     += dAplusdX[ size * dim * i + dim * l + a ] * J_Aminus[ size * size * size * l + size * size * j + bc ]
                                      + Aplus[ size * i + l ] * J_dAminusdX[ size * dim * size * size * l + dim * size * size * j + size * size * a + bc ];
+                            }
+                        }
+                    }
+                }
+            }
+
+        }
+        else{
+
+            std::fill( output_begin, output_end, output_type( ) );
+
+        }
+
+    }
+
+    template<
+        unsigned int size,
+        unsigned int dim,
+        class configuration_iterator,
+        class configuration_gradient_iterator,
+        class output_iterator
+    >
+    void DeformationBase::getLeadingSubConfigurationGradientConfigurationGradientJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Compute the Jacobian gradient of a sub configuration with respect to the leading configuration's gradient e.g., given a configuration
+         *
+         * \f$ [A] = [B][C][D] \f$
+         *
+         * compute
+         *
+         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [B]}{\partial X} } = \mathbbold{I} [C] [D] \f$
+         *
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) == ( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) ),
+            "The number of configurations from the sub configurations is " + std::to_string( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) + " but the number of configurations from the gradients is " + std::to_string( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) == ( size * size * dim * size * size * dim ),
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim * size * size * dim )
+        );
+
+        // Initialize the output vector
+        std::fill(
+            output_begin, output_end, output_type( )
+        );
+
+        if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
+
+            std::array< output_type, size * size > Aminus;
+            getSubConfiguration<size>(
+                configurations_begin + size * size, configurations_end,
+                std::begin( Aminus ), std::end( Aminus )
+            );
+
+            for ( unsigned int i = 0; i < size; ++i ){
+                for ( unsigned int j = 0; j < size; ++j ){
+                    for ( unsigned int a = 0; a < dim; ++a ){
+                        for ( unsigned int k = 0; k < size; ++k ){
+                            *( output_begin + size * dim * size * size * dim * i + dim * size * size * dim * j + size * size * dim * a + size * dim * i + dim * k + a )
+                                += Aminus[ size * k + j ];
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    template<
+        unsigned int size,
+        unsigned int dim,
+        class configuration_iterator,
+        class configuration_gradient_iterator,
+        class output_iterator
+    >
+    void DeformationBase::getTrailingSubConfigurationGradientConfigurationGradientJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Compute the Jacobian gradient of a sub configuration with respect to the trailing configuration's gradient e.g., given a configuration
+         *
+         * \f$ [A] = [B][C][D] \f$
+         *
+         * compute
+         *
+         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [D]}{\partial X} } = [B][C]\mathbbold{I} \f$
+         *
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) == ( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) ),
+            "The number of configurations from the sub configurations is " + std::to_string( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) + " but the number of configurations from the gradients is " + std::to_string( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) == ( size * size * dim * size * size * dim ),
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim * size * size * dim )
+        );
+
+        // Initialize the output vector
+        std::fill(
+            output_begin, output_end, output_type( )
+        );
+
+        if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
+
+            std::array< output_type, size * size > Aplus;
+            getSubConfiguration<size>(
+                configurations_begin, configurations_end - size * size,
+                std::begin( Aplus ), std::end( Aplus )
+            );
+
+            for ( unsigned int i = 0; i < size; ++i ){
+                for ( unsigned int ja = 0; ja < size * dim; ++ja ){
+                    for ( unsigned int l = 0; l < size; ++l ){
+                        *( output_begin + size * dim * size * size * dim * i + size * size * dim * ja + size * dim * l + ja ) += Aplus[ size * i + l ];
+                    }
+                }
+            }
+
+        }
+
+    }
+
+    template<
+        unsigned int size,
+        unsigned int dim,
+        class configuration_iterator,
+        class configuration_gradient_iterator,
+        class output_iterator
+    >
+    void DeformationBase::getSubConfigurationGradientConfigurationGradientJacobian(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+        const unsigned int &configuration_index,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Compute the Jacobian gradient of a sub configuration with respect to an arbitrary configuration gradient e.g., given a configuration
+         *
+         * \f$ [A] = [B][C][D] \f$
+         *
+         * compute
+         *
+         * \f$ \frac{\partial^2 [A]}{\partial X \partial \frac{\partial [C]}{\partial X} } = [b] \mathbbold{I} [D] \f$
+         *
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param &configuration_index: The index of the configuration to compute the Jacobian for
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) == ( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) ),
+            "The number of configurations from the sub configurations is " + std::to_string( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) + " but the number of configurations from the gradients is " + std::to_string( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) == ( size * size * dim * size * size * dim ),
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim * size * size * dim )
+        );
+
+        const unsigned int num_configurations = ( unsigned int )( configurations_end - configurations_begin ) / ( size * size );
+
+        if ( configuration_index == 0 ){
+
+            getLeadingSubConfigurationGradientConfigurationGradientJacobian<size,dim>(
+                configurations_begin, configurations_end, configuration_gradients_begin, configuration_gradients_end, output_begin, output_end
+            );
+
+        }
+        else if ( ( configuration_index + 1 ) == num_configurations ){
+
+            getTrailingSubConfigurationGradientConfigurationGradientJacobian<size,dim>(
+                configurations_begin, configurations_end, configuration_gradients_begin, configuration_gradients_end, output_begin, output_end
+            );
+
+        }
+        else if ( ( 0 < configuration_index ) && ( configuration_index < ( num_configurations - 1 ) ) ){
+
+            std::fill( output_begin, output_end, output_type( ) );
+            
+            // Get the prior and previous configurations
+            std::array< output_type, size * size > Aplus, Aminus;
+            getSubConfiguration<size>(
+                configurations_begin, configurations_begin + size * size * configuration_index,
+                std::begin( Aplus ), std::end( Aplus )
+            );
+            getSubConfiguration<size>(
+                configurations_begin + size * size * ( configuration_index + 1 ), configurations_end,
+                std::begin( Aminus ), std::end( Aminus )
+            );
+
+            // Assemble the Jacobian
+            for ( unsigned int i = 0; i < size; ++i ){
+                for ( unsigned int j = 0; j < size; ++j ){
+                    for ( unsigned int a = 0; a < dim; ++a ){
+                        for ( unsigned int k = 0; k < size; ++k ){
+                            for ( unsigned int l = 0; l < size; ++l ){
+                                *( output_begin + size * dim * size * size * dim * i + dim * size * size * dim * j + size * size * dim * a + size * dim * k + dim * l + a )
+                                    += Aplus[ size * i + k ] * Aminus[ size * l + j ];
                             }
                         }
                     }
