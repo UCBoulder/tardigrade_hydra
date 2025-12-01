@@ -162,6 +162,7 @@ namespace tardigradeHydra{
             );
 
             template<
+                unsigned int deformation_rows,
                 unsigned int size,
                 class deformation_iterator,
                 class configuration_iterator,
@@ -170,6 +171,33 @@ namespace tardigradeHydra{
             void solveForLeadingConfiguration(
                 const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
+            template<
+                unsigned int deformation_rows,
+                unsigned int size,
+                class deformation_iterator,
+                class configuration_iterator,
+                class output_iterator
+            >
+            void solveForLeadingConfigurationDeformationJacobian(
+                const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+                const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
+            template<
+                unsigned int deformation_rows,
+                unsigned int size,
+                class deformation_iterator,
+                class configuration_iterator,
+                class output_iterator
+            >
+            void solveForLeadingConfigurationConfigurationJacobian(
+                const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+                const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+                const unsigned int &configuration_index,
                 output_iterator output_begin, output_iterator output_end
             );
 
