@@ -1280,6 +1280,10 @@ namespace tardigradeHydra{
         Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( &(*Aminus_inverse_begin), size, size );
         _Aminus_inverse = _Aminus.inverse( );
 
+        std::fill(
+            output_begin, output_end, output_type( )
+        );
+
         for ( unsigned int i = 0; i < deformation_rows; ++i ){
             for ( unsigned int j = 0; j < size; ++j ){
                 for ( unsigned int a = 0; a < dim; ++a ){
@@ -1347,6 +1351,90 @@ namespace tardigradeHydra{
             std::begin( Aminus ), std::end( Aminus ),
             output_begin, output_end
         );
+
+    }
+
+    template<
+        unsigned int deformation_rows,
+        unsigned int size,
+        unsigned int dim,
+        class deformation_gradient_iterator,
+        class leading_configuration_iterator,
+        class configuration_iterator,
+        class configuration_gradient_iterator,
+        class output_iterator
+    >
+    void DeformationBase::solveForLeadingConfigurationGradientDeformationGradientJacobian(
+        const deformation_gradient_iterator &deformation_gradient_begin, const deformation_gradient_iterator &deformation_gradient_end,
+        const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Solve for the jacobian with respect to the total deformation gradient of the leading configuration gradient
+         * which would be required to achieve the total configuration gradient i.e., if the total deformation is
+         * \f$ [A] \f$ and we know the net deformation from the subsequent deformations in the form of the configurations, then
+         *
+         * \f$ \frac{\partial [B]}{\partial X} = \frac{\partial [A]}{\partial X} A^{-} + [A] \frac{\partial [A]^{-}}{\partial X} \f$
+         *
+         * which means we can solve for \f$ \frac{\partial [A]}{\partial X} \f$ via
+         *
+         * \f$ \frac{\partial [A]}{\partial X} = \left(\frac{\partial [B]}{\partial X} - [A] \frac{\partial [A]^{-}}{\partial X}\right) \left([A]^{-}\right)^{-1}
+         *
+         * \param &deformation_gradient_begin: The starting iterator of the total deformation gradient.
+         *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
+         * \param &deformation_gradient_end: The stopping iterator of the total deformation gradient.
+         *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
+         * \param &leading_configuration_begin: The starting iterator of the leading configuration
+         * \param &leading_configuration_end: The stopping iterator of the leading configuration
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using configuration_gradient_type = typename std::iterator_traits<configuration_gradient_iterator>::value_type;
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) == deformation_rows * size * dim,
+            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) ) + " but must have a size of " + std::to_string( deformation_rows * size * dim )
+        )
+
+        // J_ijk_abc = d_ia d_lb d_kc Aminus_inv_lj
+        // J_ija_iba = Aminus_inv_bj
+
+        std::array< configuration_type, size * size > Aminus, Aminus_inverse;
+        std::array< configuration_gradient_type, size * size * dim > dAMinusdX;
+        std::array< output_type, deformation_rows * size * dim > intermediate_term1, intermediate_term2;
+
+        // Compute the trailing configuration and it's gradient
+        getNetConfiguration<size>(
+            configurations_begin, configurations_end,
+            std::begin( Aminus ), std::end( Aminus )
+        );
+
+        // TODO: Generalize this to a matrix solve rather than computing an inverse
+        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
+        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( Aminus_inverse.data( ), size, size );
+        _Aminus_inverse = _Aminus.inverse( );
+
+        for ( unsigned int i = 0; i < deformation_rows; ++i ){
+            for ( unsigned int j = 0; j < size; ++j ){
+                for ( unsigned int a = 0; a < dim; ++a ){
+                    for ( unsigned int b = 0; b < size; ++b ){
+                        *( output_begin + size * dim * deformation_rows * size * dim * i + dim * deformation_rows * size * dim * j + deformation_rows * size * dim * a + size * dim * i + dim * b + a )
+                            += Aminus_inverse[ size * b + j ];
+                    }
+                }
+            }
+        }
 
     }
 
