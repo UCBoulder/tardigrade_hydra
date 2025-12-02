@@ -33,7 +33,7 @@ namespace tardigradeHydra{
                 class configuration_iterator,
                 class output_iterator
             >
-            void getSubConfiguration(
+            void getNetConfiguration(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 output_iterator output_begin, output_iterator output_end
             );
@@ -43,7 +43,7 @@ namespace tardigradeHydra{
                 class configuration_iterator,
                 class output_iterator
             >
-            void getLeadingSubConfigurationJacobian(
+            void getLeadingNetConfigurationJacobian(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 output_iterator output_begin, output_iterator output_end
             );
@@ -53,7 +53,7 @@ namespace tardigradeHydra{
                 class configuration_iterator,
                 class output_iterator
             >
-            void getTrailingSubConfigurationJacobian(
+            void getTrailingNetConfigurationJacobian(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 output_iterator output_begin, output_iterator output_end
             );
@@ -63,7 +63,7 @@ namespace tardigradeHydra{
                 class configuration_iterator,
                 class output_iterator
             >
-            void getSubConfigurationJacobian(
+            void getNetConfigurationJacobian(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end
             );
@@ -75,7 +75,7 @@ namespace tardigradeHydra{
                 class configuration_gradient_iterator,
                 class output_iterator
             >
-            void getSubConfigurationGradient(
+            void getNetConfigurationGradient(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
                 output_iterator output_begin, output_iterator output_end
@@ -88,7 +88,7 @@ namespace tardigradeHydra{
                 class configuration_gradient_iterator,
                 class output_iterator
             >
-            void getLeadingSubConfigurationGradientConfigurationJacobian(
+            void getLeadingNetConfigurationGradientConfigurationJacobian(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
                 output_iterator output_begin, output_iterator output_end
@@ -101,7 +101,7 @@ namespace tardigradeHydra{
                 class configuration_gradient_iterator,
                 class output_iterator
             >
-            void getTrailingSubConfigurationGradientConfigurationJacobian(
+            void getTrailingNetConfigurationGradientConfigurationJacobian(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
                 output_iterator output_begin, output_iterator output_end
@@ -114,7 +114,7 @@ namespace tardigradeHydra{
                 class configuration_gradient_iterator,
                 class output_iterator
             >
-            void getSubConfigurationGradientConfigurationJacobian(
+            void getNetConfigurationGradientConfigurationJacobian(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
                 const unsigned int &configuration_index,
@@ -128,7 +128,7 @@ namespace tardigradeHydra{
                 class configuration_gradient_iterator,
                 class output_iterator
             >
-            void getLeadingSubConfigurationGradientConfigurationGradientJacobian(
+            void getLeadingNetConfigurationGradientConfigurationGradientJacobian(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
                 output_iterator output_begin, output_iterator output_end
@@ -141,7 +141,7 @@ namespace tardigradeHydra{
                 class configuration_gradient_iterator,
                 class output_iterator
             >
-            void getTrailingSubConfigurationGradientConfigurationGradientJacobian(
+            void getTrailingNetConfigurationGradientConfigurationGradientJacobian(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
                 output_iterator output_begin, output_iterator output_end
@@ -154,7 +154,7 @@ namespace tardigradeHydra{
                 class configuration_gradient_iterator,
                 class output_iterator
             >
-            void getSubConfigurationGradientConfigurationGradientJacobian(
+            void getNetConfigurationGradientConfigurationGradientJacobian(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
                 const unsigned int &configuration_index,

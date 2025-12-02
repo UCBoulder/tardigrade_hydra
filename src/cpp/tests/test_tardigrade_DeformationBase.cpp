@@ -115,7 +115,7 @@ BOOST_AUTO_TEST_CASE( test_denseMatrixMultiply, * boost::unit_test::tolerance( D
 
 }
 
-BOOST_AUTO_TEST_CASE( test_getSubConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_getNetConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE( test_getSubConfiguration, * boost::unit_test::tolerance( D
 
     tardigradeHydra::DeformationBase deformation;
 
-    deformation.getSubConfiguration<4>(
+    deformation.getNetConfiguration<4>(
         std::begin( configurations ), std::end( configurations ), std::begin( result ), std::end( result )
     );
 
@@ -155,7 +155,7 @@ BOOST_AUTO_TEST_CASE( test_getSubConfiguration, * boost::unit_test::tolerance( D
 
 }
 
-BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_getLeadingNetConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
@@ -183,7 +183,7 @@ BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationJacobian, * boost::unit_tes
 
     tardigradeHydra::DeformationBase deformation;
 
-    deformation.getLeadingSubConfigurationJacobian<4>(
+    deformation.getLeadingNetConfigurationJacobian<4>(
         std::begin( configurations ), std::end( configurations ), std::begin( jacobian ), std::end( jacobian )
     );
 
@@ -206,10 +206,10 @@ BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationJacobian, * boost::unit_tes
             std::vector< double > rp( 16 );
             std::vector< double > rm( 16 );
 
-            deformation.getSubConfiguration<4>(
+            deformation.getNetConfiguration<4>(
                 std::begin( xp ), std::end( xp ), std::begin( rp ), std::end( rp )
             );
-            deformation.getSubConfiguration<4>(
+            deformation.getNetConfiguration<4>(
                 std::begin( xm ), std::end( xm ), std::begin( rm ), std::end( rm )
             );
 
@@ -225,7 +225,7 @@ BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationJacobian, * boost::unit_tes
 
 }
 
-BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_getTrailingNetConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
@@ -253,7 +253,7 @@ BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationJacobian, * boost::unit_te
 
     tardigradeHydra::DeformationBase deformation;
 
-    deformation.getTrailingSubConfigurationJacobian<4>(
+    deformation.getTrailingNetConfigurationJacobian<4>(
         std::begin( configurations ), std::end( configurations ), std::begin( jacobian ), std::end( jacobian )
     );
 
@@ -276,10 +276,10 @@ BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationJacobian, * boost::unit_te
             std::vector< double > rp( 16 );
             std::vector< double > rm( 16 );
 
-            deformation.getSubConfiguration<4>(
+            deformation.getNetConfiguration<4>(
                 std::begin( xp ), std::end( xp ), std::begin( rp ), std::end( rp )
             );
-            deformation.getSubConfiguration<4>(
+            deformation.getNetConfiguration<4>(
                 std::begin( xm ), std::end( xm ), std::begin( rm ), std::end( rm )
             );
 
@@ -295,7 +295,7 @@ BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationJacobian, * boost::unit_te
 
 }
 
-BOOST_AUTO_TEST_CASE( test_getSubConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_getNetConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
@@ -324,7 +324,7 @@ BOOST_AUTO_TEST_CASE( test_getSubConfigurationJacobian, * boost::unit_test::tole
 
         tardigradeHydra::DeformationBase deformation;
 
-        deformation.getSubConfigurationJacobian<4>(
+        deformation.getNetConfigurationJacobian<4>(
             std::begin( configurations ), std::end( configurations ), c, std::begin( jacobian ), std::end( jacobian )
         );
 
@@ -347,10 +347,10 @@ BOOST_AUTO_TEST_CASE( test_getSubConfigurationJacobian, * boost::unit_test::tole
                 std::vector< double > rp( 16 );
                 std::vector< double > rm( 16 );
 
-                deformation.getSubConfiguration<4>(
+                deformation.getNetConfiguration<4>(
                     std::begin( xp ), std::end( xp ), std::begin( rp ), std::end( rp )
                 );
-                deformation.getSubConfiguration<4>(
+                deformation.getNetConfiguration<4>(
                     std::begin( xm ), std::end( xm ), std::begin( rm ), std::end( rm )
                 );
 
@@ -368,7 +368,7 @@ BOOST_AUTO_TEST_CASE( test_getSubConfigurationJacobian, * boost::unit_test::tole
 
 }
 
-BOOST_AUTO_TEST_CASE( test_getSubConfigurationGradient, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_getNetConfigurationGradient, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
@@ -499,7 +499,7 @@ BOOST_AUTO_TEST_CASE( test_getSubConfigurationGradient, * boost::unit_test::tole
 
     tardigradeHydra::DeformationBase deformation;
 
-    deformation.getSubConfigurationGradient<4,5>(
+    deformation.getNetConfigurationGradient<4,5>(
         std::begin( configurations ), std::end( configurations ),
         std::begin( configuration_gradients ), std::end( configuration_gradients ),
         std::begin( result ), std::end( result )
@@ -509,7 +509,7 @@ BOOST_AUTO_TEST_CASE( test_getSubConfigurationGradient, * boost::unit_test::tole
 
 }
 
-BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationGradientConfigurationJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
+BOOST_AUTO_TEST_CASE( test_getLeadingNetConfigurationGradientConfigurationJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
@@ -617,7 +617,7 @@ BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationGradientConfigurationJacobi
 
     tardigradeHydra::DeformationBase deformation;
 
-    deformation.getLeadingSubConfigurationGradientConfigurationJacobian<4,5>(
+    deformation.getLeadingNetConfigurationGradientConfigurationJacobian<4,5>(
         std::begin( configurations ), std::end( configurations ),
         std::begin( configuration_gradients ), std::end( configuration_gradients ),
         std::begin( jacobian ), std::end( jacobian )
@@ -645,13 +645,13 @@ BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationGradientConfigurationJacobi
             std::vector< double > rp( 80 );
             std::vector< double > rm( 80 );
 
-            deformation.getSubConfigurationGradient<4,5>(
+            deformation.getNetConfigurationGradient<4,5>(
                 std::begin( xp ), std::end( xp ),
                 std::begin( configuration_gradients ), std::end( configuration_gradients ),
                 std::begin( rp ), std::end( rp )
             );
 
-            deformation.getSubConfigurationGradient<4,5>(
+            deformation.getNetConfigurationGradient<4,5>(
                 std::begin( xm ), std::end( xm ),
                 std::begin( configuration_gradients ), std::end( configuration_gradients ),
                 std::begin( rm ), std::end( rm )
@@ -669,7 +669,7 @@ BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationGradientConfigurationJacobi
 
 }
 
-BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationGradientConfigurationJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
+BOOST_AUTO_TEST_CASE( test_getTrailingNetConfigurationGradientConfigurationJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
@@ -777,7 +777,7 @@ BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationGradientConfigurationJacob
 
     tardigradeHydra::DeformationBase deformation;
 
-    deformation.getTrailingSubConfigurationGradientConfigurationJacobian<4,5>(
+    deformation.getTrailingNetConfigurationGradientConfigurationJacobian<4,5>(
         std::begin( configurations ), std::end( configurations ),
         std::begin( configuration_gradients ), std::end( configuration_gradients ),
         std::begin( jacobian ), std::end( jacobian )
@@ -805,13 +805,13 @@ BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationGradientConfigurationJacob
             std::vector< double > rp( 80 );
             std::vector< double > rm( 80 );
 
-            deformation.getSubConfigurationGradient<4,5>(
+            deformation.getNetConfigurationGradient<4,5>(
                 std::begin( xp ), std::end( xp ),
                 std::begin( configuration_gradients ), std::end( configuration_gradients ),
                 std::begin( rp ), std::end( rp )
             );
 
-            deformation.getSubConfigurationGradient<4,5>(
+            deformation.getNetConfigurationGradient<4,5>(
                 std::begin( xm ), std::end( xm ),
                 std::begin( configuration_gradients ), std::end( configuration_gradients ),
                 std::begin( rm ), std::end( rm )
@@ -829,7 +829,7 @@ BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationGradientConfigurationJacob
 
 }
 
-BOOST_AUTO_TEST_CASE( test_getSubConfigurationGradientConfigurationJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
+BOOST_AUTO_TEST_CASE( test_getNetConfigurationGradientConfigurationJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
@@ -943,7 +943,7 @@ BOOST_AUTO_TEST_CASE( test_getSubConfigurationGradientConfigurationJacobian, * b
 
             tardigradeHydra::DeformationBase deformation;
 
-            deformation.getSubConfigurationGradientConfigurationJacobian<4,5>(
+            deformation.getNetConfigurationGradientConfigurationJacobian<4,5>(
                 std::begin( configurations ), std::end( configurations ),
                 std::begin( configuration_gradients ), std::end( configuration_gradients ),
                 c,
@@ -967,13 +967,13 @@ BOOST_AUTO_TEST_CASE( test_getSubConfigurationGradientConfigurationJacobian, * b
                 std::vector< double > rp( 80 );
                 std::vector< double > rm( 80 );
 
-                deformation.getSubConfigurationGradient<4,5>(
+                deformation.getNetConfigurationGradient<4,5>(
                     std::begin( xp ), std::end( xp ),
                     std::begin( configuration_gradients ), std::end( configuration_gradients ),
                     std::begin( rp ), std::end( rp )
                 );
 
-                deformation.getSubConfigurationGradient<4,5>(
+                deformation.getNetConfigurationGradient<4,5>(
                     std::begin( xm ), std::end( xm ),
                     std::begin( configuration_gradients ), std::end( configuration_gradients ),
                     std::begin( rm ), std::end( rm )
@@ -993,7 +993,7 @@ BOOST_AUTO_TEST_CASE( test_getSubConfigurationGradientConfigurationJacobian, * b
 
 }
 
-BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationGradientConfigurationGradientJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
+BOOST_AUTO_TEST_CASE( test_getLeadingNetConfigurationGradientConfigurationGradientJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
@@ -1101,7 +1101,7 @@ BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationGradientConfigurationGradie
 
     tardigradeHydra::DeformationBase deformation;
 
-    deformation.getLeadingSubConfigurationGradientConfigurationGradientJacobian<4,5>(
+    deformation.getLeadingNetConfigurationGradientConfigurationGradientJacobian<4,5>(
         std::begin( configurations ), std::end( configurations ),
         std::begin( configuration_gradients ), std::end( configuration_gradients ),
         std::begin( jacobian ), std::end( jacobian )
@@ -1129,13 +1129,13 @@ BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationGradientConfigurationGradie
             std::vector< double > rp( 80 );
             std::vector< double > rm( 80 );
 
-            deformation.getSubConfigurationGradient<4,5>(
+            deformation.getNetConfigurationGradient<4,5>(
                 std::begin( configurations ), std::end( configurations ),
                 std::begin( xp ), std::end( xp ),
                 std::begin( rp ), std::end( rp )
             );
 
-            deformation.getSubConfigurationGradient<4,5>(
+            deformation.getNetConfigurationGradient<4,5>(
                 std::begin( configurations ), std::end( configurations ),
                 std::begin( xm ), std::end( xm ),
                 std::begin( rm ), std::end( rm )
@@ -1153,7 +1153,7 @@ BOOST_AUTO_TEST_CASE( test_getLeadingSubConfigurationGradientConfigurationGradie
 
 }
 
-BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationGradientConfigurationGradientJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
+BOOST_AUTO_TEST_CASE( test_getTrailingNetConfigurationGradientConfigurationGradientJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
@@ -1261,7 +1261,7 @@ BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationGradientConfigurationGradi
 
     tardigradeHydra::DeformationBase deformation;
 
-    deformation.getTrailingSubConfigurationGradientConfigurationGradientJacobian<4,5>(
+    deformation.getTrailingNetConfigurationGradientConfigurationGradientJacobian<4,5>(
         std::begin( configurations ), std::end( configurations ),
         std::begin( configuration_gradients ), std::end( configuration_gradients ),
         std::begin( jacobian ), std::end( jacobian )
@@ -1289,13 +1289,13 @@ BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationGradientConfigurationGradi
             std::vector< double > rp( 80 );
             std::vector< double > rm( 80 );
 
-            deformation.getSubConfigurationGradient<4,5>(
+            deformation.getNetConfigurationGradient<4,5>(
                 std::begin( configurations ), std::end( configurations ),
                 std::begin( xp ), std::end( xp ),
                 std::begin( rp ), std::end( rp )
             );
 
-            deformation.getSubConfigurationGradient<4,5>(
+            deformation.getNetConfigurationGradient<4,5>(
                 std::begin( configurations ), std::end( configurations ),
                 std::begin( xm ), std::end( xm ),
                 std::begin( rm ), std::end( rm )
@@ -1313,7 +1313,7 @@ BOOST_AUTO_TEST_CASE( test_getTrailingSubConfigurationGradientConfigurationGradi
 
 }
 
-BOOST_AUTO_TEST_CASE( test_getSubConfigurationGradientConfigurationGradientJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
+BOOST_AUTO_TEST_CASE( test_getNetConfigurationGradientConfigurationGradientJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
 
     std::vector< double > configurations = {
         +3.649834609e-01, -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01,
@@ -1424,7 +1424,7 @@ BOOST_AUTO_TEST_CASE( test_getSubConfigurationGradientConfigurationGradientJacob
 
         tardigradeHydra::DeformationBase deformation;
 
-        deformation.getSubConfigurationGradientConfigurationGradientJacobian<4,5>(
+        deformation.getNetConfigurationGradientConfigurationGradientJacobian<4,5>(
             std::begin( configurations ), std::end( configurations ),
             std::begin( configuration_gradients ), std::end( configuration_gradients ),
             c,
@@ -1450,13 +1450,13 @@ BOOST_AUTO_TEST_CASE( test_getSubConfigurationGradientConfigurationGradientJacob
                 std::vector< double > rp( 80 );
                 std::vector< double > rm( 80 );
 
-                deformation.getSubConfigurationGradient<4,5>(
+                deformation.getNetConfigurationGradient<4,5>(
                     std::begin( configurations ), std::end( configurations ),
                     std::begin( xp ), std::end( xp ),
                     std::begin( rp ), std::end( rp )
                 );
 
-                deformation.getSubConfigurationGradient<4,5>(
+                deformation.getNetConfigurationGradient<4,5>(
                     std::begin( configurations ), std::end( configurations ),
                     std::begin( xm ), std::end( xm ),
                     std::begin( rm ), std::end( rm )

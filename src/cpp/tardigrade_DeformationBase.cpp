@@ -70,12 +70,12 @@ namespace tardigradeHydra{
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::getSubConfiguration(
+    void DeformationBase::getNetConfiguration(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Construct a sub configuration from the iterator using an assumed multiplicative decomposition
+         * Construct a net configuration from the iterator using an assumed multiplicative decomposition
          * where each configuration is a square matrix of dimension size x size i.e.,
          *
          * \f$ A_{af} = A_{ab} A_{cd} \cdots A_{ef} \f$
@@ -101,9 +101,9 @@ namespace tardigradeHydra{
 
         if ( configurations_end != ( configurations_begin + size * size ) ){
 
-            // Get preceeding sub-configuration
+            // Get preceeding net configuration
             std::array< output_type, size * size > Aminus;
-            getSubConfiguration<size>( configurations_begin + size * size, configurations_end, std::begin( Aminus ), std::end( Aminus ) );
+            getNetConfiguration<size>( configurations_begin + size * size, configurations_end, std::begin( Aminus ), std::end( Aminus ) );
 
             // Update the output
             _denseMatrixMultiply<size,size,size>(
@@ -128,12 +128,12 @@ namespace tardigradeHydra{
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::getLeadingSubConfigurationJacobian(
+    void DeformationBase::getLeadingNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Compute the Jacobian of a sub-configuration with respect to the first configuration e.g.,
+         * Compute the Jacobian of a net configuration with respect to the first configuration e.g.,
          *
          * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [B] \f$
          *
@@ -166,7 +166,7 @@ namespace tardigradeHydra{
 
         std::array< output_type, size * size > Aminus;
 
-        getSubConfiguration<size>(
+        getNetConfiguration<size>(
             configurations_begin + size * size, configurations_end,
             std::begin( Aminus ), std::end( Aminus )
         );
@@ -186,12 +186,12 @@ namespace tardigradeHydra{
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::getTrailingSubConfigurationJacobian(
+    void DeformationBase::getTrailingNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Compute the Jacobian of a sub-configuration with respect to the first configuration e.g.,
+         * Compute the Jacobian of a net configuration with respect to the first configuration e.g.,
          *
          * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [D] \f$
          *
@@ -224,7 +224,7 @@ namespace tardigradeHydra{
 
         std::array< output_type, size * size > Aplus;
 
-        getSubConfiguration<size>(
+        getNetConfiguration<size>(
             configurations_begin, configurations_end - size * size,
             std::begin( Aplus ), std::end( Aplus )
         );
@@ -243,12 +243,12 @@ namespace tardigradeHydra{
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::getSubConfigurationJacobian(
+    void DeformationBase::getNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Compute the Jacobian of a sub-configuration with respect to an internal configuration e.g.,
+         * Compute the Jacobian of a net configuration with respect to an internal configuration e.g.,
          *
          * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [C] \f$
          *
@@ -280,14 +280,14 @@ namespace tardigradeHydra{
 
         if ( configuration_index == 0 ){
 
-            getLeadingSubConfigurationJacobian<size>(
+            getLeadingNetConfigurationJacobian<size>(
                 configurations_begin, configurations_end, output_begin, output_end
             );
 
         }
         else if ( ( configuration_index + 1 ) == num_configurations ){
 
-            getTrailingSubConfigurationJacobian<size>(
+            getTrailingNetConfigurationJacobian<size>(
                 configurations_begin, configurations_end, output_begin, output_end
             );
 
@@ -298,11 +298,11 @@ namespace tardigradeHydra{
             
             // Get the prior and previous configurations
             std::array< output_type, size * size > Aplus, Aminus;
-            getSubConfiguration<size>(
+            getNetConfiguration<size>(
                 configurations_begin, configurations_begin + size * size * configuration_index,
                 std::begin( Aplus ), std::end( Aplus )
             );
-            getSubConfiguration<size>(
+            getNetConfiguration<size>(
                 configurations_begin + size * size * ( configuration_index + 1 ), configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
@@ -334,13 +334,13 @@ namespace tardigradeHydra{
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getSubConfigurationGradient(
+    void DeformationBase::getNetConfigurationGradient(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Compute the gradient of a sub configuration e.g., given a configuration
+         * Compute the gradient of a net configuration e.g., given a configuration
          *
          * \f$ [A] = [B][C][D] \f$
          *
@@ -376,12 +376,12 @@ namespace tardigradeHydra{
             std::array< output_type, size * size > Aminus;
             std::array< output_type, size * size * dim > dAminusdX;
 
-            getSubConfiguration<size>(
+            getNetConfiguration<size>(
                 configurations_begin + size * size, configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
 
-            getSubConfigurationGradient<size,dim>(
+            getNetConfigurationGradient<size,dim>(
                 configurations_begin + size * size, configurations_end,
                 configuration_gradients_begin + size * size * dim, configuration_gradients_end,
                 std::begin( dAminusdX ), std::end( dAminusdX )
@@ -417,13 +417,13 @@ namespace tardigradeHydra{
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getLeadingSubConfigurationGradientConfigurationJacobian(
+    void DeformationBase::getLeadingNetConfigurationGradientConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Compute the Jacobian gradient of a sub configuration with respect to the leading configuration e.g., given a configuration
+         * Compute the Jacobian gradient of a net configuration with respect to the leading configuration e.g., given a configuration
          *
          * \f$ [A] = [B][C][D] \f$
          *
@@ -459,7 +459,7 @@ namespace tardigradeHydra{
         if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
 
             std::array< output_type, size * size * dim > dAminusdX;
-            getSubConfigurationGradient<size,dim>(
+            getNetConfigurationGradient<size,dim>(
                 configurations_begin + size * size, configurations_end,
                 configuration_gradients_begin + size * size * dim, configuration_gradients_end,
                 std::begin( dAminusdX ), std::end( dAminusdX )
@@ -486,13 +486,13 @@ namespace tardigradeHydra{
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getTrailingSubConfigurationGradientConfigurationJacobian(
+    void DeformationBase::getTrailingNetConfigurationGradientConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Compute the Jacobian gradient of a sub configuration with respect to the trailing configuration e.g., given a configuration
+         * Compute the Jacobian gradient of a net configuration with respect to the trailing configuration e.g., given a configuration
          *
          * \f$ [A] = [B][C][D] \f$
          *
@@ -528,7 +528,7 @@ namespace tardigradeHydra{
         if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
 
             std::array< output_type, size * size * dim > dAplusdX;
-            getSubConfigurationGradient<size,dim>(
+            getNetConfigurationGradient<size,dim>(
                 configurations_begin, configurations_end - size * size,
                 configuration_gradients_begin, configuration_gradients_end - size * size * dim,
                 std::begin( dAplusdX ), std::end( dAplusdX )
@@ -555,14 +555,14 @@ namespace tardigradeHydra{
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getSubConfigurationGradientConfigurationJacobian(
+    void DeformationBase::getNetConfigurationGradientConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         const unsigned int &configuration_index,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Compute the Jacobian gradient of a sub configuration with respect to an arbitrary configuration e.g., given a configuration
+         * Compute the Jacobian gradient of a net configuration with respect to an arbitrary configuration e.g., given a configuration
          *
          * \f$ [A] = [B][C][D] \f$
          *
@@ -595,14 +595,14 @@ namespace tardigradeHydra{
 
         if ( configuration_index == 0 ){
 
-            getLeadingSubConfigurationGradientConfigurationJacobian<size,dim>(
+            getLeadingNetConfigurationGradientConfigurationJacobian<size,dim>(
                 configurations_begin, configurations_end, configuration_gradients_begin, configuration_gradients_end, output_begin, output_end
             );
 
         }
         else if ( ( configuration_index + 1 ) == num_configurations ){
 
-            getTrailingSubConfigurationGradientConfigurationJacobian<size,dim>(
+            getTrailingNetConfigurationGradientConfigurationJacobian<size,dim>(
                 configurations_begin, configurations_end, configuration_gradients_begin, configuration_gradients_end, output_begin, output_end
             );
 
@@ -614,11 +614,11 @@ namespace tardigradeHydra{
             // Get the prior and previous configurations
             std::array< output_type, size * size > Aplus;
             std::array< output_type, size * size * dim > dAplusdX;
-            getSubConfiguration<size>(
+            getNetConfiguration<size>(
                 configurations_begin, configurations_begin + size * size * configuration_index,
                 std::begin( Aplus ), std::end( Aplus )
             );
-            getSubConfigurationGradient<size,dim>(
+            getNetConfigurationGradient<size,dim>(
                 configurations_begin, configurations_begin + size * size * configuration_index,
                 configuration_gradients_begin, configuration_gradients_begin + size * size * dim * configuration_index,
                 std::begin( dAplusdX ), std::end( dAplusdX )
@@ -628,12 +628,12 @@ namespace tardigradeHydra{
             std::array< output_type, size * size * size * size > J_Aminus;
             std::array< output_type, size * size * dim * size * size > J_dAminusdX;
 
-            getLeadingSubConfigurationJacobian<size>(
+            getLeadingNetConfigurationJacobian<size>(
                 configurations_begin + size * size * configuration_index, configurations_end,
                 std::begin( J_Aminus ), std::end( J_Aminus )
             );
 
-            getLeadingSubConfigurationGradientConfigurationJacobian<size,dim>(
+            getLeadingNetConfigurationGradientConfigurationJacobian<size,dim>(
                 configurations_begin + size * size * configuration_index, configurations_end,
                 configuration_gradients_begin + size * size * dim * configuration_index, configuration_gradients_end,
                 std::begin( J_dAminusdX ), std::end( J_dAminusdX )
@@ -670,13 +670,13 @@ namespace tardigradeHydra{
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getLeadingSubConfigurationGradientConfigurationGradientJacobian(
+    void DeformationBase::getLeadingNetConfigurationGradientConfigurationGradientJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Compute the Jacobian gradient of a sub configuration with respect to the leading configuration's gradient e.g., given a configuration
+         * Compute the Jacobian gradient of a net configuration with respect to the leading configuration's gradient e.g., given a configuration
          *
          * \f$ [A] = [B][C][D] \f$
          *
@@ -712,7 +712,7 @@ namespace tardigradeHydra{
         if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
 
             std::array< output_type, size * size > Aminus;
-            getSubConfiguration<size>(
+            getNetConfiguration<size>(
                 configurations_begin + size * size, configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
@@ -737,13 +737,13 @@ namespace tardigradeHydra{
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getTrailingSubConfigurationGradientConfigurationGradientJacobian(
+    void DeformationBase::getTrailingNetConfigurationGradientConfigurationGradientJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Compute the Jacobian gradient of a sub configuration with respect to the trailing configuration's gradient e.g., given a configuration
+         * Compute the Jacobian gradient of a net configuration with respect to the trailing configuration's gradient e.g., given a configuration
          *
          * \f$ [A] = [B][C][D] \f$
          *
@@ -779,7 +779,7 @@ namespace tardigradeHydra{
         if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
 
             std::array< output_type, size * size > Aplus;
-            getSubConfiguration<size>(
+            getNetConfiguration<size>(
                 configurations_begin, configurations_end - size * size,
                 std::begin( Aplus ), std::end( Aplus )
             );
@@ -803,14 +803,14 @@ namespace tardigradeHydra{
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getSubConfigurationGradientConfigurationGradientJacobian(
+    void DeformationBase::getNetConfigurationGradientConfigurationGradientJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         const unsigned int &configuration_index,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Compute the Jacobian gradient of a sub configuration with respect to an arbitrary configuration gradient e.g., given a configuration
+         * Compute the Jacobian gradient of a net configuration with respect to an arbitrary configuration gradient e.g., given a configuration
          *
          * \f$ [A] = [B][C][D] \f$
          *
@@ -843,14 +843,14 @@ namespace tardigradeHydra{
 
         if ( configuration_index == 0 ){
 
-            getLeadingSubConfigurationGradientConfigurationGradientJacobian<size,dim>(
+            getLeadingNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
                 configurations_begin, configurations_end, configuration_gradients_begin, configuration_gradients_end, output_begin, output_end
             );
 
         }
         else if ( ( configuration_index + 1 ) == num_configurations ){
 
-            getTrailingSubConfigurationGradientConfigurationGradientJacobian<size,dim>(
+            getTrailingNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
                 configurations_begin, configurations_end, configuration_gradients_begin, configuration_gradients_end, output_begin, output_end
             );
 
@@ -861,11 +861,11 @@ namespace tardigradeHydra{
             
             // Get the prior and previous configurations
             std::array< output_type, size * size > Aplus, Aminus;
-            getSubConfiguration<size>(
+            getNetConfiguration<size>(
                 configurations_begin, configurations_begin + size * size * configuration_index,
                 std::begin( Aplus ), std::end( Aplus )
             );
-            getSubConfiguration<size>(
+            getNetConfiguration<size>(
                 configurations_begin + size * size * ( configuration_index + 1 ), configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
@@ -955,7 +955,7 @@ namespace tardigradeHydra{
 
             std::array< output_type, size * size > Aminus;
 
-            getSubConfiguration<size>(
+            getNetConfiguration<size>(
                 configurations_begin, configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
@@ -1074,7 +1074,7 @@ namespace tardigradeHydra{
 
             std::array< output_type, size * size > Aminus, Aminus_inverse;
 
-            getSubConfiguration<size>(
+            getNetConfiguration<size>(
                 configurations_begin, configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
@@ -1154,7 +1154,7 @@ namespace tardigradeHydra{
                 std::begin( leadingConfiguration ), std::end( leadingConfiguration )
             );
 
-            getSubConfigurationJacobian<size>(
+            getNetConfigurationJacobian<size>(
                 configurations_begin, configurations_end,
                 configuration_index,
                 std::begin( Aminus_jacobian ), std::end( Aminus_jacobian )
@@ -1189,20 +1189,107 @@ namespace tardigradeHydra{
 
     }
 
-    template<
-        unsigned int deformation_rows,
-        unsigned int size,
-        class deformation_iterator,
-        class configuration_iterator,
-        class output_iterator
-    >
-    void solveForLeadingConfigurationGradient(
-        const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
-        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        output_iterator output_begin, output_iterator output_end
-    ){
-
-    }
-
+//    template<
+//        unsigned int deformation_rows,
+//        unsigned int size,
+//        unsigned int dim,
+//        class deformation_gradient_iterator,
+//        class leading_configuration_iterator,
+//        class configuration_iterator,
+//        class configuration_gradient_iterator,
+//        class Aminus_inverse_iterator,
+//        class output_iterator
+//    >
+//    void solveForLeadingConfigurationGradient(
+//        const deformation_gradient_iterator &deformation_gradient_begin, const deformation_gradient_iterator &deformation_gradient_end,
+//        const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
+//        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+//        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+//        Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
+//        output_iterator output_begin, output_iterator output_end
+//    ){
+//        /*!
+//         * Solve for the leading configuration gradient which would be required to achieve the total configuration gradient i.e., if
+//         * the total deformation is \f$ [A] \f$ and we know the net deformation from the subsequent deformations
+//         * in the form of the configurations, then
+//         *
+//         * \f$ \frac{\partial [B]}{\partial X} = \frac{\partial [A]}{\partial X} A^{-} + [A] \frac{\partial [A]^{-}}{\partial X} \f$
+//         *
+//         * which means we can solve for \f$ \frac{\partial [A]}{\partial X} \f$ via
+//         *
+//         * \f$ \frac{\partial [A]}{\partial X} = \left(\frac{\partial [B]}{\partial X} - [A] \frac{\partial [A]^{-}}{\partial X}\right) \left([A]^{-}\right)^{-1}
+//         *
+//         * \param &deformation_gradient_begin: The starting iterator of the total deformation gradient.
+//         *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
+//         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
+//         * \param &deformation_gradient_end: The stopping iterator of the total deformation gradient.
+//         *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
+//         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
+//         * \param &leading_configuration_begin: The starting iterator of the leading configuration
+//         * \param &leading_configuration_end: The stopping iterator of the leading configuration
+//         * \param &configurations_begin: The starting iterator of the configurations
+//         * \param &configurations_end: The stopping iterator of the configurations
+//         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+//         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+//         * \param Aminus_inverse_begin: The starting iterator of the inverse of the total trailing configuration
+//         * \param Aminus_inverse_end: The stopping iterator of the inverse of the total trailing configuration
+//         * \param output_begin: The starting iterator of the output
+//         * \param output_end: The stopping iterator of the output
+//         */
+//
+//        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+//        using configuration_gradient_type = typename std::iterator_traits<configuration_gradient_iterator>::value_type;
+//        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+//
+//        TARDIGRADE_ERROR_TOOLS_CHECK(
+//            ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) == deformation_rows * size * dim,
+//            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) ) + " but must have a size of " + std::to_string( deformation_rows * size * dim )
+//        )
+//
+//        std::array< configuration_type, size * size > Aminus;
+//        std::array< configuration_gradient_type, size * size * dim > dAMinusdX;
+//        std::array< output_type, deformation_rows * size * dim > intermediate_term1, intermediate_term2;
+//
+//        // Compute the trailing configuration and it's gradient
+//        getNetConfiguration<size>(
+//            configurations_begin, configurations_end,
+//            std::begin( Aminus ), std::end( Aminus )
+//        );
+//
+//        getNetConfigurationGradient<size,dim>(
+//            configurations_begin, configuration_end,
+//            configuration_gradients_begin, configuration_gradients_end,
+//            std::begin( dAMinusdX ), std::end( dAMinusdX ),
+//        );
+//
+//        // Assemble the intermediate terms
+//        _denseMatrixMultiply<deformation_rows,size,size>(
+//            leading_configuration_begin, leading_configuration_end,
+//            std::begin( dAMinusdX ), std::end( dAMinusdX ),
+//            std::begin( intermediate_term ), std::end( intermediate_term )
+//        );
+//
+//        std::transform(
+//            deformation_gradient_begin, deformation_gradient_end,
+//            std::begin( intermediate_term1 ), std::begin( intermediate_term2 ),
+//            std::minus<>()
+//        );
+//
+//        // TODO: Generalize this to a matrix solve rather than computing an inverse
+//        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
+//        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( &(*Aminus_inverse_begin), size, size );
+//        _Aminus_inverse = _Aminus.inverse( );
+//
+//        for ( auto i = 0; i < deformation_rows; ++i ){
+//            for ( auto j = 0; j < size; ++j ){
+//                for ( auto a = 0; a < dim; ++a ){
+//                    for ( auto k = 0; k < size; ++k ){
+//                        *( output_begin + size * dim * i + dim * j + a ) += intermediate_term2[ size * dim * i + dim * k + a ] * ( *( Aminus_inverse_begin + size * k + j ) );
+//                    }
+//                }
+//            }
+//        }
+//
+//    }
 
 }
