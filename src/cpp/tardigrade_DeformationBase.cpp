@@ -1399,7 +1399,6 @@ namespace tardigradeHydra{
          */
 
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
-        using configuration_gradient_type = typename std::iterator_traits<configuration_gradient_iterator>::value_type;
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
@@ -1411,8 +1410,6 @@ namespace tardigradeHydra{
         // J_ija_iba = Aminus_inv_bj
 
         std::array< configuration_type, size * size > Aminus, Aminus_inverse;
-        std::array< configuration_gradient_type, size * size * dim > dAMinusdX;
-        std::array< output_type, deformation_rows * size * dim > intermediate_term1, intermediate_term2;
 
         // Compute the trailing configuration and it's gradient
         getNetConfiguration<size>(
