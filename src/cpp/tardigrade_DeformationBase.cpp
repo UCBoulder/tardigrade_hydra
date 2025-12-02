@@ -1189,107 +1189,107 @@ namespace tardigradeHydra{
 
     }
 
-//    template<
-//        unsigned int deformation_rows,
-//        unsigned int size,
-//        unsigned int dim,
-//        class deformation_gradient_iterator,
-//        class leading_configuration_iterator,
-//        class configuration_iterator,
-//        class configuration_gradient_iterator,
-//        class Aminus_inverse_iterator,
-//        class output_iterator
-//    >
-//    void solveForLeadingConfigurationGradient(
-//        const deformation_gradient_iterator &deformation_gradient_begin, const deformation_gradient_iterator &deformation_gradient_end,
-//        const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
-//        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-//        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
-//        Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
-//        output_iterator output_begin, output_iterator output_end
-//    ){
-//        /*!
-//         * Solve for the leading configuration gradient which would be required to achieve the total configuration gradient i.e., if
-//         * the total deformation is \f$ [A] \f$ and we know the net deformation from the subsequent deformations
-//         * in the form of the configurations, then
-//         *
-//         * \f$ \frac{\partial [B]}{\partial X} = \frac{\partial [A]}{\partial X} A^{-} + [A] \frac{\partial [A]^{-}}{\partial X} \f$
-//         *
-//         * which means we can solve for \f$ \frac{\partial [A]}{\partial X} \f$ via
-//         *
-//         * \f$ \frac{\partial [A]}{\partial X} = \left(\frac{\partial [B]}{\partial X} - [A] \frac{\partial [A]^{-}}{\partial X}\right) \left([A]^{-}\right)^{-1}
-//         *
-//         * \param &deformation_gradient_begin: The starting iterator of the total deformation gradient.
-//         *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
-//         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
-//         * \param &deformation_gradient_end: The stopping iterator of the total deformation gradient.
-//         *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
-//         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
-//         * \param &leading_configuration_begin: The starting iterator of the leading configuration
-//         * \param &leading_configuration_end: The stopping iterator of the leading configuration
-//         * \param &configurations_begin: The starting iterator of the configurations
-//         * \param &configurations_end: The stopping iterator of the configurations
-//         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
-//         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
-//         * \param Aminus_inverse_begin: The starting iterator of the inverse of the total trailing configuration
-//         * \param Aminus_inverse_end: The stopping iterator of the inverse of the total trailing configuration
-//         * \param output_begin: The starting iterator of the output
-//         * \param output_end: The stopping iterator of the output
-//         */
-//
-//        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
-//        using configuration_gradient_type = typename std::iterator_traits<configuration_gradient_iterator>::value_type;
-//        using output_type = typename std::iterator_traits<output_iterator>::value_type;
-//
-//        TARDIGRADE_ERROR_TOOLS_CHECK(
-//            ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) == deformation_rows * size * dim,
-//            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) ) + " but must have a size of " + std::to_string( deformation_rows * size * dim )
-//        )
-//
-//        std::array< configuration_type, size * size > Aminus;
-//        std::array< configuration_gradient_type, size * size * dim > dAMinusdX;
-//        std::array< output_type, deformation_rows * size * dim > intermediate_term1, intermediate_term2;
-//
-//        // Compute the trailing configuration and it's gradient
-//        getNetConfiguration<size>(
-//            configurations_begin, configurations_end,
-//            std::begin( Aminus ), std::end( Aminus )
-//        );
-//
-//        getNetConfigurationGradient<size,dim>(
-//            configurations_begin, configuration_end,
-//            configuration_gradients_begin, configuration_gradients_end,
-//            std::begin( dAMinusdX ), std::end( dAMinusdX ),
-//        );
-//
-//        // Assemble the intermediate terms
-//        _denseMatrixMultiply<deformation_rows,size,size>(
-//            leading_configuration_begin, leading_configuration_end,
-//            std::begin( dAMinusdX ), std::end( dAMinusdX ),
-//            std::begin( intermediate_term ), std::end( intermediate_term )
-//        );
-//
-//        std::transform(
-//            deformation_gradient_begin, deformation_gradient_end,
-//            std::begin( intermediate_term1 ), std::begin( intermediate_term2 ),
-//            std::minus<>()
-//        );
-//
-//        // TODO: Generalize this to a matrix solve rather than computing an inverse
-//        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
-//        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( &(*Aminus_inverse_begin), size, size );
-//        _Aminus_inverse = _Aminus.inverse( );
-//
-//        for ( auto i = 0; i < deformation_rows; ++i ){
-//            for ( auto j = 0; j < size; ++j ){
-//                for ( auto a = 0; a < dim; ++a ){
-//                    for ( auto k = 0; k < size; ++k ){
-//                        *( output_begin + size * dim * i + dim * j + a ) += intermediate_term2[ size * dim * i + dim * k + a ] * ( *( Aminus_inverse_begin + size * k + j ) );
-//                    }
-//                }
-//            }
-//        }
-//
-//    }
+    template<
+        unsigned int deformation_rows,
+        unsigned int size,
+        unsigned int dim,
+        class deformation_gradient_iterator,
+        class leading_configuration_iterator,
+        class configuration_iterator,
+        class configuration_gradient_iterator,
+        class Aminus_inverse_iterator,
+        class output_iterator
+    >
+    void DeformationBase::solveForLeadingConfigurationGradient(
+        const deformation_gradient_iterator &deformation_gradient_begin, const deformation_gradient_iterator &deformation_gradient_end,
+        const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+        Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Solve for the leading configuration gradient which would be required to achieve the total configuration gradient i.e., if
+         * the total deformation is \f$ [A] \f$ and we know the net deformation from the subsequent deformations
+         * in the form of the configurations, then
+         *
+         * \f$ \frac{\partial [B]}{\partial X} = \frac{\partial [A]}{\partial X} A^{-} + [A] \frac{\partial [A]^{-}}{\partial X} \f$
+         *
+         * which means we can solve for \f$ \frac{\partial [A]}{\partial X} \f$ via
+         *
+         * \f$ \frac{\partial [A]}{\partial X} = \left(\frac{\partial [B]}{\partial X} - [A] \frac{\partial [A]^{-}}{\partial X}\right) \left([A]^{-}\right)^{-1}
+         *
+         * \param &deformation_gradient_begin: The starting iterator of the total deformation gradient.
+         *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
+         * \param &deformation_gradient_end: The stopping iterator of the total deformation gradient.
+         *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
+         * \param &leading_configuration_begin: The starting iterator of the leading configuration
+         * \param &leading_configuration_end: The stopping iterator of the leading configuration
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param Aminus_inverse_begin: The starting iterator of the inverse of the total trailing configuration
+         * \param Aminus_inverse_end: The stopping iterator of the inverse of the total trailing configuration
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using configuration_gradient_type = typename std::iterator_traits<configuration_gradient_iterator>::value_type;
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) == deformation_rows * size * dim,
+            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) ) + " but must have a size of " + std::to_string( deformation_rows * size * dim )
+        )
+
+        std::array< configuration_type, size * size > Aminus;
+        std::array< configuration_gradient_type, size * size * dim > dAMinusdX;
+        std::array< output_type, deformation_rows * size * dim > intermediate_term1, intermediate_term2;
+
+        // Compute the trailing configuration and it's gradient
+        getNetConfiguration<size>(
+            configurations_begin, configurations_end,
+            std::begin( Aminus ), std::end( Aminus )
+        );
+
+        getNetConfigurationGradient<size,dim>(
+            configurations_begin, configurations_end,
+            configuration_gradients_begin, configuration_gradients_end,
+            std::begin( dAMinusdX ), std::end( dAMinusdX )
+        );
+
+        // Assemble the intermediate terms
+        _denseMatrixMultiply<deformation_rows,size,size>(
+            leading_configuration_begin, leading_configuration_end,
+            std::begin( dAMinusdX ), std::end( dAMinusdX ),
+            std::begin( intermediate_term1 ), std::end( intermediate_term1 )
+        );
+
+        std::transform(
+            deformation_gradient_begin, deformation_gradient_end,
+            std::begin( intermediate_term1 ), std::begin( intermediate_term2 ),
+            std::minus<>()
+        );
+
+        // TODO: Generalize this to a matrix solve rather than computing an inverse
+        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
+        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( &(*Aminus_inverse_begin), size, size );
+        _Aminus_inverse = _Aminus.inverse( );
+
+        for ( auto i = 0; i < deformation_rows; ++i ){
+            for ( auto j = 0; j < size; ++j ){
+                for ( auto a = 0; a < dim; ++a ){
+                    for ( auto k = 0; k < size; ++k ){
+                        *( output_begin + size * dim * i + dim * j + a ) += intermediate_term2[ size * dim * i + dim * k + a ] * ( *( Aminus_inverse_begin + size * k + j ) );
+                    }
+                }
+            }
+        }
+
+    }
 
 }
