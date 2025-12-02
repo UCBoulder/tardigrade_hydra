@@ -1105,12 +1105,19 @@ namespace tardigradeHydra{
             _Aminus_inverse = _Aminus.inverse( );
 
             std::fill(
-                output_begin, output_end, output_type( )
+                std::begin( leadingConfiguration ), std::end( leadingConfiguration ), output_type( )
             );
 
-            solveForLeadingConfiguration<deformation_rows, size>(
-                deformation_begin, deformation_end, configurations_begin, configurations_end,
-                std::begin( leadingConfiguration ), std::end( leadingConfiguration )
+            for ( unsigned int i = 0; i < deformation_rows; ++i ){
+                for ( unsigned int j = 0; j < size; ++j ){
+                    for ( unsigned int k = 0; k < size; ++k ){
+                        leadingConfiguration[ size * i + k ] += ( deformation_begin + size * i + j ) * Aminus_inverse[ size * j + k ];
+                    }
+                }
+            }
+
+            std::fill(
+                output_begin, output_end, output_type( )
             );
 
 //            A_ij = B_ik Aminusinv_kj
