@@ -896,13 +896,13 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        class deformation_iterator,
+        class total_configuration_iterator,
         class configuration_iterator,
         class Aminus_inverse_iterator,
         class output_iterator
     >
     void DeformationBase::solveForLeadingConfiguration(
-        const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+        const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
         output_iterator output_begin, output_iterator output_end
@@ -914,8 +914,8 @@ namespace tardigradeHydra{
          * 
          * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
          *
-         * \param &deformation_begin: The starting iterator of the total deformation
-         * \param &deformation_end: The stopping iterator of the total deformation
+         * \param &total_configuration_begin: The starting iterator of the total deformation
+         * \param &total_configuration_end: The stopping iterator of the total deformation
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
          * \param &Aminus_inverse_begin: The starting iterator of the inverse of the total deformation represented by the configurations
@@ -928,8 +928,8 @@ namespace tardigradeHydra{
         using Aminus_inverse_type = typename std::iterator_traits<Aminus_inverse_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( deformation_end - deformation_begin ) == ( unsigned int )( output_end - output_begin ),
-            "The total deformation has a size of " + std::to_string( ( unsigned int )( deformation_end - deformation_begin ) ) + " but the output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) )
+            ( unsigned int )( total_configuration_end - total_configuration_begin ) == ( unsigned int )( output_end - output_begin ),
+            "The total deformation has a size of " + std::to_string( ( unsigned int )( total_configuration_end - total_configuration_begin ) ) + " but the output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) )
         );
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
@@ -947,7 +947,7 @@ namespace tardigradeHydra{
             std::fill( Aminus_inverse_begin, Aminus_inverse_end, Aminus_inverse_type( ) );
 
             std::copy(
-                deformation_begin, deformation_end, output_begin
+                total_configuration_begin, total_configuration_end, output_begin
             );
 
         }
@@ -973,7 +973,7 @@ namespace tardigradeHydra{
                 leading_rows, size, size
             >
             (
-                deformation_begin, deformation_end,
+                total_configuration_begin, total_configuration_end,
                 Aminus_inverse_begin, Aminus_inverse_end,
                 output_begin, output_end
             );
@@ -984,12 +984,12 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        class deformation_iterator,
+        class total_configuration_iterator,
         class configuration_iterator,
         class output_iterator
     >
     void DeformationBase::solveForLeadingConfiguration(
-        const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+        const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -1000,8 +1000,8 @@ namespace tardigradeHydra{
          * 
          * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
          *
-         * \param &deformation_begin: The starting iterator of the total deformation
-         * \param &deformation_end: The stopping iterator of the total deformation
+         * \param &total_configuration_begin: The starting iterator of the total deformation
+         * \param &total_configuration_end: The stopping iterator of the total deformation
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
          * \param output_begin: The starting iterator of the output
@@ -1013,7 +1013,7 @@ namespace tardigradeHydra{
         std::array< configuration_type, size * size > Aminus_inverse;
 
         solveForLeadingConfiguration<leading_rows, size>(
-            deformation_begin, deformation_end, configurations_begin, configurations_end,
+            total_configuration_begin, total_configuration_end, configurations_begin, configurations_end,
             std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
             output_begin, output_end
         );
@@ -1023,12 +1023,12 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        class deformation_iterator,
+        class total_configuration_iterator,
         class configuration_iterator,
         class output_iterator
     >
     void DeformationBase::solveForLeadingConfigurationDeformationJacobian(
-        const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+        const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -1039,8 +1039,8 @@ namespace tardigradeHydra{
          * 
          * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
          *
-         * \param &deformation_begin: The starting iterator of the total deformation
-         * \param &deformation_end: The stopping iterator of the total deformation
+         * \param &total_configuration_begin: The starting iterator of the total deformation
+         * \param &total_configuration_end: The stopping iterator of the total deformation
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
          * \param output_begin: The starting iterator of the output
@@ -1050,8 +1050,8 @@ namespace tardigradeHydra{
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( deformation_end - deformation_begin ) * ( unsigned int )( deformation_end - deformation_begin ) == ( unsigned int )( output_end - output_begin ),
-            "The Jacobian should have a size of " + std::to_string( ( unsigned int )( deformation_end - deformation_begin ) * ( unsigned int )( deformation_end - deformation_begin ) ) + " but the output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) )
+            ( unsigned int )( total_configuration_end - total_configuration_begin ) * ( unsigned int )( total_configuration_end - total_configuration_begin ) == ( unsigned int )( output_end - output_begin ),
+            "The Jacobian should have a size of " + std::to_string( ( unsigned int )( total_configuration_end - total_configuration_begin ) * ( unsigned int )( total_configuration_end - total_configuration_begin ) ) + " but the output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) )
         );
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
@@ -1102,12 +1102,12 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        class deformation_iterator,
+        class total_configuration_iterator,
         class configuration_iterator,
         class output_iterator
     >
     void DeformationBase::solveForLeadingConfigurationConfigurationJacobian(
-        const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+        const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const unsigned int &configuration_index,
         output_iterator output_begin, output_iterator output_end
@@ -1119,8 +1119,8 @@ namespace tardigradeHydra{
          * 
          * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
          *
-         * \param &deformation_begin: The starting iterator of the total deformation
-         * \param &deformation_end: The stopping iterator of the total deformation
+         * \param &total_configuration_begin: The starting iterator of the total deformation
+         * \param &total_configuration_end: The stopping iterator of the total deformation
          * \param &configurations_begin: The starting iterator of the configurations
          * \param &configurations_end: The stopping iterator of the configurations
          * \param &configuration_index: The index of the configuration in the configuration iterator to
@@ -1149,7 +1149,7 @@ namespace tardigradeHydra{
             std::array< output_type, size * size * size * size > Aminus_jacobian;
 
             solveForLeadingConfiguration<leading_rows,size>(
-                deformation_begin, deformation_end, configurations_begin, configurations_end,
+                total_configuration_begin, total_configuration_end, configurations_begin, configurations_end,
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
                 std::begin( leadingConfiguration ), std::end( leadingConfiguration )
             );
@@ -1193,7 +1193,7 @@ namespace tardigradeHydra{
         unsigned int leading_rows,
         unsigned int size,
         unsigned int dim,
-        class deformation_gradient_iterator,
+        class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class configuration_iterator,
         class configuration_gradient_iterator,
@@ -1201,7 +1201,7 @@ namespace tardigradeHydra{
         class output_iterator
     >
     void DeformationBase::solveForLeadingConfigurationGradient(
-        const deformation_gradient_iterator &deformation_gradient_begin, const deformation_gradient_iterator &deformation_gradient_end,
+        const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
@@ -1219,10 +1219,10 @@ namespace tardigradeHydra{
          *
          * \f$ \frac{\partial [A]}{\partial X} = \left(\frac{\partial [B]}{\partial X} - [A] \frac{\partial [A]^{-}}{\partial X}\right) \left([A]^{-}\right)^{-1}
          *
-         * \param &deformation_gradient_begin: The starting iterator of the total deformation gradient.
+         * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient.
          *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
          *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
-         * \param &deformation_gradient_end: The stopping iterator of the total deformation gradient.
+         * \param &total_configuration_gradient_end: The stopping iterator of the total deformation gradient.
          *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
          *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
          * \param &leading_configuration_begin: The starting iterator of the leading configuration
@@ -1242,8 +1242,8 @@ namespace tardigradeHydra{
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) == leading_rows * size * dim,
-            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) ) + " but must have a size of " + std::to_string( leading_rows * size * dim )
+            ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) == leading_rows * size * dim,
+            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) ) + " but must have a size of " + std::to_string( leading_rows * size * dim )
         )
 
         std::array< configuration_type, size * size > Aminus;
@@ -1270,7 +1270,7 @@ namespace tardigradeHydra{
         );
 
         std::transform(
-            deformation_gradient_begin, deformation_gradient_end,
+            total_configuration_gradient_begin, total_configuration_gradient_end,
             std::begin( intermediate_term1 ), std::begin( intermediate_term2 ),
             std::minus<>()
         );
@@ -1300,14 +1300,14 @@ namespace tardigradeHydra{
         unsigned int leading_rows,
         unsigned int size,
         unsigned int dim,
-        class deformation_gradient_iterator,
+        class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
     void DeformationBase::solveForLeadingConfigurationGradient(
-        const deformation_gradient_iterator &deformation_gradient_begin, const deformation_gradient_iterator &deformation_gradient_end,
+        const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
@@ -1322,14 +1322,14 @@ namespace tardigradeHydra{
          *
          * which means we can solve for \f$ \frac{\partial [A]}{\partial X} \f$ via
          *
-         * \f$ \frac{\partial [A]}{\partial X} = \left(\frac{\partial [B]}{\partial X} - [A] \frac{\partial [A]^{-}}{\partial X}\right) \left([A]^{-}\right)^{-1}
+         * \f$ \frac{\partial [A]}{\partial X} = \left(\frac{\partial [B]}{\partial X} - [A] \frac{\partial [A]^{-}}{\partial X}\right) \left([A]^{-}\right)^{-1} \f$
          *
-         * \param &deformation_gradient_begin: The starting iterator of the total deformation gradient.
+         * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient.
          *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
-         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
-         * \param &deformation_gradient_end: The stopping iterator of the total deformation gradient.
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ F \f$)
+         * \param &total_configuration_gradient_end: The stopping iterator of the total deformation gradient.
          *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
-         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ F \f$)
          * \param &leading_configuration_begin: The starting iterator of the leading configuration
          * \param &leading_configuration_end: The stopping iterator of the leading configuration
          * \param &configurations_begin: The starting iterator of the configurations
@@ -1344,7 +1344,7 @@ namespace tardigradeHydra{
         std::array< configuration_type, size * size > Aminus;
 
         solveForLeadingConfigurationGradient<leading_rows, size, dim>(
-            deformation_gradient_begin, deformation_gradient_end,
+            total_configuration_gradient_begin, total_configuration_gradient_end,
             leading_configuration_begin, leading_configuration_end,
             configurations_begin, configurations_end,
             configuration_gradients_begin, configuration_gradients_end,
@@ -1358,14 +1358,14 @@ namespace tardigradeHydra{
         unsigned int leading_rows,
         unsigned int size,
         unsigned int dim,
-        class deformation_gradient_iterator,
+        class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfigurationGradientDeformationGradientJacobian(
-        const deformation_gradient_iterator &deformation_gradient_begin, const deformation_gradient_iterator &deformation_gradient_end,
+    void DeformationBase::solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
+        const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
@@ -1380,14 +1380,14 @@ namespace tardigradeHydra{
          *
          * which means we can solve for \f$ \frac{\partial [A]}{\partial X} \f$ via
          *
-         * \f$ \frac{\partial [A]}{\partial X} = \left(\frac{\partial [B]}{\partial X} - [A] \frac{\partial [A]^{-}}{\partial X}\right) \left([A]^{-}\right)^{-1}
+         * \f$ \frac{\partial [A]}{\partial X} = \left(\frac{\partial [B]}{\partial X} - [A] \frac{\partial [A]^{-}}{\partial X}\right) \left([A]^{-}\right)^{-1} \f$
          *
-         * \param &deformation_gradient_begin: The starting iterator of the total deformation gradient.
+         * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient.
          *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
-         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
-         * \param &deformation_gradient_end: The stopping iterator of the total deformation gradient.
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ F \f$)
+         * \param &total_configuration_gradient_end: The stopping iterator of the total deformation gradient.
          *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
-         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ F \f$)
          * \param &leading_configuration_begin: The starting iterator of the leading configuration
          * \param &leading_configuration_end: The stopping iterator of the leading configuration
          * \param &configurations_begin: The starting iterator of the configurations
@@ -1402,8 +1402,8 @@ namespace tardigradeHydra{
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) == leading_rows * size * dim,
-            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) ) + " but must have a size of " + std::to_string( leading_rows * size * dim )
+            ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) == leading_rows * size * dim,
+            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) ) + " but must have a size of " + std::to_string( leading_rows * size * dim )
         )
 
         // J_ijk_abc = d_ia d_lb d_kc Aminus_inv_lj

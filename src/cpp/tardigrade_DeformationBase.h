@@ -164,12 +164,12 @@ namespace tardigradeHydra{
             template<
                 unsigned int leading_rows,
                 unsigned int size,
-                class deformation_iterator,
+                class total_configuration_iterator,
                 class configuration_iterator,
                 class output_iterator
             >
             void solveForLeadingConfiguration(
-                const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+                const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 output_iterator output_begin, output_iterator output_end
             );
@@ -177,13 +177,13 @@ namespace tardigradeHydra{
             template<
                 unsigned int leading_rows,
                 unsigned int size,
-                class deformation_iterator,
+                class total_configuration_iterator,
                 class configuration_iterator,
                 class Aminus_inverse_iterator,
                 class output_iterator
             >
             void solveForLeadingConfiguration(
-                const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+                const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
                 output_iterator output_begin, output_iterator output_end
@@ -192,12 +192,12 @@ namespace tardigradeHydra{
             template<
                 unsigned int leading_rows,
                 unsigned int size,
-                class deformation_iterator,
+                class total_configuration_iterator,
                 class configuration_iterator,
                 class output_iterator
             >
             void solveForLeadingConfigurationDeformationJacobian(
-                const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+                const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 output_iterator output_begin, output_iterator output_end
             );
@@ -205,12 +205,12 @@ namespace tardigradeHydra{
             template<
                 unsigned int leading_rows,
                 unsigned int size,
-                class deformation_iterator,
+                class total_configuration_iterator,
                 class configuration_iterator,
                 class output_iterator
             >
             void solveForLeadingConfigurationConfigurationJacobian(
-                const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+                const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const unsigned int &configuration_index,
                 output_iterator output_begin, output_iterator output_end
@@ -220,7 +220,7 @@ namespace tardigradeHydra{
                 unsigned int leading_rows,
                 unsigned int size,
                 unsigned int dim,
-                class deformation_gradient_iterator,
+                class total_configuration_gradient_iterator,
                 class leading_configuration_iterator,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
@@ -228,7 +228,7 @@ namespace tardigradeHydra{
                 class output_iterator
             >
             void solveForLeadingConfigurationGradient(
-                const deformation_gradient_iterator &deformation_gradient_begin, const deformation_gradient_iterator &deformation_gradient_end,
+                const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
                 const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
@@ -240,14 +240,14 @@ namespace tardigradeHydra{
                 unsigned int leading_rows,
                 unsigned int size,
                 unsigned int dim,
-                class deformation_gradient_iterator,
+                class total_configuration_gradient_iterator,
                 class leading_configuration_iterator,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class output_iterator
             >
             void solveForLeadingConfigurationGradient(
-                const deformation_gradient_iterator &deformation_gradient_begin, const deformation_gradient_iterator &deformation_gradient_end,
+                const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
                 const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
@@ -258,14 +258,14 @@ namespace tardigradeHydra{
                 unsigned int leading_rows,
                 unsigned int size,
                 unsigned int dim,
-                class deformation_gradient_iterator,
+                class total_configuration_gradient_iterator,
                 class leading_configuration_iterator,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class output_iterator
             >
-            void solveForLeadingConfigurationGradientDeformationGradientJacobian(
-                const deformation_gradient_iterator &deformation_gradient_begin, const deformation_gradient_iterator &deformation_gradient_end,
+            void solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
+                const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
                 const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,

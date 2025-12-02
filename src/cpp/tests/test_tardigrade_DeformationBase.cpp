@@ -1478,7 +1478,7 @@ BOOST_AUTO_TEST_CASE( test_getNetConfigurationGradientConfigurationGradientJacob
 
 BOOST_AUTO_TEST_CASE( test_solveForLeadingConfiguration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::vector< double > total_deformation{
+    std::vector< double > total_configuration{
         +7.654259694e-01,+8.389449327e-01,-1.689928983e-01,+4.892309243e-01,
         -5.743370029e-01,-2.153918578e-01,+7.030961028e-01,-7.447755516e-01,
         +7.877307357e-01,-6.984055250e-03,-1.478086893e-01,-3.887072238e-01
@@ -1514,7 +1514,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfiguration, * boost::unit_test::tol
     tardigradeHydra::DeformationBase deformation;
 
     deformation.solveForLeadingConfiguration<3,4>(
-        std::begin( total_deformation ), std::end( total_deformation ), std::begin( configurations ), std::end( configurations ), std::begin( result ), std::end( result )
+        std::begin( total_configuration ), std::end( total_configuration ), std::begin( configurations ), std::end( configurations ), std::begin( result ), std::end( result )
     );
 
     BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
@@ -1523,7 +1523,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfiguration, * boost::unit_test::tol
 
 BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationDeformationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::vector< double > total_deformation{
+    std::vector< double > total_configuration{
         +7.654259694e-01,+8.389449327e-01,-1.689928983e-01,+4.892309243e-01,
         -5.743370029e-01,-2.153918578e-01,+7.030961028e-01,-7.447755516e-01,
         +7.877307357e-01,-6.984055250e-03,-1.478086893e-01,-3.887072238e-01
@@ -1551,7 +1551,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationDeformationJacobian, * bo
     tardigradeHydra::DeformationBase deformation;
     std::vector< double > jacobian( 144, 0 );
     deformation.solveForLeadingConfigurationDeformationJacobian<3,4>(
-        std::begin( total_deformation ), std::end( total_deformation ), std::begin( configurations ), std::end( configurations ), std::begin( jacobian ), std::end( jacobian )
+        std::begin( total_configuration ), std::end( total_configuration ), std::begin( configurations ), std::end( configurations ), std::begin( jacobian ), std::end( jacobian )
     );
 
     double eps = 1e-6;
@@ -1560,7 +1560,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationDeformationJacobian, * bo
 
         constexpr unsigned int NUM_INPUT  = 12;
         constexpr unsigned int NUM_OUTPUT = 12;
-        std::vector< double > x( std::begin( total_deformation ), std::end( total_deformation ) );
+        std::vector< double > x( std::begin( total_configuration ), std::end( total_configuration ) );
 
         for ( unsigned int i = 0; i < NUM_INPUT; ++i ){
 
@@ -1595,7 +1595,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationDeformationJacobian, * bo
 
 BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationConfigurationJacobian, * boost::unit_test::tolerance( 1e-5 ) ){
 
-    std::vector< double > total_deformation{
+    std::vector< double > total_configuration{
         +7.654259694e-01,+8.389449327e-01,-1.689928983e-01,+4.892309243e-01,
         -5.743370029e-01,-2.153918578e-01,+7.030961028e-01,-7.447755516e-01,
         +7.877307357e-01,-6.984055250e-03,-1.478086893e-01,-3.887072238e-01
@@ -1627,7 +1627,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationConfigurationJacobian, * 
         tardigradeHydra::DeformationBase deformation;
         std::vector< double > jacobian( 192, 0 );
         deformation.solveForLeadingConfigurationConfigurationJacobian<3,4>(
-            std::begin( total_deformation ), std::end( total_deformation ),
+            std::begin( total_configuration ), std::end( total_configuration ),
             std::begin( configurations ), std::end( configurations ), c,
             std::begin( jacobian ), std::end( jacobian )
         );
@@ -1651,10 +1651,10 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationConfigurationJacobian, * 
                 std::vector< double > rm( 12, 0 );
 
                 deformation.solveForLeadingConfiguration<3,4>(
-                    std::begin( total_deformation ), std::end( total_deformation ), std::begin( xp ), std::end( xp ), std::begin( rp ), std::end( rp )
+                    std::begin( total_configuration ), std::end( total_configuration ), std::begin( xp ), std::end( xp ), std::begin( rp ), std::end( rp )
                 );
                 deformation.solveForLeadingConfiguration<3,4>(
-                    std::begin( total_deformation ), std::end( total_deformation ), std::begin( xm ), std::end( xm ), std::begin( rm ), std::end( rm )
+                    std::begin( total_configuration ), std::end( total_configuration ), std::begin( xm ), std::end( xm ), std::begin( rm ), std::end( rm )
                 );
 
                 for ( unsigned int j = 0; j < NUM_OUTPUT; ++j ){
@@ -1673,7 +1673,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationConfigurationJacobian, * 
 
 BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradient, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::vector< double > total_deformation_gradient{
+    std::vector< double > total_configuration_gradient{
         -1.228555106e-01, -8.806442068e-01, -2.039114893e-01, +4.759908115e-01, -6.350165391e-01,
         -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +6.988635882e-01,
         +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, -2.764226888e-01,
@@ -1819,7 +1819,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradient, * boost::unit_t
     tardigradeHydra::DeformationBase deformation;
 
     deformation.solveForLeadingConfigurationGradient<3,4,5>(
-        std::begin( total_deformation_gradient ), std::end( total_deformation_gradient ),
+        std::begin( total_configuration_gradient ), std::end( total_configuration_gradient ),
         std::begin( leading_configuration ), std::end( leading_configuration ),
         std::begin( configurations ), std::end( configurations ),
         std::begin( configuration_gradients ), std::end( configuration_gradients ),
@@ -1832,7 +1832,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradient, * boost::unit_t
 
 BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradientDeformationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    std::vector< double > total_deformation_gradient{
+    std::vector< double > total_configuration_gradient{
         -1.228555106e-01, -8.806442068e-01, -2.039114893e-01, +4.759908115e-01, -6.350165391e-01,
         -6.490964877e-01, +6.310274768e-02, +6.365517419e-02, +2.688019171e-01, +6.988635882e-01,
         +4.489106497e-01, +2.220470214e-01, +4.448867651e-01, -3.540821723e-01, -2.764226888e-01,
@@ -1959,8 +1959,8 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradientDeformationJacobi
 
     tardigradeHydra::DeformationBase deformation;
 
-    deformation.solveForLeadingConfigurationGradientDeformationGradientJacobian<3,4,5>(
-        std::begin( total_deformation_gradient ), std::end( total_deformation_gradient ),
+    deformation.solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian<3,4,5>(
+        std::begin( total_configuration_gradient ), std::end( total_configuration_gradient ),
         std::begin( leading_configuration ), std::end( leading_configuration ),
         std::begin( configurations ), std::end( configurations ),
         std::begin( configuration_gradients ), std::end( configuration_gradients ),
@@ -1972,7 +1972,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradientDeformationJacobi
         constexpr double eps = 1e-5;
         constexpr unsigned int NUM_INPUTS  = 60;
         constexpr unsigned int NUM_OUTPUTS = 60;
-        std::vector< double > x = total_deformation_gradient;
+        std::vector< double > x = total_configuration_gradient;
 
         for ( unsigned int i = 0; i < NUM_INPUTS; ++i ){
 
