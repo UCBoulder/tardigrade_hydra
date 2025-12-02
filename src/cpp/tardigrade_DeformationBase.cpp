@@ -969,13 +969,14 @@ namespace tardigradeHydra{
                 output_begin, output_end, output_type( )
             );
 
-            for ( unsigned int i = 0; i < deformation_rows; ++i ){
-                for ( unsigned int k = 0; k < size; ++k ){
-                    for ( unsigned int j = 0; j < size; ++j ){
-                        *( output_begin + size * i + j ) += ( *( deformation_begin + size * i + k ) ) * ( *( Aminus_inverse_begin + size * k + j ) );
-                    }
-                }
-            }
+            _denseMatrixMultiply<
+                deformation_rows, size, size
+            >
+            (
+                deformation_begin, deformation_end,
+                Aminus_inverse_begin, Aminus_inverse_end,
+                output_begin, output_end
+            );
         }
 
     }
@@ -1163,14 +1164,6 @@ namespace tardigradeHydra{
                 std::begin( intermediate_term ), std::end( intermediate_term ), output_type( )
             );
 
-//            A_ij = B_ik Aminusinv_kj
-//
-//            d_kl = Aminusinv_km Aminus_ml
-//            0 = Aminusinv_km_ab Aminus_ml + Aminusinv_ka d_lb
-//            Aminusinv_kj_cd = -Aminusinv_kc Aminusinv_dj
-//            
-//            A_ij_ab = -B_ik Aminusinv_kc Aminusinv_dj Aminus_cd_ab  = -A_ic Aminusinv_dj Aminus_cd_ab
-
             for ( unsigned int i = 0; i < deformation_rows; ++i ){
                 for ( unsigned int j = 0; j < size; ++j ){
                     for ( unsigned int c = 0; c < size; ++c ){
@@ -1182,18 +1175,32 @@ namespace tardigradeHydra{
                 }
             }
 
-            std::fill(
-                output_begin, output_end, output_type( )
+            _denseMatrixMultiply<
+                deformation_rows * size,
+                size * size,
+                size * size
+            >(
+                std::begin( intermediate_term ), std::end( intermediate_term ),
+                std::begin( Aminus_jacobian ),   std::end( Aminus_jacobian ),
+                output_begin, output_end
             );
 
-            for ( unsigned int ij = 0; ij < deformation_rows * size; ++ij ){
-                for ( unsigned int cd = 0; cd < size * size; ++cd ){
-                    for ( unsigned int ab = 0; ab < size * size; ++ab ){
-                        *( output_begin + size * size * ij + ab ) += intermediate_term[ size * size * ij + cd ] * Aminus_jacobian[ size * size * cd + ab ];
-                    }
-                }
-            }
         }
+
+    }
+
+    template<
+        unsigned int deformation_rows,
+        unsigned int size,
+        class deformation_iterator,
+        class configuration_iterator,
+        class output_iterator
+    >
+    void solveForLeadingConfigurationGradient(
+        const deformation_iterator   &deformation_begin, const deformation_iterator &deformation_end,
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
 
     }
 
