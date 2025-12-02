@@ -894,7 +894,7 @@ namespace tardigradeHydra{
     }
 
     template<
-        unsigned int total_rows,
+        unsigned int leading_rows,
         unsigned int size,
         class deformation_iterator,
         class configuration_iterator,
@@ -933,8 +933,8 @@ namespace tardigradeHydra{
         );
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( output_end - output_begin ) == total_rows * size,
-            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but it needs a size of " + std::to_string( total_rows * size )
+            ( unsigned int )( output_end - output_begin ) == leading_rows * size,
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but it needs a size of " + std::to_string( leading_rows * size )
         );
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
@@ -970,7 +970,7 @@ namespace tardigradeHydra{
             );
 
             _denseMatrixMultiply<
-                total_rows, size, size
+                leading_rows, size, size
             >
             (
                 deformation_begin, deformation_end,
@@ -982,7 +982,7 @@ namespace tardigradeHydra{
     }
 
     template<
-        unsigned int total_rows,
+        unsigned int leading_rows,
         unsigned int size,
         class deformation_iterator,
         class configuration_iterator,
@@ -1012,7 +1012,7 @@ namespace tardigradeHydra{
 
         std::array< configuration_type, size * size > Aminus_inverse;
 
-        solveForLeadingConfiguration<total_rows, size>(
+        solveForLeadingConfiguration<leading_rows, size>(
             deformation_begin, deformation_end, configurations_begin, configurations_end,
             std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
             output_begin, output_end
@@ -1021,7 +1021,7 @@ namespace tardigradeHydra{
     }
 
     template<
-        unsigned int total_rows,
+        unsigned int leading_rows,
         unsigned int size,
         class deformation_iterator,
         class configuration_iterator,
@@ -1055,17 +1055,17 @@ namespace tardigradeHydra{
         );
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( output_end - output_begin ) == total_rows * size * total_rows * size,
-            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but it needs a size of at least " + std::to_string( total_rows * size * total_rows * size )
+            ( unsigned int )( output_end - output_begin ) == leading_rows * size * leading_rows * size,
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but it needs a size of at least " + std::to_string( leading_rows * size * leading_rows * size )
         );
 
         if ( configurations_end == ( configurations_begin + size * size ) ){
 
             std::fill( output_begin, output_end, output_type( ) );
 
-            for ( unsigned int i = 0; i < total_rows * size; ++i ){
+            for ( unsigned int i = 0; i < leading_rows * size; ++i ){
 
-                *( output_begin + total_rows * size * i + i ) += 1;
+                *( output_begin + leading_rows * size * i + i ) += 1;
 
             }
 
@@ -1088,10 +1088,10 @@ namespace tardigradeHydra{
                 output_begin, output_end, output_type( )
             );
 
-            for ( unsigned int i = 0; i < total_rows; ++i ){
+            for ( unsigned int i = 0; i < leading_rows; ++i ){
                 for ( unsigned int j = 0; j < size; ++j ){
                     for ( unsigned int a = 0; a < size; ++a ){
-                        *( output_begin + size * total_rows * size * i + total_rows * size * j + size * i + a ) += Aminus_inverse[ size * a + j ];
+                        *( output_begin + size * leading_rows * size * i + leading_rows * size * j + size * i + a ) += Aminus_inverse[ size * a + j ];
                     }
                 }
             }
@@ -1100,7 +1100,7 @@ namespace tardigradeHydra{
     }
 
     template<
-        unsigned int total_rows,
+        unsigned int leading_rows,
         unsigned int size,
         class deformation_iterator,
         class configuration_iterator,
@@ -1132,7 +1132,7 @@ namespace tardigradeHydra{
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( output_end - output_begin ) == total_rows * size * size * size,
+            ( unsigned int )( output_end - output_begin ) == leading_rows * size * size * size,
             "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but it needs a size of at least " + std::to_string( size * size )
         );
 
@@ -1143,12 +1143,12 @@ namespace tardigradeHydra{
         }
         else{
 
-            std::array< output_type, total_rows * size > leadingConfiguration;
+            std::array< output_type, leading_rows * size > leadingConfiguration;
             std::array< output_type, size * size > Aminus_inverse;
-            std::array< output_type, total_rows * size * size * size > intermediate_term;
+            std::array< output_type, leading_rows * size * size * size > intermediate_term;
             std::array< output_type, size * size * size * size > Aminus_jacobian;
 
-            solveForLeadingConfiguration<total_rows,size>(
+            solveForLeadingConfiguration<leading_rows,size>(
                 deformation_begin, deformation_end, configurations_begin, configurations_end,
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
                 std::begin( leadingConfiguration ), std::end( leadingConfiguration )
@@ -1164,7 +1164,7 @@ namespace tardigradeHydra{
                 std::begin( intermediate_term ), std::end( intermediate_term ), output_type( )
             );
 
-            for ( unsigned int i = 0; i < total_rows; ++i ){
+            for ( unsigned int i = 0; i < leading_rows; ++i ){
                 for ( unsigned int j = 0; j < size; ++j ){
                     for ( unsigned int c = 0; c < size; ++c ){
                         for ( unsigned int d = 0; d < size; ++d ){
@@ -1176,7 +1176,7 @@ namespace tardigradeHydra{
             }
 
             _denseMatrixMultiply<
-                total_rows * size,
+                leading_rows * size,
                 size * size,
                 size * size
             >(
@@ -1190,7 +1190,7 @@ namespace tardigradeHydra{
     }
 
     template<
-        unsigned int total_rows,
+        unsigned int leading_rows,
         unsigned int size,
         unsigned int dim,
         class deformation_gradient_iterator,
@@ -1242,13 +1242,13 @@ namespace tardigradeHydra{
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) == total_rows * size * dim,
-            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) ) + " but must have a size of " + std::to_string( total_rows * size * dim )
+            ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) == leading_rows * size * dim,
+            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) ) + " but must have a size of " + std::to_string( leading_rows * size * dim )
         )
 
         std::array< configuration_type, size * size > Aminus;
         std::array< configuration_gradient_type, size * size * dim > dAMinusdX;
-        std::array< output_type, total_rows * size * dim > intermediate_term1, intermediate_term2;
+        std::array< output_type, leading_rows * size * dim > intermediate_term1, intermediate_term2;
 
         // Compute the trailing configuration and it's gradient
         getNetConfiguration<size>(
@@ -1263,7 +1263,7 @@ namespace tardigradeHydra{
         );
 
         // Assemble the intermediate terms
-        _denseMatrixMultiply<total_rows,size,size*dim>(
+        _denseMatrixMultiply<leading_rows,size,size*dim>(
             leading_configuration_begin, leading_configuration_end,
             std::begin( dAMinusdX ), std::end( dAMinusdX ),
             std::begin( intermediate_term1 ), std::end( intermediate_term1 )
@@ -1284,7 +1284,7 @@ namespace tardigradeHydra{
             output_begin, output_end, output_type( )
         );
 
-        for ( unsigned int i = 0; i < total_rows; ++i ){
+        for ( unsigned int i = 0; i < leading_rows; ++i ){
             for ( unsigned int j = 0; j < size; ++j ){
                 for ( unsigned int a = 0; a < dim; ++a ){
                     for ( unsigned int k = 0; k < size; ++k ){
@@ -1297,7 +1297,7 @@ namespace tardigradeHydra{
     }
 
     template<
-        unsigned int total_rows,
+        unsigned int leading_rows,
         unsigned int size,
         unsigned int dim,
         class deformation_gradient_iterator,
@@ -1343,7 +1343,7 @@ namespace tardigradeHydra{
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
         std::array< configuration_type, size * size > Aminus;
 
-        solveForLeadingConfigurationGradient<total_rows, size, dim>(
+        solveForLeadingConfigurationGradient<leading_rows, size, dim>(
             deformation_gradient_begin, deformation_gradient_end,
             leading_configuration_begin, leading_configuration_end,
             configurations_begin, configurations_end,
@@ -1355,7 +1355,7 @@ namespace tardigradeHydra{
     }
 
     template<
-        unsigned int total_rows,
+        unsigned int leading_rows,
         unsigned int size,
         unsigned int dim,
         class deformation_gradient_iterator,
@@ -1402,8 +1402,8 @@ namespace tardigradeHydra{
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) == total_rows * size * dim,
-            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) ) + " but must have a size of " + std::to_string( total_rows * size * dim )
+            ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) == leading_rows * size * dim,
+            "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( deformation_gradient_end - deformation_gradient_begin ) ) + " but must have a size of " + std::to_string( leading_rows * size * dim )
         )
 
         // J_ijk_abc = d_ia d_lb d_kc Aminus_inv_lj
@@ -1422,11 +1422,11 @@ namespace tardigradeHydra{
         Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( Aminus_inverse.data( ), size, size );
         _Aminus_inverse = _Aminus.inverse( );
 
-        for ( unsigned int i = 0; i < total_rows; ++i ){
+        for ( unsigned int i = 0; i < leading_rows; ++i ){
             for ( unsigned int j = 0; j < size; ++j ){
                 for ( unsigned int a = 0; a < dim; ++a ){
                     for ( unsigned int b = 0; b < size; ++b ){
-                        *( output_begin + size * dim * total_rows * size * dim * i + dim * total_rows * size * dim * j + total_rows * size * dim * a + size * dim * i + dim * b + a )
+                        *( output_begin + size * dim * leading_rows * size * dim * i + dim * leading_rows * size * dim * j + leading_rows * size * dim * a + size * dim * i + dim * b + a )
                             += Aminus_inverse[ size * b + j ];
                     }
                 }

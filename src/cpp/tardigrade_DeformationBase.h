@@ -162,7 +162,7 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int total_rows,
+                unsigned int leading_rows,
                 unsigned int size,
                 class deformation_iterator,
                 class configuration_iterator,
@@ -175,7 +175,7 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int total_rows,
+                unsigned int leading_rows,
                 unsigned int size,
                 class deformation_iterator,
                 class configuration_iterator,
@@ -190,7 +190,7 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int total_rows,
+                unsigned int leading_rows,
                 unsigned int size,
                 class deformation_iterator,
                 class configuration_iterator,
@@ -203,7 +203,7 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int total_rows,
+                unsigned int leading_rows,
                 unsigned int size,
                 class deformation_iterator,
                 class configuration_iterator,
@@ -217,7 +217,7 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int total_rows,
+                unsigned int leading_rows,
                 unsigned int size,
                 unsigned int dim,
                 class deformation_gradient_iterator,
@@ -237,7 +237,7 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int total_rows,
+                unsigned int leading_rows,
                 unsigned int size,
                 unsigned int dim,
                 class deformation_gradient_iterator,
@@ -255,7 +255,7 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int total_rows,
+                unsigned int leading_rows,
                 unsigned int size,
                 unsigned int dim,
                 class deformation_gradient_iterator,
