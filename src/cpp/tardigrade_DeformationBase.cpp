@@ -1217,7 +1217,7 @@ namespace tardigradeHydra{
          *
          * which means we can solve for \f$ \frac{\partial [A]}{\partial X} \f$ via
          *
-         * \f$ \frac{\partial [A]}{\partial X} = \left(\frac{\partial [B]}{\partial X} - [A] \frac{\partial [A]^{-}}{\partial X}\right) \left([A]^{-}\right)^{-1}
+         * \f$ \frac{\partial [A]}{\partial X} = \left(\frac{\partial [B]}{\partial X} - [A] \frac{\partial [A]^{-}}{\partial X}\right) \left([A]^{-}\right)^{-1} \f$
          *
          * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient.
          *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
@@ -1326,10 +1326,10 @@ namespace tardigradeHydra{
          *
          * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient.
          *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
-         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ F \f$)
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
          * \param &total_configuration_gradient_end: The stopping iterator of the total deformation gradient.
          *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
-         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ F \f$)
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
          * \param &leading_configuration_begin: The starting iterator of the leading configuration
          * \param &leading_configuration_end: The stopping iterator of the leading configuration
          * \param &configurations_begin: The starting iterator of the configurations
@@ -1384,10 +1384,10 @@ namespace tardigradeHydra{
          *
          * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient.
          *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
-         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ F \f$)
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
          * \param &total_configuration_gradient_end: The stopping iterator of the total deformation gradient.
          *     Note that this deformation gradient is the derivative of the deformation \f$ [B] \f$ with respect
-         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ F \f$)
+         *     to \f$ X \f$ rather than the standard deformation gradient from continuum (i.e., \f$ \bf{F} \f$)
          * \param &leading_configuration_begin: The starting iterator of the leading configuration
          * \param &leading_configuration_end: The stopping iterator of the leading configuration
          * \param &configurations_begin: The starting iterator of the configurations
@@ -1405,9 +1405,6 @@ namespace tardigradeHydra{
             ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) == leading_rows * size * dim,
             "The total deformation gradient has a size of " + std::to_string( ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) ) + " but must have a size of " + std::to_string( leading_rows * size * dim )
         )
-
-        // J_ijk_abc = d_ia d_lb d_kc Aminus_inv_lj
-        // J_ija_iba = Aminus_inv_bj
 
         std::array< configuration_type, size * size > Aminus, Aminus_inverse;
 
