@@ -1661,7 +1661,7 @@ namespace tardigradeHydra{
             std::begin( J_dAminusdX ), std::end( J_dAminusdX )
         );
 
-        // Compute the leading configuration Jacobian
+        // Compute the leading configuration
         solveForLeadingConfigurationGradient<leading_rows, size, dim>(
             total_configuration_gradient_begin, total_configuration_gradient_end,
             leading_configuration_begin, leading_configuration_end,
@@ -1671,21 +1671,52 @@ namespace tardigradeHydra{
             std::begin( leadingConfigurationGradient ), std::end( leadingConfigurationGradient )
         );
 
-        std::array< output_type, leading_rows * size * dim * size * size > intermediate_term;
+        // Assemble the Jacobian
+        std::array< output_type, size * size * dim * size * size > intermediate_term1;
         std::fill(
-            std::begin( intermediate_term ), std::end( intermediate_term ), output_type( )
+            std::begin( intermediate_term1 ), std::end( intermediate_term1 ), output_type( )
         );
 
-        for ( unsigned int i = 0; i < leading_rows; ++i ){
+        for ( unsigned int i = 0; i < size; ++i ){
             for ( unsigned int j = 0; j < size; ++j ){
                 for ( unsigned int k = 0; k < size; ++k ){
                     for ( unsigned int acd = 0; acd < dim * size * size; ++acd ){
-                        intermediate_term[ size * dim * size * size * i + dim * size * size * j + acd ]
+                        intermediate_term1[ size * dim * size * size * i + dim * size * size * j + acd ]
                             -= J_dAminusdX[ size * dim * size * size * i + dim * size * size * k + acd ] * Aminus_inverse[ size * k + j ];
                     }
                 }
             }
         }
+
+        _denseMatrixMultiply<leading_rows,size,size*dim*size*size>(
+            leading_configuration_begin, leading_configuration_end,
+            std::begin( intermediate_term1 ), std::end( intermediate_term1 ),
+            output_begin, output_end
+        );
+
+        std::array< output_type, leading_rows * size * dim * size * size > intermediate_term2;
+        std::fill(
+            std::begin( intermediate_term2 ), std::end( intermediate_term2 ), output_type( )
+        );
+
+        for ( unsigned int i = 0; i < leading_rows; ++i ){
+            for ( unsigned int j = 0; j < size; ++j ){
+                for ( unsigned int a = 0; a < dim; ++a ){
+                    for ( unsigned int e = 0; e < size; ++e ){
+                        for ( unsigned int f = 0; f < size; ++f ){
+                            intermediate_term2[ size * dim * size * size * i + dim * size * size * j + size * size * a + size * e + f ]
+                                -= leadingConfigurationGradient[ size * dim * i + dim * f + a ] * Aminus_inverse[ size * e + j ];
+                        }
+                    }
+                }
+            }
+        }
+
+        _denseMatrixMultiplyAccumulate<leading_rows * size * dim, size * size, size * size>(
+            std::begin( intermediate_term2 ), std::end( intermediate_term2 ),
+            std::begin( J_Aminus ), std::end( J_Aminus ),
+            output_begin, output_end
+        );
 
     }
 
