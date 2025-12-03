@@ -2139,7 +2139,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradientLeadingConfigurat
         -9.233367860e-01, +9.295804334e-02, +7.238241909e-01, +1.351483251e-01, -6.483434691e-01
     };
 
-    std::vector< double > jacobian( 3600, 0 );
+    std::vector< double > jacobian( 720, 0 );
 
     tardigradeHydra::DeformationBase deformation;
 
