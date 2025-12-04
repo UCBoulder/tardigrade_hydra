@@ -1677,10 +1677,7 @@ namespace tardigradeHydra{
         );
 
         // Assemble the Jacobian
-        std::array< output_type, size * size * dim * size * size > intermediate_term1;
-        std::fill(
-            std::begin( intermediate_term1 ), std::end( intermediate_term1 ), output_type( )
-        );
+        std::array< output_type, size * size * dim * size * size > intermediate_term1 = { output_type( ) };
 
         for ( unsigned int i = 0; i < size; ++i ){
             for ( unsigned int j = 0; j < size; ++j ){
@@ -1699,10 +1696,7 @@ namespace tardigradeHydra{
             output_begin, output_end
         );
 
-        std::array< output_type, leading_rows * size * dim * size * size > intermediate_term2;
-        std::fill(
-            std::begin( intermediate_term2 ), std::end( intermediate_term2 ), output_type( )
-        );
+        std::array< output_type, leading_rows * size * dim * size * size > intermediate_term2 = { output_type( ) };
 
         for ( unsigned int i = 0; i < leading_rows; ++i ){
             for ( unsigned int j = 0; j < size; ++j ){
@@ -1785,9 +1779,6 @@ namespace tardigradeHydra{
             "The jacobian has a size of " + std::to_string( ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) ) + " but must have a size of " + std::to_string( leading_rows * size * dim * size * size * dim )
         )
 
-//        dAdX_ija = (B_ika - A_il dAminusdX_lka) Aminus_inverse_kj
-//        dAdX_ija_cde = -A_il dAminusdX_lka_cde Aminus_inverse_kj
-
         std::array< configuration_type, size * size > Aminus, Aminus_inverse;
         std::array< configuration_gradient_type, size * size * dim * size * size * dim > J_dAminusdX;
 
@@ -1809,10 +1800,7 @@ namespace tardigradeHydra{
             std::begin( J_dAminusdX ), std::end( J_dAminusdX )
         );
 
-        std::array< output_type, size * size * dim * size * size * dim > intermediate_term;
-        std::fill(
-            std::begin( intermediate_term ), std::end( intermediate_term ), output_type( )
-        );
+        std::array< output_type, size * size * dim * size * size * dim > intermediate_term = { output_type( ) };
 
         for ( unsigned int i = 0; i < size; ++i ){
             for ( unsigned int j = 0; j < size; ++j ){
@@ -1830,6 +1818,117 @@ namespace tardigradeHydra{
             std::begin( intermediate_term ), std::end( intermediate_term ),
             output_begin, output_end
         );
+
+    }
+
+    template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim,
+        class total_configuration_iterator,
+        class total_configuration_gradient_iterator,
+        class configuration_iterator,
+        class configuration_gradient_iterator,
+        class output_leading_configuration_iterator,
+        class output_leading_configuration_gradient_iterator
+    >
+    void solveForAllLeading(
+        const total_configuration_iterator &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
+        const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+        output_leading_configuration_iterator output_leading_configuration_begin, output_leading_configuration_iterator output_leading_configuration_end,
+        output_leading_configuration_gradient_iterator output_leading_configuration_gradient_begin, output_leading_configuration_gradient_iterator output_leading_configuration_gradient_end
+    ){
+        /*!
+         * Solve for the leading configuration and its gradient which would be required to achieve the total deformation i.e., if
+         * the total deformation is \f$ [A] \f$ and we know the net deformation from the subsequent deformations
+         * in the form of the configurations, then
+         * 
+         * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
+         *
+         * \param &total_configuration_begin: The starting iterator of the total deformation
+         * \param &total_configuration_end: The stopping iterator of the total deformation
+         * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient
+         * \param &total_configuration_gradient_end: The stopping iterator of the total deformation gradient
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param output_leading_configuration_begin: The starting iterator of the leading configuration output
+         * \param output_leading_configuration_end: The stopping iterator of the leading configuration output
+         */
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( total_configuration_end - total_configuration_begin ) == ( leading_rows * size ),
+            "The total configuration has a size of " + std::to_string( ( unsigned int )( total_configuration_end - total_configuration_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) == ( leading_rows * size * dim ),
+            "The total configuration gradient has a size of " + std::to_string( ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size * dim )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_leading_configuration_end - output_leading_configuration_begin ) == ( leading_rows * size ),
+            "The leading configuration has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_end - output_leading_configuration_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_leading_configuration_gradient_end - output_leading_configuration_gradient_begin ) == ( leading_rows * size * dim ),
+            "The leading configuration gradient has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_gradient_end - output_leading_configuration_gradient_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size * dim )
+        );
+
+//        TARDIGRADE_ERROR_TOOLS_CHECK(
+//            ( unsigned int )( Aminus_inverse_end - Aminus_inverse_begin ) == size * size,
+//            "The inverse of the total deformation of the configurations has a size of " + std::to_string( ( unsigned int )( Aminus_inverse_end - Aminus_inverse_begin ) ) + " but it needs a size of " + std::to_string( size * size )
+//        );
+//
+//        using output_type         = typename std::iterator_traits<output_iterator>::value_type;
+//        using Aminus_inverse_type = typename std::iterator_traits<Aminus_inverse_iterator>::value_type;
+//
+//        if ( configurations_end == configurations_begin ){
+//
+//            std::fill( Aminus_inverse_begin, Aminus_inverse_end, Aminus_inverse_type( ) );
+//
+//            std::copy(
+//                total_configuration_begin, total_configuration_end, output_leading_configuration_begin
+//            );
+//
+//            std::copy(
+//                total_configuration_gradient_begin, total_configuration_gradient_end, output_leading_configuration_gradient_begin
+//            );
+//
+//        }
+//        else{
+//
+//            std::array< output_type, size * size > Aminus;
+//            std::array< output_type, size * size * dim > dAminusdX;
+//
+//            getNetConfiguration<size>(
+//                configurations_begin, configurations_end,
+//                std::begin( Aminus ), std::end( Aminus )
+//            );
+//
+//            getNetConfigurationGradient<size,dim>(
+//                configurations_begin, configuration_end,
+//                std::begin( dAminusdX ), std::end( dAminusdX )
+//            );
+//
+//            // TODO: Generalize this to a matrix solve rather than computing an inverse
+//            Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
+//            Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( &(*Aminus_inverse_begin ), size, size );
+//            _Aminus_inverse = _Aminus.inverse( );
+//
+//            _denseMatrixMultiply<
+//                leading_rows, size, size
+//            >
+//            (
+//                total_configuration_begin, total_configuration_end,
+//                Aminus_inverse_begin, Aminus_inverse_end,
+//                output_begin, output_end
+//            );
+//        }
 
     }
 

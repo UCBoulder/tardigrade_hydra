@@ -330,6 +330,26 @@ namespace tardigradeHydra{
                 output_iterator output_begin, output_iterator output_end
             );
 
+            template<
+                unsigned int leading_rows,
+                unsigned int size,
+                unsigned int dim,
+                class total_configuration_iterator,
+                class total_configuration_gradient_iterator,
+                class configuration_iterator,
+                class configuration_gradient_iterator,
+                class output_leading_configuration_iterator,
+                class output_leading_configuration_gradient_iterator
+            >
+            void solveForAllLeading(
+                const total_configuration_iterator &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
+                const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
+                const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+                const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+                output_leading_configuration_iterator output_leading_configuration_begin, output_leading_configuration_iterator output_leading_configuration_end,
+                output_leading_configuration_gradient_iterator output_leading_configuration_gradient_begin, output_leading_configuration_gradient_iterator output_leading_configuration_gradient_end
+            );
+
         protected:
 
             template<
