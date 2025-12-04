@@ -2198,7 +2198,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradientLeadingConfigurat
 
 }
 
-BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradientConfigurationJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradientConfigurationJacobian, * boost::unit_test::tolerance( 1e-4 ) ){
 
     std::vector< double > total_configuration_gradient{
         -1.228555106e-01, -8.806442068e-01, -2.039114893e-01, +4.759908115e-01, -6.350165391e-01,

@@ -225,6 +225,7 @@ namespace tardigradeHydra{
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class Aminus_inverse_iterator,
+                class dAminusdX_iterator,
                 class output_iterator
             >
             void solveForLeadingConfigurationGradient(
@@ -233,6 +234,7 @@ namespace tardigradeHydra{
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
                 Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
+                dAminusdX_iterator dAminusdX_begin, dAminusdX_iterator dAminusdX_end,
                 output_iterator output_begin, output_iterator output_end
             );
 

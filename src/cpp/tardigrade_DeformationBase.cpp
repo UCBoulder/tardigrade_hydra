@@ -1244,6 +1244,7 @@ namespace tardigradeHydra{
         class configuration_iterator,
         class configuration_gradient_iterator,
         class Aminus_inverse_iterator,
+        class dAminusdX_iterator,
         class output_iterator
     >
     void DeformationBase::solveForLeadingConfigurationGradient(
@@ -1252,6 +1253,7 @@ namespace tardigradeHydra{
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
+        dAminusdX_iterator dAminusdX_begin, dAminusdX_iterator dAminusdX_end,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
@@ -1279,12 +1281,13 @@ namespace tardigradeHydra{
          * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
          * \param Aminus_inverse_begin: The starting iterator of the inverse of the total trailing configuration
          * \param Aminus_inverse_end: The stopping iterator of the inverse of the total trailing configuration
+         * \param dAminusdX_begin: The starting iterator of the gradient of the total trailing configuration
+         * \param dAminusdX_end: The stopping iterator of the gradient of the total trailing configuration
          * \param output_begin: The starting iterator of the output
          * \param output_end: The stopping iterator of the output
          */
 
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
-        using configuration_gradient_type = typename std::iterator_traits<configuration_gradient_iterator>::value_type;
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
@@ -1293,7 +1296,6 @@ namespace tardigradeHydra{
         )
 
         std::array< configuration_type, size * size > Aminus;
-        std::array< configuration_gradient_type, size * size * dim > dAMinusdX;
         std::array< output_type, leading_rows * size * dim > intermediate_term1, intermediate_term2;
 
         // Compute the trailing configuration and it's gradient
@@ -1305,13 +1307,13 @@ namespace tardigradeHydra{
         getNetConfigurationGradient<size,dim>(
             configurations_begin, configurations_end,
             configuration_gradients_begin, configuration_gradients_end,
-            std::begin( dAMinusdX ), std::end( dAMinusdX )
+            dAminusdX_begin, dAminusdX_end
         );
 
         // Assemble the intermediate terms
         _denseMatrixMultiply<leading_rows,size,size*dim>(
             leading_configuration_begin, leading_configuration_end,
-            std::begin( dAMinusdX ), std::end( dAMinusdX ),
+            dAminusdX_begin, dAminusdX_end,
             std::begin( intermediate_term1 ), std::end( intermediate_term1 )
         );
 
@@ -1387,7 +1389,9 @@ namespace tardigradeHydra{
          */
 
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using configuration_gradient_type = typename std::iterator_traits<configuration_gradient_iterator>::value_type;
         std::array< configuration_type, size * size > Aminus;
+        std::array< configuration_gradient_type, size * size * dim > dAminusdx;
 
         solveForLeadingConfigurationGradient<leading_rows, size, dim>(
             total_configuration_gradient_begin, total_configuration_gradient_end,
@@ -1395,6 +1399,7 @@ namespace tardigradeHydra{
             configurations_begin, configurations_end,
             configuration_gradients_begin, configuration_gradients_end,
             std::begin( Aminus ), std::end( Aminus ),
+            std::begin( dAminusdx ), std::end( dAminusdx ),
             output_begin, output_end
         );
 
@@ -1621,6 +1626,7 @@ namespace tardigradeHydra{
          * \param &configurations_end: The stopping iterator of the configurations
          * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
          * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param &configuration_index: The index of the configuration in the configurations array to compute the Jacobian with respect to
          * \param output_begin: The starting iterator of the output
          * \param output_end: The stopping iterator of the output
          */
@@ -1646,6 +1652,7 @@ namespace tardigradeHydra{
         std::array< configuration_type, size * size * size * size > J_Aminus;
         std::array< configuration_type, size * size > Aminus_inverse;
         std::array< configuration_gradient_type, size * size * dim * size * size > J_dAminusdX;
+        std::array< configuration_gradient_type, size * size * dim > dAminusdX;
 
         // Compute the Jacobian of the trailing configuration and it's gradient
         getNetConfigurationJacobian<size>(
@@ -1668,6 +1675,7 @@ namespace tardigradeHydra{
             configurations_begin, configurations_end,
             configuration_gradients_begin, configuration_gradients_end,
             std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+            std::begin( dAminusdX ), std::end( dAminusdX ),
             std::begin( leadingConfigurationGradient ), std::end( leadingConfigurationGradient )
         );
 
@@ -1705,7 +1713,7 @@ namespace tardigradeHydra{
                     for ( unsigned int e = 0; e < size; ++e ){
                         for ( unsigned int f = 0; f < size; ++f ){
                             intermediate_term2[ size * dim * size * size * i + dim * size * size * j + size * size * a + size * e + f ]
-                                -= leadingConfigurationGradient[ size * dim * i + dim * f + a ] * Aminus_inverse[ size * e + j ];
+                                -= leadingConfigurationGradient[ size * dim * i + dim * e + a ] * Aminus_inverse[ size * f + j ];
                         }
                     }
                 }
