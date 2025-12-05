@@ -1184,6 +1184,44 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
+        class leading_configuration_iterator,
+        class Aminus_inverse_iterator,
+        class output_iterator
+    >
+    void DeformationBase::_compute_intermediate_term_1_solveForLeadingConfigurationConfigurationJacobian(
+        const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
+        const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Compute intermediate term 1 for solveForLeadingConfigurationGradientConfigurationJacobian
+         *
+         * \param &leading_configuration_begin: The starting iterator of the leading configuration
+         * \param &leading_configuration_end: The stopping iterator of the leading configuration
+         * \param Aminus_inverse_begin: The starting iterator of the inverse of the total trailing configuration
+         * \param Aminus_inverse_end: The stopping iterator of the inverse of the total trailing configuration
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+        std::fill( output_begin, output_end, output_type( ) );
+
+        for ( unsigned int i = 0; i < leading_rows; ++i ){
+            for ( unsigned int j = 0; j < size; ++j ){
+                for ( unsigned int c = 0; c < size; ++c ){
+                    for ( unsigned int d = 0; d < size; ++d ){
+                        *( output_begin + size * size * size * i + size * size * j + size * c + d )
+                            -= ( *( leading_configuration_begin + size * i + c ) ) * ( *( Aminus_inverse_begin + size * d + j ) );
+                    }
+                }
+            }
+        }
+    }
+
+    template<
+        unsigned int leading_rows,
+        unsigned int size,
         class total_configuration_iterator,
         class configuration_iterator,
         class output_iterator
@@ -1227,7 +1265,7 @@ namespace tardigradeHydra{
 
             std::array< output_type, leading_rows * size > leadingConfiguration;
             std::array< output_type, size * size > Aminus_inverse;
-            std::array< output_type, leading_rows * size * size * size > intermediate_term;
+            std::array< output_type, leading_rows * size * size * size > intermediate_term = { output_type( ) };
             std::array< output_type, size * size * size * size > Aminus_jacobian;
 
             solveForLeadingConfiguration<leading_rows,size>(
@@ -1242,20 +1280,11 @@ namespace tardigradeHydra{
                 std::begin( Aminus_jacobian ), std::end( Aminus_jacobian )
             );
 
-            std::fill(
-                std::begin( intermediate_term ), std::end( intermediate_term ), output_type( )
+            _compute_intermediate_term_1_solveForLeadingConfigurationConfigurationJacobian<leading_rows,size>(
+                std::begin( leadingConfiguration ), std::end( leadingConfiguration ),
+                std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+                std::begin( intermediate_term ), std::end( intermediate_term )
             );
-
-            for ( unsigned int i = 0; i < leading_rows; ++i ){
-                for ( unsigned int j = 0; j < size; ++j ){
-                    for ( unsigned int c = 0; c < size; ++c ){
-                        for ( unsigned int d = 0; d < size; ++d ){
-                            intermediate_term[ size * size * size * i + size * size * j + size * c + d ]
-                                -= leadingConfiguration[ size * i + c ] * Aminus_inverse[ size * d + j ];
-                        }
-                    }
-                }
-            }
 
             _denseMatrixMultiply<
                 leading_rows * size,
@@ -2407,6 +2436,7 @@ namespace tardigradeHydra{
                 }
             }
 
+            // Assemble the Jacobians of the leading configuration gradient
             for ( unsigned int i = 0; i < leading_rows; ++i ){
                 for ( unsigned int l = 0; l < size; ++l ){
                     for ( unsigned int a = 0; a < dim; ++a ){
@@ -2421,6 +2451,7 @@ namespace tardigradeHydra{
             }
 
             // JACOBIANS W.R.T. TOTAL CONFIGURATION GRADIENT
+            // Assemble the Jacobians of the leading configuration gradient
             for ( unsigned int i = 0; i < leading_rows; ++i ){
                 for ( unsigned int j = 0; j < size; ++j ){
                     for ( unsigned int a = 0; a < dim; ++a ){
@@ -2432,31 +2463,26 @@ namespace tardigradeHydra{
                 }
             }
 
-            std::array< output_lc_configurations_J_type, leading_rows * size * size * size > intermediate_term1;
+            std::array< output_lc_configurations_J_type, leading_rows * size * size * size > intermediate_term1 = { output_lc_configurations_J_type( ) };
+            _compute_intermediate_term_1_solveForLeadingConfigurationConfigurationJacobian<leading_rows,size>(
+                std::begin( leading_configuration ), std::end( leading_configuration ),
+                std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+                std::begin( intermediate_term1 ), std::end( intermediate_term1 )
+            );
+
+            std::array< output_lcg_configurations_J_type, size * size * dim * size * size > intermediate_term2;
+            std::array< output_lcg_configurations_J_type, leading_rows * size * dim * size * size > intermediate_term3;
             std::array< output_lc_configurations_J_type, size * size * size * size > Aminus_jacobian;
+            std::array< output_lcg_configurations_J_type, size * size * dim * size * size > dAminusdX_jacobian;
             for ( unsigned int configuration_index = 0; configuration_index < num_configs; ++configuration_index ){
 
                 // JACOBIANS W.R.T. CONFIGURATIONS
+                // Assemble the Jacobians of the leading configuration
                 getNetConfigurationJacobian<size>(
                     configurations_begin, configurations_end,
                     configuration_index,
                     std::begin( Aminus_jacobian ), std::end( Aminus_jacobian )
                 );
-
-                std::fill(
-                    std::begin( intermediate_term1 ), std::end( intermediate_term1 ), output_lc_configurations_J_type( )
-                );
-
-                for ( unsigned int i = 0; i < leading_rows; ++i ){
-                    for ( unsigned int j = 0; j < size; ++j ){
-                        for ( unsigned int c = 0; c < size; ++c ){
-                            for ( unsigned int d = 0; d < size; ++d ){
-                                intermediate_term1[ size * size * size * i + size * size * j + size * c + d ]
-                                    -= leading_configuration[ size * i + c ] * Aminus_inverse[ size * d + j ];
-                            }
-                        }
-                    }
-                }
 
                 _denseMatrixMultiplyAccumulate<
                     leading_rows * size,
@@ -2469,6 +2495,51 @@ namespace tardigradeHydra{
                     configuration_index * size * size, size * size * num_configs
                 );
 
+                // Assemble the Jacobians of the leading configuration gradient
+
+//                std::fill(
+//                    std::begin( intermediate_term2 ), std::end( intermediate_term2 ), output_lcg_configurations_J_type( )
+//                );
+//
+//                for ( unsigned int i = 0; i < size; ++i ){
+//                    for ( unsigned int j = 0; j < size; ++j ){
+//                        for ( unsigned int k = 0; k < size; ++k ){
+//                            for ( unsigned int acd = 0; acd < dim * size * size; ++acd ){
+//                                intermediate_term2[ size * dim * size * size * i + dim * size * size * j + acd ]
+//                                    -= dAminusdX_jacobian[ size * dim * size * size * i + dim * size * size * k + acd ] * Aminus_inverse[ size * k + j ];
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                _denseMatrixMultiply<leading_rows,size,size*dim*size*size>(
+//                    std::begin( leading_configuration ), std::begin( leading_configuration ),
+//                    std::begin( intermediate_term2 ), std::end( intermediate_term2 ),
+//                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end
+//                );
+//
+//                std::fill(
+//                    std::begin( intermediate_term3 ), std::end( intermediate_term3 ), output_lcg_configurations_J_type( )
+//                );
+//
+//                for ( unsigned int i = 0; i < leading_rows; ++i ){
+//                    for ( unsigned int j = 0; j < size; ++j ){
+//                        for ( unsigned int a = 0; a < dim; ++a ){
+//                            for ( unsigned int e = 0; e < size; ++e ){
+//                                for ( unsigned int f = 0; f < size; ++f ){
+//                                    intermediate_term3[ size * dim * size * size * i + dim * size * size * j + size * size * a + size * e + f ]
+//                                        -= leading_configuration_gradient[ size * dim * i + dim * e + a ] * Aminus_inverse[ size * f + j ];
+//                                }
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                _denseMatrixMultiplyAccumulate<leading_rows * size * dim, size * size, size * size>(
+//                    std::begin( intermediate_term3 ), std::end( intermediate_term3 ),
+//                    std::begin( Aminus_jacobian ), std::end( Aminus_jacobian ),
+//                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end
+//                );
 
             }
 

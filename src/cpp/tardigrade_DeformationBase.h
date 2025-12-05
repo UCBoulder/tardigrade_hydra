@@ -501,6 +501,19 @@ namespace tardigradeHydra{
                 output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_begin, output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_end
             );
 
+            template<
+                unsigned int leading_rows,
+                unsigned int size,
+                class leading_configuration_iterator,
+                class Aminus_inverse_iterator,
+                class output_iterator
+            >
+            void _compute_intermediate_term_1_solveForLeadingConfigurationConfigurationJacobian(
+                const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
+                const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
     };
 
 }
