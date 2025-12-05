@@ -1073,7 +1073,7 @@ namespace tardigradeHydra{
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfigurationDeformationJacobian(
+    void DeformationBase::solveForLeadingConfigurationTotalConfigurationJacobian(
         const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end
@@ -2275,6 +2275,8 @@ namespace tardigradeHydra{
 
         const unsigned int num_configs = ( configurations_end - configurations_begin ) / ( size * size );
 
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using configuration_gradient_type = typename std::iterator_traits<configuration_gradient_iterator>::value_type;
         using output_lc_total_J_type = typename std::iterator_traits<output_leading_configuration_total_J_iterator>::value_type;
         using output_lc_configurations_J_type = typename std::iterator_traits<output_leading_configuration_configurations_J_iterator>::value_type;
         using output_lc_configuration_gradients_J_type = typename std::iterator_traits<output_leading_configuration_gradient_configuration_gradients_J_iterator>::value_type;
@@ -2315,13 +2317,44 @@ namespace tardigradeHydra{
 
         if( num_configs == 0 ){
 
+            // In this case the leading configuration is the total configuration
+            for ( unsigned int i = 0; i < leading_rows * size; ++i ){
+
+                *( output_leading_configuration_total_J_begin + leading_rows * size * i + i ) += 1;
+
+            }
+
+            for ( unsigned int i = 0; i < leading_rows * size * dim; ++i ){
+
+                *( output_leading_configuration_gradient_total_gradient_J_begin + leading_rows * size * dim * i + i ) += 1;
+
+            }
 
         }
         else{
 
-        }
+            // Assemble the Jacobian Contributions
+            std::array< output_lc_total_J_type, leading_rows * size > leading_configuration; //TODO: The type may not always be correct
+            std::array< output_lcg_total_J_type, leading_rows * size * dim > leading_configuration_gradient; //TODO: The type may not always be correct
+            std::array< configuration_type, size * size > Aminus_inverse;
+            std::array< configuration_gradient_type, size * size * dim > dAminusdX;
 
-        
+            // Compute the leading configuration and its gradients
+            solveForAllLeading<leading_rows,size,dim>(
+                total_configuration_begin, total_configuration_end,
+                total_configuration_gradient_begin, total_configuration_gradient_end,
+                configurations_begin, configurations_end,
+                configuration_gradients_begin, configuration_gradients_end,
+                std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+                std::begin( dAminusdX ), std::end( dAminusdX ),
+                std::begin( leading_configuration ), std::end( leading_configuration ),
+                std::begin( leading_configuration_gradient ), std::end( leading_configuration_gradient )
+            );
+
+            // Assemble the Jacobians of the leading configuration
+
+
+        }
 
     }
 

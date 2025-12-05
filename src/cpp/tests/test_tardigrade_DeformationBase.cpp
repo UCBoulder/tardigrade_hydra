@@ -1550,7 +1550,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationTotalConfigurationJacobia
 
     tardigradeHydra::DeformationBase deformation;
     std::vector< double > jacobian( 144, 0 );
-    deformation.solveForLeadingConfigurationDeformationJacobian<3,4>(
+    deformation.solveForLeadingConfigurationTotalConfigurationJacobian<3,4>(
         std::begin( total_configuration ), std::end( total_configuration ), std::begin( configurations ), std::end( configurations ), std::begin( jacobian ), std::end( jacobian )
     );
 

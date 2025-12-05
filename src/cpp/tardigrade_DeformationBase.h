@@ -196,7 +196,7 @@ namespace tardigradeHydra{
                 class configuration_iterator,
                 class output_iterator
             >
-            void solveForLeadingConfigurationDeformationJacobian(
+            void solveForLeadingConfigurationTotalConfigurationJacobian(
                 const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
                 output_iterator output_begin, output_iterator output_end
