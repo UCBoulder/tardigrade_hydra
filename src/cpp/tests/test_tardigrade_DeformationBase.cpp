@@ -3119,7 +3119,7 @@ BOOST_AUTO_TEST_CASE( test_solveForAllLeadingJacobians, * boost::unit_test::tole
 
     {
 
-        double eps = 1e-6;
+        double eps = 1e-5;
         constexpr unsigned int NUM_INPUTS = 4 * 4 * 5;
         constexpr unsigned int NUM_OUTPUTS_LC = 3 * 4;
         constexpr unsigned int NUM_OUTPUTS_LCG = 3 * 4 * 5;

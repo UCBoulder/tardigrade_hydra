@@ -21,7 +21,8 @@ namespace tardigradeHydra{
     void DeformationBase::_denseMatrixMultiply(
         const A_iterator &A_begin, const A_iterator &A_end,
         const B_iterator &B_begin, const B_iterator &B_end,
-        C_iterator C_begin, C_iterator C_end
+        C_iterator C_begin, C_iterator C_end,
+        const unsigned int offset, const unsigned int stride
     ){
         /*!
          * Dense matrix multiplication of the form \f$ [A][B] = [C] \f$
@@ -34,29 +35,17 @@ namespace tardigradeHydra{
          * \param &B_end: The stopping iterator for the B matrix
          * \param &C_begin: The starting iterator for the C matrix
          * \param &C_end: The stopping iterator for the C matrix
+         * \param offset: The column-wise shift applied to the output
+         * \param stride: The size of each row of output
          */
 
         using C_type = typename std::iterator_traits<C_iterator>::value_type;
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( A_end - A_begin ) == rows * inner,
-            "The size of matrix A is " + std::to_string( ( unsigned int )( A_end - A_begin ) ) + " but it should be " + std::to_string( rows * inner )
-        );
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( B_end - B_begin ) == inner * columns,
-            "The size of matrix B is " + std::to_string( ( unsigned int )( B_end - B_begin ) ) + " but it should be " + std::to_string( inner * columns )
-        );
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( C_end - C_begin ) == rows * columns,
-            "The size of matrix C is " + std::to_string( ( unsigned int )( C_end - C_begin ) ) + " but it should be " + std::to_string( rows * columns )
-        );
-
         std::fill( C_begin, C_end, C_type( ) );
 
         _denseMatrixMultiplyAccumulate<rows,inner,columns>(
-            A_begin, A_end, B_begin, B_end, C_begin, C_end
+            A_begin, A_end, B_begin, B_end, C_begin, C_end,
+            offset, stride
         );
 
     }
@@ -70,7 +59,8 @@ namespace tardigradeHydra{
     void DeformationBase::_denseMatrixMultiplyAccumulate(
         const A_iterator &A_begin, const A_iterator &A_end,
         const B_iterator &B_begin, const B_iterator &B_end,
-        C_iterator C_begin, C_iterator C_end
+        C_iterator C_begin, C_iterator C_end,
+        const unsigned int offset, const unsigned int stride
     ){
         /*!
          * Dense matrix multiplication of the form \f$ [A][B] = [C] \f$
@@ -84,6 +74,8 @@ namespace tardigradeHydra{
          * \param &B_end: The stopping iterator for the B matrix
          * \param &C_begin: The starting iterator for the C matrix
          * \param &C_end: The stopping iterator for the C matrix
+         * \param offset: The column-wise shift applied to the output
+         * \param stride: The size of each row of output
          */
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
@@ -97,14 +89,19 @@ namespace tardigradeHydra{
         );
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( C_end - C_begin ) == rows * columns,
-            "The size of matrix C is " + std::to_string( ( unsigned int )( C_end - C_begin ) ) + " but it should be " + std::to_string( rows * columns )
+            ( unsigned int )( C_end - C_begin ) == rows * stride,
+            "The size of matrix C is " + std::to_string( ( unsigned int )( C_end - C_begin ) ) + " but it should be " + std::to_string( rows * stride )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            stride >= columns,
+            "The stride is a size of " + std::to_string( stride ) + " and is less than the number of columns " + std::to_string( columns )
         );
 
         for ( unsigned int i = 0; i < rows; ++i ){
             for ( unsigned int j = 0; j < inner; ++j ){
                 for ( unsigned int k = 0; k < columns; ++k ){
-                    *( C_begin + columns * i + k ) += ( *( A_begin + inner * i + j ) ) * ( *( B_begin + columns * j + k ) );
+                    *( C_begin + stride * i + k + offset ) += ( *( A_begin + inner * i + j ) ) * ( *( B_begin + columns * j + k ) );
                 }
             }
         }
@@ -1221,7 +1218,7 @@ namespace tardigradeHydra{
             "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but it needs a size of at least " + std::to_string( size * size )
         );
 
-        if ( configurations_end == ( configurations_begin + size * size ) ){
+        if ( configurations_end == configurations_begin ){
 
             std::fill( output_begin, output_end, output_type( ) );
 
@@ -2433,6 +2430,46 @@ namespace tardigradeHydra{
                         }
                     }
                 }
+            }
+
+            std::array< output_lc_configurations_J_type, leading_rows * size * size * size > intermediate_term1;
+            std::array< output_lc_configurations_J_type, size * size * size * size > Aminus_jacobian;
+            for ( unsigned int configuration_index = 0; configuration_index < num_configs; ++configuration_index ){
+
+                // JACOBIANS W.R.T. CONFIGURATIONS
+                getNetConfigurationJacobian<size>(
+                    configurations_begin, configurations_end,
+                    configuration_index,
+                    std::begin( Aminus_jacobian ), std::end( Aminus_jacobian )
+                );
+
+                std::fill(
+                    std::begin( intermediate_term1 ), std::end( intermediate_term1 ), output_lc_configurations_J_type( )
+                );
+
+                for ( unsigned int i = 0; i < leading_rows; ++i ){
+                    for ( unsigned int j = 0; j < size; ++j ){
+                        for ( unsigned int c = 0; c < size; ++c ){
+                            for ( unsigned int d = 0; d < size; ++d ){
+                                intermediate_term1[ size * size * size * i + size * size * j + size * c + d ]
+                                    -= leading_configuration[ size * i + c ] * Aminus_inverse[ size * d + j ];
+                            }
+                        }
+                    }
+                }
+
+                _denseMatrixMultiplyAccumulate<
+                    leading_rows * size,
+                    size * size,
+                    size * size
+                >(
+                    std::begin( intermediate_term1 ), std::end( intermediate_term1 ),
+                    std::begin( Aminus_jacobian ),   std::end( Aminus_jacobian ),
+                    output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_end,
+                    configuration_index * size * size, size * size * num_configs
+                );
+
+
             }
 
         }
