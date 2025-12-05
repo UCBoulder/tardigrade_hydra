@@ -439,6 +439,57 @@ namespace tardigradeHydra{
         unsigned int dim,
         class configuration_iterator,
         class configuration_gradient_iterator,
+        class Aminus_iterator,
+        class dAminusdX_iterator,
+        class output_iterator
+    >
+    void DeformationBase::_assemble_dAdX_getNetConfigurationGradient(
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+        const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end,
+        const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param &Aminus_begin: The starting iterator of the net subsequent configuration
+         * \param &Aminus_end: The stopping iterator of the net subsequent configuration
+         * \param &dAminusdX_begin: The starting iterator of the net subsequent configuration gradient
+         * \param &dAminusdX_end: The stopping iterator of the net subsequent configuration gradient
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) == ( size * size * dim ),
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim )
+        )
+
+        std::fill( output_begin, output_end, output_type( ) );
+
+        // Assemble the configuration gradient
+        for ( unsigned int i = 0; i < size; ++i ){
+            for ( unsigned int j = 0; j < size; ++j ){
+                for ( unsigned int a = 0; a < dim; ++a ){
+                    for ( unsigned int l = 0; l < size; ++l ){
+                        *( output_begin + size * dim * i + dim * j + a ) += ( *( configuration_gradients_begin + size * dim * i + dim * l + a ) ) * ( *( Aminus_begin + size * l + j ) )
+                                                                          + ( *( configurations_begin + size * i + l ) ) * ( *( dAminusdX_begin + size * dim * l + dim * j + a ) );
+                    }
+                }
+            }
+        }
+    }
+
+    template<
+        unsigned int size,
+        unsigned int dim,
+        class configuration_iterator,
+        class configuration_gradient_iterator,
         class output_iterator
     >
     void DeformationBase::getNetConfigurationGradient(
@@ -463,25 +514,19 @@ namespace tardigradeHydra{
          * \param output_end: The stopping iterator of the output
          */
 
-        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using configuration_gradient_type = typename std::iterator_traits<configuration_gradient_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             ( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) == ( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) ),
             "The number of configurations from the sub configurations is " + std::to_string( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) + " but the number of configurations from the gradients is " + std::to_string( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) )
         );
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( output_end - output_begin ) == ( size * size * dim ),
-            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim )
-        )
-
         if ( configurations_end != ( configurations_begin + size * size ) ){
 
-            std::fill( output_begin, output_end, output_type( ) );
-
             // Get the following configuration and its gradient
-            std::array< output_type, size * size > Aminus;
-            std::array< output_type, size * size * dim > dAminusdX;
+            std::array< configuration_type, size * size > Aminus;
+            std::array< configuration_gradient_type, size * size * dim > dAminusdX;
 
             getNetConfiguration<size>(
                 configurations_begin + size * size, configurations_end,
@@ -494,17 +539,13 @@ namespace tardigradeHydra{
                 std::begin( dAminusdX ), std::end( dAminusdX )
             );
 
-            // Assemble the configuration gradient
-            for ( unsigned int i = 0; i < size; ++i ){
-                for ( unsigned int j = 0; j < size; ++j ){
-                    for ( unsigned int a = 0; a < dim; ++a ){
-                        for ( unsigned int l = 0; l < size; ++l ){
-                            *( output_begin + size * dim * i + dim * j + a ) += ( *( configuration_gradients_begin + size * dim * i + dim * l + a ) ) * Aminus[ size * l + j ]
-                                                                              + ( *( configurations_begin + size * i + l ) ) * dAminusdX[ size * dim * l + dim * j + a ];
-                        }
-                    }
-                }
-            }
+            _assemble_dAdX_getNetConfigurationGradient<size,dim>(
+                configurations_begin, configurations_end,
+                configuration_gradients_begin, configuration_gradients_end,
+                std::begin( Aminus ), std::end( Aminus ),
+                std::begin( dAminusdX ), std::end( dAminusdX ),
+                output_begin, output_end
+            );
 
         }
         else{
