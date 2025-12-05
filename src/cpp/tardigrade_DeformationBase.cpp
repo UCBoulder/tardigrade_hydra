@@ -1950,6 +1950,75 @@ namespace tardigradeHydra{
         unsigned int dim,
         class total_configuration_iterator,
         class total_configuration_gradient_iterator,
+        class Aminus_inverse_iterator,
+        class dAminusdX_iterator,
+        class output_leading_configuration_iterator,
+        class output_leading_configuration_gradient_iterator
+    >
+    void DeformationBase::_sizeCheck_solveForAllLeading(
+        const total_configuration_iterator &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
+        const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
+        Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
+        dAminusdX_iterator dAminusdX_begin, dAminusdX_iterator dAminusdX_end,
+        output_leading_configuration_iterator output_leading_configuration_begin, output_leading_configuration_iterator output_leading_configuration_end,
+        output_leading_configuration_gradient_iterator output_leading_configuration_gradient_begin, output_leading_configuration_gradient_iterator output_leading_configuration_gradient_end
+    ){
+        /*!
+         * Check the sizes for the solveForAllLeading function
+         *
+         *
+         * \param &total_configuration_begin: The starting iterator of the total deformation
+         * \param &total_configuration_end: The stopping iterator of the total deformation
+         * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient
+         * \param &total_configuration_gradient_end: The stopping iterator of the total deformation gradient
+         * \param Aminus_inverse_begin: The starting iterator for the net trailing configuration
+         * \param Aminus_inverse_end: The stopping iterator for the net trailing configuration
+         * \param dAminusdX_begin: The starting iterator for the net trailing configuration gradient
+         * \param dAminusdX_end: The stopping iterator for the net trailing configuration gradient
+         * \param output_leading_configuration_begin: The starting iterator of the leading configuration output
+         * \param output_leading_configuration_end: The stopping iterator of the leading configuration output
+         * \param output_leading_configuration_gradient_begin: The starting iterator of the leading configuration gradient output
+         * \param output_leading_configuration_gradient_end: The stopping iterator of the leading configuration gradient output
+         */
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( total_configuration_end - total_configuration_begin ) == ( leading_rows * size ),
+            "The total configuration has a size of " + std::to_string( ( unsigned int )( total_configuration_end - total_configuration_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) == ( leading_rows * size * dim ),
+            "The total configuration gradient has a size of " + std::to_string( ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size * dim )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( Aminus_inverse_end - Aminus_inverse_begin ) == size * size,
+            "The inverse of the total deformation of the configurations has a size of " + std::to_string( ( unsigned int )( Aminus_inverse_end - Aminus_inverse_begin ) ) + " but it needs a size of " + std::to_string( size * size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( dAminusdX_end - dAminusdX_begin ) == size * size * dim,
+            "The gradient of the total deformation of the configurations has a size of " + std::to_string( ( unsigned int )( dAminusdX_end - dAminusdX_begin ) ) + " but it needs a size of " + std::to_string( size * size * dim )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_leading_configuration_end - output_leading_configuration_begin ) == ( leading_rows * size ),
+            "The leading configuration has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_end - output_leading_configuration_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_leading_configuration_gradient_end - output_leading_configuration_gradient_begin ) == ( leading_rows * size * dim ),
+            "The leading configuration gradient has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_gradient_end - output_leading_configuration_gradient_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size * dim )
+        );
+
+    }
+
+    template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim,
+        class total_configuration_iterator,
+        class total_configuration_gradient_iterator,
         class configuration_iterator,
         class configuration_gradient_iterator,
         class Aminus_inverse_iterator,
@@ -1992,35 +2061,16 @@ namespace tardigradeHydra{
          * \param output_leading_configuration_gradient_end: The stopping iterator of the leading configuration gradient output
          */
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( total_configuration_end - total_configuration_begin ) == ( leading_rows * size ),
-            "The total configuration has a size of " + std::to_string( ( unsigned int )( total_configuration_end - total_configuration_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size )
+#ifndef TARDIGRADE_ERROR_TOOLS_OPT
+        _sizeCheck_solveForAllLeading<leading_rows,size,dim>(
+            total_configuration_begin, total_configuration_end,
+            total_configuration_gradient_begin, total_configuration_gradient_end,
+            Aminus_inverse_begin, Aminus_inverse_end,
+            dAminusdX_begin, dAminusdX_end,
+            output_leading_configuration_begin, output_leading_configuration_end,
+            output_leading_configuration_gradient_begin, output_leading_configuration_gradient_end
         );
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) == ( leading_rows * size * dim ),
-            "The total configuration gradient has a size of " + std::to_string( ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size * dim )
-        );
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( output_leading_configuration_end - output_leading_configuration_begin ) == ( leading_rows * size ),
-            "The leading configuration has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_end - output_leading_configuration_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size )
-        );
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( output_leading_configuration_gradient_end - output_leading_configuration_gradient_begin ) == ( leading_rows * size * dim ),
-            "The leading configuration gradient has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_gradient_end - output_leading_configuration_gradient_begin ) ) + " but should have a size of " + std::to_string( leading_rows * size * dim )
-        );
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( Aminus_inverse_end - Aminus_inverse_begin ) == size * size,
-            "The inverse of the total deformation of the configurations has a size of " + std::to_string( ( unsigned int )( Aminus_inverse_end - Aminus_inverse_begin ) ) + " but it needs a size of " + std::to_string( size * size )
-        );
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( dAminusdX_end - dAminusdX_begin ) == size * size * dim,
-            "The gradient of the total deformation of the configurations has a size of " + std::to_string( ( unsigned int )( dAminusdX_end - dAminusdX_begin ) ) + " but it needs a size of " + std::to_string( size * size * dim )
-        );
+#endif
 
         using output_leading_configuration_gradient_type = typename std::iterator_traits<output_leading_configuration_gradient_iterator>::value_type;
 
