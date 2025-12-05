@@ -2423,6 +2423,18 @@ namespace tardigradeHydra{
                 }
             }
 
+            // JACOBIANS W.R.T. TOTAL CONFIGURATION GRADIENT
+            for ( unsigned int i = 0; i < leading_rows; ++i ){
+                for ( unsigned int j = 0; j < size; ++j ){
+                    for ( unsigned int a = 0; a < dim; ++a ){
+                        for ( unsigned int b = 0; b < size; ++b ){
+                            *( output_leading_configuration_gradient_total_gradient_J_begin + size * dim * leading_rows * size * dim * i + dim * leading_rows * size * dim * j + leading_rows * size * dim * a + size * dim * i + dim * b + a )
+                                += Aminus_inverse[ size * b + j ];
+                        }
+                    }
+                }
+            }
+
         }
 
     }
