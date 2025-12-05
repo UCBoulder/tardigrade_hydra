@@ -442,6 +442,16 @@ namespace tardigradeHydra{
             );
 
             template<
+                unsigned int size,
+                class A_iterator,
+                class output_iterator
+            >
+            void _compute_matrix_inverse(
+                const A_iterator &A_begin, const A_iterator &A_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
+            template<
                 unsigned int leading_rows,
                 unsigned int size,
                 class total_configuration_iterator,

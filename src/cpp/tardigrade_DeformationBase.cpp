@@ -149,6 +149,31 @@ namespace tardigradeHydra{
 
     template<
         unsigned int size,
+        class A_iterator,
+        class output_iterator
+    >
+    void DeformationBase::_compute_matrix_inverse(
+        const A_iterator &A_begin, const A_iterator &A_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Compute the inverse of a matrix
+         *
+         * \param &A_begin: The starting iterator of the matrix
+         * \param &A_end: The stopping iterator of the matrix
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _A( &(*A_begin), size, size );
+        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _A_inverse( &(*output_begin ), size, size );
+        _A_inverse = _A.inverse( );
+
+    }
+
+    template<
+        unsigned int size,
         class configuration_iterator,
         class output_iterator
     >
@@ -168,7 +193,7 @@ namespace tardigradeHydra{
          * \param output_end: The stopping iterator of the output
          */
 
-        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             ( unsigned int )( output_end - output_begin ) == size * size,
@@ -1083,9 +1108,10 @@ namespace tardigradeHydra{
             );
 
             // TODO: Generalize this to a matrix solve rather than computing an inverse
-            Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
-            Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( &(*Aminus_inverse_begin ), size, size );
-            _Aminus_inverse = _Aminus.inverse( );
+            _compute_matrix_inverse<size>(
+                std::begin( Aminus ), std::end( Aminus ),
+                Aminus_inverse_begin, Aminus_inverse_end
+            );
 
             _assemble_leading_configuration_solveForLeadingConfiguration<leading_rows,size>(
                 total_configuration_begin, total_configuration_end,
@@ -1196,9 +1222,10 @@ namespace tardigradeHydra{
             );
 
             // TODO: Generalize this to a matrix solve rather than computing an inverse
-            Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
-            Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( Aminus_inverse.data( ), size, size );
-            _Aminus_inverse = _Aminus.inverse( );
+            _compute_matrix_inverse<size>(
+                std::begin( Aminus ), std::end( Aminus ),
+                std::begin( Aminus_inverse ), std::end( Aminus_inverse )
+            );
 
             std::fill(
                 output_begin, output_end, output_type( )
