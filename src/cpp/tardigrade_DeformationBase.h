@@ -431,6 +431,15 @@ namespace tardigradeHydra{
             );
 
             template<
+                unsigned int size,
+                class A_inverse_iterator, class output_iterator
+            >
+            void _assembledAinversedA(
+                const A_inverse_iterator &A_inverse_begin, const A_inverse_iterator &A_inverse_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
+            template<
                 unsigned int leading_rows,
                 unsigned int size,
                 unsigned int dim,

@@ -113,6 +113,45 @@ namespace tardigradeHydra{
 
     template<
         unsigned int size,
+        class A_inverse_iterator, class output_iterator
+    >
+    void DeformationBase::_assembledAinversedA(
+        const A_inverse_iterator &A_inverse_begin, const A_inverse_iterator &A_inverse_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Construct the derivative of the inverse of a matrix w.r.t. the matrix
+         *
+         * \param &A_inverse_begin: The starting iterator of the inverse matrix
+         * \param &A_inverse_end: The stopping iterator of the inverse matrix
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( A_inverse_end - A_inverse_begin ) == size * size,
+            "The inverse matrix has a size of " + std::to_string( ( unsigned int )( A_inverse_end - A_inverse_begin ) ) + " but must have a size of " + std::to_string( size * size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) == size * size * size * size,
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but must have a size of " + std::to_string( size * size * size * size )
+        );
+
+        for ( unsigned int i = 0; i < size; ++i ){
+            for ( unsigned int j = 0; j < size; ++j ){
+                for ( unsigned int k = 0; k < size; ++k ){
+                    for ( unsigned int l = 0; l < size; ++l ){
+                        *( output_begin + size * size * size * i + size * size * j + size * k + l )
+                            = -( *( A_inverse_begin + size * i + k ) ) * ( *( A_inverse_begin + size * l + j ) );
+                    }
+                }
+            }
+        }
+    }
+
+    template<
+        unsigned int size,
         class configuration_iterator,
         class output_iterator
     >
@@ -1857,6 +1896,8 @@ namespace tardigradeHydra{
          * \param &configurations_end: The stopping iterator of the configurations
          * \param output_leading_configuration_begin: The starting iterator of the leading configuration output
          * \param output_leading_configuration_end: The stopping iterator of the leading configuration output
+         * \param output_leading_configuration_gradient_begin: The starting iterator of the leading configuration gradient output
+         * \param output_leading_configuration_gradient_end: The stopping iterator of the leading configuration gradient output
          */
 
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
@@ -2249,6 +2290,8 @@ namespace tardigradeHydra{
          * 
          * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
          *
+         * \f$ \frac{\partial [B]}{\partial X} = \left(\frac{\partial [A]}{\partial X} - [B] \frac{ \partial A^{-}}{\partial X}\right)[A^{-}]^{-1} \f$
+         *
          * \param &total_configuration_begin: The starting iterator of the total deformation
          * \param &total_configuration_end: The stopping iterator of the total deformation
          * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient
@@ -2351,8 +2394,16 @@ namespace tardigradeHydra{
                 std::begin( leading_configuration_gradient ), std::end( leading_configuration_gradient )
             );
 
-            // Assemble the Jacobians of the leading configuration
 
+            // JACOBIANS W.R.T. TOTAL CONFIGURATION
+            // Assemble the Jacobians of the leading configuration
+            for ( unsigned int i = 0; i < leading_rows; ++i ){
+                for ( unsigned int j = 0; j < size; ++j ){
+                    for ( unsigned int a = 0; a < size; ++a ){
+                        *( output_leading_configuration_total_J_begin + size * leading_rows * size * i + leading_rows * size * j + size * i + a ) += Aminus_inverse[ size * a + j ];
+                    }
+                }
+            }
 
         }
 
