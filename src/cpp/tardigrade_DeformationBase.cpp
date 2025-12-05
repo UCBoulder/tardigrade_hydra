@@ -979,6 +979,51 @@ namespace tardigradeHydra{
         unsigned int leading_rows,
         unsigned int size,
         class total_configuration_iterator,
+        class Aminus_inverse_iterator,
+        class output_iterator
+    >
+    void DeformationBase::_assemble_leading_configuration_solveForLeadingConfiguration(
+        const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
+        Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Assemble the leading configuration
+         *
+         * \param &total_configuration_begin: The starting iterator of the total deformation
+         * \param &total_configuration_end: The stopping iterator of the total deformation
+         * \param &Aminus_inverse_begin: The starting iterator of the inverse of the total deformation represented by the configurations
+         * \param &Aminus_inverse_end: The stopping iterator of the inverse of the total deformation represented by the configuraitons
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) == leading_rows * size,
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but it needs a size of " + std::to_string( leading_rows * size )
+        );
+
+        std::fill(
+            output_begin, output_end, output_type( )
+        );
+
+        _denseMatrixMultiply<
+            leading_rows, size, size
+        >
+        (
+            total_configuration_begin, total_configuration_end,
+            Aminus_inverse_begin, Aminus_inverse_end,
+            output_begin, output_end
+        );
+
+    }
+
+    template<
+        unsigned int leading_rows,
+        unsigned int size,
+        class total_configuration_iterator,
         class configuration_iterator,
         class Aminus_inverse_iterator,
         class output_iterator
@@ -1015,11 +1060,6 @@ namespace tardigradeHydra{
         );
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( output_end - output_begin ) == leading_rows * size,
-            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but it needs a size of " + std::to_string( leading_rows * size )
-        );
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
             ( unsigned int )( Aminus_inverse_end - Aminus_inverse_begin ) == size * size,
             "The inverse of the total deformation of the configurations has a size of " + std::to_string( ( unsigned int )( Aminus_inverse_end - Aminus_inverse_begin ) ) + " but it needs a size of " + std::to_string( size * size )
         );
@@ -1047,18 +1087,12 @@ namespace tardigradeHydra{
             Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( &(*Aminus_inverse_begin ), size, size );
             _Aminus_inverse = _Aminus.inverse( );
 
-            std::fill(
-                output_begin, output_end, output_type( )
-            );
-
-            _denseMatrixMultiply<
-                leading_rows, size, size
-            >
-            (
+            _assemble_leading_configuration_solveForLeadingConfiguration<leading_rows,size>(
                 total_configuration_begin, total_configuration_end,
                 Aminus_inverse_begin, Aminus_inverse_end,
                 output_begin, output_end
             );
+
         }
 
     }

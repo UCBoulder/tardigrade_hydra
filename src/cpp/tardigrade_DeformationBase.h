@@ -444,6 +444,19 @@ namespace tardigradeHydra{
             template<
                 unsigned int leading_rows,
                 unsigned int size,
+                class total_configuration_iterator,
+                class Aminus_inverse_iterator,
+                class output_iterator
+            >
+            void _assemble_leading_configuration_solveForLeadingConfiguration(
+                const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
+                Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
+            template<
+                unsigned int leading_rows,
+                unsigned int size,
                 unsigned int dim,
                 class total_configuration_iterator,
                 class total_configuration_gradient_iterator,
