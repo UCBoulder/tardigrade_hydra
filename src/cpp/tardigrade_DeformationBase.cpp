@@ -1450,9 +1450,10 @@ namespace tardigradeHydra{
         );
 
         // TODO: Generalize this to a matrix solve rather than computing an inverse
-        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
-        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( &(*Aminus_inverse_begin), size, size );
-        _Aminus_inverse = _Aminus.inverse( );
+        _compute_matrix_inverse<size>(
+            std::begin( Aminus ), std::end( Aminus ),
+            Aminus_inverse_begin, Aminus_inverse_end
+        );
 
         std::fill(
             output_begin, output_end, output_type( )
@@ -1576,7 +1577,6 @@ namespace tardigradeHydra{
          */
 
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
-        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) == leading_rows * size * dim,
@@ -1597,9 +1597,10 @@ namespace tardigradeHydra{
         );
 
         // TODO: Generalize this to a matrix solve rather than computing an inverse
-        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
-        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( Aminus_inverse.data( ), size, size );
-        _Aminus_inverse = _Aminus.inverse( );
+        _compute_matrix_inverse<size>(
+            std::begin( Aminus ), std::end( Aminus ),
+            std::begin( Aminus_inverse ), std::end( Aminus_inverse )
+        );
 
         for ( unsigned int i = 0; i < leading_rows; ++i ){
             for ( unsigned int j = 0; j < size; ++j ){
@@ -1688,9 +1689,10 @@ namespace tardigradeHydra{
         );
 
         // TODO: Generalize this to a matrix solve rather than computing an inverse
-        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
-        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( Aminus_inverse.data( ), size, size );
-        _Aminus_inverse = _Aminus.inverse( );
+        _compute_matrix_inverse<size>(
+            std::begin( Aminus ), std::end( Aminus ),
+            std::begin( Aminus_inverse ), std::end( Aminus_inverse )
+        );
 
         std::fill(
             output_begin, output_end, output_type( )
@@ -1914,9 +1916,10 @@ namespace tardigradeHydra{
         );
 
         // TODO: Generalize this to a matrix solve rather than computing an inverse
-        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus( Aminus.data( ), size, size );
-        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _Aminus_inverse( Aminus_inverse.data( ), size, size );
-        _Aminus_inverse = _Aminus.inverse( );
+        _compute_matrix_inverse<size>(
+            std::begin( Aminus ), std::end( Aminus ),
+            std::begin( Aminus_inverse ), std::end( Aminus_inverse )
+        );
 
         // Compute the Jacobian of the trailing configuration and it's gradient
         getNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
