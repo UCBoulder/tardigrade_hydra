@@ -2977,6 +2977,7 @@ BOOST_AUTO_TEST_CASE( test_solveForAllLeadingJacobians, * boost::unit_test::tole
     };
 
     std::vector< double > leading_configuration_total_J_result( 12 * 3 * 4, 0 );
+    std::vector< double > leading_configuration_total_gradient_J_result( 12 * 3 * 4 * 5, 0 ); // Expect to be zero
     std::vector< double > leading_configuration_configurations_J_result( 12 * 5 * 4 * 4, 0 );
     std::vector< double > leading_configuration_configuration_gradients_J_result( 12 * 5 * 4 * 4 * 5, 0 );
     std::vector< double > leading_configuration_gradient_total_J_result( 60 * 3 * 4, 0 );
@@ -3055,6 +3056,64 @@ BOOST_AUTO_TEST_CASE( test_solveForAllLeadingJacobians, * boost::unit_test::tole
 
         BOOST_TEST( jacobian_lc == leading_configuration_total_J_result, CHECK_PER_ELEMENT );
         BOOST_TEST( jacobian_lcg == leading_configuration_gradient_total_J_result, CHECK_PER_ELEMENT );
+
+    }
+
+    {
+
+        double eps = 1e-6;
+        constexpr unsigned int NUM_INPUTS = 3 * 4 * 5;
+        constexpr unsigned int NUM_OUTPUTS_LC = 3 * 4;
+        constexpr unsigned int NUM_OUTPUTS_LCG = 3 * 4 * 5;
+        std::vector< double > x = total_configuration_gradient;
+        std::vector< double > jacobian_lc( NUM_OUTPUTS_LC * NUM_INPUTS, 0 );
+        std::vector< double > jacobian_lcg( NUM_OUTPUTS_LCG * NUM_INPUTS, 0 );
+
+        for ( unsigned int i = 0; i < NUM_INPUTS; ++i ){
+
+            double delta = eps * std::fabs( x[ i ] ) + eps;
+
+            std::vector< double > xp = x;
+            std::vector< double > xm = x;
+
+            xp[ i ] += delta;
+            xm[ i ] -= delta;
+
+            std::vector< double > lc_rp( NUM_OUTPUTS_LC );
+            std::vector< double > lc_rm( NUM_OUTPUTS_LC );
+
+            std::vector< double > lcg_rp( NUM_OUTPUTS_LCG );
+            std::vector< double > lcg_rm( NUM_OUTPUTS_LCG );
+
+            deformation.solveForAllLeading<3,4,5>(
+                std::begin( total_configuration ), std::end( total_configuration ),
+                std::begin( xp ), std::end( xp ),
+                std::begin( configurations ), std::end( configurations ),
+                std::begin( configuration_gradients ), std::end( configuration_gradients ),
+                std::begin( lc_rp ), std::end( lc_rp ),
+                std::begin( lcg_rp ), std::end( lcg_rp )
+            );
+
+            deformation.solveForAllLeading<3,4,5>(
+                std::begin( total_configuration ), std::end( total_configuration ),
+                std::begin( xm ), std::end( xm ),
+                std::begin( configurations ), std::end( configurations ),
+                std::begin( configuration_gradients ), std::end( configuration_gradients ),
+                std::begin( lc_rm ), std::end( lc_rm ),
+                std::begin( lcg_rm ), std::end( lcg_rm )
+            );
+
+            for ( unsigned int j = 0; j < NUM_OUTPUTS_LC; ++j ){
+                jacobian_lc[ NUM_INPUTS * j + i ] = ( lc_rp[ j ] - lc_rm[ j ] ) / ( 2 * delta );
+            }
+            for ( unsigned int j = 0; j < NUM_OUTPUTS_LCG; ++j ){
+                jacobian_lcg[ NUM_INPUTS * j + i ] = ( lcg_rp[ j ] - lcg_rm[ j ] ) / ( 2 * delta );
+            }
+
+        }
+
+        BOOST_TEST( jacobian_lc == leading_configuration_total_gradient_J_result, CHECK_PER_ELEMENT );
+        BOOST_TEST( jacobian_lcg == leading_configuration_gradient_total_gradient_J_result, CHECK_PER_ELEMENT );
 
     }
 
