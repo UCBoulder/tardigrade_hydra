@@ -587,7 +587,7 @@ namespace tardigradeHydra{
          * \param output_end: The stopping iterator of the output
          */
 
-        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             ( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) == ( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) ),
@@ -656,7 +656,7 @@ namespace tardigradeHydra{
          * \param output_end: The stopping iterator of the output
          */
 
-        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             ( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) == ( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) ),
