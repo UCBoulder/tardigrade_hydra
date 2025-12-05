@@ -1912,15 +1912,17 @@ namespace tardigradeHydra{
          * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient
          * \param &total_configuration_gradient_end: The stopping iterator of the total deformation gradient
          * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
          * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
          * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
-         * \param &configurations_end: The stopping iterator of the configurations
          * \param Aminus_inverse_begin: The starting iterator for the net trailing configuration
          * \param Aminus_inverse_end: The stopping iterator for the net trailing configuration
          * \param dAminusdX_begin: The starting iterator for the net trailing configuration gradient
          * \param dAminusdX_end: The stopping iterator for the net trailing configuration gradient
          * \param output_leading_configuration_begin: The starting iterator of the leading configuration output
          * \param output_leading_configuration_end: The stopping iterator of the leading configuration output
+         * \param output_leading_configuration_gradient_begin: The starting iterator of the leading configuration gradient output
+         * \param output_leading_configuration_gradient_end: The stopping iterator of the leading configuration gradient output
          */
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
@@ -1999,6 +2001,327 @@ namespace tardigradeHydra{
                 }
             }
         }
+
+    }
+
+    template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim,
+        class total_configuration_iterator,
+        class total_configuration_gradient_iterator,
+        class configuration_iterator,
+        class configuration_gradient_iterator,
+        class output_leading_configuration_total_J_iterator,
+        class output_leading_configuration_configurations_J_iterator,
+        class output_leading_configuration_configuration_gradients_J_iterator,
+        class output_leading_configuration_gradient_total_J_iterator,
+        class output_leading_configuration_gradient_total_gradient_J_iterator,
+        class output_leading_configuration_gradient_configurations_J_iterator,
+        class output_leading_configuration_gradient_configuration_gradients_J_iterator
+    >
+    void DeformationBase::_sizeCheck_solveForAllLeadingJacobians(
+        const total_configuration_iterator &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
+        const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+        output_leading_configuration_total_J_iterator output_leading_configuration_total_J_begin, output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
+        output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
+        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_begin, output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_end,
+        output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin, output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_end,
+        output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_begin, output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_end,
+        output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_end,
+        output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_begin, output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_end
+    ){
+        /*!
+         * Check the iterator sizes for solveForAllLeadingJacobians
+         *
+         * \param &total_configuration_begin: The starting iterator of the total deformation
+         * \param &total_configuration_end: The stopping iterator of the total deformation
+         * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient
+         * \param &total_configuration_gradient_end: The stopping iterator of the total deformation gradient
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+         * \param output_leading_configuration_total_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the total configuration output
+         * \param output_leading_configuration_total_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the total configuration output
+         * \param output_leading_configuration_configurations_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configurations output
+         * \param output_leading_configuration_configurations_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configurations output
+         * \param output_leading_configuration_configuration_gradients_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
+         * \param output_leading_configuration_configuration_gradients_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
+         * \param output_leading_configuration_gradient_total_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
+         * \param output_leading_configuration_gradient_total_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
+         * \param output_leading_configuration_gradient_total_gradient_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration gradient output
+         * \param output_leading_configuration_gradient_total_gradient_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the total configuration gradient output
+         * \param output_leading_configuration_gradient_configurations_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the configurations output
+         * \param output_leading_configuration_gradient_configurations_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the configurations output
+         * \param output_leading_configuration_gradient_configuration_gradients_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the configuration gradients output
+         * \param output_leading_configuration_gradient_configuration_gradients_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the configuration gradients output
+         */
+
+        const unsigned int num_configs = ( configurations_end - configurations_begin ) / ( size * size );
+
+        const unsigned int leading_configuration_size = leading_rows * size;
+        const unsigned int leading_configuration_gradient_size = leading_rows * size * dim;
+        const unsigned int configuration_size = size * size;
+        const unsigned int configuration_gradient_size = size * size * dim;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( total_configuration_end - total_configuration_begin ) == leading_configuration_size,
+            "The total configuration has a size of " + std::to_string( ( unsigned int )( total_configuration_end - total_configuration_begin ) ) + " but must have a size of " + std::to_string( leading_configuration_size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) == leading_configuration_gradient_size,
+            "The total configuration gradient has a size of " + std::to_string( ( unsigned int )( total_configuration_gradient_end - total_configuration_gradient_begin ) ) + " but must have a size of " + std::to_string( leading_configuration_gradient_size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( configurations_end - configurations_begin ) == configuration_size * num_configs,
+            "The configurations have a size of " + std::to_string( ( unsigned int )( configurations_end - configurations_begin ) ) + " but they must have a size of " + std::to_string( configuration_size * num_configs )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) == configuration_gradient_size * num_configs,
+            "The configuration gradients have a size of " + std::to_string( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) ) + " but they must have a size of " + std::to_string( configuration_gradient_size * num_configs )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_leading_configuration_total_J_end - output_leading_configuration_total_J_begin ) == leading_configuration_size * leading_configuration_size,
+            "The jacobian of the leading configuration with respect to the total deformation has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_total_J_end - output_leading_configuration_total_J_begin ) ) + " but must have a size of " + std::to_string( leading_configuration_size * leading_configuration_size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_leading_configuration_configurations_J_end - output_leading_configuration_configurations_J_begin ) == leading_configuration_size * configuration_size * num_configs,
+            "The jacobian of the leading configuration with respect to the configurations has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_configurations_J_end - output_leading_configuration_configurations_J_begin ) ) + " but must have a size of " + std::to_string( leading_configuration_size * configuration_size * num_configs )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_leading_configuration_configuration_gradients_J_end - output_leading_configuration_configuration_gradients_J_begin ) == leading_configuration_size * configuration_gradient_size * num_configs,
+            "The jacobian of the leading configuration with respect to the configuration gradients has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_configuration_gradients_J_end - output_leading_configuration_configuration_gradients_J_begin ) ) + " but must have a size of " + std::to_string( leading_configuration_size * configuration_gradient_size * num_configs )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_leading_configuration_gradient_total_J_end - output_leading_configuration_gradient_total_J_begin ) == leading_configuration_gradient_size * leading_configuration_size,
+            "The jacobian of the leading configuration gradient with respect to the total deformation has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_gradient_total_J_end - output_leading_configuration_gradient_total_J_begin ) ) + " but must have a size of " + std::to_string( leading_configuration_gradient_size * leading_configuration_size )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_leading_configuration_gradient_configurations_J_end - output_leading_configuration_gradient_configurations_J_begin ) == leading_configuration_gradient_size * configuration_size * num_configs,
+            "The jacobian of the leading configuration gradient with respect to the configurations has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_gradient_configurations_J_end - output_leading_configuration_gradient_configurations_J_begin ) ) + " but must have a size of " + std::to_string( leading_configuration_gradient_size * configuration_size * num_configs )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_leading_configuration_gradient_configuration_gradients_J_end - output_leading_configuration_gradient_configuration_gradients_J_begin ) == leading_configuration_gradient_size * configuration_gradient_size * num_configs,
+            "The jacobian of the leading configuration gradient with respect to the configuration gradients has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_gradient_configuration_gradients_J_end - output_leading_configuration_gradient_configuration_gradients_J_begin ) ) + " but must have a size of " + std::to_string( leading_configuration_gradient_size * configuration_gradient_size * num_configs )
+        );
+
+    }
+
+    template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim,
+        class total_configuration_iterator,
+        class total_configuration_gradient_iterator,
+        class configuration_iterator,
+        class configuration_gradient_iterator,
+        class output_leading_configuration_total_J_iterator,
+        class output_leading_configuration_configurations_J_iterator,
+        class output_leading_configuration_configuration_gradients_J_iterator,
+        class output_leading_configuration_gradient_total_J_iterator,
+        class output_leading_configuration_gradient_total_gradient_J_iterator,
+        class output_leading_configuration_gradient_configurations_J_iterator,
+        class output_leading_configuration_gradient_configuration_gradients_J_iterator
+    >
+    void DeformationBase::_zeroOutputs_solveForAllLeadingJacobians(
+        const total_configuration_iterator &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
+        const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+        output_leading_configuration_total_J_iterator output_leading_configuration_total_J_begin, output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
+        output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
+        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_begin, output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_end,
+        output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin, output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_end,
+        output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_begin, output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_end,
+        output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_end,
+        output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_begin, output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_end
+    ){
+        /*!
+         * Check the iterator sizes for solveForAllLeadingJacobians
+         *
+         * \param &total_configuration_begin: The starting iterator of the total deformation
+         * \param &total_configuration_end: The stopping iterator of the total deformation
+         * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient
+         * \param &total_configuration_gradient_end: The stopping iterator of the total deformation gradient
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+         * \param output_leading_configuration_total_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the total configuration output
+         * \param output_leading_configuration_total_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the total configuration output
+         * \param output_leading_configuration_configurations_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configurations output
+         * \param output_leading_configuration_configurations_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configurations output
+         * \param output_leading_configuration_configuration_gradients_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
+         * \param output_leading_configuration_configuration_gradients_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
+         * \param output_leading_configuration_gradient_total_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
+         * \param output_leading_configuration_gradient_total_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
+         * \param output_leading_configuration_gradient_total_gradient_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration gradient output
+         * \param output_leading_configuration_gradient_total_gradient_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the total configuration gradient output
+         * \param output_leading_configuration_gradient_configurations_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the configurations output
+         * \param output_leading_configuration_gradient_configurations_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the configurations output
+         * \param output_leading_configuration_gradient_configuration_gradients_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the configuration gradients output
+         * \param output_leading_configuration_gradient_configuration_gradients_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the configuration gradients output
+         */
+
+        using output_lc_total_J_type = typename std::iterator_traits<output_leading_configuration_total_J_iterator>::value_type;
+        using output_lc_configurations_J_type = typename std::iterator_traits<output_leading_configuration_configurations_J_iterator>::value_type;
+        using output_lc_configuration_gradients_J_type = typename std::iterator_traits<output_leading_configuration_gradient_configuration_gradients_J_iterator>::value_type;
+        using output_lcg_total_J_type = typename std::iterator_traits<output_leading_configuration_gradient_total_J_iterator>::value_type;
+        using output_lcg_total_gradient_J_type = typename std::iterator_traits<output_leading_configuration_gradient_total_gradient_J_iterator>::value_type;
+        using output_lcg_configurations_J_type = typename std::iterator_traits<output_leading_configuration_gradient_configurations_J_iterator>::value_type;
+        using output_lcg_configuration_gradients_J_type = typename std::iterator_traits<output_leading_configuration_gradient_configuration_gradients_J_iterator>::value_type;
+
+        std::fill(
+            output_leading_configuration_total_J_begin, output_leading_configuration_total_J_end, output_lc_total_J_type( )
+        );
+
+        std::fill(
+            output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_end, output_lc_configurations_J_type( )
+        );
+
+        std::fill(
+            output_leading_configuration_configuration_gradients_J_begin, output_leading_configuration_configuration_gradients_J_end, output_lc_configuration_gradients_J_type( )
+        );
+
+        std::fill(
+            output_leading_configuration_gradient_total_J_begin, output_leading_configuration_gradient_total_J_end, output_lcg_total_J_type( )
+        );
+
+        std::fill(
+            output_leading_configuration_gradient_total_gradient_J_begin, output_leading_configuration_gradient_total_gradient_J_end, output_lcg_total_gradient_J_type( )
+        );
+
+        std::fill(
+            output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end, output_lcg_configurations_J_type( )
+        );
+
+        std::fill(
+            output_leading_configuration_gradient_configuration_gradients_J_begin, output_leading_configuration_gradient_configuration_gradients_J_end, output_lcg_configuration_gradients_J_type( )
+        );
+
+    }
+
+    template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim,
+        class total_configuration_iterator,
+        class total_configuration_gradient_iterator,
+        class configuration_iterator,
+        class configuration_gradient_iterator,
+        class output_leading_configuration_total_J_iterator,
+        class output_leading_configuration_configurations_J_iterator,
+        class output_leading_configuration_configuration_gradients_J_iterator,
+        class output_leading_configuration_gradient_total_J_iterator,
+        class output_leading_configuration_gradient_total_gradient_J_iterator,
+        class output_leading_configuration_gradient_configurations_J_iterator,
+        class output_leading_configuration_gradient_configuration_gradients_J_iterator
+    >
+    void DeformationBase::solveForAllLeadingJacobians(
+        const total_configuration_iterator &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
+        const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
+        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
+        output_leading_configuration_total_J_iterator output_leading_configuration_total_J_begin, output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
+        output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
+        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_begin, output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_end,
+        output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin, output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_end,
+        output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_begin, output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_end,
+        output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_end,
+        output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_begin, output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_end
+    ){
+        /*!
+         * Solve for all of the Jacobians of the leading configuration and its gradient which would be required to achieve the total deformation i.e., if
+         * the total deformation is \f$ [A] \f$ and we know the net deformation from the subsequent deformations
+         * in the form of the configurations, then
+         * 
+         * \f$ [A] = [B] [A^{-}] \rightarrow [B] = [A] [A^{-}]^{-1} \f$
+         *
+         * \param &total_configuration_begin: The starting iterator of the total deformation
+         * \param &total_configuration_end: The stopping iterator of the total deformation
+         * \param &total_configuration_gradient_begin: The starting iterator of the total deformation gradient
+         * \param &total_configuration_gradient_end: The stopping iterator of the total deformation gradient
+         * \param &configurations_begin: The starting iterator of the configurations
+         * \param &configurations_end: The stopping iterator of the configurations
+         * \param &configuration_gradients_end: The stopping iterator of the configuration gradients
+         * \param &configuration_gradients_begin: The starting iterator of the configuration gradients
+         * \param output_leading_configuration_total_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the total configuration output
+         * \param output_leading_configuration_total_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the total configuration output
+         * \param output_leading_configuration_configurations_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configurations output
+         * \param output_leading_configuration_configurations_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configurations output
+         * \param output_leading_configuration_configuration_gradients_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
+         * \param output_leading_configuration_configuration_gradients_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
+         * \param output_leading_configuration_gradient_total_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
+         * \param output_leading_configuration_gradient_total_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
+         * \param output_leading_configuration_gradient_total_gradient_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration gradient output
+         * \param output_leading_configuration_gradient_total_gradient_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the total configuration gradient output
+         * \param output_leading_configuration_gradient_configurations_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the configurations output
+         * \param output_leading_configuration_gradient_configurations_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the configurations output
+         * \param output_leading_configuration_gradient_configuration_gradients_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the configuration gradients output
+         * \param output_leading_configuration_gradient_configuration_gradients_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the configuration gradients output
+         */
+
+        const unsigned int num_configs = ( configurations_end - configurations_begin ) / ( size * size );
+
+        using output_lc_total_J_type = typename std::iterator_traits<output_leading_configuration_total_J_iterator>::value_type;
+        using output_lc_configurations_J_type = typename std::iterator_traits<output_leading_configuration_configurations_J_iterator>::value_type;
+        using output_lc_configuration_gradients_J_type = typename std::iterator_traits<output_leading_configuration_gradient_configuration_gradients_J_iterator>::value_type;
+        using output_lcg_total_J_type = typename std::iterator_traits<output_leading_configuration_total_J_iterator>::value_type;
+        using output_lcg_total_gradient_J_type = typename std::iterator_traits<output_leading_configuration_gradient_total_gradient_J_iterator>::value_type;
+        using output_lcg_configurations_J_type = typename std::iterator_traits<output_leading_configuration_gradient_configurations_J_iterator>::value_type;
+        using output_lcg_configuration_gradients_J_type = typename std::iterator_traits<output_leading_configuration_gradient_configuration_gradients_J_iterator>::value_type;
+
+#ifndef TARDIGRADE_ERROR_TOOLS_OPT
+        _sizeCheck_solveForAllLeadingJacobians<leading_rows,size,dim>(
+            total_configuration_begin, total_configuration_end,
+            total_configuration_gradient_begin, total_configuration_gradient_end,
+            configurations_begin, configurations_end,
+            configuration_gradients_begin, configuration_gradients_end,
+            output_leading_configuration_total_J_begin, output_leading_configuration_total_J_end,
+            output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_end,
+            output_leading_configuration_configuration_gradients_J_begin, output_leading_configuration_configuration_gradients_J_end,
+            output_leading_configuration_gradient_total_J_begin, output_leading_configuration_gradient_total_J_end,
+            output_leading_configuration_gradient_total_gradient_J_begin, output_leading_configuration_gradient_total_gradient_J_end,
+            output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end,
+            output_leading_configuration_gradient_configuration_gradients_J_begin, output_leading_configuration_gradient_configuration_gradients_J_end
+        );
+#endif
+        // Initialize to zero
+        _zeroOutputs_solveForAllLeadingJacobians<leading_rows,size,dim>(
+            total_configuration_begin, total_configuration_end,
+            total_configuration_gradient_begin, total_configuration_gradient_end,
+            configurations_begin, configurations_end,
+            configuration_gradients_begin, configuration_gradients_end,
+            output_leading_configuration_total_J_begin, output_leading_configuration_total_J_end,
+            output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_end,
+            output_leading_configuration_configuration_gradients_J_begin, output_leading_configuration_configuration_gradients_J_end,
+            output_leading_configuration_gradient_total_J_begin, output_leading_configuration_gradient_total_J_end,
+            output_leading_configuration_gradient_total_gradient_J_begin, output_leading_configuration_gradient_total_gradient_J_end,
+            output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end,
+            output_leading_configuration_gradient_configuration_gradients_J_begin, output_leading_configuration_gradient_configuration_gradients_J_end
+        );
+
+        if( num_configs == 0 ){
+
+
+        }
+        else{
+
+        }
+
+        
 
     }
 
