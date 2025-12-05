@@ -2381,6 +2381,7 @@ namespace tardigradeHydra{
             std::array< output_lcg_total_J_type, leading_rows * size * dim > leading_configuration_gradient; //TODO: The type may not always be correct
             std::array< configuration_type, size * size > Aminus_inverse;
             std::array< configuration_gradient_type, size * size * dim > dAminusdX;
+            std::array< configuration_type, size * size * size * size > dAminusInversedA;
 
             // Compute the leading configuration and its gradients
             solveForAllLeading<leading_rows,size,dim>(
@@ -2394,6 +2395,10 @@ namespace tardigradeHydra{
                 std::begin( leading_configuration_gradient ), std::end( leading_configuration_gradient )
             );
 
+            _assembledAinversedA<size>(
+                std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+                std::begin( dAminusInversedA ), std::end( dAminusInversedA )
+            );
 
             // JACOBIANS W.R.T. TOTAL CONFIGURATION
             // Assemble the Jacobians of the leading configuration
@@ -2401,6 +2406,19 @@ namespace tardigradeHydra{
                 for ( unsigned int j = 0; j < size; ++j ){
                     for ( unsigned int a = 0; a < size; ++a ){
                         *( output_leading_configuration_total_J_begin + size * leading_rows * size * i + leading_rows * size * j + size * i + a ) += Aminus_inverse[ size * a + j ];
+                    }
+                }
+            }
+
+            for ( unsigned int i = 0; i < leading_rows; ++i ){
+                for ( unsigned int l = 0; l < size; ++l ){
+                    for ( unsigned int a = 0; a < dim; ++a ){
+                        for ( unsigned int c = 0; c < size; ++c ){
+                            for ( unsigned int kj = 0; kj < size * size; ++kj ){
+                                *( output_leading_configuration_gradient_total_J_begin + size * dim * leading_rows * size * i + dim * leading_rows * size * l + leading_rows * size * a + size * i + c )
+                                    += dAminusInversedA[ size * size * size * c + size * size * l + kj ] * dAminusdX[ dim * kj + a ];
+                            }
+                        }
                     }
                 }
             }
