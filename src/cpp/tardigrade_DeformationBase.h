@@ -65,7 +65,8 @@ namespace tardigradeHydra{
             >
             void getNetConfigurationJacobian(
                 const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-                const unsigned int &configuration_index, output_iterator output_begin, output_iterator output_end
+                const unsigned int &configuration_index,
+                output_iterator output_begin, output_iterator output_end
             );
 
             template<
@@ -591,6 +592,18 @@ namespace tardigradeHydra{
             >
             void _assemble_output_getTrailingNetConfigurationJacobian(
                 const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
+            template<
+                unsigned int size,
+                class Aplus_iterator,
+                class Aminus_iterator,
+                class output_iterator
+            >
+            void _assemble_output_getNetConfigurationJacobian(
+                const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end,
+                const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end,
                 output_iterator output_begin, output_iterator output_end
             );
 
