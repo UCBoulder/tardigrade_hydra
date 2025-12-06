@@ -252,11 +252,6 @@ namespace tardigradeHydra{
 
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( output_end - output_begin ) == ( size * size * size * size ),
-            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should have a size of " + std::to_string( size * size * size * size )
-        );
-
         std::fill( output_begin, output_end, output_type( ) );
 
         for ( unsigned int i = 0; i < size; ++i ){
@@ -292,6 +287,11 @@ namespace tardigradeHydra{
 
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) == ( size * size * size * size ),
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should have a size of " + std::to_string( size * size * size * size )
+        );
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             configurations_end != configurations_begin,
@@ -344,11 +344,6 @@ namespace tardigradeHydra{
 
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( output_end - output_begin ) == ( size * size * size * size ),
-            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should have a size of " + std::to_string( size * size * size * size )
-        );
-
         std::fill( output_begin, output_end, output_type( ) );
 
         for ( unsigned int i = 0; i < size; ++i ){
@@ -383,6 +378,11 @@ namespace tardigradeHydra{
 
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
         using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) == ( size * size * size * size ),
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should have a size of " + std::to_string( size * size * size * size )
+        );
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             configurations_end != configurations_begin,
