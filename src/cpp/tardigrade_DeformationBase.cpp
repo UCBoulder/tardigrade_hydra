@@ -670,6 +670,47 @@ namespace tardigradeHydra{
     template<
         unsigned int size,
         unsigned int dim,
+        class dAminusdX_iterator,
+        class output_iterator
+    >
+    void DeformationBase::_assemble_output_getLeadingNetConfigurationGradientConfigurationJacobian(
+        const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Assemble the output of getLeadingNetConfigurationGradientConfigurationJacobian
+         * 
+         * \param dAminusdX_begin: The starting iterator of the trailing configuration gradient
+         * \param dAminusdX_end: The stopping iterator of the trailing configuration gradient
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) == ( size * size * dim * size * size ),
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim * size * size )
+        );
+
+        std::fill(
+            output_begin, output_end, output_type( )
+        );
+
+        for ( unsigned int i = 0; i < size; ++i ){
+            for ( unsigned int j = 0; j < size; ++j ){
+                for ( unsigned int a = 0; a < dim; ++a ){
+                    for ( unsigned int b = 0; b < size; ++b ){
+                        *( output_begin + size * dim * size * size * i + dim * size * size * j + size * size * a + size * i + b ) += ( *( dAminusdX_begin + size * dim * b + dim * j + a ) );
+                    }
+                }
+            }
+        }
+    }
+
+    template<
+        unsigned int size,
+        unsigned int dim,
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
@@ -696,6 +737,7 @@ namespace tardigradeHydra{
          * \param output_end: The stopping iterator of the output
          */
 
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
@@ -708,30 +750,28 @@ namespace tardigradeHydra{
             "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim * size * size )
         );
 
-        // Initialize the output vector
-        std::fill(
-            output_begin, output_end, output_type( )
-        );
-
         if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
 
-            std::array< output_type, size * size * dim > dAminusdX;
+            std::fill(
+                output_begin, output_end, output_type( )
+            );
+            std::array< configuration_type, size * size * dim > dAminusdX;
             getNetConfigurationGradient<size,dim>(
                 configurations_begin + size * size, configurations_end,
                 configuration_gradients_begin + size * size * dim, configuration_gradients_end,
                 std::begin( dAminusdX ), std::end( dAminusdX )
             );
 
-            for ( unsigned int i = 0; i < size; ++i ){
-                for ( unsigned int j = 0; j < size; ++j ){
-                    for ( unsigned int a = 0; a < dim; ++a ){
-                        for ( unsigned int b = 0; b < size; ++b ){
-                            *( output_begin + size * dim * size * size * i + dim * size * size * j + size * size * a + size * i + b ) += dAminusdX[ size * dim * b + dim * j + a ];
-                        }
-                    }
-                }
-            }
+            _assemble_output_getLeadingNetConfigurationGradientConfigurationJacobian<size,dim>(
+                std::begin( dAminusdX ), std::end( dAminusdX ),
+                output_begin, output_end
+            );
 
+        }
+        else{
+            std::fill(
+                output_begin, output_end, output_type( )
+            );
         }
 
     }
