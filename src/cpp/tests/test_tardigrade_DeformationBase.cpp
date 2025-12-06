@@ -263,6 +263,7 @@ BOOST_AUTO_TEST_CASE( test_getLeadingNetConfigurationJacobian, * boost::unit_tes
     unsigned int configuration = 0;
 
     std::vector< double > jacobian( 256, 0 );
+    std::vector< double > answer( 256, 0 );
 
     tardigradeHydra::DeformationBase deformation;
 
@@ -298,11 +299,56 @@ BOOST_AUTO_TEST_CASE( test_getLeadingNetConfigurationJacobian, * boost::unit_tes
 
             for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
 
-                BOOST_TEST( jacobian[ NUM_OUTPUTS * j + i ] == ( rp[ j ] - rm[ j ] ) / ( 2 * delta ) );
+                answer[ NUM_INPUTS * j + i ] = ( rp[ j ] - rm[ j ] ) / ( 2 * delta );
 
             }
 
         }
+
+        BOOST_TEST( jacobian == answer, CHECK_PER_ELEMENT );
+
+    }
+
+    // Test for a single configuration
+    deformation.getLeadingNetConfigurationJacobian<4>(
+        std::begin( configurations ), std::begin( configurations ) + 16, std::begin( jacobian ), std::end( jacobian )
+    );
+
+    {
+
+        constexpr unsigned int NUM_INPUTS = 16;
+        constexpr unsigned int NUM_OUTPUTS = 16;
+        std::vector< double > x( std::begin( configurations ), std::begin( configurations ) + 16 );
+
+        for ( unsigned int i = 0; i < NUM_INPUTS; ++i ){
+
+            double delta = eps * std::fabs( x[ i + 16 * configuration ] ) + eps;
+
+            std::vector< double > xp = x;
+            std::vector< double > xm = x;
+
+            xp[ i + 16 * configuration ] += delta;
+            xm[ i + 16 * configuration ] -= delta;
+
+            std::vector< double > rp( 16 );
+            std::vector< double > rm( 16 );
+
+            deformation.getNetConfiguration<4>(
+                std::begin( xp ), std::end( xp ), std::begin( rp ), std::end( rp )
+            );
+            deformation.getNetConfiguration<4>(
+                std::begin( xm ), std::end( xm ), std::begin( rm ), std::end( rm )
+            );
+
+            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
+
+                answer[ NUM_INPUTS * j + i ] = ( rp[ j ] - rm[ j ] ) / ( 2 * delta );
+
+            }
+
+        }
+
+        BOOST_TEST( jacobian == answer, CHECK_PER_ELEMENT );
 
     }
 
@@ -335,6 +381,7 @@ BOOST_AUTO_TEST_CASE( test_getTrailingNetConfigurationJacobian, * boost::unit_te
     std::vector< double > jacobian( 256, 0 );
 
     tardigradeHydra::DeformationBase deformation;
+    std::vector< double > answer( 256, 0 );
 
     deformation.getTrailingNetConfigurationJacobian<4>(
         std::begin( configurations ), std::end( configurations ), std::begin( jacobian ), std::end( jacobian )
@@ -368,11 +415,57 @@ BOOST_AUTO_TEST_CASE( test_getTrailingNetConfigurationJacobian, * boost::unit_te
 
             for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
 
-                BOOST_TEST( jacobian[ NUM_OUTPUTS * j + i ] == ( rp[ j ] - rm[ j ] ) / ( 2 * delta ) );
+                answer[ NUM_INPUTS * j + i ] = ( rp[ j ] - rm[ j ] ) / ( 2 * delta );
 
             }
 
         }
+
+        BOOST_TEST( jacobian == answer, CHECK_PER_ELEMENT );
+
+    }
+
+    // Test for a single configuration
+    configuration = 0;
+    deformation.getTrailingNetConfigurationJacobian<4>(
+        std::begin( configurations ), std::begin( configurations ) + 16, std::begin( jacobian ), std::end( jacobian )
+    );
+
+    {
+
+        constexpr unsigned int NUM_INPUTS = 16;
+        constexpr unsigned int NUM_OUTPUTS = 16;
+        std::vector< double > x( std::begin( configurations ), std::begin( configurations ) + 16 );
+
+        for ( unsigned int i = 0; i < NUM_INPUTS; ++i ){
+
+            double delta = eps * std::fabs( x[ i + 16 * configuration ] ) + eps;
+
+            std::vector< double > xp = x;
+            std::vector< double > xm = x;
+
+            xp[ i + 16 * configuration ] += delta;
+            xm[ i + 16 * configuration ] -= delta;
+
+            std::vector< double > rp( 16 );
+            std::vector< double > rm( 16 );
+
+            deformation.getNetConfiguration<4>(
+                std::begin( xp ), std::end( xp ), std::begin( rp ), std::end( rp )
+            );
+            deformation.getNetConfiguration<4>(
+                std::begin( xm ), std::end( xm ), std::begin( rm ), std::end( rm )
+            );
+
+            for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
+
+                answer[ NUM_INPUTS * j + i ] = ( rp[ j ] - rm[ j ] ) / ( 2 * delta );
+
+            }
+
+        }
+
+        BOOST_TEST( jacobian == answer, CHECK_PER_ELEMENT );
 
     }
 
@@ -439,7 +532,7 @@ BOOST_AUTO_TEST_CASE( test_getNetConfigurationJacobian, * boost::unit_test::tole
 
                 for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
 
-                    BOOST_TEST( jacobian[ NUM_OUTPUTS * j + i ] == ( rp[ j ] - rm[ j ] ) / ( 2 * delta ) );
+                    BOOST_TEST( jacobian[ NUM_INPUTS * j + i ] == ( rp[ j ] - rm[ j ] ) / ( 2 * delta ) );
 
                 }
 
