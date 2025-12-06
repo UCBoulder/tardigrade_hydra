@@ -574,6 +574,16 @@ namespace tardigradeHydra{
                 output_iterator output_begin, output_iterator output_end
             );
 
+            template<
+                unsigned int size,
+                class Aplus_iterator,
+                class output_iterator
+            >
+            void _assemble_output_getTrailingNetConfigurationJacobian(
+                const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
     };
 
 }
