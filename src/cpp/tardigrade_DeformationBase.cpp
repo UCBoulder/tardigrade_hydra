@@ -779,6 +779,43 @@ namespace tardigradeHydra{
     template<
         unsigned int size,
         unsigned int dim,
+        class dAplusdX_iterator,
+        class output_iterator
+    >
+    void DeformationBase::_assemble_output_getTrailingNetConfigurationGradientConfigurationJacobian(
+        const dAplusdX_iterator &dAplusdX_begin, const dAplusdX_iterator &dAplusdX_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Assemble the output for getTrailingNetConfigurationGradientConfigurationJacobian
+         *
+         * \param &dAplusdX_begin: The starting iterator of the leading net configuration gradient
+         * \param &dAplusdX_end: The stopping iterator of the leading net configuration gradient
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+
+        std::fill(
+            output_begin, output_end, output_type( )
+        );
+
+        for ( unsigned int i = 0; i < size; ++i ){
+            for ( unsigned int j = 0; j < size; ++j ){
+                for ( unsigned int a = 0; a < dim; ++a ){
+                    for ( unsigned int b = 0; b < size; ++b ){
+                        *( output_begin + size * dim * size * size * i + dim * size * size * j + size * size * a + size * b + j ) += ( *( dAplusdX_begin + size * dim * i + dim * b + a ) );
+                    }
+                }
+            }
+        }
+
+    }
+
+    template<
+        unsigned int size,
+        unsigned int dim,
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
@@ -805,6 +842,7 @@ namespace tardigradeHydra{
          * \param output_end: The stopping iterator of the output
          */
 
+        using configuration_gradient_type = typename std::iterator_traits<configuration_gradient_iterator>::value_type;
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
@@ -817,30 +855,26 @@ namespace tardigradeHydra{
             "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim * size * size )
         );
 
-        // Initialize the output vector
-        std::fill(
-            output_begin, output_end, output_type( )
-        );
-
         if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
 
-            std::array< output_type, size * size * dim > dAplusdX;
+            std::array< configuration_gradient_type, size * size * dim > dAplusdX;
+
             getNetConfigurationGradient<size,dim>(
                 configurations_begin, configurations_end - size * size,
                 configuration_gradients_begin, configuration_gradients_end - size * size * dim,
                 std::begin( dAplusdX ), std::end( dAplusdX )
             );
 
-            for ( unsigned int i = 0; i < size; ++i ){
-                for ( unsigned int j = 0; j < size; ++j ){
-                    for ( unsigned int a = 0; a < dim; ++a ){
-                        for ( unsigned int b = 0; b < size; ++b ){
-                            *( output_begin + size * dim * size * size * i + dim * size * size * j + size * size * a + size * b + j ) += dAplusdX[ size * dim * i + dim * b + a ];
-                        }
-                    }
-                }
-            }
+            _assemble_output_getTrailingNetConfigurationGradientConfigurationJacobian<size,dim>(
+                std::begin( dAplusdX ), std::end( dAplusdX ),
+                output_begin, output_end
+            );
 
+        }
+        else{
+            std::fill(
+                output_begin, output_end, output_type( )
+            );
         }
 
     }
