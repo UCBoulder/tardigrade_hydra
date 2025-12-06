@@ -232,6 +232,46 @@ namespace tardigradeHydra{
 
     template<
         unsigned int size,
+        class Aminus_iterator,
+        class output_iterator
+    >
+    void DeformationBase::_assemble_output_getLeadingNetConfigurationJacobian(
+        const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Assemble the jacobian of getLeadingNetConfigurationJacobian
+         *
+         * Given \f$ [A] = [B] [C] [D] \f$, compute the derivative of \f$ [A] \f$ with respect to \f$ [B] \f$
+         *
+         * \param &Aminus_begin: The starting iterator of the trailing configuration
+         * \param &Aminus_end: The stopping iterator of the trailing configuration
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( output_end - output_begin ) == ( size * size * size * size ),
+            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should have a size of " + std::to_string( size * size * size * size )
+        );
+
+        std::fill( output_begin, output_end, output_type( ) );
+
+        for ( unsigned int i = 0; i < size; ++i ){
+            for ( unsigned int j = 0; j < size; ++j ){
+                for ( unsigned int k = 0; k < size; ++k ){
+                    *( output_begin + size * size * size * i + size * size * j + size * i + k ) += ( *( Aminus_begin + size * k + j ) );
+                }
+            }
+        }
+
+    }
+
+
+    template<
+        unsigned int size,
         class configuration_iterator,
         class output_iterator
     >
@@ -250,12 +290,8 @@ namespace tardigradeHydra{
          * \param output_end: The stopping iterator of the output
          */
 
-        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( output_end - output_begin ) == ( size * size * size * size ),
-            "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should have a size of " + std::to_string( size * size * size * size )
-        );
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             configurations_end != configurations_begin,
@@ -263,29 +299,26 @@ namespace tardigradeHydra{
         );
 
         // Handle the case where the configuration array only contains one configuration
-        std::fill( output_begin, output_end, output_type( ) );
 
         if ( configurations_end == ( configurations_begin + size * size ) ){
 
+            std::fill( output_begin, output_end, output_type( ) );
             for ( unsigned int i = 0; i < size * size; ++i ){ *( output_begin + size * size * i + i ) += 1; }
             return;
 
         }
 
-        std::array< output_type, size * size > Aminus;
+        std::array< configuration_type, size * size > Aminus;
 
         getNetConfiguration<size>(
             configurations_begin + size * size, configurations_end,
             std::begin( Aminus ), std::end( Aminus )
         );
 
-        for ( unsigned int i = 0; i < size; ++i ){
-            for ( unsigned int j = 0; j < size; ++j ){
-                for ( unsigned int k = 0; k < size; ++k ){
-                    *( output_begin + size * size * size * i + size * size * j + size * i + k ) += Aminus[ size * k + j ];
-                }
-            }
-        }
+        _assemble_output_getLeadingNetConfigurationJacobian<size>(
+            std::begin( Aminus ), std::end( Aminus ),
+            output_begin, output_end
+        );
 
     }
 
