@@ -265,9 +265,10 @@ namespace tardigradeHydra{
         // Handle the case where the configuration array only contains one configuration
         std::fill( output_begin, output_end, output_type( ) );
 
-        if ( output_end == ( output_begin + size * size ) ){
+        if ( configurations_end == ( configurations_begin + size * size ) ){
 
-            for ( unsigned int i = 0; i < size * size; ++i ){ *( output_begin + size * i + i ) += 1; }
+            for ( unsigned int i = 0; i < size * size; ++i ){ *( output_begin + size * size * i + i ) += 1; }
+            return;
 
         }
 
@@ -323,9 +324,10 @@ namespace tardigradeHydra{
         // Handle the case where the configuration array only contains one configuration
         std::fill( output_begin, output_end, output_type( ) );
 
-        if ( output_end == ( output_begin + size * size ) ){
+        if ( configurations_end == ( configurations_begin + size * size ) ){
 
-            for ( unsigned int i = 0; i < size * size; ++i ){ *( output_begin + size * i + i ) += 1; }
+            for ( unsigned int i = 0; i < size * size; ++i ){ *( output_begin + size * size * i + i ) += 1; }
+            return;
 
         }
 
