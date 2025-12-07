@@ -1082,17 +1082,16 @@ namespace tardigradeHydra{
             "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim * size * size * dim )
         );
 
-        // Initialize the output vector
-        std::fill(
-            output_begin, output_end, output_type( )
-        );
-
         if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
 
             std::array< output_type, size * size > Aminus;
             getNetConfiguration<size>(
                 configurations_begin + size * size, configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
+            );
+
+            std::fill(
+                output_begin, output_end, output_type( )
             );
 
             for ( unsigned int i = 0; i < size; ++i ){
@@ -1105,6 +1104,11 @@ namespace tardigradeHydra{
                     }
                 }
             }
+        }
+        else{
+            std::fill(
+                output_begin, output_end, output_type( )
+            );
         }
     }
 
