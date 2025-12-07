@@ -669,8 +669,19 @@ namespace tardigradeHydra{
             void _assemble_output_getNetConfigurationGradientConfigurationJacobian(
                 const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end,
                 const dAplusdX_iterator &dAplusdX_begin, const dAplusdX_iterator &dAplusdX_end,
-                const Aminus_jacobian_iterator &Aminus_jacobian, const Aminus_jacobian_iterator &Aminus_jacobian_end,
-                const dAminusdX_jacobian_iterator &dAminusdX_jacobian, const dAminusdX_jacobian_iterator &dAminusdX_jacobian_end,
+                const Aminus_jacobian_iterator &Aminus_jacobian_begin, const Aminus_jacobian_iterator &Aminus_jacobian_end,
+                const dAminusdX_jacobian_iterator &dAminusdX_jacobian_begin, const dAminusdX_jacobian_iterator &dAminusdX_jacobian_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
+            template<
+                unsigned int size,
+                unsigned int dim,
+                class Aminus_iterator,
+                class output_iterator
+            >
+            void _assemble_output_getLeadingNetConfigurationGradientConfigurationGradientJacobian(
+                const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end,
                 output_iterator output_begin, output_iterator output_end
             );
 
