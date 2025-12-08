@@ -709,6 +709,17 @@ namespace tardigradeHydra{
                 output_iterator output_begin, output_iterator output_end
             );
 
+            template<
+                unsigned int leading_rows,
+                unsigned int size,
+                class Aminus_inverse_iterator,
+                class output_iterator
+            >
+            void _assemble_output_solveForLeadingConfigurationTotalConfigurationJacobian(
+                const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
     };
 
 }
