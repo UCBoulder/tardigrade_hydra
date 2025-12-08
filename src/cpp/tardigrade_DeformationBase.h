@@ -689,6 +689,17 @@ namespace tardigradeHydra{
                 unsigned int size,
                 unsigned int dim,
                 class Aplus_iterator,
+                class output_iterator
+            >
+            void _assemble_output_getTrailingNetConfigurationGradientConfigurationGradientJacobian(
+                const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
+            template<
+                unsigned int size,
+                unsigned int dim,
+                class Aplus_iterator,
                 class Aminus_iterator,
                 class output_iterator
             >
