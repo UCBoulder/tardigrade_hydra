@@ -445,7 +445,9 @@ namespace tardigradeHydra{
                 const A_iterator &A_begin, const A_iterator &A_end,
                 const B_iterator &B_begin, const B_iterator &B_end,
                 C_iterator C_begin, C_iterator C_end,
-                const unsigned int offset = 0, const unsigned int stride = columns
+                const unsigned int A_offset = 0, const unsigned int A_stride = inner,
+                const unsigned int B_offset = 0, const unsigned int B_stride = columns,
+                const unsigned int output_offset = 0, const unsigned int output_stride = columns
             );
 
             template<
@@ -458,7 +460,9 @@ namespace tardigradeHydra{
                 const A_iterator &A_begin, const A_iterator &A_end,
                 const B_iterator &B_begin, const B_iterator &B_end,
                 C_iterator C_begin, C_iterator C_end,
-                const unsigned int offset = 0, const unsigned int stride = columns
+                const unsigned int A_offset = 0, const unsigned int A_stride = inner,
+                const unsigned int B_offset = 0, const unsigned int B_stride = columns,
+                const unsigned int output_offset = 0, const unsigned int output_stride = columns
             );
 
             template<

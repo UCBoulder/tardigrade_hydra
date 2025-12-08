@@ -104,12 +104,64 @@ BOOST_AUTO_TEST_CASE( test_denseMatrixMultiply, * boost::unit_test::tolerance( D
 
     DeformationBase_mock deformation;
 
-    try{
     deformation.public_denseMatrixMultiply(
         A, B, result
     );
-    }
-    catch(std::exception &e){tardigradeErrorTools::printNestedExceptions(e), throw;}
+
+    BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_denseMatrixMultiply_2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class DeformationBase_mock : public tardigradeHydra::DeformationBase{
+
+        public:
+
+            DeformationBase_mock( ){ }
+
+            void public_denseMatrixMultiply(
+                const std::vector<double> &A,
+                const std::vector<double> &B,
+                std::vector<double> &C
+            ){
+
+                _denseMatrixMultiply<3, 3, 2>(
+                    std::begin( A ), std::end( A ),
+                    std::begin( B ), std::end( B ),
+                    std::begin( C ), std::end( C ),
+                    0, 3, 2, 10, 2, 10
+                );
+
+            }
+
+    };
+
+    std::vector< double > A = {
+        1., 2., 3.,
+        4., 5., 6.,
+        7., 8., 9.
+    };
+
+    std::vector< double > B = {
+        0.12, 0.23, 0.34, 0.45, 0.56, 0.67, 0.78, 0.89, 1.  , 1.11,
+        1.22, 1.33, 1.44, 1.55, 1.66, 1.77, 1.88, 1.99, 2.1 , 2.21,
+        2.32, 2.43, 2.54, 2.65, 2.76, 2.87, 2.98, 3.09, 3.2 , 3.31
+    };
+
+    std::vector< double > answer = {
+         0.  ,  0.  , 10.84, 11.5 ,  0.  ,  0.  ,  0.  ,  0.  ,  0.  ,
+         0.  ,  0.  ,  0.  , 23.8 , 25.45,  0.  ,  0.  ,  0.  ,  0.  ,
+         0.  ,  0.  ,  0.  ,  0.  , 36.76, 39.4 ,  0.  ,  0.  ,  0.  ,
+         0.  ,  0.  ,  0.  
+    };
+
+    std::vector< double > result( 30, -1 );
+
+    DeformationBase_mock deformation;
+    deformation.public_denseMatrixMultiply(
+        A, B, result
+    );
 
     BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
 
