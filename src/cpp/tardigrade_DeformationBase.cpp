@@ -2098,6 +2098,50 @@ namespace tardigradeHydra{
         unsigned int leading_rows,
         unsigned int size,
         unsigned int dim,
+        class Aminus_inverse_iterator,
+        class dAminusdX_iterator,
+        class output_iterator
+    >
+    void DeformationBase::_assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
+        const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
+        const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Assemble the output for solveForLeadingConfigurationGradientLeadingConfigurationJacobian
+         *
+         * \param &Aminus_inverse_begin: The starting iterator of the inverse of the net trailing configuration
+         * \param &Aminus_inverse_end: The stopping iterator of the inverse of the net trailing configuration
+         * \param &dAminusdX_begin: The starting iterator of the gradient of the net trailing configuration
+         * \param &dAminusdX_end: The stopping iterator of the gradient of the net trailing configuration
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+
+        std::fill(
+            output_begin, output_end, output_type( )
+        );
+
+        for ( unsigned int i = 0; i < leading_rows; ++i ){
+            for ( unsigned int j = 0; j < size; ++j ){
+                for ( unsigned int a = 0; a < dim; ++a ){
+                    for ( unsigned int b = 0; b < size; ++b ){
+                        for ( unsigned int l = 0; l < size; ++l ){
+                            *( output_begin + size * dim * leading_rows * size * i + dim * leading_rows * size * j + leading_rows * size * a + size * i + b )
+                                -= ( *( dAminusdX_begin + size * dim * b + dim * l + a ) ) * ( *( Aminus_inverse_begin + size * l + j ) );
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim,
         class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class configuration_iterator,
@@ -2153,7 +2197,7 @@ namespace tardigradeHydra{
         )
 
         std::array< configuration_type, size * size > Aminus, Aminus_inverse;
-        std::array< configuration_gradient_type, size * size * dim > dAMinusdX;
+        std::array< configuration_gradient_type, size * size * dim > dAminusdX;
 
         // Compute the trailing configuration and it's gradient
         getNetConfiguration<size>(
@@ -2164,7 +2208,7 @@ namespace tardigradeHydra{
         getNetConfigurationGradient<size,dim>(
             configurations_begin, configurations_end,
             configuration_gradients_begin, configuration_gradients_end,
-            std::begin( dAMinusdX ), std::end( dAMinusdX )
+            std::begin( dAminusdX ), std::end( dAminusdX )
         );
 
         // TODO: Generalize this to a matrix solve rather than computing an inverse
@@ -2173,22 +2217,11 @@ namespace tardigradeHydra{
             std::begin( Aminus_inverse ), std::end( Aminus_inverse )
         );
 
-        std::fill(
-            output_begin, output_end, output_type( )
+        _assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian<leading_rows,size,dim>(
+            std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+            std::begin( dAminusdX ), std::end( dAminusdX ),
+            output_begin, output_end
         );
-
-        for ( unsigned int i = 0; i < leading_rows; ++i ){
-            for ( unsigned int j = 0; j < size; ++j ){
-                for ( unsigned int a = 0; a < dim; ++a ){
-                    for ( unsigned int b = 0; b < size; ++b ){
-                        for ( unsigned int l = 0; l < size; ++l ){
-                            *( output_begin + size * dim * leading_rows * size * i + dim * leading_rows * size * j + leading_rows * size * a + size * i + b )
-                                -= dAMinusdX[ size * dim * b + dim * l + a ] * Aminus_inverse[ size * l + j ];
-                        }
-                    }
-                }
-            }
-        }
 
     }
 
