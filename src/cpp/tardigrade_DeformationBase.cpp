@@ -3161,18 +3161,25 @@ namespace tardigradeHydra{
                 std::begin( intermediate_term1 ), std::end( intermediate_term1 )
             );
 
-            std::array< output_lcg_configurations_J_type, leading_rows * size * dim * size * size > intermediate_term2;
-            _assemble_intermediate_term_1_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size,dim>(
-                std::begin( leading_configuration_gradient ), std::end( leading_configuration_gradient ),
+            std::array< output_lcg_configurations_J_type, leading_rows * size * dim * leading_rows * size > intermediate_term2;
+            _assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian<leading_rows,size,dim>(
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+                std::begin( dAminusdX ), std::end( dAminusdX ),
                 std::begin( intermediate_term2 ), std::end( intermediate_term2 )
             );
 
-            std::array< output_lcg_configurations_J_type, leading_rows * size * size * size > intermediate_term3;
+            std::array< output_lcg_configurations_J_type, leading_rows * size * dim * size * size > intermediate_term3;
+            _assemble_intermediate_term_1_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size,dim>(
+                std::begin( leading_configuration_gradient ), std::end( leading_configuration_gradient ),
+                std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+                std::begin( intermediate_term3 ), std::end( intermediate_term3 )
+            );
+
+            std::array< output_lcg_configurations_J_type, leading_rows * size * size * size > intermediate_term4;
             _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size>(
                 std::begin( leading_configuration ), std::end( leading_configuration ),
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
-                std::begin( intermediate_term3 ), std::end( intermediate_term3 )
+                std::begin( intermediate_term4 ), std::end( intermediate_term4 )
             );
 
             std::array< output_lc_configurations_J_type, size * size * size * size > Aminus_jacobian;
@@ -3200,14 +3207,19 @@ namespace tardigradeHydra{
 
                 // Assemble the Jacobians of the leading configuration gradient
 
-//                _denseMatrixMultiplyAccumulate<leading_rows * size * dim, size * size, size * size>(
+//                _denseMatrrixMultiply<leading_rows * size * dim, leading_rows * size, size * size>(
 //                    std::begin( intermediate_term2 ), std::end( intermediate_term2 ),
+//                    output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_end,
+//                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end
+//                );
+//                _denseMatrixMultiplyAccumulate<leading_rows * size * dim, size * size, size * size>(
+//                    std::begin( intermediate_term3 ), std::end( intermediate_term3 ),
 //                    std::begin( Aminus_jacobian ), std::end( Aminus_jacobian ),
 //                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end
 //                );
 //
 //                _denseMatrixMultiplyAccumulate<leading_rows*size,size*size,dim*size*size>(
-//                    std::begin( intermediate_term3 ), std::end( intermediate_term3 ),
+//                    std::begin( intermediate_term4 ), std::end( intermediate_term4 ),
 //                    std::begin( dAminusdX_jacobian ), std::end( dAminusdX_jacobian ),
 //                    output_leading_configuration_gradient_configuration_J_begin, output_leading_configuration_gradient_configuration_J_end
 //                );
