@@ -778,6 +778,20 @@ namespace tardigradeHydra{
                 output_iterator output_begin, output_iterator output_end
             );
 
+            template<
+                unsigned int leading_rows,
+                unsigned int size,
+                unsigned int dim,
+                class Aminus_inverse_iterator,
+                class dAminusdX_jacobian_iterator,
+                class output_iterator
+            >
+            void _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian(
+                const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
+                const dAminusdX_jacobian_iterator &dAminusdX_jacobian_begin, const dAminusdX_jacobian_iterator &dAminusdX_jacobian_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
     };
 
 }
