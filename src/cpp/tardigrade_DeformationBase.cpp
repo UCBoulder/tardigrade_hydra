@@ -1822,7 +1822,7 @@ namespace tardigradeHydra{
         )
 
         std::array< configuration_type, size * size > Aminus;
-        std::array< output_type, leading_rows * size * dim > intermediate_term1, intermediate_term2;
+        std::array< output_type, leading_rows * size * dim > intermediate_term;
 
         // Compute the trailing configuration and it's gradient
         getNetConfiguration<size>(
@@ -1836,23 +1836,23 @@ namespace tardigradeHydra{
             dAminusdX_begin, dAminusdX_end
         );
 
-        // Assemble the intermediate terms
-        _denseMatrixMultiply<leading_rows,size,size*dim>(
-            leading_configuration_begin, leading_configuration_end,
-            dAminusdX_begin, dAminusdX_end,
-            std::begin( intermediate_term1 ), std::end( intermediate_term1 )
-        );
-
-        std::transform(
-            total_configuration_gradient_begin, total_configuration_gradient_end,
-            std::begin( intermediate_term1 ), std::begin( intermediate_term2 ),
-            std::minus<>()
-        );
-
         // TODO: Generalize this to a matrix solve rather than computing an inverse
         _compute_matrix_inverse<size>(
             std::begin( Aminus ), std::end( Aminus ),
             Aminus_inverse_begin, Aminus_inverse_end
+        );
+
+        // Assemble the intermediate terms
+        _denseMatrixMultiply<leading_rows,size,size*dim>(
+            leading_configuration_begin, leading_configuration_end,
+            dAminusdX_begin, dAminusdX_end,
+            std::begin( intermediate_term ), std::end( intermediate_term )
+        );
+
+        std::transform(
+            total_configuration_gradient_begin, total_configuration_gradient_end,
+            std::begin( intermediate_term ), std::begin( intermediate_term ),
+            std::minus<>()
         );
 
         std::fill(
@@ -1863,7 +1863,7 @@ namespace tardigradeHydra{
             for ( unsigned int j = 0; j < size; ++j ){
                 for ( unsigned int a = 0; a < dim; ++a ){
                     for ( unsigned int k = 0; k < size; ++k ){
-                        *( output_begin + size * dim * i + dim * j + a ) += intermediate_term2[ size * dim * i + dim * k + a ] * ( *( Aminus_inverse_begin + size * k + j ) );
+                        *( output_begin + size * dim * i + dim * j + a ) += intermediate_term[ size * dim * i + dim * k + a ] * ( *( Aminus_inverse_begin + size * k + j ) );
                     }
                 }
             }
