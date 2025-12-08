@@ -2428,25 +2428,6 @@ namespace tardigradeHydra{
             output_begin, output_end
         );
 
-//        std::array< output_type, size * size * dim * size * size > intermediate_term2 = { output_type( ) };
-//
-//        for ( unsigned int i = 0; i < size; ++i ){
-//            for ( unsigned int j = 0; j < size; ++j ){
-//                for ( unsigned int k = 0; k < size; ++k ){
-//                    for ( unsigned int acd = 0; acd < dim * size * size; ++acd ){
-//                        intermediate_term2[ size * dim * size * size * i + dim * size * size * j + acd ]
-//                            -= J_dAminusdX[ size * dim * size * size * i + dim * size * size * k + acd ] * Aminus_inverse[ size * k + j ];
-//                    }
-//                }
-//            }
-//        }
-//
-//        _denseMatrixMultiplyAccumulate<leading_rows,size,size*dim*size*size>(
-//            leading_configuration_begin, leading_configuration_end,
-//            std::begin( intermediate_term2 ), std::end( intermediate_term2 ),
-//            output_begin, output_end
-//        );
-
     }
 
     template<
@@ -2531,22 +2512,17 @@ namespace tardigradeHydra{
             std::begin( J_dAminusdX ), std::end( J_dAminusdX )
         );
 
-        std::array< output_type, size * size * dim * size * size * dim > intermediate_term = { output_type( ) };
-
-        for ( unsigned int i = 0; i < size; ++i ){
-            for ( unsigned int j = 0; j < size; ++j ){
-                for ( unsigned int k = 0; k < size; ++k ){
-                    for ( unsigned int acde = 0; acde < dim * size * size * dim; ++acde ){
-                        intermediate_term[ size * dim * size * size * dim * i + dim * size * size * dim * j + acde ]
-                            -= J_dAminusdX[ size * dim * size * size * dim * i + dim * size * size * dim * k + acde ] * Aminus_inverse[ size * k + j ];
-                    }
-                }
-            }
-        }
-
-        _denseMatrixMultiply<leading_rows,size,size*dim*size*size*dim>(
+        
+        std::array< output_type, leading_rows * size * size * size > intermediate_term;
+        _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size>(
             leading_configuration_begin, leading_configuration_end,
+            std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+            std::begin( intermediate_term ), std::end( intermediate_term )
+        );
+
+        _denseMatrixMultiply<leading_rows*size,size*size,dim*size*size*dim>(
             std::begin( intermediate_term ), std::end( intermediate_term ),
+            std::begin( J_dAminusdX ), std::end( J_dAminusdX ),
             output_begin, output_end
         );
 
@@ -2906,17 +2882,28 @@ namespace tardigradeHydra{
         class output_leading_configuration_gradient_configuration_gradients_J_iterator
     >
     void DeformationBase::_zeroOutputs_solveForAllLeadingJacobians(
-        const total_configuration_iterator &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
-        const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
-        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
-        output_leading_configuration_total_J_iterator output_leading_configuration_total_J_begin, output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
-        output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
-        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_begin, output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_end,
-        output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin, output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_end,
-        output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_begin, output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_end,
-        output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_end,
-        output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_begin, output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_end
+        const total_configuration_iterator &total_configuration_begin,
+        const total_configuration_iterator &total_configuration_end,
+        const total_configuration_gradient_iterator &total_configuration_gradient_begin,
+        const total_configuration_gradient_iterator &total_configuration_gradient_end,
+        const configuration_iterator &configurations_begin,
+        const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin,
+        const configuration_gradient_iterator &configuration_gradients_end,
+        output_leading_configuration_total_J_iterator output_leading_configuration_total_J_begin,
+        output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
+        output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin,
+        output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
+        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_begin,
+        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_end,
+        output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin,
+        output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_end,
+        output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_begin,
+        output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_end,
+        output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_begin,
+        output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_end,
+        output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_begin,
+        output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_end
     ){
         /*!
          * Check the iterator sizes for solveForAllLeadingJacobians
@@ -3000,17 +2987,28 @@ namespace tardigradeHydra{
         class output_leading_configuration_gradient_configuration_gradients_J_iterator
     >
     void DeformationBase::solveForAllLeadingJacobians(
-        const total_configuration_iterator &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
-        const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
-        const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
-        const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
-        output_leading_configuration_total_J_iterator output_leading_configuration_total_J_begin, output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
-        output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
-        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_begin, output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_end,
-        output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin, output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_end,
-        output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_begin, output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_end,
-        output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_end,
-        output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_begin, output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_end
+        const total_configuration_iterator &total_configuration_begin,
+        const total_configuration_iterator &total_configuration_end,
+        const total_configuration_gradient_iterator &total_configuration_gradient_begin,
+        const total_configuration_gradient_iterator &total_configuration_gradient_end,
+        const configuration_iterator &configurations_begin,
+        const configuration_iterator &configurations_end,
+        const configuration_gradient_iterator &configuration_gradients_begin,
+        const configuration_gradient_iterator &configuration_gradients_end,
+        output_leading_configuration_total_J_iterator output_leading_configuration_total_J_begin,
+        output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
+        output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin,
+        output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
+        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_begin,
+        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_end,
+        output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin,
+        output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_end,
+        output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_begin,
+        output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_end,
+        output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_begin,
+        output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_end,
+        output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_begin,
+        output_leading_configuration_gradient_configuration_gradients_J_iterator output_leading_configuration_gradient_configuration_gradients_J_end
     ){
         /*!
          * Solve for all of the Jacobians of the leading configuration and its gradient which would be required to achieve the total deformation i.e., if
@@ -3170,7 +3168,13 @@ namespace tardigradeHydra{
                 std::begin( intermediate_term2 ), std::end( intermediate_term2 )
             );
 
-            std::array< output_lcg_configurations_J_type, size * size * dim * size * size > intermediate_term3;
+            std::array< output_lcg_configurations_J_type, leading_rows * size * size * size > intermediate_term3;
+            _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size>(
+                std::begin( leading_configuration ), std::end( leading_configuration ),
+                std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+                std::begin( intermediate_term3 ), std::end( intermediate_term3 )
+            );
+
             std::array< output_lc_configurations_J_type, size * size * size * size > Aminus_jacobian;
             std::array< output_lcg_configurations_J_type, size * size * dim * size * size > dAminusdX_jacobian;
             for ( unsigned int configuration_index = 0; configuration_index < num_configs; ++configuration_index ){
@@ -3196,31 +3200,16 @@ namespace tardigradeHydra{
 
                 // Assemble the Jacobians of the leading configuration gradient
 
-//                std::fill(
-//                    std::begin( intermediate_term2 ), std::end( intermediate_term2 ), output_lcg_configurations_J_type( )
-//                );
-//
-//                for ( unsigned int i = 0; i < size; ++i ){
-//                    for ( unsigned int j = 0; j < size; ++j ){
-//                        for ( unsigned int k = 0; k < size; ++k ){
-//                            for ( unsigned int acd = 0; acd < dim * size * size; ++acd ){
-//                                intermediate_term3[ size * dim * size * size * i + dim * size * size * j + acd ]
-//                                    -= dAminusdX_jacobian[ size * dim * size * size * i + dim * size * size * k + acd ] * Aminus_inverse[ size * k + j ];
-//                            }
-//                        }
-//                    }
-//                }
-//
-//                _denseMatrixMultiply<leading_rows,size,size*dim*size*size>(
-//                    std::begin( leading_configuration ), std::begin( leading_configuration ),
-//                    std::begin( intermediate_term3 ), std::end( intermediate_term3 ),
-//                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end
-//                );
-//
 //                _denseMatrixMultiplyAccumulate<leading_rows * size * dim, size * size, size * size>(
 //                    std::begin( intermediate_term2 ), std::end( intermediate_term2 ),
 //                    std::begin( Aminus_jacobian ), std::end( Aminus_jacobian ),
 //                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end
+//                );
+//
+//                _denseMatrixMultiplyAccumulate<leading_rows*size,size*size,dim*size*size>(
+//                    std::begin( intermediate_term3 ), std::end( intermediate_term3 ),
+//                    std::begin( dAminusdX_jacobian ), std::end( dAminusdX_jacobian ),
+//                    output_leading_configuration_gradient_configuration_J_begin, output_leading_configuration_gradient_configuration_J_end
 //                );
 
             }
