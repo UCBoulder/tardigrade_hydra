@@ -720,6 +720,24 @@ namespace tardigradeHydra{
                 output_iterator output_begin, output_iterator output_end
             );
 
+            template<
+                unsigned int leading_rows,
+                unsigned int size,
+                unsigned int dim,
+                class total_configuration_gradient_iterator,
+                class leading_configuration_iterator,
+                class Aminus_inverse_iterator,
+                class dAminusdX_iterator,
+                class output_iterator
+            >
+            void _assemble_output_solveForLeadingConfigurationGradient(
+                const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
+                const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
+                const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
+                const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
     };
 
 }
