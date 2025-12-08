@@ -1649,7 +1649,7 @@ namespace tardigradeHydra{
         class Aminus_inverse_iterator,
         class output_iterator
     >
-    void DeformationBase::_compute_intermediate_term_1_solveForLeadingConfigurationConfigurationJacobian(
+    void DeformationBase::_compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian(
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
         output_iterator output_begin, output_iterator output_end
@@ -1741,7 +1741,7 @@ namespace tardigradeHydra{
                 std::begin( Aminus_jacobian ), std::end( Aminus_jacobian )
             );
 
-            _compute_intermediate_term_1_solveForLeadingConfigurationConfigurationJacobian<leading_rows,size>(
+            _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian<leading_rows,size>(
                 std::begin( leadingConfiguration ), std::end( leadingConfiguration ),
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
                 std::begin( intermediate_term ), std::end( intermediate_term )
@@ -1983,6 +1983,44 @@ namespace tardigradeHydra{
         unsigned int leading_rows,
         unsigned int size,
         unsigned int dim,
+        class Aminus_inverse_iterator,
+        class output_iterator
+    >
+    void DeformationBase::_assemble_output_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
+        const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Assemble the output for solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian
+         * 
+         * \param &Aminus_inverse_begin: The starting iterator of the trailing configuration inverse
+         * \param &Aminus_inverse_end: The stopping iterator of the trailing configuration inverse
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+
+        std::fill(
+            output_begin, output_end, output_type( )
+        );
+
+        for ( unsigned int i = 0; i < leading_rows; ++i ){
+            for ( unsigned int j = 0; j < size; ++j ){
+                for ( unsigned int a = 0; a < dim; ++a ){
+                    for ( unsigned int b = 0; b < size; ++b ){
+                        *( output_begin + size * dim * leading_rows * size * dim * i + dim * leading_rows * size * dim * j + leading_rows * size * dim * a + size * dim * i + dim * b + a )
+                            += ( *( Aminus_inverse_begin + size * b + j ) );
+                    }
+                }
+            }
+        }
+    }
+
+    template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim,
         class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class configuration_iterator,
@@ -2049,16 +2087,10 @@ namespace tardigradeHydra{
             std::begin( Aminus_inverse ), std::end( Aminus_inverse )
         );
 
-        for ( unsigned int i = 0; i < leading_rows; ++i ){
-            for ( unsigned int j = 0; j < size; ++j ){
-                for ( unsigned int a = 0; a < dim; ++a ){
-                    for ( unsigned int b = 0; b < size; ++b ){
-                        *( output_begin + size * dim * leading_rows * size * dim * i + dim * leading_rows * size * dim * j + leading_rows * size * dim * a + size * dim * i + dim * b + a )
-                            += Aminus_inverse[ size * b + j ];
-                    }
-                }
-            }
-        }
+        _assemble_output_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian<leading_rows,size,dim>(
+            std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+            output_begin, output_end
+        );
 
     }
 
@@ -2985,20 +3017,14 @@ namespace tardigradeHydra{
             }
 
             // JACOBIANS W.R.T. TOTAL CONFIGURATION GRADIENT
-            // Assemble the Jacobians of the leading configuration gradient
-            for ( unsigned int i = 0; i < leading_rows; ++i ){
-                for ( unsigned int j = 0; j < size; ++j ){
-                    for ( unsigned int a = 0; a < dim; ++a ){
-                        for ( unsigned int b = 0; b < size; ++b ){
-                            *( output_leading_configuration_gradient_total_gradient_J_begin + size * dim * leading_rows * size * dim * i + dim * leading_rows * size * dim * j + leading_rows * size * dim * a + size * dim * i + dim * b + a )
-                                += Aminus_inverse[ size * b + j ];
-                        }
-                    }
-                }
-            }
+            _assemble_output_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian<leading_rows,size,dim>(
+                std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+                output_leading_configuration_gradient_total_gradient_J_begin,
+                output_leading_configuration_gradient_total_gradient_J_end
+            );
 
             std::array< output_lc_configurations_J_type, leading_rows * size * size * size > intermediate_term1 = { output_lc_configurations_J_type( ) };
-            _compute_intermediate_term_1_solveForLeadingConfigurationConfigurationJacobian<leading_rows,size>(
+            _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian<leading_rows,size>(
                 std::begin( leading_configuration ), std::end( leading_configuration ),
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
                 std::begin( intermediate_term1 ), std::end( intermediate_term1 )

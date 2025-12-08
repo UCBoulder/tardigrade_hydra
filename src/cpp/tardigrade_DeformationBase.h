@@ -597,7 +597,7 @@ namespace tardigradeHydra{
                 class Aminus_inverse_iterator,
                 class output_iterator
             >
-            void _compute_intermediate_term_1_solveForLeadingConfigurationConfigurationJacobian(
+            void _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian(
                 const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
                 const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
                 output_iterator output_begin, output_iterator output_end
@@ -735,6 +735,18 @@ namespace tardigradeHydra{
                 const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
                 const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
                 const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
+                output_iterator output_begin, output_iterator output_end
+            );
+
+            template<
+                unsigned int leading_rows,
+                unsigned int size,
+                unsigned int dim,
+                class Aminus_inverse_iterator,
+                class output_iterator
+            >
+            void _assemble_output_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
+                const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
                 output_iterator output_begin, output_iterator output_end
             );
 
