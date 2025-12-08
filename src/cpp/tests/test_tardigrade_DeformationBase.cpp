@@ -2149,6 +2149,7 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradientTotalConfiguratio
         constexpr unsigned int NUM_INPUTS  = 60;
         constexpr unsigned int NUM_OUTPUTS = 60;
         std::vector< double > x = total_configuration_gradient;
+        std::vector< double > answer( NUM_OUTPUTS * NUM_INPUTS );
 
         for ( unsigned int i = 0; i < NUM_INPUTS; ++i ){
 
@@ -2180,11 +2181,13 @@ BOOST_AUTO_TEST_CASE( test_solveForLeadingConfigurationGradientTotalConfiguratio
 
             for ( unsigned int j = 0; j < NUM_OUTPUTS; ++j ){
 
-                BOOST_TEST( jacobian[ NUM_INPUTS * j + i ] == ( rp[ j ] - rm[ j ] ) / ( 2 * delta ) );
+                answer[ NUM_INPUTS * j + i ] = ( rp[ j ] - rm[ j ] ) / ( 2 * delta );
 
             }
 
         }
+
+        BOOST_TEST( jacobian == answer, CHECK_PER_ELEMENT );
 
     }
 
