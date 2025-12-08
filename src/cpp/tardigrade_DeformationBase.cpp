@@ -1181,17 +1181,16 @@ namespace tardigradeHydra{
             "The output has a size of " + std::to_string( ( unsigned int )( output_end - output_begin ) ) + " but should be " + std::to_string( size * size * dim * size * size * dim )
         );
 
-        // Initialize the output vector
-        std::fill(
-            output_begin, output_end, output_type( )
-        );
-
         if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
 
             std::array< output_type, size * size > Aplus;
             getNetConfiguration<size>(
                 configurations_begin, configurations_end - size * size,
                 std::begin( Aplus ), std::end( Aplus )
+            );
+
+            std::fill(
+                output_begin, output_end, output_type( )
             );
 
             for ( unsigned int i = 0; i < size; ++i ){
@@ -1202,6 +1201,56 @@ namespace tardigradeHydra{
                 }
             }
 
+        }
+        else{
+
+            std::fill(
+                output_begin, output_end, output_type( )
+            );
+
+        }
+
+    }
+
+    template<
+        unsigned int size,
+        unsigned int dim,
+        class Aplus_iterator,
+        class Aminus_iterator,
+        class output_iterator
+    >
+    void DeformationBase::_assemble_output_getNetConfigurationGradientConfigurationGradientJacobian(
+        const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end,
+        const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end,
+        output_iterator output_begin, output_iterator output_end
+    ){
+        /*!
+         * Assemble the output for getNetConfigurationGradientConfigurationGradientJacobian
+         *
+         * \param Aplus_begin: The starting iterator of the leading gradients
+         * \param Aplus_end: The stopping iterator of the leading gradients
+         * \param Aminus_begin: The starting iterator of the trailing gradients
+         * \param Aminus_end: The stopping iterator of the trailing gradients
+         * \param output_begin: The starting iterator of the output
+         * \param output_end: The stopping iterator of the output
+         */
+
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
+
+        std::fill( output_begin, output_end, output_type( ) );
+            
+        // Assemble the Jacobian
+        for ( unsigned int i = 0; i < size; ++i ){
+            for ( unsigned int j = 0; j < size; ++j ){
+                for ( unsigned int a = 0; a < dim; ++a ){
+                    for ( unsigned int k = 0; k < size; ++k ){
+                        for ( unsigned int l = 0; l < size; ++l ){
+                            *( output_begin + size * dim * size * size * dim * i + dim * size * size * dim * j + size * size * dim * a + size * dim * k + dim * l + a )
+                                += ( *( Aplus_begin + size * i + k ) ) * ( *( Aminus_begin + size * l + j ) );
+                        }
+                    }
+                }
+            }
         }
 
     }
@@ -1237,7 +1286,8 @@ namespace tardigradeHydra{
          * \param output_end: The stopping iterator of the output
          */
 
-        using output_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using configuration_type = typename std::iterator_traits<configuration_iterator>::value_type;
+        using output_type = typename std::iterator_traits<output_iterator>::value_type;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             ( ( unsigned int )( configurations_end - configurations_begin ) / ( size * size ) ) == ( ( unsigned int )( configuration_gradients_end - configuration_gradients_begin ) / ( size * size * dim ) ),
@@ -1267,10 +1317,9 @@ namespace tardigradeHydra{
         }
         else if ( ( 0 < configuration_index ) && ( configuration_index < ( num_configurations - 1 ) ) ){
 
-            std::fill( output_begin, output_end, output_type( ) );
-            
             // Get the prior and previous configurations
-            std::array< output_type, size * size > Aplus, Aminus;
+            std::array< configuration_type, size * size > Aplus, Aminus;
+
             getNetConfiguration<size>(
                 configurations_begin, configurations_begin + size * size * configuration_index,
                 std::begin( Aplus ), std::end( Aplus )
@@ -1280,19 +1329,11 @@ namespace tardigradeHydra{
                 std::begin( Aminus ), std::end( Aminus )
             );
 
-            // Assemble the Jacobian
-            for ( unsigned int i = 0; i < size; ++i ){
-                for ( unsigned int j = 0; j < size; ++j ){
-                    for ( unsigned int a = 0; a < dim; ++a ){
-                        for ( unsigned int k = 0; k < size; ++k ){
-                            for ( unsigned int l = 0; l < size; ++l ){
-                                *( output_begin + size * dim * size * size * dim * i + dim * size * size * dim * j + size * size * dim * a + size * dim * k + dim * l + a )
-                                    += Aplus[ size * i + k ] * Aminus[ size * l + j ];
-                            }
-                        }
-                    }
-                }
-            }
+            _assemble_output_getNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
+                std::begin( Aplus ), std::end( Aplus ),
+                std::begin( Aminus ), std::end( Aminus ),
+                output_begin, output_end
+            );
 
         }
         else{
