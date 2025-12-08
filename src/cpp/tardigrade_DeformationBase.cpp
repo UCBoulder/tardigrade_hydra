@@ -2271,23 +2271,22 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        class leading_configuration_iterator,
         class Aminus_inverse_iterator,
-        class dAminusdX_jacobian_iterator,
         class output_iterator
     >
     void DeformationBase::_assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian(
+        const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
-        const dAminusdX_jacobian_iterator &dAminusdX_jacobian_begin, const dAminusdX_jacobian_iterator &dAminusdX_jacobian_end,
         output_iterator output_begin, output_iterator output_end
     ){
         /*!
-         * Assemble the first intermediate term for solveForLeadingConfigurationGradientConfigurationJacobian
+         * Assemble the second intermediate term for solveForLeadingConfigurationGradientConfigurationJacobian
          *
+         * \param &leading_configuration_begin: The starting iterator for the leading configuration
+         * \param &leading_configuration_end: The stopping iterator for the leading configuration
          * \param &Aminus_inverse_begin: The starting iterator for the inverse of the trailing net configuration
          * \param &Aminus_inverse_end: The stopping iterator for the inverse of the leading net configuration
-         * \param &dAminusdX_jacobian_begin: The starting iterator for the jacobian of the trailing net configuration gradient
-         * \param &dAminusdX_jacoiban_end: The stopping iterator for the jacoibian of the trailing net configuration gradient
          * \param output_begin: The starting iterator of the output
          * \param output_end: The stopping iterator of the output
          */
@@ -2298,6 +2297,16 @@ namespace tardigradeHydra{
             output_begin, output_end, output_type( )
         );
 
+        for ( unsigned int i = 0; i < leading_rows; ++i ){
+            for ( unsigned int l = 0; l < size; ++l ){
+                for ( unsigned int k = 0; k < size; ++k ){
+                    for ( unsigned int j = 0; j < size; ++j ){
+                        *( output_begin + size * size * size * i + size * size * l + size * k + j )
+                            -= ( *( leading_configuration_begin + size * i + k ) ) * ( *( Aminus_inverse_begin + size * j + l ) );
+                    }
+                }
+            }
+        }
     }
 
     template<
@@ -2406,24 +2415,37 @@ namespace tardigradeHydra{
             output_begin, output_end
         );
 
-        std::array< output_type, size * size * dim * size * size > intermediate_term2 = { output_type( ) };
-
-        for ( unsigned int i = 0; i < size; ++i ){
-            for ( unsigned int j = 0; j < size; ++j ){
-                for ( unsigned int k = 0; k < size; ++k ){
-                    for ( unsigned int acd = 0; acd < dim * size * size; ++acd ){
-                        intermediate_term2[ size * dim * size * size * i + dim * size * size * j + acd ]
-                            -= J_dAminusdX[ size * dim * size * size * i + dim * size * size * k + acd ] * Aminus_inverse[ size * k + j ];
-                    }
-                }
-            }
-        }
-
-        _denseMatrixMultiplyAccumulate<leading_rows,size,size*dim*size*size>(
+        std::array< output_type, leading_rows * size * size * size > intermediate_term2;
+        _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size>(
             leading_configuration_begin, leading_configuration_end,
+            std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+            std::begin( intermediate_term2 ), std::end( intermediate_term2 )
+        );
+
+        _denseMatrixMultiplyAccumulate<leading_rows*size,size*size,dim*size*size>(
             std::begin( intermediate_term2 ), std::end( intermediate_term2 ),
+            std::begin( J_dAminusdX ), std::end( J_dAminusdX ),
             output_begin, output_end
         );
+
+//        std::array< output_type, size * size * dim * size * size > intermediate_term2 = { output_type( ) };
+//
+//        for ( unsigned int i = 0; i < size; ++i ){
+//            for ( unsigned int j = 0; j < size; ++j ){
+//                for ( unsigned int k = 0; k < size; ++k ){
+//                    for ( unsigned int acd = 0; acd < dim * size * size; ++acd ){
+//                        intermediate_term2[ size * dim * size * size * i + dim * size * size * j + acd ]
+//                            -= J_dAminusdX[ size * dim * size * size * i + dim * size * size * k + acd ] * Aminus_inverse[ size * k + j ];
+//                    }
+//                }
+//            }
+//        }
+//
+//        _denseMatrixMultiplyAccumulate<leading_rows,size,size*dim*size*size>(
+//            leading_configuration_begin, leading_configuration_end,
+//            std::begin( intermediate_term2 ), std::end( intermediate_term2 ),
+//            output_begin, output_end
+//        );
 
     }
 
