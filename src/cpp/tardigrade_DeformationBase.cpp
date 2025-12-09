@@ -2829,7 +2829,6 @@ namespace tardigradeHydra{
         class configuration_gradient_iterator,
         class output_leading_configuration_total_J_iterator,
         class output_leading_configuration_configurations_J_iterator,
-        class output_leading_configuration_configuration_gradients_J_iterator,
         class output_leading_configuration_gradient_total_J_iterator,
         class output_leading_configuration_gradient_total_gradient_J_iterator,
         class output_leading_configuration_gradient_configurations_J_iterator,
@@ -2847,8 +2846,6 @@ namespace tardigradeHydra{
         output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin,
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
-        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_begin,
-        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_end,
         output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin,
         output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_end,
         output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_begin,
@@ -2873,8 +2870,6 @@ namespace tardigradeHydra{
          * \param output_leading_configuration_total_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the total configuration output
          * \param output_leading_configuration_configurations_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configurations output
          * \param output_leading_configuration_configurations_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configurations output
-         * \param output_leading_configuration_configuration_gradients_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
-         * \param output_leading_configuration_configuration_gradients_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
          * \param output_leading_configuration_gradient_total_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
          * \param output_leading_configuration_gradient_total_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
          * \param output_leading_configuration_gradient_total_gradient_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration gradient output
@@ -2923,11 +2918,6 @@ namespace tardigradeHydra{
         );
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
-            ( unsigned int )( output_leading_configuration_configuration_gradients_J_end - output_leading_configuration_configuration_gradients_J_begin ) == leading_configuration_size * configuration_gradient_size * num_configs,
-            "The jacobian of the leading configuration with respect to the configuration gradients has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_configuration_gradients_J_end - output_leading_configuration_configuration_gradients_J_begin ) ) + " but must have a size of " + std::to_string( leading_configuration_size * configuration_gradient_size * num_configs )
-        );
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(
             ( unsigned int )( output_leading_configuration_gradient_total_J_end - output_leading_configuration_gradient_total_J_begin ) == leading_configuration_gradient_size * leading_configuration_size,
             "The jacobian of the leading configuration gradient with respect to the total deformation has a size of " + std::to_string( ( unsigned int )( output_leading_configuration_gradient_total_J_end - output_leading_configuration_gradient_total_J_begin ) ) + " but must have a size of " + std::to_string( leading_configuration_gradient_size * leading_configuration_size )
         );
@@ -2954,7 +2944,6 @@ namespace tardigradeHydra{
         class configuration_gradient_iterator,
         class output_leading_configuration_total_J_iterator,
         class output_leading_configuration_configurations_J_iterator,
-        class output_leading_configuration_configuration_gradients_J_iterator,
         class output_leading_configuration_gradient_total_J_iterator,
         class output_leading_configuration_gradient_total_gradient_J_iterator,
         class output_leading_configuration_gradient_configurations_J_iterator,
@@ -2973,8 +2962,6 @@ namespace tardigradeHydra{
         output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin,
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
-        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_begin,
-        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_end,
         output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin,
         output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_end,
         output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_begin,
@@ -2999,8 +2986,6 @@ namespace tardigradeHydra{
          * \param output_leading_configuration_total_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the total configuration output
          * \param output_leading_configuration_configurations_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configurations output
          * \param output_leading_configuration_configurations_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configurations output
-         * \param output_leading_configuration_configuration_gradients_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
-         * \param output_leading_configuration_configuration_gradients_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
          * \param output_leading_configuration_gradient_total_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
          * \param output_leading_configuration_gradient_total_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
          * \param output_leading_configuration_gradient_total_gradient_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration gradient output
@@ -3025,10 +3010,6 @@ namespace tardigradeHydra{
 
         std::fill(
             output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_end, output_lc_configurations_J_type( )
-        );
-
-        std::fill(
-            output_leading_configuration_configuration_gradients_J_begin, output_leading_configuration_configuration_gradients_J_end, output_lc_configuration_gradients_J_type( )
         );
 
         std::fill(
@@ -3059,7 +3040,6 @@ namespace tardigradeHydra{
         class configuration_gradient_iterator,
         class output_leading_configuration_total_J_iterator,
         class output_leading_configuration_configurations_J_iterator,
-        class output_leading_configuration_configuration_gradients_J_iterator,
         class output_leading_configuration_gradient_total_J_iterator,
         class output_leading_configuration_gradient_total_gradient_J_iterator,
         class output_leading_configuration_gradient_configurations_J_iterator,
@@ -3078,8 +3058,6 @@ namespace tardigradeHydra{
         output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin,
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
-        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_begin,
-        output_leading_configuration_configuration_gradients_J_iterator output_leading_configuration_configuration_gradients_J_end,
         output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin,
         output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_end,
         output_leading_configuration_gradient_total_gradient_J_iterator output_leading_configuration_gradient_total_gradient_J_begin,
@@ -3110,8 +3088,6 @@ namespace tardigradeHydra{
          * \param output_leading_configuration_total_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the total configuration output
          * \param output_leading_configuration_configurations_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configurations output
          * \param output_leading_configuration_configurations_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configurations output
-         * \param output_leading_configuration_configuration_gradients_J_begin: The starting iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
-         * \param output_leading_configuration_configuration_gradients_J_end: The stopping iterator of the Jacobian of the leading configuration with respect to the configuration gradients output
          * \param output_leading_configuration_gradient_total_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
          * \param output_leading_configuration_gradient_total_J_end: The stopping iterator of the Jacobian of the leading configuration gradient with respect to the total configuration output
          * \param output_leading_configuration_gradient_total_gradient_J_begin: The starting iterator of the Jacobian of the leading configuration gradient with respect to the total configuration gradient output
@@ -3142,7 +3118,6 @@ namespace tardigradeHydra{
             configuration_gradients_begin, configuration_gradients_end,
             output_leading_configuration_total_J_begin, output_leading_configuration_total_J_end,
             output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_end,
-            output_leading_configuration_configuration_gradients_J_begin, output_leading_configuration_configuration_gradients_J_end,
             output_leading_configuration_gradient_total_J_begin, output_leading_configuration_gradient_total_J_end,
             output_leading_configuration_gradient_total_gradient_J_begin, output_leading_configuration_gradient_total_gradient_J_end,
             output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end,
@@ -3157,7 +3132,6 @@ namespace tardigradeHydra{
             configuration_gradients_begin, configuration_gradients_end,
             output_leading_configuration_total_J_begin, output_leading_configuration_total_J_end,
             output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_end,
-            output_leading_configuration_configuration_gradients_J_begin, output_leading_configuration_configuration_gradients_J_end,
             output_leading_configuration_gradient_total_J_begin, output_leading_configuration_gradient_total_J_end,
             output_leading_configuration_gradient_total_gradient_J_begin, output_leading_configuration_gradient_total_gradient_J_end,
             output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end,
@@ -3233,6 +3207,7 @@ namespace tardigradeHydra{
                 output_leading_configuration_gradient_total_gradient_J_end
             );
 
+            // Construct Jacobians W.R.T. the trailing configurations and their gradients
             std::array< output_lc_configurations_J_type, leading_rows * size * size * size > intermediate_term1 = { output_lc_configurations_J_type( ) };
             _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian<leading_rows,size>(
                 std::begin( leading_configuration ), std::end( leading_configuration ),
@@ -3263,6 +3238,7 @@ namespace tardigradeHydra{
 
             std::array< output_lc_configurations_J_type, size * size * size * size > Aminus_configuration_jacobian;
             std::array< output_lcg_configurations_J_type, size * size * dim * size * size > dAminusdX_configuration_jacobian;
+            std::array< output_lcg_configurations_J_type, size * size * dim * size * size * dim > dAminusdX_configuration_gradient_jacobian;
             for ( unsigned int configuration_index = 0; configuration_index < num_configs; ++configuration_index ){
 
                 // JACOBIANS W.R.T. CONFIGURATIONS
@@ -3293,6 +3269,13 @@ namespace tardigradeHydra{
                     std::begin( dAminusdX_configuration_jacobian ), std::end( dAminusdX_configuration_jacobian )
                 );
 
+                getNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
+                    configurations_begin, configurations_end,
+                    configuration_gradients_begin, configuration_gradients_end,
+                    configuration_index,
+                    std::begin( dAminusdX_configuration_gradient_jacobian ), std::end( dAminusdX_configuration_gradient_jacobian )
+                );
+
                 _denseMatrixMultiplyAccumulate<leading_rows * size * dim, leading_rows * size, size * size>(
                     std::begin( intermediate_term2 ), std::end( intermediate_term2 ),
                     output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_end,
@@ -3318,6 +3301,14 @@ namespace tardigradeHydra{
                 );
 
                 // JACOBIANS W.R.T. CONFIGURATION GRADIENTS
+                _denseMatrixMultiplyAccumulateReshape<leading_rows*size,size*size,dim*size*size*dim,leading_rows*size*dim,size*size*dim>(
+                    std::begin( intermediate_term4 ), std::end( intermediate_term4 ),
+                    std::begin( dAminusdX_configuration_gradient_jacobian ), std::end( dAminusdX_configuration_gradient_jacobian ),
+                    output_leading_configuration_gradient_configuration_gradients_J_begin,
+                    output_leading_configuration_gradient_configuration_gradients_J_end,
+                    0, size * size, 0, dim * size * size * dim,
+                    configuration_index * size * size * dim, size * size * dim * num_configs
+                );
 
             }
 

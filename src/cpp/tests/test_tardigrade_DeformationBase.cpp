@@ -3142,7 +3142,6 @@ BOOST_AUTO_TEST_CASE( test_solveForAllLeadingJacobians, * boost::unit_test::tole
         std::begin( configuration_gradients ), std::end( configuration_gradients ),
         std::begin( leading_configuration_total_J_result ), std::end( leading_configuration_total_J_result ),
         std::begin( leading_configuration_configurations_J_result ), std::end( leading_configuration_configurations_J_result ),
-        std::begin( leading_configuration_configuration_gradients_J_result ), std::end( leading_configuration_configuration_gradients_J_result ),
         std::begin( leading_configuration_gradient_total_J_result ), std::end( leading_configuration_gradient_total_J_result ),
         std::begin( leading_configuration_gradient_total_gradient_J_result ), std::end( leading_configuration_gradient_total_gradient_J_result ),
         std::begin( leading_configuration_gradient_configurations_J_result ), std::end( leading_configuration_gradient_configurations_J_result ),
@@ -3325,7 +3324,7 @@ BOOST_AUTO_TEST_CASE( test_solveForAllLeadingJacobians, * boost::unit_test::tole
 
     {
 
-        double eps = 1e-6;
+        double eps = 1e-5;
         constexpr unsigned int NUM_INPUTS = 4 * 4 * 5 * 5;
         constexpr unsigned int NUM_OUTPUTS_LC = 3 * 4;
         constexpr unsigned int NUM_OUTPUTS_LCG = 3 * 4 * 5;
