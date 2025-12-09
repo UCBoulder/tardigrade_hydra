@@ -3386,7 +3386,6 @@ namespace tardigradeHydra{
                 output_leading_configuration_gradient_configurations_J_end
             );
 
-            // JACOBIANS W.R.T. CONFIGURATION GRADIENTS
             _denseMatrixMultiplyAccumulateReshape<leading_rows*size,size*size,dim*size*size*dim,leading_rows*size*dim,size*size*dim>(
                 intermediate_term4_begin, intermediate_term4_end,
                 std::begin( dAminusdX_configuration_gradient_jacobian ), std::end( dAminusdX_configuration_gradient_jacobian ),
@@ -3397,6 +3396,81 @@ namespace tardigradeHydra{
             );
 
         }
+
+    }
+
+    template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim,
+        class leading_configuration_iterator,
+        class leading_configuration_gradient_iterator,
+        class Aminus_inverse_iterator,
+        class dAminusdX_iterator,
+        class output_intermediate_term1_iterator,
+        class output_intermediate_term2_iterator,
+        class output_intermediate_term3_iterator,
+        class output_intermediate_term4_iterator
+    >
+    void DeformationBase::_compute_intermediate_terms_solveForAllLeadingJacobians(
+        const leading_configuration_iterator &leading_configuration_begin,
+        const leading_configuration_iterator &leading_configuration_end,
+        const leading_configuration_gradient_iterator &leading_configuration_gradient_begin,
+        const leading_configuration_gradient_iterator &leading_configuration_gradient_end,
+        const Aminus_inverse_iterator &Aminus_inverse_begin,
+        const Aminus_inverse_iterator &Aminus_inverse_end,
+        const dAminusdX_iterator &dAminusdX_begin,
+        const dAminusdX_iterator &dAminusdX_end,
+        output_intermediate_term1_iterator output_intermediate_term1_begin,
+        output_intermediate_term1_iterator output_intermediate_term1_end,
+        output_intermediate_term2_iterator output_intermediate_term2_begin,
+        output_intermediate_term2_iterator output_intermediate_term2_end,
+        output_intermediate_term3_iterator output_intermediate_term3_begin,
+        output_intermediate_term3_iterator output_intermediate_term3_end,
+        output_intermediate_term4_iterator output_intermediate_term4_begin,
+        output_intermediate_term4_iterator output_intermediate_term4_end
+    ){
+        /*!
+         * \param &leading_configuration_begin: The starting iterator of the leading configuration
+         * \param &leading_configuration_end: The stopping iterator of the leading configuration
+         * \param &leading_configuration_gradient_begin: The starting iterator of the leading configuration gradient
+         * \param &leading_configuration_gradient_end: The stopping iterator of the leading configuration gradient
+         * \param &Aminus_inverse_begin: The starting iterator of the inverse of the net trailing configuration
+         * \param &Aminus_inverse_end: The starting iterator of the inverse of the net trailing configuration
+         * \param &dAminusdX_begin: The starting iterator of the gradient of the net trailing configuration
+         * \param &dAminusdX_end: The starting iterator of the gradient of the net trailing configuration
+         * \param output_intermediate_term2_begin: The starting iterator of intermediate term 2
+         * \param output_intermediate_term2_end: The stopping iterator of intermediate term 2
+         * \param output_intermediate_term3_begin: The starting iterator of intermediate term 3
+         * \param output_intermediate_term3_end: The stopping iterator of intermediate term 3
+         * \param output_intermediate_term4_begin: The starting iterator of intermediate term 4
+         * \param output_intermediate_term4_end: The stopping iterator of intermediate term 4
+         */
+
+        // Construct Jacobians W.R.T. the trailing configurations and their gradients
+        _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian<leading_rows,size>(
+            leading_configuration_begin, leading_configuration_end,
+            Aminus_inverse_begin, Aminus_inverse_end,
+            output_intermediate_term1_begin, output_intermediate_term1_end
+        );
+
+        _assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian<leading_rows,size,dim>(
+            Aminus_inverse_begin, Aminus_inverse_end,
+            dAminusdX_begin, dAminusdX_end,
+            output_intermediate_term2_begin, output_intermediate_term2_end
+        );
+
+        _assemble_intermediate_term_1_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size,dim>(
+            leading_configuration_gradient_begin, leading_configuration_gradient_end,
+            Aminus_inverse_begin, Aminus_inverse_end,
+            output_intermediate_term3_begin, output_intermediate_term3_end
+        );
+
+        _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size>(
+            leading_configuration_begin, leading_configuration_end,
+            Aminus_inverse_begin, Aminus_inverse_end,
+            output_intermediate_term4_begin, output_intermediate_term4_end
+        );
 
     }
 
@@ -3553,31 +3627,19 @@ namespace tardigradeHydra{
             );
 
             // Construct Jacobians W.R.T. the trailing configurations and their gradients
-            std::array< output_lc_configurations_J_type, leading_rows * size * size * size > intermediate_term1 = { output_lc_configurations_J_type( ) };
-            _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian<leading_rows,size>(
-                std::begin( leading_configuration ), std::end( leading_configuration ),
-                std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
-                std::begin( intermediate_term1 ), std::end( intermediate_term1 )
-            );
-
+            std::array< output_lc_configurations_J_type, leading_rows * size * size * size > intermediate_term1;
             std::array< output_lcg_configurations_J_type, leading_rows * size * dim * leading_rows * size > intermediate_term2;
-            _assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian<leading_rows,size,dim>(
-                std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
-                std::begin( dAminusdX ), std::end( dAminusdX ),
-                std::begin( intermediate_term2 ), std::end( intermediate_term2 )
-            );
-
             std::array< output_lcg_configurations_J_type, leading_rows * size * dim * size * size > intermediate_term3;
-            _assemble_intermediate_term_1_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size,dim>(
+            std::array< output_lcg_configurations_J_type, leading_rows * size * size * size > intermediate_term4;
+
+            _compute_intermediate_terms_solveForAllLeadingJacobians<leading_rows,size,dim>(
+                std::begin( leading_configuration ), std::end( leading_configuration ),
                 std::begin( leading_configuration_gradient ), std::end( leading_configuration_gradient ),
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
-                std::begin( intermediate_term3 ), std::end( intermediate_term3 )
-            );
-
-            std::array< output_lcg_configurations_J_type, leading_rows * size * size * size > intermediate_term4;
-            _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size>(
-                std::begin( leading_configuration ), std::end( leading_configuration ),
-                std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
+                std::begin( dAminusdX ), std::end( dAminusdX ),
+                std::begin( intermediate_term1 ), std::end( intermediate_term1 ),
+                std::begin( intermediate_term2 ), std::end( intermediate_term2 ),
+                std::begin( intermediate_term3 ), std::end( intermediate_term3 ),
                 std::begin( intermediate_term4 ), std::end( intermediate_term4 )
             );
 

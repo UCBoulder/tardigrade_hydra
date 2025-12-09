@@ -926,6 +926,38 @@ namespace tardigradeHydra{
                 output_leading_configuration_gradient_configurations_jacobian_iterator output_leading_configuration_gradient_configurations_jacobian_end
             );
 
+            template<
+                unsigned int leading_rows,
+                unsigned int size,
+                unsigned int dim,
+                class leading_configuration_iterator,
+                class leading_configuration_gradient_iterator,
+                class Aminus_inverse_iterator,
+                class dAminusdX_iterator,
+                class output_intermediate_term1_iterator,
+                class output_intermediate_term2_iterator,
+                class output_intermediate_term3_iterator,
+                class output_intermediate_term4_iterator
+            >
+            void _compute_intermediate_terms_solveForAllLeadingJacobians(
+                const leading_configuration_iterator &leading_configuration_begin,
+                const leading_configuration_iterator &leading_configuration_end,
+                const leading_configuration_gradient_iterator &leading_configuration_gradient_begin,
+                const leading_configuration_gradient_iterator &leading_configuration_gradient_end,
+                const Aminus_inverse_iterator &Aminus_inverse_begin,
+                const Aminus_inverse_iterator &Aminus_inverse_end,
+                const dAminusdX_iterator &dAminusdX_begin,
+                const dAminusdX_iterator &dAminusdX_end,
+                output_intermediate_term1_iterator output_intermediate_term1_begin,
+                output_intermediate_term1_iterator output_intermediate_term1_end,
+                output_intermediate_term2_iterator output_intermediate_term2_begin,
+                output_intermediate_term2_iterator output_intermediate_term2_end,
+                output_intermediate_term3_iterator output_intermediate_term3_begin,
+                output_intermediate_term3_iterator output_intermediate_term3_end,
+                output_intermediate_term4_iterator output_intermediate_term4_begin,
+                output_intermediate_term4_iterator output_intermediate_term4_end
+            );
+
     };
 
 }
