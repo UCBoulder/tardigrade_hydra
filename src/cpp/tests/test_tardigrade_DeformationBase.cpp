@@ -2975,7 +2975,7 @@ BOOST_AUTO_TEST_CASE( test_solveForAllLeading, * boost::unit_test::tolerance( DE
 
 }
 
-BOOST_AUTO_TEST_CASE( test_solveForAllLeadingJacobians, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_solveForAllLeadingJacobians, * boost::unit_test::tolerance( 1e-5 ) ){
 
     std::vector< double > total_configuration{
         +3.929383660e-01,-4.277213271e-01,-5.462970898e-01,+1.026295332e-01,
@@ -3267,7 +3267,7 @@ BOOST_AUTO_TEST_CASE( test_solveForAllLeadingJacobians, * boost::unit_test::tole
 
     {
 
-        double eps = 1e-5;
+        double eps = 9e-6;
         constexpr unsigned int NUM_INPUTS = 4 * 4 * 5;
         constexpr unsigned int NUM_OUTPUTS_LC = 3 * 4;
         constexpr unsigned int NUM_OUTPUTS_LCG = 3 * 4 * 5;
@@ -3319,7 +3319,7 @@ BOOST_AUTO_TEST_CASE( test_solveForAllLeadingJacobians, * boost::unit_test::tole
         }
 
         BOOST_TEST( jacobian_lc == leading_configuration_configurations_J_result, CHECK_PER_ELEMENT );
-//        BOOST_TEST( jacobian_lcg == leading_configuration_gradient_configurations_J_result, CHECK_PER_ELEMENT );
+        BOOST_TEST( jacobian_lcg == leading_configuration_gradient_configurations_J_result, CHECK_PER_ELEMENT );
 
     }
 

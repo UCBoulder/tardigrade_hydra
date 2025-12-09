@@ -466,6 +466,23 @@ namespace tardigradeHydra{
             );
 
             template<
+                unsigned int rows,
+                unsigned int inner,
+                unsigned int columns,
+                unsigned int output_rows,
+                unsigned int output_columns,
+                class A_iterator, class B_iterator, class C_iterator
+            >
+            void _denseMatrixMultiplyAccumulateReshape(
+                const A_iterator &A_begin, const A_iterator &A_end,
+                const B_iterator &B_begin, const B_iterator &B_end,
+                C_iterator C_begin, C_iterator C_end,
+                const unsigned int A_offset = 0, const unsigned int A_stride = inner,
+                const unsigned int B_offset = 0, const unsigned int B_stride = columns,
+                const unsigned int output_offset = 0, const unsigned int output_stride = output_columns
+            );
+
+            template<
                 unsigned int size,
                 class A_inverse_iterator, class output_iterator
             >

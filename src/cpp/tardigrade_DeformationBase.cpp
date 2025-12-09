@@ -73,7 +73,7 @@ namespace tardigradeHydra{
     ){
         /*!
          * Dense matrix multiplication of the form \f$ [A][B] = [C] \f$
-         * where the values are accumulated into whatever is already in C
+         * where the values are accumulated into whatever is already in \f$ [C] \f$
          *
          * TODO This probably should be moved to tardigrade_vector_tools
          *
@@ -118,6 +118,72 @@ namespace tardigradeHydra{
                 }
             }
         }
+
+    }
+
+    template<
+        unsigned int rows,
+        unsigned int inner,
+        unsigned int columns,
+        unsigned int output_rows,
+        unsigned int output_columns,
+        class A_iterator, class B_iterator, class C_iterator
+    >
+    void DeformationBase::_denseMatrixMultiplyAccumulateReshape(
+        const A_iterator &A_begin, const A_iterator &A_end,
+        const B_iterator &B_begin, const B_iterator &B_end,
+        C_iterator C_begin, C_iterator C_end,
+        const unsigned int A_offset, const unsigned int A_stride,
+        const unsigned int B_offset, const unsigned int B_stride,
+        const unsigned int output_offset, const unsigned int output_stride
+    ){
+        /*!
+         * Dense matrix multiplication of the form \f$ [A][B] = [C] \f$
+         * where the values are accumulated into whatever is already in \f$ [C] \f$
+         * where the output matrix \f$ [C] \f$ may have more complicated shape requirements
+         *
+         * TODO This probably should be moved to tardigrade_vector_tools
+         *
+         * \param &A_begin: The starting iterator for the A matrix
+         * \param &A_end: The stopping iterator for the A matrix
+         * \param &B_begin: The starting iterator for the B matrix
+         * \param &B_end: The stopping iterator for the B matrix
+         * \param &C_begin: The starting iterator for the C matrix
+         * \param &C_end: The stopping iterator for the C matrix
+         * \param A_offset: The column-wise shift applied to A
+         * \param A_stride: The size of each row of A
+         * \param B_offset: The column-wise shift applied to B
+         * \param B_stride: The size of each row of B
+         * \param output_offset: The column-wise shift applied to the output
+         * \param output_stride: The size of each row of output
+         */
+
+        using C_type = typename std::iterator_traits<C_iterator>::value_type;
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            rows * columns == output_rows * output_columns,
+            "The shape of the matrix defined by rows and columns is " + std::to_string( rows * columns ) + " but this is not compatible with the requested output shape " + std::to_string( output_rows * output_columns )
+        );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            ( unsigned int )( C_end - C_begin ) == output_rows * output_stride,
+            "The size of matrix C is " + std::to_string( ( unsigned int )( C_end - C_begin ) ) + " but it should be " + std::to_string( output_rows * output_stride )
+        );
+
+        std::array< C_type, rows * columns > intermediate = { C_type( ) };
+
+        _denseMatrixMultiply<rows,inner,columns>(
+            A_begin, A_end, B_begin, B_end,
+            std::begin( intermediate ), std::end( intermediate ),
+            A_offset, A_stride, B_offset, B_stride
+        );
+
+        for ( unsigned int i = 0; i < output_rows; ++i ){
+            for ( unsigned int j = 0; j < output_columns; ++j ){
+                *( C_begin + output_stride * i + j + output_offset ) += intermediate[ output_columns * i + j ];
+            }
+        }
+
 
     }
 
@@ -3227,31 +3293,29 @@ namespace tardigradeHydra{
                     std::begin( dAminusdX_configuration_jacobian ), std::end( dAminusdX_configuration_jacobian )
                 );
 
-//                _denseMatrixMultiply<leading_rows * size * dim, leading_rows * size, size * size>(
-//                    std::begin( intermediate_term2 ), std::end( intermediate_term2 ),
-//                    output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_end,
-//                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end,
-//                    0, leading_rows * size, configuration_index * size * size, size * size * num_configs,
-//                    configuration_index * size * size, size * size * num_configs
-//                );
-//
-//                 std::fill( output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end, 0 );
-//
-//                _denseMatrixMultiplyAccumulate<leading_rows * size * dim, size * size, size * size>(
-//                    std::begin( intermediate_term3 ), std::end( intermediate_term3 ),
-//                    std::begin( Aminus_configuration_jacobian ), std::end( Aminus_configuration_jacobian ),
-//                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end,
-//                    0, size * size, 0, size * size,
-//                    configuration_index * size * size, size * size * num_configs
-//                );
-//
-//                _denseMatrixMultiplyAccumulate<leading_rows*size,size*size,dim*size*size>(
-//                    std::begin( intermediate_term4 ), std::end( intermediate_term4 ),
-//                    std::begin( dAminusdX_configuration_jacobian ), std::end( dAminusdX_configuration_jacobian ),
-//                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end,
-//                    0, size * size, 0, dim * size * size,
-//                    configuration_index * dim * size * size, dim * size * size * num_configs
-//                );
+                _denseMatrixMultiplyAccumulate<leading_rows * size * dim, leading_rows * size, size * size>(
+                    std::begin( intermediate_term2 ), std::end( intermediate_term2 ),
+                    output_leading_configuration_configurations_J_begin, output_leading_configuration_configurations_J_end,
+                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end,
+                    0, leading_rows * size, configuration_index * size * size, size * size * num_configs,
+                    configuration_index * size * size, size * size * num_configs
+                );
+
+                _denseMatrixMultiplyAccumulate<leading_rows * size * dim, size * size, size * size>(
+                    std::begin( intermediate_term3 ), std::end( intermediate_term3 ),
+                    std::begin( Aminus_configuration_jacobian ), std::end( Aminus_configuration_jacobian ),
+                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end,
+                    0, size * size, 0, size * size,
+                    configuration_index * size * size, size * size * num_configs
+                );
+
+                _denseMatrixMultiplyAccumulateReshape<leading_rows*size,size*size,dim*size*size,leading_rows*size*dim,size*size>(
+                    std::begin( intermediate_term4 ), std::end( intermediate_term4 ),
+                    std::begin( dAminusdX_configuration_jacobian ), std::end( dAminusdX_configuration_jacobian ),
+                    output_leading_configuration_gradient_configurations_J_begin, output_leading_configuration_gradient_configurations_J_end,
+                    0, size * size, 0, dim * size * size,
+                    configuration_index * size * size, size * size * num_configs
+                );
 
             }
 
