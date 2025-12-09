@@ -3317,6 +3317,8 @@ namespace tardigradeHydra{
                     configuration_index * size * size, size * size * num_configs
                 );
 
+                // JACOBIANS W.R.T. CONFIGURATION GRADIENTS
+
             }
 
         }
