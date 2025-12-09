@@ -34,6 +34,7 @@ if(TARDIGRADE_HYDRA_USE_LIBXSMM)
     add_definitions(-DTARDIGRADE_HYDRA_USE_LLXSMM )
     set(PROJECT_LINK_LIBRARIES ${PROJECT_LINK_LIBRARIES} "xsmm" "blas")
 endif()
+# Upstream libraries for each sub-library
 set(TARDIGRADE_HYDRAMICROMORPHIC_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
 set(TARDIGRADE_HYDRALINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
 set(TARDIGRADE_HYDRALINEARVISCOELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
@@ -62,12 +63,6 @@ if(cmake_build_type_lower STREQUAL "release")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
-#    # Find the installed project umat
-#    find_file(installed_umat
-#              "${UMAT}.o"
-#              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
-#              NO_CACHE
-#              REQUIRED)
 endif()
 
 if(${not_conda_test} STREQUAL "true")
