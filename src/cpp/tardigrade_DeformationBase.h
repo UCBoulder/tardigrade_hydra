@@ -23,8 +23,8 @@ namespace tardigradeHydra{
 
         public:
 
-            static constexpr unsigned int leading_rows = _leading_rows; //< The number of rows in the leading configuration
-            static constexpr unsigned int size = _size; //< The number of columns in the leading configuration and rows and columns for trailing configurations
+            static constexpr unsigned int leading_rows = _leading_rows; //!< The number of rows in the leading configuration
+            static constexpr unsigned int size = _size; //!< The number of columns in the leading configuration and rows and columns for trailing configurations
             static constexpr unsigned int dim = _dim; //!< The dimension of the gradient
 
             DeformationBase( ){
