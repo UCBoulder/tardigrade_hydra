@@ -276,26 +276,6 @@ namespace tardigradeHydra{
 
         };
 
-//        template <>
-//        inline void dataStorage< std::vector< residualBase* > >::zero( ){
-//                    /*!
-//                     * The function to set the value to zero
-//                     */
-//
-//            throw std::runtime_error( "Zeroing the residualBase pointer vector is not allowed" );
-//
-//        }
-//
-//        template <>
-//        inline void dataStorage< std::vector< residualBase* > >::zero( const unsigned int size ){
-//                    /*!
-//                     * The function to set the value to zero
-//                     */
-//
-//            throw std::runtime_error( "Zeroing the residualBase pointer vector is not allowed" );
-//
-//        }
-
         template <>
         inline void dataStorage< int >::clear( ){
                     /*!
@@ -359,38 +339,6 @@ namespace tardigradeHydra{
             throw std::runtime_error( "A scalar value cannot have a size!");
 
         }
-
-//        template <>
-//        inline void dataStorage< floatType >::clear( ){
-//                    /*!
-//                     * The function to erase the current values stored by setting first to false and second to zero
-//                     */
-//
-//            first = false;
-//
-//            second = 0;
-//
-//        }
-//
-//        template <>
-//        inline void dataStorage< floatType >::zero( ){
-//                    /*!
-//                     * The function to set the value to zero
-//                     */
-//
-//            second = 0;
-//
-//        }
-//
-//        template <>
-//        inline void dataStorage< floatType >::zero( const unsigned int size ){
-//                    /*!
-//                     * The function to set the value to zero
-//                     */
-//
-//            throw std::runtime_error( "A scalar value cannot have a size!");
-//
-//        }
 
         /*!
          * A custom object that handles setting dataStorage objects in place
@@ -503,6 +451,32 @@ namespace tardigradeHydra{
           protected:
 
               dataStorage< T > *_ds; //!< Pointer to the data for the data storage object
+
+        };
+
+        template< typename container, typename T>
+        class setDataStorageIterationBase : public setDataStorageBase< T >{
+          public:
+
+              setDataStorageIterationBase( dataStorage< T > *ds, container * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
+                  /*!
+                   * Create a data storage object that will be reset at each new iteration
+                   * 
+                   * \param *ds: The data storage object
+                   * \param *rp: The class that contains the data storage object. Must have a function addIterationData
+                   *     wich accepts a pointer to the data storage object
+                   */ }
+
+              //! Destructor object that adds the data storage object to the iteration data list
+              ~setDataStorageIterationBase( ){
+
+                  _rp->addIterationData( this->_ds );
+
+              }
+
+          protected:
+
+              container *_rp; //!< The containing hydraBase class
 
         };
 
