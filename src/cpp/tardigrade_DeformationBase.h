@@ -14,9 +14,18 @@ namespace tardigradeHydra{
     /*!
      * Base class for the decomposition of deformation
      */
+    template<
+        unsigned int _leading_rows,
+        unsigned int _size,
+        unsigned int _dim
+    >
     class DeformationBase{
 
         public:
+
+            static constexpr unsigned int leading_rows = _leading_rows; //< The number of rows in the leading configuration
+            static constexpr unsigned int size = _size; //< The number of columns in the leading configuration and rows and columns for trailing configurations
+            static constexpr unsigned int dim = _dim; //!< The dimension of the gradient
 
             DeformationBase( ){
                 /*!
@@ -25,11 +34,27 @@ namespace tardigradeHydra{
                  * Provides utilities for decomposition which can then be used
                  * to create specific approaches (e.g., classical continuum,
                  * micromorphic continuum, etc.)
+                 *
+                 * The template parameters define the fundamental dimensions of
+                 * the deformation. If the deformation can be written as
+                 *
+                 * \f$ A_{ij} = B_{ik} C_{kj} \f$
+                 *
+                 * If the total configuration \f$ A \f$ has a dimension of
+                 * leading_rows x size then \f$ B \f$ will have a dimension
+                 * of leading_size x size and \f$ C \f$ will have a dimension
+                 * of size x size.
+                 * 
+                 * The gradient can be written as
+                 * 
+                 * \f$ A_{ij,a} = B_{ik,a} C_{kj} + B_{ik} C_{kj,a} \f$
+                 * 
+                 * where the index \f$ a \f$ will have a dimension of dim.
                  */
+
             }
 
             template<
-                unsigned int size,
                 class configuration_iterator,
                 class output_iterator
             >
@@ -39,7 +64,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
                 class configuration_iterator,
                 class output_iterator
             >
@@ -49,7 +73,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
                 class configuration_iterator,
                 class output_iterator
             >
@@ -59,7 +82,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
                 class configuration_iterator,
                 class output_iterator
             >
@@ -70,8 +92,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class Aminus_iterator,
@@ -87,8 +107,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class output_iterator
@@ -100,8 +118,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class output_iterator
@@ -113,8 +129,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class output_iterator
@@ -126,8 +140,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class output_iterator
@@ -140,8 +152,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class output_iterator
@@ -153,8 +163,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class output_iterator
@@ -166,8 +174,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class output_iterator
@@ -180,8 +186,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
                 class total_configuration_iterator,
                 class configuration_iterator,
                 class output_iterator
@@ -193,8 +197,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
                 class total_configuration_iterator,
                 class configuration_iterator,
                 class Aminus_inverse_iterator,
@@ -208,8 +210,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
                 class total_configuration_iterator,
                 class configuration_iterator,
                 class output_iterator
@@ -221,8 +221,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
                 class total_configuration_iterator,
                 class configuration_iterator,
                 class output_iterator
@@ -235,9 +233,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_gradient_iterator,
                 class leading_configuration_iterator,
                 class configuration_iterator,
@@ -257,9 +252,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_gradient_iterator,
                 class leading_configuration_iterator,
                 class configuration_iterator,
@@ -275,9 +267,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_gradient_iterator,
                 class leading_configuration_iterator,
                 class configuration_iterator,
@@ -293,9 +282,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_gradient_iterator,
                 class leading_configuration_iterator,
                 class configuration_iterator,
@@ -311,9 +297,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_gradient_iterator,
                 class leading_configuration_iterator,
                 class configuration_iterator,
@@ -330,9 +313,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_gradient_iterator,
                 class leading_configuration_iterator,
                 class configuration_iterator,
@@ -349,9 +329,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_iterator,
                 class total_configuration_gradient_iterator,
                 class configuration_iterator,
@@ -373,9 +350,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_iterator,
                 class total_configuration_gradient_iterator,
                 class configuration_iterator,
@@ -393,9 +367,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_iterator,
                 class total_configuration_gradient_iterator,
                 class configuration_iterator,
@@ -480,7 +451,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
                 class A_inverse_iterator, class output_iterator
             >
             void _assembledAinversedA(
@@ -489,7 +459,7 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
+                unsigned int matrix_size,
                 class A_iterator,
                 class output_iterator
             >
@@ -499,8 +469,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
                 class total_configuration_iterator,
                 class Aminus_inverse_iterator,
                 class output_iterator
@@ -514,9 +482,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_iterator,
                 class total_configuration_gradient_iterator,
                 class configuration_iterator,
@@ -603,9 +568,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_iterator,
                 class total_configuration_gradient_iterator,
                 class Aminus_inverse_iterator,
@@ -627,8 +589,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
                 class leading_configuration_iterator,
                 class Aminus_inverse_iterator,
                 class output_iterator
@@ -640,7 +600,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
                 class Aminus_iterator,
                 class output_iterator
             >
@@ -650,7 +609,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
                 class Aplus_iterator,
                 class output_iterator
             >
@@ -660,7 +618,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
                 class Aplus_iterator,
                 class Aminus_iterator,
                 class output_iterator
@@ -672,8 +629,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class dAminusdX_iterator,
                 class output_iterator
             >
@@ -683,8 +638,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class dAplusdX_iterator,
                 class output_iterator
             >
@@ -694,8 +647,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class Aplus_iterator,
                 class dAplusdX_iterator,
                 class Aminus_jacobian_iterator,
@@ -711,8 +662,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class Aminus_iterator,
                 class output_iterator
             >
@@ -722,8 +671,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class Aplus_iterator,
                 class output_iterator
             >
@@ -733,8 +680,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int size,
-                unsigned int dim,
                 class Aplus_iterator,
                 class Aminus_iterator,
                 class output_iterator
@@ -746,8 +691,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
                 class Aminus_inverse_iterator,
                 class output_iterator
             >
@@ -757,9 +700,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class total_configuration_gradient_iterator,
                 class leading_configuration_iterator,
                 class Aminus_inverse_iterator,
@@ -775,9 +715,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class Aminus_inverse_iterator,
                 class output_iterator
             >
@@ -787,9 +724,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class Aminus_inverse_iterator,
                 class dAminusdX_iterator,
                 class output_iterator
@@ -801,9 +735,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class leading_configuration_gradient_iterator,
                 class Aminus_inverse_iterator,
                 class output_iterator
@@ -815,8 +746,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
                 class leading_configuration_iterator,
                 class Aminus_inverse_iterator,
                 class output_iterator
@@ -828,9 +757,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class Aminus_inverse_iterator,
                 class dAminusdX_iterator,
                 class output_iterator
@@ -842,9 +768,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows, 
-                unsigned int size,
-                unsigned int dim,
                 class Aminus_inverse_iterator,
                 class dAminusdX_iterator,
                 class output_leading_configuration_total_J_iterator,
@@ -865,9 +788,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class configuration_iterator,
                 class configuration_gradient_iterator,
                 class intermediate_term1_iterator,
@@ -900,9 +820,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class intermediate_term2_iterator,
                 class intermediate_term3_iterator,
                 class intermediate_term4_iterator,
@@ -927,9 +844,6 @@ namespace tardigradeHydra{
             );
 
             template<
-                unsigned int leading_rows,
-                unsigned int size,
-                unsigned int dim,
                 class leading_configuration_iterator,
                 class leading_configuration_gradient_iterator,
                 class Aminus_inverse_iterator,

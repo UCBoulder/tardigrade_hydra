@@ -13,12 +13,17 @@
 namespace tardigradeHydra{
 
     template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim
+    >
+    template<
         unsigned int rows,
         unsigned int inner,
         unsigned int columns,
         class A_iterator, class B_iterator, class C_iterator
     >
-    void DeformationBase::_denseMatrixMultiply(
+    void DeformationBase<leading_rows,size,dim>::_denseMatrixMultiply(
         const A_iterator &A_begin, const A_iterator &A_end,
         const B_iterator &B_begin, const B_iterator &B_end,
         C_iterator C_begin, C_iterator C_end,
@@ -58,12 +63,17 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim
+    >
+    template<
         unsigned int rows,
         unsigned int inner,
         unsigned int columns,
         class A_iterator, class B_iterator, class C_iterator
     >
-    void DeformationBase::_denseMatrixMultiplyAccumulate(
+    void DeformationBase<leading_rows,size,dim>::_denseMatrixMultiplyAccumulate(
         const A_iterator &A_begin, const A_iterator &A_end,
         const B_iterator &B_begin, const B_iterator &B_end,
         C_iterator C_begin, C_iterator C_end,
@@ -122,6 +132,11 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim
+    >
+    template<
         unsigned int rows,
         unsigned int inner,
         unsigned int columns,
@@ -129,7 +144,7 @@ namespace tardigradeHydra{
         unsigned int output_columns,
         class A_iterator, class B_iterator, class C_iterator
     >
-    void DeformationBase::_denseMatrixMultiplyAccumulateReshape(
+    void DeformationBase<leading_rows,size,dim>::_denseMatrixMultiplyAccumulateReshape(
         const A_iterator &A_begin, const A_iterator &A_end,
         const B_iterator &B_begin, const B_iterator &B_end,
         C_iterator C_begin, C_iterator C_end,
@@ -188,10 +203,14 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class A_inverse_iterator, class output_iterator
     >
-    void DeformationBase::_assembledAinversedA(
+    void DeformationBase<leading_rows,size,dim>::_assembledAinversedA(
         const A_inverse_iterator &A_inverse_begin, const A_inverse_iterator &A_inverse_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -227,11 +246,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
+        unsigned int matrix_size,
         class A_iterator,
         class output_iterator
     >
-    void DeformationBase::_compute_matrix_inverse(
+    void DeformationBase<leading_rows,size,dim>::_compute_matrix_inverse(
         const A_iterator &A_begin, const A_iterator &A_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -245,18 +269,22 @@ namespace tardigradeHydra{
          */
 
         using output_type = typename std::iterator_traits<output_iterator>::value_type;
-        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _A( &(*A_begin), size, size );
-        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _A_inverse( &(*output_begin ), size, size );
+        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _A( &(*A_begin), matrix_size, matrix_size );
+        Eigen::Map< Eigen::Matrix<output_type, size, size, Eigen::RowMajor> > _A_inverse( &(*output_begin ), matrix_size, matrix_size );
         _A_inverse = _A.inverse( );
 
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::getNetConfiguration(
+    void DeformationBase<leading_rows,size,dim>::getNetConfiguration(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -289,7 +317,7 @@ namespace tardigradeHydra{
 
             // Get preceeding net configuration
             std::array< output_type, size * size > Aminus;
-            getNetConfiguration<size>( configurations_begin + size * size, configurations_end, std::begin( Aminus ), std::end( Aminus ) );
+            getNetConfiguration( configurations_begin + size * size, configurations_end, std::begin( Aminus ), std::end( Aminus ) );
 
             // Update the output
             _denseMatrixMultiply<size,size,size>(
@@ -310,11 +338,15 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class Aminus_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_getLeadingNetConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_getLeadingNetConfigurationJacobian(
         const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -343,13 +375,16 @@ namespace tardigradeHydra{
 
     }
 
-
     template<
+        unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::getLeadingNetConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::getLeadingNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -389,12 +424,12 @@ namespace tardigradeHydra{
 
         std::array< configuration_type, size * size > Aminus;
 
-        getNetConfiguration<size>(
+        getNetConfiguration(
             configurations_begin + size * size, configurations_end,
             std::begin( Aminus ), std::end( Aminus )
         );
 
-        _assemble_output_getLeadingNetConfigurationJacobian<size>(
+        _assemble_output_getLeadingNetConfigurationJacobian(
             std::begin( Aminus ), std::end( Aminus ),
             output_begin, output_end
         );
@@ -402,11 +437,15 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class Aplus_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_getTrailingNetConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_getTrailingNetConfigurationJacobian(
         const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -436,11 +475,15 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::getTrailingNetConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::getTrailingNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -479,12 +522,12 @@ namespace tardigradeHydra{
 
         std::array< configuration_type, size * size > Aplus;
 
-        getNetConfiguration<size>(
+        getNetConfiguration(
             configurations_begin, configurations_end - size * size,
             std::begin( Aplus ), std::end( Aplus )
         );
 
-        _assemble_output_getTrailingNetConfigurationJacobian<size>(
+        _assemble_output_getTrailingNetConfigurationJacobian(
             std::begin( Aplus ), std::end( Aplus ),
             output_begin, output_end
         );
@@ -492,12 +535,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class Aplus_iterator,
         class Aminus_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_getNetConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_getNetConfigurationJacobian(
         const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end,
         const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end,
         output_iterator output_begin, output_iterator output_end
@@ -535,11 +582,15 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::getNetConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::getNetConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const unsigned int &configuration_index,
         output_iterator output_begin, output_iterator output_end
@@ -578,14 +629,14 @@ namespace tardigradeHydra{
 
         if ( configuration_index == 0 ){
 
-            getLeadingNetConfigurationJacobian<size>(
+            getLeadingNetConfigurationJacobian(
                 configurations_begin, configurations_end, output_begin, output_end
             );
 
         }
         else if ( ( configuration_index + 1 ) == num_configurations ){
 
-            getTrailingNetConfigurationJacobian<size>(
+            getTrailingNetConfigurationJacobian(
                 configurations_begin, configurations_end, output_begin, output_end
             );
 
@@ -597,17 +648,17 @@ namespace tardigradeHydra{
             // Get the prior and previous configurations
             std::array< configuration_type, size * size > Aplus, Aminus;
 
-            getNetConfiguration<size>(
+            getNetConfiguration(
                 configurations_begin, configurations_begin + size * size * configuration_index,
                 std::begin( Aplus ), std::end( Aplus )
             );
 
-            getNetConfiguration<size>(
+            getNetConfiguration(
                 configurations_begin + size * size * ( configuration_index + 1 ), configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
 
-            _assemble_output_getNetConfigurationJacobian<size>(
+            _assemble_output_getNetConfigurationJacobian(
                 std::begin( Aplus ), std::end( Aplus ),
                 std::begin( Aminus ), std::end( Aminus ),
                 output_begin, output_end
@@ -623,15 +674,18 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class configuration_gradient_iterator,
         class Aminus_iterator,
         class dAminusdX_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_dAdX_getNetConfigurationGradient(
+    void DeformationBase<leading_rows,size,dim>::_assemble_dAdX_getNetConfigurationGradient(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end,
@@ -674,13 +728,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getNetConfigurationGradient(
+    void DeformationBase<leading_rows,size,dim>::getNetConfigurationGradient(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         output_iterator output_begin, output_iterator output_end
@@ -716,18 +773,18 @@ namespace tardigradeHydra{
             std::array< configuration_type, size * size > Aminus;
             std::array< configuration_gradient_type, size * size * dim > dAminusdX;
 
-            getNetConfiguration<size>(
+            getNetConfiguration(
                 configurations_begin + size * size, configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
 
-            getNetConfigurationGradient<size,dim>(
+            getNetConfigurationGradient(
                 configurations_begin + size * size, configurations_end,
                 configuration_gradients_begin + size * size * dim, configuration_gradients_end,
                 std::begin( dAminusdX ), std::end( dAminusdX )
             );
 
-            _assemble_dAdX_getNetConfigurationGradient<size,dim>(
+            _assemble_dAdX_getNetConfigurationGradient(
                 configurations_begin, configurations_end,
                 configuration_gradients_begin, configuration_gradients_end,
                 std::begin( Aminus ), std::end( Aminus ),
@@ -747,12 +804,15 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class dAminusdX_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_getLeadingNetConfigurationGradientConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_getLeadingNetConfigurationGradientConfigurationJacobian(
         const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -788,13 +848,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getLeadingNetConfigurationGradientConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::getLeadingNetConfigurationGradientConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         output_iterator output_begin, output_iterator output_end
@@ -835,13 +898,13 @@ namespace tardigradeHydra{
                 output_begin, output_end, output_type( )
             );
             std::array< configuration_type, size * size * dim > dAminusdX;
-            getNetConfigurationGradient<size,dim>(
+            getNetConfigurationGradient(
                 configurations_begin + size * size, configurations_end,
                 configuration_gradients_begin + size * size * dim, configuration_gradients_end,
                 std::begin( dAminusdX ), std::end( dAminusdX )
             );
 
-            _assemble_output_getLeadingNetConfigurationGradientConfigurationJacobian<size,dim>(
+            _assemble_output_getLeadingNetConfigurationGradientConfigurationJacobian(
                 std::begin( dAminusdX ), std::end( dAminusdX ),
                 output_begin, output_end
             );
@@ -856,12 +919,15 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class dAplusdX_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_getTrailingNetConfigurationGradientConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_getTrailingNetConfigurationGradientConfigurationJacobian(
         const dAplusdX_iterator &dAplusdX_begin, const dAplusdX_iterator &dAplusdX_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -893,13 +959,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getTrailingNetConfigurationGradientConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::getTrailingNetConfigurationGradientConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         output_iterator output_begin, output_iterator output_end
@@ -938,13 +1007,13 @@ namespace tardigradeHydra{
 
             std::array< configuration_gradient_type, size * size * dim > dAplusdX;
 
-            getNetConfigurationGradient<size,dim>(
+            getNetConfigurationGradient(
                 configurations_begin, configurations_end - size * size,
                 configuration_gradients_begin, configuration_gradients_end - size * size * dim,
                 std::begin( dAplusdX ), std::end( dAplusdX )
             );
 
-            _assemble_output_getTrailingNetConfigurationGradientConfigurationJacobian<size,dim>(
+            _assemble_output_getTrailingNetConfigurationGradientConfigurationJacobian(
                 std::begin( dAplusdX ), std::end( dAplusdX ),
                 output_begin, output_end
             );
@@ -959,15 +1028,18 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class Aplus_iterator,
         class dAplusdX_iterator,
         class Aminus_jacobian_iterator,
         class dAminusdX_jacobian_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_getNetConfigurationGradientConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_getNetConfigurationGradientConfigurationJacobian(
         const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end,
         const dAplusdX_iterator &dAplusdX_begin, const dAplusdX_iterator &dAplusdX_end,
         const Aminus_jacobian_iterator &Aminus_jacobian_begin, const Aminus_jacobian_iterator &Aminus_jacobian_end,
@@ -1014,13 +1086,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getNetConfigurationGradientConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::getNetConfigurationGradientConfigurationJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         const unsigned int &configuration_index,
@@ -1060,14 +1135,14 @@ namespace tardigradeHydra{
 
         if ( configuration_index == 0 ){
 
-            getLeadingNetConfigurationGradientConfigurationJacobian<size,dim>(
+            getLeadingNetConfigurationGradientConfigurationJacobian(
                 configurations_begin, configurations_end, configuration_gradients_begin, configuration_gradients_end, output_begin, output_end
             );
 
         }
         else if ( ( configuration_index + 1 ) == num_configurations ){
 
-            getTrailingNetConfigurationGradientConfigurationJacobian<size,dim>(
+            getTrailingNetConfigurationGradientConfigurationJacobian(
                 configurations_begin, configurations_end, configuration_gradients_begin, configuration_gradients_end, output_begin, output_end
             );
 
@@ -1077,11 +1152,11 @@ namespace tardigradeHydra{
             // Get the prior and previous configurations
             std::array< output_type, size * size > Aplus;
             std::array< output_type, size * size * dim > dAplusdX;
-            getNetConfiguration<size>(
+            getNetConfiguration(
                 configurations_begin, configurations_begin + size * size * configuration_index,
                 std::begin( Aplus ), std::end( Aplus )
             );
-            getNetConfigurationGradient<size,dim>(
+            getNetConfigurationGradient(
                 configurations_begin, configurations_begin + size * size * configuration_index,
                 configuration_gradients_begin, configuration_gradients_begin + size * size * dim * configuration_index,
                 std::begin( dAplusdX ), std::end( dAplusdX )
@@ -1091,19 +1166,19 @@ namespace tardigradeHydra{
             std::array< output_type, size * size * size * size > J_Aminus;
             std::array< output_type, size * size * dim * size * size > J_dAminusdX;
 
-            getLeadingNetConfigurationJacobian<size>(
+            getLeadingNetConfigurationJacobian(
                 configurations_begin + size * size * configuration_index, configurations_end,
                 std::begin( J_Aminus ), std::end( J_Aminus )
             );
 
-            getLeadingNetConfigurationGradientConfigurationJacobian<size,dim>(
+            getLeadingNetConfigurationGradientConfigurationJacobian(
                 configurations_begin + size * size * configuration_index, configurations_end,
                 configuration_gradients_begin + size * size * dim * configuration_index, configuration_gradients_end,
                 std::begin( J_dAminusdX ), std::end( J_dAminusdX )
             );
 
             // Assemble the Jacobian
-            _assemble_output_getNetConfigurationGradientConfigurationJacobian<size,dim>(
+            _assemble_output_getNetConfigurationGradientConfigurationJacobian(
                 std::begin( Aplus ), std::end( Aplus ),
                 std::begin( dAplusdX ), std::end( dAplusdX ),
                 std::begin( J_Aminus ), std::end( J_Aminus ),
@@ -1121,12 +1196,15 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class Aminus_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_getLeadingNetConfigurationGradientConfigurationGradientJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_getLeadingNetConfigurationGradientConfigurationGradientJacobian(
         const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -1157,13 +1235,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getLeadingNetConfigurationGradientConfigurationGradientJacobian(
+    void DeformationBase<leading_rows,size,dim>::getLeadingNetConfigurationGradientConfigurationGradientJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         output_iterator output_begin, output_iterator output_end
@@ -1201,12 +1282,12 @@ namespace tardigradeHydra{
         if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
 
             std::array< configuration_type, size * size > Aminus;
-            getNetConfiguration<size>(
+            getNetConfiguration(
                 configurations_begin + size * size, configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
 
-            _assemble_output_getLeadingNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
+            _assemble_output_getLeadingNetConfigurationGradientConfigurationGradientJacobian(
                 std::begin( Aminus ), std::end( Aminus ),
                 output_begin, output_end
             );
@@ -1220,12 +1301,15 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class Aplus_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_getTrailingNetConfigurationGradientConfigurationGradientJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_getTrailingNetConfigurationGradientConfigurationGradientJacobian(
         const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -1254,13 +1338,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getTrailingNetConfigurationGradientConfigurationGradientJacobian(
+    void DeformationBase<leading_rows,size,dim>::getTrailingNetConfigurationGradientConfigurationGradientJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         output_iterator output_begin, output_iterator output_end
@@ -1298,12 +1385,12 @@ namespace tardigradeHydra{
         if ( ( unsigned int )( configurations_end - configurations_begin ) > ( size * size ) ){
 
             std::array< configuration_type, size * size > Aplus;
-            getNetConfiguration<size>(
+            getNetConfiguration(
                 configurations_begin, configurations_end - size * size,
                 std::begin( Aplus ), std::end( Aplus )
             );
 
-            _assemble_output_getTrailingNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
+            _assemble_output_getTrailingNetConfigurationGradientConfigurationGradientJacobian(
                 std::begin( Aplus ), std::end( Aplus ),
                 output_begin, output_end
             );
@@ -1320,13 +1407,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class Aplus_iterator,
         class Aminus_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_getNetConfigurationGradientConfigurationGradientJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_getNetConfigurationGradientConfigurationGradientJacobian(
         const Aplus_iterator &Aplus_begin, const Aplus_iterator &Aplus_end,
         const Aminus_iterator &Aminus_begin, const Aminus_iterator &Aminus_end,
         output_iterator output_begin, output_iterator output_end
@@ -1363,13 +1453,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::getNetConfigurationGradientConfigurationGradientJacobian(
+    void DeformationBase<leading_rows,size,dim>::getNetConfigurationGradientConfigurationGradientJacobian(
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin, const configuration_gradient_iterator &configuration_gradients_end,
         const unsigned int &configuration_index,
@@ -1410,14 +1503,14 @@ namespace tardigradeHydra{
 
         if ( configuration_index == 0 ){
 
-            getLeadingNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
+            getLeadingNetConfigurationGradientConfigurationGradientJacobian(
                 configurations_begin, configurations_end, configuration_gradients_begin, configuration_gradients_end, output_begin, output_end
             );
 
         }
         else if ( ( configuration_index + 1 ) == num_configurations ){
 
-            getTrailingNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
+            getTrailingNetConfigurationGradientConfigurationGradientJacobian(
                 configurations_begin, configurations_end, configuration_gradients_begin, configuration_gradients_end, output_begin, output_end
             );
 
@@ -1427,16 +1520,16 @@ namespace tardigradeHydra{
             // Get the prior and previous configurations
             std::array< configuration_type, size * size > Aplus, Aminus;
 
-            getNetConfiguration<size>(
+            getNetConfiguration(
                 configurations_begin, configurations_begin + size * size * configuration_index,
                 std::begin( Aplus ), std::end( Aplus )
             );
-            getNetConfiguration<size>(
+            getNetConfiguration(
                 configurations_begin + size * size * ( configuration_index + 1 ), configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
 
-            _assemble_output_getNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
+            _assemble_output_getNetConfigurationGradientConfigurationGradientJacobian(
                 std::begin( Aplus ), std::end( Aplus ),
                 std::begin( Aminus ), std::end( Aminus ),
                 output_begin, output_end
@@ -1454,11 +1547,14 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class total_configuration_iterator,
         class Aminus_inverse_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_leading_configuration_solveForLeadingConfiguration(
+    void DeformationBase<leading_rows,size,dim>::_assemble_leading_configuration_solveForLeadingConfiguration(
         const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
         output_iterator output_begin, output_iterator output_end
@@ -1499,12 +1595,15 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class total_configuration_iterator,
         class configuration_iterator,
         class Aminus_inverse_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfiguration(
+    void DeformationBase<leading_rows,size,dim>::solveForLeadingConfiguration(
         const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
@@ -1553,7 +1652,7 @@ namespace tardigradeHydra{
 
             std::array< output_type, size * size > Aminus;
 
-            getNetConfiguration<size>(
+            getNetConfiguration(
                 configurations_begin, configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
@@ -1564,7 +1663,7 @@ namespace tardigradeHydra{
                 Aminus_inverse_begin, Aminus_inverse_end
             );
 
-            _assemble_leading_configuration_solveForLeadingConfiguration<leading_rows,size>(
+            _assemble_leading_configuration_solveForLeadingConfiguration(
                 total_configuration_begin, total_configuration_end,
                 Aminus_inverse_begin, Aminus_inverse_end,
                 output_begin, output_end
@@ -1577,11 +1676,14 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class total_configuration_iterator,
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfiguration(
+    void DeformationBase<leading_rows,size,dim>::solveForLeadingConfiguration(
         const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end
@@ -1605,7 +1707,7 @@ namespace tardigradeHydra{
 
         std::array< configuration_type, size * size > Aminus_inverse;
 
-        solveForLeadingConfiguration<leading_rows, size>(
+        solveForLeadingConfiguration(
             total_configuration_begin, total_configuration_end, configurations_begin, configurations_end,
             std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
             output_begin, output_end
@@ -1616,10 +1718,13 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class Aminus_inverse_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_solveForLeadingConfigurationTotalConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_solveForLeadingConfigurationTotalConfigurationJacobian(
         const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -1651,11 +1756,14 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class total_configuration_iterator,
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfigurationTotalConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::solveForLeadingConfigurationTotalConfigurationJacobian(
         const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         output_iterator output_begin, output_iterator output_end
@@ -1702,7 +1810,7 @@ namespace tardigradeHydra{
 
             std::array< output_type, size * size > Aminus, Aminus_inverse;
 
-            getNetConfiguration<size>(
+            getNetConfiguration(
                 configurations_begin, configurations_end,
                 std::begin( Aminus ), std::end( Aminus )
             );
@@ -1713,7 +1821,7 @@ namespace tardigradeHydra{
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse )
             );
 
-            _assemble_output_solveForLeadingConfigurationTotalConfigurationJacobian<leading_rows,size>(
+            _assemble_output_solveForLeadingConfigurationTotalConfigurationJacobian(
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
                 output_begin, output_end
             );
@@ -1724,11 +1832,14 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class leading_configuration_iterator,
         class Aminus_inverse_iterator,
         class output_iterator
     >
-    void DeformationBase::_compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::_compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian(
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
         output_iterator output_begin, output_iterator output_end
@@ -1762,11 +1873,14 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class total_configuration_iterator,
         class configuration_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfigurationConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::solveForLeadingConfigurationConfigurationJacobian(
         const total_configuration_iterator   &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
         const unsigned int &configuration_index,
@@ -1808,19 +1922,19 @@ namespace tardigradeHydra{
             std::array< output_type, leading_rows * size * size * size > intermediate_term = { output_type( ) };
             std::array< output_type, size * size * size * size > Aminus_jacobian;
 
-            solveForLeadingConfiguration<leading_rows,size>(
+            solveForLeadingConfiguration(
                 total_configuration_begin, total_configuration_end, configurations_begin, configurations_end,
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
                 std::begin( leadingConfiguration ), std::end( leadingConfiguration )
             );
 
-            getNetConfigurationJacobian<size>(
+            getNetConfigurationJacobian(
                 configurations_begin, configurations_end,
                 configuration_index,
                 std::begin( Aminus_jacobian ), std::end( Aminus_jacobian )
             );
 
-            _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian<leading_rows,size>(
+            _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian(
                 std::begin( leadingConfiguration ), std::end( leadingConfiguration ),
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
                 std::begin( intermediate_term ), std::end( intermediate_term )
@@ -1843,14 +1957,16 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class Aminus_inverse_iterator,
         class dAminusdX_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_solveForLeadingConfigurationGradient(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_solveForLeadingConfigurationGradient(
         const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
@@ -1911,7 +2027,9 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class configuration_iterator,
@@ -1920,7 +2038,7 @@ namespace tardigradeHydra{
         class dAminusdX_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfigurationGradient(
+    void DeformationBase<leading_rows,size,dim>::solveForLeadingConfigurationGradient(
         const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
@@ -1970,12 +2088,12 @@ namespace tardigradeHydra{
         std::array< configuration_type, size * size > Aminus;
 
         // Compute the trailing configuration and it's gradient
-        getNetConfiguration<size>(
+        getNetConfiguration(
             configurations_begin, configurations_end,
             std::begin( Aminus ), std::end( Aminus )
         );
 
-        getNetConfigurationGradient<size,dim>(
+        getNetConfigurationGradient(
             configurations_begin, configurations_end,
             configuration_gradients_begin, configuration_gradients_end,
             dAminusdX_begin, dAminusdX_end
@@ -1987,7 +2105,7 @@ namespace tardigradeHydra{
             Aminus_inverse_begin, Aminus_inverse_end
         );
 
-        _assemble_output_solveForLeadingConfigurationGradient<leading_rows,size,dim>(
+        _assemble_output_solveForLeadingConfigurationGradient(
             total_configuration_gradient_begin, total_configuration_gradient_end,
             leading_configuration_begin, leading_configuration_end,
             Aminus_inverse_begin, Aminus_inverse_end,
@@ -2000,14 +2118,16 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfigurationGradient(
+    void DeformationBase<leading_rows,size,dim>::solveForLeadingConfigurationGradient(
         const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
@@ -2046,7 +2166,7 @@ namespace tardigradeHydra{
         std::array< configuration_type, size * size > Aminus;
         std::array< configuration_gradient_type, size * size * dim > dAminusdx;
 
-        solveForLeadingConfigurationGradient<leading_rows, size, dim>(
+        solveForLeadingConfigurationGradient(
             total_configuration_gradient_begin, total_configuration_gradient_end,
             leading_configuration_begin, leading_configuration_end,
             configurations_begin, configurations_end,
@@ -2061,11 +2181,13 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class Aminus_inverse_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
         const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
         output_iterator output_begin, output_iterator output_end
     ){
@@ -2099,14 +2221,16 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
+    void DeformationBase<leading_rows,size,dim>::solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
         const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
@@ -2155,7 +2279,7 @@ namespace tardigradeHydra{
         std::array< configuration_type, size * size > Aminus, Aminus_inverse;
 
         // Compute the trailing configuration and it's gradient
-        getNetConfiguration<size>(
+        getNetConfiguration(
             configurations_begin, configurations_end,
             std::begin( Aminus ), std::end( Aminus )
         );
@@ -2166,7 +2290,7 @@ namespace tardigradeHydra{
             std::begin( Aminus_inverse ), std::end( Aminus_inverse )
         );
 
-        _assemble_output_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian<leading_rows,size,dim>(
+        _assemble_output_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
             std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
             output_begin, output_end
         );
@@ -2176,12 +2300,14 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class Aminus_inverse_iterator,
         class dAminusdX_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
         const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
         const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
         output_iterator output_begin, output_iterator output_end
@@ -2220,14 +2346,16 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
         const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
@@ -2278,12 +2406,12 @@ namespace tardigradeHydra{
         std::array< configuration_gradient_type, size * size * dim > dAminusdX;
 
         // Compute the trailing configuration and it's gradient
-        getNetConfiguration<size>(
+        getNetConfiguration(
             configurations_begin, configurations_end,
             std::begin( Aminus ), std::end( Aminus )
         );
 
-        getNetConfigurationGradient<size,dim>(
+        getNetConfigurationGradient(
             configurations_begin, configurations_end,
             configuration_gradients_begin, configuration_gradients_end,
             std::begin( dAminusdX ), std::end( dAminusdX )
@@ -2295,7 +2423,7 @@ namespace tardigradeHydra{
             std::begin( Aminus_inverse ), std::end( Aminus_inverse )
         );
 
-        _assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian<leading_rows,size,dim>(
+        _assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
             std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
             std::begin( dAminusdX ), std::end( dAminusdX ),
             output_begin, output_end
@@ -2306,12 +2434,14 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class leading_configuration_gradient_iterator,
         class Aminus_inverse_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_intermediate_term_1_solveForLeadingConfigurationGradientConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_intermediate_term_1_solveForLeadingConfigurationGradientConfigurationJacobian(
         const leading_configuration_gradient_iterator &leading_configuration_gradient_begin, const leading_configuration_gradient_iterator &leading_configuration_gradient_end,
         const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
         output_iterator output_begin, output_iterator output_end
@@ -2350,11 +2480,14 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
+        unsigned int dim
+    >
+    template<
         class leading_configuration_iterator,
         class Aminus_inverse_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::_assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian(
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
         output_iterator output_begin, output_iterator output_end
@@ -2391,14 +2524,16 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfigurationGradientConfigurationJacobian(
+    void DeformationBase<leading_rows,size,dim>::solveForLeadingConfigurationGradientConfigurationJacobian(
         const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
@@ -2455,13 +2590,13 @@ namespace tardigradeHydra{
         std::array< configuration_gradient_type, size * size * dim > dAminusdX;
 
         // Compute the Jacobian of the trailing configuration and it's gradient
-        getNetConfigurationJacobian<size>(
+        getNetConfigurationJacobian(
             configurations_begin, configurations_end,
             configuration_index,
             std::begin( J_Aminus ), std::end( J_Aminus )
         );
 
-        getNetConfigurationGradientConfigurationJacobian<size,dim>(
+        getNetConfigurationGradientConfigurationJacobian(
             configurations_begin, configurations_end,
             configuration_gradients_begin, configuration_gradients_end,
             configuration_index,
@@ -2469,7 +2604,7 @@ namespace tardigradeHydra{
         );
 
         // Compute the leading configuration
-        solveForLeadingConfigurationGradient<leading_rows, size, dim>(
+        solveForLeadingConfigurationGradient(
             total_configuration_gradient_begin, total_configuration_gradient_end,
             leading_configuration_begin, leading_configuration_end,
             configurations_begin, configurations_end,
@@ -2482,7 +2617,7 @@ namespace tardigradeHydra{
         // Assemble the Jacobian
         std::array< output_type, leading_rows * size * dim * size * size > intermediate_term1;
 
-        _assemble_intermediate_term_1_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size,dim>(
+        _assemble_intermediate_term_1_solveForLeadingConfigurationGradientConfigurationJacobian(
             std::begin( leading_configuration_gradient ), std::end( leading_configuration_gradient ),
             std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
             std::begin( intermediate_term1 ), std::end( intermediate_term1 )
@@ -2495,7 +2630,7 @@ namespace tardigradeHydra{
         );
 
         std::array< output_type, leading_rows * size * size * size > intermediate_term2;
-        _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size>(
+        _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian(
             leading_configuration_begin, leading_configuration_end,
             std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
             std::begin( intermediate_term2 ), std::end( intermediate_term2 )
@@ -2512,14 +2647,16 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_gradient_iterator,
         class leading_configuration_iterator,
         class configuration_iterator,
         class configuration_gradient_iterator,
         class output_iterator
     >
-    void DeformationBase::solveForLeadingConfigurationGradientConfigurationGradientJacobian(
+    void DeformationBase<leading_rows,size,dim>::solveForLeadingConfigurationGradientConfigurationGradientJacobian(
         const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const leading_configuration_iterator &leading_configuration_begin, const leading_configuration_iterator &leading_configuration_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
@@ -2572,7 +2709,7 @@ namespace tardigradeHydra{
         std::array< configuration_type, size * size > Aminus, Aminus_inverse;
         std::array< configuration_gradient_type, size * size * dim * size * size * dim > J_dAminusdX;
 
-        getNetConfiguration<size>(
+        getNetConfiguration(
             configurations_begin, configurations_end,
             std::begin( Aminus ), std::end( Aminus )
         );
@@ -2584,7 +2721,7 @@ namespace tardigradeHydra{
         );
 
         // Compute the Jacobian of the trailing configuration and it's gradient
-        getNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
+        getNetConfigurationGradientConfigurationGradientJacobian(
             configurations_begin, configurations_end,
             configuration_gradients_begin, configuration_gradients_end,
             configuration_index,
@@ -2592,7 +2729,7 @@ namespace tardigradeHydra{
         );
  
         std::array< output_type, leading_rows * size * size * size > intermediate_term;
-        _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size>(
+        _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian(
             leading_configuration_begin, leading_configuration_end,
             std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
             std::begin( intermediate_term ), std::end( intermediate_term )
@@ -2609,7 +2746,9 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_iterator,
         class total_configuration_gradient_iterator,
         class configuration_iterator,
@@ -2617,7 +2756,7 @@ namespace tardigradeHydra{
         class output_leading_configuration_iterator,
         class output_leading_configuration_gradient_iterator
     >
-    void DeformationBase::solveForAllLeading(
+    void DeformationBase<leading_rows,size,dim>::solveForAllLeading(
         const total_configuration_iterator &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
@@ -2652,7 +2791,7 @@ namespace tardigradeHydra{
         std::array< configuration_type, size * size > Aminus_inverse;
         std::array< configuration_gradient_type, size * size * dim > dAminusdX;
 
-        solveForAllLeading<leading_rows,size,dim>(
+        solveForAllLeading(
             total_configuration_begin, total_configuration_end,
             total_configuration_gradient_begin, total_configuration_gradient_end,
             configurations_begin, configurations_end,
@@ -2667,7 +2806,9 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_iterator,
         class total_configuration_gradient_iterator,
         class Aminus_inverse_iterator,
@@ -2675,7 +2816,7 @@ namespace tardigradeHydra{
         class output_leading_configuration_iterator,
         class output_leading_configuration_gradient_iterator
     >
-    void DeformationBase::_sizeCheck_solveForAllLeading(
+    void DeformationBase<leading_rows,size,dim>::_sizeCheck_solveForAllLeading(
         const total_configuration_iterator &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         Aminus_inverse_iterator Aminus_inverse_begin, Aminus_inverse_iterator Aminus_inverse_end,
@@ -2736,7 +2877,9 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_iterator,
         class total_configuration_gradient_iterator,
         class configuration_iterator,
@@ -2746,7 +2889,7 @@ namespace tardigradeHydra{
         class output_leading_configuration_iterator,
         class output_leading_configuration_gradient_iterator
     >
-    void DeformationBase::solveForAllLeading(
+    void DeformationBase<leading_rows,size,dim>::solveForAllLeading(
         const total_configuration_iterator &total_configuration_begin, const total_configuration_iterator &total_configuration_end,
         const total_configuration_gradient_iterator &total_configuration_gradient_begin, const total_configuration_gradient_iterator &total_configuration_gradient_end,
         const configuration_iterator &configurations_begin, const configuration_iterator &configurations_end,
@@ -2782,7 +2925,7 @@ namespace tardigradeHydra{
          */
 
 #ifndef TARDIGRADE_ERROR_TOOLS_OPT
-        _sizeCheck_solveForAllLeading<leading_rows,size,dim>(
+        _sizeCheck_solveForAllLeading(
             total_configuration_begin, total_configuration_end,
             total_configuration_gradient_begin, total_configuration_gradient_end,
             Aminus_inverse_begin, Aminus_inverse_end,
@@ -2794,7 +2937,7 @@ namespace tardigradeHydra{
 
         // Compute the leading configuration and its gradient
 
-        solveForLeadingConfiguration<leading_rows,size>(
+        solveForLeadingConfiguration(
             total_configuration_begin, total_configuration_end,
             configurations_begin, configurations_end,
             Aminus_inverse_begin, Aminus_inverse_end,
@@ -2802,13 +2945,13 @@ namespace tardigradeHydra{
         );
 
         // Compute the trailing configuration gradient
-        getNetConfigurationGradient<size,dim>(
+        getNetConfigurationGradient(
             configurations_begin, configurations_end,
             configuration_gradients_begin, configuration_gradients_end,
             dAminusdX_begin, dAminusdX_end
         );
 
-        _assemble_output_solveForLeadingConfigurationGradient<leading_rows,size,dim>(
+        _assemble_output_solveForLeadingConfigurationGradient(
             total_configuration_gradient_begin, total_configuration_gradient_end,
             output_leading_configuration_begin, output_leading_configuration_end,
             Aminus_inverse_begin, Aminus_inverse_end,
@@ -2821,7 +2964,9 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_iterator,
         class total_configuration_gradient_iterator,
         class configuration_iterator,
@@ -2833,7 +2978,7 @@ namespace tardigradeHydra{
         class output_leading_configuration_gradient_configurations_J_iterator,
         class output_leading_configuration_gradient_configuration_gradients_J_iterator
     >
-    void DeformationBase::_sizeCheck_solveForAllLeadingJacobians(
+    void DeformationBase<leading_rows,size,dim>::_sizeCheck_solveForAllLeadingJacobians(
         const total_configuration_iterator &total_configuration_begin,
         const total_configuration_iterator &total_configuration_end,
         const total_configuration_gradient_iterator &total_configuration_gradient_begin,
@@ -2881,10 +3026,10 @@ namespace tardigradeHydra{
 
         const unsigned int num_configs = ( configurations_end - configurations_begin ) / ( size * size );
 
-        const unsigned int leading_configuration_size = leading_rows * size;
-        const unsigned int leading_configuration_gradient_size = leading_rows * size * dim;
-        const unsigned int configuration_size = size * size;
-        const unsigned int configuration_gradient_size = size * size * dim;
+        constexpr unsigned int leading_configuration_size = leading_rows * size;
+        constexpr unsigned int leading_configuration_gradient_size = leading_rows * size * dim;
+        constexpr unsigned int configuration_size = size * size;
+        constexpr unsigned int configuration_gradient_size = size * size * dim;
 
         TARDIGRADE_ERROR_TOOLS_CHECK(
             ( unsigned int )( total_configuration_end - total_configuration_begin ) == leading_configuration_size,
@@ -2934,6 +3079,11 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim
+    >
+    template<
         class output_leading_configuration_total_J_iterator,
         class output_leading_configuration_configurations_J_iterator,
         class output_leading_configuration_gradient_total_J_iterator,
@@ -2941,7 +3091,7 @@ namespace tardigradeHydra{
         class output_leading_configuration_gradient_configurations_J_iterator,
         class output_leading_configuration_gradient_configuration_gradients_J_iterator
     >
-    void DeformationBase::_zeroOutputs_solveForAllLeadingJacobians(
+    void DeformationBase<leading_rows,size,dim>::_zeroOutputs_solveForAllLeadingJacobians(
         output_leading_configuration_total_J_iterator output_leading_configuration_total_J_begin,
         output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin,
@@ -2993,11 +3143,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim
+    >
+    template<
         class output_leading_configuration_configurations_J_iterator,
         class output_leading_configuration_gradient_configurations_J_iterator,
         class output_leading_configuration_gradient_configuration_gradients_J_iterator
     >
-    void DeformationBase::_zeroConfigurationOutputs_solveForAllLeadingJacobians(
+    void DeformationBase<leading_rows,size,dim>::_zeroConfigurationOutputs_solveForAllLeadingJacobians(
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_begin,
         output_leading_configuration_configurations_J_iterator output_leading_configuration_configurations_J_end,
         output_leading_configuration_gradient_configurations_J_iterator output_leading_configuration_gradient_configurations_J_begin,
@@ -3035,11 +3190,16 @@ namespace tardigradeHydra{
     }
 
     template<
+        unsigned int leading_rows,
+        unsigned int size,
+        unsigned int dim
+    >
+    template<
         class output_leading_configuration_total_J_iterator,
         class output_leading_configuration_gradient_total_J_iterator,
         class output_leading_configuration_gradient_total_gradient_J_iterator
     >
-    void DeformationBase::_zeroTotalOutputs_solveForAllLeadingJacobians(
+    void DeformationBase<leading_rows,size,dim>::_zeroTotalOutputs_solveForAllLeadingJacobians(
         output_leading_configuration_total_J_iterator output_leading_configuration_total_J_begin,
         output_leading_configuration_total_J_iterator output_leading_configuration_total_J_end,
         output_leading_configuration_gradient_total_J_iterator output_leading_configuration_gradient_total_J_begin,
@@ -3079,12 +3239,14 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class Aminus_inverse_iterator,
         class dAminusdX_iterator,
         class output_iterator
     >
-    void DeformationBase::_assemble_leading_configuration_gradient_total_configuration_jacobian_solveforAllLeadingJacobians(
+    void DeformationBase<leading_rows,size,dim>::_assemble_leading_configuration_gradient_total_configuration_jacobian_solveforAllLeadingJacobians(
         const Aminus_inverse_iterator &Aminus_inverse_begin, const Aminus_inverse_iterator &Aminus_inverse_end,
         const dAminusdX_iterator &dAminusdX_begin, const dAminusdX_iterator &dAminusdX_end,
         output_iterator output_begin, output_iterator output_end
@@ -3103,7 +3265,7 @@ namespace tardigradeHydra{
         using configuration_type = typename std::iterator_traits<Aminus_inverse_iterator>::value_type;
         std::array< configuration_type, size * size * size * size > dAminusInversedA;
 
-        _assembledAinversedA<size>(
+        _assembledAinversedA(
             Aminus_inverse_begin, Aminus_inverse_end,
             std::begin( dAminusInversedA ), std::end( dAminusInversedA )
         );
@@ -3126,14 +3288,16 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class Aminus_inverse_iterator,
         class dAminusdX_iterator,
         class output_leading_configuration_total_J_iterator,
         class output_leading_configuration_gradient_total_J_iterator,
         class output_leading_configuration_gradient_total_gradient_J_iterator
     >
-    void DeformationBase::_assemble_total_jacobians_solveForAllLeadingJacobians(
+    void DeformationBase<leading_rows,size,dim>::_assemble_total_jacobians_solveForAllLeadingJacobians(
         const Aminus_inverse_iterator &Aminus_inverse_begin,
         const Aminus_inverse_iterator &Aminus_inverse_end,
         const dAminusdX_iterator &dAminusdX_begin,
@@ -3169,18 +3333,18 @@ namespace tardigradeHydra{
             output_leading_configuration_gradient_total_gradient_J_end
         );
 
-        _assemble_output_solveForLeadingConfigurationTotalConfigurationJacobian<leading_rows,size>(
+        _assemble_output_solveForLeadingConfigurationTotalConfigurationJacobian(
             Aminus_inverse_begin, Aminus_inverse_end,
             output_leading_configuration_total_J_begin, output_leading_configuration_total_J_end
         );
 
-        _assemble_leading_configuration_gradient_total_configuration_jacobian_solveforAllLeadingJacobians<leading_rows,size,dim>(
+        _assemble_leading_configuration_gradient_total_configuration_jacobian_solveforAllLeadingJacobians(
             Aminus_inverse_begin, Aminus_inverse_end,
             dAminusdX_begin, dAminusdX_end,
             output_leading_configuration_gradient_total_J_begin, output_leading_configuration_gradient_total_J_end
         );
 
-        _assemble_output_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian<leading_rows,size,dim>(
+        _assemble_output_solveForLeadingConfigurationGradientTotalConfigurationGradientJacobian(
             Aminus_inverse_begin, Aminus_inverse_end,
             output_leading_configuration_gradient_total_gradient_J_begin,
             output_leading_configuration_gradient_total_gradient_J_end
@@ -3191,7 +3355,9 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class intermediate_term2_iterator,
         class intermediate_term3_iterator,
         class intermediate_term4_iterator,
@@ -3200,7 +3366,7 @@ namespace tardigradeHydra{
         class dAminusdX_configuration_jacobian_iterator,
         class output_leading_configuration_gradient_configurations_jacobian_iterator
     >
-    void DeformationBase::_accumulate_output_leading_configuration_gradient_configurations_J_solveForAllLeadingJacobians(
+    void DeformationBase<leading_rows,size,dim>::_accumulate_output_leading_configuration_gradient_configurations_J_solveForAllLeadingJacobians(
         const unsigned int configuration_index, const unsigned int num_configs,
         const intermediate_term2_iterator &intermediate_term2_begin, const intermediate_term2_iterator &intermediate_term2_end,
         const intermediate_term3_iterator &intermediate_term3_begin, const intermediate_term3_iterator &intermediate_term3_end,
@@ -3263,7 +3429,9 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class configuration_iterator,
         class configuration_gradient_iterator,
         class intermediate_term1_iterator,
@@ -3274,7 +3442,7 @@ namespace tardigradeHydra{
         class output_leading_configuration_gradient_configurations_J_iterator,
         class output_leading_configuration_gradient_configuration_gradients_J_iterator
     >
-    void DeformationBase::_assemble_configuration_jacobians_solveForAllLeadingJacobians(
+    void DeformationBase<leading_rows,size,dim>::_assemble_configuration_jacobians_solveForAllLeadingJacobians(
         const configuration_iterator &configurations_begin,
         const configuration_iterator &configurations_end,
         const configuration_gradient_iterator &configuration_gradients_begin,
@@ -3338,7 +3506,7 @@ namespace tardigradeHydra{
         for ( unsigned int configuration_index = 0; configuration_index < num_configs; ++configuration_index ){
 
             // Assemble the Jacobians of the leading configuration
-            getNetConfigurationJacobian<size>(
+            getNetConfigurationJacobian(
                 configurations_begin, configurations_end,
                 configuration_index,
                 std::begin( Aminus_configuration_jacobian ), std::end( Aminus_configuration_jacobian )
@@ -3357,21 +3525,21 @@ namespace tardigradeHydra{
             );
 
             // Assemble the Jacobians of the leading configuration gradient
-            getNetConfigurationGradientConfigurationJacobian<size,dim>(
+            getNetConfigurationGradientConfigurationJacobian(
                 configurations_begin, configurations_end,
                 configuration_gradients_begin, configuration_gradients_end,
                 configuration_index,
                 std::begin( dAminusdX_configuration_jacobian ), std::end( dAminusdX_configuration_jacobian )
             );
 
-            getNetConfigurationGradientConfigurationGradientJacobian<size,dim>(
+            getNetConfigurationGradientConfigurationGradientJacobian(
                 configurations_begin, configurations_end,
                 configuration_gradients_begin, configuration_gradients_end,
                 configuration_index,
                 std::begin( dAminusdX_configuration_gradient_jacobian ), std::end( dAminusdX_configuration_gradient_jacobian )
             );
 
-            _accumulate_output_leading_configuration_gradient_configurations_J_solveForAllLeadingJacobians<leading_rows,size,dim>(
+            _accumulate_output_leading_configuration_gradient_configurations_J_solveForAllLeadingJacobians(
                 configuration_index, num_configs,
                 intermediate_term2_begin, intermediate_term2_end,
                 intermediate_term3_begin, intermediate_term3_end,
@@ -3402,7 +3570,9 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class leading_configuration_iterator,
         class leading_configuration_gradient_iterator,
         class Aminus_inverse_iterator,
@@ -3412,7 +3582,7 @@ namespace tardigradeHydra{
         class output_intermediate_term3_iterator,
         class output_intermediate_term4_iterator
     >
-    void DeformationBase::_compute_intermediate_terms_solveForAllLeadingJacobians(
+    void DeformationBase<leading_rows,size,dim>::_compute_intermediate_terms_solveForAllLeadingJacobians(
         const leading_configuration_iterator &leading_configuration_begin,
         const leading_configuration_iterator &leading_configuration_end,
         const leading_configuration_gradient_iterator &leading_configuration_gradient_begin,
@@ -3439,6 +3609,8 @@ namespace tardigradeHydra{
          * \param &Aminus_inverse_end: The starting iterator of the inverse of the net trailing configuration
          * \param &dAminusdX_begin: The starting iterator of the gradient of the net trailing configuration
          * \param &dAminusdX_end: The starting iterator of the gradient of the net trailing configuration
+         * \param output_intermediate_term1_begin: The starting iterator of intermediate term 1
+         * \param output_intermediate_term1_end: The stopping iterator of intermediate term 1
          * \param output_intermediate_term2_begin: The starting iterator of intermediate term 2
          * \param output_intermediate_term2_end: The stopping iterator of intermediate term 2
          * \param output_intermediate_term3_begin: The starting iterator of intermediate term 3
@@ -3448,25 +3620,25 @@ namespace tardigradeHydra{
          */
 
         // Construct Jacobians W.R.T. the trailing configurations and their gradients
-        _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian<leading_rows,size>(
+        _compute_intermediate_term_solveForLeadingConfigurationConfigurationJacobian(
             leading_configuration_begin, leading_configuration_end,
             Aminus_inverse_begin, Aminus_inverse_end,
             output_intermediate_term1_begin, output_intermediate_term1_end
         );
 
-        _assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian<leading_rows,size,dim>(
+        _assemble_output_solveForLeadingConfigurationGradientLeadingConfigurationJacobian(
             Aminus_inverse_begin, Aminus_inverse_end,
             dAminusdX_begin, dAminusdX_end,
             output_intermediate_term2_begin, output_intermediate_term2_end
         );
 
-        _assemble_intermediate_term_1_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size,dim>(
+        _assemble_intermediate_term_1_solveForLeadingConfigurationGradientConfigurationJacobian(
             leading_configuration_gradient_begin, leading_configuration_gradient_end,
             Aminus_inverse_begin, Aminus_inverse_end,
             output_intermediate_term3_begin, output_intermediate_term3_end
         );
 
-        _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian<leading_rows,size>(
+        _assemble_intermediate_term_2_solveForLeadingConfigurationGradientConfigurationJacobian(
             leading_configuration_begin, leading_configuration_end,
             Aminus_inverse_begin, Aminus_inverse_end,
             output_intermediate_term4_begin, output_intermediate_term4_end
@@ -3477,7 +3649,9 @@ namespace tardigradeHydra{
     template<
         unsigned int leading_rows,
         unsigned int size,
-        unsigned int dim,
+        unsigned int dim
+    >
+    template<
         class total_configuration_iterator,
         class total_configuration_gradient_iterator,
         class configuration_iterator,
@@ -3489,7 +3663,7 @@ namespace tardigradeHydra{
         class output_leading_configuration_gradient_configurations_J_iterator,
         class output_leading_configuration_gradient_configuration_gradients_J_iterator
     >
-    void DeformationBase::solveForAllLeadingJacobians(
+    void DeformationBase<leading_rows,size,dim>::solveForAllLeadingJacobians(
         const total_configuration_iterator &total_configuration_begin,
         const total_configuration_iterator &total_configuration_end,
         const total_configuration_gradient_iterator &total_configuration_gradient_begin,
@@ -3548,14 +3722,11 @@ namespace tardigradeHydra{
         using configuration_gradient_type = typename std::iterator_traits<configuration_gradient_iterator>::value_type;
         using output_lc_total_J_type = typename std::iterator_traits<output_leading_configuration_total_J_iterator>::value_type;
         using output_lc_configurations_J_type = typename std::iterator_traits<output_leading_configuration_configurations_J_iterator>::value_type;
-        using output_lc_configuration_gradients_J_type = typename std::iterator_traits<output_leading_configuration_gradient_configuration_gradients_J_iterator>::value_type;
         using output_lcg_total_J_type = typename std::iterator_traits<output_leading_configuration_total_J_iterator>::value_type;
-        using output_lcg_total_gradient_J_type = typename std::iterator_traits<output_leading_configuration_gradient_total_gradient_J_iterator>::value_type;
         using output_lcg_configurations_J_type = typename std::iterator_traits<output_leading_configuration_gradient_configurations_J_iterator>::value_type;
-        using output_lcg_configuration_gradients_J_type = typename std::iterator_traits<output_leading_configuration_gradient_configuration_gradients_J_iterator>::value_type;
 
 #ifndef TARDIGRADE_ERROR_TOOLS_OPT
-        _sizeCheck_solveForAllLeadingJacobians<leading_rows,size,dim>(
+        _sizeCheck_solveForAllLeadingJacobians(
             total_configuration_begin, total_configuration_end,
             total_configuration_gradient_begin, total_configuration_gradient_end,
             configurations_begin, configurations_end,
@@ -3604,7 +3775,7 @@ namespace tardigradeHydra{
             std::array< configuration_gradient_type, size * size * dim > dAminusdX;
 
             // Compute the leading configuration and its gradients
-            solveForAllLeading<leading_rows,size,dim>(
+            solveForAllLeading(
                 total_configuration_begin, total_configuration_end,
                 total_configuration_gradient_begin, total_configuration_gradient_end,
                 configurations_begin, configurations_end,
@@ -3615,7 +3786,7 @@ namespace tardigradeHydra{
                 std::begin( leading_configuration_gradient ), std::end( leading_configuration_gradient )
             );
 
-            _assemble_total_jacobians_solveForAllLeadingJacobians<leading_rows,size,dim>(
+            _assemble_total_jacobians_solveForAllLeadingJacobians(
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
                 std::begin( dAminusdX ), std::end( dAminusdX ),
                 output_leading_configuration_total_J_begin,
@@ -3632,7 +3803,7 @@ namespace tardigradeHydra{
             std::array< output_lcg_configurations_J_type, leading_rows * size * dim * size * size > intermediate_term3;
             std::array< output_lcg_configurations_J_type, leading_rows * size * size * size > intermediate_term4;
 
-            _compute_intermediate_terms_solveForAllLeadingJacobians<leading_rows,size,dim>(
+            _compute_intermediate_terms_solveForAllLeadingJacobians(
                 std::begin( leading_configuration ), std::end( leading_configuration ),
                 std::begin( leading_configuration_gradient ), std::end( leading_configuration_gradient ),
                 std::begin( Aminus_inverse ), std::end( Aminus_inverse ),
@@ -3643,7 +3814,7 @@ namespace tardigradeHydra{
                 std::begin( intermediate_term4 ), std::end( intermediate_term4 )
             );
 
-            _assemble_configuration_jacobians_solveForAllLeadingJacobians<leading_rows,size,dim>(
+            _assemble_configuration_jacobians_solveForAllLeadingJacobians(
                 configurations_begin, configurations_end,
                 configuration_gradients_begin, configuration_gradients_end,
                 std::begin( intermediate_term1 ), std::end( intermediate_term1 ),
