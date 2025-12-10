@@ -2242,6 +2242,28 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Base class for Solver Steps
+     */
+    class SolverStepBase{
+
+        public:
+
+           SolverStepBase( ){
+                /*!
+                 * Constructor for NonlinearStepBase
+                 */
+
+            }
+
+            void GetStep( ){
+                /*!
+                 * Get the step
+                 */ 
+            }
+
+    };
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
