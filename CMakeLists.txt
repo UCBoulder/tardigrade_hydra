@@ -21,6 +21,7 @@ set(TARDIGRADE_FULL_BUILD OFF CACHE BOOL "Flag for whether a full build of Tardi
 
 # Set the internal support libraries
 set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearTestMaterial" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPerzynaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPerzynaViscodamage" "tardigrade_hydraMicromorphicDruckerPragerPlasticity" "tardigrade_hydraPerzynaJ2Viscoplasticity" "tardigrade_hydraMassChange" "tardigrade_hydraMicromorphicDruckerPragerPlasticityOptimization" "tardigrade_hydraFourierHeatConduction" "tardigrade_hydraLinearInternalEnergy" "tardigrade_hydraMicromorphicRadialReturnLinearElasticity" "tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity" "tardigrade_hydraDOFVelocityGradientDeformation")
+set(ADDITIONAL_HEADER_ONLY_LIBRARIES "tardigrade_DeformationBase")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
@@ -33,6 +34,7 @@ if(TARDIGRADE_HYDRA_USE_LIBXSMM)
     add_definitions(-DTARDIGRADE_HYDRA_USE_LLXSMM )
     set(PROJECT_LINK_LIBRARIES ${PROJECT_LINK_LIBRARIES} "xsmm" "blas")
 endif()
+# Upstream libraries for each sub-library
 set(TARDIGRADE_HYDRAMICROMORPHIC_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
 set(TARDIGRADE_HYDRALINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
 set(TARDIGRADE_HYDRALINEARVISCOELASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_stress_tools")
@@ -61,12 +63,12 @@ if(cmake_build_type_lower STREQUAL "release")
 elseif(cmake_build_type_lower STREQUAL "conda-test")
     set(upstream_required "REQUIRED")
     set(not_conda_test "false")
-#    # Find the installed project umat
-#    find_file(installed_umat
-#              "${UMAT}.o"
-#              PATHS "$ENV{CONDA_PREFIX}/lib64" "$ENV{CONDA_PREFIX}/lib"
-#              NO_CACHE
-#              REQUIRED)
+endif()
+
+if(${not_conda_test} STREQUAL "true")
+    foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
+        add_library(${package} INTERFACE "${CPP_SRC_PATH}/${package}.cpp" "${CPP_SRC_PATH}/${package}.h")
+    endforeach(package)
 endif()
 
 # Get version number from Git

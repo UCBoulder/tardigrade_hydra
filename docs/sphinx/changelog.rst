@@ -9,6 +9,10 @@ Changelog
 0.7.0 (unreleased)
 ******************
 
+New Features
+============
+- Added a general purpose deformation decomposition class (:pull:`237`). By `Nathan Miller`_.
+
 Breaking Changes
 ================
 - Changed scalar return pointers to return values instead for consistency and to prepare

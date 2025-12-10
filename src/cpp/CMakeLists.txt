@@ -28,5 +28,15 @@ foreach(package ${PROJECT_NAME})# ${UMAT})
             INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
             PUBLIC_HEADER DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
 endforeach(package)
+
+foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
+    install(TARGETS ${package}
+            EXPORT ${package}_Targets
+            INCLUDES DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+            ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR})
+    install(FILES ${package}.h ${package}.cpp
+            DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
+endforeach(package)
+
 install(FILES ${PROJECT_PRIVATE_HEADERS}
         DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
