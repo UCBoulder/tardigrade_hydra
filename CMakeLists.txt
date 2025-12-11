@@ -7,7 +7,6 @@ project(tardigrade_hydra)
 set(CPP_SRC_PATH "src/cpp")
 set(CPP_TEST_PATH "${CPP_SRC_PATH}/tests")
 set(CMAKE_SRC_PATH "src/cmake")
-set(ABAQUS_TEST_PATH "${ABAQUS_SRC_PATH}/tests")
 set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
 
@@ -46,9 +45,6 @@ set(TARDIGRADE_HYDRAMICROMORPHICLINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_
 set(TARDIGRADE_HYDRAMICROMORPHICLINEARTESTMATERIAL_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
 set(TARDIGRADE_HYDRAMICROMORPHICDRUCKERPRAGERPLASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
 set(TARDIGRADE_HYDRAMASSCHANGEDOF_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
-# Set some Abaqus integration variables
-set(UMAT "${PROJECT_NAME}_umat")
-set(MISSING_INTEGRATION_DEPS_MESSAGE "Abaqus integration tests will be skipped.")
 
 # Add the cmake folder to locate project CMake module(s)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_PATH})
@@ -172,7 +168,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
     # Add c++ tests and docs
     add_subdirectory(${CPP_TEST_PATH})
-#    add_subdirectory(${ABAQUS_SRC_PATH})
     if(${not_conda_test} STREQUAL "true")
         add_subdirectory(${DOXYGEN_SRC_PATH})
         add_subdirectory(${SPHINX_SRC_PATH})
@@ -181,7 +176,7 @@ endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
 if(${not_conda_test} STREQUAL "true")
-    foreach(package ${PROJECT_NAME})# ${UMAT})
+    foreach(package ${PROJECT_NAME})
         include(CMakePackageConfigHelpers)
         write_basic_package_version_file("${package}ConfigVersion.cmake"
                                          VERSION ${PROJECT_VERSION}

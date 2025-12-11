@@ -448,8 +448,6 @@ Update project name
       renamed:    modulefiles/tardigrade-hydra-env -> modulefiles/my_project-env
       renamed:    src/cpp/tardigrade-hydra.cpp -> src/cpp/my_project.cpp
       renamed:    src/cpp/tardigrade-hydra.h -> src/cpp/my_project.h
-      renamed:    src/cpp/tardigrade-hydra_umat.cpp -> src/cpp/my_project_umat.cpp
-      renamed:    src/cpp/tardigrade-hydra_umat.h -> src/cpp/my_project_umat.h
       renamed:    src/cpp/tests/test_tardigrade-hydra.cpp -> src/cpp/tests/test_my_project.cpp
 
 9. Commit and push your changes to your "remote" or "fork" repository
