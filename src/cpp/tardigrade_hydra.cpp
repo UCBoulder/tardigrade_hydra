@@ -769,8 +769,8 @@ namespace tardigradeHydra{
          * state variables though only the residual on the cauchy stress must come
          * in this specific order if the deconstructSolutionVector function is redefined.
          * 
-         * The user should define a vector of residualBase objects and use the
-         * setResidualClasses( std::vector< residualBase > & ) function here.
+         * The user should define a vector of ResidualBase objects and use the
+         * setResidualClasses( std::vector< ResidualBase > & ) function here.
          * 
          * The resulting residual should have the form
          * 
@@ -783,7 +783,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::setResidualClasses( std::vector< residualBase* > &residualClasses ){
+    void hydraBase::setResidualClasses( std::vector< ResidualBase* > &residualClasses ){
         /*!
          * Set the residual classes
          * 
@@ -793,7 +793,7 @@ namespace tardigradeHydra{
 
         unsigned int numEquations = 0;
 
-        _residualClasses.second = std::vector< residualBase* >( residualClasses.size( ) );
+        _residualClasses.second = std::vector< ResidualBase* >( residualClasses.size( ) );
 
         for ( auto c = residualClasses.begin( ); c != residualClasses.end( ); c++ ){
 
@@ -817,7 +817,7 @@ namespace tardigradeHydra{
 
     }
 
-    std::vector< residualBase* >* hydraBase::getResidualClasses( ){
+    std::vector< ResidualBase* >* hydraBase::getResidualClasses( ){
         /*!
          * Get a pointer to the vector of residual class pointers
          */

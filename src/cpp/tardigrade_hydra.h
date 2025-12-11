@@ -30,22 +30,22 @@
 namespace tardigradeHydra{
 
     template <>
-    inline void DataStorage< std::vector< residualBase* > >::zero( ){
+    inline void DataStorage< std::vector< ResidualBase* > >::zero( ){
                 /*!
                  * The function to set the value to zero
                  */
 
-        throw std::runtime_error( "Zeroing the residualBase pointer vector is not allowed" );
+        throw std::runtime_error( "Zeroing the ResidualBase pointer vector is not allowed" );
 
     }
 
     template <>
-    inline void DataStorage< std::vector< residualBase* > >::zero( const unsigned int size ){
+    inline void DataStorage< std::vector< ResidualBase* > >::zero( const unsigned int size ){
                 /*!
                  * The function to set the value to zero
                  */
 
-        throw std::runtime_error( "Zeroing the residualBase pointer vector is not allowed" );
+        throw std::runtime_error( "Zeroing the ResidualBase pointer vector is not allowed" );
 
     }
 
@@ -398,9 +398,9 @@ namespace tardigradeHydra{
 
             virtual void setResidualClasses( );
 
-            void setResidualClasses( std::vector< residualBase* > &residualClasses );
+            void setResidualClasses( std::vector< ResidualBase* > &residualClasses );
 
-            std::vector< residualBase* >* getResidualClasses( );
+            std::vector< ResidualBase* >* getResidualClasses( );
 
             const floatVector* getResidual( );
 
@@ -1177,7 +1177,7 @@ namespace tardigradeHydra{
 
             std::vector< dataBase* > _nlStepData; //!< A vector of pointers to data which should be cleared after each nonlinear step
 
-            DataStorage< std::vector< residualBase* > > _residualClasses; //!< A vector of classes which compute the terms in the residual equation
+            DataStorage< std::vector< ResidualBase* > > _residualClasses; //!< A vector of classes which compute the terms in the residual equation
 
             DataStorage< floatVector > _residual; //!< The residual vector for the global solve
 
@@ -1354,9 +1354,9 @@ namespace tardigradeHydra{
 
     //! A data storage class that updates at every iteration
     template< typename T >
-    class SetDataStorageIteration : public SetDataStorageIterationBase< residualBase, T > {
+    class SetDataStorageIteration : public SetDataStorageIterationBase< ResidualBase, T > {
 
-        using tardigradeHydra::SetDataStorageIterationBase<residualBase,T>::SetDataStorageIterationBase;
+        using tardigradeHydra::SetDataStorageIterationBase<ResidualBase,T>::SetDataStorageIterationBase;
 
     };
 

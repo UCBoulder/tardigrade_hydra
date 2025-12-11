@@ -229,11 +229,11 @@ BOOST_AUTO_TEST_CASE( test_computeStateVariableResidual, * boost::unit_test::tol
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic::ResidualBaseMicromorphic;
 
     };
 
@@ -333,7 +333,7 @@ BOOST_AUTO_TEST_CASE( test_computeStateVariableResidual, * boost::unit_test::tol
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -521,11 +521,11 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -537,7 +537,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -617,7 +617,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -813,11 +813,11 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD, * boost::unit_test::tol
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -829,7 +829,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD, * boost::unit_test::tol
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -909,7 +909,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD, * boost::unit_test::tol
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -1114,11 +1114,11 @@ BOOST_AUTO_TEST_CASE( test_computeConstraints, * boost::unit_test::tolerance( DE
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic::ResidualBaseMicromorphic;
 
     };
 
@@ -1218,7 +1218,7 @@ BOOST_AUTO_TEST_CASE( test_computeConstraints, * boost::unit_test::tolerance( DE
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -1376,11 +1376,11 @@ BOOST_AUTO_TEST_CASE( test_setConstraintJacobians, * boost::unit_test::tolerance
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -1392,7 +1392,7 @@ BOOST_AUTO_TEST_CASE( test_setConstraintJacobians, * boost::unit_test::tolerance
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -1472,7 +1472,7 @@ BOOST_AUTO_TEST_CASE( test_setConstraintJacobians, * boost::unit_test::tolerance
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -1668,11 +1668,11 @@ BOOST_AUTO_TEST_CASE( test_suggestInitialIterates, * boost::unit_test::tolerance
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic::ResidualBaseMicromorphic;
 
     };
 
@@ -1772,7 +1772,7 @@ BOOST_AUTO_TEST_CASE( test_suggestInitialIterates, * boost::unit_test::tolerance
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 

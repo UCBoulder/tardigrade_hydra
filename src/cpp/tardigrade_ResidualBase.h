@@ -17,14 +17,14 @@ namespace tardigradeHydra{
     /*!
      * A class to contain the residual computations associated with some part of a non-linear solve
      */
-    class residualBase{
+    class ResidualBase{
 
         public:
 
             /*!
              * Default residual
              */
-            residualBase( ) : hydra( NULL ), _numEquations( 0 ){ };
+            ResidualBase( ) : hydra( NULL ), _numEquations( 0 ){ };
 
             /*!
              * Main utilization constructor
@@ -32,16 +32,16 @@ namespace tardigradeHydra{
              * \param *_hydra: A pointer to a hydraBase object
              * \param &_numEquations: The number of equations defined by the residual
              */
-            residualBase( hydraBase *_hydra, const unsigned int &_numEquations ) : hydra( _hydra ), _numEquations( _numEquations ){ }
+            ResidualBase( hydraBase *_hydra, const unsigned int &_numEquations ) : hydra( _hydra ), _numEquations( _numEquations ){ }
 
             /*!
              * Copy constructor
              * 
              * \param &r: The residual to be copied
              */
-            residualBase( residualBase &r ) : hydra( r.hydra ), _numEquations( r.getNumEquations( ) ), _numConstraints( r.getNumConstraints( ) ){ }
+            ResidualBase( ResidualBase &r ) : hydra( r.hydra ), _numEquations( r.getNumEquations( ) ), _numConstraints( r.getNumConstraints( ) ){ }
 
-            hydraBase* hydra; //!< The hydra class which owns the residualBase object
+            hydraBase* hydra; //!< The hydra class which owns the ResidualBase object
 
             // User defined setter functions
 
@@ -442,21 +442,21 @@ namespace tardigradeHydra{
 
             //! Class which defines data storage objects which are reset at each iteration
             template< typename T >
-            class SetDataStorageIteration : public SetDataStorageIterationBase< residualBase, T > {
+            class SetDataStorageIteration : public SetDataStorageIterationBase< ResidualBase, T > {
 
               public:
 
-                  using tardigradeHydra::SetDataStorageIterationBase<residualBase,T>::SetDataStorageIterationBase;
+                  using tardigradeHydra::SetDataStorageIterationBase<ResidualBase,T>::SetDataStorageIterationBase;
 
             };
 
             //! Class which defines data storage objects which are reset at each nonlinear step
             template< typename T >
-            class SetDataStorageNLStep : public SetDataStorageNLStepBase< residualBase, T > {
+            class SetDataStorageNLStep : public SetDataStorageNLStepBase< ResidualBase, T > {
 
               public:
 
-                  using tardigradeHydra::SetDataStorageNLStepBase<residualBase,T>::SetDataStorageNLStepBase;
+                  using tardigradeHydra::SetDataStorageNLStepBase<ResidualBase,T>::SetDataStorageNLStepBase;
 
             };
 

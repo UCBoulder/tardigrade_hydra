@@ -1774,14 +1774,14 @@ namespace tardigradeHydra{
 
         void residual::setdRdT( const floatVector &dRdT ){
             /*!
-             * Pass-through function to residualBase::setdRdT
+             * Pass-through function to ResidualBase::setdRdT
              *
              * Required because of overloading
              *
              * \param &dRdT: The derivative of the residual w.r.t. the temperature
              */
 
-            tardigradeHydra::residualBase::setdRdT( dRdT );
+            tardigradeHydra::ResidualBase::setdRdT( dRdT );
 
         }
 

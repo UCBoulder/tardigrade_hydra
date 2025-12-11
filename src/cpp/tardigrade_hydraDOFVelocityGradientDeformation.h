@@ -66,7 +66,7 @@ namespace tardigradeHydra{
          * A class which defines a deformation where the velocity gradient of that deformation is
          * defined by the additional dof vector
          */
-        class residual : public tardigradeHydra::residualBase{
+        class residual : public tardigradeHydra::ResidualBase{
 
             public:
 
@@ -76,7 +76,7 @@ namespace tardigradeHydra{
                     const unsigned int densityIndex, const unsigned int internalEnergyIndex, const unsigned int dofVelocityGradientIndex,
                     const bool internalEnergyScaledByDensity,
                     std::vector< unsigned int > stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5
-                ) : tardigradeHydra::residualBase( hydra, numEquations ), _integrationParameter( integrationParameter ){
+                ) : tardigradeHydra::ResidualBase( hydra, numEquations ), _integrationParameter( integrationParameter ){
                     /*!
                      * The main constructor function
                      *
@@ -230,19 +230,19 @@ namespace tardigradeHydra{
                 // Friend classes
                 friend class tardigradeHydra::dofVelocityGradientDeformation::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
-                using tardigradeHydra::residualBase::residualBase;
+                using tardigradeHydra::ResidualBase::ResidualBase;
 
-                using tardigradeHydra::residualBase::setResidual;
+                using tardigradeHydra::ResidualBase::setResidual;
 
-                using tardigradeHydra::residualBase::setJacobian;
+                using tardigradeHydra::ResidualBase::setJacobian;
 
-                using tardigradeHydra::residualBase::setdRdF;
+                using tardigradeHydra::ResidualBase::setdRdF;
 
-                using tardigradeHydra::residualBase::setdRdT;
+                using tardigradeHydra::ResidualBase::setdRdT;
 
-                using tardigradeHydra::residualBase::setdRdAdditionalDOF;
+                using tardigradeHydra::ResidualBase::setdRdAdditionalDOF;
 
-                using tardigradeHydra::residualBase::setAdditionalDerivatives;
+                using tardigradeHydra::ResidualBase::setAdditionalDerivatives;
 
                 unsigned int _dofConfigurationIndex;
 

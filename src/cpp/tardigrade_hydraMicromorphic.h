@@ -190,11 +190,11 @@ namespace tardigradeHydra{
     };
 
     //! The base class for micromorphic residuals
-    class residualBaseMicromorphic : public residualBase{
+    class ResidualBaseMicromorphic : public ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             /*!
              * Base class for micromorphic residuals
@@ -202,7 +202,7 @@ namespace tardigradeHydra{
              * \param *_hydra: A pointer to the containing hydra object
              * \param _numEquations: The number of equations the residual defines
              */
-            residualBaseMicromorphic( hydraBaseMicromorphic *_hydra, unsigned int _numEquations ) : residualBase( _hydra, _numEquations ), hydra( _hydra ){ }
+            ResidualBaseMicromorphic( hydraBaseMicromorphic *_hydra, unsigned int _numEquations ) : ResidualBase( _hydra, _numEquations ), hydra( _hydra ){ }
 
             hydraBaseMicromorphic *hydra; //!< A pointer to the containing hydra object
 
@@ -233,7 +233,7 @@ namespace tardigradeHydra{
                  * \param &dRdD: The derivative of the resdual with respect to the deformation (F, chi, gradChi )
                  */
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( residualBase::setdRdF( dRdD ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( ResidualBase::setdRdF( dRdD ) );
 
             }
 
@@ -244,18 +244,18 @@ namespace tardigradeHydra{
                  * Pass-through to getdRdF just changing the naming convention
                  */
 
-                return residualBase::getdRdF( );
+                return ResidualBase::getdRdF( );
 
             }
 
-            tardigradeHydra::residualBase::SetDataStorageIteration< floatVector > get_SetDataStorage_dRdD( ){
+            tardigradeHydra::ResidualBase::SetDataStorageIteration< floatVector > get_SetDataStorage_dRdD( ){
                 /*!
                  * Get the setting term for dRdD
                  * 
                  * Pass-through to get_SetDataStorage_dRdF just changing the naming convention
                  */
 
-                return residualBase::get_SetDataStorage_dRdF( );
+                return ResidualBase::get_SetDataStorage_dRdF( );
 
             }
 

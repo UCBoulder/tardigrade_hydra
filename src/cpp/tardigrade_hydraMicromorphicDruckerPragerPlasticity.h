@@ -441,24 +441,24 @@ namespace tardigradeHydra{
         /*!
          * The residual for a micromorphic Drucker Prager plasticity model
          */
-        class residual : public tardigradeHydra::residualBaseMicromorphic {
+        class residual : public tardigradeHydra::ResidualBaseMicromorphic {
 
             public:
 
-                using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+                using tardigradeHydra::ResidualBaseMicromorphic::ResidualBaseMicromorphic;
 
-                using tardigradeHydra::residualBaseMicromorphic::setResidual;
+                using tardigradeHydra::ResidualBaseMicromorphic::setResidual;
 
-                using tardigradeHydra::residualBaseMicromorphic::setJacobian;
+                using tardigradeHydra::ResidualBaseMicromorphic::setJacobian;
 
-                using tardigradeHydra::residualBaseMicromorphic::setdRdD;
+                using tardigradeHydra::ResidualBaseMicromorphic::setdRdD;
 
-                using tardigradeHydra::residualBaseMicromorphic::setdRdT;
+                using tardigradeHydra::ResidualBaseMicromorphic::setdRdT;
 
                 residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const unsigned int &plasticConfigurationIndex,
                           const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5,
                           const bool useWeakenedMacaulay = false, const floatType weakenedMacaulayParameter=10, const floatType plasticMultiplierBarrierModulus=1000. )
-                        : tardigradeHydra::residualBaseMicromorphic( _hydra, _numEquations ){
+                        : tardigradeHydra::ResidualBaseMicromorphic( _hydra, _numEquations ){
                     /*!
                      * The main initialization constructor for the Drucker Prager plasticity residual
                      * 

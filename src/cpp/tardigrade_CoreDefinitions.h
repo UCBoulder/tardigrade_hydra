@@ -15,7 +15,7 @@ namespace tardigradeHydra{
 
     // forward class declarations
     class hydraBase; //!< The base hydra class
-    class residualBase; //!< The base residual class
+    class ResidualBase; //!< The base residual class
 
     namespace unit_test{
         class hydraBaseTester; //!< Friend class for hydraBase for unit testing

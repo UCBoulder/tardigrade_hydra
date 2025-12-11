@@ -991,17 +991,17 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector, * boost::unit
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
-        using tardigradeHydra::residualBase::residualBase;
+        using tardigradeHydra::ResidualBase::ResidualBase;
 
     };
 
-    class residualBaseMockStress : public tardigradeHydra::residualBase{
+    class ResidualBaseMockStress : public tardigradeHydra::ResidualBase{
 
-        using tardigradeHydra::residualBase::residualBase;
+        using tardigradeHydra::ResidualBase::ResidualBase;
 
-        using tardigradeHydra::residualBase::setStress;
+        using tardigradeHydra::ResidualBase::setStress;
 
         floatVector cauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -1017,11 +1017,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector2, * boost::uni
 
         public:
 
-            residualBaseMockStress r1;
+            ResidualBaseMockStress r1;
         
-            residualBaseMock r2;
+            ResidualBaseMock r2;
         
-            residualBaseMock r3;
+            ResidualBaseMock r3;
 
             unsigned int s1 = 36;
 
@@ -1035,13 +1035,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeStateVariableVector2, * boost::uni
 
             virtual void setResidualClasses( ){
 
-                r1 = residualBaseMockStress( this, s1 );
+                r1 = ResidualBaseMockStress( this, s1 );
 
-                r2 = residualBaseMock( this, s2 );
+                r2 = ResidualBaseMock( this, s2 );
 
-                r3 = residualBaseMock( this, s3 );
+                r3 = ResidualBaseMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -2551,7 +2551,7 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients, * b
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_residualBase, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBase_ResidualBase, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
 
@@ -2559,11 +2559,11 @@ BOOST_AUTO_TEST_CASE( test_residualBase_residualBase, * boost::unit_test::tolera
 
     unsigned int numConstraints = 5;
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             void public_setNumConstraints( const unsigned int &val ){
 
@@ -2573,7 +2573,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_residualBase, * boost::unit_test::tolera
 
     };
 
-    residualBaseMock residual( &hydra, numEquations );
+    ResidualBaseMock residual( &hydra, numEquations );
 
     residual.public_setNumConstraints( numConstraints );
 
@@ -2585,13 +2585,13 @@ BOOST_AUTO_TEST_CASE( test_residualBase_residualBase, * boost::unit_test::tolera
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_checkDefaults, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBase_checkDefaults, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
 
     unsigned int numEquations = 3;
 
-    tardigradeHydra::residualBase residual( &hydra, numEquations );
+    tardigradeHydra::ResidualBase residual( &hydra, numEquations );
 
     BOOST_CHECK_THROW( residual.setResidual( ), std::nested_exception );
 
@@ -2607,17 +2607,17 @@ BOOST_AUTO_TEST_CASE( test_residualBase_checkDefaults, * boost::unit_test::toler
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_setResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::setResidual;
+            using tardigradeHydra::ResidualBase::setResidual;
 
             floatVector residual = { 1, 2, 3 };
 
-            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            ResidualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : ResidualBase( hydra, numEquations ){ }
     
             virtual void setResidual( ){
     
@@ -2631,23 +2631,23 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setResidual, * boost::unit_test::toleran
 
     unsigned int numEquations = 3;
 
-    residualBaseMock residual( &hydra, numEquations );
+    ResidualBaseMock residual( &hydra, numEquations );
 
     BOOST_TEST( *residual.getResidual( ) == residual.residual, CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_setJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::setJacobian;
+            using tardigradeHydra::ResidualBase::setJacobian;
 
             floatVector jacobian = { 1, 2, 3, 4, 5, 6 };
     
-            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            ResidualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : ResidualBase( hydra, numEquations ){ }
 
             virtual void setJacobian( ){
     
@@ -2661,23 +2661,23 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setJacobian, * boost::unit_test::toleran
 
     unsigned int numEquations = 3;
 
-    residualBaseMock residual( &hydra, numEquations );
+    ResidualBaseMock residual( &hydra, numEquations );
 
     BOOST_TEST( *residual.getJacobian( ) == residual.jacobian, CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_setdRdF, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setdRdF, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::setdRdF;
+            using tardigradeHydra::ResidualBase::setdRdF;
 
             floatVector dRdF = { 1, 2, 3, 4, 5, 6 };
 
-            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            ResidualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : ResidualBase( hydra, numEquations ){ }
     
             virtual void setdRdF( ){
     
@@ -2691,23 +2691,23 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setdRdF, * boost::unit_test::tolerance( 
 
     unsigned int numEquations = 3;
 
-    residualBaseMock residual( &hydra, numEquations );
+    ResidualBaseMock residual( &hydra, numEquations );
 
     BOOST_TEST( *residual.getdRdF( ) == residual.dRdF, CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_setdRdT, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setdRdT, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::setdRdT;
+            using tardigradeHydra::ResidualBase::setdRdT;
 
             floatVector dRdT = { 4, 5, 6 };
 
-            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            ResidualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : ResidualBase( hydra, numEquations ){ }
     
             virtual void setdRdT( ){
     
@@ -2721,23 +2721,23 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setdRdT, * boost::unit_test::tolerance( 
 
     unsigned int numEquations = 3;
 
-    residualBaseMock residual( &hydra, numEquations );
+    ResidualBaseMock residual( &hydra, numEquations );
 
     BOOST_TEST( *residual.getdRdT( ) == residual.dRdT, CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_setAdditionalDerivatives, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setAdditionalDerivatives, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::setAdditionalDerivatives;
+            using tardigradeHydra::ResidualBase::setAdditionalDerivatives;
 
             floatVector additionalDerivatives = { 4, 5, 6 };
 
-            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            ResidualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : ResidualBase( hydra, numEquations ){ }
     
             virtual void setAdditionalDerivatives( ){
     
@@ -2751,23 +2751,23 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setAdditionalDerivatives, * boost::unit_
 
     unsigned int numEquations = 3;
 
-    residualBaseMock residual( &hydra, numEquations );
+    ResidualBaseMock residual( &hydra, numEquations );
 
     BOOST_TEST( *residual.getAdditionalDerivatives( ) == residual.additionalDerivatives, CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_setStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::setStress;
+            using tardigradeHydra::ResidualBase::setStress;
 
             floatVector cauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            ResidualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : ResidualBase( hydra, numEquations ){ }
     
             virtual void setStress( ){
     
@@ -2781,23 +2781,23 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setStress, * boost::unit_test::tolerance
 
     unsigned int numEquations = 3;
 
-    residualBaseMock residual( &hydra, numEquations );
+    ResidualBaseMock residual( &hydra, numEquations );
 
     BOOST_TEST( *residual.getStress( ) == residual.cauchyStress, CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_setPreviousStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setPreviousStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase::setPreviousStress;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
-            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            ResidualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : ResidualBase( hydra, numEquations ){ }
     
             virtual void setPreviousStress( ){
     
@@ -2811,23 +2811,23 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setPreviousStress, * boost::unit_test::t
 
     unsigned int numEquations = 3;
 
-    residualBaseMock residual( &hydra, numEquations );
+    ResidualBaseMock residual( &hydra, numEquations );
 
     BOOST_TEST( *residual.getPreviousStress( ) == residual.previousCauchyStress, CHECK_PER_ELEMENT );
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBase_setCurrentAdditionalStateVariables, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setCurrentAdditionalStateVariables, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::setCurrentAdditionalStateVariables;
+            using tardigradeHydra::ResidualBase::setCurrentAdditionalStateVariables;
 
             floatVector currentAdditionalStateVariables = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
 
-            residualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : residualBase( hydra, numEquations ){ }
+            ResidualBaseMock( tardigradeHydra::hydraBase *hydra, unsigned int numEquations ) : ResidualBase( hydra, numEquations ){ }
     
             virtual void setCurrentAdditionalStateVariables( ){
     
@@ -2841,7 +2841,7 @@ BOOST_AUTO_TEST_CASE( test_residualBase_setCurrentAdditionalStateVariables, * bo
 
     unsigned int numEquations = 3;
 
-    residualBaseMock residual( &hydra, numEquations );
+    ResidualBaseMock residual( &hydra, numEquations );
 
     BOOST_TEST( *residual.getCurrentAdditionalStateVariables( ) == residual.currentAdditionalStateVariables, CHECK_PER_ELEMENT );
 
@@ -2853,11 +2853,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses, * boost::unit_test::tol
 
         public:
 
-            tardigradeHydra::residualBase r1;
+            tardigradeHydra::ResidualBase r1;
         
-            tardigradeHydra::residualBase r2;
+            tardigradeHydra::ResidualBase r2;
         
-            tardigradeHydra::residualBase r3;
+            tardigradeHydra::ResidualBase r3;
 
             unsigned int s1 = 36;
 
@@ -2871,13 +2871,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses, * boost::unit_test::tol
 
             virtual void setResidualClasses( ){
 
-                r1 = tardigradeHydra::residualBase( this, s1 );
+                r1 = tardigradeHydra::ResidualBase( this, s1 );
 
-                r2 = tardigradeHydra::residualBase( this, s2 );
+                r2 = tardigradeHydra::ResidualBase( this, s2 );
 
-                r3 = tardigradeHydra::residualBase( this, s3 );
+                r3 = tardigradeHydra::ResidualBase( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -2944,11 +2944,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses2, * boost::unit_test::to
 
         public:
 
-            tardigradeHydra::residualBase r1;
+            tardigradeHydra::ResidualBase r1;
         
-            tardigradeHydra::residualBase r2;
+            tardigradeHydra::ResidualBase r2;
         
-            tardigradeHydra::residualBase r3;
+            tardigradeHydra::ResidualBase r3;
 
             unsigned int s1 = 2;
 
@@ -2962,13 +2962,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses2, * boost::unit_test::to
 
             virtual void setResidualClasses( ){
 
-                r1 = tardigradeHydra::residualBase( this, s1 );
+                r1 = tardigradeHydra::ResidualBase( this, s1 );
 
-                r2 = tardigradeHydra::residualBase( this, s2 );
+                r2 = tardigradeHydra::ResidualBase( this, s2 );
 
-                r3 = tardigradeHydra::residualBase( this, s3 );
+                r3 = tardigradeHydra::ResidualBase( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -3025,7 +3025,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setResidualClasses2, * boost::unit_test::to
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
@@ -3041,19 +3041,19 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             unsigned int _num_modify_global_dRdAdditionalDOF_calls = 0;
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
-            using tardigradeHydra::residualBase::setResidual;
+            using tardigradeHydra::ResidualBase::setResidual;
 
-            using tardigradeHydra::residualBase::setJacobian;
+            using tardigradeHydra::ResidualBase::setJacobian;
 
-            using tardigradeHydra::residualBase::setdRdF;
+            using tardigradeHydra::ResidualBase::setdRdF;
 
-            using tardigradeHydra::residualBase::setdRdT;
+            using tardigradeHydra::ResidualBase::setdRdT;
 
-            using tardigradeHydra::residualBase::setdRdAdditionalDOF;
+            using tardigradeHydra::ResidualBase::setdRdAdditionalDOF;
 
-            using tardigradeHydra::residualBase::setAdditionalDerivatives;
+            using tardigradeHydra::ResidualBase::setAdditionalDerivatives;
 
             virtual void setResidual( ){
 
@@ -3201,11 +3201,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
         public:
 
-            residualBaseMock r1;
+            ResidualBaseMock r1;
         
-            residualBaseMock r2;
+            ResidualBaseMock r2;
         
-            residualBaseMock r3;
+            ResidualBaseMock r3;
 
             unsigned int s1 = 36;
 
@@ -3219,13 +3219,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
             virtual void setResidualClasses( ){
 
-                r1 = residualBaseMock( this, s1 );
+                r1 = ResidualBaseMock( this, s1 );
 
-                r2 = residualBaseMock( this, s2 );
+                r2 = ResidualBaseMock( this, s2 );
 
-                r3 = residualBaseMock( this, s3 );
+                r3 = ResidualBaseMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -3368,23 +3368,23 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_formNonLinearProblem, * boost::unit_test::t
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
             unsigned int numVariables = 41;
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
-            using tardigradeHydra::residualBase::setResidual;
+            using tardigradeHydra::ResidualBase::setResidual;
 
-            using tardigradeHydra::residualBase::setJacobian;
+            using tardigradeHydra::ResidualBase::setJacobian;
 
-            using tardigradeHydra::residualBase::setdRdF;
+            using tardigradeHydra::ResidualBase::setdRdF;
 
-            using tardigradeHydra::residualBase::setdRdT;
+            using tardigradeHydra::ResidualBase::setdRdT;
 
-            using tardigradeHydra::residualBase::setAdditionalDerivatives;
+            using tardigradeHydra::ResidualBase::setAdditionalDerivatives;
 
             virtual void setResidual( ){
 
@@ -3452,25 +3452,25 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector, * boost::unit_test
 
     };
 
-    class residualBaseMockStress : public residualBaseMock{
+    class ResidualBaseMockStress : public ResidualBaseMock{
 
         public:
 
             floatVector cauchyStress = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
 
-            using residualBaseMock::residualBaseMock;
+            using ResidualBaseMock::ResidualBaseMock;
 
-            using residualBaseMock::setResidual;
+            using ResidualBaseMock::setResidual;
 
-            using residualBaseMock::setJacobian;
+            using ResidualBaseMock::setJacobian;
 
-            using residualBaseMock::setdRdF;
+            using ResidualBaseMock::setdRdF;
 
-            using residualBaseMock::setdRdT;
+            using ResidualBaseMock::setdRdT;
 
-            using residualBaseMock::setAdditionalDerivatives;
+            using ResidualBaseMock::setAdditionalDerivatives;
 
-            using tardigradeHydra::residualBase::setStress;
+            using tardigradeHydra::ResidualBase::setStress;
 
             virtual void setStress( ){
 
@@ -3484,11 +3484,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector, * boost::unit_test
 
         public:
 
-            residualBaseMockStress r1;
+            ResidualBaseMockStress r1;
         
-            residualBaseMock r2;
+            ResidualBaseMock r2;
         
-            residualBaseMock r3;
+            ResidualBaseMock r3;
 
             unsigned int s1 = 36;
 
@@ -3502,13 +3502,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector, * boost::unit_test
 
             virtual void setResidualClasses( ){
 
-                r1 = residualBaseMockStress( this, s1 );
+                r1 = ResidualBaseMockStress( this, s1 );
 
-                r2 = residualBaseMock( this, s2 );
+                r2 = ResidualBaseMock( this, s2 );
 
-                r3 = residualBaseMock( this, s3 );
+                r3 = ResidualBaseMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -3576,23 +3576,23 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector, * boost::unit_test
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector_2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
         public:
 
             unsigned int numVariables = 41;
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
-            using tardigradeHydra::residualBase::setResidual;
+            using tardigradeHydra::ResidualBase::setResidual;
 
-            using tardigradeHydra::residualBase::setJacobian;
+            using tardigradeHydra::ResidualBase::setJacobian;
 
-            using tardigradeHydra::residualBase::setdRdF;
+            using tardigradeHydra::ResidualBase::setdRdF;
 
-            using tardigradeHydra::residualBase::setdRdT;
+            using tardigradeHydra::ResidualBase::setdRdT;
 
-            using tardigradeHydra::residualBase::setAdditionalDerivatives;
+            using tardigradeHydra::ResidualBase::setAdditionalDerivatives;
 
             virtual void setResidual( ){
 
@@ -3660,13 +3660,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector_2, * boost::unit_te
 
     };
 
-    class residualBaseMockSuggest : public residualBaseMock{
+    class ResidualBaseMockSuggest : public ResidualBaseMock{
 
         public:
 
             unsigned int config_suggest = 1;
 
-            using residualBaseMock::residualBaseMock;
+            using ResidualBaseMock::ResidualBaseMock;
 
             virtual void suggestInitialIterateValues( std::vector< unsigned int > &indices, std::vector< floatType > &values ) override{
 
@@ -3686,25 +3686,25 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector_2, * boost::unit_te
 
     };
 
-    class residualBaseMockStress : public residualBaseMock{
+    class ResidualBaseMockStress : public ResidualBaseMock{
 
         public:
 
             floatVector cauchyStress = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
 
-            using residualBaseMock::residualBaseMock;
+            using ResidualBaseMock::ResidualBaseMock;
 
-            using residualBaseMock::setResidual;
+            using ResidualBaseMock::setResidual;
 
-            using residualBaseMock::setJacobian;
+            using ResidualBaseMock::setJacobian;
 
-            using residualBaseMock::setdRdF;
+            using ResidualBaseMock::setdRdF;
 
-            using residualBaseMock::setdRdT;
+            using ResidualBaseMock::setdRdT;
 
-            using residualBaseMock::setAdditionalDerivatives;
+            using ResidualBaseMock::setAdditionalDerivatives;
 
-            using tardigradeHydra::residualBase::setStress;
+            using tardigradeHydra::ResidualBase::setStress;
 
             virtual void setStress( ){
 
@@ -3718,11 +3718,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector_2, * boost::unit_te
 
         public:
 
-            residualBaseMockStress r1;
+            ResidualBaseMockStress r1;
         
-            residualBaseMock r2;
+            ResidualBaseMock r2;
         
-            residualBaseMockSuggest r3;
+            ResidualBaseMockSuggest r3;
 
             unsigned int s1 = 36;
 
@@ -3736,13 +3736,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeUnknownVector_2, * boost::unit_te
 
             virtual void setResidualClasses( ){
 
-                r1 = residualBaseMockStress( this, s1 );
+                r1 = ResidualBaseMockStress( this, s1 );
 
-                r2 = residualBaseMock( this, s2 );
+                r2 = ResidualBaseMock( this, s2 );
 
-                r3 = residualBaseMockSuggest( this, s3 );
+                r3 = ResidualBaseMockSuggest( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -4016,11 +4016,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkLSConvergence, * boost::unit_test::tol
 BOOST_AUTO_TEST_CASE( test_hydraBase_getStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
 
-    class residualMockGood : public tardigradeHydra::residualBase {
+    class residualMockGood : public tardigradeHydra::ResidualBase {
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             floatVector cauchyStress = { 0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9 };
 
@@ -4030,13 +4030,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getStress, * boost::unit_test::tolerance( D
 
             virtual void setStress( ){
 
-                tardigradeHydra::residualBase::setStress( cauchyStress );
+                tardigradeHydra::ResidualBase::setStress( cauchyStress );
 
             }
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -4048,13 +4048,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getStress, * boost::unit_test::tolerance( D
 
             residualMockGood residual1;
 
-            tardigradeHydra::residualBase residual2;
+            tardigradeHydra::ResidualBase residual2;
 
-            tardigradeHydra::residualBase remainder;
+            tardigradeHydra::ResidualBase remainder;
 
             using tardigradeHydra::hydraBase::hydraBase;
 
-            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
 
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
 
@@ -4070,13 +4070,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getStress, * boost::unit_test::tolerance( D
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residual1 = residualMockGood( this, 9 );
 
-                residual2 = tardigradeHydra::residualBase( this, 9 );
+                residual2 = tardigradeHydra::ResidualBase( this, 9 );
 
-                remainder = tardigradeHydra::residualBase( this, 3 );
+                remainder = tardigradeHydra::ResidualBase( this, 3 );
 
                 residuals[ 0 ] = &residual1;
 
@@ -4145,11 +4145,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getStress, * boost::unit_test::tolerance( D
 BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
 
-    class residualMockGood : public tardigradeHydra::residualBase {
+    class residualMockGood : public tardigradeHydra::ResidualBase {
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -4157,7 +4157,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousStress, * boost::unit_test::tole
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::residualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -4169,13 +4169,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousStress, * boost::unit_test::tole
 
             residualMockGood residual1;
 
-            tardigradeHydra::residualBase residual2;
+            tardigradeHydra::ResidualBase residual2;
 
-            tardigradeHydra::residualBase remainder;
+            tardigradeHydra::ResidualBase remainder;
 
             using tardigradeHydra::hydraBase::hydraBase;
 
-            void setResidualClasses( std::vector< tardigradeHydra::residualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
 
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
 
@@ -4185,13 +4185,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getPreviousStress, * boost::unit_test::tole
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residual1 = residualMockGood( this, 9 );
 
-                residual2 = tardigradeHydra::residualBase( this, 9 );
+                residual2 = tardigradeHydra::ResidualBase( this, 9 );
 
-                remainder = tardigradeHydra::residualBase( this, 3 );
+                remainder = tardigradeHydra::ResidualBase( this, 3 );
 
                 residuals[ 0 ] = &residual1;
 
@@ -4878,7 +4878,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdF, * boost::unit_test::tolerance( DEFA
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -6058,13 +6058,13 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_updateUnknownVector, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
             bool project_called = false;
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             virtual void projectSuggestedX( std::vector< double > &trialX,
                                             const std::vector< double > &Xp ) override{
@@ -6121,7 +6121,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_updateUnknownVector, * boost::unit_test::to
 
                 r2 = residualMock( this, 9 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
 
                 r1.setUseProjection( _use_projection );
 
@@ -6201,13 +6201,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_updateUnknownVector, * boost::unit_test::to
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
             bool project_called = false;
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             virtual void projectSuggestedX( std::vector< double > &trialX,
                                             const std::vector< double > &Xp ) override{
@@ -6299,13 +6299,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
             bool project_called = false;
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             virtual void projectSuggestedX( std::vector< double > &trialX,
                                             const std::vector< double > &Xp ) override{
@@ -6467,17 +6467,17 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate, * boost::unit_test::tolerance( DE
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
-        using tardigradeHydra::residualBase::residualBase;
+        using tardigradeHydra::ResidualBase::ResidualBase;
 
     };
 
-    class residualBaseMockStress : public tardigradeHydra::residualBase{
+    class ResidualBaseMockStress : public tardigradeHydra::ResidualBase{
 
-        using tardigradeHydra::residualBase::residualBase;
+        using tardigradeHydra::ResidualBase::ResidualBase;
 
-        using tardigradeHydra::residualBase::setStress;
+        using tardigradeHydra::ResidualBase::setStress;
 
         floatVector cauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -6505,11 +6505,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
             std::vector< unsigned int > fail_indices = { 0, 1, 3 };
 
-            residualBaseMockStress r1;
+            ResidualBaseMockStress r1;
         
-            residualBaseMock r2;
+            ResidualBaseMock r2;
         
-            residualBaseMock r3;
+            ResidualBaseMock r3;
 
             unsigned int s1 = 9;
 
@@ -6597,13 +6597,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
             virtual void setResidualClasses( ){
 
-                r1 = residualBaseMockStress( this, s1 );
+                r1 = ResidualBaseMockStress( this, s1 );
 
-                r2 = residualBaseMock( this, s2 );
+                r2 = ResidualBaseMock( this, s2 );
 
-                r3 = residualBaseMock( this, s3 );
+                r3 = ResidualBaseMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -6659,19 +6659,19 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase{
 
-        using tardigradeHydra::residualBase::residualBase;
+        using tardigradeHydra::ResidualBase::ResidualBase;
 
     };
 
-    class residualBaseMockStress : public tardigradeHydra::residualBase{
+    class ResidualBaseMockStress : public tardigradeHydra::ResidualBase{
 
        public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
     
-            using tardigradeHydra::residualBase::setStress;
+            using tardigradeHydra::ResidualBase::setStress;
     
             floatVector cauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -6715,9 +6715,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( D
 
             unsigned int n_failure = 3;
 
-            residualBaseMockStress r1;
+            ResidualBaseMockStress r1;
         
-            residualBaseMock r2;
+            ResidualBaseMock r2;
         
             unsigned int s1 = 9;
 
@@ -6762,11 +6762,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( D
 
             virtual void setResidualClasses( ){
 
-                r1 = residualBaseMockStress( this, s1 );
+                r1 = ResidualBaseMockStress( this, s1 );
 
-                r2 = residualBaseMock( this, s2 );
+                r2 = ResidualBaseMock( this, s2 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
 
                 residuals[ 0 ] = &r1;
 
@@ -6826,13 +6826,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( D
 
 BOOST_AUTO_TEST_CASE( test_SetDataStorageBase, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
             bool project_called = false;
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             tardigradeHydra::DataStorage< floatType > myScalarData;
 
@@ -6883,13 +6883,13 @@ BOOST_AUTO_TEST_CASE( test_SetDataStorageBase, * boost::unit_test::tolerance( DE
 
 BOOST_AUTO_TEST_CASE( test_SetDataStorageBase2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
             bool project_called = false;
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             tardigradeHydra::DataStorage< floatType > _myScalarData;
 
@@ -6944,13 +6944,13 @@ BOOST_AUTO_TEST_CASE( test_SetDataStorageBase2, * boost::unit_test::tolerance( D
 
 BOOST_AUTO_TEST_CASE( test_SetDataStorageIteration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
             bool project_called = false;
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             tardigradeHydra::DataStorage< floatType > myScalarData;
 
@@ -7009,13 +7009,13 @@ BOOST_AUTO_TEST_CASE( test_SetDataStorageIteration, * boost::unit_test::toleranc
 
 BOOST_AUTO_TEST_CASE( test_SetDataStorageIteration2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
             bool project_called = false;
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             tardigradeHydra::DataStorage< floatType > _myScalarData;
 
@@ -7078,13 +7078,13 @@ BOOST_AUTO_TEST_CASE( test_SetDataStorageIteration2, * boost::unit_test::toleran
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_setConstraints, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
-            residualMock( tardigradeHydra::hydraBase *h, const unsigned int neq, const unsigned int ncon ) : tardigradeHydra::residualBase( h, neq ){
+            residualMock( tardigradeHydra::hydraBase *h, const unsigned int neq, const unsigned int ncon ) : tardigradeHydra::ResidualBase( h, neq ){
 
                 setNumConstraints( ncon );
 
@@ -7162,7 +7162,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setConstraints, * boost::unit_test::toleran
 
                 r3 = residualMock( this, s3, n3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -7805,11 +7805,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeActiveConstraints, * boost::unit_
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             unsigned int numSetupCalls = 0;
 
@@ -7885,7 +7885,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
                 r3.setConvergedRelaxedIncrement( i3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -7987,11 +7987,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             unsigned int numSetupCalls = 0;
 
@@ -8074,7 +8074,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
                 r3.setConvergedRelaxedIncrement( i3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -8203,11 +8203,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualSuccessfulNLStep, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             unsigned int numSuccessfulNLStepCalls = 0;
 
@@ -8251,7 +8251,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualSuccessfulNLStep, * boost::unit
 
                 r3 = residualMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -8320,11 +8320,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualSuccessfulNLStep, * boost::unit
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPreSubcycler, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             unsigned int numPreSubcyclerCalls = 0;
 
@@ -8366,7 +8366,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPreSubcycler, * boost::unit_tes
 
                 r3 = residualMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -8435,11 +8435,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPreSubcycler, * boost::unit_tes
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualSubcyclerSuccess, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             unsigned int numPostSubcyclerSuccessCalls = 0;
 
@@ -8481,7 +8481,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualSubcyclerSuccess, * boost::unit
 
                 r3 = residualMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -8550,11 +8550,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualSubcyclerSuccess, * boost::unit
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualSubcyclerFailure, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             unsigned int numPostSubcyclerFailureCalls = 0;
 
@@ -8596,7 +8596,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualSubcyclerFailure, * boost::unit
 
                 r3 = residualMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -8665,14 +8665,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualSubcyclerFailure, * boost::unit
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualRelaxedStepFailure, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            residualMock( ) : tardigradeHydra::residualBase( ){ }
+            residualMock( ) : tardigradeHydra::ResidualBase( ){ }
 
             residualMock( tardigradeHydra::hydraBase *h, unsigned int num_vals, unsigned int p )
-                : tardigradeHydra::residualBase( h, num_vals ), ncallsuccess(p){
+                : tardigradeHydra::ResidualBase( h, num_vals ), ncallsuccess(p){
 
             }
 
@@ -8734,7 +8734,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualRelaxedStepFailure, * boost::un
 
                 r3 = residualMock( this, s3, p3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -8818,11 +8818,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualRelaxedStepFailure, * boost::un
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getCurrentResidualOffset, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             unsigned int offset = 0;
 
@@ -8864,7 +8864,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getCurrentResidualOffset, * boost::unit_tes
 
                 r3 = residualMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -8933,11 +8933,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getCurrentResidualOffset, * boost::unit_tes
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPreNLSolve, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             unsigned int numPreNLSolveCalls = 0;
 
@@ -8979,7 +8979,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPreNLSolve, * boost::unit_test:
 
                 r3 = residualMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -9048,11 +9048,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPreNLSolve, * boost::unit_test:
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPostNLSolve, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             unsigned int numPostNLSolveCalls = 0;
 
@@ -9094,7 +9094,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPostNLSolve, * boost::unit_test
 
                 r3 = residualMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -9163,11 +9163,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPostNLSolve, * boost::unit_test
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_getResidualParameterizationInfo, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
             unsigned int numPostNLSolveCalls = 0;
 
@@ -9215,7 +9215,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getResidualParameterizationInfo, * boost::u
 
                 r3 = residualMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
@@ -9278,11 +9278,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getResidualParameterizationInfo, * boost::u
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_resetProblem, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBase{
+    class residualMock : public tardigradeHydra::ResidualBase{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase::ResidualBase;
 
         protected:
 
@@ -9320,7 +9320,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_resetProblem, * boost::unit_test::tolerance
 
                 r3 = residualMock( this, s3 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 3 );
+                std::vector< tardigradeHydra::ResidualBase* > residuals( 3 );
 
                 residuals[ 0 ] = &r1;
 
