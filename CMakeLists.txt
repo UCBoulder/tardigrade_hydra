@@ -7,7 +7,6 @@ project(tardigrade_hydra)
 set(CPP_SRC_PATH "src/cpp")
 set(CPP_TEST_PATH "${CPP_SRC_PATH}/tests")
 set(CMAKE_SRC_PATH "src/cmake")
-set(ABAQUS_SRC_PATH "src/abaqus")
 set(ABAQUS_TEST_PATH "${ABAQUS_SRC_PATH}/tests")
 set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
@@ -112,26 +111,6 @@ find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 include_directories(${EIGEN3_INCLUDE_DIR})
 if(EIGEN3_FOUND)
     message(STATUS "Found Eigen3: ${EIGEN3_INCLUDE_DIR}")
-endif()
-
-# Find bash (Required for abaqus integration tests)
-find_program(BASH_PROGRAM bash)
-if(BASH_PROGRAM)
-    message(STATUS "Found bash: ${BASH_PROGRAM}")
-else()
-    message(STATUS "bash not found. ${MISSING_INTEGRATION_DEPS_MESSAGE}")
-endif()
-
-# Find Abaqus (Required for abaqus integration tests)
-find_program(ABAQUS_PROGRAM
-             NAMES abaqus abq2022 abq2021 abq2020 abq2019 abq2018 abq2017
-             # AEA path, HPC path
-             HINTS /apps/abaqus/Commands /usr/projects/ea/abaqus/Commands
-            )
-if(ABAQUS_PROGRAM)
-    message(STATUS "Found Abaqus: ${ABAQUS_PROGRAM}")
-else()
-    message(STATUS "Abaqus not found. ${MISSING_INTEGRATION_DEPS_MESSAGE}")
 endif()
 
 # Find related, but external, projects in installed environment
