@@ -22,6 +22,7 @@
 #endif
 
 #include"tardigrade_CoreDefinitions.h"
+#include"tardigrade_CustomErrors.h"
 #include"tardigrade_SetDataStorage.h"
 #include"tardigrade_MatrixMap.h"
 
@@ -46,30 +47,6 @@ namespace tardigradeHydra{
         throw std::runtime_error( "Zeroing the residualBase pointer vector is not allowed" );
 
     }
-
-    /*!
-     * A custom error for use with failures in convergence of the solver.
-     */
-    class convergence_error : public std::exception{
-
-        private:
-            std::string message_; //!< The output message
-
-        public:
-
-            //! Constructor
-            explicit convergence_error( const std::string& message ) : message_( message ) { }
-
-            const char *what( ) const noexcept override {
-                /*!
-                 * Output the message
-                 */
-
-                return message_.c_str( );
-
-            }
-
-    };
 
     /*!
      * A class to contain the residual computations associated with some part of a non-linear solve
