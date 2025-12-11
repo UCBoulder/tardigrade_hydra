@@ -15,37 +15,6 @@ namespace tardigradeHydra{
     /** \brief Define the expected number of tensor spatial dimensions. */
     const int spatialDimensions = 3;
 
-    void residualBase::addIterationData( dataBase *data ){
-        /*!
-         * Add data to the vector of values which will be cleared after each iteration
-         * 
-         * \param *data: The dataBase object to be cleared
-         */
-
-        hydra->addIterationData( data );
-
-    }
-
-    void residualBase::addNLStepData( dataBase *data ){
-        /*!
-         * Add data to the vector of values which will be cleared after each nonlinear step
-         * 
-         * \param *data: The dataBase object to be cleared
-         */
-
-        hydra->addNLStepData( data );
-
-    }
-
-    void residualBase::setupRelaxedStep( const unsigned int &relaxedStep ){
-        /*!
-         * When performing a relaxed iteration this function is called prior to the solution of the non-linear
-         * problem. Users can use this function to dynamically adjust parameters or perform other tuning tasks.
-         *
-         * \param &relaxedStep: The current relaxed step.
-         */
-    }
-
     hydraBase::hydraBase( const floatType &time, const floatType &deltaTime,
                           const floatType &temperature, const floatType &previousTemperature,
                           const secondOrderTensor &deformationGradient, const secondOrderTensor &previousDeformationGradient,

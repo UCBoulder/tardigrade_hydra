@@ -446,14 +446,7 @@ namespace tardigradeHydra{
 
               public:
 
-                  SetDataStorageIteration( DataStorage< T > *ds, residualBase * rp ) : SetDataStorageIterationBase< residualBase, T >( ds, rp ){
-                      /*!
-                       * Create a data storage object that will be reset at each new iteration
-                       * 
-                       * \param *ds: The data storage object
-                       * \param *rp: The residual class that contains the data storage object
-                       */
-                  }
+                  using tardigradeHydra::SetDataStorageIterationBase<residualBase,T>::SetDataStorageIterationBase;
 
             };
 
@@ -463,14 +456,7 @@ namespace tardigradeHydra{
 
               public:
 
-                  SetDataStorageNLStep( DataStorage< T > *ds, residualBase * rp ) : SetDataStorageNLStepBase< residualBase, T >( ds, rp ){
-                      /*!
-                       * Create a data storage object that will be reset at each nonlinear step
-                       * 
-                       * \param *ds: The data storage object
-                       * \param *rp: The residual class that contains the data storage object
-                       */
-                  }
+                  using tardigradeHydra::SetDataStorageNLStepBase<residualBase,T>::SetDataStorageNLStepBase;
 
             };
 
