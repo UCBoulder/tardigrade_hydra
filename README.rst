@@ -87,7 +87,6 @@ during the Gitlab-CI ``conda-build`` job to limit the test phase to the as-insta
 The build type can be set with the ``-DCMAKE_BUILD_TYPE=<build type string>`` during project configuration. Both build
 types will require the upstream dependent libraries
 
-* ``abaqus_tools``: https://github.com/UCBoulder/tardigrade_abaqus_tools
 * ``error_tools``: https://github.com/UCBoulder/tardigrade_error_tools
 * ``vector_tools``: https://github.com/UCBoulder/tardigrade_vector_tools
 * ``constitutive_tools``: https://github.com/UCBoulder/tardigrade_constitutive_tools

@@ -21,7 +21,7 @@ set(TARDIGRADE_FULL_BUILD OFF CACHE BOOL "Flag for whether a full build of Tardi
 
 # Set the internal support libraries
 set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearTestMaterial" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPerzynaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPerzynaViscodamage" "tardigrade_hydraMicromorphicDruckerPragerPlasticity" "tardigrade_hydraPerzynaJ2Viscoplasticity" "tardigrade_hydraMassChange" "tardigrade_hydraMicromorphicDruckerPragerPlasticityOptimization" "tardigrade_hydraFourierHeatConduction" "tardigrade_hydraLinearInternalEnergy" "tardigrade_hydraMicromorphicRadialReturnLinearElasticity" "tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity" "tardigrade_hydraDOFVelocityGradientDeformation")
-set(ADDITIONAL_HEADER_ONLY_LIBRARIES "tardigrade_DeformationBase" "tardigrade_SetDataStorage" "tardigrade_MatrixMap")
+set(ADDITIONAL_HEADER_ONLY_LIBRARIES "tardigrade_DeformationBase" "tardigrade_SetDataStorage" "tardigrade_MatrixMap" "tardigrade_CoreDefinitions")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
@@ -136,7 +136,7 @@ endif()
 
 # Find related, but external, projects in installed environment
 include(FetchContent)
-set(upstream_packages "tardigrade_error_tools" "tardigrade_vector_tools" "tardigrade_constitutive_tools" "tardigrade_stress_tools" "tardigrade_abaqus_tools" "tardigrade_micromorphic_tools")
+set(upstream_packages "tardigrade_error_tools" "tardigrade_vector_tools" "tardigrade_constitutive_tools" "tardigrade_stress_tools" "tardigrade_micromorphic_tools")
 if(${not_conda_test} STREQUAL "false")
     # During conda-build testing, we must find the installed project files as if they were an external project
     set(upstream_packages ${upstream_packages} ${PROJECT_NAME})

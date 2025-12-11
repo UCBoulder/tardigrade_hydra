@@ -25,7 +25,6 @@ requirements:
     - tardigrade_constitutive_tools>=0.7.2
     - tardigrade_stress_tools
     - tardigrade_solver_tools
-    - tardigrade_abaqus_tools>=0.4
     - boost >=1.59  # TODO: Separate the package/test configuration to make BOOST an optional build dependency
     - setuptools_scm >=6.2
     - libcxx <16  # [osx]
@@ -44,7 +43,6 @@ requirements:
     - tardigrade_constitutive_tools>=0.7.2
     - tardigrade_stress_tools
     - tardigrade_solver_tools
-    - tardigrade_abaqus_tools>=0.4
 
 test:
   requires:
