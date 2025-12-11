@@ -27,22 +27,6 @@
 
 namespace tardigradeHydra{
 
-    typedef double floatType; //!< Define the float values type.
-    typedef std::vector< floatType > floatVector; //!< Define a vector of floats
-    typedef std::vector< std::vector< floatType > > floatMatrix; //!< Define a matrix of floats
-
-    //Define tensors of known size
-    typedef std::vector< floatType > dimVector; //!< Dimension vector
-    typedef std::vector< floatType > secondOrderTensor; //!< Second order tensors
-    typedef std::vector< floatType > thirdOrderTensor; //!< Third order tensors
-    typedef std::vector< floatType > fourthOrderTensor; //!< Fourth order tensors
-
-#ifdef TARDIGRADE_HYDRA_USE_LLXSMM
-    typedef libxsmm_mmfunction<floatType> kernel_type; //!< The libxsmm kernel type
-#endif
-
-    typedef void ( hydraBase::*hydraBaseFxn )( ); //!< Typedef for passing pointers to hydraBase functions
-
     template <>
     inline void dataStorage< std::vector< residualBase* > >::zero( ){
                 /*!
