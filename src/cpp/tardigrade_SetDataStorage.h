@@ -6,11 +6,12 @@
   ******************************************************************************
   */
 
-#include"tardigrade_error_tools.h"
-#include"Eigen/Dense"
-
 #ifndef TARDIGRADE_SETDATASTORAGE
 #define TARDIGRADE_SETDATASTORAGE
+
+#include"tardigrade_error_tools.h"
+#include"tardigrade_CoreDefinitions.h"
+#include"Eigen/Dense"
 
 /*!
  * \brief Declares a named setDataStorage getter function
@@ -479,6 +480,39 @@ namespace tardigradeHydra{
               container *_rp; //!< The containing hydraBase class
 
         };
+
+        // CoreDefinitions dataStorage specifications
+        template <>
+        inline void dataStorage< floatType >::clear( ){
+                    /*!
+                     * The function to erase the current values stored by setting first to false and second to zero
+                     */
+
+            first = false;
+
+            second = 0;
+
+        }
+
+        template <>
+        inline void dataStorage< floatType >::zero( ){
+                    /*!
+                     * The function to set the value to zero
+                     */
+
+            second = 0;
+
+        }
+
+        template <>
+        inline void dataStorage< floatType >::zero( const unsigned int size ){
+                    /*!
+                     * The function to set the value to zero
+                     */
+
+            throw std::runtime_error( "A scalar value cannot have a size!");
+
+        }
 
 //    }
 

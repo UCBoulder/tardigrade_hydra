@@ -47,38 +47,6 @@ namespace tardigradeHydra{
 
     }
 
-    template <>
-    inline void dataStorage< floatType >::clear( ){
-                /*!
-                 * The function to erase the current values stored by setting first to false and second to zero
-                 */
-
-        first = false;
-
-        second = 0;
-
-    }
-
-    template <>
-    inline void dataStorage< floatType >::zero( ){
-                /*!
-                 * The function to set the value to zero
-                 */
-
-        second = 0;
-
-    }
-
-    template <>
-    inline void dataStorage< floatType >::zero( const unsigned int size ){
-                /*!
-                 * The function to set the value to zero
-                 */
-
-        throw std::runtime_error( "A scalar value cannot have a size!");
-
-    }
-
     /*!
      * A custom error for use with failures in convergence of the solver.
      */
