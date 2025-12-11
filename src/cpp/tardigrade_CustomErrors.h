@@ -6,6 +6,12 @@
 ******************************************************************************
 */
 
+#ifndef TARDIGRADE_CUSTOMERRORS_H
+#define TARDIGRADE_CUSTOMERRORS_H
+
+#include<exception>
+#include<string>
+
 namespace tardigradeHydra{
 
     /*!
@@ -33,3 +39,7 @@ namespace tardigradeHydra{
     };
 
 }
+
+#include"tardigrade_CustomErrors.cpp"
+
+#endif
