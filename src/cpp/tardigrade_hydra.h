@@ -493,11 +493,11 @@ namespace tardigradeHydra{
 
             //! Class which defines data storage objects which are reset at each nonlinear step
             template< typename T >
-            class SetDataStorageNLStep : public SetDataStorageBase< T > {
+            class SetDataStorageNLStep : public SetDataStorageNLStepBase< residualBase, T > {
 
               public:
 
-                  SetDataStorageNLStep( DataStorage< T > *ds, residualBase * rp ) : SetDataStorageBase< T >( ds ), _rp( rp ){
+                  SetDataStorageNLStep( DataStorage< T > *ds, residualBase * rp ) : SetDataStorageNLStepBase< residualBase, T >( ds, rp ){
                       /*!
                        * Create a data storage object that will be reset at each nonlinear step
                        * 
@@ -505,19 +505,6 @@ namespace tardigradeHydra{
                        * \param *rp: The residual class that contains the data storage object
                        */
                   }
-
-                  ~SetDataStorageNLStep( ){
-                      /*!
-                       * Destructor that says the data storage object has been set
-                       */
-
-                      _rp->addNLStepData( this->_ds );
-
-                  }
-
-              protected:
-
-                  residualBase *_rp; //!< The containing residual class
 
             };
 

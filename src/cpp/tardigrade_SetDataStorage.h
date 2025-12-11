@@ -481,6 +481,32 @@ namespace tardigradeHydra{
 
         };
 
+        template< typename container, typename T>
+        class SetDataStorageNLStepBase : public SetDataStorageBase< T >{
+          public:
+
+              SetDataStorageNLStepBase( DataStorage< T > *ds, container * rp ) : SetDataStorageBase< T >( ds ), _rp( rp ){
+                  /*!
+                   * Create a data storage object that will be reset at each new nonlinear step
+                   * 
+                   * \param *ds: The data storage object
+                   * \param *rp: The class that contains the data storage object. Must have a function addNLStepData
+                   *     wich accepts a pointer to the data storage object
+                   */ }
+
+              //! Destructor object that adds the data storage object to the nonlinear step data list
+              ~SetDataStorageNLStepBase( ){
+
+                  _rp->addNLStepData( this->_ds );
+
+              }
+
+          protected:
+
+              container *_rp; //!< The containing hydraBase class
+
+        };
+
         // CoreDefinitions DataStorage specifications
         template <>
         inline void DataStorage< floatType >::clear( ){
