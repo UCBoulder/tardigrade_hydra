@@ -1360,14 +1360,6 @@ namespace tardigradeHydra{
 
     }
 
-    /// Say hello
-    /// @param message The message to print
-    void sayHello( std::string message ) {
-        TARDIGRADE_ERROR_TOOLS_CHECK( ( message.compare( "George" ) != 0 ), "ERROR: George is a wolf in sheep's clothing!");
-        std::cout << "Hello " << message << std::endl;
-        return;
-    }
-
     const floatVector* hydraBase::getStress( ){
         /*!
          * Get the stress
