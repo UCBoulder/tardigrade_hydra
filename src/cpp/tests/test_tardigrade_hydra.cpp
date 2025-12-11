@@ -6824,7 +6824,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate3, * boost::unit_test::tolerance( D
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setDataStorageBase, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SetDataStorageBase, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::residualBase{
 
@@ -6859,11 +6859,11 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageBase, * boost::unit_test::tolerance( DE
 
     {
 
-        tardigradeHydra::setDataStorageBase< floatType > setFloatType( &residual.myScalarData );
+        tardigradeHydra::SetDataStorageBase< floatType > setFloatType( &residual.myScalarData );
 
         *setFloatType.value = 123.4;
 
-        tardigradeHydra::setDataStorageBase< floatVector > setVectorType( &residual.myVectorData );
+        tardigradeHydra::SetDataStorageBase< floatVector > setVectorType( &residual.myVectorData );
 
         *setVectorType.value = { 123.4, 234.5, 345.6 };
 
@@ -6881,7 +6881,7 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageBase, * boost::unit_test::tolerance( DE
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setDataStorageBase2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SetDataStorageBase2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::residualBase{
 
@@ -6895,9 +6895,9 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageBase2, * boost::unit_test::tolerance( D
 
             tardigradeHydra::DataStorage< floatVector > _myVectorData;
 
-            TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myScalarData,tardigradeHydra::setDataStorageBase,floatType);
+            TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myScalarData,tardigradeHydra::SetDataStorageBase,floatType);
 
-            TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myVectorData,tardigradeHydra::setDataStorageBase,floatVector);
+            TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myVectorData,tardigradeHydra::SetDataStorageBase,floatVector);
 
             virtual void projectSuggestedX( std::vector< double > &trialX,
                                             const std::vector< double > &Xp ) override{
@@ -6920,11 +6920,11 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageBase2, * boost::unit_test::tolerance( D
 
     {
 
-        tardigradeHydra::setDataStorageBase< floatType > setFloatType = residual.get_setDataStorage_myScalarData( );
+        tardigradeHydra::SetDataStorageBase< floatType > setFloatType = residual.get_SetDataStorage_myScalarData( );
 
         *setFloatType.value = 123.4;
 
-        tardigradeHydra::setDataStorageBase< floatVector > setVectorType = residual.get_setDataStorage_myVectorData( );
+        tardigradeHydra::SetDataStorageBase< floatVector > setVectorType = residual.get_SetDataStorage_myVectorData( );
 
         *setVectorType.value = { 123.4, 234.5, 345.6 };
 
@@ -6942,7 +6942,7 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageBase2, * boost::unit_test::tolerance( D
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setDataStorageIteration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SetDataStorageIteration, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::residualBase{
 
@@ -6977,11 +6977,11 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageIteration, * boost::unit_test::toleranc
 
     {
 
-        tardigradeHydra::setDataStorageIteration< floatType > setFloatType( &residual.myScalarData, &residual );
+        tardigradeHydra::SetDataStorageIteration< floatType > setFloatType( &residual.myScalarData, &residual );
 
         *setFloatType.value = 123.4;
 
-        tardigradeHydra::setDataStorageIteration< floatVector > setVectorType( &residual.myVectorData, &residual );
+        tardigradeHydra::SetDataStorageIteration< floatVector > setVectorType( &residual.myVectorData, &residual );
 
         *setVectorType.value = { 123.4, 234.5, 345.6 };
 
@@ -7007,7 +7007,7 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageIteration, * boost::unit_test::toleranc
 
 }
 
-BOOST_AUTO_TEST_CASE( test_setDataStorageIteration2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SetDataStorageIteration2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::residualBase{
 
@@ -7021,9 +7021,9 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageIteration2, * boost::unit_test::toleran
 
             tardigradeHydra::DataStorage< floatVector > _myVectorData;
 
-            TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myScalarData,tardigradeHydra::setDataStorageIteration,floatType,this);
+            TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myScalarData,tardigradeHydra::SetDataStorageIteration,floatType,this);
 
-            TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myVectorData,tardigradeHydra::setDataStorageIteration,floatVector,this);
+            TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myVectorData,tardigradeHydra::SetDataStorageIteration,floatVector,this);
 
             virtual void projectSuggestedX( std::vector< double > &trialX,
                                             const std::vector< double > &Xp ) override{
@@ -7046,11 +7046,11 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageIteration2, * boost::unit_test::toleran
 
     {
 
-        tardigradeHydra::setDataStorageIteration< floatType > setFloatType = residual.get_setDataStorage_myScalarData( );
+        tardigradeHydra::SetDataStorageIteration< floatType > setFloatType = residual.get_SetDataStorage_myScalarData( );
 
         *setFloatType.value = 123.4;
 
-        tardigradeHydra::setDataStorageIteration< floatVector > setVectorType = residual.get_setDataStorage_myVectorData( );
+        tardigradeHydra::SetDataStorageIteration< floatVector > setVectorType = residual.get_SetDataStorage_myVectorData( );
 
         *setVectorType.value = { 123.4, 234.5, 345.6 };
 
@@ -7094,7 +7094,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setConstraints, * boost::unit_test::toleran
 
             virtual void setConstraints( ){
 
-                auto constraints = get_setDataStorage_constraints( );
+                auto constraints = get_SetDataStorage_constraints( );
 
                 constraints.zero( getNumConstraints( ) );
 
@@ -7110,7 +7110,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setConstraints, * boost::unit_test::toleran
 
                 const unsigned int numUnknowns = hydra->getNumUnknowns( );
 
-                auto constraintJacobians = get_setDataStorage_constraintJacobians( );
+                auto constraintJacobians = get_SetDataStorage_constraintJacobians( );
 
                 constraintJacobians.zero( getNumConstraints( ) * numUnknowns );
 
@@ -7263,7 +7263,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTMatrix, * boost::unit_test::tole
 
             virtual void setConstraints( ) override{
 
-                auto constraints = get_setDataStorage_constraints( );
+                auto constraints = get_SetDataStorage_constraints( );
 
                 *constraints.value = { 2, 6, 2, 0, 0 };
 
@@ -7281,7 +7281,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTMatrix, * boost::unit_test::tole
 
             virtual void setConstraintJacobians( ) override{
 
-                auto constraintJacobians = get_setDataStorage_constraintJacobians( );
+                auto constraintJacobians = get_SetDataStorage_constraintJacobians( );
 
                 *constraintJacobians.value = { 1, -2,
                                               -1, -2,
@@ -7416,7 +7416,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTRHSVector, * boost::unit_test::t
 
             virtual void setConstraints( ) override{
 
-                auto constraints = get_setDataStorage_constraints( );
+                auto constraints = get_SetDataStorage_constraints( );
 
                 *constraints.value = { 2, 6, 2, 0, 0 };
 
@@ -7434,7 +7434,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTRHSVector, * boost::unit_test::t
 
             virtual void setConstraintJacobians( ) override{
 
-                auto constraintJacobians = get_setDataStorage_constraintJacobians( );
+                auto constraintJacobians = get_SetDataStorage_constraintJacobians( );
 
                 *constraintJacobians.value = { 1, -2,
                                               -1, -2,
@@ -7645,7 +7645,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveConstrainedQP, * boost::unit_test::tol
 
             virtual void setConstraints( ) override{
 
-                auto constraints = get_setDataStorage_constraints( );
+                auto constraints = get_SetDataStorage_constraints( );
 
                 *constraints.value = { 2, 6, 2, 0, 0 };
 
@@ -7663,7 +7663,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveConstrainedQP, * boost::unit_test::tol
 
             virtual void setConstraintJacobians( ) override{
 
-                auto constraintJacobians = get_setDataStorage_constraintJacobians( );
+                auto constraintJacobians = get_SetDataStorage_constraintJacobians( );
 
                 *constraintJacobians.value = { 1, -2,
                                               -1, -2,
@@ -7746,7 +7746,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_initializeActiveConstraints, * boost::unit_
 
             virtual void setConstraints( ) override{
 
-                auto constraints = get_setDataStorage_constraints( );
+                auto constraints = get_SetDataStorage_constraints( );
 
                 *constraints.value = { 2, 6, -2, 0.1, 2 };
 

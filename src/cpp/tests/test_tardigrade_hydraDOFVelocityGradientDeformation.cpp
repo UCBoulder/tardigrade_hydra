@@ -3380,7 +3380,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofResidual, * boost::unit_test::tolerance( 
 
             virtual void setMassChangeRate( ) override{
 
-                auto mcr = get_setDataStorage_massChangeRate( );
+                auto mcr = get_SetDataStorage_massChangeRate( );
 
                 *mcr.value = massChangeRate;
 
@@ -3388,7 +3388,7 @@ BOOST_AUTO_TEST_CASE( test_residual_dofResidual, * boost::unit_test::tolerance( 
 
             virtual void setInternalHeatGenerationRate( ) override{
 
-                auto ihgr = get_setDataStorage_internalHeatGenerationRate( );
+                auto ihgr = get_SetDataStorage_internalHeatGenerationRate( );
 
                 *ihgr.value = internalHeatGenerationRate;
 

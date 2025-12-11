@@ -49,7 +49,7 @@ namespace tardigradeHydra{
 
             const dimVector *microGradientYield = get_microGradientYield( );
 
-            auto residual = get_setDataStorage_stateVariableResiduals( );
+            auto residual = get_SetDataStorage_stateVariableResiduals( );
             residual.zero( get_plasticStateVariables( )->size( ) );
 
             // Add the consistency condition
@@ -149,7 +149,7 @@ namespace tardigradeHydra{
 
             const floatVector *dUpdatedPlasticStrainLikeISVsdStateVariables = get_dUpdatedPlasticStrainLikeISVsdStateVariables( );
 
-            auto jacobian = get_setDataStorage_stateVariableJacobians( );
+            auto jacobian = get_SetDataStorage_stateVariableJacobians( );
             jacobian.zero( numISVs * numUnknowns );
 
             unsigned int offset = numConfigurations * numConfigurationUnknowns;
@@ -295,7 +295,7 @@ namespace tardigradeHydra{
 
             const thirdOrderTensor  *dMicroGradientYielddChi            = get_dMicroGradientYielddChi( );
 
-            auto dRdD = get_setDataStorage_dStateVariableResidualsdD( );
+            auto dRdD = get_SetDataStorage_dStateVariableResidualsdD( );
             dRdD.zero( get_plasticStateVariables( )->size( ) * numConfigurationUnknowns );
 
             unsigned int offset = 0;
@@ -353,7 +353,7 @@ namespace tardigradeHydra{
 
             const unsigned int numSlackVariables = slackVariables.size( );
 
-            auto constraints = get_setDataStorage_constraints( );
+            auto constraints = get_SetDataStorage_constraints( );
             constraints.zero( numPlasticMultipliers + numSlackVariables );
 
             // Set the positivity constraints on the plastic multipliers
@@ -392,7 +392,7 @@ namespace tardigradeHydra{
 
             const unsigned int numSlackVariables = slackVariables.size( );
 
-            auto jacobian = get_setDataStorage_constraintJacobians( );
+            auto jacobian = get_SetDataStorage_constraintJacobians( );
             jacobian.zero( ( numPlasticMultipliers + numSlackVariables ) * numUnknowns );
 
             unsigned int offset = numConfigurations * numConfigurationUnknowns;

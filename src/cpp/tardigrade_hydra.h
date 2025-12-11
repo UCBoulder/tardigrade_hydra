@@ -499,11 +499,11 @@ namespace tardigradeHydra{
 
             //! Class which defines data storage objects which are reset at each iteration
             template< typename T >
-            class setDataStorageIteration : public setDataStorageIterationBase< residualBase, T > {
+            class SetDataStorageIteration : public SetDataStorageIterationBase< residualBase, T > {
 
               public:
 
-                  setDataStorageIteration( DataStorage< T > *ds, residualBase * rp ) : setDataStorageIterationBase< residualBase, T >( ds, rp ){
+                  SetDataStorageIteration( DataStorage< T > *ds, residualBase * rp ) : SetDataStorageIterationBase< residualBase, T >( ds, rp ){
                       /*!
                        * Create a data storage object that will be reset at each new iteration
                        * 
@@ -516,11 +516,11 @@ namespace tardigradeHydra{
 
             //! Class which defines data storage objects which are reset at each nonlinear step
             template< typename T >
-            class setDataStorageNLStep : public setDataStorageBase< T > {
+            class SetDataStorageNLStep : public SetDataStorageBase< T > {
 
               public:
 
-                  setDataStorageNLStep( DataStorage< T > *ds, residualBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
+                  SetDataStorageNLStep( DataStorage< T > *ds, residualBase * rp ) : SetDataStorageBase< T >( ds ), _rp( rp ){
                       /*!
                        * Create a data storage object that will be reset at each nonlinear step
                        * 
@@ -529,7 +529,7 @@ namespace tardigradeHydra{
                        */
                   }
 
-                  ~setDataStorageNLStep( ){
+                  ~SetDataStorageNLStep( ){
                       /*!
                        * Destructor that says the data storage object has been set
                        */
@@ -546,11 +546,11 @@ namespace tardigradeHydra{
 
             //! Class which defines data storage objects for values defined at the previous timestep
             template< typename T >
-            class setDataStoragePrevious : public setDataStorageBase< T > {
+            class SetDataStoragePrevious : public SetDataStorageBase< T > {
 
                 public:
 
-                    setDataStoragePrevious( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                    SetDataStoragePrevious( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
                         /*!
                          * Constructor for data storage objects for temporally previous objects
                          * 
@@ -564,11 +564,11 @@ namespace tardigradeHydra{
              * Class that is a constant data storage object
              */
             template< typename T >
-            class setDataStorageConstant : public setDataStorageBase< T > {
+            class SetDataStorageConstant : public SetDataStorageBase< T > {
 
                 public:
 
-                    setDataStorageConstant( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                    SetDataStorageConstant( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
                         /*!
                          * Constructor for constant data storage objects
                          * 
@@ -1521,10 +1521,10 @@ namespace tardigradeHydra{
 
             //! A data storage class that resets at every iteration
             template< typename T >
-            class setDataStorageIteration : public setDataStorageIterationBase< hydraBase, T > {
+            class SetDataStorageIteration : public SetDataStorageIterationBase< hydraBase, T > {
 
                 public:
-                    setDataStorageIteration( DataStorage< T > *ds, hydraBase * rp ) : setDataStorageIterationBase<hydraBase,T>( ds, rp ){
+                    SetDataStorageIteration( DataStorage< T > *ds, hydraBase * rp ) : SetDataStorageIterationBase<hydraBase,T>( ds, rp ){
                       /*!
                        * Create a data storage object that will be reset at each new iteration
                        * 
@@ -1539,12 +1539,12 @@ namespace tardigradeHydra{
              * Class which defines setting values defined at the previous timestep
              */
             template< typename T >
-            class setDataStoragePrevious : public setDataStorageBase< T > {
+            class SetDataStoragePrevious : public SetDataStorageBase< T > {
 
                 public:
 
                     //! Create a data storage object that will be reset whenever the previous value gets reset
-                    setDataStoragePrevious( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                    SetDataStoragePrevious( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
                         /*!
                          * Constructor for data storage objects for temporally previous objects
                          * 
@@ -1558,11 +1558,11 @@ namespace tardigradeHydra{
              * Class which defines setting constant values regardless of the timestep
              */
             template< typename T >
-            class setDataStorageConstant : public setDataStorageBase< T > {
+            class SetDataStorageConstant : public SetDataStorageBase< T > {
 
                 public:
 
-                    setDataStorageConstant( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                    SetDataStorageConstant( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
                         /*!
                          * Constructor for constant data storage objects
                          * 
@@ -1572,9 +1572,9 @@ namespace tardigradeHydra{
 
             };
 
-            virtual tardigradeHydra::hydraBase::setDataStorageConstant<floatVector> get_setDataStorage_tolerance( );
+            virtual tardigradeHydra::hydraBase::SetDataStorageConstant<floatVector> get_SetDataStorage_tolerance( );
 
-            virtual tardigradeHydra::hydraBase::setDataStorageIteration<secondOrderTensor> get_setDataStorage_stress( );
+            virtual tardigradeHydra::hydraBase::SetDataStorageIteration<secondOrderTensor> get_SetDataStorage_stress( );
 
             virtual void assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
 
@@ -1926,11 +1926,11 @@ namespace tardigradeHydra{
 
     //! A data storage class that updates at every iteration
     template< typename T >
-    class setDataStorageIteration : public setDataStorageIterationBase< residualBase, T > {
+    class SetDataStorageIteration : public SetDataStorageIterationBase< residualBase, T > {
 
       public:
 
-          setDataStorageIteration( DataStorage< T > *ds, residualBase * rp ) : setDataStorageIterationBase< residualBase, T >( ds, rp ){
+          SetDataStorageIteration( DataStorage< T > *ds, residualBase * rp ) : SetDataStorageIterationBase< residualBase, T >( ds, rp ){
                       /*!
                        * Create a data storage object that will be reset at each new iteration
                        * 
@@ -1943,11 +1943,11 @@ namespace tardigradeHydra{
 
     //! A data storage class that updates whenever the previous values change
     template< typename T >
-    class setDataStoragePrevious : public setDataStorageBase< T > {
+    class SetDataStoragePrevious : public SetDataStorageBase< T > {
 
         public:
 
-            setDataStoragePrevious( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+            SetDataStoragePrevious( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
                 /*!
                  * Constructor for data storage objects for temporally previous objects
                  * 
@@ -1959,11 +1959,11 @@ namespace tardigradeHydra{
 
     //! A data storage class that is constant
     template< typename T >
-    class setDataStorageConstant : public setDataStorageBase< T > {
+    class SetDataStorageConstant : public SetDataStorageBase< T > {
 
         public:
 
-            setDataStorageConstant( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+            SetDataStorageConstant( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
                 /*!
                  * Constructor for constant data storage objects
                  * 

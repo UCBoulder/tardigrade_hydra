@@ -213,7 +213,7 @@ BOOST_AUTO_TEST_CASE( test_setTrialStress, * boost::unit_test::tolerance( DEFAUL
 
             virtual void setStress( ) override{
 
-                auto stress = get_setDataStorage_stress( );
+                auto stress = get_SetDataStorage_stress( );
 
                 stress.zero( answer.size( ) );
 
@@ -540,7 +540,7 @@ BOOST_AUTO_TEST_CASE( test_setResidaul, * boost::unit_test::tolerance( DEFAULT_T
 
             virtual void setStress( ) override{
 
-                auto stress = get_setDataStorage_stress( );
+                auto stress = get_SetDataStorage_stress( );
 
                 stress.zero( trialStress.size( ) );
 
@@ -857,7 +857,7 @@ BOOST_AUTO_TEST_CASE( test_residual_jacobians, * boost::unit_test::tolerance( DE
 //
 //            virtual void setStress( ) override{
 //
-//                auto stress = get_setDataStorage_stress( );
+//                auto stress = get_SetDataStorage_stress( );
 //
 //                stress.zero( answer.size( ) );
 //

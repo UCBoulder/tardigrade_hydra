@@ -42,7 +42,7 @@ namespace tardigradeHydra{
              * Set which constraints are active
              */
 
-            auto activeConstraints = get_setDataStorage_activeConstraints( );
+            auto activeConstraints = get_SetDataStorage_activeConstraints( );
 
             activeConstraints.value->resize( 5 );
 
@@ -71,7 +71,7 @@ namespace tardigradeHydra{
                 std::begin( *get_activeConstraints( ) ), std::end( *get_activeConstraints( ) ), std::begin( initialActiveConstraints )
             );
 
-            auto activeConstraints = get_setDataStorage_activeConstraints( );
+            auto activeConstraints = get_SetDataStorage_activeConstraints( );
 
             TARDIGRADE_ERROR_TOOLS_CHECK( activeConstraints.value->size( ) == get_plasticMultipliers( )->size( ), "The active constraints must be the same size as the plastic multipliers\n  activeConstraints size : " + std::to_string( activeConstraints.value->size( ) ) + "\n  plasticMultipliers size: " + std::to_string( get_plasticMultipliers( )->size( ) ) + "\n" )
 
@@ -118,7 +118,7 @@ namespace tardigradeHydra{
 
             auto plasticMultipliers = get_plasticMultipliers( );
 
-            auto residual = get_setDataStorage_stateVariableResiduals( );
+            auto residual = get_SetDataStorage_stateVariableResiduals( );
 
             auto num_ISVS = get_plasticStateVariables( )->size( );
 
@@ -178,7 +178,7 @@ namespace tardigradeHydra{
 
             auto plasticMultipliers = get_plasticMultipliers( );
 
-            auto jacobian = get_setDataStorage_stateVariableJacobians( );
+            auto jacobian = get_SetDataStorage_stateVariableJacobians( );
 
             auto num_ISVS = get_plasticStateVariables( )->size( );
 
@@ -366,7 +366,7 @@ namespace tardigradeHydra{
 
             auto activeConstraints = get_activeConstraints( );
 
-            auto jacobian = get_setDataStorage_dStateVariableResidualsdD( );
+            auto jacobian = get_SetDataStorage_dStateVariableResidualsdD( );
 
             auto num_ISVS = get_plasticStateVariables( )->size( );
 

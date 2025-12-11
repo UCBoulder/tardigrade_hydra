@@ -3208,11 +3208,11 @@ namespace tardigradeHydra{
 
             const floatVector *stress;
 
-            setDataStorageBase< secondOrderTensor > macroDrivingStress;
+            SetDataStorageBase< secondOrderTensor > macroDrivingStress;
 
-            setDataStorageBase< secondOrderTensor > symmetricMicroDrivingStress;
+            SetDataStorageBase< secondOrderTensor > symmetricMicroDrivingStress;
 
-            setDataStorageBase< thirdOrderTensor > higherOrderDrivingStress;
+            SetDataStorageBase< thirdOrderTensor > higherOrderDrivingStress;
 
             if ( isPrevious ){
 
@@ -3222,11 +3222,11 @@ namespace tardigradeHydra{
 
                 chip   = hydra->getPreviousFollowingMicroConfiguration( getPlasticConfigurationIndex( ) - 1 );
 
-                macroDrivingStress          = get_setDataStorage_previousMacroDrivingStress( );
+                macroDrivingStress          = get_SetDataStorage_previousMacroDrivingStress( );
 
-                symmetricMicroDrivingStress = get_setDataStorage_previousSymmetricMicroDrivingStress( );
+                symmetricMicroDrivingStress = get_SetDataStorage_previousSymmetricMicroDrivingStress( );
 
-                higherOrderDrivingStress    = get_setDataStorage_previousHigherOrderDrivingStress( );
+                higherOrderDrivingStress    = get_SetDataStorage_previousHigherOrderDrivingStress( );
 
             }
             else{
@@ -3237,11 +3237,11 @@ namespace tardigradeHydra{
 
                 chip   = hydra->getFollowingMicroConfiguration( getPlasticConfigurationIndex( ) - 1 );
 
-                macroDrivingStress          = get_setDataStorage_macroDrivingStress( );
+                macroDrivingStress          = get_SetDataStorage_macroDrivingStress( );
 
-                symmetricMicroDrivingStress = get_setDataStorage_symmetricMicroDrivingStress( );
+                symmetricMicroDrivingStress = get_SetDataStorage_symmetricMicroDrivingStress( );
 
-                higherOrderDrivingStress    = get_setDataStorage_higherOrderDrivingStress( );
+                higherOrderDrivingStress    = get_SetDataStorage_higherOrderDrivingStress( );
 
             }
 
@@ -3526,33 +3526,33 @@ namespace tardigradeHydra{
 
             const floatVector *dChi1dChin;
 
-            setDataStorageBase< secondOrderTensor > macroDrivingStress;
+            SetDataStorageBase< secondOrderTensor > macroDrivingStress;
 
-            setDataStorageBase< secondOrderTensor > symmetricMicroDrivingStress;
+            SetDataStorageBase< secondOrderTensor > symmetricMicroDrivingStress;
 
-            setDataStorageBase< thirdOrderTensor > higherOrderDrivingStress;
+            SetDataStorageBase< thirdOrderTensor > higherOrderDrivingStress;
 
-            setDataStorageBase< fourthOrderTensor > dMacrodPK2;
+            SetDataStorageBase< fourthOrderTensor > dMacrodPK2;
 
-            setDataStorageBase< fourthOrderTensor > dMicrodSigma;
+            SetDataStorageBase< fourthOrderTensor > dMicrodSigma;
 
-            setDataStorageBase< sixthOrderTensor > dHigherdM;
+            SetDataStorageBase< sixthOrderTensor > dHigherdM;
 
-            setDataStorageBase< fourthOrderTensor > dMacroDrivingStressdF;
+            SetDataStorageBase< fourthOrderTensor > dMacroDrivingStressdF;
 
-            setDataStorageBase< fourthOrderTensor > dMicroDrivingStressdF;
+            SetDataStorageBase< fourthOrderTensor > dMicroDrivingStressdF;
 
-            setDataStorageBase< fifthOrderTensor > dHigherDrivingStressdF;
+            SetDataStorageBase< fifthOrderTensor > dHigherDrivingStressdF;
 
-            setDataStorageBase< fifthOrderTensor > dHigherDrivingStressdChi;
+            SetDataStorageBase< fifthOrderTensor > dHigherDrivingStressdChi;
 
-            setDataStorageBase< floatVector > dMacroDrivingStressdFn;
+            SetDataStorageBase< floatVector > dMacroDrivingStressdFn;
 
-            setDataStorageBase< floatVector > dMicroDrivingStressdFn;
+            SetDataStorageBase< floatVector > dMicroDrivingStressdFn;
 
-            setDataStorageBase< floatVector > dHigherDrivingStressdFn;
+            SetDataStorageBase< floatVector > dHigherDrivingStressdFn;
 
-            setDataStorageBase< floatVector > dHigherDrivingStressdChin;
+            SetDataStorageBase< floatVector > dHigherDrivingStressdChin;
 
             if ( isPrevious ){
 
@@ -3574,33 +3574,33 @@ namespace tardigradeHydra{
 
                 chip          = hydra->getPreviousFollowingMicroConfiguration(    getPlasticConfigurationIndex( ) - 1 );
 
-                macroDrivingStress          = get_setDataStorage_previousMacroDrivingStress( );
+                macroDrivingStress          = get_SetDataStorage_previousMacroDrivingStress( );
 
-                symmetricMicroDrivingStress = get_setDataStorage_previousSymmetricMicroDrivingStress( );
+                symmetricMicroDrivingStress = get_SetDataStorage_previousSymmetricMicroDrivingStress( );
 
-                higherOrderDrivingStress    = get_setDataStorage_previousHigherOrderDrivingStress( );
+                higherOrderDrivingStress    = get_SetDataStorage_previousHigherOrderDrivingStress( );
 
-                dMacrodPK2                  = get_setDataStorage_previousdMacroDrivingStressdMacroStress( );
+                dMacrodPK2                  = get_SetDataStorage_previousdMacroDrivingStressdMacroStress( );
 
-                dMicrodSigma                = get_setDataStorage_previousdSymmetricMicroDrivingStressdMicroStress( );
+                dMicrodSigma                = get_SetDataStorage_previousdSymmetricMicroDrivingStressdMicroStress( );
 
-                dHigherdM                   = get_setDataStorage_previousdHigherOrderDrivingStressdHigherOrderStress( );
+                dHigherdM                   = get_SetDataStorage_previousdHigherOrderDrivingStressdHigherOrderStress( );
 
-                dMacroDrivingStressdF       = get_setDataStorage_previousdMacroDrivingStressdF( );
+                dMacroDrivingStressdF       = get_SetDataStorage_previousdMacroDrivingStressdF( );
 
-                dMicroDrivingStressdF       = get_setDataStorage_previousdSymmetricMicroDrivingStressdF( );
+                dMicroDrivingStressdF       = get_SetDataStorage_previousdSymmetricMicroDrivingStressdF( );
 
-                dHigherDrivingStressdF      = get_setDataStorage_previousdHigherOrderDrivingStressdF( );
+                dHigherDrivingStressdF      = get_SetDataStorage_previousdHigherOrderDrivingStressdF( );
 
-                dHigherDrivingStressdChi    = get_setDataStorage_previousdHigherOrderDrivingStressdChi( );
+                dHigherDrivingStressdChi    = get_SetDataStorage_previousdHigherOrderDrivingStressdChi( );
 
-                dMacroDrivingStressdFn      = get_setDataStorage_previousdMacroDrivingStressdFn( );
+                dMacroDrivingStressdFn      = get_SetDataStorage_previousdMacroDrivingStressdFn( );
 
-                dMicroDrivingStressdFn      = get_setDataStorage_previousdSymmetricMicroDrivingStressdFn( );
+                dMicroDrivingStressdFn      = get_SetDataStorage_previousdSymmetricMicroDrivingStressdFn( );
 
-                dHigherDrivingStressdFn     = get_setDataStorage_previousdHigherOrderDrivingStressdFn( );
+                dHigherDrivingStressdFn     = get_SetDataStorage_previousdHigherOrderDrivingStressdFn( );
 
-                dHigherDrivingStressdChin   = get_setDataStorage_previousdHigherOrderDrivingStressdChin( );
+                dHigherDrivingStressdChin   = get_SetDataStorage_previousdHigherOrderDrivingStressdChin( );
 
             }
             else{
@@ -3623,33 +3623,33 @@ namespace tardigradeHydra{
 
                 chip          = hydra->getFollowingMicroConfiguration(    getPlasticConfigurationIndex( ) - 1 );
 
-                macroDrivingStress          = get_setDataStorage_macroDrivingStress( );
+                macroDrivingStress          = get_SetDataStorage_macroDrivingStress( );
 
-                symmetricMicroDrivingStress = get_setDataStorage_symmetricMicroDrivingStress( );
+                symmetricMicroDrivingStress = get_SetDataStorage_symmetricMicroDrivingStress( );
 
-                higherOrderDrivingStress    = get_setDataStorage_higherOrderDrivingStress( );
+                higherOrderDrivingStress    = get_SetDataStorage_higherOrderDrivingStress( );
 
-                dMacrodPK2                  = get_setDataStorage_dMacroDrivingStressdMacroStress( );
+                dMacrodPK2                  = get_SetDataStorage_dMacroDrivingStressdMacroStress( );
 
-                dMicrodSigma                = get_setDataStorage_dSymmetricMicroDrivingStressdMicroStress( );
+                dMicrodSigma                = get_SetDataStorage_dSymmetricMicroDrivingStressdMicroStress( );
 
-                dHigherdM                   = get_setDataStorage_dHigherOrderDrivingStressdHigherOrderStress( );
+                dHigherdM                   = get_SetDataStorage_dHigherOrderDrivingStressdHigherOrderStress( );
 
-                dMacroDrivingStressdF       = get_setDataStorage_dMacroDrivingStressdF( );
+                dMacroDrivingStressdF       = get_SetDataStorage_dMacroDrivingStressdF( );
 
-                dMicroDrivingStressdF       = get_setDataStorage_dSymmetricMicroDrivingStressdF( );
+                dMicroDrivingStressdF       = get_SetDataStorage_dSymmetricMicroDrivingStressdF( );
 
-                dHigherDrivingStressdF      = get_setDataStorage_dHigherOrderDrivingStressdF( );
+                dHigherDrivingStressdF      = get_SetDataStorage_dHigherOrderDrivingStressdF( );
 
-                dHigherDrivingStressdChi    = get_setDataStorage_dHigherOrderDrivingStressdChi( );
+                dHigherDrivingStressdChi    = get_SetDataStorage_dHigherOrderDrivingStressdChi( );
 
-                dMacroDrivingStressdFn      = get_setDataStorage_dMacroDrivingStressdFn( );
+                dMacroDrivingStressdFn      = get_SetDataStorage_dMacroDrivingStressdFn( );
 
-                dMicroDrivingStressdFn      = get_setDataStorage_dSymmetricMicroDrivingStressdFn( );
+                dMicroDrivingStressdFn      = get_SetDataStorage_dSymmetricMicroDrivingStressdFn( );
 
-                dHigherDrivingStressdFn     = get_setDataStorage_dHigherOrderDrivingStressdFn( );
+                dHigherDrivingStressdFn     = get_SetDataStorage_dHigherOrderDrivingStressdFn( );
 
-                dHigherDrivingStressdChin   = get_setDataStorage_dHigherOrderDrivingStressdChin( );
+                dHigherDrivingStressdChin   = get_SetDataStorage_dHigherOrderDrivingStressdChin( );
 
             }
 
@@ -3923,20 +3923,20 @@ namespace tardigradeHydra{
 
             const floatVector *nonlinearISVs;
 
-            setDataStorageBase< floatVector > plasticStateVariables;
+            SetDataStorageBase< floatVector > plasticStateVariables;
 
             if ( isPrevious ){
 
                 nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
 
-                plasticStateVariables = get_setDataStorage_previousPlasticStateVariables( );
+                plasticStateVariables = get_SetDataStorage_previousPlasticStateVariables( );
 
             }
             else{
 
                 nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
 
-                plasticStateVariables = get_setDataStorage_plasticStateVariables( );
+                plasticStateVariables = get_SetDataStorage_plasticStateVariables( );
 
             }
 
@@ -3977,20 +3977,20 @@ namespace tardigradeHydra{
 
             const floatVector *nonlinearISVs;
 
-            setDataStorageBase< floatVector > plasticMultipliers;
+            SetDataStorageBase< floatVector > plasticMultipliers;
 
             if ( isPrevious ){
 
                 nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
 
-                plasticMultipliers = get_setDataStorage_previousPlasticMultipliers( );
+                plasticMultipliers = get_SetDataStorage_previousPlasticMultipliers( );
 
             }
             else{
 
                 nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
 
-                plasticMultipliers = get_setDataStorage_plasticMultipliers( );
+                plasticMultipliers = get_SetDataStorage_plasticMultipliers( );
 
             }
 
@@ -4031,20 +4031,20 @@ namespace tardigradeHydra{
 
             const floatVector *nonlinearISVs;
 
-            setDataStorageBase< floatVector > plasticStrainLikeISVs;
+            SetDataStorageBase< floatVector > plasticStrainLikeISVs;
 
             if ( isPrevious ){
 
                 nonlinearISVs = hydra->get_previousNonLinearSolveStateVariables( );
 
-                plasticStrainLikeISVs = get_setDataStorage_previousPlasticStrainLikeISVs( );
+                plasticStrainLikeISVs = get_SetDataStorage_previousPlasticStrainLikeISVs( );
 
             }
             else{
 
                 nonlinearISVs = hydra->get_nonLinearSolveStateVariables( );
 
-                plasticStrainLikeISVs = get_setDataStorage_plasticStrainLikeISVs( );
+                plasticStrainLikeISVs = get_SetDataStorage_plasticStrainLikeISVs( );
 
             }
 
@@ -4211,17 +4211,17 @@ namespace tardigradeHydra{
 
             const floatVector *microGradientFlowParameters = get_microGradientFlowParameters( );
 
-            setDataStorageBase< floatType > dMacroFlowdCohesion;
+            SetDataStorageBase< floatType > dMacroFlowdCohesion;
 
-            setDataStorageBase< floatType > dMicroFlowdCohesion;
+            SetDataStorageBase< floatType > dMicroFlowdCohesion;
 
-            setDataStorageBase< secondOrderTensor > dMicroGradientFlowdCohesion;
+            SetDataStorageBase< secondOrderTensor > dMicroGradientFlowdCohesion;
 
-            setDataStorageBase< secondOrderTensor > dMacroFlowdDrivingStress;
+            SetDataStorageBase< secondOrderTensor > dMacroFlowdDrivingStress;
 
-            setDataStorageBase< secondOrderTensor > dMicroFlowdDrivingStress;
+            SetDataStorageBase< secondOrderTensor > dMicroFlowdDrivingStress;
 
-            setDataStorageBase< fourthOrderTensor > dMicroGradientFlowdDrivingStress;
+            SetDataStorageBase< fourthOrderTensor > dMicroGradientFlowdDrivingStress;
 
             if ( isPrevious ){
 
@@ -4239,17 +4239,17 @@ namespace tardigradeHydra{
 
                 microGradientDrivingStress         = get_previousHigherOrderDrivingStress( );
 
-                dMacroFlowdCohesion                = get_setDataStorage_previousdMacroFlowdc( );
+                dMacroFlowdCohesion                = get_SetDataStorage_previousdMacroFlowdc( );
 
-                dMicroFlowdCohesion                = get_setDataStorage_previousdMicroFlowdc( );
+                dMicroFlowdCohesion                = get_SetDataStorage_previousdMicroFlowdc( );
 
-                dMicroGradientFlowdCohesion        = get_setDataStorage_previousdMicroGradientFlowdc( );
+                dMicroGradientFlowdCohesion        = get_SetDataStorage_previousdMicroGradientFlowdc( );
 
-                dMacroFlowdDrivingStress           = get_setDataStorage_previousdMacroFlowdDrivingStress( );
+                dMacroFlowdDrivingStress           = get_SetDataStorage_previousdMacroFlowdDrivingStress( );
 
-                dMicroFlowdDrivingStress           = get_setDataStorage_previousdMicroFlowdDrivingStress( );
+                dMicroFlowdDrivingStress           = get_SetDataStorage_previousdMicroFlowdDrivingStress( );
 
-                dMicroGradientFlowdDrivingStress   = get_setDataStorage_previousdMicroGradientFlowdDrivingStress( );
+                dMicroGradientFlowdDrivingStress   = get_SetDataStorage_previousdMicroGradientFlowdDrivingStress( );
             }
             else{
 
@@ -4267,17 +4267,17 @@ namespace tardigradeHydra{
 
                 microGradientDrivingStress         = get_higherOrderDrivingStress( );
 
-                dMacroFlowdCohesion                = get_setDataStorage_dMacroFlowdc( );
+                dMacroFlowdCohesion                = get_SetDataStorage_dMacroFlowdc( );
 
-                dMicroFlowdCohesion                = get_setDataStorage_dMicroFlowdc( );
+                dMicroFlowdCohesion                = get_SetDataStorage_dMicroFlowdc( );
 
-                dMicroGradientFlowdCohesion        = get_setDataStorage_dMicroGradientFlowdc( );
+                dMicroGradientFlowdCohesion        = get_SetDataStorage_dMicroGradientFlowdc( );
 
-                dMacroFlowdDrivingStress           = get_setDataStorage_dMacroFlowdDrivingStress( );
+                dMacroFlowdDrivingStress           = get_SetDataStorage_dMacroFlowdDrivingStress( );
 
-                dMicroFlowdDrivingStress           = get_setDataStorage_dMicroFlowdDrivingStress( );
+                dMicroFlowdDrivingStress           = get_SetDataStorage_dMicroFlowdDrivingStress( );
 
-                dMicroGradientFlowdDrivingStress   = get_setDataStorage_dMicroGradientFlowdDrivingStress( );
+                dMicroGradientFlowdDrivingStress   = get_SetDataStorage_dMicroGradientFlowdDrivingStress( );
 
             }
 
@@ -4564,39 +4564,39 @@ namespace tardigradeHydra{
 
             const floatVector *microGradientFlowParameters = get_microGradientFlowParameters( );
 
-            setDataStorageBase< floatType > dMacroFlowdCohesion;
+            SetDataStorageBase< floatType > dMacroFlowdCohesion;
 
-            setDataStorageBase< floatType > dMicroFlowdCohesion;
+            SetDataStorageBase< floatType > dMicroFlowdCohesion;
 
-            setDataStorageBase< secondOrderTensor > dMicroGradientFlowdCohesion;
+            SetDataStorageBase< secondOrderTensor > dMicroGradientFlowdCohesion;
 
-            setDataStorageBase< secondOrderTensor > dMacroFlowdDrivingStress;
+            SetDataStorageBase< secondOrderTensor > dMacroFlowdDrivingStress;
 
-            setDataStorageBase< secondOrderTensor > dMicroFlowdDrivingStress;
+            SetDataStorageBase< secondOrderTensor > dMicroFlowdDrivingStress;
 
-            setDataStorageBase< fourthOrderTensor > dMicroGradientFlowdDrivingStress;
+            SetDataStorageBase< fourthOrderTensor > dMicroGradientFlowdDrivingStress;
 
-            setDataStorageBase< fourthOrderTensor > d2MacroFlowdDrivingStressdMacroStress;
+            SetDataStorageBase< fourthOrderTensor > d2MacroFlowdDrivingStressdMacroStress;
 
-            setDataStorageBase< fourthOrderTensor > d2MicroFlowdDrivingStressdMicroStress;
+            SetDataStorageBase< fourthOrderTensor > d2MicroFlowdDrivingStressdMicroStress;
 
-            setDataStorageBase< seventhOrderTensor > d2MicroGradientFlowdDrivingStressdMicroGradientStress;
+            SetDataStorageBase< seventhOrderTensor > d2MicroGradientFlowdDrivingStressdMicroGradientStress;
 
-            setDataStorageBase< fourthOrderTensor > d2MacroFlowdDrivingStressdF;
+            SetDataStorageBase< fourthOrderTensor > d2MacroFlowdDrivingStressdF;
 
-            setDataStorageBase< fourthOrderTensor > d2MicroFlowdDrivingStressdF;
+            SetDataStorageBase< fourthOrderTensor > d2MicroFlowdDrivingStressdF;
 
-            setDataStorageBase< sixthOrderTensor > d2MicroGradientFlowdDrivingStressdF;
+            SetDataStorageBase< sixthOrderTensor > d2MicroGradientFlowdDrivingStressdF;
 
-            setDataStorageBase< sixthOrderTensor > d2MicroGradientFlowdDrivingStressdChi;
+            SetDataStorageBase< sixthOrderTensor > d2MicroGradientFlowdDrivingStressdChi;
 
-            setDataStorageBase< floatVector > d2MacroFlowdDrivingStressdFn;
+            SetDataStorageBase< floatVector > d2MacroFlowdDrivingStressdFn;
 
-            setDataStorageBase< floatVector > d2MicroFlowdDrivingStressdFn;
+            SetDataStorageBase< floatVector > d2MicroFlowdDrivingStressdFn;
 
-            setDataStorageBase< floatVector > d2MicroGradientFlowdDrivingStressdFn;
+            SetDataStorageBase< floatVector > d2MicroGradientFlowdDrivingStressdFn;
 
-            setDataStorageBase< floatVector > d2MicroGradientFlowdDrivingStressdChin;
+            SetDataStorageBase< floatVector > d2MicroGradientFlowdDrivingStressdChin;
 
             if ( isPrevious ){
 
@@ -4640,39 +4640,39 @@ namespace tardigradeHydra{
 
                 microGradientDrivingStress         = get_previousHigherOrderDrivingStress( );
 
-                dMacroFlowdCohesion                = get_setDataStorage_previousdMacroFlowdc( );
+                dMacroFlowdCohesion                = get_SetDataStorage_previousdMacroFlowdc( );
 
-                dMicroFlowdCohesion                = get_setDataStorage_previousdMicroFlowdc( );
+                dMicroFlowdCohesion                = get_SetDataStorage_previousdMicroFlowdc( );
 
-                dMicroGradientFlowdCohesion        = get_setDataStorage_previousdMicroGradientFlowdc( );
+                dMicroGradientFlowdCohesion        = get_SetDataStorage_previousdMicroGradientFlowdc( );
 
-                dMacroFlowdDrivingStress           = get_setDataStorage_previousdMacroFlowdDrivingStress( );
+                dMacroFlowdDrivingStress           = get_SetDataStorage_previousdMacroFlowdDrivingStress( );
 
-                dMicroFlowdDrivingStress           = get_setDataStorage_previousdMicroFlowdDrivingStress( );
+                dMicroFlowdDrivingStress           = get_SetDataStorage_previousdMicroFlowdDrivingStress( );
 
-                dMicroGradientFlowdDrivingStress   = get_setDataStorage_previousdMicroGradientFlowdDrivingStress( );
+                dMicroGradientFlowdDrivingStress   = get_SetDataStorage_previousdMicroGradientFlowdDrivingStress( );
 
-                d2MacroFlowdDrivingStressdMacroStress = get_setDataStorage_previousd2MacroFlowdDrivingStressdStress( );
+                d2MacroFlowdDrivingStressdMacroStress = get_SetDataStorage_previousd2MacroFlowdDrivingStressdStress( );
 
-                d2MicroFlowdDrivingStressdMicroStress = get_setDataStorage_previousd2MicroFlowdDrivingStressdStress( );
+                d2MicroFlowdDrivingStressdMicroStress = get_SetDataStorage_previousd2MicroFlowdDrivingStressdStress( );
 
-                d2MicroGradientFlowdDrivingStressdMicroGradientStress = get_setDataStorage_previousd2MicroGradientFlowdDrivingStressdStress( );
+                d2MicroGradientFlowdDrivingStressdMicroGradientStress = get_SetDataStorage_previousd2MicroGradientFlowdDrivingStressdStress( );
 
-                d2MacroFlowdDrivingStressdF                           = get_setDataStorage_previousd2MacroFlowdDrivingStressdF( );
+                d2MacroFlowdDrivingStressdF                           = get_SetDataStorage_previousd2MacroFlowdDrivingStressdF( );
 
-                d2MicroFlowdDrivingStressdF                           = get_setDataStorage_previousd2MicroFlowdDrivingStressdF( );
+                d2MicroFlowdDrivingStressdF                           = get_SetDataStorage_previousd2MicroFlowdDrivingStressdF( );
 
-                d2MicroGradientFlowdDrivingStressdF                   = get_setDataStorage_previousd2MicroGradientFlowdDrivingStressdF( );
+                d2MicroGradientFlowdDrivingStressdF                   = get_SetDataStorage_previousd2MicroGradientFlowdDrivingStressdF( );
 
-                d2MicroGradientFlowdDrivingStressdChi                 = get_setDataStorage_previousd2MicroGradientFlowdDrivingStressdChi( );
+                d2MicroGradientFlowdDrivingStressdChi                 = get_SetDataStorage_previousd2MicroGradientFlowdDrivingStressdChi( );
 
-                d2MacroFlowdDrivingStressdFn                          = get_setDataStorage_previousd2MacroFlowdDrivingStressdFn( );
+                d2MacroFlowdDrivingStressdFn                          = get_SetDataStorage_previousd2MacroFlowdDrivingStressdFn( );
 
-                d2MicroFlowdDrivingStressdFn                          = get_setDataStorage_previousd2MicroFlowdDrivingStressdFn( );
+                d2MicroFlowdDrivingStressdFn                          = get_SetDataStorage_previousd2MicroFlowdDrivingStressdFn( );
 
-                d2MicroGradientFlowdDrivingStressdFn                  = get_setDataStorage_previousd2MicroGradientFlowdDrivingStressdFn( );
+                d2MicroGradientFlowdDrivingStressdFn                  = get_SetDataStorage_previousd2MicroGradientFlowdDrivingStressdFn( );
 
-                d2MicroGradientFlowdDrivingStressdChin                = get_setDataStorage_previousd2MicroGradientFlowdDrivingStressdChin( );
+                d2MicroGradientFlowdDrivingStressdChin                = get_SetDataStorage_previousd2MicroGradientFlowdDrivingStressdChin( );
 
             }
             else{
@@ -4717,39 +4717,39 @@ namespace tardigradeHydra{
 
                 microGradientDrivingStress                            = get_higherOrderDrivingStress( );
 
-                dMacroFlowdCohesion                                   = get_setDataStorage_dMacroFlowdc( );
+                dMacroFlowdCohesion                                   = get_SetDataStorage_dMacroFlowdc( );
 
-                dMicroFlowdCohesion                                   = get_setDataStorage_dMicroFlowdc( );
+                dMicroFlowdCohesion                                   = get_SetDataStorage_dMicroFlowdc( );
 
-                dMicroGradientFlowdCohesion                           = get_setDataStorage_dMicroGradientFlowdc( );
+                dMicroGradientFlowdCohesion                           = get_SetDataStorage_dMicroGradientFlowdc( );
 
-                dMacroFlowdDrivingStress                              = get_setDataStorage_dMacroFlowdDrivingStress( );
+                dMacroFlowdDrivingStress                              = get_SetDataStorage_dMacroFlowdDrivingStress( );
 
-                dMicroFlowdDrivingStress                              = get_setDataStorage_dMicroFlowdDrivingStress( );
+                dMicroFlowdDrivingStress                              = get_SetDataStorage_dMicroFlowdDrivingStress( );
 
-                dMicroGradientFlowdDrivingStress                      = get_setDataStorage_dMicroGradientFlowdDrivingStress( );
+                dMicroGradientFlowdDrivingStress                      = get_SetDataStorage_dMicroGradientFlowdDrivingStress( );
 
-                d2MacroFlowdDrivingStressdMacroStress                 = get_setDataStorage_d2MacroFlowdDrivingStressdStress( );
+                d2MacroFlowdDrivingStressdMacroStress                 = get_SetDataStorage_d2MacroFlowdDrivingStressdStress( );
 
-                d2MicroFlowdDrivingStressdMicroStress                 = get_setDataStorage_d2MicroFlowdDrivingStressdStress( );
+                d2MicroFlowdDrivingStressdMicroStress                 = get_SetDataStorage_d2MicroFlowdDrivingStressdStress( );
 
-                d2MicroGradientFlowdDrivingStressdMicroGradientStress = get_setDataStorage_d2MicroGradientFlowdDrivingStressdStress( );
+                d2MicroGradientFlowdDrivingStressdMicroGradientStress = get_SetDataStorage_d2MicroGradientFlowdDrivingStressdStress( );
 
-                d2MacroFlowdDrivingStressdF                           = get_setDataStorage_d2MacroFlowdDrivingStressdF( );
+                d2MacroFlowdDrivingStressdF                           = get_SetDataStorage_d2MacroFlowdDrivingStressdF( );
 
-                d2MicroFlowdDrivingStressdF                           = get_setDataStorage_d2MicroFlowdDrivingStressdF( );
+                d2MicroFlowdDrivingStressdF                           = get_SetDataStorage_d2MicroFlowdDrivingStressdF( );
 
-                d2MicroGradientFlowdDrivingStressdF                   = get_setDataStorage_d2MicroGradientFlowdDrivingStressdF( );
+                d2MicroGradientFlowdDrivingStressdF                   = get_SetDataStorage_d2MicroGradientFlowdDrivingStressdF( );
 
-                d2MicroGradientFlowdDrivingStressdChi                 = get_setDataStorage_d2MicroGradientFlowdDrivingStressdChi( );
+                d2MicroGradientFlowdDrivingStressdChi                 = get_SetDataStorage_d2MicroGradientFlowdDrivingStressdChi( );
 
-                d2MacroFlowdDrivingStressdFn                          = get_setDataStorage_d2MacroFlowdDrivingStressdFn( );
+                d2MacroFlowdDrivingStressdFn                          = get_SetDataStorage_d2MacroFlowdDrivingStressdFn( );
 
-                d2MicroFlowdDrivingStressdFn                          = get_setDataStorage_d2MicroFlowdDrivingStressdFn( );
+                d2MicroFlowdDrivingStressdFn                          = get_SetDataStorage_d2MicroFlowdDrivingStressdFn( );
 
-                d2MicroGradientFlowdDrivingStressdFn                  = get_setDataStorage_d2MicroGradientFlowdDrivingStressdFn( );
+                d2MicroGradientFlowdDrivingStressdFn                  = get_SetDataStorage_d2MicroGradientFlowdDrivingStressdFn( );
 
-                d2MicroGradientFlowdDrivingStressdChin                = get_setDataStorage_d2MicroGradientFlowdDrivingStressdChin( );
+                d2MicroGradientFlowdDrivingStressdChin                = get_SetDataStorage_d2MicroGradientFlowdDrivingStressdChin( );
 
             }
 
@@ -4912,32 +4912,32 @@ namespace tardigradeHydra{
 
             const floatVector *plasticStrainLikeISVs;
 
-            setDataStorageBase< floatType > macroCohesion;
+            SetDataStorageBase< floatType > macroCohesion;
 
-            setDataStorageBase< floatType > microCohesion;
+            SetDataStorageBase< floatType > microCohesion;
 
-            setDataStorageBase< dimVector > microGradientCohesion;
+            SetDataStorageBase< dimVector > microGradientCohesion;
 
             if ( isPrevious ){
 
                 plasticStrainLikeISVs = get_previousPlasticStrainLikeISVs( );
 
-                macroCohesion               = get_setDataStorage_previousMacroCohesion( );
+                macroCohesion               = get_SetDataStorage_previousMacroCohesion( );
 
-                microCohesion               = get_setDataStorage_previousMicroCohesion( );
+                microCohesion               = get_SetDataStorage_previousMicroCohesion( );
 
-                microGradientCohesion       = get_setDataStorage_previousMicroGradientCohesion( );
+                microGradientCohesion       = get_SetDataStorage_previousMicroGradientCohesion( );
 
             }
             else{
 
                 plasticStrainLikeISVs = get_plasticStrainLikeISVs( );
 
-                macroCohesion               = get_setDataStorage_macroCohesion( );
+                macroCohesion               = get_SetDataStorage_macroCohesion( );
 
-                microCohesion               = get_setDataStorage_microCohesion( );
+                microCohesion               = get_SetDataStorage_microCohesion( );
 
-                microGradientCohesion       = get_setDataStorage_microGradientCohesion( );
+                microGradientCohesion       = get_SetDataStorage_microGradientCohesion( );
 
             }
 
@@ -5031,50 +5031,50 @@ namespace tardigradeHydra{
 
             const floatVector *plasticStrainLikeISVs;
 
-            setDataStorageBase< floatType > macroCohesion;
+            SetDataStorageBase< floatType > macroCohesion;
 
-            setDataStorageBase< floatType > microCohesion;
+            SetDataStorageBase< floatType > microCohesion;
 
-            setDataStorageBase< dimVector > microGradientCohesion;
+            SetDataStorageBase< dimVector > microGradientCohesion;
 
-            setDataStorageBase< floatVector > dMacroCohesiondISVs;
+            SetDataStorageBase< floatVector > dMacroCohesiondISVs;
 
-            setDataStorageBase< floatVector > dMicroCohesiondISVs;
+            SetDataStorageBase< floatVector > dMicroCohesiondISVs;
 
-            setDataStorageBase< floatVector > dMicroGradientCohesiondISVs;
+            SetDataStorageBase< floatVector > dMicroGradientCohesiondISVs;
 
             if ( isPrevious ){
 
                 plasticStrainLikeISVs       = get_previousPlasticStrainLikeISVs( );
 
-                macroCohesion               = get_setDataStorage_previousMacroCohesion( );
+                macroCohesion               = get_SetDataStorage_previousMacroCohesion( );
 
-                microCohesion               = get_setDataStorage_previousMicroCohesion( );
+                microCohesion               = get_SetDataStorage_previousMicroCohesion( );
 
-                microGradientCohesion       = get_setDataStorage_previousMicroGradientCohesion( );
+                microGradientCohesion       = get_SetDataStorage_previousMicroGradientCohesion( );
 
-                dMacroCohesiondISVs         = get_setDataStorage_previousdMacroCohesiondStateVariables( );
+                dMacroCohesiondISVs         = get_SetDataStorage_previousdMacroCohesiondStateVariables( );
 
-                dMicroCohesiondISVs         = get_setDataStorage_previousdMicroCohesiondStateVariables( );
+                dMicroCohesiondISVs         = get_SetDataStorage_previousdMicroCohesiondStateVariables( );
 
-                dMicroGradientCohesiondISVs = get_setDataStorage_previousdMicroGradientCohesiondStateVariables( );
+                dMicroGradientCohesiondISVs = get_SetDataStorage_previousdMicroGradientCohesiondStateVariables( );
 
             }
             else{
 
                 plasticStrainLikeISVs       = get_plasticStrainLikeISVs( );
 
-                macroCohesion               = get_setDataStorage_macroCohesion( );
+                macroCohesion               = get_SetDataStorage_macroCohesion( );
 
-                microCohesion               = get_setDataStorage_microCohesion( );
+                microCohesion               = get_SetDataStorage_microCohesion( );
 
-                microGradientCohesion       = get_setDataStorage_microGradientCohesion( );
+                microGradientCohesion       = get_SetDataStorage_microGradientCohesion( );
 
-                dMacroCohesiondISVs         = get_setDataStorage_dMacroCohesiondStateVariables( );
+                dMacroCohesiondISVs         = get_SetDataStorage_dMacroCohesiondStateVariables( );
 
-                dMicroCohesiondISVs         = get_setDataStorage_dMicroCohesiondStateVariables( );
+                dMicroCohesiondISVs         = get_SetDataStorage_dMicroCohesiondStateVariables( );
 
-                dMicroGradientCohesiondISVs = get_setDataStorage_dMicroGradientCohesiondStateVariables( );
+                dMicroGradientCohesiondISVs = get_SetDataStorage_dMicroGradientCohesiondStateVariables( );
 
             }
 
@@ -5150,7 +5150,7 @@ namespace tardigradeHydra{
 
             const floatVector *plasticMultipliers;
 
-            setDataStorageBase< floatVector > evolutionRates;
+            SetDataStorageBase< floatVector > evolutionRates;
 
             if ( isPrevious ){
 
@@ -5162,7 +5162,7 @@ namespace tardigradeHydra{
 
                 dMicroGradientFlowdc = get_previousdMicroGradientFlowdc( );
 
-                evolutionRates = get_setDataStorage_previousPlasticStrainLikeISVEvolutionRates( );
+                evolutionRates = get_SetDataStorage_previousPlasticStrainLikeISVEvolutionRates( );
 
             }
             else{
@@ -5175,7 +5175,7 @@ namespace tardigradeHydra{
 
                 dMicroGradientFlowdc = get_dMicroGradientFlowdc( );
 
-                evolutionRates = get_setDataStorage_plasticStrainLikeISVEvolutionRates( );
+                evolutionRates = get_SetDataStorage_plasticStrainLikeISVEvolutionRates( );
 
             }
 
@@ -5232,9 +5232,9 @@ namespace tardigradeHydra{
 
             const floatVector *plasticMultipliers;
 
-            setDataStorageBase< floatVector > evolutionRates;
+            SetDataStorageBase< floatVector > evolutionRates;
 
-            setDataStorageBase< floatVector > dEvolutionRatesdStateVariables;
+            SetDataStorageBase< floatVector > dEvolutionRatesdStateVariables;
 
             if ( isPrevious ){
 
@@ -5246,9 +5246,9 @@ namespace tardigradeHydra{
 
                 dMicroGradientFlowdc = get_previousdMicroGradientFlowdc( );
 
-                evolutionRates       = get_setDataStorage_previousPlasticStrainLikeISVEvolutionRates( );
+                evolutionRates       = get_SetDataStorage_previousPlasticStrainLikeISVEvolutionRates( );
 
-                dEvolutionRatesdStateVariables = get_setDataStorage_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( );
+                dEvolutionRatesdStateVariables = get_SetDataStorage_previousdPlasticStrainLikeISVEvolutionRatesdStateVariables( );
 
             }
             else{
@@ -5261,9 +5261,9 @@ namespace tardigradeHydra{
 
                 dMicroGradientFlowdc = get_dMicroGradientFlowdc( );
 
-                evolutionRates       = get_setDataStorage_plasticStrainLikeISVEvolutionRates( );
+                evolutionRates       = get_SetDataStorage_plasticStrainLikeISVEvolutionRates( );
 
-                dEvolutionRatesdStateVariables = get_setDataStorage_dPlasticStrainLikeISVEvolutionRatesdStateVariables( );
+                dEvolutionRatesdStateVariables = get_SetDataStorage_dPlasticStrainLikeISVEvolutionRatesdStateVariables( );
 
             }
 
@@ -5309,7 +5309,7 @@ namespace tardigradeHydra{
             const floatVector *previousEvolutionRates        = get_previousPlasticStrainLikeISVEvolutionRates( );
 
             floatVector dISVs;
-            auto updatedISVs = get_setDataStorage_updatedPlasticStrainLikeISVs( );
+            auto updatedISVs = get_SetDataStorage_updatedPlasticStrainLikeISVs( );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolution( hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, 1 - getIntegrationParameter( ) ) );
 
@@ -5353,15 +5353,15 @@ namespace tardigradeHydra{
 
             floatVector dISVsdEvolutionRates;
 
-            auto updatedISVs = get_setDataStorage_updatedPlasticStrainLikeISVs( );
+            auto updatedISVs = get_SetDataStorage_updatedPlasticStrainLikeISVs( );
 
-            auto dUpdatedPlasticStrainLikeISVsdStateVariables = get_setDataStorage_dUpdatedPlasticStrainLikeISVsdStateVariables( );
+            auto dUpdatedPlasticStrainLikeISVsdStateVariables = get_SetDataStorage_dUpdatedPlasticStrainLikeISVsdStateVariables( );
 
             if ( addPrevious ){
 
                 floatVector dISVsdPreviousEvolutionRates;
 
-                auto dISVsdStateVariables = get_setDataStorage_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables( );
+                auto dISVsdStateVariables = get_SetDataStorage_dUpdatedPlasticStrainLikeISVsdPreviousStateVariables( );
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::midpointEvolutionFlatJ( hydra->getDeltaTime( ), *previousPlasticStrainLikeISVs, *previousEvolutionRates, *evolutionRates, dISVs, *updatedISVs.value, dISVsdEvolutionRates, dISVsdPreviousEvolutionRates, 1 - getIntegrationParameter( ) ) );
 
@@ -5477,11 +5477,11 @@ namespace tardigradeHydra{
 
             const floatVector *microGradientYieldParameters = get_microGradientYieldParameters( );
 
-            setDataStorageBase< floatType > macroYield;
+            SetDataStorageBase< floatType > macroYield;
 
-            setDataStorageBase< floatType > microYield;
+            SetDataStorageBase< floatType > microYield;
 
-            setDataStorageBase< dimVector > microGradientYield;
+            SetDataStorageBase< dimVector > microGradientYield;
 
             if ( isPrevious ){
 
@@ -5499,11 +5499,11 @@ namespace tardigradeHydra{
 
                 microGradientCohesion      = get_previousMicroGradientCohesion( );
 
-                macroYield                 = get_setDataStorage_previousMacroYield( );
+                macroYield                 = get_SetDataStorage_previousMacroYield( );
 
-                microYield                 = get_setDataStorage_previousMicroYield( );
+                microYield                 = get_SetDataStorage_previousMicroYield( );
 
-                microGradientYield         = get_setDataStorage_previousMicroGradientYield( );
+                microGradientYield         = get_SetDataStorage_previousMicroGradientYield( );
 
             }
             else{
@@ -5522,11 +5522,11 @@ namespace tardigradeHydra{
 
                 microGradientCohesion      = get_microGradientCohesion( );
 
-                macroYield                 = get_setDataStorage_macroYield( );
+                macroYield                 = get_SetDataStorage_macroYield( );
 
-                microYield                 = get_setDataStorage_microYield( );
+                microYield                 = get_SetDataStorage_microYield( );
 
-                microGradientYield         = get_setDataStorage_microGradientYield( );
+                microGradientYield         = get_SetDataStorage_microGradientYield( );
 
             }
 
@@ -5865,39 +5865,39 @@ namespace tardigradeHydra{
 
             const floatVector *microGradientYieldParameters = get_microGradientYieldParameters( );
 
-            setDataStorageBase< floatType > macroYield;
+            SetDataStorageBase< floatType > macroYield;
 
-            setDataStorageBase< floatType > microYield;
+            SetDataStorageBase< floatType > microYield;
 
-            setDataStorageBase< dimVector > microGradientYield;
+            SetDataStorageBase< dimVector > microGradientYield;
 
-            setDataStorageBase< secondOrderTensor > dMacroYielddStress;
+            SetDataStorageBase< secondOrderTensor > dMacroYielddStress;
 
-            setDataStorageBase< floatVector > dMacroYielddStateVariables;
+            SetDataStorageBase< floatVector > dMacroYielddStateVariables;
 
-            setDataStorageBase< secondOrderTensor > dMacroYielddF;
+            SetDataStorageBase< secondOrderTensor > dMacroYielddF;
 
-            setDataStorageBase< floatVector > dMacroYielddFn;
+            SetDataStorageBase< floatVector > dMacroYielddFn;
 
-            setDataStorageBase< secondOrderTensor > dMicroYielddStress;
+            SetDataStorageBase< secondOrderTensor > dMicroYielddStress;
 
-            setDataStorageBase< floatVector > dMicroYielddStateVariables;
+            SetDataStorageBase< floatVector > dMicroYielddStateVariables;
 
-            setDataStorageBase< secondOrderTensor > dMicroYielddF;
+            SetDataStorageBase< secondOrderTensor > dMicroYielddF;
 
-            setDataStorageBase< floatVector > dMicroYielddFn;
+            SetDataStorageBase< floatVector > dMicroYielddFn;
 
-            setDataStorageBase< fourthOrderTensor > dMicroGradientYielddStress;
+            SetDataStorageBase< fourthOrderTensor > dMicroGradientYielddStress;
 
-            setDataStorageBase< floatVector > dMicroGradientYielddStateVariables;
+            SetDataStorageBase< floatVector > dMicroGradientYielddStateVariables;
 
-            setDataStorageBase< fourthOrderTensor > dMicroGradientYielddF;
+            SetDataStorageBase< fourthOrderTensor > dMicroGradientYielddF;
 
-            setDataStorageBase< floatVector > dMicroGradientYielddFn;
+            SetDataStorageBase< floatVector > dMicroGradientYielddFn;
 
-            setDataStorageBase< fourthOrderTensor > dMicroGradientYielddChi;
+            SetDataStorageBase< fourthOrderTensor > dMicroGradientYielddChi;
 
-            setDataStorageBase< floatVector > dMicroGradientYielddChin;
+            SetDataStorageBase< floatVector > dMicroGradientYielddChin;
 
             if ( isPrevious ){
 
@@ -5947,39 +5947,39 @@ namespace tardigradeHydra{
 
                 microGradientCohesion                 = get_previousMicroGradientCohesion( );
 
-                macroYield                            = get_setDataStorage_previousMacroYield( );
+                macroYield                            = get_SetDataStorage_previousMacroYield( );
 
-                microYield                            = get_setDataStorage_previousMicroYield( );
+                microYield                            = get_SetDataStorage_previousMicroYield( );
 
-                microGradientYield                    = get_setDataStorage_previousMicroGradientYield( );
+                microGradientYield                    = get_SetDataStorage_previousMicroGradientYield( );
 
-                dMacroYielddStress                    = get_setDataStorage_previousdMacroYielddStress( );
+                dMacroYielddStress                    = get_SetDataStorage_previousdMacroYielddStress( );
 
-                dMacroYielddStateVariables            = get_setDataStorage_previousdMacroYielddStateVariables( );
+                dMacroYielddStateVariables            = get_SetDataStorage_previousdMacroYielddStateVariables( );
 
-                dMacroYielddF                         = get_setDataStorage_previousdMacroYielddF( );
+                dMacroYielddF                         = get_SetDataStorage_previousdMacroYielddF( );
 
-                dMacroYielddFn                        = get_setDataStorage_previousdMacroYielddFn( );
+                dMacroYielddFn                        = get_SetDataStorage_previousdMacroYielddFn( );
 
-                dMicroYielddStress                    = get_setDataStorage_previousdMicroYielddStress( );
+                dMicroYielddStress                    = get_SetDataStorage_previousdMicroYielddStress( );
 
-                dMicroYielddStateVariables            = get_setDataStorage_previousdMicroYielddStateVariables( );
+                dMicroYielddStateVariables            = get_SetDataStorage_previousdMicroYielddStateVariables( );
 
-                dMicroYielddF                         = get_setDataStorage_previousdMicroYielddF( );
+                dMicroYielddF                         = get_SetDataStorage_previousdMicroYielddF( );
 
-                dMicroYielddFn                        = get_setDataStorage_previousdMicroYielddFn( );
+                dMicroYielddFn                        = get_SetDataStorage_previousdMicroYielddFn( );
 
-                dMicroGradientYielddStress            = get_setDataStorage_previousdMicroGradientYielddStress( );
+                dMicroGradientYielddStress            = get_SetDataStorage_previousdMicroGradientYielddStress( );
 
-                dMicroGradientYielddStateVariables    = get_setDataStorage_previousdMicroGradientYielddStateVariables( );
+                dMicroGradientYielddStateVariables    = get_SetDataStorage_previousdMicroGradientYielddStateVariables( );
 
-                dMicroGradientYielddF                 = get_setDataStorage_previousdMicroGradientYielddF( );
+                dMicroGradientYielddF                 = get_SetDataStorage_previousdMicroGradientYielddF( );
 
-                dMicroGradientYielddFn                = get_setDataStorage_previousdMicroGradientYielddFn( );
+                dMicroGradientYielddFn                = get_SetDataStorage_previousdMicroGradientYielddFn( );
 
-                dMicroGradientYielddChi               = get_setDataStorage_previousdMicroGradientYielddChi( );
+                dMicroGradientYielddChi               = get_SetDataStorage_previousdMicroGradientYielddChi( );
 
-                dMicroGradientYielddChin              = get_setDataStorage_previousdMicroGradientYielddChin( );
+                dMicroGradientYielddChin              = get_SetDataStorage_previousdMicroGradientYielddChin( );
 
             }
             else{
@@ -6030,39 +6030,39 @@ namespace tardigradeHydra{
 
                 microGradientCohesion              = get_microGradientCohesion( );
 
-                macroYield                         = get_setDataStorage_macroYield( );
+                macroYield                         = get_SetDataStorage_macroYield( );
 
-                microYield                         = get_setDataStorage_microYield( );
+                microYield                         = get_SetDataStorage_microYield( );
 
-                microGradientYield                 = get_setDataStorage_microGradientYield( );
+                microGradientYield                 = get_SetDataStorage_microGradientYield( );
 
-                dMacroYielddStress                 = get_setDataStorage_dMacroYielddStress( );
+                dMacroYielddStress                 = get_SetDataStorage_dMacroYielddStress( );
 
-                dMacroYielddStateVariables         = get_setDataStorage_dMacroYielddStateVariables( );
+                dMacroYielddStateVariables         = get_SetDataStorage_dMacroYielddStateVariables( );
 
-                dMacroYielddF                      = get_setDataStorage_dMacroYielddF( );
+                dMacroYielddF                      = get_SetDataStorage_dMacroYielddF( );
 
-                dMacroYielddFn                     = get_setDataStorage_dMacroYielddFn( );
+                dMacroYielddFn                     = get_SetDataStorage_dMacroYielddFn( );
 
-                dMicroYielddStress                 = get_setDataStorage_dMicroYielddStress( );
+                dMicroYielddStress                 = get_SetDataStorage_dMicroYielddStress( );
 
-                dMicroYielddStateVariables         = get_setDataStorage_dMicroYielddStateVariables( );
+                dMicroYielddStateVariables         = get_SetDataStorage_dMicroYielddStateVariables( );
 
-                dMicroYielddF                      = get_setDataStorage_dMicroYielddF( );
+                dMicroYielddF                      = get_SetDataStorage_dMicroYielddF( );
 
-                dMicroYielddFn                     = get_setDataStorage_dMicroYielddFn( );
+                dMicroYielddFn                     = get_SetDataStorage_dMicroYielddFn( );
 
-                dMicroGradientYielddStress         = get_setDataStorage_dMicroGradientYielddStress( );
+                dMicroGradientYielddStress         = get_SetDataStorage_dMicroGradientYielddStress( );
 
-                dMicroGradientYielddStateVariables = get_setDataStorage_dMicroGradientYielddStateVariables( );
+                dMicroGradientYielddStateVariables = get_SetDataStorage_dMicroGradientYielddStateVariables( );
 
-                dMicroGradientYielddF              = get_setDataStorage_dMicroGradientYielddF( );
+                dMicroGradientYielddF              = get_SetDataStorage_dMicroGradientYielddF( );
 
-                dMicroGradientYielddFn             = get_setDataStorage_dMicroGradientYielddFn( );
+                dMicroGradientYielddFn             = get_SetDataStorage_dMicroGradientYielddFn( );
 
-                dMicroGradientYielddChi            = get_setDataStorage_dMicroGradientYielddChi( );
+                dMicroGradientYielddChi            = get_SetDataStorage_dMicroGradientYielddChi( );
 
-                dMicroGradientYielddChin           = get_setDataStorage_dMicroGradientYielddChin( );
+                dMicroGradientYielddChin           = get_SetDataStorage_dMicroGradientYielddChin( );
 
             }
 
@@ -6261,9 +6261,9 @@ namespace tardigradeHydra{
 
             const floatVector *dF1dFn;
 
-            setDataStorageBase< fourthOrderTensor > dPrecedingFdF;
+            SetDataStorageBase< fourthOrderTensor > dPrecedingFdF;
 
-            setDataStorageBase< floatVector > dPrecedingFdFn;
+            SetDataStorageBase< floatVector > dPrecedingFdFn;
 
             if ( isPrevious ){
 
@@ -6275,9 +6275,9 @@ namespace tardigradeHydra{
 
                 dF1dFn = hydra->get_previousdF1dFn( );
 
-                dPrecedingFdF  = get_setDataStorage_previousdPrecedingDeformationGradientdF( );
+                dPrecedingFdF  = get_SetDataStorage_previousdPrecedingDeformationGradientdF( );
 
-                dPrecedingFdFn = get_setDataStorage_previousdPrecedingDeformationGradientdFn( );
+                dPrecedingFdFn = get_SetDataStorage_previousdPrecedingDeformationGradientdFn( );
 
             }
             else{
@@ -6290,9 +6290,9 @@ namespace tardigradeHydra{
 
                 dF1dFn = hydra->get_dF1dFn( );
 
-                dPrecedingFdF  = get_setDataStorage_dPrecedingDeformationGradientdF( );
+                dPrecedingFdF  = get_SetDataStorage_dPrecedingDeformationGradientdF( );
 
-                dPrecedingFdFn = get_setDataStorage_dPrecedingDeformationGradientdFn( );
+                dPrecedingFdFn = get_SetDataStorage_dPrecedingDeformationGradientdFn( );
 
             }
 
@@ -6421,9 +6421,9 @@ namespace tardigradeHydra{
 
             const floatVector *dChi1dChin;
 
-            setDataStorageBase< fourthOrderTensor > dPrecedingChidChi;
+            SetDataStorageBase< fourthOrderTensor > dPrecedingChidChi;
 
-            setDataStorageBase< floatVector >       dPrecedingChidChin;
+            SetDataStorageBase< floatVector >       dPrecedingChidChin;
 
             if ( isPrevious ){
 
@@ -6435,9 +6435,9 @@ namespace tardigradeHydra{
 
                 dChi1dChin = hydra->get_previousdChi1dChin( );
 
-                dPrecedingChidChi  = get_setDataStorage_previousdPrecedingMicroDeformationdChi( );
+                dPrecedingChidChi  = get_SetDataStorage_previousdPrecedingMicroDeformationdChi( );
 
-                dPrecedingChidChin = get_setDataStorage_previousdPrecedingMicroDeformationdChin( );
+                dPrecedingChidChin = get_SetDataStorage_previousdPrecedingMicroDeformationdChin( );
 
             }
             else{
@@ -6450,9 +6450,9 @@ namespace tardigradeHydra{
 
                 dChi1dChin = hydra->get_dChi1dChin( );
 
-                dPrecedingChidChi  = get_setDataStorage_dPrecedingMicroDeformationdChi( );
+                dPrecedingChidChi  = get_SetDataStorage_dPrecedingMicroDeformationdChi( );
 
-                dPrecedingChidChin = get_setDataStorage_dPrecedingMicroDeformationdChin( );
+                dPrecedingChidChin = get_SetDataStorage_dPrecedingMicroDeformationdChin( );
 
             }
 
@@ -6744,11 +6744,11 @@ namespace tardigradeHydra{
 
             const fourthOrderTensor *dMicroGradientFlowdDrivingStress;
 
-            setDataStorageBase< secondOrderTensor > macroVelocityGradient;
+            SetDataStorageBase< secondOrderTensor > macroVelocityGradient;
 
-            setDataStorageBase< secondOrderTensor > microVelocityGradient;
+            SetDataStorageBase< secondOrderTensor > microVelocityGradient;
 
-            setDataStorageBase< thirdOrderTensor >  gradientMicroVelocityGradient;
+            SetDataStorageBase< thirdOrderTensor >  gradientMicroVelocityGradient;
 
             if ( isPrevious ){
 
@@ -6766,11 +6766,11 @@ namespace tardigradeHydra{
 
                 dMicroGradientFlowdDrivingStress = get_previousdMicroGradientFlowdDrivingStress( );
 
-                macroVelocityGradient         = get_setDataStorage_previousPlasticMacroVelocityGradient( );
+                macroVelocityGradient         = get_SetDataStorage_previousPlasticMacroVelocityGradient( );
 
-                microVelocityGradient         = get_setDataStorage_previousPlasticMicroVelocityGradient( );
+                microVelocityGradient         = get_SetDataStorage_previousPlasticMicroVelocityGradient( );
 
-                gradientMicroVelocityGradient = get_setDataStorage_previousPlasticGradientMicroVelocityGradient( );
+                gradientMicroVelocityGradient = get_SetDataStorage_previousPlasticGradientMicroVelocityGradient( );
 
             }
             else{
@@ -6789,11 +6789,11 @@ namespace tardigradeHydra{
 
                 dMicroGradientFlowdDrivingStress = get_dMicroGradientFlowdDrivingStress( );
 
-                macroVelocityGradient         = get_setDataStorage_plasticMacroVelocityGradient( );
+                macroVelocityGradient         = get_SetDataStorage_plasticMacroVelocityGradient( );
 
-                microVelocityGradient         = get_setDataStorage_plasticMicroVelocityGradient( );
+                microVelocityGradient         = get_SetDataStorage_plasticMicroVelocityGradient( );
 
-                gradientMicroVelocityGradient = get_setDataStorage_plasticGradientMicroVelocityGradient( );
+                gradientMicroVelocityGradient = get_SetDataStorage_plasticGradientMicroVelocityGradient( );
 
             }
 
@@ -7280,51 +7280,51 @@ namespace tardigradeHydra{
 
             const floatVector *d2MicroGradientFlowdDrivingStressdChin;
 
-            setDataStorageBase< secondOrderTensor > macroVelocityGradient;
+            SetDataStorageBase< secondOrderTensor > macroVelocityGradient;
 
-            setDataStorageBase< secondOrderTensor > microVelocityGradient;
+            SetDataStorageBase< secondOrderTensor > microVelocityGradient;
 
-            setDataStorageBase< thirdOrderTensor >  gradientMicroVelocityGradient;
+            SetDataStorageBase< thirdOrderTensor >  gradientMicroVelocityGradient;
 
-            setDataStorageBase< secondOrderTensor > dPlasticMacroLdMacroStress;
+            SetDataStorageBase< secondOrderTensor > dPlasticMacroLdMacroStress;
 
-            setDataStorageBase< secondOrderTensor > dPlasticMacroLdMicroStress;
+            SetDataStorageBase< secondOrderTensor > dPlasticMacroLdMicroStress;
 
-            setDataStorageBase< secondOrderTensor > dPlasticMicroLdMicroStress;
+            SetDataStorageBase< secondOrderTensor > dPlasticMicroLdMicroStress;
 
-            setDataStorageBase< fifthOrderTensor >  dPlasticGradientMicroLdMicroStress;
+            SetDataStorageBase< fifthOrderTensor >  dPlasticGradientMicroLdMicroStress;
 
-            setDataStorageBase< sixthOrderTensor >  dPlasticGradientMicroLdHigherOrderStress;
+            SetDataStorageBase< sixthOrderTensor >  dPlasticGradientMicroLdHigherOrderStress;
 
-            setDataStorageBase< fourthOrderTensor > dPlasticMacroLdF;
+            SetDataStorageBase< fourthOrderTensor > dPlasticMacroLdF;
 
-            setDataStorageBase< floatVector > dPlasticMacroLdFn;
+            SetDataStorageBase< floatVector > dPlasticMacroLdFn;
 
-            setDataStorageBase< fourthOrderTensor > dPlasticMicroLdF;
+            SetDataStorageBase< fourthOrderTensor > dPlasticMicroLdF;
 
-            setDataStorageBase< floatVector > dPlasticMicroLdFn;
+            SetDataStorageBase< floatVector > dPlasticMicroLdFn;
 
-            setDataStorageBase< fifthOrderTensor > dPlasticGradientMicroLdF;
+            SetDataStorageBase< fifthOrderTensor > dPlasticGradientMicroLdF;
 
-            setDataStorageBase< floatVector > dPlasticGradientMicroLdFn;
+            SetDataStorageBase< floatVector > dPlasticGradientMicroLdFn;
 
-            setDataStorageBase< fourthOrderTensor > dPlasticMicroLdChi;
+            SetDataStorageBase< fourthOrderTensor > dPlasticMicroLdChi;
 
-            setDataStorageBase< floatVector > dPlasticMicroLdChin;
+            SetDataStorageBase< floatVector > dPlasticMicroLdChin;
 
-            setDataStorageBase< fifthOrderTensor > dPlasticGradientMicroLdChi;
+            SetDataStorageBase< fifthOrderTensor > dPlasticGradientMicroLdChi;
 
-            setDataStorageBase< floatVector > dPlasticGradientMicroLdChin;
+            SetDataStorageBase< floatVector > dPlasticGradientMicroLdChin;
 
-            setDataStorageBase< sixthOrderTensor > dPlasticGradientMicroLdGradChi;
+            SetDataStorageBase< sixthOrderTensor > dPlasticGradientMicroLdGradChi;
 
-            setDataStorageBase< floatVector > dPlasticGradientMicroLdGradChin;
+            SetDataStorageBase< floatVector > dPlasticGradientMicroLdGradChin;
 
-            setDataStorageBase< floatVector > dPlasticMacroLdISVs;
+            SetDataStorageBase< floatVector > dPlasticMacroLdISVs;
 
-            setDataStorageBase< floatVector > dPlasticMicroLdISVs;
+            SetDataStorageBase< floatVector > dPlasticMicroLdISVs;
 
-            setDataStorageBase< floatVector > dPlasticGradientMicroLdISVs;
+            SetDataStorageBase< floatVector > dPlasticGradientMicroLdISVs;
 
             if ( isPrevious ){
 
@@ -7382,51 +7382,51 @@ namespace tardigradeHydra{
 
                 dMicroGradientFlowdDrivingStress = get_previousdMicroGradientFlowdDrivingStress( );
 
-                macroVelocityGradient         = get_setDataStorage_previousPlasticMacroVelocityGradient( );
+                macroVelocityGradient         = get_SetDataStorage_previousPlasticMacroVelocityGradient( );
 
-                microVelocityGradient         = get_setDataStorage_previousPlasticMicroVelocityGradient( );
+                microVelocityGradient         = get_SetDataStorage_previousPlasticMicroVelocityGradient( );
 
-                gradientMicroVelocityGradient = get_setDataStorage_previousPlasticGradientMicroVelocityGradient( );
+                gradientMicroVelocityGradient = get_SetDataStorage_previousPlasticGradientMicroVelocityGradient( );
 
-                dPlasticMacroLdMacroStress    = get_setDataStorage_previousdPlasticMacroVelocityGradientdMacroStress( );
+                dPlasticMacroLdMacroStress    = get_SetDataStorage_previousdPlasticMacroVelocityGradientdMacroStress( );
 
-                dPlasticMacroLdMicroStress    = get_setDataStorage_previousdPlasticMacroVelocityGradientdMicroStress( );
+                dPlasticMacroLdMicroStress    = get_SetDataStorage_previousdPlasticMacroVelocityGradientdMicroStress( );
 
-                dPlasticMicroLdMicroStress    = get_setDataStorage_previousdPlasticMicroVelocityGradientdMicroStress( );
+                dPlasticMicroLdMicroStress    = get_SetDataStorage_previousdPlasticMicroVelocityGradientdMicroStress( );
 
-                dPlasticGradientMicroLdMicroStress = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdMicroStress( );
+                dPlasticGradientMicroLdMicroStress = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdMicroStress( );
 
-                dPlasticGradientMicroLdHigherOrderStress = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress( );
+                dPlasticGradientMicroLdHigherOrderStress = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdHigherOrderStress( );
 
-                dPlasticMacroLdF  = get_setDataStorage_previousdPlasticMacroVelocityGradientdF( );
+                dPlasticMacroLdF  = get_SetDataStorage_previousdPlasticMacroVelocityGradientdF( );
 
-                dPlasticMacroLdFn = get_setDataStorage_previousdPlasticMacroVelocityGradientdFn( );
+                dPlasticMacroLdFn = get_SetDataStorage_previousdPlasticMacroVelocityGradientdFn( );
 
-                dPlasticMicroLdF  = get_setDataStorage_previousdPlasticMicroVelocityGradientdF( );
+                dPlasticMicroLdF  = get_SetDataStorage_previousdPlasticMicroVelocityGradientdF( );
 
-                dPlasticMicroLdFn = get_setDataStorage_previousdPlasticMicroVelocityGradientdFn( );
+                dPlasticMicroLdFn = get_SetDataStorage_previousdPlasticMicroVelocityGradientdFn( );
 
-                dPlasticGradientMicroLdF  = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdF( );
+                dPlasticGradientMicroLdF  = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdF( );
 
-                dPlasticGradientMicroLdFn = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdFn( );
+                dPlasticGradientMicroLdFn = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdFn( );
 
-                dPlasticMicroLdChi  = get_setDataStorage_previousdPlasticMicroVelocityGradientdChi( );
+                dPlasticMicroLdChi  = get_SetDataStorage_previousdPlasticMicroVelocityGradientdChi( );
 
-                dPlasticMicroLdChin = get_setDataStorage_previousdPlasticMicroVelocityGradientdChin( );
+                dPlasticMicroLdChin = get_SetDataStorage_previousdPlasticMicroVelocityGradientdChin( );
 
-                dPlasticGradientMicroLdChi  = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdChi( );
+                dPlasticGradientMicroLdChi  = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdChi( );
 
-                dPlasticGradientMicroLdChin = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdChin( );
+                dPlasticGradientMicroLdChin = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdChin( );
 
-                dPlasticGradientMicroLdGradChi  = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdGradChi( );
+                dPlasticGradientMicroLdGradChi  = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdGradChi( );
 
-                dPlasticGradientMicroLdGradChin = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdGradChin( );
+                dPlasticGradientMicroLdGradChin = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdGradChin( );
 
-                dPlasticMacroLdISVs = get_setDataStorage_previousdPlasticMacroVelocityGradientdStateVariables( );
+                dPlasticMacroLdISVs = get_SetDataStorage_previousdPlasticMacroVelocityGradientdStateVariables( );
 
-                dPlasticMicroLdISVs = get_setDataStorage_previousdPlasticMicroVelocityGradientdStateVariables( );
+                dPlasticMicroLdISVs = get_SetDataStorage_previousdPlasticMicroVelocityGradientdStateVariables( );
 
-                dPlasticGradientMicroLdISVs = get_setDataStorage_previousdPlasticGradientMicroVelocityGradientdStateVariables( );
+                dPlasticGradientMicroLdISVs = get_SetDataStorage_previousdPlasticGradientMicroVelocityGradientdStateVariables( );
 
             }
             else{
@@ -7485,51 +7485,51 @@ namespace tardigradeHydra{
 
                 dMicroGradientFlowdDrivingStress = get_dMicroGradientFlowdDrivingStress( );
 
-                macroVelocityGradient         = get_setDataStorage_plasticMacroVelocityGradient( );
+                macroVelocityGradient         = get_SetDataStorage_plasticMacroVelocityGradient( );
 
-                microVelocityGradient         = get_setDataStorage_plasticMicroVelocityGradient( );
+                microVelocityGradient         = get_SetDataStorage_plasticMicroVelocityGradient( );
 
-                gradientMicroVelocityGradient = get_setDataStorage_plasticGradientMicroVelocityGradient( );
+                gradientMicroVelocityGradient = get_SetDataStorage_plasticGradientMicroVelocityGradient( );
 
-                dPlasticMacroLdMacroStress    = get_setDataStorage_dPlasticMacroVelocityGradientdMacroStress( );
+                dPlasticMacroLdMacroStress    = get_SetDataStorage_dPlasticMacroVelocityGradientdMacroStress( );
 
-                dPlasticMacroLdMicroStress    = get_setDataStorage_dPlasticMacroVelocityGradientdMicroStress( );
+                dPlasticMacroLdMicroStress    = get_SetDataStorage_dPlasticMacroVelocityGradientdMicroStress( );
 
-                dPlasticMicroLdMicroStress    = get_setDataStorage_dPlasticMicroVelocityGradientdMicroStress( );
+                dPlasticMicroLdMicroStress    = get_SetDataStorage_dPlasticMicroVelocityGradientdMicroStress( );
 
-                dPlasticGradientMicroLdMicroStress = get_setDataStorage_dPlasticGradientMicroVelocityGradientdMicroStress( );
+                dPlasticGradientMicroLdMicroStress = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdMicroStress( );
 
-                dPlasticGradientMicroLdHigherOrderStress = get_setDataStorage_dPlasticGradientMicroVelocityGradientdHigherOrderStress( );
+                dPlasticGradientMicroLdHigherOrderStress = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdHigherOrderStress( );
 
-                dPlasticMacroLdF  = get_setDataStorage_dPlasticMacroVelocityGradientdF( );
+                dPlasticMacroLdF  = get_SetDataStorage_dPlasticMacroVelocityGradientdF( );
 
-                dPlasticMacroLdFn = get_setDataStorage_dPlasticMacroVelocityGradientdFn( );
+                dPlasticMacroLdFn = get_SetDataStorage_dPlasticMacroVelocityGradientdFn( );
 
-                dPlasticMicroLdF  = get_setDataStorage_dPlasticMicroVelocityGradientdF( );
+                dPlasticMicroLdF  = get_SetDataStorage_dPlasticMicroVelocityGradientdF( );
 
-                dPlasticMicroLdFn = get_setDataStorage_dPlasticMicroVelocityGradientdFn( );
+                dPlasticMicroLdFn = get_SetDataStorage_dPlasticMicroVelocityGradientdFn( );
 
-                dPlasticGradientMicroLdF  = get_setDataStorage_dPlasticGradientMicroVelocityGradientdF( );
+                dPlasticGradientMicroLdF  = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdF( );
 
-                dPlasticGradientMicroLdFn = get_setDataStorage_dPlasticGradientMicroVelocityGradientdFn( );
+                dPlasticGradientMicroLdFn = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdFn( );
 
-                dPlasticMicroLdChi  = get_setDataStorage_dPlasticMicroVelocityGradientdChi( );
+                dPlasticMicroLdChi  = get_SetDataStorage_dPlasticMicroVelocityGradientdChi( );
 
-                dPlasticMicroLdChin = get_setDataStorage_dPlasticMicroVelocityGradientdChin( );
+                dPlasticMicroLdChin = get_SetDataStorage_dPlasticMicroVelocityGradientdChin( );
 
-                dPlasticGradientMicroLdChi  = get_setDataStorage_dPlasticGradientMicroVelocityGradientdChi( );
+                dPlasticGradientMicroLdChi  = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdChi( );
 
-                dPlasticGradientMicroLdChin = get_setDataStorage_dPlasticGradientMicroVelocityGradientdChin( );
+                dPlasticGradientMicroLdChin = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdChin( );
 
-                dPlasticGradientMicroLdGradChi  = get_setDataStorage_dPlasticGradientMicroVelocityGradientdGradChi( );
+                dPlasticGradientMicroLdGradChi  = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdGradChi( );
 
-                dPlasticGradientMicroLdGradChin = get_setDataStorage_dPlasticGradientMicroVelocityGradientdGradChin( );
+                dPlasticGradientMicroLdGradChin = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdGradChin( );
 
-                dPlasticMacroLdISVs = get_setDataStorage_dPlasticMacroVelocityGradientdStateVariables( );
+                dPlasticMacroLdISVs = get_SetDataStorage_dPlasticMacroVelocityGradientdStateVariables( );
 
-                dPlasticMicroLdISVs = get_setDataStorage_dPlasticMicroVelocityGradientdStateVariables( );
+                dPlasticMicroLdISVs = get_SetDataStorage_dPlasticMicroVelocityGradientdStateVariables( );
 
-                dPlasticGradientMicroLdISVs = get_setDataStorage_dPlasticGradientMicroVelocityGradientdStateVariables( );
+                dPlasticGradientMicroLdISVs = get_SetDataStorage_dPlasticGradientMicroVelocityGradientdStateVariables( );
 
             }
 
@@ -7882,11 +7882,11 @@ namespace tardigradeHydra{
 
             auto plasticConfigurationIndex = getPlasticConfigurationIndex( );
 
-            auto updatedPlasticDeformationGradient = get_setDataStorage_updatedPlasticDeformationGradient( );
+            auto updatedPlasticDeformationGradient = get_SetDataStorage_updatedPlasticDeformationGradient( );
 
-            auto updatedPlasticMicroDeformation = get_setDataStorage_updatedPlasticMicroDeformation( );
+            auto updatedPlasticMicroDeformation = get_SetDataStorage_updatedPlasticMicroDeformation( );
 
-            auto updatedPlasticGradientMicroDeformation = get_setDataStorage_updatedPlasticGradientMicroDeformation( );
+            auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation( );
 
             const secondOrderTensor previousPlasticDeformationGradient      = secondOrderTensor( hydra->get_previousConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
                                                                                                  hydra->get_previousConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
@@ -8315,11 +8315,11 @@ namespace tardigradeHydra{
 
             auto plasticConfigurationIndex = getPlasticConfigurationIndex( );
 
-            auto updatedPlasticDeformationGradient = get_setDataStorage_updatedPlasticDeformationGradient( );
+            auto updatedPlasticDeformationGradient = get_SetDataStorage_updatedPlasticDeformationGradient( );
 
-            auto updatedPlasticMicroDeformation = get_setDataStorage_updatedPlasticMicroDeformation( );
+            auto updatedPlasticMicroDeformation = get_SetDataStorage_updatedPlasticMicroDeformation( );
 
-            auto updatedPlasticGradientMicroDeformation = get_setDataStorage_updatedPlasticGradientMicroDeformation( );
+            auto updatedPlasticGradientMicroDeformation = get_SetDataStorage_updatedPlasticGradientMicroDeformation( );
 
             const secondOrderTensor previousPlasticDeformationGradient      = secondOrderTensor( hydra->get_previousConfigurations( )->begin( ) + sot_dim * plasticConfigurationIndex,
                                                                                                  hydra->get_previousConfigurations( )->begin( ) + sot_dim * ( plasticConfigurationIndex + 1 ) );
@@ -8414,67 +8414,67 @@ namespace tardigradeHydra{
                 auto map_previousdPlasticGradientMicroVelocityGradientdGradChin           = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_previousdPlasticGradientMicroVelocityGradientdGradChin( )->data( ), tot_dim * ( num_configs - 1 ) );
                 auto map_previousdPlasticGradientMicroVelocityGradientdStateVariables     = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_previousdPlasticGradientMicroVelocityGradientdStateVariables( )->data( ), num_isvs );
 
-                auto dUpdatedPlasticDeformationGradientdPreviousMacroStress = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousMacroStress( );
+                auto dUpdatedPlasticDeformationGradientdPreviousMacroStress = get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousMacroStress( );
                 auto map_dUpdatedPlasticDeformationGradientdPreviousMacroStress = dUpdatedPlasticDeformationGradientdPreviousMacroStress.zeroMap< floatType, sot_dim, sot_dim >( );
 
-                auto dUpdatedPlasticDeformationGradientdPreviousMicroStress = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousMicroStress( );
+                auto dUpdatedPlasticDeformationGradientdPreviousMicroStress = get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousMicroStress( );
                 auto map_dUpdatedPlasticDeformationGradientdPreviousMicroStress = dUpdatedPlasticDeformationGradientdPreviousMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
 
-                auto dUpdatedPlasticDeformationGradientdPreviousF = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousF( );
+                auto dUpdatedPlasticDeformationGradientdPreviousF = get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousF( );
                 auto map_dUpdatedPlasticDeformationGradientdPreviousF = dUpdatedPlasticDeformationGradientdPreviousF.zeroMap< floatType, sot_dim, sot_dim >( );
 
-                auto dUpdatedPlasticFdPreviousFn = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousFn( );
+                auto dUpdatedPlasticFdPreviousFn = get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousFn( );
                 auto map_dUpdatedPlasticFdPreviousFn = dUpdatedPlasticFdPreviousFn.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
 
-                auto dUpdatedPlasticDeformationGradientdPreviousStateVariables = get_setDataStorage_dUpdatedPlasticDeformationGradientdPreviousStateVariables( );
+                auto dUpdatedPlasticDeformationGradientdPreviousStateVariables = get_SetDataStorage_dUpdatedPlasticDeformationGradientdPreviousStateVariables( );
                 auto map_dUpdatedPlasticDeformationGradientdPreviousStateVariables = dUpdatedPlasticDeformationGradientdPreviousStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
 
-                auto dUpdatedPlasticMicroDeformationdPreviousMicroStress = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousMicroStress( );
+                auto dUpdatedPlasticMicroDeformationdPreviousMicroStress = get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousMicroStress( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousMicroStress = dUpdatedPlasticMicroDeformationdPreviousMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
 
-                auto dUpdatedPlasticMicroDeformationdPreviousF = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousF( );
+                auto dUpdatedPlasticMicroDeformationdPreviousF = get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousF( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousF = dUpdatedPlasticMicroDeformationdPreviousF.zeroMap< floatType, sot_dim, sot_dim >( );
 
-                auto dUpdatedPlasticMicroDeformationdPreviousFn = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousFn( );
+                auto dUpdatedPlasticMicroDeformationdPreviousFn = get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousFn( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousFn = dUpdatedPlasticMicroDeformationdPreviousFn.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
 
-                auto dUpdatedPlasticMicroDeformationdPreviousChi = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousChi( );
+                auto dUpdatedPlasticMicroDeformationdPreviousChi = get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousChi( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousChi = dUpdatedPlasticMicroDeformationdPreviousChi.zeroMap< floatType, sot_dim >( sot_dim );
 
-                auto dUpdatedPlasticMicroDeformationdPreviousChin = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousChin( );
+                auto dUpdatedPlasticMicroDeformationdPreviousChin = get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousChin( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousChin = dUpdatedPlasticMicroDeformationdPreviousChin.zeroMap< floatType, sot_dim >( sot_dim * ( num_configs - 1 ) );
 
-                auto dUpdatedPlasticMicroDeformationdPreviousStateVariables = get_setDataStorage_dUpdatedPlasticMicroDeformationdPreviousStateVariables( );
+                auto dUpdatedPlasticMicroDeformationdPreviousStateVariables = get_SetDataStorage_dUpdatedPlasticMicroDeformationdPreviousStateVariables( );
                 auto map_dUpdatedPlasticMicroDeformationdPreviousStateVariables = dUpdatedPlasticMicroDeformationdPreviousStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress = dUpdatedPlasticGradientMicroDeformationdPreviousMacroStress.zeroMap< floatType, tot_dim, sot_dim >( );
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress = dUpdatedPlasticGradientMicroDeformationdPreviousMicroStress.zeroMap< floatType, tot_dim, sot_dim >( );
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress = dUpdatedPlasticGradientMicroDeformationdPreviousHigherOrderStress.zeroMap< floatType, tot_dim, tot_dim >( );
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousF = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousF( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousF = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousF( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousF = dUpdatedPlasticGradientMicroDeformationdPreviousF.zeroMap< floatType, tot_dim, sot_dim >( );
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousFn = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousFn( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousFn = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousFn( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousFn = dUpdatedPlasticGradientMicroDeformationdPreviousFn.zeroMap< floatType, tot_dim >( sot_dim * ( num_configs - 1 ) );
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousChi = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousChi( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousChi = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousChi( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousChi = dUpdatedPlasticGradientMicroDeformationdPreviousChi.zeroMap< floatType, tot_dim, sot_dim >( );
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousChin = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousChin( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousChin = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousChin( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousChin = dUpdatedPlasticGradientMicroDeformationdPreviousChin.zeroMap< floatType, tot_dim >( sot_dim * ( num_configs - 1 ) );
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousGradChi = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousGradChi = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChi = dUpdatedPlasticGradientMicroDeformationdPreviousGradChi.zeroMap< floatType, tot_dim, tot_dim >( );
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousGradChin = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousGradChin = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousGradChin = dUpdatedPlasticGradientMicroDeformationdPreviousGradChin.zeroMap< floatType, tot_dim >( tot_dim * ( num_configs - 1 ) );
 
-                auto dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables( );
+                auto dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables( );
                 auto map_dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables = dUpdatedPlasticGradientMicroDeformationdPreviousStateVariables.zeroMap< floatType, tot_dim >( num_isvs );
 
                 map_dUpdatedPlasticDeformationGradientdPreviousMacroStress = ( map_dPlasticFdPreviousPlasticMacroL * map_previousdPlasticMacroVelocityGradientdMacroStress ).eval( );
@@ -8632,67 +8632,67 @@ namespace tardigradeHydra{
             auto map_dPlasticGradientMicroVelocityGradientdGradChin           = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_dPlasticGradientMicroVelocityGradientdGradChin( )->data( ), tot_dim * ( num_configs - 1 ) );
             auto map_dPlasticGradientMicroVelocityGradientdStateVariables     = getDynamicColumnSizeMatrixMap< floatType, tot_dim >( get_dPlasticGradientMicroVelocityGradientdStateVariables( )->data( ), num_isvs );
 
-            auto dUpdatedPlasticDeformationGradientdMacroStress = get_setDataStorage_dUpdatedPlasticDeformationGradientdMacroStress( );
+            auto dUpdatedPlasticDeformationGradientdMacroStress = get_SetDataStorage_dUpdatedPlasticDeformationGradientdMacroStress( );
             auto map_dUpdatedPlasticDeformationGradientdMacroStress = dUpdatedPlasticDeformationGradientdMacroStress.zeroMap< floatType, sot_dim, sot_dim >( );
 
-            auto dUpdatedPlasticDeformationGradientdMicroStress = get_setDataStorage_dUpdatedPlasticDeformationGradientdMicroStress( );
+            auto dUpdatedPlasticDeformationGradientdMicroStress = get_SetDataStorage_dUpdatedPlasticDeformationGradientdMicroStress( );
             auto map_dUpdatedPlasticDeformationGradientdMicroStress = dUpdatedPlasticDeformationGradientdMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
 
-            auto dUpdatedPlasticDeformationGradientdF = get_setDataStorage_dUpdatedPlasticDeformationGradientdF( );
+            auto dUpdatedPlasticDeformationGradientdF = get_SetDataStorage_dUpdatedPlasticDeformationGradientdF( );
             auto map_dUpdatedPlasticDeformationGradientdF = dUpdatedPlasticDeformationGradientdF.zeroMap< floatType, sot_dim, sot_dim >( );
 
-            auto dUpdatedPlasticDeformationGradientdFn = get_setDataStorage_dUpdatedPlasticDeformationGradientdFn( );
+            auto dUpdatedPlasticDeformationGradientdFn = get_SetDataStorage_dUpdatedPlasticDeformationGradientdFn( );
             auto map_dUpdatedPlasticDeformationGradientdFn = dUpdatedPlasticDeformationGradientdFn.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
 
-            auto dUpdatedPlasticDeformationGradientdStateVariables = get_setDataStorage_dUpdatedPlasticDeformationGradientdStateVariables( );
+            auto dUpdatedPlasticDeformationGradientdStateVariables = get_SetDataStorage_dUpdatedPlasticDeformationGradientdStateVariables( );
             auto map_dUpdatedPlasticDeformationGradientdStateVariables = dUpdatedPlasticDeformationGradientdStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
 
-            auto dUpdatedPlasticMicroDeformationdMicroStress = get_setDataStorage_dUpdatedPlasticMicroDeformationdMicroStress( );
+            auto dUpdatedPlasticMicroDeformationdMicroStress = get_SetDataStorage_dUpdatedPlasticMicroDeformationdMicroStress( );
             auto map_dUpdatedPlasticMicroDeformationdMicroStress = dUpdatedPlasticMicroDeformationdMicroStress.zeroMap< floatType, sot_dim, sot_dim >( );
 
-            auto dUpdatedPlasticMicroDeformationdF = get_setDataStorage_dUpdatedPlasticMicroDeformationdF( );
+            auto dUpdatedPlasticMicroDeformationdF = get_SetDataStorage_dUpdatedPlasticMicroDeformationdF( );
             auto map_dUpdatedPlasticMicroDeformationdF = dUpdatedPlasticMicroDeformationdF.zeroMap< floatType, sot_dim, sot_dim >( );
 
-            auto dUpdatedPlasticMicroDeformationdFn = get_setDataStorage_dUpdatedPlasticMicroDeformationdFn( );
+            auto dUpdatedPlasticMicroDeformationdFn = get_SetDataStorage_dUpdatedPlasticMicroDeformationdFn( );
             auto map_dUpdatedPlasticMicroDeformationdFn = dUpdatedPlasticMicroDeformationdFn.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
 
-            auto dUpdatedPlasticMicroDeformationdChi = get_setDataStorage_dUpdatedPlasticMicroDeformationdChi( );
+            auto dUpdatedPlasticMicroDeformationdChi = get_SetDataStorage_dUpdatedPlasticMicroDeformationdChi( );
             auto map_dUpdatedPlasticMicroDeformationdChi = dUpdatedPlasticMicroDeformationdChi.zeroMap< floatType, sot_dim, sot_dim >( );
 
-            auto dUpdatedPlasticMicroDeformationdChin = get_setDataStorage_dUpdatedPlasticMicroDeformationdChin( );
+            auto dUpdatedPlasticMicroDeformationdChin = get_SetDataStorage_dUpdatedPlasticMicroDeformationdChin( );
             auto map_dUpdatedPlasticMicroDeformationdChin = dUpdatedPlasticMicroDeformationdChin.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
 
-            auto dUpdatedPlasticMicroDeformationdStateVariables = get_setDataStorage_dUpdatedPlasticMicroDeformationdStateVariables( );
+            auto dUpdatedPlasticMicroDeformationdStateVariables = get_SetDataStorage_dUpdatedPlasticMicroDeformationdStateVariables( );
             auto map_dUpdatedPlasticMicroDeformationdStateVariables = dUpdatedPlasticMicroDeformationdStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
 
-            auto dUpdatedPlasticGradientMicroDeformationdMacroStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdMacroStress( );
+            auto dUpdatedPlasticGradientMicroDeformationdMacroStress = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdMacroStress( );
             auto map_dUpdatedPlasticGradientMicroDeformationdMacroStress = dUpdatedPlasticGradientMicroDeformationdMacroStress.zeroMap< floatType, tot_dim, sot_dim >( );
 
-            auto dUpdatedPlasticGradientMicroDeformationdMicroStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdMicroStress( );
+            auto dUpdatedPlasticGradientMicroDeformationdMicroStress = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdMicroStress( );
             auto map_dUpdatedPlasticGradientMicroDeformationdMicroStress = dUpdatedPlasticGradientMicroDeformationdMicroStress.zeroMap< floatType, tot_dim, sot_dim >( );
 
-            auto dUpdatedPlasticGradientMicroDeformationdHigherOrderStress = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( );
+            auto dUpdatedPlasticGradientMicroDeformationdHigherOrderStress = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress( );
             auto map_dUpdatedPlasticGradientMicroDeformationdHigherOrderStress = dUpdatedPlasticGradientMicroDeformationdHigherOrderStress.zeroMap< floatType, tot_dim, tot_dim >( );
 
-            auto dUpdatedPlasticGradientMicroDeformationdF = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdF( );
+            auto dUpdatedPlasticGradientMicroDeformationdF = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdF( );
             auto map_dUpdatedPlasticGradientMicroDeformationdF = dUpdatedPlasticGradientMicroDeformationdF.zeroMap< floatType, tot_dim, sot_dim >( );
 
-            auto dUpdatedPlasticGradientMicroDeformationdFn = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdFn( );
+            auto dUpdatedPlasticGradientMicroDeformationdFn = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdFn( );
             auto map_dUpdatedPlasticGradientMicroDeformationdFn = dUpdatedPlasticGradientMicroDeformationdFn.zeroMap< floatType, tot_dim >( ( num_configs - 1 ) * sot_dim );
 
-            auto dUpdatedPlasticGradientMicroDeformationdChi = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdChi( );
+            auto dUpdatedPlasticGradientMicroDeformationdChi = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdChi( );
             auto map_dUpdatedPlasticGradientMicroDeformationdChi = dUpdatedPlasticGradientMicroDeformationdChi.zeroMap< floatType, tot_dim, sot_dim >( );
 
-            auto dUpdatedPlasticGradientMicroDeformationdChin = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdChin( );
+            auto dUpdatedPlasticGradientMicroDeformationdChin = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdChin( );
             auto map_dUpdatedPlasticGradientMicroDeformationdChin = dUpdatedPlasticGradientMicroDeformationdChin.zeroMap< floatType, tot_dim >( ( num_configs - 1 ) * sot_dim );
 
-            auto dUpdatedPlasticGradientMicroDeformationdGradChi = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdGradChi( );
+            auto dUpdatedPlasticGradientMicroDeformationdGradChi = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdGradChi( );
             auto map_dUpdatedPlasticGradientMicroDeformationdGradChi = dUpdatedPlasticGradientMicroDeformationdGradChi.zeroMap< floatType, tot_dim, tot_dim >( );
 
-            auto dUpdatedPlasticGradientMicroDeformationdGradChin = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdGradChin( );
+            auto dUpdatedPlasticGradientMicroDeformationdGradChin = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdGradChin( );
             auto map_dUpdatedPlasticGradientMicroDeformationdGradChin = dUpdatedPlasticGradientMicroDeformationdGradChin.zeroMap< floatType, tot_dim >( ( num_configs - 1 ) * tot_dim );
 
-            auto dUpdatedPlasticGradientMicroDeformationdStateVariables = get_setDataStorage_dUpdatedPlasticGradientMicroDeformationdStateVariables( );
+            auto dUpdatedPlasticGradientMicroDeformationdStateVariables = get_SetDataStorage_dUpdatedPlasticGradientMicroDeformationdStateVariables( );
             auto map_dUpdatedPlasticGradientMicroDeformationdStateVariables = dUpdatedPlasticGradientMicroDeformationdStateVariables.zeroMap< floatType, tot_dim >( num_isvs );
 
             map_dUpdatedPlasticDeformationGradientdMacroStress = ( map_dPlasticFdPlasticMacroL * map_dPlasticMacroVelocityGradientdMacroStress ).eval( );
@@ -8784,7 +8784,7 @@ namespace tardigradeHydra{
 
             const dimVector *microGradientYield = get_microGradientYield( );
 
-            auto residual = get_setDataStorage_stateVariableResiduals( );
+            auto residual = get_SetDataStorage_stateVariableResiduals( );
             residual.zero( get_plasticStateVariables( )->size( ) );
 
             floatType macroMac  = tardigradeConstitutiveTools::mac( *macroYield );
@@ -8928,7 +8928,7 @@ namespace tardigradeHydra{
 
             const dimVector *microGradientYield = get_microGradientYield( );
 
-            auto jacobian = get_setDataStorage_stateVariableJacobians( );
+            auto jacobian = get_SetDataStorage_stateVariableJacobians( );
             jacobian.zero( numISVs * numUnknowns );
 
             floatVector signs( 5, 0 );
@@ -9150,7 +9150,7 @@ namespace tardigradeHydra{
 
             const dimVector *microGradientYield = get_microGradientYield( );
 
-            auto dRdD = get_setDataStorage_dStateVariableResidualsdD( );
+            auto dRdD = get_SetDataStorage_dStateVariableResidualsdD( );
             dRdD.zero( get_plasticStateVariables( )->size( ) * numConfigurationUnknowns );
 
             floatVector signs( 5, 0 );
@@ -9280,7 +9280,7 @@ namespace tardigradeHydra{
 
             const unsigned int numISVs = hydra->getPreviousStateVariables( )->size( );
 
-            auto dRdPreviousISVs = get_setDataStorage_dStateVariableResidualsdPreviousISVs( );
+            auto dRdPreviousISVs = get_SetDataStorage_dStateVariableResidualsdPreviousISVs( );
             dRdPreviousISVs.zero( numPlasticISVs * numISVs );
 
             // Stress Jacobians
@@ -9348,7 +9348,7 @@ namespace tardigradeHydra{
                 stateVariableResiduals = get_stateVariableResiduals( );
             )
 
-            auto residual = get_setDataStorage_residual( );
+            auto residual = get_SetDataStorage_residual( );
 
             *residual.value = tardigradeVectorTools::appendVectors( { *updatedPlasticDeformationGradient      - plasticDeformationGradient,
                                                                       *updatedPlasticMicroDeformation         - plasticMicroDeformation,
@@ -9474,7 +9474,7 @@ namespace tardigradeHydra{
                 stateVariableJacobians = get_stateVariableJacobians( );
             )
 
-            auto jacobian = get_setDataStorage_jacobian( );
+            auto jacobian = get_SetDataStorage_jacobian( );
             jacobian.zero( numEquations * numUnknowns );
 
             // Set the Jacobians of the second order plastic deformation measures
@@ -9641,7 +9641,7 @@ namespace tardigradeHydra{
                 dStateVariableResidualsdD = get_dStateVariableResidualsdD( );
             )
 
-            auto dRdD = get_setDataStorage_dRdD( );
+            auto dRdD = get_SetDataStorage_dRdD( );
             dRdD.zero( numEquations * numConfigurationUnknowns );
 
             // Set the Jacobians of the second order plastic deformation measures
@@ -9701,7 +9701,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            auto dRdT = get_setDataStorage_dRdT( );
+            auto dRdT = get_SetDataStorage_dRdT( );
             dRdT.zero( getNumEquations( ) );
 
         }

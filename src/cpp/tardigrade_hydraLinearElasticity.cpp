@@ -45,7 +45,7 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                auto previousFe = get_setDataStorage_previousFe( );
+                auto previousFe = get_SetDataStorage_previousFe( );
 
                 *previousFe.value = secondOrderTensor( hydra->get_previousConfigurations( )->begin( ),
                                                        hydra->get_previousConfigurations( )->begin( ) + sot_dim );
@@ -53,7 +53,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                auto Fe = get_setDataStorage_Fe( );
+                auto Fe = get_SetDataStorage_Fe( );
                 
                 *Fe.value = secondOrderTensor( hydra->get_configurations( )->begin( ),
                                                hydra->get_configurations( )->begin( ) + sot_dim );
@@ -87,9 +87,9 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                auto previousdFedF = get_setDataStorage_previousdFedF( );
+                auto previousdFedF = get_SetDataStorage_previousdFedF( );
 
-                auto previousdFedFn = get_setDataStorage_previousdFedFn( );
+                auto previousdFedFn = get_SetDataStorage_previousdFedFn( );
 
                 *previousdFedF.value  = *hydra->get_previousdF1dF( );
 
@@ -98,9 +98,9 @@ namespace tardigradeHydra{
             }
             else{
 
-                auto dFedF = get_setDataStorage_dFedF( );
+                auto dFedF = get_SetDataStorage_dFedF( );
 
-                auto dFedFn = get_setDataStorage_dFedFn( );
+                auto dFedFn = get_SetDataStorage_dFedFn( );
 
                 *dFedF.value  = *hydra->get_dF1dF( );
 
@@ -155,26 +155,26 @@ namespace tardigradeHydra{
 
             const secondOrderTensor *Fe;
    
-            setDataStorageBase< secondOrderTensor > Ee;
+            SetDataStorageBase< secondOrderTensor > Ee;
 
-            setDataStorageBase< fourthOrderTensor > dEedFe;
+            SetDataStorageBase< fourthOrderTensor > dEedFe;
 
             if ( isPrevious ){
 
                 Fe = get_previousFe( );
 
-                Ee = get_setDataStorage_previousEe( );
+                Ee = get_SetDataStorage_previousEe( );
 
-                dEedFe = get_setDataStorage_previousdEedFe( );
+                dEedFe = get_SetDataStorage_previousdEedFe( );
 
             }
             else{
 
                 Fe = get_Fe( );
 
-                Ee = get_setDataStorage_Ee( );
+                Ee = get_SetDataStorage_Ee( );
 
-                dEedFe = get_setDataStorage_dEedFe( );
+                dEedFe = get_SetDataStorage_dEedFe( );
 
             }
 
@@ -231,7 +231,7 @@ namespace tardigradeHydra{
    
             constexpr unsigned int dim = 3;
 
-            setDataStorageBase< secondOrderTensor > PK2Stress;
+            SetDataStorageBase< secondOrderTensor > PK2Stress;
 
             const secondOrderTensor *Ee;
 
@@ -239,14 +239,14 @@ namespace tardigradeHydra{
 
                 Ee = get_previousEe( );
 
-                PK2Stress = get_setDataStorage_previousPK2Stress( );
+                PK2Stress = get_SetDataStorage_previousPK2Stress( );
 
             }
             else{
 
                 Ee = get_Ee( );
 
-                PK2Stress = get_setDataStorage_PK2Stress( );
+                PK2Stress = get_SetDataStorage_PK2Stress( );
 
             }
 
@@ -286,9 +286,9 @@ namespace tardigradeHydra{
             const unsigned int dim     = hydra->getDimension( ); 
             const unsigned int fot_dim = hydra->getFOTDimension( );
 
-            auto dPK2StressdEe = get_setDataStorage_dPK2StressdEe( );
+            auto dPK2StressdEe = get_SetDataStorage_dPK2StressdEe( );
 
-            auto previousdPK2StressdEe = get_setDataStorage_previousdPK2StressdEe( );
+            auto previousdPK2StressdEe = get_SetDataStorage_previousdPK2StressdEe( );
 
             dPK2StressdEe.zero( fot_dim );
             for ( unsigned int i = 0; i < dim; i++ ){
@@ -330,7 +330,7 @@ namespace tardigradeHydra{
 
              const unsigned int fot_dim = hydra->getFOTDimension( );
 
-             auto dPK2StressdFe = get_setDataStorage_dPK2StressdFe( );
+             auto dPK2StressdFe = get_SetDataStorage_dPK2StressdFe( );
 
              dPK2StressdFe.zero( fot_dim );
 
@@ -357,7 +357,7 @@ namespace tardigradeHydra{
              */
 
 
-            auto dPK2StressdPreviousFe = get_setDataStorage_dPK2StressdPreviousFe( );
+            auto dPK2StressdPreviousFe = get_SetDataStorage_dPK2StressdPreviousFe( );
 
             dPK2StressdPreviousFe.zero( hydra->getFOTDimension( ) );
 
@@ -369,7 +369,7 @@ namespace tardigradeHydra{
              * deformation gradient
              */
 
-             auto previousdPK2StressdFe = get_setDataStorage_previousdPK2StressdFe( );
+             auto previousdPK2StressdFe = get_SetDataStorage_previousdPK2StressdFe( );
 
              previousdPK2StressdFe.zero( hydra->getFOTDimension( ) );
 
@@ -418,13 +418,13 @@ namespace tardigradeHydra{
 
             const fourthOrderTensor *dPK2StressdFe;
 
-            setDataStorageBase< secondOrderTensor > cauchyStress;
+            SetDataStorageBase< secondOrderTensor > cauchyStress;
 
-            setDataStorageBase< fourthOrderTensor > dCauchyStressdPK2Stress;
+            SetDataStorageBase< fourthOrderTensor > dCauchyStressdPK2Stress;
 
-            setDataStorageBase< fourthOrderTensor > dCauchyStressdF;
+            SetDataStorageBase< fourthOrderTensor > dCauchyStressdF;
 
-            setDataStorageBase< floatVector > dCauchyStressdFn;
+            SetDataStorageBase< floatVector > dCauchyStressdFn;
 
             if ( isPrevious ){
 
@@ -438,13 +438,13 @@ namespace tardigradeHydra{
 
                 dPK2StressdFe = get_previousdPK2StressdFe( );
 
-                cauchyStress            = get_setDataStorage_previousCauchyStress( );
+                cauchyStress            = get_SetDataStorage_previousCauchyStress( );
 
-                dCauchyStressdPK2Stress = get_setDataStorage_previousdCauchyStressdPK2Stress( );
+                dCauchyStressdPK2Stress = get_SetDataStorage_previousdCauchyStressdPK2Stress( );
 
-                dCauchyStressdF         = get_setDataStorage_previousdCauchyStressdF( );
+                dCauchyStressdF         = get_SetDataStorage_previousdCauchyStressdF( );
 
-                dCauchyStressdFn        = get_setDataStorage_previousdCauchyStressdFn( );
+                dCauchyStressdFn        = get_SetDataStorage_previousdCauchyStressdFn( );
 
             }
             else{
@@ -459,13 +459,13 @@ namespace tardigradeHydra{
 
                 dPK2StressdFe = get_dPK2StressdFe( );
 
-                cauchyStress             = get_setDataStorage_cauchyStress( );
+                cauchyStress             = get_SetDataStorage_cauchyStress( );
 
-                dCauchyStressdPK2Stress  = get_setDataStorage_dCauchyStressdPK2Stress( );
+                dCauchyStressdPK2Stress  = get_SetDataStorage_dCauchyStressdPK2Stress( );
 
-                dCauchyStressdF          = get_setDataStorage_dCauchyStressdF( );
+                dCauchyStressdF          = get_SetDataStorage_dCauchyStressdF( );
 
-                dCauchyStressdFn         = get_setDataStorage_dCauchyStressdFn( );
+                dCauchyStressdFn         = get_SetDataStorage_dCauchyStressdFn( );
 
             }
 
@@ -506,9 +506,9 @@ namespace tardigradeHydra{
 
             if ( !isPrevious ){
 
-                auto dCauchyStressdPreviousF  = get_setDataStorage_dCauchyStressdPreviousF( );
+                auto dCauchyStressdPreviousF  = get_SetDataStorage_dCauchyStressdPreviousF( );
 
-                auto dCauchyStressdPreviousFn = get_setDataStorage_dCauchyStressdPreviousFn( );
+                auto dCauchyStressdPreviousFn = get_SetDataStorage_dCauchyStressdPreviousFn( );
 
                 Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dPK2StressdPreviousFe( get_dPK2StressdPreviousFe( )->data( ), sot_dim, sot_dim );
 
@@ -567,7 +567,7 @@ namespace tardigradeHydra{
 
             setCauchyStress( false );
 
-            auto stress = get_setDataStorage_stress( );
+            auto stress = get_SetDataStorage_stress( );
 
             *stress.value = *get_cauchyStress( );
 
@@ -582,7 +582,7 @@ namespace tardigradeHydra{
 
             setCauchyStress( true );
 
-            auto previousStress = get_setDataStorage_previousStress( );
+            auto previousStress = get_SetDataStorage_previousStress( );
 
             *previousStress.value = *get_previousCauchyStress( );
 
@@ -668,7 +668,7 @@ namespace tardigradeHydra{
              * Set the residual value
              */
 
-            auto residual = get_setDataStorage_residual( );
+            auto residual = get_SetDataStorage_residual( );
 
             const secondOrderTensor *stress = getStress( );
 
@@ -692,7 +692,7 @@ namespace tardigradeHydra{
             auto num_unknowns = hydra->getNumUnknowns( );
 
             // Form the Jacobian
-            auto jacobian = get_setDataStorage_jacobian( );
+            auto jacobian = get_SetDataStorage_jacobian( );
 
             jacobian.zero( sot_dim * num_unknowns );
 
@@ -719,7 +719,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            auto dRdT = get_setDataStorage_dRdT( );
+            auto dRdT = get_SetDataStorage_dRdT( );
 
             dRdT.zero( getNumEquations( ) );
 
@@ -730,7 +730,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            auto dRdF = get_setDataStorage_dRdF( );
+            auto dRdF = get_SetDataStorage_dRdF( );
 
             *dRdF.value = *get_dCauchyStressdF( );
 

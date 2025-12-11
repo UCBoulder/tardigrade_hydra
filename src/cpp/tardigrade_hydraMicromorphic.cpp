@@ -279,11 +279,11 @@ namespace tardigradeHydra{
 
         unsigned int start_index = getStressSize( ) + ( num_configs - 1 ) * sot_dim;
 
-        auto microConfigurations         = get_setDataStorage_microConfigurations( );
+        auto microConfigurations         = get_SetDataStorage_microConfigurations( );
 
-        auto inverseMicroConfigurations  = get_setDataStorage_inverseMicroConfigurations( );
+        auto inverseMicroConfigurations  = get_SetDataStorage_inverseMicroConfigurations( );
 
-        auto gradientMicroConfigurations = get_setDataStorage_gradientMicroConfigurations( );
+        auto gradientMicroConfigurations = get_SetDataStorage_gradientMicroConfigurations( );
 
         // Compute the micro-configurations
 
@@ -306,17 +306,17 @@ namespace tardigradeHydra{
 
         unsigned int start_index = ( num_configs - 1 ) * sot_dim;
 
-        auto microConfigurations = get_setDataStorage_microConfigurations( );
+        auto microConfigurations = get_SetDataStorage_microConfigurations( );
 
-        auto inverseMicroConfigurations  = get_setDataStorage_inverseMicroConfigurations( );
+        auto inverseMicroConfigurations  = get_SetDataStorage_inverseMicroConfigurations( );
 
-        auto gradientMicroConfigurations = get_setDataStorage_gradientMicroConfigurations( );
+        auto gradientMicroConfigurations = get_SetDataStorage_gradientMicroConfigurations( );
 
-        auto previousMicroConfigurations = get_setDataStorage_previousMicroConfigurations( );
+        auto previousMicroConfigurations = get_SetDataStorage_previousMicroConfigurations( );
 
-        auto previousInverseMicroConfigurations  = get_setDataStorage_previousInverseMicroConfigurations( );
+        auto previousInverseMicroConfigurations  = get_SetDataStorage_previousInverseMicroConfigurations( );
 
-        auto previousGradientMicroConfigurations = get_setDataStorage_previousGradientMicroConfigurations( );
+        auto previousGradientMicroConfigurations = get_SetDataStorage_previousGradientMicroConfigurations( );
 
         // Compute the micro-configurations
 
@@ -511,9 +511,9 @@ namespace tardigradeHydra{
          * Set the Jacobians of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        auto dChi1dChi  = get_setDataStorage_dChi1dChi( ); 
+        auto dChi1dChi  = get_SetDataStorage_dChi1dChi( ); 
 
-        auto dChi1dChin = get_setDataStorage_dChi1dChin( );
+        auto dChi1dChin = get_SetDataStorage_dChi1dChin( );
 
         calculateFirstConfigurationJacobians( *get_microConfigurations( ), *dChi1dChi.value, *dChi1dChin.value );
 
@@ -524,9 +524,9 @@ namespace tardigradeHydra{
          * Set the Jacobians of the previous first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        auto previousdChi1dChi  = get_setDataStorage_previousdChi1dChi( );
+        auto previousdChi1dChi  = get_SetDataStorage_previousdChi1dChi( );
 
-        auto previousdChi1dChin = get_setDataStorage_previousdChi1dChin( );
+        auto previousdChi1dChin = get_SetDataStorage_previousdChi1dChin( );
 
         calculateFirstConfigurationJacobians( *get_previousMicroConfigurations( ), *previousdChi1dChi.value, *previousdChi1dChin.value );
 
@@ -537,15 +537,15 @@ namespace tardigradeHydra{
          * Set the Jacobians of the gradient of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        auto dGradChi1dFn       = get_setDataStorage_dGradChi1dFn( );
+        auto dGradChi1dFn       = get_SetDataStorage_dGradChi1dFn( );
 
-        auto dGradChi1dChi      = get_setDataStorage_dGradChi1dChi( );
+        auto dGradChi1dChi      = get_SetDataStorage_dGradChi1dChi( );
 
-        auto dGradChi1dChin     = get_setDataStorage_dGradChi1dChin( );
+        auto dGradChi1dChin     = get_SetDataStorage_dGradChi1dChin( );
 
-        auto dGradChi1dGradChi  = get_setDataStorage_dGradChi1dGradChi( );
+        auto dGradChi1dGradChi  = get_SetDataStorage_dGradChi1dGradChi( );
 
-        auto dGradChi1dGradChin = get_setDataStorage_dGradChi1dGradChin( );
+        auto dGradChi1dGradChin = get_SetDataStorage_dGradChi1dGradChin( );
 
         calculateFirstConfigurationGradChiJacobian( *get_configurations( ), *get_microConfigurations( ),
                                                     *getGradientMicroDeformation( ), *get_gradientMicroConfigurations( ),
@@ -560,15 +560,15 @@ namespace tardigradeHydra{
          * Set the Jacobians of the previous gradient of the first micro configuration w.r.t. the total micro configuration and the remaining sub-micro configurations
          */
 
-        auto previousdGradChi1dFn       = get_setDataStorage_previousdGradChi1dFn( );
+        auto previousdGradChi1dFn       = get_SetDataStorage_previousdGradChi1dFn( );
 
-        auto previousdGradChi1dChi      = get_setDataStorage_previousdGradChi1dChi( );
+        auto previousdGradChi1dChi      = get_SetDataStorage_previousdGradChi1dChi( );
 
-        auto previousdGradChi1dChin     = get_setDataStorage_previousdGradChi1dChin( );
+        auto previousdGradChi1dChin     = get_SetDataStorage_previousdGradChi1dChin( );
 
-        auto previousdGradChi1dGradChi  = get_setDataStorage_previousdGradChi1dGradChi( );
+        auto previousdGradChi1dGradChi  = get_SetDataStorage_previousdGradChi1dGradChi( );
 
-        auto previousdGradChi1dGradChin = get_setDataStorage_previousdGradChi1dGradChin( );
+        auto previousdGradChi1dGradChin = get_SetDataStorage_previousdGradChi1dGradChin( );
 
         calculateFirstConfigurationGradChiJacobian( *get_previousConfigurations( ), *get_previousMicroConfigurations( ),
                                                     *getPreviousGradientMicroDeformation( ), *get_previousGradientMicroConfigurations( ),
