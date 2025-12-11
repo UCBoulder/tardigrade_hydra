@@ -93,7 +93,7 @@
     TARDIGRADE_HYDRA_DECLARE_NAMED_SETTER( set_##varname, varname, vartype, setfun )
 
 /*!
- * \brief Declare a dataStorage variable and the associated named setters and getters
+ * \brief Declare a DataStorage class and the associated named setters and getters
  * \param context: The context (public, protected, private) that the macro should return to
  * \param setname: The name of the setter function
  * \param getname: The name of the getter function
@@ -105,14 +105,14 @@
  * \param uncall: The function that is called if the variable is not set
  */
 #define TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,getsetdatastoragename,varname,classtype,vartype,setfun,uncall,...) \
-    private: dataStorage<vartype> _##varname;                       \
+    private: DataStorage<vartype> _##varname;                       \
     public: TARDIGRADE_HYDRA_DECLARE_NAMED_SETTER(setname,varname,vartype,setfun) \
     public: TARDIGRADE_HYDRA_DECLARE_NAMED_GETTER(getname,varname,vartype,uncall) \
     public: TARDIGRADE_HYDRA_DECLARE_NAMED_SETDATASTORAGE_GETTER(getsetdatastoragename,varname,classtype,vartype, ##__VA_ARGS__) \
     context:
 
 /*!
- * \brief Declare a dataStorage variable and the associated setters and getters
+ * \brief Declare a DataStorage class and the associated setters and getters
  * \param context: The context (public, protected, private) that the macro should return to
  * \param varname: The name of the variable
  * \param vartype: The ctype of the variable
@@ -123,7 +123,7 @@
     TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_setDataStorage_##varname,varname,tardigradeHydra::setDataStorageBase,vartype,setfun,uncall)
 
 /*!
- * \brief Declare a named dataStorage variable that uses setIterationData as the setter function
+ * \brief Declare a named DataStorage class that uses setIterationData as the setter function
  * \param context: The context (public, protected, private) that the macro should return to
  * \param setname: The name of the setter
  * \param getname: The name of the getter function
@@ -135,7 +135,7 @@
     TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,get_setDataStorage_##varname,varname,setDataStorageIteration,vartype,setIterationData,uncall,this)
 
 /*!
- * \brief Declare a dataStorage variable that uses setIterationData as the setter function
+ * \brief Declare a DataStorage class that uses setIterationData as the setter function
  * \param context: The context (public, protected, private) that the macro should return to
  * \param varname: The name of the variable
  * \param vartype: The type of the variable
@@ -145,7 +145,7 @@
     TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_setDataStorage_##varname,varname,setDataStorageIteration,vartype,setIterationData,uncall,this)
 
 /*!
- * \brief Declare a dataStorage variable that uses setNLStepData as the setter function
+ * \brief Declare a DataStorage class that uses setNLStepData as the setter function
  * \param context: The context (public, protected, private) that the macro should return to
  * \param varname: The name of the variable
  * \param vartype: The type of the variable
@@ -155,7 +155,7 @@
     TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_setDataStorage_##varname,varname,setDataStorageNLStep,vartype,setNLStepData,uncall,this)
 
 /*!
- * \brief Declare a named dataStorage variable that uses setPreviousData as the setter function
+ * \brief Declare a named DataStorage class that uses setPreviousData as the setter function
  * \param context: The context (public, protected, private) that the macro should return to
  * \param setname: The name of the setter
  * \param getname: The name of the getter function
@@ -167,7 +167,7 @@
     TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,get_setDataStorage_##varname,varname,setDataStoragePrevious,vartype,setPreviousData,uncall)
 
 /*!
- * \brief Declare a dataStorage variable that uses setPreviousData as the setter function
+ * \brief Declare a DataStorage class that uses setPreviousData as the setter function
  * \param context: The context (public, protected, private) that the macro should return to
  * \param varname: The name of the variable
  * \param vartype: The type of the variable
@@ -177,7 +177,7 @@
     TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,set_##varname,get_##varname,get_setDataStorage_##varname,varname,setDataStoragePrevious,vartype,setPreviousData,uncall)
 
 /*!
- * \brief Declare a named dataStorage variable that uses setConstantData as the setter function
+ * \brief Declare a named DataStorage class that uses setConstantData as the setter function
  * \param context: The context (public, protected, private) that the macro should return to
  * \param setname: The name of the setter
  * \param getname: The name of the getter function
@@ -189,7 +189,7 @@
     TARDIGRADE_HYDRA_DECLARE_NAMED_STORAGE(context,setname,getname,get_setDataSTorage_##varname,varname,setDataStorageConstant,vartype,setConstantData,uncall)
 
 /*!
- * \brief Declare a dataStorage variable that uses setContantData as the setter function
+ * \brief Declare a DataStorage class that uses setContantData as the setter function
  * \param context: The context (public, protected, private) that the macro should return to
  * \param varname: The name of the variable
  * \param vartype: The type of the variable
@@ -224,7 +224,7 @@ namespace tardigradeHydra{
          * Custom data storage object that allows for smart storage of objects
          */
         template < typename T >
-        class dataStorage : public dataBase{
+        class DataStorage : public dataBase{
 
             public:
 
@@ -232,7 +232,7 @@ namespace tardigradeHydra{
 
                 T second; //!< The stored data
 
-                dataStorage( ){ };
+                DataStorage( ){ };
 
                 /*!
                  * Constructor for a data-storage object setting first and second
@@ -240,7 +240,7 @@ namespace tardigradeHydra{
                  * \param &_first: The flag for whether the data storage has been set
                  * \param &_second: The data contained by the object
                  */
-                dataStorage( const bool &_first, const T &_second ) : first( _first ), second( _second ) { }
+                DataStorage( const bool &_first, const T &_second ) : first( _first ), second( _second ) { }
 
                 virtual void clear( ){
                     /*!
@@ -278,7 +278,7 @@ namespace tardigradeHydra{
         };
 
         template <>
-        inline void dataStorage< int >::clear( ){
+        inline void DataStorage< int >::clear( ){
                     /*!
                      * The function to erase the current values stored by setting first to false and second to zero
                      */
@@ -290,7 +290,7 @@ namespace tardigradeHydra{
         }
 
         template <>
-        inline void dataStorage< int >::zero( ){
+        inline void DataStorage< int >::zero( ){
                     /*!
                      * The function to set the value to zero
                      */
@@ -300,7 +300,7 @@ namespace tardigradeHydra{
         }
 
         template <>
-        inline void dataStorage< int >::zero( const unsigned int size ){
+        inline void DataStorage< int >::zero( const unsigned int size ){
                     /*!
                      * The function to set the value to zero
                      */
@@ -310,7 +310,7 @@ namespace tardigradeHydra{
         }
 
         template <>
-        inline void dataStorage< unsigned int >::clear( ){
+        inline void DataStorage< unsigned int >::clear( ){
                     /*!
                      * The function to erase the current values stored by setting first to false and second to zero
                      */
@@ -322,7 +322,7 @@ namespace tardigradeHydra{
         }
 
         template <>
-        inline void dataStorage< unsigned int >::zero( ){
+        inline void DataStorage< unsigned int >::zero( ){
                     /*!
                      * The function to set the value to zero
                      */
@@ -332,7 +332,7 @@ namespace tardigradeHydra{
         }
 
         template <>
-        inline void dataStorage< unsigned int >::zero( const unsigned int size ){
+        inline void DataStorage< unsigned int >::zero( const unsigned int size ){
                     /*!
                      * The function to set the value to zero
                      */
@@ -342,8 +342,8 @@ namespace tardigradeHydra{
         }
 
         /*!
-         * A custom object that handles setting dataStorage objects in place
-         * When the destructor is run the dataStorage is assumed to be set.
+         * A custom object that handles setting DataStorage objects in place
+         * When the destructor is run the DataStorage is assumed to be set.
          */
         template< typename T >
         class setDataStorageBase {
@@ -354,7 +354,7 @@ namespace tardigradeHydra{
                 setDataStorageBase( ) : _ds( NULL ){ }
 
                 //! Constructor that reads in a data storage object and sets the value
-                setDataStorageBase( dataStorage< T > *ds ) : _ds( ds ){
+                setDataStorageBase( DataStorage< T > *ds ) : _ds( ds ){
 
                     if ( _ds ){
 
@@ -451,7 +451,7 @@ namespace tardigradeHydra{
 
           protected:
 
-              dataStorage< T > *_ds; //!< Pointer to the data for the data storage object
+              DataStorage< T > *_ds; //!< Pointer to the data for the data storage object
 
         };
 
@@ -459,7 +459,7 @@ namespace tardigradeHydra{
         class setDataStorageIterationBase : public setDataStorageBase< T >{
           public:
 
-              setDataStorageIterationBase( dataStorage< T > *ds, container * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
+              setDataStorageIterationBase( DataStorage< T > *ds, container * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
                   /*!
                    * Create a data storage object that will be reset at each new iteration
                    * 
@@ -481,9 +481,9 @@ namespace tardigradeHydra{
 
         };
 
-        // CoreDefinitions dataStorage specifications
+        // CoreDefinitions DataStorage specifications
         template <>
-        inline void dataStorage< floatType >::clear( ){
+        inline void DataStorage< floatType >::clear( ){
                     /*!
                      * The function to erase the current values stored by setting first to false and second to zero
                      */
@@ -495,7 +495,7 @@ namespace tardigradeHydra{
         }
 
         template <>
-        inline void dataStorage< floatType >::zero( ){
+        inline void DataStorage< floatType >::zero( ){
                     /*!
                      * The function to set the value to zero
                      */
@@ -505,7 +505,7 @@ namespace tardigradeHydra{
         }
 
         template <>
-        inline void dataStorage< floatType >::zero( const unsigned int size ){
+        inline void DataStorage< floatType >::zero( const unsigned int size ){
                     /*!
                      * The function to set the value to zero
                      */

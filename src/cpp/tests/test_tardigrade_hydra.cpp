@@ -6834,9 +6834,9 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageBase, * boost::unit_test::tolerance( DE
 
             using tardigradeHydra::residualBase::residualBase;
 
-            tardigradeHydra::dataStorage< floatType > myScalarData;
+            tardigradeHydra::DataStorage< floatType > myScalarData;
 
-            tardigradeHydra::dataStorage< floatVector > myVectorData;
+            tardigradeHydra::DataStorage< floatVector > myVectorData;
 
             virtual void projectSuggestedX( std::vector< double > &trialX,
                                             const std::vector< double > &Xp ) override{
@@ -6891,9 +6891,9 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageBase2, * boost::unit_test::tolerance( D
 
             using tardigradeHydra::residualBase::residualBase;
 
-            tardigradeHydra::dataStorage< floatType > _myScalarData;
+            tardigradeHydra::DataStorage< floatType > _myScalarData;
 
-            tardigradeHydra::dataStorage< floatVector > _myVectorData;
+            tardigradeHydra::DataStorage< floatVector > _myVectorData;
 
             TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myScalarData,tardigradeHydra::setDataStorageBase,floatType);
 
@@ -6952,9 +6952,9 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageIteration, * boost::unit_test::toleranc
 
             using tardigradeHydra::residualBase::residualBase;
 
-            tardigradeHydra::dataStorage< floatType > myScalarData;
+            tardigradeHydra::DataStorage< floatType > myScalarData;
 
-            tardigradeHydra::dataStorage< floatVector > myVectorData;
+            tardigradeHydra::DataStorage< floatVector > myVectorData;
 
             virtual void projectSuggestedX( std::vector< double > &trialX,
                                             const std::vector< double > &Xp ) override{
@@ -7017,9 +7017,9 @@ BOOST_AUTO_TEST_CASE( test_setDataStorageIteration2, * boost::unit_test::toleran
 
             using tardigradeHydra::residualBase::residualBase;
 
-            tardigradeHydra::dataStorage< floatType > _myScalarData;
+            tardigradeHydra::DataStorage< floatType > _myScalarData;
 
-            tardigradeHydra::dataStorage< floatVector > _myVectorData;
+            tardigradeHydra::DataStorage< floatVector > _myVectorData;
 
             TARDIGRADE_HYDRA_DECLARE_SETDATASTORAGE_GETTER(myScalarData,tardigradeHydra::setDataStorageIteration,floatType,this);
 

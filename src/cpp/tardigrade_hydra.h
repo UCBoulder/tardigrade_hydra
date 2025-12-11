@@ -28,7 +28,7 @@
 namespace tardigradeHydra{
 
     template <>
-    inline void dataStorage< std::vector< residualBase* > >::zero( ){
+    inline void DataStorage< std::vector< residualBase* > >::zero( ){
                 /*!
                  * The function to set the value to zero
                  */
@@ -38,7 +38,7 @@ namespace tardigradeHydra{
     }
 
     template <>
-    inline void dataStorage< std::vector< residualBase* > >::zero( const unsigned int size ){
+    inline void DataStorage< std::vector< residualBase* > >::zero( const unsigned int size ){
                 /*!
                  * The function to set the value to zero
                  */
@@ -379,7 +379,7 @@ namespace tardigradeHydra{
             void addNLStepData( dataBase *data );
 
             template<class T>
-            void setIterationData( const T &data, dataStorage<T> &storage ){
+            void setIterationData( const T &data, DataStorage<T> &storage ){
                 /*!
                  * Template function for adding iteration data
                  *
@@ -396,7 +396,7 @@ namespace tardigradeHydra{
             }
 
             template<class T>
-            void setNLStepData( const T &data, dataStorage<T> &storage ){
+            void setNLStepData( const T &data, DataStorage<T> &storage ){
                 /*!
                  * Template function for adding nonlinear step data
                  *
@@ -413,7 +413,7 @@ namespace tardigradeHydra{
             }
 
             template<class T>
-            void setPreviousData( const T &data, dataStorage<T> &storage ){
+            void setPreviousData( const T &data, DataStorage<T> &storage ){
                 /*!
                  * Template function for adding previous data
                  * 
@@ -428,7 +428,7 @@ namespace tardigradeHydra{
             }
 
             template<class T>
-            void setConstantData( const T &data, dataStorage<T> &storage ){
+            void setConstantData( const T &data, DataStorage<T> &storage ){
                 /*!
                  * Template function for adding constant data
                  * 
@@ -503,7 +503,7 @@ namespace tardigradeHydra{
 
               public:
 
-                  setDataStorageIteration( dataStorage< T > *ds, residualBase * rp ) : setDataStorageIterationBase< residualBase, T >( ds, rp ){
+                  setDataStorageIteration( DataStorage< T > *ds, residualBase * rp ) : setDataStorageIterationBase< residualBase, T >( ds, rp ){
                       /*!
                        * Create a data storage object that will be reset at each new iteration
                        * 
@@ -520,7 +520,7 @@ namespace tardigradeHydra{
 
               public:
 
-                  setDataStorageNLStep( dataStorage< T > *ds, residualBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
+                  setDataStorageNLStep( DataStorage< T > *ds, residualBase * rp ) : setDataStorageBase< T >( ds ), _rp( rp ){
                       /*!
                        * Create a data storage object that will be reset at each nonlinear step
                        * 
@@ -550,7 +550,7 @@ namespace tardigradeHydra{
 
                 public:
 
-                    setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                    setDataStoragePrevious( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
                         /*!
                          * Constructor for data storage objects for temporally previous objects
                          * 
@@ -568,7 +568,7 @@ namespace tardigradeHydra{
 
                 public:
 
-                    setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                    setDataStorageConstant( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
                         /*!
                          * Constructor for constant data storage objects
                          * 
@@ -1379,9 +1379,9 @@ namespace tardigradeHydra{
 
             const floatVector *get_basedResidualNormdX( );
 
-            dataStorage< floatType > _baseResidualNorm; //!< The base value of the norm of the residual
+            DataStorage< floatType > _baseResidualNorm; //!< The base value of the norm of the residual
 
-            dataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
+            DataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
 
             void set_baseResidualNorm( const floatType &value ){ /*! Set the base value of the residual norm \param &value: The new value */  setNLStepData( value, _baseResidualNorm ); }
 
@@ -1418,7 +1418,7 @@ namespace tardigradeHydra{
             virtual bool callResidualRelaxedStepFailure( );
 
             template<class T>
-            void setIterationData( const T &data, dataStorage<T> &storage ){
+            void setIterationData( const T &data, DataStorage<T> &storage ){
                 /*!
                  * Template function for adding iteration data. These values are cleared
                  * every time the unknown vector is updated.
@@ -1436,7 +1436,7 @@ namespace tardigradeHydra{
             }
 
             template<class T>
-            void setNLStepData( const T &data, dataStorage<T> &storage ){
+            void setNLStepData( const T &data, DataStorage<T> &storage ){
                 /*!
                  * Template function for adding nonlinear step data. These values are cleared
                  * every time the nonlinear step is advanced.
@@ -1454,7 +1454,7 @@ namespace tardigradeHydra{
             }
 
             template<class T>
-            void setPreviousData( const T &data, dataStorage<T> &storage ){
+            void setPreviousData( const T &data, DataStorage<T> &storage ){
                 /*!
                  * Template function for adding previous data
                  * 
@@ -1469,7 +1469,7 @@ namespace tardigradeHydra{
             }
 
             template<class T>
-            void setConstantData( const T &data, dataStorage<T> &storage ){
+            void setConstantData( const T &data, DataStorage<T> &storage ){
                 /*!
                  * Template function for adding constant data
                  * 
@@ -1524,7 +1524,7 @@ namespace tardigradeHydra{
             class setDataStorageIteration : public setDataStorageIterationBase< hydraBase, T > {
 
                 public:
-                    setDataStorageIteration( dataStorage< T > *ds, hydraBase * rp ) : setDataStorageIterationBase<hydraBase,T>( ds, rp ){
+                    setDataStorageIteration( DataStorage< T > *ds, hydraBase * rp ) : setDataStorageIterationBase<hydraBase,T>( ds, rp ){
                       /*!
                        * Create a data storage object that will be reset at each new iteration
                        * 
@@ -1544,7 +1544,7 @@ namespace tardigradeHydra{
                 public:
 
                     //! Create a data storage object that will be reset whenever the previous value gets reset
-                    setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                    setDataStoragePrevious( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
                         /*!
                          * Constructor for data storage objects for temporally previous objects
                          * 
@@ -1562,7 +1562,7 @@ namespace tardigradeHydra{
 
                 public:
 
-                    setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+                    setDataStorageConstant( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
                         /*!
                          * Constructor for constant data storage objects
                          * 
@@ -1749,19 +1749,19 @@ namespace tardigradeHydra{
 
             std::vector< dataBase* > _nlStepData; //!< A vector of pointers to data which should be cleared after each nonlinear step
 
-            dataStorage< std::vector< residualBase* > > _residualClasses; //!< A vector of classes which compute the terms in the residual equation
+            DataStorage< std::vector< residualBase* > > _residualClasses; //!< A vector of classes which compute the terms in the residual equation
 
-            dataStorage< floatVector > _residual; //!< The residual vector for the global solve
+            DataStorage< floatVector > _residual; //!< The residual vector for the global solve
 
-            dataStorage< floatVector > _jacobian; //!< The jacobian matrix in row-major form for the global solve
+            DataStorage< floatVector > _jacobian; //!< The jacobian matrix in row-major form for the global solve
 
-            dataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
+            DataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
 
-            dataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
+            DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
-            dataStorage< floatVector > _preconditioner; //!< The pre-conditioner matrix in row-major form for the global solve
+            DataStorage< floatVector > _preconditioner; //!< The pre-conditioner matrix in row-major form for the global solve
 
-            dataStorage< floatVector > _previouslyConvergedStress; //!< The previously converged stress
+            DataStorage< floatVector > _previouslyConvergedStress; //!< The previously converged stress
 
             bool _use_preconditioner; //!< Flag for whether to pre-condition the Jacobian or not
 
@@ -1779,29 +1779,29 @@ namespace tardigradeHydra{
 
             floatType _lm_mu         = 1e-8; //!< The mu parameter for Levenberg-Marquardt iterations
 
-            dataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
+            DataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
 
-            dataStorage< floatVector > _dRdT; //!< The gradient of the residual w.r.t. the temperature for the global solve
+            DataStorage< floatVector > _dRdT; //!< The gradient of the residual w.r.t. the temperature for the global solve
 
-            dataStorage< floatVector > _dRdAdditionalDOF; //!< The derivatives of the residual w.r.t. the additional degrees of freedom
+            DataStorage< floatVector > _dRdAdditionalDOF; //!< The derivatives of the residual w.r.t. the additional degrees of freedom
 
-            dataStorage< floatVector > _additionalDerivatives; //!< Additional derivatives of the residual
+            DataStorage< floatVector > _additionalDerivatives; //!< Additional derivatives of the residual
 
-            dataStorage< floatVector > _X; //!< The unknown vector { stress, F1, ..., Fn, xi1, ..., xim }
+            DataStorage< floatVector > _X; //!< The unknown vector { stress, F1, ..., Fn, xi1, ..., xim }
 
-            dataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
+            DataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
 
-            dataStorage< floatType > _lsResidualNorm; //!< The reference residual norm for the line-search convergence criteria
+            DataStorage< floatType > _lsResidualNorm; //!< The reference residual norm for the line-search convergence criteria
 
-            dataStorage< floatVector > _stress; //!< The stress in the current configuration as determined from the current state
+            DataStorage< floatVector > _stress; //!< The stress in the current configuration as determined from the current state
 
-            dataStorage< floatVector > _previousStress; //!< The previous value of the stress in the current configuration as determined from the previous state
+            DataStorage< floatVector > _previousStress; //!< The previous value of the stress in the current configuration as determined from the previous state
 
-            dataStorage< floatVector > _flatdXdF; //!< The total derivative of the unknown vector w.r.t. the deformation in row-major form
+            DataStorage< floatVector > _flatdXdF; //!< The total derivative of the unknown vector w.r.t. the deformation in row-major form
 
-            dataStorage< floatVector > _flatdXdT; //!< The total derivative of the unknown vector w.r.t. the temperature
+            DataStorage< floatVector > _flatdXdT; //!< The total derivative of the unknown vector w.r.t. the temperature
 
-            dataStorage< floatVector > _flatdXdAdditionalDOF; //!< The total derivative of the unknown vector w.r.t. the additional DOF
+            DataStorage< floatVector > _flatdXdAdditionalDOF; //!< The total derivative of the unknown vector w.r.t. the additional DOF
 
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
@@ -1930,7 +1930,7 @@ namespace tardigradeHydra{
 
       public:
 
-          setDataStorageIteration( dataStorage< T > *ds, residualBase * rp ) : setDataStorageIterationBase< residualBase, T >( ds, rp ){
+          setDataStorageIteration( DataStorage< T > *ds, residualBase * rp ) : setDataStorageIterationBase< residualBase, T >( ds, rp ){
                       /*!
                        * Create a data storage object that will be reset at each new iteration
                        * 
@@ -1947,7 +1947,7 @@ namespace tardigradeHydra{
 
         public:
 
-            setDataStoragePrevious( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+            setDataStoragePrevious( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
                 /*!
                  * Constructor for data storage objects for temporally previous objects
                  * 
@@ -1963,7 +1963,7 @@ namespace tardigradeHydra{
 
         public:
 
-            setDataStorageConstant( dataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
+            setDataStorageConstant( DataStorage< T > *ds ) : setDataStorageBase< T >( ds ){
                 /*!
                  * Constructor for constant data storage objects
                  * 
