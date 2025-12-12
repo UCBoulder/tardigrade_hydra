@@ -106,6 +106,38 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_ResidualBase, * boost::unit_test::tolera
 
 }
 
-BOOST_AUTO_TEST_CASE( test_placeholder, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBase_checkDefaults, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class HydraMock{
+
+        public:
+
+            HydraMock( ){
+
+            };
+
+            void addIterationData( tardigradeHydra::dataBase* ){
+
+            };
+
+    };
+
+    HydraMock hydra;
+
+    unsigned int numEquations = 3;
+
+    tardigradeHydra::ResidualBase<HydraMock> residual( &hydra, numEquations );
+
+    BOOST_CHECK_THROW( residual.setResidual( ), std::nested_exception );
+
+    BOOST_CHECK_THROW( residual.setJacobian( ), std::nested_exception );
+
+    BOOST_CHECK_THROW( residual.setdRdF( ), std::nested_exception );
+
+    BOOST_CHECK_THROW( residual.setdRdT( ), std::nested_exception );
+
+    BOOST_CHECK_NO_THROW( residual.setAdditionalDerivatives( ) );
+
+    BOOST_CHECK( !residual.getUseProjection( ) );
 
 }
