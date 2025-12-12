@@ -4,7 +4,8 @@
   * Tests for tardigrade_ResidualBase
   */
 
-#include<tardigrade_ResidualBase.h>
+#include"tardigrade_ResidualBase.h"
+#include"tardigrade_SetDataStorage.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_ResidualBase
 #include <boost/test/included/unit_test.hpp>
@@ -54,6 +55,54 @@ bool tolerantCheck( const std::vector< double > &v1, const std::vector< double >
     }
 
     return true;
+
+}
+
+BOOST_AUTO_TEST_CASE( test_ResidualBase_ResidualBase, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class HydraMock{
+
+        public:
+
+            HydraMock( ){
+
+            };
+
+            void addIterationData( tardigradeHydra::dataBase* ){
+
+            };
+
+    };
+
+    HydraMock hydra;
+
+    unsigned int numEquations = 3;
+
+    unsigned int numConstraints = 5;
+
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
+
+        public:
+
+            using tardigradeHydra::ResidualBase<HydraMock>::ResidualBase;
+
+            void public_setNumConstraints( const unsigned int &val ){
+
+                setNumConstraints( val );
+
+            }
+
+    };
+
+    ResidualBaseMock residual( &hydra, numEquations );
+
+    residual.public_setNumConstraints( numConstraints );
+
+    BOOST_CHECK( residual.hydra == &hydra );
+
+    BOOST_CHECK( residual.getNumEquations( ) == numEquations );
+
+    BOOST_CHECK( residual.getNumConstraints( ) == numConstraints );
 
 }
 

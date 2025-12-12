@@ -2551,40 +2551,6 @@ BOOST_AUTO_TEST_CASE( test_hydraTest_setPreviousFirstConfigurationGradients, * b
 
 }
 
-BOOST_AUTO_TEST_CASE( test_ResidualBase_ResidualBase, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    unsigned int numEquations = 3;
-
-    unsigned int numConstraints = 5;
-
-    class ResidualBaseMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>{
-
-        public:
-
-            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
-
-            void public_setNumConstraints( const unsigned int &val ){
-
-                setNumConstraints( val );
-
-            }
-
-    };
-
-    ResidualBaseMock residual( &hydra, numEquations );
-
-    residual.public_setNumConstraints( numConstraints );
-
-    BOOST_CHECK( residual.hydra == &hydra );
-
-    BOOST_CHECK( residual.getNumEquations( ) == numEquations );
-
-    BOOST_CHECK( residual.getNumConstraints( ) == numConstraints );
-
-}
-
 BOOST_AUTO_TEST_CASE( test_ResidualBase_checkDefaults, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
