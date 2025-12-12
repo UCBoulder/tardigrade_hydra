@@ -30,7 +30,7 @@
 namespace tardigradeHydra{
 
     template <>
-    inline void DataStorage< std::vector< ResidualBase* > >::zero( ){
+    inline void DataStorage< std::vector< ResidualBase<hydraBase>* > >::zero( ){
                 /*!
                  * The function to set the value to zero
                  */
@@ -40,7 +40,7 @@ namespace tardigradeHydra{
     }
 
     template <>
-    inline void DataStorage< std::vector< ResidualBase* > >::zero( const unsigned int size ){
+    inline void DataStorage< std::vector< ResidualBase<hydraBase>* > >::zero( const unsigned int size ){
                 /*!
                  * The function to set the value to zero
                  */
@@ -398,9 +398,9 @@ namespace tardigradeHydra{
 
             virtual void setResidualClasses( );
 
-            void setResidualClasses( std::vector< ResidualBase* > &residualClasses );
+            void setResidualClasses( std::vector< ResidualBase<hydraBase>* > &residualClasses );
 
-            std::vector< ResidualBase* >* getResidualClasses( );
+            std::vector< ResidualBase<hydraBase>* >* getResidualClasses( );
 
             const floatVector* getResidual( );
 
@@ -1177,7 +1177,7 @@ namespace tardigradeHydra{
 
             std::vector< dataBase* > _nlStepData; //!< A vector of pointers to data which should be cleared after each nonlinear step
 
-            DataStorage< std::vector< ResidualBase* > > _residualClasses; //!< A vector of classes which compute the terms in the residual equation
+            DataStorage< std::vector< ResidualBase<hydraBase>* > > _residualClasses; //!< A vector of classes which compute the terms in the residual equation
 
             DataStorage< floatVector > _residual; //!< The residual vector for the global solve
 
@@ -1354,9 +1354,9 @@ namespace tardigradeHydra{
 
     //! A data storage class that updates at every iteration
     template< typename T >
-    class SetDataStorageIteration : public SetDataStorageIterationBase< ResidualBase, T > {
+    class SetDataStorageIteration : public SetDataStorageIterationBase< ResidualBase<hydraBase>, T > {
 
-        using tardigradeHydra::SetDataStorageIterationBase<ResidualBase,T>::SetDataStorageIterationBase;
+        using tardigradeHydra::SetDataStorageIterationBase<ResidualBase<hydraBase>,T>::SetDataStorageIterationBase;
 
     };
 

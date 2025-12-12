@@ -17,6 +17,7 @@ namespace tardigradeHydra{
     /*!
      * A class to contain the residual computations associated with some part of a non-linear solve
      */
+    template<class container>
     class ResidualBase{
 
         public:
@@ -32,7 +33,7 @@ namespace tardigradeHydra{
              * \param *_hydra: A pointer to a hydraBase object
              * \param &_numEquations: The number of equations defined by the residual
              */
-            ResidualBase( hydraBase *_hydra, const unsigned int &_numEquations ) : hydra( _hydra ), _numEquations( _numEquations ){ }
+            ResidualBase( container *_hydra, const unsigned int &_numEquations ) : hydra( _hydra ), _numEquations( _numEquations ){ }
 
             /*!
              * Copy constructor
@@ -41,7 +42,7 @@ namespace tardigradeHydra{
              */
             ResidualBase( ResidualBase &r ) : hydra( r.hydra ), _numEquations( r.getNumEquations( ) ), _numConstraints( r.getNumConstraints( ) ){ }
 
-            hydraBase* hydra; //!< The hydra class which owns the ResidualBase object
+            container* hydra; //!< The hydra class which owns the ResidualBase object
 
             // User defined setter functions
 
@@ -530,5 +531,7 @@ namespace tardigradeHydra{
     };
 
 }
+
+#include"tardigrade_ResidualBase.cpp"
 
 #endif

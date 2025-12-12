@@ -15,6 +15,7 @@ namespace tardigradeHydra{
 
     // forward class declarations
     class hydraBase; //!< The base hydra class
+    template<class container=hydraBase>
     class ResidualBase; //!< The base residual class
 
     namespace unit_test{

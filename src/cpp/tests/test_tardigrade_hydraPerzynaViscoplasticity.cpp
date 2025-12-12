@@ -327,7 +327,7 @@ bool tolerantCheck( const double &v1, const double &v2, double eps = 1e-6, doubl
 
 BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class stressResidualMock : public tardigradeHydra::ResidualBase {
+    class stressResidualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
@@ -337,17 +337,17 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
 
         private:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             virtual void setStress( ){
 
-                tardigradeHydra::ResidualBase::setStress( currentCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setStress( currentCauchyStress );
 
             }
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -386,9 +386,9 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -398,7 +398,7 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressResidualMock( this, 9 );
 
@@ -406,7 +406,7 @@ BOOST_AUTO_TEST_CASE( test_residual_basicGetTests, * boost::unit_test::tolerance
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -472,11 +472,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress, * boost::unit_test::toler
      * Test of computing the driving stress
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -484,7 +484,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress, * boost::unit_test::toler
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -526,9 +526,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress, * boost::unit_test::toler
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -538,7 +538,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress, * boost::unit_test::toler
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -548,7 +548,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_drivingStress, * boost::unit_test::toler
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -928,9 +928,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection, * boost::unit_test::toler
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -940,7 +940,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection, * boost::unit_test::toler
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -948,7 +948,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection, * boost::unit_test::toler
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1029,11 +1029,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian, * boost::unit_te
      * Test of computing the flow direction stress
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -1041,7 +1041,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian, * boost::unit_te
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -1083,9 +1083,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian, * boost::unit_te
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -1095,7 +1095,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian, * boost::unit_te
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -1105,7 +1105,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_flowDirection_jacobian, * boost::unit_te
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1471,9 +1471,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction, * boost::unit_test::toler
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -1483,7 +1483,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction, * boost::unit_test::toler
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -1491,7 +1491,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction, * boost::unit_test::toler
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1567,11 +1567,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian, * boost::unit_te
      * Test of computing the yield function's Jacobian
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -1579,7 +1579,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian, * boost::unit_te
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -1621,9 +1621,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian, * boost::unit_te
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -1633,7 +1633,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian, * boost::unit_te
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -1643,7 +1643,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_yieldFunction_jacobian, * boost::unit_te
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1956,9 +1956,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticThermalMultiplier, * boost::unit_
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -1968,7 +1968,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticThermalMultiplier, * boost::unit_
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -1976,7 +1976,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticThermalMultiplier, * boost::unit_
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -2178,9 +2178,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress, * boost::unit_test::toleranc
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -2190,7 +2190,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress, * boost::unit_test::toleranc
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -2198,7 +2198,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress, * boost::unit_test::toleranc
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -2332,9 +2332,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress_jacobian, * boost::unit_test:
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -2344,7 +2344,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress_jacobian, * boost::unit_test:
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -2356,7 +2356,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_dragStress_jacobian, * boost::unit_test:
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -2565,9 +2565,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction, * boost::unit_test::t
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -2577,7 +2577,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction, * boost::unit_test::t
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -2585,7 +2585,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_hardeningFunction, * boost::unit_test::t
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -2777,9 +2777,9 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters, * boost::unit_test::tol
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -2789,7 +2789,7 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters, * boost::unit_test::tol
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -2797,7 +2797,7 @@ BOOST_AUTO_TEST_CASE( test_residual_decomposeParameters, * boost::unit_test::tol
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -2925,9 +2925,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariableIndices, * boost::unit_test:
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -2937,7 +2937,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariableIndices, * boost::unit_test:
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -2945,7 +2945,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getStateVariableIndices, * boost::unit_test:
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -3051,9 +3051,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariables, * boost::unit_test::tole
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -3063,7 +3063,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariables, * boost::unit_test::tole
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -3071,7 +3071,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariables, * boost::unit_test::tole
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 3 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 3 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -3147,11 +3147,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
      * Test of computing the plastic multiplier
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -3159,7 +3159,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -3398,9 +3398,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -3410,7 +3410,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );//tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -3418,7 +3418,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMuliplier, * boost::unit_test::to
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -3504,11 +3504,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian, * boost::uni
      * Test of computing the plastic multiplier's Jacobian
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -3516,7 +3516,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian, * boost::uni
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -3558,9 +3558,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian, * boost::uni
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -3570,7 +3570,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian, * boost::uni
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -3580,7 +3580,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticMultiplier_jacobian, * boost::uni
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -4266,9 +4266,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -4278,7 +4278,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -4286,7 +4286,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient, * boost::unit_test::to
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -4371,11 +4371,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian, * boost::unit
      * Test of computing the velocity gradient's Jacobian
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -4383,7 +4383,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian, * boost::unit
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -4425,9 +4425,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian, * boost::unit
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -4437,7 +4437,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian, * boost::unit
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -4447,7 +4447,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_velocityGradient_jacobian, * boost::unit
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -5134,9 +5134,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -5146,7 +5146,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -5154,7 +5154,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRate, * boost::uni
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -5238,11 +5238,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian, * 
      * Test of computing the velocity gradient's Jacobian
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -5250,7 +5250,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian, * 
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -5292,9 +5292,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian, * 
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -5304,7 +5304,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian, * 
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -5314,7 +5314,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_stateVariableEvolutionRates_jacobian, * 
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -5961,9 +5961,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -5973,7 +5973,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -5981,7 +5981,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient, * boost::uni
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -6065,11 +6065,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian, * b
      * Test of computing the plastic deformation gradient
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -6077,7 +6077,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian, * b
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -6119,9 +6119,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian, * b
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -6131,7 +6131,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian, * b
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -6141,7 +6141,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticDeformationGradient_jacobian, * b
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -6796,9 +6796,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -6808,7 +6808,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -6816,7 +6816,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables, * boost::unit_tes
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -6898,11 +6898,11 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian, * boost:
      * Test of computing the plastic deformation gradient
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -6910,7 +6910,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian, * boost:
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -6952,9 +6952,9 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian, * boost:
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -6964,7 +6964,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian, * boost:
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -6974,7 +6974,7 @@ BOOST_AUTO_TEST_CASE( test_residual_get_plasticStateVariables_jacobian, * boost:
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -7484,9 +7484,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -7496,7 +7496,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, 9, elasticityParameters );
 
@@ -7504,7 +7504,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getResidual, * boost::unit_test::tolerance( 
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -7576,11 +7576,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian, * boost::unit_test::tolerance( 
      * Test of computing the jacobian
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -7588,7 +7588,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian, * boost::unit_test::tolerance( 
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -7630,9 +7630,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian, * boost::unit_test::tolerance( 
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -7642,7 +7642,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian, * boost::unit_test::tolerance( 
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -7652,7 +7652,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian, * boost::unit_test::tolerance( 
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -7752,11 +7752,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT, * boost::unit_test::tolerance( DEFA
      * Test of computing the jacobian
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -7764,7 +7764,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT, * boost::unit_test::tolerance( DEFA
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -7806,9 +7806,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT, * boost::unit_test::tolerance( DEFA
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -7818,7 +7818,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT, * boost::unit_test::tolerance( DEFA
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -7828,7 +7828,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT, * boost::unit_test::tolerance( DEFA
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -7934,11 +7934,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF, * boost::unit_test::tolerance( DEFA
      * Test of computing the jacobian
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -7946,7 +7946,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF, * boost::unit_test::tolerance( DEFA
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -7988,9 +7988,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF, * boost::unit_test::tolerance( DEFA
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -8000,7 +8000,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF, * boost::unit_test::tolerance( DEFA
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -8010,7 +8010,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF, * boost::unit_test::tolerance( DEFA
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -8120,11 +8120,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getParameterizationInfo, * boost::unit_test:
      * Test of computing the jacobian
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -8132,7 +8132,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getParameterizationInfo, * boost::unit_test:
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -8174,9 +8174,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getParameterizationInfo, * boost::unit_test:
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -8186,7 +8186,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getParameterizationInfo, * boost::unit_test:
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -8196,7 +8196,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getParameterizationInfo, * boost::unit_test:
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 2, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -8265,11 +8265,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian2, * boost::unit_test::tolerance(
      * Test of computing the jacobian
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -8277,7 +8277,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian2, * boost::unit_test::tolerance(
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -8319,9 +8319,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian2, * boost::unit_test::tolerance(
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -8331,7 +8331,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian2, * boost::unit_test::tolerance(
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -8341,7 +8341,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getJacobian2, * boost::unit_test::tolerance(
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 1, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -8441,11 +8441,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT2, * boost::unit_test::tolerance( DEF
      * Test of computing the jacobian
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -8453,7 +8453,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT2, * boost::unit_test::tolerance( DEF
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -8495,9 +8495,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT2, * boost::unit_test::tolerance( DEF
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -8507,7 +8507,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT2, * boost::unit_test::tolerance( DEF
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -8517,7 +8517,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdT2, * boost::unit_test::tolerance( DEF
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 1, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -8623,11 +8623,11 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF2, * boost::unit_test::tolerance( DEF
      * Test of computing the jacobian
      */
 
-    class stressMock : public tardigradeHydra::ResidualBase {
+    class stressMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> {
 
         public:
 
-            using tardigradeHydra::ResidualBase::ResidualBase;
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
             floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -8635,7 +8635,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF2, * boost::unit_test::tolerance( DEF
 
             virtual void setPreviousStress( ){
 
-                tardigradeHydra::ResidualBase::setPreviousStress( previousCauchyStress );
+                tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setPreviousStress( previousCauchyStress );
 
             }
 
@@ -8677,9 +8677,9 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF2, * boost::unit_test::tolerance( DEF
 
             tardigradeHydra::thermalExpansion::residual thermalExpansion;
     
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
     
-            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase* > &residuals ){
+            void setResidualClasses( std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > &residuals ){
     
                 tardigradeHydra::hydraBase::setResidualClasses( residuals );
     
@@ -8689,7 +8689,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF2, * boost::unit_test::tolerance( DEF
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 4 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 4 );
 
                 elasticity = stressMock( this, 9 );
 
@@ -8699,7 +8699,7 @@ BOOST_AUTO_TEST_CASE( test_residual_getdRdF2, * boost::unit_test::tolerance( DEF
 
                 thermalExpansion = tardigradeHydra::thermalExpansion::residual( this, 9, 1, thermalParameters );
 
-                remainder = tardigradeHydra::ResidualBase( this, 4 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 4 );
 
                 residuals[ 0 ] = &elasticity;
 

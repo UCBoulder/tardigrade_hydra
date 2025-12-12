@@ -69,11 +69,11 @@ namespace tardigradeHydra{
          * 
          * [density, mass_change_rate, mass_change_gradient_x, mass_change_gradient_y, mass_change_gradient_z]
          */
-        class residual : public tardigradeHydra::ResidualBase{
+        class residual : public tardigradeHydra::ResidualBase<>{
 
             public:
 
-                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int massChangeConfigurationIndex, const floatVector &parameters, const floatType integrationParameter = 0.5 ) : tardigradeHydra::ResidualBase( hydra, numEquations ), _integrationParameter( integrationParameter ){
+                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int massChangeConfigurationIndex, const floatVector &parameters, const floatType integrationParameter = 0.5 ) : tardigradeHydra::ResidualBase<>( hydra, numEquations ), _integrationParameter( integrationParameter ){
                     /*!
                      * The main constructor function
                      *
@@ -237,19 +237,19 @@ namespace tardigradeHydra{
                 // Friend classes
                 friend class tardigradeHydra::massChange::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
-                using tardigradeHydra::ResidualBase::ResidualBase;
+                using tardigradeHydra::ResidualBase<>::ResidualBase;
 
-                using tardigradeHydra::ResidualBase::setResidual;
+                using tardigradeHydra::ResidualBase<>::setResidual;
 
-                using tardigradeHydra::ResidualBase::setJacobian;
+                using tardigradeHydra::ResidualBase<>::setJacobian;
 
-                using tardigradeHydra::ResidualBase::setdRdF;
+                using tardigradeHydra::ResidualBase<>::setdRdF;
 
-                using tardigradeHydra::ResidualBase::setdRdT;
+                using tardigradeHydra::ResidualBase<>::setdRdT;
 
-                using tardigradeHydra::ResidualBase::setdRdAdditionalDOF;
+                using tardigradeHydra::ResidualBase<>::setdRdAdditionalDOF;
 
-                using tardigradeHydra::ResidualBase::setAdditionalDerivatives;
+                using tardigradeHydra::ResidualBase<>::setAdditionalDerivatives;
 
                 unsigned int _massChangeConfigurationIndex;
 

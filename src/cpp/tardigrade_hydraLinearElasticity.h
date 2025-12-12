@@ -66,7 +66,7 @@ namespace tardigradeHydra{
          * A residual class for a linear-elastic material model where the stress is computed
          * in the reference configuration and pushed forward to the current configuration.
          */
-        class residual : public tardigradeHydra::ResidualBase {
+        class residual : public tardigradeHydra::ResidualBase<> {
         
             public:
 
@@ -77,7 +77,7 @@ namespace tardigradeHydra{
                  * \param &numEquations: The number of equations the residual defines
                  * \param &parameters: The parameter vector
                  */
-                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters ) : tardigradeHydra::ResidualBase( hydra, numEquations ){
+                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters ) : tardigradeHydra::ResidualBase<>( hydra, numEquations ){
     
                     TARDIGRADE_ERROR_TOOLS_CATCH( decomposeParameterVector( parameters ) );
     
@@ -189,21 +189,21 @@ namespace tardigradeHydra{
                 // Friend classes
                 friend class tardigradeHydra::linearElasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
         
-                using tardigradeHydra::ResidualBase::ResidualBase;
+                using tardigradeHydra::ResidualBase<>::ResidualBase;
         
-                using tardigradeHydra::ResidualBase::setResidual;
+                using tardigradeHydra::ResidualBase<>::setResidual;
         
-                using tardigradeHydra::ResidualBase::setJacobian;
+                using tardigradeHydra::ResidualBase<>::setJacobian;
         
-                using tardigradeHydra::ResidualBase::setdRdF;
+                using tardigradeHydra::ResidualBase<>::setdRdF;
         
-                using tardigradeHydra::ResidualBase::setdRdT;
+                using tardigradeHydra::ResidualBase<>::setdRdT;
         
-                using tardigradeHydra::ResidualBase::setAdditionalDerivatives;
+                using tardigradeHydra::ResidualBase<>::setAdditionalDerivatives;
         
-                using tardigradeHydra::ResidualBase::setStress;
+                using tardigradeHydra::ResidualBase<>::setStress;
 
-                using tardigradeHydra::ResidualBase::setPreviousStress;
+                using tardigradeHydra::ResidualBase<>::setPreviousStress;
         
                 floatType _lambda;
         

@@ -441,24 +441,24 @@ namespace tardigradeHydra{
         /*!
          * The residual for a micromorphic Drucker Prager plasticity model
          */
-        class residual : public tardigradeHydra::ResidualBaseMicromorphic {
+        class residual : public tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic> {
 
             public:
 
-                using tardigradeHydra::ResidualBaseMicromorphic::ResidualBaseMicromorphic;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
-                using tardigradeHydra::ResidualBaseMicromorphic::setResidual;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setResidual;
 
-                using tardigradeHydra::ResidualBaseMicromorphic::setJacobian;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setJacobian;
 
-                using tardigradeHydra::ResidualBaseMicromorphic::setdRdD;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setdRdD;
 
-                using tardigradeHydra::ResidualBaseMicromorphic::setdRdT;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setdRdT;
 
                 residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const unsigned int &plasticConfigurationIndex,
                           const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5,
                           const bool useWeakenedMacaulay = false, const floatType weakenedMacaulayParameter=10, const floatType plasticMultiplierBarrierModulus=1000. )
-                        : tardigradeHydra::ResidualBaseMicromorphic( _hydra, _numEquations ){
+                        : tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>( _hydra, _numEquations ){
                     /*!
                      * The main initialization constructor for the Drucker Prager plasticity residual
                      * 

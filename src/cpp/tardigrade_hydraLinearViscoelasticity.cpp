@@ -1781,7 +1781,7 @@ namespace tardigradeHydra{
              * \param &dRdT: The derivative of the residual w.r.t. the temperature
              */
 
-            tardigradeHydra::ResidualBase::setdRdT( dRdT );
+            tardigradeHydra::ResidualBase<>::setdRdT( dRdT );
 
         }
 

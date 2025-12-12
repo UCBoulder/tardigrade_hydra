@@ -190,7 +190,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setFe, * boost::unit_test::tolerance( 1e-5 )
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
             unsigned int elasticitySize = 9;
 
@@ -202,9 +202,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setFe, * boost::unit_test::tolerance( 1e-5 )
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                remainder = tardigradeHydra::ResidualBase( this, 9 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 9 );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 2 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -424,7 +424,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setEe, * boost::unit_test::tolerance( DEFAUL
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -498,7 +498,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdEedFe, * boost::unit_test::tolerance( DE
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -608,7 +608,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setPK2Stress, * boost::unit_test::tolerance(
 
                 elasticity = residualMock( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -710,7 +710,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdEe, * boost::unit_test::tolera
 
                 elasticity = residualMock( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -838,7 +838,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdPK2StressdFe, * boost::unit_test::tolera
 
                 elasticity = residualMock( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1000,7 +1000,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setCauchyStress, * boost::unit_test::toleran
 
                 elasticity = residualMock( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1106,7 +1106,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setStress, * boost::unit_test::tolerance( DE
 
                 elasticity = residualMock( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1206,7 +1206,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdPK2Stress, * boost::unit_te
 
                 elasticity = residualMock( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1304,7 +1304,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdF, * boost::unit_test::tole
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1426,7 +1426,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn, * boost::unit_test::tol
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1492,7 +1492,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn2, * boost::unit_test::to
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1577,7 +1577,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn3, * boost::unit_test::to
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
-            tardigradeHydra::ResidualBase additional;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> additional;
 
             unsigned int elasticitySize = 9;
 
@@ -1589,9 +1589,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setdCauchyStressdFn3, * boost::unit_test::to
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                additional = tardigradeHydra::ResidualBase( this, 18 );
+                additional = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 18 );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 2 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1686,7 +1686,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual, * boost::unit_test::tolerance( 
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
             unsigned int elasticitySize = 9;
 
@@ -1698,9 +1698,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual, * boost::unit_test::tolerance( 
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                remainder = tardigradeHydra::ResidualBase( this, 18 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 18 );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 2 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1759,7 +1759,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual2, * boost::unit_test::tolerance(
 
             using tardigradeHydra::linearElasticity::residual::residual;
 
-            void setStress( floatVector &cauchyStress ){ tardigradeHydra::ResidualBase::setStress( cauchyStress ); }
+            void setStress( floatVector &cauchyStress ){ tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setStress( cauchyStress ); }
 
         private:
 
@@ -1779,7 +1779,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual2, * boost::unit_test::tolerance(
 
             residualMock elasticity;
 
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
             unsigned int elasticitySize = 9;
 
@@ -1791,9 +1791,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setResidual2, * boost::unit_test::tolerance(
 
                 elasticity = residualMock( this, elasticitySize, *getParameters( ) );
 
-                remainder = tardigradeHydra::ResidualBase( this, 18 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 18 );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 2 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1858,7 +1858,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setJacobian, * boost::unit_test::tolerance( 
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
             unsigned int elasticitySize = 9;
 
@@ -1870,9 +1870,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setJacobian, * boost::unit_test::tolerance( 
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                remainder = tardigradeHydra::ResidualBase( this, 21 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 21 );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 2 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -1971,7 +1971,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdT, * boost::unit_test::tolerance( DEFA
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
             unsigned int elasticitySize = 9;
 
@@ -1983,9 +1983,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdT, * boost::unit_test::tolerance( DEFA
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                remainder = tardigradeHydra::ResidualBase( this, 21 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 21 );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 2 );
 
                 residuals[ 0 ] = &elasticity;
 
@@ -2080,7 +2080,7 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdF, * boost::unit_test::tolerance( DEFA
 
             tardigradeHydra::linearElasticity::residual elasticity;
 
-            tardigradeHydra::ResidualBase remainder;
+            tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase> remainder;
 
             unsigned int elasticitySize = 9;
 
@@ -2092,9 +2092,9 @@ BOOST_AUTO_TEST_CASE( test_residual_setdRdF, * boost::unit_test::tolerance( DEFA
 
                 elasticity = tardigradeHydra::linearElasticity::residual( this, elasticitySize, *getParameters( ) );
 
-                remainder = tardigradeHydra::ResidualBase( this, 21 );
+                remainder = tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>( this, 21 );
 
-                std::vector< tardigradeHydra::ResidualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 2 );
 
                 residuals[ 0 ] = &elasticity;
 

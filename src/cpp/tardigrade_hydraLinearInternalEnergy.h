@@ -65,7 +65,7 @@ namespace tardigradeHydra{
          * A residual class for a linear-elastic material model where the stress is computed
          * in the reference configuration and pushed forward to the current configuration.
          */
-        class residual : public tardigradeHydra::ResidualBase {
+        class residual : public tardigradeHydra::ResidualBase<> {
         
             public:
 
@@ -82,7 +82,7 @@ namespace tardigradeHydra{
                     tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const floatVector &parameters,
                     const unsigned int expectedParameterVectorSize = 1,
                     const unsigned int internalEnergyIndex = 9
-                ) : tardigradeHydra::ResidualBase( hydra, numEquations ),
+                ) : tardigradeHydra::ResidualBase<>( hydra, numEquations ),
                 _expectedParameterVectorSize( expectedParameterVectorSize ),
                 _internalEnergyIndex( internalEnergyIndex ){
     
@@ -147,17 +147,17 @@ namespace tardigradeHydra{
                 // Friend classes
                 friend class tardigradeHydra::linearInternalEnergy::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
         
-                using tardigradeHydra::ResidualBase::ResidualBase;
+                using tardigradeHydra::ResidualBase<>::ResidualBase;
         
-                using tardigradeHydra::ResidualBase::setResidual;
+                using tardigradeHydra::ResidualBase<>::setResidual;
         
-                using tardigradeHydra::ResidualBase::setJacobian;
+                using tardigradeHydra::ResidualBase<>::setJacobian;
         
-                using tardigradeHydra::ResidualBase::setdRdF;
+                using tardigradeHydra::ResidualBase<>::setdRdF;
         
-                using tardigradeHydra::ResidualBase::setdRdT;
+                using tardigradeHydra::ResidualBase<>::setdRdT;
         
-                using tardigradeHydra::ResidualBase::setAdditionalDerivatives;
+                using tardigradeHydra::ResidualBase<>::setAdditionalDerivatives;
 
                 TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, specificHeat,           floatType,           setSpecificHeat )
 

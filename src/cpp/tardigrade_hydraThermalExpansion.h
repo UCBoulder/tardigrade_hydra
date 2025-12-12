@@ -65,11 +65,11 @@ namespace tardigradeHydra{
         /*!
          * A class which defines a thermal expansion residual
          */
-        class residual : public tardigradeHydra::ResidualBase{
+        class residual : public tardigradeHydra::ResidualBase<>{
 
             public:
 
-                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int thermalConfigurationIndex, const floatVector &parameters ) : tardigradeHydra::ResidualBase( hydra, numEquations ){
+                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int thermalConfigurationIndex, const floatVector &parameters ) : tardigradeHydra::ResidualBase<>( hydra, numEquations ){
                     /*!
                      * The main constructor function
                      *
@@ -131,17 +131,17 @@ namespace tardigradeHydra{
                 // Friend classes
                 friend class tardigradeHydra::thermalExpansion::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
-                using tardigradeHydra::ResidualBase::ResidualBase;
+                using tardigradeHydra::ResidualBase<>::ResidualBase;
 
-                using tardigradeHydra::ResidualBase::setResidual;
+                using tardigradeHydra::ResidualBase<>::setResidual;
 
-                using tardigradeHydra::ResidualBase::setJacobian;
+                using tardigradeHydra::ResidualBase<>::setJacobian;
 
-                using tardigradeHydra::ResidualBase::setdRdF;
+                using tardigradeHydra::ResidualBase<>::setdRdF;
 
-                using tardigradeHydra::ResidualBase::setdRdT;
+                using tardigradeHydra::ResidualBase<>::setdRdT;
 
-                using tardigradeHydra::ResidualBase::setAdditionalDerivatives;
+                using tardigradeHydra::ResidualBase<>::setAdditionalDerivatives;
 
                 unsigned int _thermalConfigurationIndex;
 

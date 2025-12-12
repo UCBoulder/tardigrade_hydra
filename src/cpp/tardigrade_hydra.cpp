@@ -783,7 +783,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::setResidualClasses( std::vector< ResidualBase* > &residualClasses ){
+    void hydraBase::setResidualClasses( std::vector< ResidualBase<hydraBase>* > &residualClasses ){
         /*!
          * Set the residual classes
          * 
@@ -793,7 +793,7 @@ namespace tardigradeHydra{
 
         unsigned int numEquations = 0;
 
-        _residualClasses.second = std::vector< ResidualBase* >( residualClasses.size( ) );
+        _residualClasses.second = std::vector< ResidualBase<hydraBase>* >( residualClasses.size( ) );
 
         for ( auto c = residualClasses.begin( ); c != residualClasses.end( ); c++ ){
 
@@ -817,7 +817,7 @@ namespace tardigradeHydra{
 
     }
 
-    std::vector< ResidualBase* >* hydraBase::getResidualClasses( ){
+    std::vector< ResidualBase<hydraBase>* >* hydraBase::getResidualClasses( ){
         /*!
          * Get a pointer to the vector of residual class pointers
          */
