@@ -141,3 +141,355 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_checkDefaults, * boost::unit_test::toler
     BOOST_CHECK( !residual.getUseProjection( ) );
 
 }
+
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setResidual, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class HydraMock{
+
+        public:
+
+            HydraMock( ){
+
+            };
+
+            void addIterationData( tardigradeHydra::dataBase* ){
+
+            };
+
+    };
+
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
+
+        public:
+
+            using tardigradeHydra::ResidualBase<HydraMock>::setResidual;
+
+            tardigradeHydra::floatVector residual = { 1, 2, 3 };
+
+            ResidualBaseMock( HydraMock *hydra, unsigned int numEquations ) : ResidualBase( hydra, numEquations ){ }
+    
+            virtual void setResidual( ){
+    
+                setResidual( residual );
+    
+            }
+
+    };
+
+    HydraMock hydra;
+
+    unsigned int numEquations = 3;
+
+    ResidualBaseMock residual( &hydra, numEquations );
+
+    BOOST_TEST( *residual.getResidual( ) == residual.residual, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setJacobian, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class HydraMock{
+
+        public:
+
+            HydraMock( ){
+
+            };
+
+            void addIterationData( tardigradeHydra::dataBase* ){
+
+            };
+
+    };
+
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
+
+        public:
+
+            using tardigradeHydra::ResidualBase<HydraMock>::setJacobian;
+
+            tardigradeHydra::floatVector jacobian = { 1, 2, 3, 4, 5, 6 };
+    
+            ResidualBaseMock( HydraMock *hydra, unsigned int numEquations ) : ResidualBase<HydraMock>( hydra, numEquations ){ }
+
+            virtual void setJacobian( ){
+    
+                setJacobian( jacobian );
+    
+            }
+
+    };
+
+    HydraMock hydra;
+
+    unsigned int numEquations = 3;
+
+    ResidualBaseMock residual( &hydra, numEquations );
+
+    BOOST_TEST( *residual.getJacobian( ) == residual.jacobian, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setdRdF, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class HydraMock{
+
+        public:
+
+            HydraMock( ){
+
+            };
+
+            void addIterationData( tardigradeHydra::dataBase* ){
+
+            };
+
+    };
+
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
+
+        public:
+
+            using tardigradeHydra::ResidualBase<HydraMock>::setdRdF;
+
+            tardigradeHydra::floatVector dRdF = { 1, 2, 3, 4, 5, 6 };
+
+            ResidualBaseMock( HydraMock *hydra, unsigned int numEquations ) : ResidualBase<HydraMock>( hydra, numEquations ){ }
+    
+            virtual void setdRdF( ){
+    
+                setdRdF( dRdF );
+    
+            }
+
+    };
+
+    HydraMock hydra;
+
+    unsigned int numEquations = 3;
+
+    ResidualBaseMock residual( &hydra, numEquations );
+
+    BOOST_TEST( *residual.getdRdF( ) == residual.dRdF, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setdRdT, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class HydraMock{
+
+        public:
+
+            HydraMock( ){
+
+            };
+
+            void addIterationData( tardigradeHydra::dataBase* ){
+
+            };
+
+    };
+
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
+
+        public:
+
+            using tardigradeHydra::ResidualBase<HydraMock>::setdRdT;
+
+            tardigradeHydra::floatVector dRdT = { 4, 5, 6 };
+
+            ResidualBaseMock( HydraMock *hydra, unsigned int numEquations ) : ResidualBase<HydraMock>( hydra, numEquations ){ }
+    
+            virtual void setdRdT( ){
+    
+                setdRdT( dRdT );
+    
+            }
+
+    };
+
+    HydraMock hydra;
+
+    unsigned int numEquations = 3;
+
+    ResidualBaseMock residual( &hydra, numEquations );
+
+    BOOST_TEST( *residual.getdRdT( ) == residual.dRdT, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setAdditionalDerivatives, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class HydraMock{
+
+        public:
+
+            HydraMock( ){
+
+            };
+
+            void addIterationData( tardigradeHydra::dataBase* ){
+
+            };
+
+    };
+
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
+
+        public:
+
+            using tardigradeHydra::ResidualBase<HydraMock>::setAdditionalDerivatives;
+
+            tardigradeHydra::floatVector additionalDerivatives = { 4, 5, 6 };
+
+            ResidualBaseMock( HydraMock *hydra, unsigned int numEquations ) : ResidualBase<HydraMock>( hydra, numEquations ){ }
+    
+            virtual void setAdditionalDerivatives( ){
+    
+                setAdditionalDerivatives( additionalDerivatives );
+    
+            }
+
+    };
+
+    HydraMock hydra;
+
+    unsigned int numEquations = 3;
+
+    ResidualBaseMock residual( &hydra, numEquations );
+
+    BOOST_TEST( *residual.getAdditionalDerivatives( ) == residual.additionalDerivatives, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class HydraMock{
+
+        public:
+
+            HydraMock( ){
+
+            };
+
+            void addIterationData( tardigradeHydra::dataBase* ){
+
+            };
+
+    };
+
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
+
+        public:
+
+            using tardigradeHydra::ResidualBase<HydraMock>::setStress;
+
+            tardigradeHydra::floatVector cauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            ResidualBaseMock( HydraMock *hydra, unsigned int numEquations ) : ResidualBase<HydraMock>( hydra, numEquations ){ }
+    
+            virtual void setStress( ){
+    
+                setStress( cauchyStress );
+    
+            }
+
+    };
+
+    HydraMock hydra;
+
+    unsigned int numEquations = 3;
+
+    ResidualBaseMock residual( &hydra, numEquations );
+
+    BOOST_TEST( *residual.getStress( ) == residual.cauchyStress, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setPreviousStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class HydraMock{
+
+        public:
+
+            HydraMock( ){
+
+            };
+
+            void addIterationData( tardigradeHydra::dataBase* ){
+
+            };
+
+    };
+
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
+
+        public:
+
+            using tardigradeHydra::ResidualBase<HydraMock>::setPreviousStress;
+
+            tardigradeHydra::floatVector previousCauchyStress = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
+
+            ResidualBaseMock( HydraMock *hydra, unsigned int numEquations ) : ResidualBase<HydraMock>( hydra, numEquations ){ }
+    
+            virtual void setPreviousStress( ){
+    
+                setPreviousStress( previousCauchyStress );
+    
+            }
+
+    };
+
+    HydraMock hydra;
+
+    unsigned int numEquations = 3;
+
+    ResidualBaseMock residual( &hydra, numEquations );
+
+    BOOST_TEST( *residual.getPreviousStress( ) == residual.previousCauchyStress, CHECK_PER_ELEMENT );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_ResidualBase_setCurrentAdditionalStateVariables, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class HydraMock{
+
+        public:
+
+            HydraMock( ){
+
+            };
+
+            void addIterationData( tardigradeHydra::dataBase* ){
+
+            };
+
+    };
+
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
+
+        public:
+
+            using tardigradeHydra::ResidualBase<HydraMock>::setCurrentAdditionalStateVariables;
+
+            tardigradeHydra::floatVector currentAdditionalStateVariables = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 };
+
+            ResidualBaseMock( HydraMock *hydra, unsigned int numEquations ) : ResidualBase<HydraMock>( hydra, numEquations ){ }
+    
+            virtual void setCurrentAdditionalStateVariables( ){
+    
+                setCurrentAdditionalStateVariables( currentAdditionalStateVariables );
+    
+            }
+
+    };
+
+    HydraMock hydra;
+
+    unsigned int numEquations = 3;
+
+    ResidualBaseMock residual( &hydra, numEquations );
+
+    BOOST_TEST( *residual.getCurrentAdditionalStateVariables( ) == residual.currentAdditionalStateVariables, CHECK_PER_ELEMENT );
+
+}
