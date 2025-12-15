@@ -50,6 +50,48 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Base class for Solver Steps
+     */
+    class SolverStepBase{
+
+        public:
+
+           SolverStepBase( ) : solver(NULL){
+                /*!
+                 * Constructor for NonlinearStepBase
+                 */
+
+            }
+
+            SolverStepBase( const SolverBase *_solver ) : solver(_solver){ }
+
+            void incrementSolution( );
+
+        protected:
+
+            const SolverBase *solver;
+
+    };
+
+    /*!
+     * Base Solver class
+     */
+    class SolverBase{
+
+        public:
+
+            SolverBase( ) : hydra(NULL), step(NULL){
+
+            }
+
+            const hydraBase *hydra;
+            const SolverStepBase *step;
+
+            virtual void solve( );
+
+    };
+
+    /*!
      * hydraBase: A base class which can be used to construct finite deformation material models.
      * 
      * The hydra class seeks to provide utilities for the construction of finite deformation constitutive models
@@ -729,6 +771,8 @@ namespace tardigradeHydra{
             }
 
         protected:
+
+            const SolverBase *solver;
 
             // Setters that the user may need to access but not override
 

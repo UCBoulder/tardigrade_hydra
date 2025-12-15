@@ -2195,48 +2195,28 @@ namespace tardigradeHydra{
 
     }
 
-    /*!
-     * Base class for Solver Steps
-     */
-    class SolverStepBase{
+    void SolverStepBase::incrementSolution( ){
+        /*!
+         * Increment the solution of the problem
+         */
+    }
 
-        public:
-
-           SolverStepBase( ){
-                /*!
-                 * Constructor for NonlinearStepBase
-                 */
-
-            }
-
-            void GetStep( ){
-                /*!
-                 * Get the step
-                 */ 
-            }
-
-    };
-
-    /*!
-     * Base Solver class
-     */
-    class SolverBase{
-
-        public:
-
-            SolverBase( ) : hydra(NULL), step(NULL){
-
-            }
-
-            const hydraBase *hydra;
-            const SolverStepBase *step;
-
-    };
+    void SolverBase::solve( ){
+        /*!
+         * Solve the system of equations
+         */
+    }
 
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem
          */
+
+        SolverBase _solver;
+        _solver.hydra = this;
+        SolverStepBase step(&_solver);
+        _solver.step = &step;
+        solver = &_solver;
 
         // Form the initial unknown vector
         if ( getInitializeUnknownVector( ) ){
