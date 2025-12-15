@@ -2217,6 +2217,22 @@ namespace tardigradeHydra{
 
     };
 
+    /*!
+     * Base Solver class
+     */
+    class SolverBase{
+
+        public:
+
+            SolverBase( ) : hydra(NULL), step(NULL){
+
+            }
+
+            const hydraBase *hydra;
+            const SolverStepBase *step;
+
+    };
+
     void hydraBase::solveNonLinearProblem( ){
         /*!
          * Solve the non-linear problem

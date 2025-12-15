@@ -1097,6 +1097,7 @@ namespace tardigradeHydra{
         private:
 
             // Friend classes
+            friend class tardigradeHydra::SolverBase; //!< The base class for the solver
             friend class unit_test::hydraBaseTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
             unsigned int _dimension; //!< The spatial dimension of the problem
