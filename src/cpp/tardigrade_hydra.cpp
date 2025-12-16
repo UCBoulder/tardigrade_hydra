@@ -2235,12 +2235,6 @@ namespace tardigradeHydra{
          * Solve the non-linear problem
          */
 
-        SolverBase _solver;
-        _solver.hydra = this;
-        SolverStepBase step(&_solver);
-        _solver.step = &step;
-        solver = &_solver;
-
         // Form the initial unknown vector
         if ( getInitializeUnknownVector( ) ){
             TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
@@ -2927,17 +2921,11 @@ namespace tardigradeHydra{
 
         auto residualNorm = get_SetDataStorage_residualNorm( );
 
-        residualNorm.zero( );
+        auto residual = getResidual( );
 
-        const unsigned int xsize = getNumUnknowns( );
+        using residual_type = std::remove_reference_t<decltype( ( *residual )[ 0 ] )>;
 
-        const floatVector *residual = getResidual( );
-
-        for ( unsigned int i = 0; i < xsize; i++ ){
-
-            *residualNorm.value += ( *residual )[ i ] * ( *residual )[ i ];
-
-        }
+        *residualNorm.value = std::inner_product( std::begin( *residual ), std::end( *residual ), std::begin( *residual ), residual_type( ) ); 
 
     }
 
