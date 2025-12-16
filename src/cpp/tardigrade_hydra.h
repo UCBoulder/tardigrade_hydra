@@ -56,20 +56,34 @@ namespace tardigradeHydra{
 
         public:
 
-           SolverStepBase( ) : solver(NULL){
+            SolverStepBase( ) : solver(NULL){
                 /*!
                  * Constructor for NonlinearStepBase
                  */
-
             }
 
-            SolverStepBase( SolverBase *_solver ) : solver(_solver){ }
+            SolverStepBase( SolverBase *_solver ) : solver(_solver){
+                /*!
+                 * Constructor for NonlinearStepBase
+                 *
+                 * \param *_solver: The containing solver object
+                 */
+            }
 
             void incrementSolution( );
 
+            floatVector X0; //!< The initial value of the unknown vector
+
+            void setSolver( SolverBase *_solver ){
+                /*! Set the containing solver object
+                 * \param *_solver: The containing solver object
+                 */
+                solver = _solver;
+            }
+
         protected:
 
-            SolverBase *solver;
+            SolverBase *solver; //!< Pointer to the containing SolverBase object
 
     };
 
@@ -84,8 +98,17 @@ namespace tardigradeHydra{
 
             }
 
-            hydraBase *hydra;
-            SolverStepBase step; //!< The object that defines the step to be taken by the solver TODO: Make this a pointer
+            SolverBase( hydraBase * _hydra ) : hydra( _hydra ){
+                /*!
+                 * Constructor for NonlinearStepBase
+                 *
+                 * \param *_hydra: The containing hydraBase object
+                 */
+            }
+
+            hydraBase *hydra; //!< Pointer to the containing hydra object
+            SolverStepBase _step; //!< Temporary object
+            SolverStepBase *step = &_step; //!< The object that defines the step to be taken by the solver TODO: Make this an incoming pointer
 
             virtual void solve( );
 
@@ -774,7 +797,8 @@ namespace tardigradeHydra{
 
         protected:
 
-            SolverBase solver; //!< The class which performs the material point solve TODO: Make this a constant pointer
+            SolverBase _solver; //!< Temporary
+            SolverBase *solver = &_solver; //!< The class which performs the material point solve TODO: Make this an incoming pointer
 
             // Setters that the user may need to access but not override
 
