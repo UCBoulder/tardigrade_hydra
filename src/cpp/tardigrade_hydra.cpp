@@ -2199,6 +2199,29 @@ namespace tardigradeHydra{
         /*!
          * Increment the solution of the problem
          */
+
+        if ( solver->hydra->getFailureVerbosityLevel( ) > 0 ){
+            solver->hydra->addToFailureOutput( "\n\n  iteration: " );
+            solver->hydra->addToFailureOutput( solver->getIteration( ) );
+        }
+
+        floatVector X0 = *solver->hydra->getUnknownVector( );
+
+        if ( solver->hydra->getFailureVerbosityLevel( ) > 0 ){
+            solver->hydra->addToFailureOutput( "  X0:\n" );
+            solver->hydra->addToFailureOutput( "  " );
+            solver->hydra->addToFailureOutput( *solver->hydra->getUnknownVector( ) );
+        }
+
+    }
+
+    const unsigned int SolverBase::getIteration( ){
+        /*!
+         * Get the current iteration number
+         */
+
+        return hydra->_iteration;
+
     }
 
     void SolverBase::solve( ){

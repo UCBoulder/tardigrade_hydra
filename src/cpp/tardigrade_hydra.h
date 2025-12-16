@@ -63,13 +63,13 @@ namespace tardigradeHydra{
 
             }
 
-            SolverStepBase( const SolverBase *_solver ) : solver(_solver){ }
+            SolverStepBase( SolverBase *_solver ) : solver(_solver){ }
 
             void incrementSolution( );
 
         protected:
 
-            const SolverBase *solver;
+            SolverBase *solver;
 
     };
 
@@ -84,10 +84,12 @@ namespace tardigradeHydra{
 
             }
 
-            const hydraBase *hydra;
-            const SolverStepBase *step;
+            hydraBase *hydra;
+            SolverStepBase *step;
 
             virtual void solve( );
+
+            const unsigned int getIteration( );
 
     };
 
