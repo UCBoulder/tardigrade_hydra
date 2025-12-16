@@ -83,6 +83,11 @@ namespace tardigradeHydra{
 
         }
 
+        // TEMP
+        _solver.hydra = this;
+        (*solver)._step.setSolver( solver );
+        // END TEMP
+
     }
 
     void hydraBase::setStress( const floatVector &stress ){
@@ -2205,7 +2210,7 @@ namespace tardigradeHydra{
             solver->hydra->addToFailureOutput( solver->getIteration( ) );
         }
 
-        floatVector X0 = *solver->hydra->getUnknownVector( );
+        X0 = *solver->hydra->getUnknownVector( );
 
         if ( solver->hydra->getFailureVerbosityLevel( ) > 0 ){
             solver->hydra->addToFailureOutput( "  X0:\n" );
@@ -2257,17 +2262,8 @@ namespace tardigradeHydra{
 
         while( !checkConvergence( ) && checkIteration( ) ){
 
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "\n\n  iteration: " );
-                addToFailureOutput( _iteration );
-            }
-            floatVector X0 = *getUnknownVector( );
+            solver->step->incrementSolution( );
 
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "  X0:\n" );
-                addToFailureOutput( "  " );
-                addToFailureOutput( *getUnknownVector( ) );
-            }
             setBaseQuantities( );
 
             if ( getUseSQPSolver( ) ){
@@ -2288,7 +2284,7 @@ namespace tardigradeHydra{
                 addToFailureOutput( deltaX );
             }
 
-            updateUnknownVector( X0 + getLambda( ) * deltaX );
+            updateUnknownVector( solver->step->X0 + getLambda( ) * deltaX );
 
             // Refine the estimate if the new point has a higher residual
             if ( !checkLSConvergence( ) ){
@@ -2296,13 +2292,13 @@ namespace tardigradeHydra{
                 if ( checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
 
                     // Perform an Armijo type line search when the search direction is aligned with the gradient
-                    performArmijoTypeLineSearch( X0, deltaX );
+                    performArmijoTypeLineSearch( solver->step->X0, deltaX );
 
                 }
                 else{
 
                     // Perform gradient descent if the search direction is not aligned with the gradient
-                    performGradientStep( X0 );
+                    performGradientStep( solver->step->X0 );
 
                 }
 
