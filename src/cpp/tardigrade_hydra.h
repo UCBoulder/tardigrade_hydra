@@ -80,12 +80,12 @@ namespace tardigradeHydra{
 
         public:
 
-            SolverBase( ) : hydra(NULL), step(NULL){
+            SolverBase( ) : hydra(NULL){//, step(NULL){ ///!< TODO: Re-enable this
 
             }
 
             hydraBase *hydra;
-            SolverStepBase *step;
+            SolverStepBase step; //!< The object that defines the step to be taken by the solver TODO: Make this a pointer
 
             virtual void solve( );
 
@@ -774,7 +774,7 @@ namespace tardigradeHydra{
 
         protected:
 
-            const SolverBase *solver;
+            SolverBase solver; //!< The class which performs the material point solve TODO: Make this a constant pointer
 
             // Setters that the user may need to access but not override
 
