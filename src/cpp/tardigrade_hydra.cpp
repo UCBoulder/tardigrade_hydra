@@ -2200,6 +2200,58 @@ namespace tardigradeHydra{
 
     }
 
+    // SolverStepBase methods
+    const floatType *SolverStepBase::get_baseResidualNorm( ){
+        /*!
+         * Get the base value for the residual norm.
+         */
+
+        if ( !_baseResidualNorm.first ){
+
+            throw std::runtime_error( "The base residual norm must be set with set_baseResidualNorm before it can be called" );
+
+        }
+
+        return &_baseResidualNorm.second;
+
+    }
+
+    const floatVector *SolverStepBase::get_basedResidualNormdX( ){
+        /*!
+         * Get the base value for the derivative of the residual norm w.r.t. the unknown vector
+         */
+
+        if ( !_basedResidualNormdX.first ){
+
+            throw std::runtime_error( "The base residual norm must be set with set_dbaseResidualNormdX before it can be called" );
+
+        }
+
+        return &_basedResidualNormdX.second;
+
+    }
+
+    void SolverStepBase::set_baseResidualNorm( const floatType &value ){
+        /*! Set the base value of the residual norm
+         *
+         * \param &value: The new value
+         */
+
+        solver->hydra->setNLStepData( value, _baseResidualNorm );
+
+    }
+
+    void SolverStepBase::set_basedResidualNormdX( const floatVector &value ){
+        /*!
+         * Set the base derivative of the residual norm w.r.t. the unknown vector
+         *
+         * \param &value: The new value
+         */
+
+        solver->hydra->setNLStepData( value, _basedResidualNormdX );
+
+    }
+
     void SolverStepBase::incrementSolution( ){
         /*!
          * Increment the solution of the problem
@@ -2220,6 +2272,9 @@ namespace tardigradeHydra{
 
     }
 
+    // END SolverStepBase methods
+    // SolverBase methods
+
     const unsigned int SolverBase::getIteration( ){
         /*!
          * Get the current iteration number
@@ -2234,6 +2289,8 @@ namespace tardigradeHydra{
          * Solve the system of equations
          */
     }
+
+    // End SolverBase methods
 
     void hydraBase::solveNonLinearProblem( ){
         /*!

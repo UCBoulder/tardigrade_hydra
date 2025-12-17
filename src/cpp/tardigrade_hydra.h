@@ -81,9 +81,23 @@ namespace tardigradeHydra{
                 solver = _solver;
             }
 
+            const floatType *get_baseResidualNorm( );
+
+            const floatVector *get_basedResidualNormdX( );
+
         protected:
 
             SolverBase *solver; //!< Pointer to the containing SolverBase object
+
+            void set_baseResidualNorm( const floatType &value );
+
+            void set_basedResidualNormdX( const floatVector &value );
+
+        private:
+
+            DataStorage< floatType > _baseResidualNorm; //!< The base value of the norm of the residual
+
+            DataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
 
     };
 
@@ -113,6 +127,8 @@ namespace tardigradeHydra{
             virtual void solve( );
 
             const unsigned int getIteration( );
+
+        protected:
 
     };
 
@@ -1167,6 +1183,7 @@ namespace tardigradeHydra{
         private:
 
             // Friend classes
+            friend class tardigradeHydra::SolverStepBase; //!< The base class for the solver steps
             friend class tardigradeHydra::SolverBase; //!< The base class for the solver
             friend class unit_test::hydraBaseTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
