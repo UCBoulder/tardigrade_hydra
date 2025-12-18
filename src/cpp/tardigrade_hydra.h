@@ -247,9 +247,6 @@ namespace tardigradeHydra{
             //!< Get the gradient descent p parameter
             const floatType getGradientP( ){ return _gradientP; }
 
-            //!< Get the Levenberg-Marquardt mu parameter
-            const floatType getLMMu( ){ return _lm_mu; }
-
             //!< Get the Newton step should be a LevenbergMarquardt step
             const bool getUseLevenbergMarquardt( ){ return _use_LM_step; }
 
@@ -319,18 +316,6 @@ namespace tardigradeHydra{
                 */
  
                 _gradientP = value;
-
-            }
-
-            //!< Set the Levenberg-Marquardt mu parameter
-            void setLMMu( const floatType &value ){
-               /*!
-                * Set the value of the mu parameter for Levenberg-Marquardt steps
-                *
-                * \param &value: The value of the parameter
-                */
- 
-                _lm_mu = value;
 
             }
 
@@ -764,6 +749,21 @@ namespace tardigradeHydra{
                 */
  
                 _solver._step.setMuk( value );
+
+            }
+
+            //!< Get the Levenberg-Marquardt mu parameter
+            const floatType getLMMu( ){ return _solver._step._lm_mu; }
+
+            //!< Set the Levenberg-Marquardt mu parameter
+            void setLMMu( const floatType &value ){
+               /*!
+                * Set the value of the mu parameter for Levenberg-Marquardt steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _solver._step.setLMMu( value );
 
             }
 
@@ -1248,8 +1248,6 @@ namespace tardigradeHydra{
             floatType _gradientRho   = 1e-8; //!< The rho parameter for the gradient descent step
 
             floatType _gradientP     = 2.1; //!< The p parameter for the gradient descent step
-
-            floatType _lm_mu         = 1e-8; //!< The mu parameter for Levenberg-Marquardt iterations
 
             DataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
 

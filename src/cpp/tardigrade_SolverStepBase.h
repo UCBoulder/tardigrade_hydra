@@ -65,6 +65,20 @@ namespace tardigradeHydra{
 
             }
 
+            //!< Get the Levenberg-Marquardt mu parameter
+            const floatType getLMMu( ){ return _lm_mu; }
+
+            //!< Set the Levenberg-Marquardt mu parameter
+            void setLMMu( const floatType &value ){
+               /*!
+                * Set the value of the mu parameter for Levenberg-Marquardt steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _lm_mu = value;
+
+            }
         protected:
 
             SolverBase *solver; //!< Pointer to the containing SolverBase object
@@ -74,6 +88,8 @@ namespace tardigradeHydra{
             void set_basedResidualNormdX( const floatVector &value );
 
             floatType _mu_k = -1; //!< The Levenberg-Marquardt scaling parameter
+
+            floatType _lm_mu = 1e-8; //!< The mu parameter for Levenberg-Marquardt iterations
 
         private:
 
