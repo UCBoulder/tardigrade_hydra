@@ -1943,7 +1943,7 @@ namespace tardigradeHydra{
 
         if ( _solver._step._mu_k < 0 ){
 
-            _solver._step.setMuk( 0.5 * getLMMu( ) * ( *_solver._step.get_baseResidualNorm( ) ) );
+            _solver._step.setMuk( 0.5 * _solver._step.getLMMu( ) * ( *_solver._step.get_baseResidualNorm( ) ) );
 
         }
         else{
