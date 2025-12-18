@@ -1850,7 +1850,7 @@ namespace tardigradeHydra{
 
         floatVector dx = ( *getUnknownVector( ) ) - X0;
 
-        floatType RHS = *get_baseResidualNorm( );
+        floatType RHS = *_solver._step.get_baseResidualNorm( );
 
         for ( unsigned int i = 0; i < xsize; i++ ){
 
