@@ -26,6 +26,7 @@
 #include"tardigrade_SetDataStorage.h"
 #include"tardigrade_MatrixMap.h"
 #include"tardigrade_ResidualBase.h"
+#include"tardigrade_SolverStepBase.h"
 
 namespace tardigradeHydra{
 
@@ -48,60 +49,6 @@ namespace tardigradeHydra{
         throw std::runtime_error( "Zeroing the ResidualBase pointer vector is not allowed" );
 
     }
-
-    /*!
-     * Base class for Solver Steps
-     */
-    class SolverStepBase{
-
-        public:
-
-            SolverStepBase( ) : solver(NULL){
-                /*!
-                 * Constructor for NonlinearStepBase
-                 */
-            }
-
-            SolverStepBase( SolverBase *_solver ) : solver(_solver){
-                /*!
-                 * Constructor for NonlinearStepBase
-                 *
-                 * \param *_solver: The containing solver object
-                 */
-            }
-
-            void incrementSolution( );
-
-            floatVector X0; //!< The initial value of the unknown vector
-
-            void setSolver( SolverBase *_solver ){
-                /*! Set the containing solver object
-                 * \param *_solver: The containing solver object
-                 */
-                solver = _solver;
-            }
-
-            const floatType *get_baseResidualNorm( );
-
-            const floatVector *get_basedResidualNormdX( );
-
-        protected:
-
-            SolverBase *solver; //!< Pointer to the containing SolverBase object
-
-            void set_baseResidualNorm( const floatType &value );
-
-            void set_basedResidualNormdX( const floatVector &value );
-
-        private:
-
-            friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
-            friend class tardigradeHydra::unit_test::SolverStepBaseTester; //!< The unit tester for the class
-            DataStorage< floatType > _baseResidualNorm; //!< The base value of the norm of the residual
-
-            DataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
-
-    };
 
     /*!
      * Base Solver class
@@ -303,9 +250,6 @@ namespace tardigradeHydra{
             //!< Get the Levenberg-Marquardt mu parameter
             const floatType getLMMu( ){ return _lm_mu; }
 
-            //!< Get the current value of mu_k
-            const floatType getMuk( ){ return _mu_k; }
-
             //!< Get the Newton step should be a LevenbergMarquardt step
             const bool getUseLevenbergMarquardt( ){ return _use_LM_step; }
 
@@ -387,18 +331,6 @@ namespace tardigradeHydra{
                 */
  
                 _lm_mu = value;
-
-            }
-
-            //!< Set the Levenberg-Marquardt mu_k
-            void setMuk( const floatType &value ){
-               /*!
-                * Set the value of the mu_k parameter for Levenberg-Marquardt steps
-                *
-                * \param &value: The value of the parameter
-                */
- 
-                _mu_k = value;
 
             }
 
@@ -817,6 +749,25 @@ namespace tardigradeHydra{
 
                 return _relaxedIteration;
             }
+
+            // TEMP REMOVE THESE
+
+            //!< Get the current value of mu_k
+            const floatType getMuk( ){ return _solver._step._mu_k; }
+
+            //!< Set the Levenberg-Marquardt mu_k
+            void setMuk( const floatType &value ){
+               /*!
+                * Set the value of the mu_k parameter for Levenberg-Marquardt steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _solver._step.setMuk( value );
+
+            }
+
+            // END TEMP
 
         protected:
 
@@ -1263,8 +1214,6 @@ namespace tardigradeHydra{
             bool _initializeUnknownVector = true; //!< Flag for whether to initialize the unknown vector in the non-linear solve
 
             unsigned int _maxRelaxedIterations = 5; //!< The number of allowed relaxed iterations
-
-            floatType _mu_k = -1; //!< The Levenberg-Marquardt scaling parameter
 
             floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
 
