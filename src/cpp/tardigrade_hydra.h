@@ -25,8 +25,9 @@
 #include"tardigrade_CustomErrors.h"
 #include"tardigrade_SetDataStorage.h"
 #include"tardigrade_MatrixMap.h"
+#include"tardigrade_SolverBase.h"
 #include"tardigrade_ResidualBase.h"
-#include"tardigrade_SolverStepBase.h"
+//#include"tardigrade_SolverStepBase.h"
 
 namespace tardigradeHydra{
 
@@ -49,42 +50,6 @@ namespace tardigradeHydra{
         throw std::runtime_error( "Zeroing the ResidualBase pointer vector is not allowed" );
 
     }
-
-    /*!
-     * Base Solver class
-     */
-    class SolverBase{
-
-        public:
-
-            SolverBase( ) : hydra(NULL){//, step(NULL){ ///!< TODO: Re-enable this
-
-            }
-
-            SolverBase( hydraBase * _hydra ) : hydra( _hydra ){
-                /*!
-                 * Constructor for NonlinearStepBase
-                 *
-                 * \param *_hydra: The containing hydraBase object
-                 */
-            }
-
-            hydraBase *hydra; //!< Pointer to the containing hydra object
-            SolverStepBase _step; //!< Temporary object
-            SolverStepBase *step = &_step; //!< The object that defines the step to be taken by the solver TODO: Make this an incoming pointer
-
-            virtual void solve( );
-
-            const unsigned int getIteration( );
-
-        protected:
-
-        private:
-
-            friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
-            friend class tardigradeHydra::unit_test::SolverBaseTester; //!< The unit tester for the class
-
-    };
 
     /*!
      * hydraBase: A base class which can be used to construct finite deformation material models.
@@ -169,19 +134,7 @@ namespace tardigradeHydra{
             virtual const unsigned int getNumAdditionalDOF( ){ return getAdditionalDOF( )->size( ); }
 
             //! Get the value of the number of constraint equations
-            virtual const unsigned int getNumConstraints( ){
-
-                unsigned int value = 0;
-
-                for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->end( ); v++ ){
-
-                    value += ( *v )->getNumConstraints( );
-
-                }
-
-                return value;
-
-            }
+            virtual const unsigned int getNumConstraints( );
 
             //! Get the current residual index
             const unsigned int getCurrentResidualIndex( ){
@@ -191,16 +144,7 @@ namespace tardigradeHydra{
 
             }
 
-            const unsigned int getCurrentResidualOffset( ){
-                /*!
-                 * Get the offset of the current residual
-                 */
-                unsigned int offset = 0;
-                for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->begin( ) + getCurrentResidualIndex( ); ++v ){
-                    offset += ( *v )->getNumEquations( );
-                }
-                return offset;
-            }
+            const unsigned int getCurrentResidualOffset( );
 
             //! Get the dimension
             constexpr unsigned int getDimension( ){ return _dimension; }
@@ -667,27 +611,7 @@ namespace tardigradeHydra{
                 return _current_residual_index_set;
             }
 
-            std::string getResidualParameterizationInfo( ){
-                /*!
-                 * Get the parameterization information of the residual classes
-                 */
-
-                std::string parameterization_info = "########################################\n# RESIDUAL PARAMETERIZATION INFORMATION#\n########################################\n\n";
-
-                for ( auto v = std::begin( *getResidualClasses( ) ); v != std::end( *getResidualClasses( ) ); ++v ){
-
-                    parameterization_info += "RESIDUAL CLASS:";
-                    parameterization_info += " " + std::to_string( ( unsigned int )( v - std::begin( *getResidualClasses( ) ) ) ) + "\n\n";
-
-                    ( *v )->addParameterizationInfo( parameterization_info );
-
-                    parameterization_info += "\n";
-
-                }
-
-                return parameterization_info;
-
-            }
+            std::string getResidualParameterizationInfo( );
 
             void updateAdditionalStateVariables( ){
                 /*!

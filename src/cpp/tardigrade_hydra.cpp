@@ -7,7 +7,8 @@
   ******************************************************************************
   */
 
-#include<tardigrade_hydra.h>
+#include"tardigrade_hydra.h"
+#include"tardigrade_SolverStepBase.h"
 
 namespace tardigradeHydra{
 
@@ -3378,5 +3379,56 @@ namespace tardigradeHydra{
         setCurrentResidualIndexMeaningful( false );
 
     }
+
+    const unsigned int hydraBase::getCurrentResidualOffset( ){
+        /*!
+         * Get the offset of the current residual
+         */
+        unsigned int offset = 0;
+        for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->begin( ) + getCurrentResidualIndex( ); ++v ){
+            offset += ( *v )->getNumEquations( );
+        }
+        return offset;
+    }
+
+    const unsigned int hydraBase::getNumConstraints( ){
+        /*!
+         * Get the value of the number of constraint equations
+         */
+
+        unsigned int value = 0;
+
+        for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->end( ); v++ ){
+
+            value += ( *v )->getNumConstraints( );
+
+        }
+
+        return value;
+
+    }
+
+    std::string hydraBase::getResidualParameterizationInfo( ){
+        /*!
+         * Get the parameterization information of the residual classes
+         */
+
+        std::string parameterization_info = "########################################\n# RESIDUAL PARAMETERIZATION INFORMATION#\n########################################\n\n";
+
+        for ( auto v = std::begin( *getResidualClasses( ) ); v != std::end( *getResidualClasses( ) ); ++v ){
+
+            parameterization_info += "RESIDUAL CLASS:";
+            parameterization_info += " " + std::to_string( ( unsigned int )( v - std::begin( *getResidualClasses( ) ) ) ) + "\n\n";
+
+            ( *v )->addParameterizationInfo( parameterization_info );
+
+            parameterization_info += "\n";
+
+        }
+
+        return parameterization_info;
+
+    }
+
 
 }

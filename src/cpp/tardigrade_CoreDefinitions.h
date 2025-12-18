@@ -18,6 +18,7 @@ namespace tardigradeHydra{
     template<class container=hydraBase>
     class ResidualBase; //!< The base residual class
     class SolverBase; //!< The base solver class
+    class SolverStepBase; //!< The base solver step class
 
     namespace unit_test{
         class hydraBaseTester; //!< Friend class for hydraBase for unit testing
