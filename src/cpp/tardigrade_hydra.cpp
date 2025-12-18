@@ -1943,12 +1943,12 @@ namespace tardigradeHydra{
 
         if ( _mu_k < 0 ){
 
-            setMuk( 0.5 * getLMMu( ) * ( *get_baseResidualNorm( ) ) );
+            setMuk( 0.5 * getLMMu( ) * ( *_solver._step.get_baseResidualNorm( ) ) );
 
         }
         else{
 
-            setMuk( std::fmin( _mu_k, ( *get_baseResidualNorm( ) ) ) );
+            setMuk( std::fmin( _mu_k, ( *_solver._step.get_baseResidualNorm( ) ) ) );
 
         }
 
