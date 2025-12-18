@@ -1204,7 +1204,7 @@ namespace tardigradeHydra{
                 LHSmap = ( Jmap.transpose( ) * Jmap ).eval( );
 
                 for ( unsigned int i = 0; i < xsize; i++ ){
-                    _flatNonlinearLHS.second[ xsize * i + i ] += getMuk( );
+                    _flatNonlinearLHS.second[ xsize * i + i ] += _solver._step.getMuk( );
                 }
 
                 addIterationData( &_flatNonlinearLHS );
@@ -1941,14 +1941,14 @@ namespace tardigradeHydra{
 
         _solver._step.set_basedResidualNormdX( *get_dResidualNormdX( ) );
 
-        if ( _mu_k < 0 ){
+        if ( _solver._step._mu_k < 0 ){
 
-            setMuk( 0.5 * getLMMu( ) * ( *_solver._step.get_baseResidualNorm( ) ) );
+            _solver._step.setMuk( 0.5 * getLMMu( ) * ( *_solver._step.get_baseResidualNorm( ) ) );
 
         }
         else{
 
-            setMuk( std::fmin( _mu_k, ( *_solver._step.get_baseResidualNorm( ) ) ) );
+            _solver._step.setMuk( std::fmin( _solver._step._mu_k, ( *_solver._step.get_baseResidualNorm( ) ) ) );
 
         }
 
@@ -3015,7 +3015,7 @@ namespace tardigradeHydra{
 
         for ( unsigned int I = 0; I < numUnknowns; I++ ){
 
-            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] += getMuk( );
+            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] += _solver._step.getMuk( );
 
         }
 
@@ -3106,7 +3106,7 @@ namespace tardigradeHydra{
 
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 
-        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + getMuk( ) * _dx ).eval( );
+        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + _solver._step.getMuk( ) * _dx ).eval( );
 
         for ( unsigned int i = 0; i < numConstraints; i++ ){
 
