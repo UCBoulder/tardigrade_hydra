@@ -95,6 +95,8 @@ namespace tardigradeHydra{
 
         private:
 
+            friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
+            friend class tardigradeHydra::unit_test::SolverStepBaseTester; //!< The unit tester for the class
             DataStorage< floatType > _baseResidualNorm; //!< The base value of the norm of the residual
 
             DataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
@@ -129,6 +131,11 @@ namespace tardigradeHydra{
             const unsigned int getIteration( );
 
         protected:
+
+        private:
+
+            friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
+            friend class tardigradeHydra::unit_test::SolverBaseTester; //!< The unit tester for the class
 
     };
 
@@ -905,9 +912,9 @@ namespace tardigradeHydra{
 
             DataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
 
-            void set_baseResidualNorm( const floatType &value ){ /*! Set the base value of the residual norm \param &value: The new value */  setNLStepData( value, _baseResidualNorm ); }
+            void set_baseResidualNorm( const floatType &value ){ /*! Set the base value of the residual norm \param &value: The new value */  solver->step->set_baseResidualNorm( value ); }
 
-            void set_basedResidualNormdX( const floatVector &value ){ /*! Set the base derivative of the residual norm w.r.t. the unknown vector \param &value: The new value */  setNLStepData( value, _basedResidualNormdX ); }
+            void set_basedResidualNormdX( const floatVector &value ){ /*! Set the base derivative of the residual norm w.r.t. the unknown vector \param &value: The new value */  solver->step->set_basedResidualNormdX( value ); }
 
             virtual void setBaseQuantities( );
 
