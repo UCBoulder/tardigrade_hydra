@@ -4,7 +4,7 @@
   * Tests for tardigrade_CoreDefinitions
   */
 
-#include<tardigrade_CoreDefinitions.h>
+#include"tardigrade_CoreDefinitions.h"
 
 #define BOOST_TEST_MODULE test_tardigrade_CoreDefinitions
 #include <boost/test/included/unit_test.hpp>
