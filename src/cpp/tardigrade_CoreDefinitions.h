@@ -21,6 +21,8 @@ namespace tardigradeHydra{
 
     namespace unit_test{
         class hydraBaseTester; //!< Friend class for hydraBase for unit testing
+        class SolverStepBaseTester; //!< Friend class for SolverStepBase for unit testing
+        class SolverBaseTester; //!< Friend class for SolverBase for unit testing
     }
 
     typedef double floatType; //!< Define the float values type.
