@@ -73,6 +73,12 @@ namespace tardigradeHydra{
 
                 }
 
+                static void checkLMMu( SolverStepBase &step ){
+
+                    BOOST_CHECK( step._lm_mu == step.getLMMu( ) );
+
+                }
+
 
         };
 
@@ -89,6 +95,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getMuk, * boost::unit_test::tolerance( DEFA
 
 }
 
+BOOST_AUTO_TEST_CASE( test_hydraBase_getLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::SolverStepBase step;
+
+    tardigradeHydra::unit_test::SolverStepBaseTester::checkLMMu( step );
+
+}
+
 BOOST_AUTO_TEST_CASE( test_hydraBase_setMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::SolverStepBase step;
@@ -98,3 +112,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setMuk, * boost::unit_test::tolerance( DEFA
     BOOST_TEST( 123.4 == step.getMuk( ) );
 
 }
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::SolverStepBase step;
+
+    step.setLMMu( 123.4 );
+
+    BOOST_TEST( 123.4 == step.getLMMu( ) );
+
+}
+

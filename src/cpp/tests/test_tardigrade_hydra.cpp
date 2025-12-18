@@ -262,12 +262,6 @@ namespace tardigradeHydra{
 
                 }
 
-                static void checkLMMu( hydraBase &hydra ){
-
-                    BOOST_CHECK( hydra._lm_mu == hydra.getLMMu( ) );
-
-                }
-
                 static void checkUseLevenbergMarquardt( hydraBase &hydra ){
 
                     BOOST_CHECK( hydra._use_LM_step == hydra.getUseLevenbergMarquardt( ) );
@@ -714,14 +708,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getGradientP, * boost::unit_test::tolerance
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkLMMu( hydra );
-
-}
-
 BOOST_AUTO_TEST_CASE( test_hydraBase_getUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
@@ -793,16 +779,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientP, * boost::unit_test::tolerance
     hydra.setGradientP( 123.4 );
 
     BOOST_TEST( 123.4 == hydra.getGradientP( ) );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_hydraBase_setLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    hydra.setLMMu( 123.4 );
-
-    BOOST_TEST( 123.4 == hydra.getLMMu( ) );
 
 }
 
