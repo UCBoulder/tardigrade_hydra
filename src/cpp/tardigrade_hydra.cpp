@@ -1932,28 +1932,6 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::setBaseQuantities( ){
-        /*!
-         * Set the base quantities required for gradient steps
-         */
-
-        _solver._step.set_baseResidualNorm( *get_residualNorm( ) );
-
-        _solver._step.set_basedResidualNormdX( *get_dResidualNormdX( ) );
-
-        if ( _solver._step._mu_k < 0 ){
-
-            _solver._step.setMuk( 0.5 * _solver._step.getLMMu( ) * ( *_solver._step.get_baseResidualNorm( ) ) );
-
-        }
-        else{
-
-            _solver._step.setMuk( std::fmin( _solver._step._mu_k, ( *_solver._step.get_baseResidualNorm( ) ) ) );
-
-        }
-
-    }
-
     void hydraBase::callResidualSuccessfulNLStep( ){
         /*!
          * Signal to the residuals that a successful nonlinear step has been performed
@@ -2239,6 +2217,28 @@ namespace tardigradeHydra{
 
     }
 
+    void SolverStepBase::setBaseQuantities( ){
+        /*!
+         * Set the base quantities required for gradient steps
+         */
+
+        set_baseResidualNorm( *solver->hydra->get_residualNorm( ) );
+
+        set_basedResidualNormdX( *solver->hydra->get_dResidualNormdX( ) );
+
+        if ( _mu_k < 0 ){
+
+            setMuk( 0.5 * getLMMu( ) * ( *get_baseResidualNorm( ) ) );
+
+        }
+        else{
+
+            setMuk( std::fmin( _mu_k, ( *get_baseResidualNorm( ) ) ) );
+
+        }
+
+    }
+
     void SolverStepBase::incrementSolution( ){
         /*!
          * Increment the solution of the problem
@@ -2256,6 +2256,8 @@ namespace tardigradeHydra{
             solver->hydra->addToFailureOutput( "  " );
             solver->hydra->addToFailureOutput( *solver->hydra->getUnknownVector( ) );
         }
+
+        setBaseQuantities( );
 
     }
 
@@ -2307,8 +2309,6 @@ namespace tardigradeHydra{
         while( !checkConvergence( ) && checkIteration( ) ){
 
             solver->step->incrementSolution( );
-
-            setBaseQuantities( );
 
             if ( getUseSQPSolver( ) ){
 

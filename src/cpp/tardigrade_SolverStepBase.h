@@ -50,6 +50,8 @@ namespace tardigradeHydra{
 
             const floatVector *get_basedResidualNormdX( );
 
+            // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
+
             //!< Get the current value of mu_k
             const floatType getMuk( ){ return _mu_k; }
 
@@ -79,6 +81,10 @@ namespace tardigradeHydra{
                 _lm_mu = value;
 
             }
+
+            virtual void setBaseQuantities( );
+
+            // END LEVENBERG-MARQUARDT FUNCTIONS
         protected:
 
             SolverBase *solver; //!< Pointer to the containing SolverBase object
