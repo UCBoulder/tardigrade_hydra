@@ -46,43 +46,23 @@ namespace tardigradeHydra{
                 solver = _solver;
             }
 
+            // CACHED DATA STORAGE OPERATIONS
+            void addIterationData( dataBase *data );
+
+            void addNLStepData( dataBase *data );
+            // END CACHED DATA STORAGE OPERATIONS
+
+            // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
+
             const floatType *get_baseResidualNorm( );
 
             const floatVector *get_basedResidualNormdX( );
 
-            // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
-
             //!< Get the current value of mu_k
             const floatType getMuk( ){ return _mu_k; }
 
-            //!< Set the Levenberg-Marquardt mu_k
-            void setMuk( const floatType &value ){
-               /*!
-                * Set the value of the mu_k parameter for Levenberg-Marquardt steps
-                *
-                * \param &value: The value of the parameter
-                */
- 
-                _mu_k = value;
-
-            }
-
             //!< Get the Levenberg-Marquardt mu parameter
             const floatType getLMMu( ){ return _lm_mu; }
-
-            //!< Set the Levenberg-Marquardt mu parameter
-            void setLMMu( const floatType &value ){
-               /*!
-                * Set the value of the mu parameter for Levenberg-Marquardt steps
-                *
-                * \param &value: The value of the parameter
-                */
- 
-                _lm_mu = value;
-
-            }
-
-            virtual void setBaseQuantities( );
 
             // END LEVENBERG-MARQUARDT FUNCTIONS
         protected:
@@ -90,9 +70,6 @@ namespace tardigradeHydra{
             SolverBase *solver; //!< Pointer to the containing SolverBase object
 
             // CACHED DATA STORAGE OPERATIONS
-            void addIterationData( dataBase *data );
-
-            void addNLStepData( dataBase *data );
 
             //! Class which defines data storage objects which are reset at each iteration
             template< typename T >
@@ -148,15 +125,114 @@ namespace tardigradeHydra{
                     }
 
             };
+
+            template<class T>
+            void setIterationData( const T &data, DataStorage<T> &storage ){
+                /*!
+                 * Template function for adding iteration data
+                 *
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
+
+                storage.second = data;
+
+                storage.first = true;
+
+                addIterationData( &storage );
+
+            }
+
+            template<class T>
+            void setNLStepData( const T &data, DataStorage<T> &storage ){
+                /*!
+                 * Template function for adding nonlinear step data
+                 *
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
+
+                storage.second = data;
+
+                storage.first = true;
+
+                addNLStepData( &storage );
+
+            }
+
+            template<class T>
+            void setPreviousData( const T &data, DataStorage<T> &storage ){
+                /*!
+                 * Template function for adding previous data
+                 * 
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
+
+                storage.second = data;
+
+                storage.first = true;
+
+            }
+
+            template<class T>
+            void setConstantData( const T &data, DataStorage<T> &storage ){
+                /*!
+                 * Template function for adding constant data
+                 * 
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
+
+                storage.second = data;
+
+                storage.first = true;
+
+            }
+
             // END CACHED DATA STORAGE OPERATIONS
+
+            // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
+
+//            virtual void setResidualNorm( );
+//
+//            virtual void setdResidualNormdX( );
 
             void set_baseResidualNorm( const floatType &value );
 
             void set_basedResidualNormdX( const floatVector &value );
 
+            virtual void setBaseQuantities( );
+
+            //!< Set the Levenberg-Marquardt mu_k
+            void setMuk( const floatType &value ){
+               /*!
+                * Set the value of the mu_k parameter for Levenberg-Marquardt steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _mu_k = value;
+
+            }
+
+            //!< Set the Levenberg-Marquardt mu parameter
+            void setLMMu( const floatType &value ){
+               /*!
+                * Set the value of the mu parameter for Levenberg-Marquardt steps
+                *
+                * \param &value: The value of the parameter
+                */
+ 
+                _lm_mu = value;
+
+            }
+
             floatType _mu_k = -1; //!< The Levenberg-Marquardt scaling parameter
 
             floatType _lm_mu = 1e-8; //!< The mu parameter for Levenberg-Marquardt iterations
+
+            // END LEVENBERG-MARQUARDT FUNCTIONS
 
         private:
 

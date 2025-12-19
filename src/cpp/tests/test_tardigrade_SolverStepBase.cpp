@@ -105,9 +105,23 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getLMMu, * boost::unit_test::tolerance( DEF
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_setMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    tardigradeHydra::SolverStepBase step;
+    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
 
-    step.setMuk( 123.4 );
+        using tardigradeHydra::SolverStepBase::SolverStepBase;
+
+        public:
+
+            void public_setMuk( const tardigradeHydra::floatType &v ){
+
+                setMuk( v );
+
+            }
+
+    };
+
+    SolverStepBaseMock step;
+
+    step.public_setMuk( 123.4 );
 
     BOOST_TEST( 123.4 == step.getMuk( ) );
 
@@ -115,9 +129,23 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setMuk, * boost::unit_test::tolerance( DEFA
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_setLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    tardigradeHydra::SolverStepBase step;
+    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
 
-    step.setLMMu( 123.4 );
+        using tardigradeHydra::SolverStepBase::SolverStepBase;
+
+        public:
+
+            void public_setLMMu( const tardigradeHydra::floatType &v ){
+
+                setLMMu( v );
+
+            }
+
+    };
+
+    SolverStepBaseMock step;
+
+    step.public_setLMMu( 123.4 );
 
     BOOST_TEST( 123.4 == step.getLMMu( ) );
 
