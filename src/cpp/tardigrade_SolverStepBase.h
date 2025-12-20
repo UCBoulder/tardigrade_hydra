@@ -58,10 +58,10 @@ namespace tardigradeHydra{
 
             const floatVector *get_basedResidualNormdX( );
 
-            //!< Get the current value of mu_k
+            //! Get the current value of mu_k
             const floatType getMuk( ){ return _mu_k; }
 
-            //!< Get the Levenberg-Marquardt mu parameter
+            //! Get the Levenberg-Marquardt mu parameter
             const floatType getLMMu( ){ return _lm_mu; }
 
             // END LEVENBERG-MARQUARDT FUNCTIONS
