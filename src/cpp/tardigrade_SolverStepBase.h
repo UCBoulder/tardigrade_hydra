@@ -194,9 +194,9 @@ namespace tardigradeHydra{
 
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
-//            virtual void setResidualNorm( );
-//
-//            virtual void setdResidualNormdX( );
+            virtual void setResidualNorm( );
+
+            virtual void setdResidualNormdX( );
 
             void set_baseResidualNorm( const floatType &value );
 
@@ -242,9 +242,9 @@ namespace tardigradeHydra{
 
             DataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
 
-//            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, residualNorm,       floatType,          setResidualNorm )
-//
-//            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, residualNorm,       floatType,          setResidualNorm )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
 
     };
 
