@@ -86,7 +86,7 @@ namespace tardigradeHydra{
 
         // TEMP
         _solver.hydra = this;
-        (*solver)._step.setSolver( solver );
+        solver->step->setSolver( solver );
         // END TEMP
 
     }
@@ -1205,7 +1205,7 @@ namespace tardigradeHydra{
                 LHSmap = ( Jmap.transpose( ) * Jmap ).eval( );
 
                 for ( unsigned int i = 0; i < xsize; i++ ){
-                    _flatNonlinearLHS.second[ xsize * i + i ] += _solver._step.getMuk( );
+                    _flatNonlinearLHS.second[ xsize * i + i ] += solver->step->getMuk( );
                 }
 
                 addIterationData( &_flatNonlinearLHS );
@@ -1851,7 +1851,7 @@ namespace tardigradeHydra{
 
         floatVector dx = ( *getUnknownVector( ) ) - X0;
 
-        floatType RHS = *_solver._step.get_baseResidualNorm( );
+        floatType RHS = *solver->step->get_baseResidualNorm( );
 
         for ( unsigned int i = 0; i < xsize; i++ ){
 
@@ -1859,7 +1859,7 @@ namespace tardigradeHydra{
 
         }
 
-        return ( *get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
+        return ( *solver->step->get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
 
     }
 
@@ -2223,9 +2223,9 @@ namespace tardigradeHydra{
          * Set the base quantities required for gradient steps
          */
 
-        set_baseResidualNorm( *solver->hydra->get_residualNorm( ) );
+        set_baseResidualNorm( *solver->step->get_residualNorm( ) );
 
-        set_basedResidualNormdX( *solver->hydra->get_dResidualNormdX( ) );
+        set_basedResidualNormdX( *solver->step->get_dResidualNormdX( ) );
 
         if ( _mu_k < 0 ){
 
@@ -2955,44 +2955,6 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::setResidualNorm( ){
-        /*!
-         * Set the norm of the residual vector
-         */
-
-        auto residualNorm = get_SetDataStorage_residualNorm( );
-
-        auto residual = getResidual( );
-
-        using residual_type = std::remove_reference_t<decltype( ( *residual )[ 0 ] )>;
-
-        *residualNorm.value = std::inner_product( std::begin( *residual ), std::end( *residual ), std::begin( *residual ), residual_type( ) ); 
-
-    }
-
-    void hydraBase::setdResidualNormdX( ){
-        /*!
-         * Set the derivative of the residual norm w.r.t. the unknown vector
-         */
-
-        const unsigned int xsize = getNumUnknowns( );
-
-        auto dResidualNormdX = get_SetDataStorage_dResidualNormdX( );
-
-        dResidualNormdX.zero( xsize );
-
-        const floatVector *residual = getResidual( );
-
-        const floatVector *jacobian = getFlatJacobian( );
-
-        for ( unsigned int i = 0; i < xsize; i++ ){
-            for ( unsigned int j = 0; j < xsize; j++ ){
-                ( *dResidualNormdX.value )[ j ] += 2 * ( *jacobian )[ xsize * i + j ] * ( *residual )[ i ];
-            }
-        }
-
-    }
-
     void hydraBase::assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints ){
         /*!
          * Assemble the Karush-Kuhn-Tucker matrix for an inequality constrained Newton-Raphson solve
@@ -3016,7 +2978,7 @@ namespace tardigradeHydra{
 
         for ( unsigned int I = 0; I < numUnknowns; I++ ){
 
-            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] += _solver._step.getMuk( );
+            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] += solver->step->getMuk( );
 
         }
 
@@ -3107,7 +3069,7 @@ namespace tardigradeHydra{
 
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 
-        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + _solver._step.getMuk( ) * _dx ).eval( );
+        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + solver->step->getMuk( ) * _dx ).eval( );
 
         for ( unsigned int i = 0; i < numConstraints; i++ ){
 

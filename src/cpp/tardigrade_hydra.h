@@ -662,7 +662,7 @@ namespace tardigradeHydra{
             // TEMP REMOVE THESE
 
             //!< Get the current value of mu_k
-            const floatType getMuk( ){ return _solver._step._mu_k; }
+            const floatType getMuk( ){ return solver->step->_mu_k; }
 
             //!< Set the Levenberg-Marquardt mu_k
             void setMuk( const floatType &value ){
@@ -672,12 +672,12 @@ namespace tardigradeHydra{
                 * \param &value: The value of the parameter
                 */
  
-                _solver._step.setMuk( value );
+                solver->step->setMuk( value );
 
             }
 
             //!< Get the Levenberg-Marquardt mu parameter
-            const floatType getLMMu( ){ return _solver._step._lm_mu; }
+            const floatType getLMMu( ){ return solver->step->_lm_mu; }
 
             //!< Set the Levenberg-Marquardt mu parameter
             void setLMMu( const floatType &value ){
@@ -687,11 +687,11 @@ namespace tardigradeHydra{
                 * \param &value: The value of the parameter
                 */
  
-                _solver._step.setLMMu( value );
+                solver->step->setLMMu( value );
 
             }
 
-            virtual void setBaseQuantities( ){ _solver._step.setBaseQuantities( ); }
+            virtual void setBaseQuantities( ){ solver->step->setBaseQuantities( ); }
 
             // END TEMP
 
@@ -912,9 +912,9 @@ namespace tardigradeHydra{
 
             }
 
-            virtual void setResidualNorm( );
-
-            virtual void setdResidualNormdX( );
+//            virtual void setResidualNorm( );
+//
+//            virtual void setdResidualNormdX( );
 
             std::string build_upper_index_out_of_range_error_string( const unsigned int upperIndex, const unsigned int num_configurations );
             std::string build_lower_index_out_of_range_error_string( const unsigned int lowerIndex, const unsigned int upperIndex );
@@ -1299,10 +1299,6 @@ namespace tardigradeHydra{
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE( private, additionalStateVariables,             floatVector, passThrough )
 
             TARDIGRADE_HYDRA_DECLARE_PREVIOUS_STORAGE(  private, previousAdditionalStateVariables,     floatVector, passThrough )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, residualNorm,       floatType,          setResidualNorm )
-
-            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
 
             TARDIGRADE_HYDRA_DECLARE_NAMED_ITERATION_STORAGE( private, setConstraints,         getConstraints,         constraints,         floatVector,       setConstraints )
 
