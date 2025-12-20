@@ -2223,9 +2223,9 @@ namespace tardigradeHydra{
          * Set the base quantities required for gradient steps
          */
 
-        set_baseResidualNorm( *solver->step->get_residualNorm( ) );
+        set_baseResidualNorm( *get_residualNorm( ) );
 
-        set_basedResidualNormdX( *solver->step->get_dResidualNormdX( ) );
+        set_basedResidualNormdX( *get_dResidualNormdX( ) );
 
         if ( _mu_k < 0 ){
 
