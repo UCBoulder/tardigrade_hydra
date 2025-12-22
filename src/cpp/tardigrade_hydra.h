@@ -934,8 +934,6 @@ namespace tardigradeHydra{
 
             virtual void setConstraintJacobians( );
 
-            virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
-
             void setInitializeUnknownVector( const bool &value ){
                 /*!
                  * Set the initialize unknown vector flag

@@ -145,6 +145,25 @@ namespace tardigradeHydra{
 
 // BEGIN SQP SOLVER FUNCTIONS
 
+    void SolverStepBase::initializeActiveConstraints( std::vector< bool > &active_constraints ){
+        /*!
+         * Initialize the active constraint vector
+         * 
+         * \param &active_constraints: The current constraints that are active
+         */
+
+        active_constraints = std::vector< bool >( solver->hydra->getNumConstraints( ), false );
+
+        for ( auto c = solver->hydra->getConstraints( )->begin( ); c != solver->hydra->getConstraints( )->end( ); c++ ){
+
+            unsigned int index = ( unsigned int )( c - solver->hydra->getConstraints( )->begin( ) );
+
+            active_constraints[ index ] = ( ( *c ) < 0. );
+
+        }
+
+    }
+
     void SolverStepBase::assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints ){
         /*!
          * Assemble the right hand side vector for the KKT matrix

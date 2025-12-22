@@ -2185,7 +2185,7 @@ namespace tardigradeHydra{
         floatVector RHS;
 
         std::vector< bool > active_constraints;
-        solver->hydra->initializeActiveConstraints( active_constraints );
+        initializeActiveConstraints( active_constraints );
 
         assembleKKTRHSVector( dx, RHS, active_constraints );
 
@@ -3050,25 +3050,6 @@ namespace tardigradeHydra{
         else{
 
             throw std::runtime_error( "Preconditioner type " + std::to_string( _preconditioner_type ) + " is not recognized." );
-
-        }
-
-    }
-
-    void hydraBase::initializeActiveConstraints( std::vector< bool > &active_constraints ){
-        /*!
-         * Initialize the active constraint vector
-         * 
-         * \param &active_constraints: The current constraints that are active
-         */
-
-        active_constraints = std::vector< bool >( getNumConstraints( ), false );
-
-        for ( auto c = getConstraints( )->begin( ); c != getConstraints( )->end( ); c++ ){
-
-            unsigned int index = ( unsigned int )( c - getConstraints( )->begin( ) );
-
-            active_constraints[ index ] = ( ( *c ) < 0. );
 
         }
 

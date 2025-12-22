@@ -248,6 +248,8 @@ namespace tardigradeHydra{
 
             virtual void solveConstrainedQP( floatVector &dx, const unsigned int kmax=100 );
 
+            virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
+
             virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints );
 
             virtual void assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
