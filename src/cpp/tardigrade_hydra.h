@@ -661,36 +661,6 @@ namespace tardigradeHydra{
 
             // TEMP REMOVE THESE
 
-            //!< Get the current value of mu_k
-            const floatType getMuk( ){ return solver->step->_mu_k; }
-
-            //!< Set the Levenberg-Marquardt mu_k
-            void setMuk( const floatType &value ){
-               /*!
-                * Set the value of the mu_k parameter for Levenberg-Marquardt steps
-                *
-                * \param &value: The value of the parameter
-                */
- 
-                solver->step->setMuk( value );
-
-            }
-
-            //!< Get the Levenberg-Marquardt mu parameter
-            const floatType getLMMu( ){ return solver->step->_lm_mu; }
-
-            //!< Set the Levenberg-Marquardt mu parameter
-            void setLMMu( const floatType &value ){
-               /*!
-                * Set the value of the mu parameter for Levenberg-Marquardt steps
-                *
-                * \param &value: The value of the parameter
-                */
- 
-                solver->step->setLMMu( value );
-
-            }
-
             virtual void setBaseQuantities( ){ solver->step->setBaseQuantities( ); }
 
             // END TEMP
