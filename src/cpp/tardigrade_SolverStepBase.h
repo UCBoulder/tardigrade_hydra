@@ -39,6 +39,8 @@ namespace tardigradeHydra{
 
             floatVector X0; //!< The initial value of the unknown vector
 
+            floatVector deltaX; //!< The change in the unknown vector
+
             void setSolver( SolverBase *_solver ){
                 /*! Set the containing solver object
                  * \param *_solver: The containing solver object
