@@ -6427,6 +6427,20 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setConstraints, * boost::unit_test::toleran
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTMatrix, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
+    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
+
+        public:
+
+            using tardigradeHydra::SolverStepBase::SolverStepBase;
+
+            virtual void public_assembleKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ){
+
+                assembleKKTMatrix( K, active_constraints );
+
+            }
+
+    };
+
     class hydraBaseMock : public tardigradeHydra::hydraBase{
 
         public:
@@ -6437,25 +6451,15 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTMatrix, * boost::unit_test::tole
 
             floatVector initialUnknownVector = { 2, 1 };
 
-            virtual void public_assembleKKTMatrix( floatVector &K, const std::vector< bool > &active_constraints ){
-
-                assembleKKTMatrix( K, active_constraints );
-
-            }
-
             virtual void public_updateKKTMatrix( floatVector &K, const std::vector< bool > &active_constraints ){
 
                 updateKKTMatrix( K, active_constraints );
 
             }
 
-            virtual void public_assembleKKTRHSVector( const floatVector &dx, floatVector &RHS, const std::vector< bool > &active_constraints ){
-
-                tardigradeHydra::unit_test::SolverStepBaseTester::assembleKKTRHSVector( *(solver->step), dx, RHS, active_constraints );
-
-            }
-
             auto public_setMuk( const floatType &value ){ tardigradeHydra::unit_test::SolverStepBaseTester::setMuk( *(solver->step), value ); }
+
+            auto set_solver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
 
         protected:
 
@@ -6540,6 +6544,16 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTMatrix, * boost::unit_test::tole
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    tardigradeHydra::SolverBase solver;
+    SolverStepBaseMock step;
+
+    hydra.set_solver( &solver );
+
+    solver.hydra = &hydra;
+    solver.step = &step;
+
+    step.setSolver( &solver );
+
     hydra.public_setMuk( 0.1 );
 
     floatVector result_KKT;
@@ -6561,7 +6575,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTMatrix, * boost::unit_test::tole
                                       0.        ,  0.        ,  0.,  0.,  0.,  1.,  0.,
                                       0.        ,  1.        ,  0.,  0.,  0.,  0.,  0. };
 
-    hydra.public_assembleKKTMatrix( result_KKT, active_constraints );
+    step.public_assembleKKTMatrix( result_KKT, active_constraints );
 
     BOOST_TEST( answer1_KKTMatrix == result_KKT, CHECK_PER_ELEMENT );
 
@@ -6574,7 +6588,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTMatrix, * boost::unit_test::tole
 
     result_KKT.clear( );
 
-    hydra.public_assembleKKTMatrix( result_KKT, active_constraints );
+    step.public_assembleKKTMatrix( result_KKT, active_constraints );
 
     BOOST_TEST( answer2_KKTMatrix == result_KKT, CHECK_PER_ELEMENT );
 

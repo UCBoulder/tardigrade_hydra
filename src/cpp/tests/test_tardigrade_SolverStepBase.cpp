@@ -521,6 +521,36 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveConstrainedQP, * boost::unit_test
 
             }
 
+            virtual void assembleKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ) override{
+
+                const unsigned int numConstraints = solver->hydra->getNumConstraints( );
+
+                K = tardigradeHydra::floatVector( ( 2 + 5 ) * ( 2 + 5 ), 0 );
+
+                K[ 7 * 0 + 0 ] = 2;
+                K[ 7 * 1 + 1 ] = 2;
+
+                for ( unsigned int i = 0; i < numConstraints; i++ ){
+
+                    if ( active_constraints[ i ] ){
+
+                        K[ 7 * 0 + i + 2 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 0 ];
+                        K[ 7 * 1 + i + 2 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 1 ];
+
+                        K[ 7 * ( i + 2 ) + 0 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 0 ];
+                        K[ 7 * ( i + 2 ) + 1 ] = ( *solver->hydra->getConstraintJacobians( ) )[ 2 * i + 1 ];
+
+                    }
+                    else{
+
+                        K[ 7 * ( i + 2 ) + i + 2 ] = 1;
+
+                    }
+
+                }
+
+            }
+
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase{
@@ -542,36 +572,6 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveConstrainedQP, * boost::unit_test
             void set_solver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
 
         protected:
-
-            virtual void assembleKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ) override{
-
-                const unsigned int numConstraints = getNumConstraints( );
-
-                K = tardigradeHydra::floatVector( ( 2 + 5 ) * ( 2 + 5 ), 0 );
-
-                K[ 7 * 0 + 0 ] = 2;
-                K[ 7 * 1 + 1 ] = 2;
-
-                for ( unsigned int i = 0; i < numConstraints; i++ ){
-
-                    if ( active_constraints[ i ] ){
-
-                        K[ 7 * 0 + i + 2 ] = ( *getConstraintJacobians( ) )[ 2 * i + 0 ];
-                        K[ 7 * 1 + i + 2 ] = ( *getConstraintJacobians( ) )[ 2 * i + 1 ];
-
-                        K[ 7 * ( i + 2 ) + 0 ] = ( *getConstraintJacobians( ) )[ 2 * i + 0 ];
-                        K[ 7 * ( i + 2 ) + 1 ] = ( *getConstraintJacobians( ) )[ 2 * i + 1 ];
-
-                    }
-                    else{
-
-                        K[ 7 * ( i + 2 ) + i + 2 ] = 1;
-
-                    }
-
-                }
-
-            }
 
             virtual void updateKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ) override{
 
