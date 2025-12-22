@@ -2189,7 +2189,7 @@ namespace tardigradeHydra{
 
         assembleKKTRHSVector( dx, RHS, active_constraints );
 
-        solver->hydra->assembleKKTMatrix( K, active_constraints );
+        assembleKKTMatrix( K, active_constraints );
 
         floatType tol = solver->hydra->getRelativeTolerance( ) * ( tardigradeVectorTools::l2norm( RHS ) ) + solver->hydra->getAbsoluteTolerance( );
 
@@ -3050,55 +3050,6 @@ namespace tardigradeHydra{
         else{
 
             throw std::runtime_error( "Preconditioner type " + std::to_string( _preconditioner_type ) + " is not recognized." );
-
-        }
-
-    }
-
-    void hydraBase::assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints ){
-        /*!
-         * Assemble the Karush-Kuhn-Tucker matrix for an inequality constrained Newton-Raphson solve
-         * 
-         * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
-         * \param &active_constraints: The vector of currently active constraints.
-         */
-
-        const unsigned int numUnknowns = getNumUnknowns( );
-
-        const unsigned int numConstraints = getNumConstraints( );
-
-        KKTMatrix = floatVector( ( numUnknowns + numConstraints ) * ( numUnknowns + numConstraints ), 0 );
-
-
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > K( KKTMatrix.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
-
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
-
-        K.block( 0, 0, numUnknowns, numUnknowns ) = ( J.transpose( ) * J ).eval( );
-
-        for ( unsigned int I = 0; I < numUnknowns; I++ ){
-
-            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] += solver->step->getMuk( );
-
-        }
-
-        for ( unsigned int i = 0; i < numConstraints; i++ ){
-
-            if ( active_constraints[ i ] ){
-
-                for ( unsigned int I = 0; I < numUnknowns; I++ ){
-
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
-
-                }
-
-            }
-            else{
-
-                KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + numUnknowns + i ] = 1;
-
-            }
 
         }
 
