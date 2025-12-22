@@ -661,8 +661,6 @@ namespace tardigradeHydra{
 
             // TEMP REMOVE THESE
 
-            virtual void setBaseQuantities( ){ solver->step->setBaseQuantities( ); }
-
             // END TEMP
 
         protected:
