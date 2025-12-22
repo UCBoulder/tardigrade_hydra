@@ -486,21 +486,13 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
 
 BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveConstrainedQP, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class hydraBaseMock : public tardigradeHydra::hydraBase{
+    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
 
         public:
 
-            using tardigradeHydra::hydraBase::hydraBase;
-
-            using tardigradeHydra::hydraBase::setResidualClasses;
+            using tardigradeHydra::SolverStepBase::SolverStepBase;
 
             tardigradeHydra::floatVector initialUnknownVector = { 2, 0 };
-
-            void public_solveConstrainedQP( tardigradeHydra::floatVector &dx ){
-
-                tardigradeHydra::unit_test::SolverStepBaseTester::solveConstrainedQP( *(solver->step), dx );
-
-            }
 
         protected:
 
@@ -528,6 +520,28 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveConstrainedQP, * boost::unit_test
                 }
 
             }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+            tardigradeHydra::floatVector initialUnknownVector = { 2, 0 };
+
+            void public_solveConstrainedQP( tardigradeHydra::floatVector &dx ){
+
+                tardigradeHydra::unit_test::SolverStepBaseTester::solveConstrainedQP( *(solver->step), dx );
+
+            }
+
+            void set_solver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
+
+        protected:
 
             virtual void assembleKKTMatrix( tardigradeHydra::floatVector &K, const std::vector< bool > &active_constraints ) override{
 
@@ -670,6 +684,15 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveConstrainedQP, * boost::unit_test
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    tardigradeHydra::SolverBase solver;
+    SolverStepBaseMock step;
+
+    solver.hydra = &hydra;
+    solver.step  = &step;
+    step.setSolver( &solver );
+
+    hydra.set_solver( &solver );
 
     tardigradeHydra::floatVector result = { 0, 0 };
 
