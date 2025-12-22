@@ -2203,7 +2203,7 @@ namespace tardigradeHydra{
          * \param &value: The new value
          */
 
-        solver->hydra->setNLStepData( value, _baseResidualNorm );
+        setNLStepData( value, _baseResidualNorm );
 
     }
 
@@ -2214,7 +2214,7 @@ namespace tardigradeHydra{
          * \param &value: The new value
          */
 
-        solver->hydra->setNLStepData( value, _basedResidualNormdX );
+        setNLStepData( value, _basedResidualNormdX );
 
     }
 
