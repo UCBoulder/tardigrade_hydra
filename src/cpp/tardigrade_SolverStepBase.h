@@ -246,6 +246,8 @@ namespace tardigradeHydra{
 
             void setUseSQPSolver( const unsigned int &value ){ /*! Set whether to use the SQP solver \param &value: The updated value */ _useSQPSolver = value; }
 
+            virtual void solveConstrainedQP( floatVector &dx, const unsigned int kmax=100 );
+
             // END SQP SOLVER FUNCTIONS
 
         private:
