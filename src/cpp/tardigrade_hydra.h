@@ -934,8 +934,6 @@ namespace tardigradeHydra{
 
             virtual void updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
 
-            virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints );
-
             virtual void setConstraints( );
 
             virtual void setConstraintJacobians( );
