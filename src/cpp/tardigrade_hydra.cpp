@@ -1739,41 +1739,6 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::solveNewtonUpdate( floatVector &deltaX_tr ){
-        /*!
-         * Solve the Newton update returning the trial value of the unknown vector
-         *
-         * \param &deltaX_tr: The trial change in the unknown vector
-         */
-
-        if ( getUsePreconditioner( ) ){
-
-            performPreconditionedSolve( deltaX_tr );
-
-        }
-        else{
-
-            Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX_tr.data( ), getNumUnknowns( ) );
-
-            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
-
-            Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
-
-            tardigradeVectorTools::solverType< floatType > linearSolver( J_map );
-            dx_map = -linearSolver.solve( R_map );
-
-            unsigned int rank = linearSolver.rank( );
-
-            if ( getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
-
-            }
-
-        }
-
-    }
-
     void hydraBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
         /*!
          * Perform an Armijo-type line search
@@ -2196,7 +2161,7 @@ namespace tardigradeHydra{
         }
         else{
 
-            solver->hydra->solveNewtonUpdate( deltaX );
+            solveNewtonUpdate( deltaX );
 
         }
 

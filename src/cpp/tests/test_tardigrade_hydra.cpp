@@ -56,6 +56,13 @@ namespace tardigradeHydra{
                     step.assembleKKTRHSVector( dx, RHS, active_constraints );
 
                 }
+
+                static void solveNewtonUpdate( SolverStepBase &step, floatVector &deltaX ){
+
+                    step.solveNewtonUpdate( deltaX );
+
+                }
+
         };
 
         class hydraBaseTester{
@@ -431,12 +438,6 @@ namespace tardigradeHydra{
                 static unsigned int get_gradientIteration( hydraBase &hydra ){
 
                     return hydra._gradientIteration;
-
-                }
-
-                static void solveNewtonUpdate( hydraBase &hydra, floatVector &deltaX ){
-
-                    hydra.solveNewtonUpdate( deltaX );
 
                 }
 
@@ -4014,6 +4015,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNewtonUpdate, * boost::unit_test::tole
 
             virtual const unsigned int getNumUnknowns( ) override{ return residual.size( ); }
 
+            auto set_solver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
+
         protected:
 
             virtual void initializeUnknownVector( ){
@@ -4064,12 +4067,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNewtonUpdate, * boost::unit_test::tole
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    tardigradeHydra::SolverBase solver;
+    tardigradeHydra::SolverStepBase step;
+
+    hydra.set_solver( &solver );
+
+    solver.hydra = &hydra;
+    solver.step  = &step;
+
+    step.setSolver( &solver );
+
     floatVector answer = { 1./3, -2./3, 0 };
 
     floatVector result( 3, 0 );
 
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector( hydra );
-    tardigradeHydra::unit_test::hydraBaseTester::solveNewtonUpdate( hydra, result );
+    tardigradeHydra::unit_test::SolverStepBaseTester::solveNewtonUpdate( step, result );
 
     BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
 
@@ -4080,8 +4093,18 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNewtonUpdate, * boost::unit_test::tole
                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension,
                              9, 1e-9, 1e-9, 20, 5, 1e-4, true, 0 );
 
+    tardigradeHydra::SolverBase solver_pre;
+    tardigradeHydra::SolverStepBase step_pre;
+
+    hydra_pre.set_solver( &solver_pre );
+
+    solver_pre.hydra = &hydra_pre;
+    solver_pre.step  = &step_pre;
+
+    step_pre.setSolver( &solver_pre );
+
     tardigradeHydra::unit_test::hydraBaseTester::initializeUnknownVector( hydra_pre );
-    tardigradeHydra::unit_test::hydraBaseTester::solveNewtonUpdate( hydra_pre, result );
+    tardigradeHydra::unit_test::SolverStepBaseTester::solveNewtonUpdate( step_pre, result );
 
     BOOST_TEST( result == answer, CHECK_PER_ELEMENT );
 

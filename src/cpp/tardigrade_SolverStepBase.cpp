@@ -143,6 +143,45 @@ namespace tardigradeHydra{
 
     }
 
+// BEGIN NEWTON SOLVER FUNCTIONS
+
+    void SolverStepBase::solveNewtonUpdate( floatVector &deltaX_tr ){
+        /*!
+         * Solve the Newton update returning the trial value of the unknown vector
+         *
+         * \param &deltaX_tr: The trial change in the unknown vector
+         */
+
+        if ( solver->hydra->getUsePreconditioner( ) ){
+
+            solver->hydra->performPreconditionedSolve( deltaX_tr );
+
+        }
+        else{
+
+            Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX_tr.data( ), solver->hydra->getNumUnknowns( ) );
+
+            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( solver->hydra->getFlatNonlinearLHS( )->data( ), solver->hydra->getNumUnknowns( ), solver->hydra->getNumUnknowns( ) );
+
+            Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( solver->hydra->getNonlinearRHS( )->data( ), solver->hydra->getNumUnknowns( ) );
+
+            tardigradeVectorTools::solverType< floatType > linearSolver( J_map );
+            dx_map = -linearSolver.solve( R_map );
+
+            unsigned int rank = linearSolver.rank( );
+
+            if ( solver->hydra->getRankDeficientError( ) && ( rank != solver->hydra->getResidual( )->size( ) ) ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
+
+            }
+
+        }
+
+    }
+
+// END NEWTON SOLVER FUNCTIONS
+
 // BEGIN SQP SOLVER FUNCTIONS
 
     void SolverStepBase::initializeActiveConstraints( std::vector< bool > &active_constraints ){

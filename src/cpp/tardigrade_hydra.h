@@ -1159,8 +1159,6 @@ namespace tardigradeHydra{
 
             void performPreconditionedSolve( floatVector &deltaX_tr );
 
-            void solveNewtonUpdate( floatVector &deltaX_tr );
-
             void setTolerance( const floatVector &tolerance );
 
             void incrementIteration( ){ _iteration++; resetLSIteration( ); }

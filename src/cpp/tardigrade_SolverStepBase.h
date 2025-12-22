@@ -242,6 +242,12 @@ namespace tardigradeHydra{
 
             // END LEVENBERG-MARQUARDT FUNCTIONS
 
+            // NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+
+            void solveNewtonUpdate( floatVector &deltaX_tr );
+
+            // END NEWTON SOLVER FUNCTIONS
+
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
             void setUseSQPSolver( const unsigned int &value ){ /*! Set whether to use the SQP solver \param &value: The updated value */ _useSQPSolver = value; }
