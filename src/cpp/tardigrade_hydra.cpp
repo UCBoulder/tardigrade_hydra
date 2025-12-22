@@ -2173,6 +2173,8 @@ namespace tardigradeHydra{
          * Increment the solution of the problem
          */
 
+        floatVector deltaX( solver->hydra->getNumUnknowns( ), 0 );
+
         if ( solver->hydra->getFailureVerbosityLevel( ) > 0 ){
             solver->hydra->addToFailureOutput( "\n\n  iteration: " );
             solver->hydra->addToFailureOutput( solver->getIteration( ) );
@@ -2187,6 +2189,52 @@ namespace tardigradeHydra{
         }
 
         setBaseQuantities( );
+
+        if ( solver->hydra->getUseSQPSolver( ) ){
+
+            std::fill( deltaX.begin( ), deltaX.end( ), 0 );
+
+            solver->hydra->solveConstrainedQP( deltaX );
+
+        }
+        else{
+
+            solver->hydra->solveNewtonUpdate( deltaX );
+
+        }
+
+        if ( solver->hydra->getFailureVerbosityLevel( ) > 0 ){
+            solver->hydra->addToFailureOutput( "  deltaX:\n" );
+            solver->hydra->addToFailureOutput( "  " );
+            solver->hydra->addToFailureOutput( deltaX );
+        }
+
+        solver->hydra->updateUnknownVector( X0 + solver->hydra->getLambda( ) * deltaX );
+
+        // Refine the estimate if the new point has a higher residual
+        if ( !solver->hydra->checkLSConvergence( ) ){
+
+            if ( solver->hydra->checkDescentDirection( deltaX ) || !solver->hydra->getUseGradientDescent( ) ){
+
+                // Perform an Armijo type line search when the search direction is aligned with the gradient
+                solver->hydra->performArmijoTypeLineSearch( X0, deltaX );
+
+            }
+            else{
+
+                // Perform gradient descent if the search direction is not aligned with the gradient
+                solver->hydra->performGradientStep( X0 );
+
+            }
+
+        }
+        else{
+
+            solver->hydra->resetToleranceScaleFactor( );
+
+            solver->hydra->incrementNumNewton( );
+
+        }
 
     }
 
@@ -2238,51 +2286,6 @@ namespace tardigradeHydra{
         while( !checkConvergence( ) && checkIteration( ) ){
 
             solver->step->incrementSolution( );
-
-            if ( getUseSQPSolver( ) ){
-
-                std::fill( deltaX.begin( ), deltaX.end( ), 0 );
-
-                solveConstrainedQP( deltaX );
-
-            }
-            else{
-
-                solveNewtonUpdate( deltaX );
-
-            }
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "  deltaX:\n" );
-                addToFailureOutput( "  " );
-                addToFailureOutput( deltaX );
-            }
-
-            updateUnknownVector( solver->step->X0 + getLambda( ) * deltaX );
-
-            // Refine the estimate if the new point has a higher residual
-            if ( !checkLSConvergence( ) ){
-
-                if ( checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
-
-                    // Perform an Armijo type line search when the search direction is aligned with the gradient
-                    performArmijoTypeLineSearch( solver->step->X0, deltaX );
-
-                }
-                else{
-
-                    // Perform gradient descent if the search direction is not aligned with the gradient
-                    performGradientStep( solver->step->X0 );
-
-                }
-
-            }
-            else{
-
-                resetToleranceScaleFactor( );
-
-                incrementNumNewton( );
-
-            }
 
             // Call residual end of a successful nonlinear step functions
             callResidualSuccessfulNLStep( );
