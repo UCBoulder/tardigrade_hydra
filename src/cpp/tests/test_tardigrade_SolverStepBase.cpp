@@ -402,6 +402,8 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
 
             }
 
+            void runSetBaseQuantities( ){ setBaseQuantities( ); }
+
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase{
@@ -419,8 +421,6 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
             tardigradeHydra::floatType mu_k = 1.34;
 
             using tardigradeHydra::hydraBase::hydraBase;
-
-            void runSetBaseQuantities( ){ setBaseQuantities( ); }
 
             const tardigradeHydra::floatType *getBaseResidualNorm( ){ return get_baseResidualNorm( ); }
 
@@ -460,7 +460,7 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
     solver.step = &step;
     step.setSolver( &solver );
 
-    hydra.runSetBaseQuantities( );
+    step.runSetBaseQuantities( );
 
     BOOST_TEST( answer1 == step.getMuk( ) );
 
@@ -472,7 +472,7 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
 
     step.setResidualNorm( );
 
-    hydra.runSetBaseQuantities( );
+    step.runSetBaseQuantities( );
 
     BOOST_TEST( step.rnorm == step.getMuk( ) );
 
