@@ -859,7 +859,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_assembleKKTRHSVector, * boost::unit_te
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTMatrix, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_assembleKKTMatrix, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
 
