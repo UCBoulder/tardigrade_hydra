@@ -1153,8 +1153,6 @@ namespace tardigradeHydra{
 
             floatType _lambda = 1;
 
-            bool _useSQPSolver = false;
-
             void setFirstConfigurationJacobians( );
 
             void setPreviousFirstConfigurationJacobians( );
