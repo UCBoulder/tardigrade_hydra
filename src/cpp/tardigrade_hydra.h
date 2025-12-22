@@ -874,10 +874,6 @@ namespace tardigradeHydra{
 
             }
 
-//            virtual void setResidualNorm( );
-//
-//            virtual void setdResidualNormdX( );
-
             std::string build_upper_index_out_of_range_error_string( const unsigned int upperIndex, const unsigned int num_configurations );
             std::string build_lower_index_out_of_range_error_string( const unsigned int lowerIndex, const unsigned int upperIndex );
 
@@ -939,8 +935,6 @@ namespace tardigradeHydra{
             virtual void updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
 
             virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints );
-
-            virtual void solveConstrainedQP( floatVector &dx, const unsigned int kmax=100 );
 
             virtual void setConstraints( );
 
