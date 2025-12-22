@@ -432,8 +432,6 @@ namespace tardigradeHydra{
 
             unsigned int getNumGrad( ){ /*! Get the number of gradient descent steps performed */  return _NUM_GRAD; }
 
-            const bool getUseSQPSolver( ){ /*! Return a flag for whether to use the SQP solver */ return _useSQPSolver; }
-
             const void setMaxRelaxedIterations( const unsigned int &value ){
                 /*!
                  * Set the maximum allowable number of relaxed iterations
@@ -949,8 +947,6 @@ namespace tardigradeHydra{
             virtual void setConstraintJacobians( );
 
             virtual void initializeActiveConstraints( std::vector< bool > &active_constraints );
-
-            void setUseSQPSolver( const unsigned int &value ){ /*! Set whether to use the SQP solver \param &value: The updated value */ _useSQPSolver = value; }
 
             void setInitializeUnknownVector( const bool &value ){
                 /*!

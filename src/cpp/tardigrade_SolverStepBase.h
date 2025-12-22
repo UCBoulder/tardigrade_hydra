@@ -65,6 +65,12 @@ namespace tardigradeHydra{
             const floatType getLMMu( ){ return _lm_mu; }
 
             // END LEVENBERG-MARQUARDT FUNCTIONS
+
+            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+
+            const bool getUseSQPSolver( ){ /*! Return a flag for whether to use the SQP solver */ return _useSQPSolver; }
+
+            // END SQP SOLVER FUNCTIONS
         protected:
 
             SolverBase *solver; //!< Pointer to the containing SolverBase object
@@ -234,6 +240,12 @@ namespace tardigradeHydra{
 
             // END LEVENBERG-MARQUARDT FUNCTIONS
 
+            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+
+            void setUseSQPSolver( const unsigned int &value ){ /*! Set whether to use the SQP solver \param &value: The updated value */ _useSQPSolver = value; }
+
+            // END SQP SOLVER FUNCTIONS
+
         private:
 
             friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
@@ -245,6 +257,12 @@ namespace tardigradeHydra{
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, residualNorm,       floatType,          setResidualNorm )
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
+
+            // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
+
+            bool _useSQPSolver = false; //!< The flag for whether to use the SQP solver
+
+            // END SQP SOLVER FUNCTIONS
 
     };
 

@@ -2190,7 +2190,7 @@ namespace tardigradeHydra{
 
         setBaseQuantities( );
 
-        if ( solver->hydra->getUseSQPSolver( ) ){
+        if ( getUseSQPSolver( ) ){
 
             std::fill( deltaX.begin( ), deltaX.end( ), 0 );
 
