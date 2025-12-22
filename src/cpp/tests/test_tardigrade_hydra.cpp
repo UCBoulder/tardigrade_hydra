@@ -51,6 +51,12 @@ namespace tardigradeHydra{
 
                 }
 
+                static void solveConstrainedQP( SolverStepBase &step, tardigradeHydra::floatVector &dx, const unsigned int kmax=100 ){
+
+                    step.solveConstrainedQP( dx, kmax );
+
+                }
+
         };
 
         class hydraBaseTester{
@@ -6724,7 +6730,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_assembleKKTRHSVector, * boost::unit_test::t
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_solveConstrainedQP, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_solveConstrainedQP, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class hydraBaseMock : public tardigradeHydra::hydraBase{
 
@@ -6738,7 +6744,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveConstrainedQP, * boost::unit_test::tol
 
             void public_solveConstrainedQP( floatVector &dx ){
 
-                solveConstrainedQP( dx );
+                tardigradeHydra::unit_test::SolverStepBaseTester::solveConstrainedQP( *(solver->step), dx );
 
             }
 
