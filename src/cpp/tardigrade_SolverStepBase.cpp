@@ -236,6 +236,48 @@ namespace tardigradeHydra{
 
     }
 
+    void SolverStepBase::updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints ){
+        /*!
+         * Update the KKTMatrix if the active constraints have changed
+         * 
+         * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
+         * \param &active_constraints: The vector of currently active constraints.
+         */
+
+        const unsigned int numUnknowns = solver->hydra->getNumUnknowns( );
+
+        const unsigned int numConstraints = solver->hydra->getNumConstraints( );
+
+        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > K( KKTMatrix.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
+
+        K.block( 0, numUnknowns, numUnknowns, numConstraints ).setZero( );
+
+        K.block( numUnknowns, 0, numConstraints, numUnknowns ).setZero( );
+
+        K.block( numUnknowns, numUnknowns, numConstraints, numConstraints ).setZero( );
+
+        for ( unsigned int i = 0; i < numConstraints; i++ ){
+
+            if ( active_constraints[ i ] ){
+
+                for ( unsigned int I = 0; I < numUnknowns; I++ ){
+
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *solver->hydra->getConstraintJacobians( ) )[ numUnknowns * i + I ];
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *solver->hydra->getConstraintJacobians( ) )[ numUnknowns * i + I ];
+
+                }
+
+            }
+            else{
+
+                KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + numUnknowns + i ] = 1;
+
+            }
+
+        }
+
+    }
+
 // END SQP SOLVER FUNCTIONS
 
 }
