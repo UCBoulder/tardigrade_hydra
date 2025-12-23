@@ -1704,15 +1704,15 @@ namespace tardigradeHydra{
 
         tardigradeVectorTools::solverType< floatType > linearSolver;
 
-        Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX_tr.data( ), getNumUnknowns( ) );
+        auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), getNumUnknowns( ) );
 
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+        auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
 
-        Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
+        auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
 
         if( getPreconditionerIsDiagonal( ) ){
 
-            Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
+            auto p_map = tardigradeHydra::getDynamicSizeVectorMap( getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
 
             linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
 
@@ -1721,7 +1721,7 @@ namespace tardigradeHydra{
         }
         else{
 
-            Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
 
             linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
 
