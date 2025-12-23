@@ -153,14 +153,14 @@ namespace tardigradeHydra{
 
         inverseConfigurations = floatVector( num_configs * sot_dim, 0 );
 
-        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( NULL, 3, 3 );
+        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( inverseConfigurations.data(), 3, 3 );
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
         kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0 );
 
         // Initialize the first configuration with the total deformation gradient
         secondOrderTensor temp( sot_dim, 0 );
 #else
-        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat2( NULL, 3, 3 );
+        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat2( configurations.data(), 3, 3 );
 #endif
 
         std::copy( total_transformation.begin( ), total_transformation.end( ), configurations.begin( ) );
