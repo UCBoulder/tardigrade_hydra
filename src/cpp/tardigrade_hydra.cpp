@@ -431,11 +431,11 @@ namespace tardigradeHydra{
 
         floatVector gradient( sot_dim * sot_dim * num_incoming_configs, 0 );
 
+        secondOrderTensor Fm, FpT;
+
         Eigen::Map< Eigen::Matrix< floatType, 3, 3 > > map( NULL, dim, dim );
 
         for ( unsigned int index = lowerIndex; index < upperIndex; index++ ){
-
-            secondOrderTensor Fm, FpT;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( Fm = getSubConfiguration( configurations, lowerIndex, index ) );
 
