@@ -159,11 +159,11 @@ namespace tardigradeHydra{
         }
         else{
 
-            Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX_tr.data( ), solver->hydra->getNumUnknowns( ) );
+            auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), solver->hydra->getNumUnknowns( ) );
 
-            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( solver->hydra->getFlatNonlinearLHS( )->data( ), solver->hydra->getNumUnknowns( ), solver->hydra->getNumUnknowns( ) );
+            auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->hydra->getFlatNonlinearLHS( )->data( ), solver->hydra->getNumUnknowns( ), solver->hydra->getNumUnknowns( ) );
 
-            Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( solver->hydra->getNonlinearRHS( )->data( ), solver->hydra->getNumUnknowns( ) );
+            auto R_map = tardigradeHydra::getDynamicSizeVectorMap( solver->hydra->getNonlinearRHS( )->data( ), solver->hydra->getNumUnknowns( ) );
 
             tardigradeVectorTools::solverType< floatType > linearSolver( J_map );
             dx_map = -linearSolver.solve( R_map );
