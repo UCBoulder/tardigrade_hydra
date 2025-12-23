@@ -663,17 +663,17 @@ namespace tardigradeHydra{
         secondOrderTensor fullConfiguration = getSubConfiguration( configurations, 0, num_configs );
 
         secondOrderTensor invCsc = getSubConfiguration( configurations, 1, num_configs );
-        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > mat( invCsc.data( ), dim, dim );
+        auto mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>( invCsc.data( ) );
         mat = mat.inverse( ).eval( );
 
         fourthOrderTensor dInvCscdCsc = tardigradeVectorTools::computeFlatDInvADA( invCsc, dim, dim );
-        Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dInvCscdCsc( dInvCscdCsc.data( ), sot_dim, sot_dim );
+        auto map_dInvCscdCsc = tardigradeHydra::getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>( dInvCscdCsc.data( ) );
 
         floatVector dCscdCs = getSubConfigurationJacobian( configurations, 1, num_configs );
-        Eigen::Map< const Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dCscdCs( dCscdCs.data( ), sot_dim, num_configs * sot_dim );
+        auto map_dCscdCs = tardigradeHydra::getDynamicSizeMatrixMap( dCscdCs.data( ), sot_dim, num_configs * sot_dim );
 
         floatVector dInvCscdCs( sot_dim * num_configs * sot_dim, 0 );
-        Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dInvCscdCs( dInvCscdCs.data( ), sot_dim, num_configs * sot_dim ); 
+        auto map_dInvCscdCs = tardigradeHydra::getDynamicSizeMatrixMap( dInvCscdCs.data( ), sot_dim, num_configs * sot_dim ); 
 
         map_dInvCscdCs = ( map_dInvCscdCsc * map_dCscdCs ).eval( );
 
