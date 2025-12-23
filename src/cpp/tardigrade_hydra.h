@@ -200,9 +200,6 @@ namespace tardigradeHydra{
             //!< Get a reference to whether Gradient descent is allowed
             const bool getUseGradientDescent( ){ return _use_gradient_descent; }
 
-            //!< Get a reference to the flag for whether to throw an error if the LHS matrix is rank-deficient
-            const bool getRankDeficientError( ){ return _rank_deficient_error; }
-
             //!< Set the gradient descent sigma parameter
             void setGradientSigma( const floatType &value ){
                /*!
@@ -298,18 +295,6 @@ namespace tardigradeHydra{
                  */
 
                 _use_gradient_descent = value;
-
-            }
-
-            //!< Set whether rank deficiency is a reason to throw an error
-            void setRankDeficientError( const bool &value ){
-                /*!
-                 * Set whether a rank-deficient LHS will cause an error
-                 * 
-                 * \param &value: The value of the parameter
-                 */
-
-                _rank_deficient_error = value;
 
             }
 

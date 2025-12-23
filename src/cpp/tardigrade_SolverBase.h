@@ -40,9 +40,15 @@ namespace tardigradeHydra{
 
             const unsigned int getIteration( );
 
+            const bool getRankDeficientError( );
+
+            void setRankDeficientError( const bool &value );
+
         protected:
 
         private:
+
+            bool _rank_deficient_error = false; //!< Flag for whether a rank-deficient Jacobian should cause an error
 
             friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
             friend class tardigradeHydra::unit_test::SolverBaseTester; //!< The unit tester for the class

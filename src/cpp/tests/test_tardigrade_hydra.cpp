@@ -293,12 +293,6 @@ namespace tardigradeHydra{
 
                 }
 
-                static void checkRankDeficientError( hydraBase &hydra ){
-
-                    BOOST_CHECK( hydra._rank_deficient_error == hydra.getRankDeficientError( ) );
-
-                }
-
                 static void checkUsePreconditioner( hydraBase &hydra ){
 
                     BOOST_CHECK( hydra._use_preconditioner == hydra.getUsePreconditioner( ) );
@@ -737,14 +731,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getUseGradientDescent, * boost::unit_test::
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getRankDeficientError, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkRankDeficientError( hydra );
-
-}
-
 BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
@@ -814,16 +800,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setUseGradientDescent, * boost::unit_test::
     hydra.setUseGradientDescent( true );
 
     BOOST_TEST( true == hydra.getUseGradientDescent( ) );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_hydraBase_setRankDeficientError, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    hydra.setRankDeficientError( false );
-
-    BOOST_TEST( false == hydra.getRankDeficientError( ) );
 
 }
 
@@ -5590,6 +5566,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
 
             void public_evaluateInternal( ){ evaluateInternal( ); }
 
+            auto access_solver( ){ return solver; }
+
         protected:
 
             floatVector _mockInitialX = {   1,  1,  1,  1,  1,  1,  1,  1,  1,
@@ -5647,7 +5625,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
 
     BOOST_TEST( hydra.getUseLevenbergMarquardt( ) );
 
-    BOOST_TEST( !hydra.getRankDeficientError( ) );
+    BOOST_TEST( !hydra.access_solver( )->getRankDeficientError( ) );
 
     BOOST_TEST( hydra.num_calls == 2 );
 
@@ -5689,6 +5667,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
             void setInitialX( ){ _initialX = _mockInitialX; }
 
             void public_evaluateInternal( ){ evaluateInternal( ); }
+
+            auto access_solver( ){ return solver; }
 
         protected:
 
@@ -5751,7 +5731,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
     BOOST_TEST( !hydra.getUseLevenbergMarquardt( ) );
 
-    BOOST_TEST( !hydra.getRankDeficientError( ) );
+    BOOST_TEST( !hydra.access_solver( )->getRankDeficientError( ) );
 
     BOOST_TEST( hydra.num_calls == 1 );
 

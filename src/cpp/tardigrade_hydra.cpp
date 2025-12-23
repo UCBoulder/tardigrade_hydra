@@ -1731,7 +1731,7 @@ namespace tardigradeHydra{
 
         unsigned int rank = linearSolver.rank( );
 
-        if ( getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
+        if ( solver->getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
             TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 
@@ -2574,7 +2574,7 @@ namespace tardigradeHydra{
 
         resetNumGrad( );
 
-        setRankDeficientError( false );
+        solver->setRankDeficientError( false );
 
         try{
 
@@ -2611,7 +2611,7 @@ namespace tardigradeHydra{
             }
             else{
                 //Try a Levenberg-Marquardt solve if there is a convergence error
-                setRankDeficientError( false );
+                solver->setRankDeficientError( false );
     
                 setUseLevenbergMarquardt( true );
     
@@ -2676,7 +2676,7 @@ namespace tardigradeHydra{
         Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getNumUnknowns( ), 1 );
 
         // Solve
-        tardigradeVectorTools::solverType< floatType > solver;
+        tardigradeVectorTools::solverType< floatType > linear_solver;
 
         if ( getUsePreconditioner( ) ){
 
@@ -2684,41 +2684,41 @@ namespace tardigradeHydra{
 
                 Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
 
-                solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
+                linear_solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
 
-                dXdFmat = -solver.solve( p_map.asDiagonal( ) * dRdFmat );
+                dXdFmat = -linear_solver.solve( p_map.asDiagonal( ) * dRdFmat );
 
-                dXdTmat = -solver.solve( p_map.asDiagonal( ) * dRdTmat );
+                dXdTmat = -linear_solver.solve( p_map.asDiagonal( ) * dRdTmat );
 
             }
             else{
 
                 Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
-                solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
+                linear_solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
 
-                dXdFmat = -solver.solve( p_map * dRdFmat );
+                dXdFmat = -linear_solver.solve( p_map * dRdFmat );
 
-                dXdTmat = -solver.solve( p_map * dRdTmat );
+                dXdTmat = -linear_solver.solve( p_map * dRdTmat );
 
             }
 
         }
         else{
 
-            solver = tardigradeVectorTools::solverType< floatType >( Amat );
+            linear_solver = tardigradeVectorTools::solverType< floatType >( Amat );
 
-            dXdFmat = -solver.solve( dRdFmat );
+            dXdFmat = -linear_solver.solve( dRdFmat );
 
-            dXdTmat = -solver.solve( dRdTmat );
+            dXdTmat = -linear_solver.solve( dRdTmat );
 
         }
 
-        unsigned int rank = solver.rank( );
+        unsigned int rank = linear_solver.rank( );
 
         TARDIGRADE_ERROR_TOOLS_CATCH(
 
-            if ( getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
+            if ( solver->getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
                 throw convergence_error( "The Jacobian is not full rank" );
 

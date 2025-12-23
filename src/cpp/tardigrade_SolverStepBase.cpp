@@ -170,7 +170,7 @@ namespace tardigradeHydra{
 
             unsigned int rank = linearSolver.rank( );
 
-            if ( solver->hydra->getRankDeficientError( ) && ( rank != solver->hydra->getResidual( )->size( ) ) ){
+            if ( solver->getRankDeficientError( ) && ( rank != solver->hydra->getResidual( )->size( ) ) ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 

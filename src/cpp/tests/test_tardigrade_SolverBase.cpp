@@ -57,6 +57,41 @@ bool tolerantCheck( const std::vector< double > &v1, const std::vector< double >
 
 }
 
-BOOST_AUTO_TEST_CASE( test_placeholder, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+namespace tardigradeHydra{
+
+    namespace unit_test{
+
+        class SolverBaseTester{
+
+            public:
+
+                static void checkRankDeficientError( SolverBase &solver ){
+
+                    BOOST_CHECK( solver._rank_deficient_error == solver.getRankDeficientError( ) );
+
+                }
+
+        };
+
+    }
 
 }
+
+BOOST_AUTO_TEST_CASE( test_SolverBase_getRankDeficientError, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::SolverBase solver;
+
+    tardigradeHydra::unit_test::SolverBaseTester::checkRankDeficientError( solver );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_SolverBase_setRankDeficientError, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::SolverBase solver;
+
+    solver.setRankDeficientError( false );
+
+    BOOST_TEST( false == solver.getRankDeficientError( ) );
+
+}
+
