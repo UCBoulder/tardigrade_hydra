@@ -2738,13 +2738,13 @@ namespace tardigradeHydra{
          */
 
         //Form the solver based on the current value of the jacobian
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Amat( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+        auto Amat = tardigradeHydra::getDynamicSizeMatrixMap( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdAdditionalDOF( getFlatdRdAdditionalDOF( )->data( ), getResidual( )->size( ), getAdditionalDOF( )->size( ) );
+        auto dRdAdditionalDOF = tardigradeHydra::getDynamicSizeMatrixMap( getFlatdRdAdditionalDOF( )->data( ), getResidual( )->size( ), getAdditionalDOF( )->size( ) );
 
         // Form the map for dXdF
         _flatdXdAdditionalDOF.second = floatVector( getNumUnknowns( ) * getAdditionalDOF( )->size( ), 0 );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdAdditionalDOF( _flatdXdAdditionalDOF.second.data( ), getNumUnknowns( ), getAdditionalDOF( )->size( ) );
+        auto dXdAdditionalDOF = tardigradeHydra::getDynamicSizeMatrixMap( _flatdXdAdditionalDOF.second.data( ), getNumUnknowns( ), getAdditionalDOF( )->size( ) );
 
         // Solve
         tardigradeVectorTools::solverType< floatType > solver;
@@ -2753,7 +2753,7 @@ namespace tardigradeHydra{
 
             if( getPreconditionerIsDiagonal( ) ){
 
-                Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
 
                 solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
 
@@ -2762,7 +2762,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
                 solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
 
