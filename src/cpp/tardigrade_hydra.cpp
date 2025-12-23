@@ -433,7 +433,7 @@ namespace tardigradeHydra{
 
         secondOrderTensor Fm, FpT;
 
-        Eigen::Map< Eigen::Matrix< floatType, 3, 3 > > map( NULL, dim, dim );
+        auto map = tardigradeHydra::getFixedSizeMatrixMap<floatType,3,3>(FpT.data());
 
         for ( unsigned int index = lowerIndex; index < upperIndex; index++ ){
 
