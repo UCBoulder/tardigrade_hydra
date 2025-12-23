@@ -388,7 +388,7 @@ namespace tardigradeHydra{
         kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0 );
 #else
         auto Fsc_mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>( Fsc.data( ) );
-        Eigen::Map<const Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor>> mat( configurations.data(), 3, 3 );
+        auto mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>( configurations.data() );
 #endif
 
         for ( unsigned int i = lowerIndex; i < upperIndex; i++ ){
