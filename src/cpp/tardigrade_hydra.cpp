@@ -2682,7 +2682,7 @@ namespace tardigradeHydra{
 
             if( getPreconditionerIsDiagonal( ) ){
 
-                Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
 
                 linear_solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
 
@@ -2693,7 +2693,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
                 linear_solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
 
