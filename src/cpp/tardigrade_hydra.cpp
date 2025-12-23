@@ -1161,11 +1161,11 @@ namespace tardigradeHydra{
 
                 const floatVector *jacobian = getFlatJacobian( );
 
-                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Jmap( jacobian->data( ), xsize, xsize );
+                auto Jmap = tardigradeHydra::getDynamicSizeMatrixMap( jacobian->data( ), xsize, xsize );
 
-                Eigen::Map< const Eigen::Matrix< floatType, -1,  1 > > Rmap( residual->data( ), xsize );
+                auto Rmap = tardigradeHydra::getDynamicSizeVectorMap( residual->data( ), xsize );
 
-                Eigen::Map< Eigen::Matrix< floatType, -1,  1 > > RHSmap( _nonlinearRHS.second.data( ), xsize );
+                auto RHSmap = tardigradeHydra::getDynamicSizeVectorMap( _nonlinearRHS.second.data( ), xsize );
 
                 RHSmap = ( Jmap.transpose( ) * Rmap ).eval( );
 
@@ -1198,9 +1198,9 @@ namespace tardigradeHydra{
 
                 const floatVector * jacobian = getFlatJacobian( );
 
-                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Jmap( jacobian->data( ), xsize, xsize );
+                auto Jmap = tardigradeHydra::getDynamicSizeMatrixMap( jacobian->data( ), xsize, xsize );
 
-                Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > LHSmap( _flatNonlinearLHS.second.data( ), xsize, xsize );
+                auto LHSmap = tardigradeHydra::getDynamicSizeMatrixMap( _flatNonlinearLHS.second.data( ), xsize, xsize );
 
                 LHSmap = ( Jmap.transpose( ) * Jmap ).eval( );
 
@@ -2661,19 +2661,19 @@ namespace tardigradeHydra{
          */
 
         //Form the solver based on the current value of the jacobian
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Amat( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+        auto Amat = tardigradeHydra::getDynamicSizeMatrixMap( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
         // Form the maps for dXdF
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdFmat( getFlatdRdF( )->data( ), getResidual( )->size( ), getConfigurationUnknownCount( ) );
+        auto dRdFmat = tardigradeHydra::getDynamicSizeMatrixMap( getFlatdRdF( )->data( ), getResidual( )->size( ), getConfigurationUnknownCount( ) );
 
         _flatdXdF.second = floatVector( getNumUnknowns( ) * getConfigurationUnknownCount( ) );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdFmat( _flatdXdF.second.data( ), getNumUnknowns( ), getConfigurationUnknownCount( ) );
+        auto dXdFmat = tardigradeHydra::getDynamicSizeMatrixMap( _flatdXdF.second.data( ), getNumUnknowns( ), getConfigurationUnknownCount( ) );
 
         // Form the maps for dXdT
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdTmat( getdRdT( )->data( ), getResidual( )->size( ), 1 );
+        auto dRdTmat = tardigradeHydra::getDynamicSizeVectorMap( getdRdT( )->data( ), getResidual( )->size( ) );
 
         _flatdXdT.second = floatVector( getNumUnknowns( ) );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getNumUnknowns( ), 1 );
+        auto dXdTmat = tardigradeHydra::getDynamicSizeVectorMap( _flatdXdT.second.data( ), getNumUnknowns( ) );
 
         // Solve
         tardigradeVectorTools::solverType< floatType > linear_solver;
