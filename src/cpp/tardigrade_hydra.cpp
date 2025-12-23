@@ -153,7 +153,7 @@ namespace tardigradeHydra{
 
         inverseConfigurations = floatVector( num_configs * sot_dim, 0 );
 
-        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( inverseConfigurations.data(), 3, 3 );
+        auto mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>( inverseConfigurations.data() );
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
         kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0 );
 
