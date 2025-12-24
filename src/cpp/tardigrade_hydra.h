@@ -60,7 +60,7 @@ namespace tardigradeHydra{
      * 
      * A non-linear problem which is of the size ( dimension**2 * num_configurations + num_ISVs ) will be solved.
      */
-    class hydraBase{
+    class hydraBase : public CachingDataBase {
 
         public:
 
@@ -406,10 +406,10 @@ namespace tardigradeHydra{
             const bool getInitializeUnknownVector( ){ return _initializeUnknownVector; }
 
             //! Add data to the vector of values which will be cleared after each iteration
-            void addIterationData( dataBase *data ){ _iterationData.push_back( data ); }
+            virtual void addIterationData( dataBase *data ) override { _iterationData.push_back( data ); }
 
             //! Add data to the vector of values which will be cleared after each non-linear step
-            void addNLStepData( dataBase *data ){ _nlStepData.push_back( data ); }
+            virtual void addNLStepData( dataBase *data ) override { _nlStepData.push_back( data ); }
 
             unsigned int getNumNewton( ){ /*! Get the number of newton steps performed */  return _NUM_NEWTON; }
 
@@ -768,72 +768,6 @@ namespace tardigradeHydra{
 
             virtual bool callResidualRelaxedStepFailure( );
 
-            template<class T>
-            void setIterationData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding iteration data. These values are cleared
-                 * every time the unknown vector is updated.
-                 *
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-                addIterationData( &storage );
-
-            }
-
-            template<class T>
-            void setNLStepData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding nonlinear step data. These values are cleared
-                 * every time the nonlinear step is advanced.
-                 *
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-                addNLStepData( &storage );
-
-            }
-
-            template<class T>
-            void setPreviousData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding previous data
-                 * 
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-            }
-
-            template<class T>
-            void setConstantData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding constant data
-                 * 
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-            }
-
             void unexpectedError( ){
                 /*!
                  * Function to throw for an unexpected error. A user should never get here!
@@ -865,51 +799,6 @@ namespace tardigradeHydra{
             floatVector _prerelaxed_initialX; //!< The initial value of the unknown vector prior to a relaxed step
 
             floatVector _initialX; //!< The initial value of the unknown vector
-
-            //! A data storage class that resets at every iteration
-            template< typename T >
-            class SetDataStorageIteration : public SetDataStorageIterationBase< hydraBase, T > {
-
-                using tardigradeHydra::SetDataStorageIterationBase<hydraBase,T>::SetDataStorageIterationBase;
-
-            };
-
-            /*!
-             * Class which defines setting values defined at the previous timestep
-             */
-            template< typename T >
-            class SetDataStoragePrevious : public SetDataStorageBase< T > {
-
-                public:
-
-                    //! Create a data storage object that will be reset whenever the previous value gets reset
-                    SetDataStoragePrevious( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
-                        /*!
-                         * Constructor for data storage objects for temporally previous objects
-                         * 
-                         * \param *ds: The data storage object to modify
-                         */
-                    }
-
-            };
-
-            /*!
-             * Class which defines setting constant values regardless of the timestep
-             */
-            template< typename T >
-            class SetDataStorageConstant : public SetDataStorageBase< T > {
-
-                public:
-
-                    SetDataStorageConstant( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
-                        /*!
-                         * Constructor for constant data storage objects
-                         * 
-                         * \param *ds: The data storage object
-                         */
-                    }
-
-            };
 
             virtual tardigradeHydra::hydraBase::SetDataStorageConstant<floatVector> get_SetDataStorage_tolerance( );
 
