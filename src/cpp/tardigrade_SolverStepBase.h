@@ -17,7 +17,7 @@ namespace tardigradeHydra{
     /*!
      * Base class for Solver Steps
      */
-    class SolverStepBase{
+    class SolverStepBase : public CachingDataBase {
 
         public:
 
@@ -49,9 +49,9 @@ namespace tardigradeHydra{
             }
 
             // CACHED DATA STORAGE OPERATIONS
-            void addIterationData( dataBase *data );
+            virtual void addIterationData( dataBase *data ) override;
 
-            void addNLStepData( dataBase *data );
+            virtual void addNLStepData( dataBase *data ) override;
             // END CACHED DATA STORAGE OPERATIONS
 
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
@@ -76,129 +76,6 @@ namespace tardigradeHydra{
         protected:
 
             SolverBase *solver; //!< Pointer to the containing SolverBase object
-
-            // CACHED DATA STORAGE OPERATIONS
-
-            //! Class which defines data storage objects which are reset at each iteration
-            template< typename T >
-            class SetDataStorageIteration : public SetDataStorageIterationBase< SolverStepBase, T > {
-
-              public:
-
-                  using tardigradeHydra::SetDataStorageIterationBase<SolverStepBase,T>::SetDataStorageIterationBase;
-
-            };
-
-            //! Class which defines data storage objects which are reset at each nonlinear step
-            template< typename T >
-            class SetDataStorageNLStep : public SetDataStorageNLStepBase< SolverStepBase, T > {
-
-              public:
-
-                  using tardigradeHydra::SetDataStorageNLStepBase<SolverStepBase,T>::SetDataStorageNLStepBase;
-
-            };
-
-            //! Class which defines data storage objects for values defined at the previous timestep
-            template< typename T >
-            class SetDataStoragePrevious : public SetDataStorageBase< T > {
-
-                public:
-
-                    SetDataStoragePrevious( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
-                        /*!
-                         * Constructor for data storage objects for temporally previous objects
-                         * 
-                         * \param *ds: The data storage object to modify
-                         */
-                    }
-
-            };
-
-            /*!
-             * Class that is a constant data storage object
-             */
-            template< typename T >
-            class SetDataStorageConstant : public SetDataStorageBase< T > {
-
-                public:
-
-                    SetDataStorageConstant( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
-                        /*!
-                         * Constructor for constant data storage objects
-                         * 
-                         * \param *ds: The data storage object
-                         */
-
-                    }
-
-            };
-
-            template<class T>
-            void setIterationData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding iteration data
-                 *
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-                addIterationData( &storage );
-
-            }
-
-            template<class T>
-            void setNLStepData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding nonlinear step data
-                 *
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-                addNLStepData( &storage );
-
-            }
-
-            template<class T>
-            void setPreviousData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding previous data
-                 * 
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-            }
-
-            template<class T>
-            void setConstantData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding constant data
-                 * 
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-            }
-
-            // END CACHED DATA STORAGE OPERATIONS
 
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
