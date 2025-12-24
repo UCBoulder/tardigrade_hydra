@@ -72,6 +72,10 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_ResidualBase, * boost::unit_test::tolera
 
             };
 
+            void addNLStepData( tardigradeHydra::dataBase* ){
+
+            }
+
     };
 
     HydraMock hydra;
@@ -120,6 +124,10 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_checkDefaults, * boost::unit_test::toler
 
             };
 
+            void addNLStepData( tardigradeHydra::dataBase* ){
+
+            }
+
     };
 
     HydraMock hydra;
@@ -155,6 +163,10 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_setResidual, * boost::unit_test::toleran
             void addIterationData( tardigradeHydra::dataBase* ){
 
             };
+
+            void addNLStepData( tardigradeHydra::dataBase* ){
+
+            }
 
     };
 
@@ -200,6 +212,10 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_setJacobian, * boost::unit_test::toleran
 
             };
 
+            void addNLStepData( tardigradeHydra::dataBase* ){
+
+            }
+
     };
 
     class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
@@ -243,6 +259,10 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_setdRdF, * boost::unit_test::tolerance( 
             void addIterationData( tardigradeHydra::dataBase* ){
 
             };
+
+            void addNLStepData( tardigradeHydra::dataBase* ){
+
+            }
 
     };
 
@@ -288,6 +308,10 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_setdRdT, * boost::unit_test::tolerance( 
 
             };
 
+            void addNLStepData( tardigradeHydra::dataBase* ){
+
+            }
+
     };
 
     class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
@@ -331,6 +355,10 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_setAdditionalDerivatives, * boost::unit_
             void addIterationData( tardigradeHydra::dataBase* ){
 
             };
+
+            void addNLStepData( tardigradeHydra::dataBase* ){
+
+            }
 
     };
 
@@ -376,6 +404,10 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_setStress, * boost::unit_test::tolerance
 
             };
 
+            void addNLStepData( tardigradeHydra::dataBase* ){
+
+            }
+
     };
 
     class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
@@ -420,6 +452,10 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_setPreviousStress, * boost::unit_test::t
 
             };
 
+            void addNLStepData( tardigradeHydra::dataBase* ){
+
+            }
+
     };
 
     class ResidualBaseMock : public tardigradeHydra::ResidualBase<HydraMock>{
@@ -458,11 +494,15 @@ BOOST_AUTO_TEST_CASE( test_ResidualBase_setCurrentAdditionalStateVariables, * bo
 
             HydraMock( ){
 
-            };
+            }
 
             void addIterationData( tardigradeHydra::dataBase* ){
 
-            };
+            }
+
+            void addNLStepData( tardigradeHydra::dataBase* ){
+
+            }
 
     };
 

@@ -540,6 +540,108 @@ namespace tardigradeHydra{
 
         }
 
+        //! A base class which defines functions for caching data
+        class CachingDataBase {
+
+            public:
+
+                //! Constructor
+                CachingDataBase( ){ }
+
+                virtual void addIterationData( dataBase *data ){
+                    /*!
+                     * The function to add iteration data
+                     * All inheriting classes must implement this
+                     *
+                     * \param *data: The incoming data
+                     */
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "addIterationData is not implemented" ) );
+
+                }
+
+                virtual void addNLStepData( dataBase *data ){
+                    /*!
+                     * The function to add nonlinear step data
+                     * All inheriting classes must implement this
+                     *
+                     * \param *data: The incoming data
+                     */
+
+                    TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "addNLStepData is not implemented" ) );
+
+                }
+
+                template<class T>
+                void setIterationData( const T &data, DataStorage<T> &storage ){
+                    /*!
+                     * Template function for adding iteration data. These values are cleared
+                     * every time the unknown vector is updated.
+                     *
+                     * \param &data: The data to be added
+                     * \param &storage: The storage to add the data to
+                     */
+
+                    storage.second = data;
+
+                    storage.first = true;
+
+                    addIterationData( &storage );
+
+                }
+
+                template<class T>
+                void setNLStepData( const T &data, DataStorage<T> &storage ){
+                    /*!
+                     * Template function for adding nonlinear step data. These values are cleared
+                     * every time the nonlinear step is advanced.
+                     *
+                     * \param &data: The data to be added
+                     * \param &storage: The storage to add the data to
+                     */
+
+                    storage.second = data;
+
+                    storage.first = true;
+
+                    addNLStepData( &storage );
+
+                }
+
+                template<class T>
+                void setPreviousData( const T &data, DataStorage<T> &storage ){
+                    /*!
+                     * Template function for adding previous data
+                     * 
+                     * \param &data: The data to be added
+                     * \param &storage: The storage to add the data to
+                     */
+
+                    storage.second = data;
+
+                    storage.first = true;
+
+                }
+
+                template<class T>
+                void setConstantData( const T &data, DataStorage<T> &storage ){
+                    /*!
+                     * Template function for adding constant data
+                     * 
+                     * \param &data: The data to be added
+                     * \param &storage: The storage to add the data to
+                     */
+
+                    storage.second = data;
+
+                    storage.first = true;
+
+                }
+
+            protected:
+
+        };
+
 //    }
 
 }

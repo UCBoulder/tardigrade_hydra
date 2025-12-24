@@ -18,7 +18,7 @@ namespace tardigradeHydra{
      * A class to contain the residual computations associated with some part of a non-linear solve
      */
     template<class container>
-    class ResidualBase{
+    class ResidualBase : public CachingDataBase {
 
         public:
 
@@ -318,73 +318,9 @@ namespace tardigradeHydra{
             //! Get the number of constraints the residual defined
             const unsigned int getNumConstraints( ){ return _numConstraints; }
 
-            void addIterationData( dataBase *data );
+            virtual void addIterationData( dataBase *data ) override;
 
-            void addNLStepData( dataBase *data );
-
-            template<class T>
-            void setIterationData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding iteration data
-                 *
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-                addIterationData( &storage );
-
-            }
-
-            template<class T>
-            void setNLStepData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding nonlinear step data
-                 *
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-                addNLStepData( &storage );
-
-            }
-
-            template<class T>
-            void setPreviousData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding previous data
-                 * 
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-            }
-
-            template<class T>
-            void setConstantData( const T &data, DataStorage<T> &storage ){
-                /*!
-                 * Template function for adding constant data
-                 * 
-                 * \param &data: The data to be added
-                 * \param &storage: The storage to add the data to
-                 */
-
-                storage.second = data;
-
-                storage.first = true;
-
-            }
+            virtual void addNLStepData( dataBase *data ) override;
 
             virtual void addParameterizationInfo( std::string &parameterization_info ){
                 /*!
