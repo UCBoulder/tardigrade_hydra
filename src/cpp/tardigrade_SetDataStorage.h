@@ -640,6 +640,61 @@ namespace tardigradeHydra{
 
             protected:
 
+            //! Class which defines data storage objects which are reset at each iteration
+            template< typename T >
+            class SetDataStorageIteration : public SetDataStorageIterationBase< CachingDataBase, T > {
+
+              public:
+
+                  using tardigradeHydra::SetDataStorageIterationBase<CachingDataBase,T>::SetDataStorageIterationBase;
+
+            };
+
+            //! Class which defines data storage objects which are reset at each nonlinear step
+            template< typename T >
+            class SetDataStorageNLStep : public SetDataStorageNLStepBase< CachingDataBase, T > {
+
+              public:
+
+                  using tardigradeHydra::SetDataStorageNLStepBase<CachingDataBase,T>::SetDataStorageNLStepBase;
+
+            };
+
+            //! Class which defines data storage objects for values defined at the previous timestep
+            template< typename T >
+            class SetDataStoragePrevious : public SetDataStorageBase< T > {
+
+                public:
+
+                    SetDataStoragePrevious( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
+                        /*!
+                         * Constructor for data storage objects for temporally previous objects
+                         * 
+                         * \param *ds: The data storage object to modify
+                         */
+                    }
+
+            };
+
+            /*!
+             * Class that is a constant data storage object
+             */
+            template< typename T >
+            class SetDataStorageConstant : public SetDataStorageBase< T > {
+
+                public:
+
+                    SetDataStorageConstant( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
+                        /*!
+                         * Constructor for constant data storage objects
+                         * 
+                         * \param *ds: The data storage object
+                         */
+
+                    }
+
+            };
+
         };
 
 //    }
