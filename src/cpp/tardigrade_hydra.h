@@ -1130,46 +1130,6 @@ namespace tardigradeHydra{
 
     };
 
-    //! A data storage class that updates at every iteration
-    template< typename T >
-    class SetDataStorageIteration : public SetDataStorageIterationBase< ResidualBase<hydraBase>, T > {
-
-        using tardigradeHydra::SetDataStorageIterationBase<ResidualBase<hydraBase>,T>::SetDataStorageIterationBase;
-
-    };
-
-    //! A data storage class that updates whenever the previous values change
-    template< typename T >
-    class SetDataStoragePrevious : public SetDataStorageBase< T > {
-
-        public:
-
-            SetDataStoragePrevious( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
-                /*!
-                 * Constructor for data storage objects for temporally previous objects
-                 * 
-                 * \param *ds: The data storage object to modify
-                 */
-            }
-
-    };
-
-    //! A data storage class that is constant
-    template< typename T >
-    class SetDataStorageConstant : public SetDataStorageBase< T > {
-
-        public:
-
-            SetDataStorageConstant( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
-                /*!
-                 * Constructor for constant data storage objects
-                 * 
-                 * \param *ds: The data storage object
-                 */
-            }
-
-    };
-
 }
 
 #endif
