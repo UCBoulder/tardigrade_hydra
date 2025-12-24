@@ -11,7 +11,7 @@
 
 #include"tardigrade_error_tools.h"
 #include"tardigrade_CoreDefinitions.h"
-#include"Eigen/Dense"
+#include"tardigrade_MatrixMap.h"
 
 /*!
  * \brief Declares a named SetDataStorage getter function
@@ -398,55 +398,55 @@ namespace tardigradeHydra{
                 }
 
                 template< typename X, unsigned int R, unsigned int C >
-                Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > zeroMap( ){
+                auto zeroMap( ){
                     /*!
-                     * Create a zeroed Eigen::Map of the quantity
+                     * Create a zeroed matrix map of the quantity
                      */
                     zero( R * C );
-                    return Eigen::Map< Eigen::Matrix< X, R, C, Eigen::RowMajor > > ( value->data( ), R, C );
+                    return tardigradeHydra::getFixedSizeMatrixMap<X,R,C>( value->data( ) );
                 }
 
                 template< typename X, unsigned int R >
-                Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > zeroMap( const unsigned int C ){
+                auto zeroMap( const unsigned int C ){
                     /*!
-                     * Create a zeroed Eigen::Map of the quantity with dynamic columns
+                     * Create a zeroed matrix map of the quantity with dynamic columns
                      * 
                      * \param C: The number of columns in the matrix
                      */
                     zero( R * C );
-                    return Eigen::Map< Eigen::Matrix< X, R, -1, Eigen::RowMajor > > ( value->data( ), R, C );
-                }
-
-                template< typename X, unsigned int R >
-                Eigen::Map< Eigen::Vector< X, R > > zeroMap( ){
-                    /*!
-                     * Create a zeroed Eigen::Map of the quantity with dynamic columns as a vector
-                     */
-                    zero( R );
-                    return Eigen::Map< Eigen::Vector< X, R > > ( value->data( ), R );
+                    return tardigradeHydra::getDynamicColumnSizeMatrixMap<X,R>( value->data( ), C );
                 }
 
                 template< typename X >
-                Eigen::Map< Eigen::Vector< X, -1 > > zeroMap( const unsigned int R ){
+                auto zeroMap( const unsigned int R, const unsigned int C ){
                     /*!
-                     * Create a zeroed Eigen::Map of the quantity with dynamic columns as a vector
-                     * 
-                     * \param R: The number of rows in the vector
-                     */
-                    zero( R );
-                    return Eigen::Map< Eigen::Vector< X, -1 > > ( value->data( ), R );
-                }
-
-                template< typename X >
-                Eigen::Map< Eigen::Matrix< X, -1, -1, Eigen::RowMajor > > zeroMap( const unsigned int R, const unsigned int C ){
-                    /*!
-                     * Create a zeroed Eigen::Map of the quantity with dynamic columns
+                     * Create a zeroed matrix map of the quantity as a dynamic-size matrix
                      * 
                      * \param R: The number of rows in the matrix
                      * \param C: The number of columns in the matrix
                      */
                     zero( R * C );
-                    return Eigen::Map< Eigen::Matrix< X, -1, -1, Eigen::RowMajor > > ( value->data( ), R, C );
+                    return tardigradeHydra::getDynamicSizeMatrixMap( value->data( ), R, C );
+                }
+
+                template< typename X, unsigned int R >
+                auto zeroMap( ){
+                    /*!
+                     * Create a zeroed vector map of the quantity as a fixed size vector
+                     */
+                    zero( R );
+                    return tardigradeHydra::getFixedSizeVectorMap<X, R>( value->data( ) );
+                }
+
+                template< typename X >
+                auto zeroMap( const unsigned int R ){
+                    /*!
+                     * Create a zeroed vector map of the quantity as a dynamic sized vector
+                     * 
+                     * \param R: The number of rows in the vector
+                     */
+                    zero( R );
+                    return tardigradeHydra::getDynamicSizeVectorMap( value->data( ), R );
                 }
 
           protected:
