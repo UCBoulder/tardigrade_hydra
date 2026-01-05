@@ -209,10 +209,10 @@ namespace tardigradeHydra{
 
             public:
 
+                /*!
+                 * The function to erase the current values stored
+                 */
                 virtual void clear( ){
-                    /*!
-                     * The function to erase the current values stored
-                     */
 
                     TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( "clear not implemented!" ) );
 
@@ -242,10 +242,10 @@ namespace tardigradeHydra{
                  */
                 DataStorage( const bool &_first, const T &_second ) : first( _first ), second( _second ) { }
 
+                /*!
+                 * The function to erase the current values stored by setting first to false and clearing second
+                 */
                 virtual void clear( ){
-                    /*!
-                     * The function to erase the current values stored by setting first to false and clearing second
-                     */
 
                     first = false;
 
@@ -253,21 +253,21 @@ namespace tardigradeHydra{
 
                 }
 
+                /*!
+                 * The function to set the current values to zero
+                 */
                 virtual void zero( ){
-                    /*!
-                     * The function to set the current values to zero
-                     */
 
                     std::fill( std::begin( second ), std::end( second ), 0 );
 
                 }
 
+                /*!
+                 * The function to resize second and set the current values to zero
+                 *
+                 * \param size: The size to resize the vector to
+                 */
                 virtual void zero( const unsigned int size ){
-                    /*!
-                     * The function to resize second and set the current values to zero
-                     *
-                     * \param size: The size to resize the vector to
-                     */
 
                     second.resize( size );
 
@@ -277,11 +277,11 @@ namespace tardigradeHydra{
 
         };
 
+        /*!
+         * The function to erase the current values stored by setting first to false and second to zero
+         */
         template <>
         inline void DataStorage< int >::clear( ){
-                    /*!
-                     * The function to erase the current values stored by setting first to false and second to zero
-                     */
 
             first = false;
 
@@ -289,31 +289,31 @@ namespace tardigradeHydra{
 
         }
 
+        /*!
+         * The function to set the value to zero
+         */
         template <>
         inline void DataStorage< int >::zero( ){
-                    /*!
-                     * The function to set the value to zero
-                     */
 
             second = 0;
 
         }
 
+        /*!
+         * The function to set the value to zero
+         */
         template <>
         inline void DataStorage< int >::zero( const unsigned int size ){
-                    /*!
-                     * The function to set the value to zero
-                     */
 
             throw std::runtime_error( "A scalar value cannot have a size!");
 
         }
 
+        /*!
+         * The function to erase the current values stored by setting first to false and second to zero
+         */
         template <>
         inline void DataStorage< unsigned int >::clear( ){
-                    /*!
-                     * The function to erase the current values stored by setting first to false and second to zero
-                     */
 
             first = false;
 
@@ -321,21 +321,21 @@ namespace tardigradeHydra{
 
         }
 
+        /*!
+         * The function to set the value to zero
+         */
         template <>
         inline void DataStorage< unsigned int >::zero( ){
-                    /*!
-                     * The function to set the value to zero
-                     */
 
             second = 0;
 
         }
 
+        /*!
+         * The function to set the value to zero
+         */
         template <>
         inline void DataStorage< unsigned int >::zero( const unsigned int size ){
-                    /*!
-                     * The function to set the value to zero
-                     */
 
             throw std::runtime_error( "A scalar value cannot have a size!");
 
@@ -386,65 +386,65 @@ namespace tardigradeHydra{
                 //! Initialize the data storage object to zero
                 void zero( ){ _ds->zero( ); }
 
+                /*!
+                 * Resize (if possible) the data storage object and set to zero
+                 * 
+                 * \param size: The size of the data storage object
+                 */
                 void zero( const unsigned int size ){
-                    /*!
-                     * Resize (if possible) the data storage object and set to zero
-                     * 
-                     * \param size: The size of the data storage object
-                     */
 
                     _ds->zero( size );
 
                 }
 
+                /*!
+                 * Create a zeroed matrix map of the quantity
+                 */
                 template< typename X, unsigned int R, unsigned int C >
                 auto zeroMap( ){
-                    /*!
-                     * Create a zeroed matrix map of the quantity
-                     */
                     zero( R * C );
                     return tardigradeHydra::getFixedSizeMatrixMap<X,R,C>( value->data( ) );
                 }
 
+                /*!
+                 * Create a zeroed matrix map of the quantity with dynamic columns
+                 * 
+                 * \param C: The number of columns in the matrix
+                 */
                 template< typename X, unsigned int R >
                 auto zeroMap( const unsigned int C ){
-                    /*!
-                     * Create a zeroed matrix map of the quantity with dynamic columns
-                     * 
-                     * \param C: The number of columns in the matrix
-                     */
                     zero( R * C );
                     return tardigradeHydra::getDynamicColumnSizeMatrixMap<X,R>( value->data( ), C );
                 }
 
+                /*!
+                 * Create a zeroed matrix map of the quantity as a dynamic-size matrix
+                 * 
+                 * \param R: The number of rows in the matrix
+                 * \param C: The number of columns in the matrix
+                 */
                 template< typename X >
                 auto zeroMap( const unsigned int R, const unsigned int C ){
-                    /*!
-                     * Create a zeroed matrix map of the quantity as a dynamic-size matrix
-                     * 
-                     * \param R: The number of rows in the matrix
-                     * \param C: The number of columns in the matrix
-                     */
                     zero( R * C );
                     return tardigradeHydra::getDynamicSizeMatrixMap( value->data( ), R, C );
                 }
 
+                /*!
+                 * Create a zeroed vector map of the quantity as a fixed size vector
+                 */
                 template< typename X, unsigned int R >
                 auto zeroMap( ){
-                    /*!
-                     * Create a zeroed vector map of the quantity as a fixed size vector
-                     */
                     zero( R );
                     return tardigradeHydra::getFixedSizeVectorMap<X, R>( value->data( ) );
                 }
 
+                /*!
+                 * Create a zeroed vector map of the quantity as a dynamic sized vector
+                 * 
+                 * \param R: The number of rows in the vector
+                 */
                 template< typename X >
                 auto zeroMap( const unsigned int R ){
-                    /*!
-                     * Create a zeroed vector map of the quantity as a dynamic sized vector
-                     * 
-                     * \param R: The number of rows in the vector
-                     */
                     zero( R );
                     return tardigradeHydra::getDynamicSizeVectorMap( value->data( ), R );
                 }
@@ -462,14 +462,14 @@ namespace tardigradeHydra{
         class SetDataStorageIterationBase : public SetDataStorageBase< T >{
           public:
 
-              SetDataStorageIterationBase( DataStorage< T > *ds, container * rp ) : SetDataStorageBase< T >( ds ), _rp( rp ){
-                  /*!
-                   * Create a data storage object that will be reset at each new iteration
-                   * 
-                   * \param *ds: The data storage object
-                   * \param *rp: The class that contains the data storage object. Must have a function addIterationData
-                   *     wich accepts a pointer to the data storage object
-                   */ }
+              /*!
+               * Create a data storage object that will be reset at each new iteration
+               * 
+               * \param *ds: The data storage object
+               * \param *rp: The class that contains the data storage object. Must have a function addIterationData
+               *     wich accepts a pointer to the data storage object
+               */
+              SetDataStorageIterationBase( DataStorage< T > *ds, container * rp ) : SetDataStorageBase< T >( ds ), _rp( rp ){ }
 
               //! Destructor object that adds the data storage object to the iteration data list
               ~SetDataStorageIterationBase( ){
@@ -491,14 +491,14 @@ namespace tardigradeHydra{
         class SetDataStorageNLStepBase : public SetDataStorageBase< T >{
           public:
 
-              SetDataStorageNLStepBase( DataStorage< T > *ds, container * rp ) : SetDataStorageBase< T >( ds ), _rp( rp ){
-                  /*!
-                   * Create a data storage object that will be reset at each new nonlinear step
-                   * 
-                   * \param *ds: The data storage object
-                   * \param *rp: The class that contains the data storage object. Must have a function addNLStepData
-                   *     wich accepts a pointer to the data storage object
-                   */ }
+              /*!
+               * Create a data storage object that will be reset at each new nonlinear step
+               * 
+               * \param *ds: The data storage object
+               * \param *rp: The class that contains the data storage object. Must have a function addNLStepData
+               *     wich accepts a pointer to the data storage object
+               */
+              SetDataStorageNLStepBase( DataStorage< T > *ds, container * rp ) : SetDataStorageBase< T >( ds ), _rp( rp ){ }
 
               //! Destructor object that adds the data storage object to the nonlinear step data list
               ~SetDataStorageNLStepBase( ){
@@ -514,11 +514,12 @@ namespace tardigradeHydra{
         };
 
         // CoreDefinitions DataStorage specifications
+
+        /*!
+         * The function to erase the current values stored by setting first to false and second to zero
+         */
         template <>
         inline void DataStorage< floatType >::clear( ){
-                    /*!
-                     * The function to erase the current values stored by setting first to false and second to zero
-                     */
 
             first = false;
 
@@ -526,21 +527,21 @@ namespace tardigradeHydra{
 
         }
 
+        /*!
+         * The function to set the value to zero
+         */
         template <>
         inline void DataStorage< floatType >::zero( ){
-                    /*!
-                     * The function to set the value to zero
-                     */
 
             second = 0;
 
         }
 
+        /*!
+         * The function to set the value to zero
+         */
         template <>
         inline void DataStorage< floatType >::zero( const unsigned int size ){
-                    /*!
-                     * The function to set the value to zero
-                     */
 
             throw std::runtime_error( "A scalar value cannot have a size!");
 
@@ -554,39 +555,39 @@ namespace tardigradeHydra{
                 //! Constructor
                 CachingDataBase( ){ }
 
+                /*!
+                 * The function to add iteration data
+                 * All inheriting classes must implement this
+                 *
+                 * \param *data: The incoming data
+                 */
                 virtual void addIterationData( dataBase *data ){
-                    /*!
-                     * The function to add iteration data
-                     * All inheriting classes must implement this
-                     *
-                     * \param *data: The incoming data
-                     */
 
                     TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "addIterationData is not implemented" ) );
 
                 }
 
+                /*!
+                 * The function to add nonlinear step data
+                 * All inheriting classes must implement this
+                 *
+                 * \param *data: The incoming data
+                 */
                 virtual void addNLStepData( dataBase *data ){
-                    /*!
-                     * The function to add nonlinear step data
-                     * All inheriting classes must implement this
-                     *
-                     * \param *data: The incoming data
-                     */
 
                     TARDIGRADE_ERROR_TOOLS_CATCH( throw std::logic_error( "addNLStepData is not implemented" ) );
 
                 }
 
+                /*!
+                 * Template function for adding iteration data. These values are cleared
+                 * every time the unknown vector is updated.
+                 *
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
                 template<class T>
                 void setIterationData( const T &data, DataStorage<T> &storage ){
-                    /*!
-                     * Template function for adding iteration data. These values are cleared
-                     * every time the unknown vector is updated.
-                     *
-                     * \param &data: The data to be added
-                     * \param &storage: The storage to add the data to
-                     */
 
                     storage.second = data;
 
@@ -596,15 +597,15 @@ namespace tardigradeHydra{
 
                 }
 
+                /*!
+                 * Template function for adding nonlinear step data. These values are cleared
+                 * every time the nonlinear step is advanced.
+                 *
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
                 template<class T>
                 void setNLStepData( const T &data, DataStorage<T> &storage ){
-                    /*!
-                     * Template function for adding nonlinear step data. These values are cleared
-                     * every time the nonlinear step is advanced.
-                     *
-                     * \param &data: The data to be added
-                     * \param &storage: The storage to add the data to
-                     */
 
                     storage.second = data;
 
@@ -614,14 +615,14 @@ namespace tardigradeHydra{
 
                 }
 
+                /*!
+                 * Template function for adding previous data
+                 * 
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
                 template<class T>
                 void setPreviousData( const T &data, DataStorage<T> &storage ){
-                    /*!
-                     * Template function for adding previous data
-                     * 
-                     * \param &data: The data to be added
-                     * \param &storage: The storage to add the data to
-                     */
 
                     storage.second = data;
 
@@ -629,14 +630,14 @@ namespace tardigradeHydra{
 
                 }
 
+                /*!
+                 * Template function for adding constant data
+                 * 
+                 * \param &data: The data to be added
+                 * \param &storage: The storage to add the data to
+                 */
                 template<class T>
                 void setConstantData( const T &data, DataStorage<T> &storage ){
-                    /*!
-                     * Template function for adding constant data
-                     * 
-                     * \param &data: The data to be added
-                     * \param &storage: The storage to add the data to
-                     */
 
                     storage.second = data;
 
@@ -676,13 +677,12 @@ namespace tardigradeHydra{
 
                 public:
 
-                    SetDataStoragePrevious( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
-                        /*!
-                         * Constructor for data storage objects for temporally previous objects
-                         * 
-                         * \param *ds: The data storage object to modify
-                         */
-                    }
+                    /*!
+                     * Constructor for data storage objects for temporally previous objects
+                     * 
+                     * \param *ds: The data storage object to modify
+                     */
+                    SetDataStoragePrevious( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){ }
 
             };
 
@@ -694,14 +694,12 @@ namespace tardigradeHydra{
 
                 public:
 
-                    SetDataStorageConstant( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){
-                        /*!
-                         * Constructor for constant data storage objects
-                         * 
-                         * \param *ds: The data storage object
-                         */
-
-                    }
+                    /*!
+                     * Constructor for constant data storage objects
+                     * 
+                     * \param *ds: The data storage object
+                     */
+                    SetDataStorageConstant( DataStorage< T > *ds ) : SetDataStorageBase< T >( ds ){ }
 
             };
 
