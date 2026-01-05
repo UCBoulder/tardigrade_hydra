@@ -14,6 +14,9 @@
 
 namespace tardigradeHydra{
 
+    /*!
+     * The base class for preconditioners to be used in tardigrade hydra solves
+     */
     class PreconditionerBase : public CachingDataBase {
 
         public:
@@ -48,12 +51,12 @@ namespace tardigradeHydra{
             //! Get a pointer to the row-major form of the preconditioner
             const floatVector * getFlatPreconditioner( );
 
-            SolverBase *solver;
+            SolverBase *solver; //!< Pointer to the containing solver class
 
             // TEMP
             bool _use_preconditioner; //!< Flag for whether to pre-condition the Jacobian or not
 
-            unsigned int _preconditioner_type = 0; //<! The type of preconditioner to use
+            unsigned int _preconditioner_type = 0; //!< The type of preconditioner to use
 
             bool _preconditioner_is_diagonal = true; //!< Flag for if the pre-conditioner only stores the diagonal elements
 

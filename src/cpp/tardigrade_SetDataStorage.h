@@ -455,6 +455,9 @@ namespace tardigradeHydra{
 
         };
 
+        /*!
+         * The base class for cached data which is to be reset at each iteration
+         */
         template< typename container, typename T>
         class SetDataStorageIterationBase : public SetDataStorageBase< T >{
           public:
@@ -481,6 +484,9 @@ namespace tardigradeHydra{
 
         };
 
+        /*!
+         * The base class for cached data which is to be reset at each non-linear step
+         */
         template< typename container, typename T>
         class SetDataStorageNLStepBase : public SetDataStorageBase< T >{
           public:
@@ -640,7 +646,9 @@ namespace tardigradeHydra{
 
             protected:
 
-            //! Class which defines data storage objects which are reset at each iteration
+            /*!
+             * Class which defines data storage objects which are reset at each iteration
+             */
             template< typename T >
             class SetDataStorageIteration : public SetDataStorageIterationBase< CachingDataBase, T > {
 
@@ -650,7 +658,9 @@ namespace tardigradeHydra{
 
             };
 
-            //! Class which defines data storage objects which are reset at each nonlinear step
+            /*!
+             * Class which defines data storage objects which are reset at each nonlinear step
+             */
             template< typename T >
             class SetDataStorageNLStep : public SetDataStorageNLStepBase< CachingDataBase, T > {
 
