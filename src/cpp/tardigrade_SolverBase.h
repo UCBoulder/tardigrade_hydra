@@ -9,6 +9,8 @@
 #ifndef TARDIGRADE_SOLVERBASE_H
 #define TARDIGRADE_SOLVERBASE_H
 
+#include"tardigrade_CoreDefinitions.h"
+#include"tardigrade_SetDataStorage.h"
 #include"tardigrade_SolverStepBase.h"
 #include"tardigrade_PreconditionerBase.h"
 
@@ -17,7 +19,7 @@ namespace tardigradeHydra{
     /*!
      * Base Solver class
      */
-    class SolverBase{
+    class SolverBase : public CachingDataBase {
 
         public:
 
@@ -25,13 +27,12 @@ namespace tardigradeHydra{
 
             }
 
-            SolverBase( hydraBase * _hydra ) : hydra( _hydra ){
-                /*!
-                 * Constructor for NonlinearStepBase
-                 *
-                 * \param *_hydra: The containing hydraBase object
-                 */
-            }
+            /*!
+             * Constructor for NonlinearStepBase
+             *
+             * \param *_hydra: The containing hydraBase object
+             */
+            SolverBase( hydraBase * _hydra ) : hydra( _hydra ){ }
 
             hydraBase *hydra; //!< Pointer to the containing hydra object
 
@@ -48,6 +49,12 @@ namespace tardigradeHydra{
             const bool getRankDeficientError( );
 
             void setRankDeficientError( const bool &value );
+
+            // CACHED DATA STORAGE OPERATIONS
+            virtual void addIterationData( dataBase *data ) override;
+
+            virtual void addNLStepData( dataBase *data ) override;
+            // END CACHED DATA STORAGE OPERATIONS
 
         protected:
 
