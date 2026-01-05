@@ -1065,48 +1065,6 @@ namespace tardigradeHydra{
 
     }
 
-    void PreconditionerBase::formPreconditioner( ){
-        /*!
-         * Form the preconditioner matrix
-         */
-
-        if ( _preconditioner_type == 0 ){
-
-            formMaxRowPreconditioner( );
-
-        }
-        else{
-
-            throw std::runtime_error( "Preconditioner type not recognized" );
-
-        }
-
-        _preconditioner.first = true;
-
-        addIterationData( &_preconditioner );
-
-    }
-
-    void PreconditionerBase::formMaxRowPreconditioner( ){
-        /*!
-         * Form a left preconditioner comprised of the inverse of the maximum value of each row
-         */
-
-        const unsigned int problem_size = solver->hydra->getNumUnknowns( );
-
-        _preconditioner.second = floatVector( problem_size, 0 );
-
-        // Find the absolute maximum value in each row
-        for ( unsigned int i = 0; i < problem_size; i++ ){
-
-            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( solver->hydra->getFlatNonlinearLHS( )->begin( ) + problem_size * i,
-                                                                                      solver->hydra->getFlatNonlinearLHS( )->begin( ) + problem_size * ( i + 1 ),
-                                                                                      [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
-
-        }
-
-    }
-
     const floatVector* hydraBase::getResidual( ){
         /*!
          * Get the residual vector for the non-linear problem
@@ -1212,21 +1170,6 @@ namespace tardigradeHydra{
         }
 
         return getFlatJacobian( );
-
-    }
-
-    const floatVector* PreconditionerBase::getFlatPreconditioner( ){
-        /*!
-         * Get the flattened row-major preconditioner for the non-linear problem
-         */
-
-        if ( !_preconditioner.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( formPreconditioner( ) );
-
-        }
-        
-        return &_preconditioner.second;
 
     }
 
