@@ -59,32 +59,6 @@ namespace tardigradeHydra{
 
         };
 
-        class PreconditionerBaseTester{
-
-            public:
-
-                static void set_flatPreconditioner( PreconditionerBase &preconditioner, const floatVector &value ){
-
-                    preconditioner._preconditioner.second = value;
-                    preconditioner._preconditioner.first = true;
-
-                    preconditioner.addIterationData( &preconditioner._preconditioner );
-                }
-
-                static void set_usePreconditioner( PreconditionerBase &preconditioner, const bool &value ){
-
-                    preconditioner._use_preconditioner = value;
-
-                }
-
-                static void set_preconditionerType( PreconditionerBase &preconditioner, const unsigned int &value ){
-
-                    preconditioner._preconditioner_type = value;
-
-                }
-
-        };
-
         class hydraBaseTester{
 
             public:
