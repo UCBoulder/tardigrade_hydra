@@ -18,7 +18,7 @@ namespace tardigradeHydra{
          * \param *data: The dataBase object to be cleared
          */
 
-        solver->hydra->addIterationData( data );
+        solver->addIterationData( data );
 
     }
 
@@ -29,7 +29,7 @@ namespace tardigradeHydra{
          * \param *data: The dataBase object to be cleared
          */
 
-        solver->hydra->addNLStepData( data );
+        solver->addNLStepData( data );
 
     }
 
