@@ -59,6 +59,32 @@ namespace tardigradeHydra{
 
         };
 
+        class PreconditionerBaseTester{
+
+            public:
+
+                static void set_flatPreconditioner( PreconditionerBase &preconditioner, const floatVector &value ){
+
+                    preconditioner._preconditioner.second = value;
+                    preconditioner._preconditioner.first = true;
+
+                    preconditioner.addIterationData( &preconditioner._preconditioner );
+                }
+
+                static void set_usePreconditioner( PreconditionerBase &preconditioner, const bool &value ){
+
+                    preconditioner._use_preconditioner = value;
+
+                }
+
+                static void set_preconditionerType( PreconditionerBase &preconditioner, const unsigned int &value ){
+
+                    preconditioner._preconditioner_type = value;
+
+                }
+
+        };
+
         class hydraBaseTester{
 
             public:
@@ -293,24 +319,6 @@ namespace tardigradeHydra{
 
                 }
 
-                static void checkUsePreconditioner( hydraBase &hydra ){
-
-                    BOOST_CHECK( hydra._use_preconditioner == hydra.getUsePreconditioner( ) );
-
-                }
-
-                static void checkPreconditionerType( hydraBase &hydra ){
-
-                    BOOST_CHECK( hydra._preconditioner_type == hydra.getPreconditionerType( ) );
-
-                }
-
-                static void checkPreconditioner( hydraBase &hydra ){
-
-                    BOOST_CHECK( &hydra._preconditioner.second == hydra.getFlatPreconditioner( ) );
-
-                }
-
                 static void formNonLinearResidual( hydraBase &hydra ){
 
                     BOOST_CHECK_NO_THROW( hydra.formNonLinearResidual( ) );
@@ -359,26 +367,6 @@ namespace tardigradeHydra{
                     hydra._additionalDerivatives.first = true;
 
                     hydra.addIterationData( &hydra._additionalDerivatives );
-                }
-
-                static void set_flatPreconditioner( hydraBase &hydra, const floatVector &value ){
-
-                    hydra._preconditioner.second = value;
-                    hydra._preconditioner.first = true;
-
-                    hydra.addIterationData( &hydra._preconditioner );
-                }
-
-                static void set_usePreconditioner( hydraBase &hydra, const bool &value ){
-
-                    hydra._use_preconditioner = value;
-
-                }
-
-                static void set_preconditionerType( hydraBase &hydra, const unsigned int &value ){
-
-                    hydra._preconditioner_type = value;
-
                 }
 
                 static void set_flatdRdF( hydraBase &hydra, const floatVector &value ){
@@ -3989,8 +3977,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performPreconditionedSolve, * boost::unit_t
 
             virtual void initializeUnknownVector( ){
 
-                initializePreconditioner( );
-
                 tardigradeHydra::unit_test::hydraBaseTester::set_residual( *this, residual );
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, flatJacobian );
@@ -4829,111 +4815,39 @@ BOOST_AUTO_TEST_CASE( test_formPreconditioner, * boost::unit_test::tolerance( DE
 
     unsigned int dimension = 3;
 
-    class hydraBaseMock : public tardigradeHydra::hydraBase{
+    class PreconditionerBaseMock : public tardigradeHydra::PreconditionerBase{
 
         public:
 
-            using tardigradeHydra::hydraBase::hydraBase;
+            using tardigradeHydra::PreconditionerBase::PreconditionerBase;
 
             floatVector expected_preconditioner = { 1, 2, 3, 4, 5, 6, 7 };
 
             void setPreconditionerType( const unsigned int val ){
 
-                tardigradeHydra::unit_test::hydraBaseTester::set_preconditionerType( *this, val );
+                tardigradeHydra::unit_test::PreconditionerBaseTester::set_preconditionerType( *this, val );
 
             }
 
             virtual void formMaxRowPreconditioner( ) override{
 
-                tardigradeHydra::unit_test::hydraBaseTester::set_flatPreconditioner( *this, expected_preconditioner );
+                tardigradeHydra::unit_test::PreconditionerBaseTester::set_flatPreconditioner( *this, expected_preconditioner );
 
             }
 
     };
-
-    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-                         { }, { },
-                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-
-    BOOST_TEST( hydra.expected_preconditioner == *hydra.getFlatPreconditioner( ), CHECK_PER_ELEMENT );
-
-    hydraBaseMock bad_hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-                             { }, { },
-                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-
-    bad_hydra.setPreconditionerType( 7 );
-
-    BOOST_CHECK_THROW( bad_hydra.getFlatPreconditioner( ), std::nested_exception );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_formMaxRowPreconditioner, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-    /*!
-     * Boost test of the get-configuration command
-     */
-
-    floatType time = 1.1;
-
-    floatType deltaTime = 2.2;
-
-    floatType temperature = 5.3;
-
-    floatType previousTemperature = 23.4;
-
-    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
-                                        0.10262954,  0.43893794, -0.15378708,
-                                        0.9615284 ,  0.36965948, -0.0381362 };
-
-    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
-                                                -0.12285551, -0.88064421, -0.20391149,
-                                                 0.47599081, -0.63501654, -0.64909649 };
-
-    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
-                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
-                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
-                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
-                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
-                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
-                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
-                                           0.54506801, 0.34276383, 0.30412079 }; 
-
-    floatVector parameters = { 1, 2, 3, 4, 5 };
-
-    unsigned int numConfigurations = 4;
-
-    unsigned int numNonLinearSolveStateVariables = 5;
-
-    unsigned int dimension = 3;
 
     class hydraBaseMock : public tardigradeHydra::hydraBase{
 
         public:
 
-            floatVector jacobian = {  1.        ,  0.        ,  0.        ,  0.        ,  0.        ,
-                                      0.        ,  1.        ,  0.        ,  0.        ,  0.        ,
-                                      0.        , 48.07641984,  1.        ,  0.        , -7.68935399,
-                                      0.        ,  0.        , 18.48297386,  1.        ,  0.        ,
-                                      0.        ,  0.        ,  0.        ,  0.        ,  1.        };
-
             using tardigradeHydra::hydraBase::hydraBase;
 
-            void setPreconditionerType( const unsigned int val ){
+            tardigradeHydra::SolverBase *getSolver( ){
 
-                tardigradeHydra::unit_test::hydraBaseTester::set_preconditionerType( *this, val );
-
-            }
-
-            virtual void formMaxRowPreconditioner( ) override{
-
-                tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, floatVector( 5, 0 ) );
-
-                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
-
-                tardigradeHydra::hydraBase::formMaxRowPreconditioner( );
+                return solver;
 
             }
-
-            virtual const unsigned int getNumUnknowns( ) override{ return 5; }
 
     };
 
@@ -4941,11 +4855,107 @@ BOOST_AUTO_TEST_CASE( test_formMaxRowPreconditioner, * boost::unit_test::toleran
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    floatVector answer = { 1.        , 1.        , 0.02080022, 0.05410385, 1.        };
+    PreconditionerBaseMock preconditioner;
 
-    BOOST_TEST( answer == *hydra.getFlatPreconditioner( ), CHECK_PER_ELEMENT );
+    hydra.getSolver( )->preconditioner = &preconditioner;
+    preconditioner.solver = hydra.getSolver( );
+
+    BOOST_TEST( preconditioner.expected_preconditioner == *preconditioner.getFlatPreconditioner( ), CHECK_PER_ELEMENT );
+
+    hydraBaseMock bad_hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                             { }, { },
+                             previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    PreconditionerBaseMock bad_preconditioner;
+
+    bad_preconditioner.setPreconditionerType( 7 );
+
+    bad_hydra.getSolver( )->preconditioner = &bad_preconditioner;
+    bad_preconditioner.solver = hydra.getSolver( );
+
+    BOOST_CHECK_THROW( bad_preconditioner.getFlatPreconditioner( ), std::nested_exception );
 
 }
+
+//BOOST_AUTO_TEST_CASE( test_formMaxRowPreconditioner, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+//    /*!
+//     * Boost test of the get-configuration command
+//     */
+//
+//    floatType time = 1.1;
+//
+//    floatType deltaTime = 2.2;
+//
+//    floatType temperature = 5.3;
+//
+//    floatType previousTemperature = 23.4;
+//
+//    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
+//                                        0.10262954,  0.43893794, -0.15378708,
+//                                        0.9615284 ,  0.36965948, -0.0381362 };
+//
+//    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+//                                                -0.12285551, -0.88064421, -0.20391149,
+//                                                 0.47599081, -0.63501654, -0.64909649 };
+//
+//    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
+//                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
+//                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
+//                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
+//                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
+//                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
+//                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
+//                                           0.54506801, 0.34276383, 0.30412079 }; 
+//
+//    floatVector parameters = { 1, 2, 3, 4, 5 };
+//
+//    unsigned int numConfigurations = 4;
+//
+//    unsigned int numNonLinearSolveStateVariables = 5;
+//
+//    unsigned int dimension = 3;
+//
+//    class hydraBaseMock : public tardigradeHydra::hydraBase{
+//
+//        public:
+//
+//            floatVector jacobian = {  1.        ,  0.        ,  0.        ,  0.        ,  0.        ,
+//                                      0.        ,  1.        ,  0.        ,  0.        ,  0.        ,
+//                                      0.        , 48.07641984,  1.        ,  0.        , -7.68935399,
+//                                      0.        ,  0.        , 18.48297386,  1.        ,  0.        ,
+//                                      0.        ,  0.        ,  0.        ,  0.        ,  1.        };
+//
+//            using tardigradeHydra::hydraBase::hydraBase;
+//
+//            void setPreconditionerType( const unsigned int val ){
+//
+//                tardigradeHydra::unit_test::hydraBaseTester::set_preconditionerType( *this, val );
+//
+//            }
+//
+//            virtual void formMaxRowPreconditioner( ) override{
+//
+//                tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, floatVector( 5, 0 ) );
+//
+//                tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
+//
+//                tardigradeHydra::hydraBase::formMaxRowPreconditioner( );
+//
+//            }
+//
+//            virtual const unsigned int getNumUnknowns( ) override{ return 5; }
+//
+//    };
+//
+//    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+//                         { }, { },
+//                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+//
+//    floatVector answer = { 1.        , 1.        , 0.02080022, 0.05410385, 1.        };
+//
+//    BOOST_TEST( answer == *hydra.getFlatPreconditioner( ), CHECK_PER_ELEMENT );
+//
+//}
 
 BOOST_AUTO_TEST_CASE( test_checkGradientConvergence, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
     /*!

@@ -27,6 +27,7 @@
 #include"tardigrade_MatrixMap.h"
 #include"tardigrade_SolverBase.h"
 #include"tardigrade_ResidualBase.h"
+#include"tardigrade_PreconditionerBase.h"
 //#include"tardigrade_SolverStepBase.h"
 
 namespace tardigradeHydra{
@@ -166,15 +167,6 @@ namespace tardigradeHydra{
 
             //! Get the line-search alpha
             constexpr floatType getLSAlpha( ){ return _lsAlpha; }
-
-            //! Get whether to use a preconditioner
-            constexpr bool getUsePreconditioner( ){ return _use_preconditioner; }
-
-            //! Get the preconditioner type
-            constexpr unsigned int getPreconditionerType( ){ return _preconditioner_type; }
-
-            //! Get whether the preconditioner is diagonal or not
-            constexpr bool getPreconditionerIsDiagonal( ){ return _preconditioner_is_diagonal; }
 
             //!< Get the gradient descent sigma parameter
             const floatType getGradientSigma( ){ return _gradientSigma; }
@@ -346,7 +338,7 @@ namespace tardigradeHydra{
 
             virtual const floatVector* getNonlinearRHS( );
 
-            const floatVector* getFlatPreconditioner( );
+//            const floatVector* getFlatPreconditioner( );
 
             floatMatrix getJacobian( );
 
@@ -704,17 +696,17 @@ namespace tardigradeHydra{
 
             virtual void formNonLinearDerivatives( );
 
-            virtual void formPreconditioner( );
+//            virtual void formPreconditioner( );
 
             virtual void solveNonLinearProblem( );
 
-            virtual void formMaxRowPreconditioner( );
+//            virtual void formMaxRowPreconditioner( );
 
             virtual void initializeUnknownVector( );
 
             virtual void setTolerance( );
 
-            virtual void initializePreconditioner( );
+//            virtual void initializePreconditioner( );
 
             virtual void evaluateInternal( );
 
@@ -975,15 +967,7 @@ namespace tardigradeHydra{
 
             DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
-            DataStorage< floatVector > _preconditioner; //!< The pre-conditioner matrix in row-major form for the global solve
-
             DataStorage< floatVector > _previouslyConvergedStress; //!< The previously converged stress
-
-            bool _use_preconditioner; //!< Flag for whether to pre-condition the Jacobian or not
-
-            unsigned int _preconditioner_type; //<! The type of preconditioner to use
-
-            bool _preconditioner_is_diagonal; //!< Flag for if the pre-conditioner only stores the diagonal elements
 
             floatType _gradientSigma = 1e-4; //!< The sigma parameter for the gradient descent step
 

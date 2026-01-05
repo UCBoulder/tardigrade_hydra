@@ -152,7 +152,7 @@ namespace tardigradeHydra{
          * \param &deltaX_tr: The trial change in the unknown vector
          */
 
-        if ( solver->hydra->getUsePreconditioner( ) ){
+        if ( solver->preconditioner->getUsePreconditioner( ) ){
 
             solver->hydra->performPreconditionedSolve( deltaX_tr );
 

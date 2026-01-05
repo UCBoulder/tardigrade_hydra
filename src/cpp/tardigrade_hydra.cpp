@@ -39,8 +39,7 @@ namespace tardigradeHydra{
                                                            _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
                                                            _tolr( tolr ), _tola( tola ),
                                                            _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ),
-                                                           _lsAlpha( lsAlpha ),
-                                                           _use_preconditioner( use_preconditioner ), _preconditioner_type( preconditioner_type ){
+                                                           _lsAlpha( lsAlpha ){
         /*!
          * The main constructor for the hydra base class. Inputs are all the required values for most solves.
          * 
@@ -77,16 +76,12 @@ namespace tardigradeHydra{
         // Set the residual classes
         setResidualClasses( );
 
-        // Initialize the preconditioner if required
-        if ( _use_preconditioner ){
-
-            initializePreconditioner( );
-
-        }
-
         // TEMP
         _solver.hydra = this;
         solver->step->setSolver( solver );
+        solver->preconditioner->setSolver( solver );
+        solver->preconditioner->_use_preconditioner = use_preconditioner;
+        solver->preconditioner->_preconditioner_type = preconditioner_type;
         // END TEMP
 
     }
@@ -1070,7 +1065,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::formPreconditioner( ){
+    void PreconditionerBase::formPreconditioner( ){
         /*!
          * Form the preconditioner matrix
          */
@@ -1092,20 +1087,20 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::formMaxRowPreconditioner( ){
+    void PreconditionerBase::formMaxRowPreconditioner( ){
         /*!
          * Form a left preconditioner comprised of the inverse of the maximum value of each row
          */
 
-        const unsigned int problem_size = getNumUnknowns( );
+        const unsigned int problem_size = solver->hydra->getNumUnknowns( );
 
         _preconditioner.second = floatVector( problem_size, 0 );
 
         // Find the absolute maximum value in each row
         for ( unsigned int i = 0; i < problem_size; i++ ){
 
-            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( getFlatNonlinearLHS( )->begin( ) + problem_size * i,
-                                                                                      getFlatNonlinearLHS( )->begin( ) + problem_size * ( i + 1 ),
+            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( solver->hydra->getFlatNonlinearLHS( )->begin( ) + problem_size * i,
+                                                                                      solver->hydra->getFlatNonlinearLHS( )->begin( ) + problem_size * ( i + 1 ),
                                                                                       [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
 
         }
@@ -1220,7 +1215,7 @@ namespace tardigradeHydra{
 
     }
 
-    const floatVector* hydraBase::getFlatPreconditioner( ){
+    const floatVector* PreconditionerBase::getFlatPreconditioner( ){
         /*!
          * Get the flattened row-major preconditioner for the non-linear problem
          */
@@ -1710,9 +1705,9 @@ namespace tardigradeHydra{
 
         auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
 
-        if( getPreconditionerIsDiagonal( ) ){
+        if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
 
-            auto p_map = tardigradeHydra::getDynamicSizeVectorMap( getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
+            auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
 
             linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
 
@@ -1721,7 +1716,7 @@ namespace tardigradeHydra{
         }
         else{
 
-            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
 
             linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
 
@@ -2678,11 +2673,11 @@ namespace tardigradeHydra{
         // Solve
         tardigradeVectorTools::solverType< floatType > linear_solver;
 
-        if ( getUsePreconditioner( ) ){
+        if ( solver->preconditioner->getUsePreconditioner( ) ){
 
-            if( getPreconditionerIsDiagonal( ) ){
+            if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
 
-                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
 
                 linear_solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
 
@@ -2693,7 +2688,7 @@ namespace tardigradeHydra{
             }
             else{
 
-                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
                 linear_solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
 
@@ -2747,35 +2742,35 @@ namespace tardigradeHydra{
         auto dXdAdditionalDOF = tardigradeHydra::getDynamicSizeMatrixMap( _flatdXdAdditionalDOF.second.data( ), getNumUnknowns( ), getAdditionalDOF( )->size( ) );
 
         // Solve
-        tardigradeVectorTools::solverType< floatType > solver;
+        tardigradeVectorTools::solverType< floatType > linear_solver;
 
-        if ( getUsePreconditioner( ) ){
+        if ( solver->preconditioner->getUsePreconditioner( ) ){
 
-            if( getPreconditionerIsDiagonal( ) ){
+            if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
 
-                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
 
-                solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
+                linear_solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
 
-                dXdAdditionalDOF = -solver.solve( p_map.asDiagonal( ) * dRdAdditionalDOF );
+                dXdAdditionalDOF = -linear_solver.solve( p_map.asDiagonal( ) * dRdAdditionalDOF );
 
             }
             else{
 
-                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
-                solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
+                linear_solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
 
-                dXdAdditionalDOF = -solver.solve( p_map * dRdAdditionalDOF );
+                dXdAdditionalDOF = -linear_solver.solve( p_map * dRdAdditionalDOF );
 
             }
 
         }
         else{
 
-            solver = tardigradeVectorTools::solverType< floatType >( Amat );
+            linear_solver = tardigradeVectorTools::solverType< floatType >( Amat );
 
-            dXdAdditionalDOF = -solver.solve( dRdAdditionalDOF );
+            dXdAdditionalDOF = -linear_solver.solve( dRdAdditionalDOF );
 
         }
 
@@ -2825,26 +2820,6 @@ namespace tardigradeHydra{
         }
 
         return &_flatdXdAdditionalDOF.second;
-
-    }
-
-    void hydraBase::initializePreconditioner( ){
-        /*!
-         * Initialize the preconditioner
-         */
-
-        _preconditioner_is_diagonal = false;
-
-        if ( _preconditioner_type == 0 ){
-
-            _preconditioner_is_diagonal = true;
-
-        }
-        else{
-
-            throw std::runtime_error( "Preconditioner type " + std::to_string( _preconditioner_type ) + " is not recognized." );
-
-        }
 
     }
 
