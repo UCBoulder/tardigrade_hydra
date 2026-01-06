@@ -1555,7 +1555,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::performPreconditionedSolve( floatVector &deltaX_tr ){
+    void SolverStepBase::performPreconditionedSolve( floatVector &deltaX_tr ){
         /*!
          * Perform a pre-conditioned solve
          *
@@ -1564,15 +1564,15 @@ namespace tardigradeHydra{
 
         tardigradeVectorTools::solverType< floatType > linearSolver;
 
-        auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), getNumUnknowns( ) );
+        auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), solver->getNumUnknowns( ) );
 
-        auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->step->getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+        auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), solver->getNumUnknowns( ), solver->getNumUnknowns( ) );
 
-        auto R_map = tardigradeHydra::getDynamicSizeVectorMap( solver->step->getNonlinearRHS( )->data( ), getNumUnknowns( ) );
+        auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), solver->getNumUnknowns( ) );
 
         if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
 
-            auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
+            auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), solver->getNumUnknowns( ) );
 
             linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
 
@@ -1581,7 +1581,7 @@ namespace tardigradeHydra{
         }
         else{
 
-            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), solver->getNumUnknowns( ), solver->getNumUnknowns( ) );
 
             linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
 
@@ -1591,7 +1591,7 @@ namespace tardigradeHydra{
 
         unsigned int rank = linearSolver.rank( );
 
-        if ( solver->getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
+        if ( solver->getRankDeficientError( ) && ( rank != solver->getResidual( )->size( ) ) ){
 
             TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 

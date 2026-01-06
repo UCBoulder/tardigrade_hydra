@@ -963,8 +963,6 @@ namespace tardigradeHydra{
 
             void setPreviousFirstConfigurationJacobians( );
 
-            void performPreconditionedSolve( floatVector &deltaX_tr );
-
             void setTolerance( const floatVector &tolerance );
 
             void incrementIteration( ){ _iteration++; resetLSIteration( ); }

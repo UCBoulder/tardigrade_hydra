@@ -236,7 +236,7 @@ namespace tardigradeHydra{
 
         if ( solver->preconditioner->getUsePreconditioner( ) ){
 
-            solver->hydra->performPreconditionedSolve( deltaX_tr );
+            performPreconditionedSolve( deltaX_tr );
 
         }
         else{

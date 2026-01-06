@@ -93,6 +93,9 @@ namespace tardigradeHydra{
             const bool getUseSQPSolver( ){ /*! Return a flag for whether to use the SQP solver */ return _useSQPSolver; }
 
             // END SQP SOLVER FUNCTIONS
+
+            void performPreconditionedSolve( floatVector &deltaX_tr ); // TEMP REMOVE THIS
+
         protected:
 
             SolverBase *solver; //!< Pointer to the containing SolverBase object
