@@ -661,9 +661,6 @@ namespace tardigradeHydra{
 
             virtual void evaluateInternal( );
 
-            //! Update the line-search lambda parameter
-            virtual void updateLambda( ){ _lambda *= 0.5; }
-
             virtual void updateUnknownVector( const floatVector &newUnknownVector );
 
             virtual void calculateFirstConfigurationJacobians( const floatVector &configurations, fourthOrderTensor &dC1dC, floatVector &dC1dCn );
@@ -944,8 +941,6 @@ namespace tardigradeHydra{
 
             unsigned int _relaxedIteration = 0; //!< The current relaxed iteration of the non-linear problem
 
-            floatType _lambda = 1;
-
             void setFirstConfigurationJacobians( );
 
             void setPreviousFirstConfigurationJacobians( );
@@ -959,8 +954,6 @@ namespace tardigradeHydra{
             void resetLSIteration( );
 
             void resetGradientIteration( ){ _gradientIteration = 0; }
-
-            const floatType getLambda( ){ return _lambda; }
 
             bool checkIteration( ){ return _iteration < _maxIterations; }
 

@@ -118,6 +118,9 @@ namespace tardigradeHydra{
 
             bool checkLSIteration( );
 
+            //! Get the linesearch lambda parameter
+            const floatType getLambda( ){ return _lambda; }
+
             // END LINESEARCH FUNCTIONS
 
         protected:
@@ -188,6 +191,13 @@ namespace tardigradeHydra{
 
             // END SQP SOLVER FUNCTIONS
 
+            // LINESEARCH PARAMETERS (MOVE TO OWN CLASS)
+
+            //! Update the line-search lambda parameter
+            virtual void updateLambda( ){ _lambda *= 0.5; }
+
+            // END LINESEARCH PARAMETERS
+
         private:
 
             friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
@@ -235,6 +245,8 @@ namespace tardigradeHydra{
             unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
 
             void incrementLSIteration( ){ _LSIteration++; }
+
+            floatType _lambda = 1;
 
             // END LS FUNCTIONS
 

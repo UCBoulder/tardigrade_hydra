@@ -1544,7 +1544,7 @@ namespace tardigradeHydra{
     /*!
      * Reset the line-search iteration
      */
-    void hydraBase::resetLSIteration( ){ solver->step->resetLSIteration( ); _lambda = 1.0;
+    void hydraBase::resetLSIteration( ){ solver->step->resetLSIteration( );
                                          _lsResidualNorm.second = tardigradeVectorTools::l2norm( *getResidual( ) );
                                          _lsResidualNorm.first = true; }
 
@@ -1560,22 +1560,22 @@ namespace tardigradeHydra{
 
             if ( solver->getFailureVerbosityLevel( ) > 0 ){
                 solver->addToFailureOutput( "    lambda, |R|: " );
-                solver->addToFailureOutput( solver->hydra->getLambda( ), false );
+                solver->addToFailureOutput( getLambda( ), false );
                 solver->addToFailureOutput( ", " );
                 solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
             }
 
-            solver->hydra->updateLambda( );
+            updateLambda( );
 
             incrementLSIteration( );
 
-            solver->updateUnknownVector( X0 + solver->hydra->getLambda( ) * deltaX );
+            solver->updateUnknownVector( X0 + getLambda( ) * deltaX );
 
         }
 
         if ( solver->getFailureVerbosityLevel( ) > 0 ){
             solver->addToFailureOutput( "    lambda, |R|: " );
-            solver->addToFailureOutput( solver->hydra->getLambda( ), false );
+            solver->addToFailureOutput( getLambda( ), false );
             solver->addToFailureOutput( ", " );
             solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
         }
@@ -1980,7 +1980,7 @@ namespace tardigradeHydra{
             solver->addToFailureOutput( deltaX );
         }
 
-        solver->updateUnknownVector( X0 + solver->hydra->getLambda( ) * deltaX );
+        solver->updateUnknownVector( X0 + getLambda( ) * deltaX );
 
         // Refine the estimate if the new point has a higher residual
         if ( !checkLSConvergence( ) ){

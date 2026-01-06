@@ -707,6 +707,8 @@ namespace tardigradeHydra{
 
         _LSIteration = 0;
 
+        _lambda = 1.0;
+
     };
 
     /*!
