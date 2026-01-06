@@ -7,7 +7,10 @@
  */
 
 #include"tardigrade_SolverStepBase.h"
-#include"tardigrade_hydra.h"
+#define USE_EIGEN
+#include"tardigrade_vector_tools.h"
+#include"tardigrade_CustomErrors.h"
+#include"tardigrade_SolverBase.h"
 
 namespace tardigradeHydra{
 
