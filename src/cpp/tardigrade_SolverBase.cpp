@@ -109,6 +109,24 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Get the constraints
+     */
+    const floatVector *SolverBase::getConstraints( ){
+
+        return hydra->getConstraints( );
+
+    }
+
+    /*!
+     * Get the constraint Jacobians
+     */
+    const floatVector *SolverBase::getConstraintJacobians( ){
+
+        return hydra->getConstraintJacobians( );
+
+    }
+
+    /*!
      * Get the verbosity level for failure messages
      */
     const unsigned int SolverBase::getFailureVerbosityLevel( ){

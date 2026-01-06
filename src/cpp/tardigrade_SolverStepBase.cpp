@@ -193,9 +193,9 @@ namespace tardigradeHydra{
 
         active_constraints = std::vector< bool >( solver->getNumConstraints( ), false );
 
-        for ( auto c = solver->hydra->getConstraints( )->begin( ); c != solver->hydra->getConstraints( )->end( ); c++ ){
+        for ( auto c = solver->getConstraints( )->begin( ); c != solver->getConstraints( )->end( ); c++ ){
 
-            unsigned int index = ( unsigned int )( c - solver->hydra->getConstraints( )->begin( ) );
+            unsigned int index = ( unsigned int )( c - solver->getConstraints( )->begin( ) );
 
             active_constraints[ index ] = ( ( *c ) < 0. );
 
@@ -232,11 +232,11 @@ namespace tardigradeHydra{
 
             if ( active_constraints[ i ] ){
 
-                KKTRHSVector[ numUnknowns + i ] = ( *( solver->hydra->getConstraints( ) ) )[ i ];
+                KKTRHSVector[ numUnknowns + i ] = ( *( solver->getConstraints( ) ) )[ i ];
 
                 for ( unsigned int I = 0; I < numUnknowns; I++ ){
 
-                    KKTRHSVector[ numUnknowns + i ] += ( *( solver->hydra->getConstraintJacobians( ) ) )[ numUnknowns * i + I ] * dx[ I ];
+                    KKTRHSVector[ numUnknowns + i ] += ( *( solver->getConstraintJacobians( ) ) )[ numUnknowns * i + I ] * dx[ I ];
 
                 }
 
@@ -278,8 +278,8 @@ namespace tardigradeHydra{
 
                 for ( unsigned int I = 0; I < numUnknowns; I++ ){
 
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *solver->hydra->getConstraintJacobians( ) )[ numUnknowns * i + I ];
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *solver->hydra->getConstraintJacobians( ) )[ numUnknowns * i + I ];
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + I ];
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + I ];
 
                 }
 
@@ -320,8 +320,8 @@ namespace tardigradeHydra{
 
                 for ( unsigned int I = 0; I < numUnknowns; I++ ){
 
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *solver->hydra->getConstraintJacobians( ) )[ numUnknowns * i + I ];
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *solver->hydra->getConstraintJacobians( ) )[ numUnknowns * i + I ];
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + I ];
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + I ];
 
                 }
 
@@ -365,7 +365,7 @@ namespace tardigradeHydra{
 
         floatVector y( numUnknowns + numConstraints, 0 );
 
-        floatVector ck = *solver->hydra->getConstraints( );
+        floatVector ck = *solver->getConstraints( );
 
         floatVector ctilde( numConstraints, 0 );
 
@@ -441,12 +441,12 @@ namespace tardigradeHydra{
             }
             else{
 
-                ck     = *solver->hydra->getConstraints( );
-                ctilde = *solver->hydra->getConstraints( );
+                ck     = *solver->getConstraints( );
+                ctilde = *solver->getConstraints( );
                 for ( unsigned int i = 0; i < numConstraints; i++ ){
                     for ( unsigned int j = 0; j < numUnknowns; j++ ){
-                        ck[ i ]     += ( *solver->hydra->getConstraintJacobians( ) )[ numUnknowns * i + j ] * dx[ j ];
-                        ctilde[ i ] += ( *solver->hydra->getConstraintJacobians( ) )[ numUnknowns * i + j ] * ( dx[ j ] - negp[ j ] );
+                        ck[ i ]     += ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + j ] * dx[ j ];
+                        ctilde[ i ] += ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + j ] * ( dx[ j ] - negp[ j ] );
                     }
                 }
 

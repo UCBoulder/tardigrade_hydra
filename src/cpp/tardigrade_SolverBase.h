@@ -69,6 +69,10 @@ namespace tardigradeHydra{
 
             const unsigned int getNumConstraints( ); //TODO: Want to allow this to be constexpr
 
+            const floatVector *getConstraints( ); //TODO: Want to generalize this
+
+            const floatVector *getConstraintJacobians( ); //TODO: Want to generalize this
+
             const unsigned int getFailureVerbosityLevel( );
 
             void addToFailureOutput( const std::string &string );
