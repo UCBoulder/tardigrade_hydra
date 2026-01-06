@@ -281,12 +281,6 @@ namespace tardigradeHydra{
 
                 }
 
-                static void checkUseLevenbergMarquardt( hydraBase &hydra ){
-
-                    BOOST_CHECK( hydra._use_LM_step == hydra.getUseLevenbergMarquardt( ) );
-
-                }
-
                 static void checkUseGradientDescent( hydraBase &hydra ){
 
                     BOOST_CHECK( hydra._use_gradient_descent == hydra.getUseGradientDescent( ) );
@@ -677,14 +671,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getGradientP, * boost::unit_test::tolerance
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkUseLevenbergMarquardt( hydra );
-
-}
-
 BOOST_AUTO_TEST_CASE( test_hydraBase_getUseGradientDescent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
@@ -740,18 +726,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientP, * boost::unit_test::tolerance
     hydra.setGradientP( 123.4 );
 
     BOOST_TEST( 123.4 == hydra.getGradientP( ) );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_hydraBase_setUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    hydra.setUseLevenbergMarquardt( true );
-
-    BOOST_TEST( true == hydra.getUseLevenbergMarquardt( ) );
-
-    BOOST_TEST( true == hydra.getUseGradientDescent( ) );
 
 }
 
@@ -5179,13 +5153,13 @@ BOOST_AUTO_TEST_CASE( test_getNonlinearLMTerms, * boost::unit_test::tolerance( 1
 
     tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
 
-    hydra.setUseLevenbergMarquardt( false );
+    hydra.getSolver( )->step->setUseLevenbergMarquardt( false );
 
     BOOST_TEST( hydra.residual == *hydra.getSolver( )->step->getNonlinearRHS( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( hydra.jacobian == *hydra.getSolver( )->step->getFlatNonlinearLHS( ), CHECK_PER_ELEMENT );
 
-    hydra.setUseLevenbergMarquardt( true );
+    hydra.getSolver( )->step->setUseLevenbergMarquardt( true );
 
     BOOST_TEST( answerRHS == *hydra.getSolver( )->step->getNonlinearRHS( ), CHECK_PER_ELEMENT );
 
@@ -5428,7 +5402,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
 
     BOOST_CHECK_THROW( hydra.public_evaluateInternal( ), tardigradeHydra::convergence_error );
 
-    BOOST_TEST( hydra.getUseLevenbergMarquardt( ) );
+    BOOST_TEST( hydra.access_solver( )->step->getUseLevenbergMarquardt( ) );
 
     BOOST_TEST( !hydra.access_solver( )->getRankDeficientError( ) );
 
@@ -5534,7 +5508,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
     hydra.public_evaluateInternal( );
 
-    BOOST_TEST( !hydra.getUseLevenbergMarquardt( ) );
+    BOOST_TEST( !hydra.access_solver( )->step->getUseLevenbergMarquardt( ) );
 
     BOOST_TEST( !hydra.access_solver( )->getRankDeficientError( ) );
 

@@ -2473,7 +2473,7 @@ namespace tardigradeHydra{
                 //Try a Levenberg-Marquardt solve if there is a convergence error
                 solver->setRankDeficientError( false );
     
-                setUseLevenbergMarquardt( true );
+                solver->step->setUseLevenbergMarquardt( true );
     
                 // Turn on projection
                 setCurrentResidualIndexMeaningful( true );
@@ -2498,7 +2498,7 @@ namespace tardigradeHydra{
                 }
                 catch( std::exception &e ){
     
-                    setUseLevenbergMarquardt( false );
+                    solver->step->setUseLevenbergMarquardt( false );
     
                     TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
     

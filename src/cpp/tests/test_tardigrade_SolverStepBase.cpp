@@ -116,6 +116,12 @@ namespace tardigradeHydra{
 
                 }
 
+                static void checkUseLevenbergMarquardt( SolverStepBase &step ){
+
+                    BOOST_CHECK( step._use_LM_step == step.getUseLevenbergMarquardt( ) );
+
+                }
+
                 static void setMuk( SolverStepBase &step, const tardigradeHydra::floatType &value ){
 
                     step.setMuk( value );
@@ -154,6 +160,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getLMMu, * boost::unit_test::tolerance( DEF
     tardigradeHydra::SolverStepBase step;
 
     tardigradeHydra::unit_test::SolverStepBaseTester::checkLMMu( step );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_getUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::SolverStepBase step;
+
+    tardigradeHydra::unit_test::SolverStepBaseTester::checkUseLevenbergMarquardt( step );
 
 }
 
@@ -203,6 +217,37 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setLMMu, * boost::unit_test::tolerance( DEF
 
     BOOST_TEST( 123.4 == step.getLMMu( ) );
 
+}
+
+BOOST_AUTO_TEST_CASE( test_hydraBase_setUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
+            tardigradeHydra::SolverBase *getSolver( ){ return solver; }
+
+    };
+
+    hydraBaseMock  hydra;
+    tardigradeHydra::SolverBase solver;
+    tardigradeHydra::SolverStepBase step;
+
+    hydra.setSolver( &solver );
+
+    solver.hydra = &hydra;
+    solver.step  = &step;
+
+    step.setSolver( &solver );
+
+    step.setUseLevenbergMarquardt( true );
+
+    BOOST_TEST( true == step.getUseLevenbergMarquardt( ) );
+
+    BOOST_TEST( true == hydra.getUseGradientDescent( ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_setResidualNorm, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){

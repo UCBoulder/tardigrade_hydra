@@ -150,7 +150,7 @@ namespace tardigradeHydra{
          * Get the RHS vector for the non-linear problem
          */
 
-        if ( solver->hydra->getUseLevenbergMarquardt( ) ){
+        if ( getUseLevenbergMarquardt( ) ){
 
             if ( !_nonlinearRHS.first ){
 
@@ -189,7 +189,7 @@ namespace tardigradeHydra{
          * Get the flat LHS matrix for the non-linear problem
          */
 
-        if ( solver->hydra->getUseLevenbergMarquardt( ) ){
+        if ( getUseLevenbergMarquardt( ) ){
 
             if ( !_flatNonlinearLHS.first ){
 
@@ -263,6 +263,23 @@ namespace tardigradeHydra{
     }
 
 // END NEWTON SOLVER FUNCTIONS
+
+// BEGIN LM FUNCTIONS
+
+    /*!
+     * Set whether to attempt a Levenberg-Marquardt step
+     * 
+     * \param &value: The value of the parameter
+     */
+    void SolverStepBase::setUseLevenbergMarquardt( const bool &value ){
+    
+        solver->hydra->setUseGradientDescent( value );
+    
+        _use_LM_step = value;
+    
+    }
+
+// END LM FUNCTIONS
 
 // BEGIN SQP SOLVER FUNCTIONS
 

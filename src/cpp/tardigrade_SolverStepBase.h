@@ -62,6 +62,11 @@ namespace tardigradeHydra{
 
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
+            //!< Get the Newton step should be a LevenbergMarquardt step
+            const bool getUseLevenbergMarquardt( ){ return _use_LM_step; }
+
+            void setUseLevenbergMarquardt( const bool &value );
+
             const floatType *get_baseResidualNorm( );
 
             const floatVector *get_basedResidualNormdX( );
@@ -166,6 +171,12 @@ namespace tardigradeHydra{
             DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
             // END NONLINEAR DATA STORAGE
+
+            // LM Functions (MOVE TO OWN CLASS)
+
+            bool _use_LM_step = false; //!< Flag for whether to attempt a Levenberg-Marquardt step
+
+            // END LM Functions
 
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
