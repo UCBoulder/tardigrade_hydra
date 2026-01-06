@@ -287,8 +287,6 @@ namespace tardigradeHydra{
 
             floatVector getPreviousFollowingConfigurationJacobian( const unsigned int &index );
 
-            const floatType* getLSResidualNorm( );
-
             virtual void setResidualClasses( );
 
             void setResidualClasses( std::vector< ResidualBase<hydraBase>* > &residualClasses );
@@ -914,8 +912,6 @@ namespace tardigradeHydra{
             DataStorage< floatVector > _X; //!< The unknown vector { stress, F1, ..., Fn, xi1, ..., xim }
 
             DataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
-
-            DataStorage< floatType > _lsResidualNorm; //!< The reference residual norm for the line-search convergence criteria
 
             DataStorage< floatVector > _stress; //!< The stress in the current configuration as determined from the current state
 

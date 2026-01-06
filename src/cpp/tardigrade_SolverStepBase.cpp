@@ -679,7 +679,7 @@ namespace tardigradeHydra{
      */
     bool SolverStepBase::checkLSConvergence( ){
 
-        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - getLSAlpha( ) ) * ( *( solver->hydra->getLSResidualNorm( ) ) ) ){
+        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
 
             return true;
 
@@ -709,6 +709,10 @@ namespace tardigradeHydra{
 
         _lambda = 1.0;
 
+        _lsResidualNorm.second = tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) );
+
+        _lsResidualNorm.first = true;
+
     };
 
     /*!
@@ -728,6 +732,22 @@ namespace tardigradeHydra{
         _maxLSIterations = value;
 
     }
+
+    /*!
+     * Get the residual norm for the line-search convergence criterion
+     */
+    const floatType* SolverStepBase::getLSResidualNorm( ){
+
+        if ( !_lsResidualNorm.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( resetLSIteration( ) );
+
+        }
+
+        return &_lsResidualNorm.second;
+
+    }
+
 // END LINESEARCH FUNCTIONS
 
 }

@@ -1484,21 +1484,6 @@ namespace tardigradeHydra{
 
     }
 
-    const floatType* hydraBase::getLSResidualNorm( ){
-        /*!
-         * Get the residual norm for the line-search convergence criterion
-         */
-
-        if ( !_lsResidualNorm.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( resetLSIteration( ) );
-
-        }
-
-        return &_lsResidualNorm.second;
-
-    }
-
     void hydraBase::updateUnknownVector( const floatVector &newUnknownVector ){
         /*!
          * Update the unknown vector
@@ -1544,9 +1529,7 @@ namespace tardigradeHydra{
     /*!
      * Reset the line-search iteration
      */
-    void hydraBase::resetLSIteration( ){ solver->step->resetLSIteration( );
-                                         _lsResidualNorm.second = tardigradeVectorTools::l2norm( *getResidual( ) );
-                                         _lsResidualNorm.first = true; }
+    void hydraBase::resetLSIteration( ){ solver->step->resetLSIteration( ); }
 
     void SolverStepBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
         /*!

@@ -102,6 +102,7 @@ namespace tardigradeHydra{
 
             void setLSAlpha( const floatType &value );
 
+            //! Get the maximum number of line-search iterations
             constexpr unsigned int getMaxLSIterations( ){ return _maxLSIterations; }
 
             void setMaxLSIterations( const unsigned int &value );
@@ -123,6 +124,7 @@ namespace tardigradeHydra{
 
             unsigned int getNumLS( ){ /*! Get the number of line search steps performed */ return _NUM_LS; }
 
+            const floatType* getLSResidualNorm( );
             // END LINESEARCH FUNCTIONS
 
         protected:
@@ -253,6 +255,8 @@ namespace tardigradeHydra{
             void incrementLSIteration( ){ _LSIteration++; }
 
             floatType _lambda = 1;
+
+            DataStorage< floatType > _lsResidualNorm; //!< The reference residual norm for the line-search convergence criteria
 
             unsigned int _NUM_LS = 0; //!< The number of line search steps performed
 
