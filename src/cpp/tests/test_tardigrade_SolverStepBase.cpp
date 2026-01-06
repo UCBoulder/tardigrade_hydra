@@ -104,6 +104,12 @@ namespace tardigradeHydra{
 
             public:
 
+                static void checkLSAlpha( SolverStepBase &step ){
+
+                    BOOST_CHECK( step._lsAlpha == step.getLSAlpha( ) );
+
+                }
+
                 static void checkMuk( SolverStepBase &step ){
 
                     BOOST_CHECK( step._mu_k == step.getMuk( ) );
@@ -150,6 +156,15 @@ namespace tardigradeHydra{
 
     }
 
+
+}
+
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_getLSAlpha, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::SolverStepBase step;
+    step.setLSAlpha( 1.23 );
+
+    tardigradeHydra::unit_test::SolverStepBaseTester::checkLSAlpha( step );
 
 }
 

@@ -679,13 +679,24 @@ namespace tardigradeHydra{
      */
     bool SolverStepBase::checkLSConvergence( ){
 
-        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - solver->hydra->getLSAlpha( ) ) * ( *( solver->hydra->getLSResidualNorm( ) ) ) ){
+        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - getLSAlpha( ) ) * ( *( solver->hydra->getLSResidualNorm( ) ) ) ){
 
             return true;
 
         }
 
         return false;
+
+    }
+
+    /*!
+     * Set the value of the line-search alpha parameter
+     *
+     * \param &value: The incoming value of the line-search alpha parameter
+     */
+    void SolverStepBase::setLSAlpha( const floatType &value ){
+
+        _lsAlpha = value;
 
     }
 

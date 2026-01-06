@@ -100,6 +100,11 @@ namespace tardigradeHydra{
 
             virtual bool checkLSConvergence( );
 
+            void setLSAlpha( const floatType &value );
+
+            //! Get the line-search alpha parameter
+            constexpr floatType getLSAlpha( ){ return _lsAlpha; }
+
             // END LINESEARCH FUNCTIONS
 
         protected:
@@ -207,6 +212,12 @@ namespace tardigradeHydra{
             bool _useSQPSolver = false; //!< The flag for whether to use the SQP solver
 
             // END SQP SOLVER FUNCTIONS
+
+            // LS Functions (MOVE TO OWN CLASS)
+
+            floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
+
+            // END LS FUNCTIONS
 
     };
 

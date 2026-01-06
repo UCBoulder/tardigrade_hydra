@@ -245,12 +245,6 @@ namespace tardigradeHydra{
 
                 }
 
-                static void checkLSAlpha( hydraBase &hydra ){
-
-                    BOOST_CHECK( hydra._lsAlpha == hydra.getLSAlpha( ) );
-
-                }
-
                 static void checkGradientSigma( hydraBase &hydra ){
 
                     BOOST_CHECK( hydra._gradientSigma == hydra.getGradientSigma( ) );
@@ -608,14 +602,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getAbsoluteTolerance, * boost::unit_test::t
     tardigradeHydra::hydraBase hydra;
 
     tardigradeHydra::unit_test::hydraBaseTester::checkAbsoluteTolerance( hydra );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_hydraBase_getLSAlpha, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkLSAlpha( hydra );
 
 }
 

@@ -165,9 +165,6 @@ namespace tardigradeHydra{
             //! Get the absolute tolerance
             constexpr floatType getAbsoluteTolerance( ){ return _tola; }
 
-            //! Get the line-search alpha
-            constexpr floatType getLSAlpha( ){ return _lsAlpha; }
-
             //!< Get the gradient descent sigma parameter
             const floatType getGradientSigma( ){ return _gradientSigma; }
 
@@ -900,8 +897,6 @@ namespace tardigradeHydra{
             bool _initializeUnknownVector = true; //!< Flag for whether to initialize the unknown vector in the non-linear solve
 
             unsigned int _maxRelaxedIterations = 5; //!< The number of allowed relaxed iterations
-
-            floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
 
             std::vector< dataBase* > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration
 

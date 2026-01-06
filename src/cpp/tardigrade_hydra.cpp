@@ -38,8 +38,7 @@ namespace tardigradeHydra{
                                                            _numConfigurations( numConfigurations ),
                                                            _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
                                                            _tolr( tolr ), _tola( tola ),
-                                                           _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ),
-                                                           _lsAlpha( lsAlpha ){
+                                                           _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ){
         /*!
          * The main constructor for the hydra base class. Inputs are all the required values for most solves.
          * 
@@ -79,6 +78,7 @@ namespace tardigradeHydra{
         // TEMP
         _solver.hydra = this;
         solver->step->setSolver( solver );
+        solver->step->setLSAlpha( lsAlpha );
         solver->preconditioner->setSolver( solver );
         solver->preconditioner->_use_preconditioner = use_preconditioner;
         solver->preconditioner->_preconditioner_type = preconditioner_type;
