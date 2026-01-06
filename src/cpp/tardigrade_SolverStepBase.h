@@ -107,6 +107,11 @@ namespace tardigradeHydra{
 
             virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
 
+            //! Get the current value of the line-search iteration
+            const unsigned int getLSIteration( ){ return _LSIteration; }
+
+            void resetLSIteration( );
+
             // END LINESEARCH FUNCTIONS
 
         protected:
@@ -218,6 +223,10 @@ namespace tardigradeHydra{
             // LS Functions (MOVE TO OWN CLASS)
 
             floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
+
+            unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
+
+            void incrementLSIteration( ){ _LSIteration++; }
 
             // END LS FUNCTIONS
 

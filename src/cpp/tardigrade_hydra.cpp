@@ -1540,6 +1540,20 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Reset the line-search iteration
+     */
+    void hydraBase::resetLSIteration( ){ solver->step->resetLSIteration( ); _lambda = 1.0;
+                                         _lsResidualNorm.second = tardigradeVectorTools::l2norm( *getResidual( ) );
+                                         _lsResidualNorm.first = true; }
+
+    /*!
+     * Check the current line search iteration
+     */
+    bool hydraBase::checkLSIteration( ){
+        return solver->step->getLSIteration( ) < _maxLSIterations;
+    }
+
     void SolverStepBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
         /*!
          * Perform an Armijo-type line search
@@ -1559,7 +1573,7 @@ namespace tardigradeHydra{
 
             solver->hydra->updateLambda( );
 
-            solver->hydra->incrementLSIteration( );
+            incrementLSIteration( );
 
             solver->updateUnknownVector( X0 + solver->hydra->getLambda( ) * deltaX );
 

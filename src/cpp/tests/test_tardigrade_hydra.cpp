@@ -57,6 +57,12 @@ namespace tardigradeHydra{
 
                 }
 
+                static unsigned int get_LSIteration( SolverStepBase &step ){
+
+                    return step._LSIteration;
+
+                }
+
         };
 
         class hydraBaseTester{
@@ -358,12 +364,6 @@ namespace tardigradeHydra{
                 static unsigned int get_iteration( hydraBase &hydra ){
 
                     return hydra._iteration;
-
-                }
-
-                static unsigned int get_LSIteration( hydraBase &hydra ){
-
-                    return hydra._LSIteration;
 
                 }
 
@@ -3984,7 +3984,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                 unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
-                unsigned int LSIteration = tardigradeHydra::unit_test::hydraBaseTester::get_LSIteration( *this );
+                unsigned int LSIteration = tardigradeHydra::unit_test::SolverStepBaseTester::get_LSIteration( *( solver->step ) );
 
                 unsigned int gradIteration = tardigradeHydra::unit_test::hydraBaseTester::get_gradientIteration( *this );
 
@@ -4032,7 +4032,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                 unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
-                unsigned int LSIteration = tardigradeHydra::unit_test::hydraBaseTester::get_LSIteration( *this );
+                unsigned int LSIteration = tardigradeHydra::unit_test::SolverStepBaseTester::get_LSIteration( *( solver->step ) );
 
                 unsigned int gradIteration = tardigradeHydra::unit_test::hydraBaseTester::get_gradientIteration( *this );
 
@@ -4099,7 +4099,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                 unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *( solver->hydra ) );
 
-                unsigned int LSIteration = tardigradeHydra::unit_test::hydraBaseTester::get_LSIteration( *( solver->hydra ) );
+                unsigned int LSIteration = tardigradeHydra::unit_test::SolverStepBaseTester::get_LSIteration( *this );
 
                 solver->getResidual( );
 
@@ -4163,6 +4163,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
     solver.preconditioner = &preconditioner;
 
     step.setSolver( &solver );
+    preconditioner.setSolver( &solver );
 
     hydra.getSolver( )->step->setUseGradientDescent( true );
 
@@ -4200,6 +4201,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
     solver_pre.preconditioner = &preconditioner_pre;
 
     step_pre.setSolver( &solver_pre );
+    preconditioner_pre.setSolver( &solver_pre );
 
     hydra_pre.getSolver( )->step->setUseGradientDescent( true );
 

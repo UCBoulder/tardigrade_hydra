@@ -700,6 +700,15 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Reset the line search iteration
+     */
+    void SolverStepBase::resetLSIteration( ){
+
+        _LSIteration = 0;
+
+    };
+
 // END LINESEARCH FUNCTIONS
 
 }

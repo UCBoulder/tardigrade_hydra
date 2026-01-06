@@ -942,8 +942,6 @@ namespace tardigradeHydra{
 
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
-            unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
-
             unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
 
             unsigned int _relaxedIteration = 0; //!< The current relaxed iteration of the non-linear problem
@@ -958,13 +956,9 @@ namespace tardigradeHydra{
 
             void incrementIteration( ){ _iteration++; resetLSIteration( ); }
 
-            void incrementLSIteration( ){ _LSIteration++; }
-
             void incrementGradientIteration( ){ _gradientIteration++; }
 
-            void resetLSIteration( ){ _LSIteration = 0; _lambda = 1.0;
-                                      _lsResidualNorm.second = tardigradeVectorTools::l2norm( *getResidual( ) );
-                                      _lsResidualNorm.first = true; }
+            void resetLSIteration( );
 
             void resetGradientIteration( ){ _gradientIteration = 0; }
 
@@ -972,7 +966,7 @@ namespace tardigradeHydra{
 
             bool checkIteration( ){ return _iteration < _maxIterations; }
 
-            bool checkLSIteration( ){ return _LSIteration < _maxLSIterations; }
+            bool checkLSIteration( );
 
             bool checkGradientIteration( ){ return _gradientIteration < _maxGradientIterations; }
 
