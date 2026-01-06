@@ -38,7 +38,7 @@ namespace tardigradeHydra{
                                                            _numConfigurations( numConfigurations ),
                                                            _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
                                                            _tolr( tolr ), _tola( tola ),
-                                                           _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ){
+                                                           _maxIterations( maxIterations ){
         /*!
          * The main constructor for the hydra base class. Inputs are all the required values for most solves.
          * 
@@ -79,6 +79,7 @@ namespace tardigradeHydra{
         _solver.hydra = this;
         solver->step->setSolver( solver );
         solver->step->setLSAlpha( lsAlpha );
+        solver->step->setMaxLSIterations( maxLSIterations );
         solver->preconditioner->setSolver( solver );
         solver->preconditioner->_use_preconditioner = use_preconditioner;
         solver->preconditioner->_preconditioner_type = preconditioner_type;
@@ -1551,7 +1552,7 @@ namespace tardigradeHydra{
      * Check the current line search iteration
      */
     bool hydraBase::checkLSIteration( ){
-        return solver->step->getLSIteration( ) < _maxLSIterations;
+        return solver->step->getLSIteration( ) < solver->step->getMaxLSIterations( );
     }
 
     void SolverStepBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){

@@ -709,6 +709,16 @@ namespace tardigradeHydra{
 
     };
 
+    /*!
+     * Set the maximum number of line-search iterations
+     *
+     * \param &value: The incoming value
+     */
+    void SolverStepBase::setMaxLSIterations( const unsigned int &value ){
+
+        _maxLSIterations = value;
+
+    }
 // END LINESEARCH FUNCTIONS
 
 }

@@ -4154,6 +4154,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     tardigradeHydra::SolverBase solver;
     SolverStepBaseMock step;
+    step.setMaxLSIterations( 5 );
+    step.setLSAlpha( 1e-4 );
     tardigradeHydra::PreconditionerBase preconditioner;
 
     hydra.setSolver( &solver );
@@ -4192,6 +4194,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     tardigradeHydra::SolverBase solver_pre;
     SolverStepBaseMock step_pre;
+    step_pre.setMaxLSIterations( 5 );
+    step_pre.setLSAlpha( 1e-4 );
     tardigradeHydra::PreconditionerBase preconditioner_pre;
 
     hydra_pre.setSolver( &solver_pre );

@@ -878,8 +878,6 @@ namespace tardigradeHydra{
 
             unsigned int _maxIterations; //!< The maximum number of allowable iterations
 
-            unsigned int _maxLSIterations; //!< The maximum number of line-search iterations
-
             unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
 
             unsigned int _NUM_NEWTON = 0; //!< The number of Newton steps performed
