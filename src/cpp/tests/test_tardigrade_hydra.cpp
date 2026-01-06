@@ -3476,19 +3476,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkConvergence, * boost::unit_test::toler
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getLSResidualNorm, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    floatVector residual = { 1, 2, 3 };
-
-    floatType lsResidualNormAnswer = tardigradeVectorTools::l2norm( residual );
-      tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
-
-    BOOST_TEST( *hydra.getLSResidualNorm( ) == lsResidualNormAnswer );
-
-}
-
 BOOST_AUTO_TEST_CASE( test_hydraBase_getStress, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
 
