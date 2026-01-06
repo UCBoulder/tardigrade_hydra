@@ -54,9 +54,11 @@ namespace tardigradeHydra{
             virtual void addNLStepData( dataBase *data ) override;
             // END CACHED DATA STORAGE OPERATIONS
 
+            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
             virtual const floatVector* getNonlinearRHS( );
 
             virtual const floatVector* getFlatNonlinearLHS( );
+            // END NONLINEAR FUNCTIONS
 
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
