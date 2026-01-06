@@ -201,6 +201,15 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Get the scale factor for the tolerance
+     */
+    const floatType SolverBase::getToleranceScaleFactor( ){
+
+        return hydra->getToleranceScaleFactor( );
+
+    }
+
+    /*!
      * Get a pointer to the nonlinear LHS vector
      */
     const floatVector *SolverBase::getFlatNonlinearLHS( ){

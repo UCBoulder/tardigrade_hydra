@@ -679,7 +679,7 @@ namespace tardigradeHydra{
      */
     bool SolverStepBase::checkLSConvergence( ){
 
-        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->hydra->getToleranceScaleFactor( ) * ( 1 - solver->hydra->getLSAlpha( ) ) * ( *( solver->hydra->getLSResidualNorm( ) ) ) ){
+        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - solver->hydra->getLSAlpha( ) ) * ( *( solver->hydra->getLSResidualNorm( ) ) ) ){
 
             return true;
 

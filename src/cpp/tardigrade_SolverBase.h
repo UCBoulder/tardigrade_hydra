@@ -87,6 +87,8 @@ namespace tardigradeHydra{
 
             void addToFailureOutput( const floatType &value, bool add_endline = true );
 
+            const floatType getToleranceScaleFactor( );
+
             const floatVector *getFlatNonlinearLHS( ); //TODO: Want to generalize this
 
             /*!
