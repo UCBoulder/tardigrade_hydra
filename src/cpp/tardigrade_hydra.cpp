@@ -1550,11 +1550,11 @@ namespace tardigradeHydra{
 
         while ( !solver->step->checkLSConvergence( ) && checkLSIteration( ) ){
 
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "    lambda, |R|: " );
-                addToFailureOutput( getLambda( ), false );
-                addToFailureOutput( ", " );
-                addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
+            if ( solver->getFailureVerbosityLevel( ) > 0 ){
+                solver->addToFailureOutput( "    lambda, |R|: " );
+                solver->addToFailureOutput( getLambda( ), false );
+                solver->addToFailureOutput( ", " );
+                solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
             }
 
             updateLambda( );
@@ -1565,11 +1565,11 @@ namespace tardigradeHydra{
 
         }
 
-        if ( getFailureVerbosityLevel( ) > 0 ){
-            addToFailureOutput( "    lambda, |R|: " );
-            addToFailureOutput( getLambda( ), false );
-            addToFailureOutput( ", " );
-            addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
+        if ( solver->getFailureVerbosityLevel( ) > 0 ){
+            solver->addToFailureOutput( "    lambda, |R|: " );
+            solver->addToFailureOutput( getLambda( ), false );
+            solver->addToFailureOutput( ", " );
+            solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
         }
 
         if ( !solver->step->checkLSConvergence( ) ){
