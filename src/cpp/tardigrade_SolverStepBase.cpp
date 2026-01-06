@@ -61,7 +61,7 @@ namespace tardigradeHydra{
 
         const floatVector *residual = solver->getResidual( );
 
-        const floatVector *jacobian = solver->hydra->getFlatJacobian( );
+        const floatVector *jacobian = solver->getFlatJacobian( );
 
         for ( unsigned int i = 0; i < xsize; i++ ){
             for ( unsigned int j = 0; j < xsize; j++ ){
@@ -191,7 +191,7 @@ namespace tardigradeHydra{
          * \param &active_constraints: The current constraints that are active
          */
 
-        active_constraints = std::vector< bool >( solver->hydra->getNumConstraints( ), false );
+        active_constraints = std::vector< bool >( solver->getNumConstraints( ), false );
 
         for ( auto c = solver->hydra->getConstraints( )->begin( ); c != solver->hydra->getConstraints( )->end( ); c++ ){
 
@@ -214,7 +214,7 @@ namespace tardigradeHydra{
 
         const unsigned int numUnknowns = solver->getNumUnknowns( );
 
-        const unsigned int numConstraints = solver->hydra->getNumConstraints( );
+        const unsigned int numConstraints = solver->getNumConstraints( );
 
         KKTRHSVector = floatVector( numUnknowns + numConstraints, 0 );
 
@@ -224,7 +224,7 @@ namespace tardigradeHydra{
 
         Eigen::Map< const Eigen::Vector< floatType, -1 > > R( solver->getResidual( )->data( ), numUnknowns );
 
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( solver->hydra->getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( solver->getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 
         RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + solver->step->getMuk( ) * _dx ).eval( );
 
@@ -256,13 +256,13 @@ namespace tardigradeHydra{
 
         const unsigned int numUnknowns = solver->getNumUnknowns( );
 
-        const unsigned int numConstraints = solver->hydra->getNumConstraints( );
+        const unsigned int numConstraints = solver->getNumConstraints( );
 
         KKTMatrix = floatVector( ( numUnknowns + numConstraints ) * ( numUnknowns + numConstraints ), 0 );
 
         Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > K( KKTMatrix.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
 
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( solver->hydra->getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( solver->getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 
         K.block( 0, 0, numUnknowns, numUnknowns ) = ( J.transpose( ) * J ).eval( );
 
@@ -304,7 +304,7 @@ namespace tardigradeHydra{
 
         const unsigned int numUnknowns = solver->getNumUnknowns( );
 
-        const unsigned int numConstraints = solver->hydra->getNumConstraints( );
+        const unsigned int numConstraints = solver->getNumConstraints( );
 
         Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > K( KKTMatrix.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
 
@@ -346,7 +346,7 @@ namespace tardigradeHydra{
 
         const unsigned int numUnknowns = solver->getNumUnknowns( );
 
-        const unsigned int numConstraints = solver->hydra->getNumConstraints( );
+        const unsigned int numConstraints = solver->getNumConstraints( );
 
         floatVector K;
 

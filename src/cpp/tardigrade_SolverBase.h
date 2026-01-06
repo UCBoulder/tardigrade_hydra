@@ -61,6 +61,10 @@ namespace tardigradeHydra{
 
             const floatVector *getResidual( ); //TODO: Want to generalize this
 
+            const floatVector *getFlatJacobian( ); //TODO: Want to generalize this
+
+            const unsigned int getNumConstraints( ); //TODO: Want to allow this to be constexpr
+
         protected:
 
         private:

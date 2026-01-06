@@ -70,4 +70,22 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Get the flat Jacobian from hydra
+     */
+    const floatVector *SolverBase::getFlatJacobian( ){
+
+        return hydra->getFlatJacobian( );
+
+    }
+
+    /*!
+     * Get the number of constraints
+     */
+    const unsigned int SolverBase::getNumConstraints( ){
+
+        return hydra->getNumConstraints( );
+
+    }
+
 }
