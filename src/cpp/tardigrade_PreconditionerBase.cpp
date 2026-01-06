@@ -8,7 +8,7 @@
   */
 
 #include"tardigrade_PreconditionerBase.h"
-#include"tardigrade_hydra.h"
+#include"tardigrade_SolverBase.h"
 
 namespace tardigradeHydra{
 
@@ -83,8 +83,8 @@ namespace tardigradeHydra{
         // Find the absolute maximum value in each row
         for ( unsigned int i = 0; i < problem_size; i++ ){
 
-            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( solver->hydra->getFlatNonlinearLHS( )->begin( ) + problem_size * i,
-                                                                                      solver->hydra->getFlatNonlinearLHS( )->begin( ) + problem_size * ( i + 1 ),
+            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( solver->getFlatNonlinearLHS( )->begin( ) + problem_size * i,
+                                                                                      solver->getFlatNonlinearLHS( )->begin( ) + problem_size * ( i + 1 ),
                                                                                       [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
 
         }

@@ -1134,22 +1134,22 @@ namespace tardigradeHydra{
 
     }
 
-    const floatVector* hydraBase::getFlatNonlinearLHS( ){
+    const floatVector* SolverStepBase::getFlatNonlinearLHS( ){
         /*!
          * Get the flat LHS matrix for the non-linear problem
          */
 
-        if ( _use_LM_step ){
+        if ( solver->hydra->getUseLevenbergMarquardt( ) ){
 
             if ( !_flatNonlinearLHS.first ){
 
-                const unsigned int xsize = getNumUnknowns( );
+                const unsigned int xsize = solver->getNumUnknowns( );
 
                 _flatNonlinearLHS.first = true;
 
                 _flatNonlinearLHS.second = floatVector( xsize * xsize, 0 );
 
-                const floatVector * jacobian = getFlatJacobian( );
+                const floatVector * jacobian = solver->getFlatJacobian( );
 
                 auto Jmap = tardigradeHydra::getDynamicSizeMatrixMap( jacobian->data( ), xsize, xsize );
 
@@ -1158,7 +1158,7 @@ namespace tardigradeHydra{
                 LHSmap = ( Jmap.transpose( ) * Jmap ).eval( );
 
                 for ( unsigned int i = 0; i < xsize; i++ ){
-                    _flatNonlinearLHS.second[ xsize * i + i ] += solver->step->getMuk( );
+                    _flatNonlinearLHS.second[ xsize * i + i ] += getMuk( );
                 }
 
                 addIterationData( &_flatNonlinearLHS );
@@ -1169,7 +1169,7 @@ namespace tardigradeHydra{
 
         }
 
-        return getFlatJacobian( );
+        return solver->getFlatJacobian( );
 
     }
 
@@ -1644,7 +1644,7 @@ namespace tardigradeHydra{
 
         auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), getNumUnknowns( ) );
 
-        auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
+        auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->step->getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
 
         auto R_map = tardigradeHydra::getDynamicSizeVectorMap( solver->step->getNonlinearRHS( )->data( ), getNumUnknowns( ) );
 

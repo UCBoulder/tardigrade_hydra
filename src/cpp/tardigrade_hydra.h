@@ -334,8 +334,6 @@ namespace tardigradeHydra{
 
             const floatVector* getFlatJacobian( );
 
-            virtual const floatVector* getFlatNonlinearLHS( );
-
             floatMatrix getJacobian( );
 
             const floatVector* getFlatdRdF( );
@@ -952,8 +950,6 @@ namespace tardigradeHydra{
             DataStorage< floatVector > _residual; //!< The residual vector for the global solve
 
             DataStorage< floatVector > _jacobian; //!< The jacobian matrix in row-major form for the global solve
-
-            DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
             DataStorage< floatVector > _previouslyConvergedStress; //!< The previously converged stress
 

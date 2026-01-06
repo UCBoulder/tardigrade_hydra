@@ -200,4 +200,13 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Get a pointer to the nonlinear LHS vector
+     */
+    const floatVector *SolverBase::getFlatNonlinearLHS( ){
+
+        return step->getFlatNonlinearLHS( );
+
+    }
+
 }

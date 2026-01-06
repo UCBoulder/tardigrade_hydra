@@ -56,7 +56,7 @@ namespace tardigradeHydra{
 
             virtual const floatVector* getNonlinearRHS( );
 
-//            virtual const floatVector* getFlatNonlinearLHS( );
+            virtual const floatVector* getFlatNonlinearLHS( );
 
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
@@ -160,6 +160,8 @@ namespace tardigradeHydra{
             // NONLINEAR DATA STORAGE
 
             DataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
+
+            DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
             // END NONLINEAR DATA STORAGE
 

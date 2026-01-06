@@ -161,7 +161,7 @@ namespace tardigradeHydra{
 
             auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), solver->getNumUnknowns( ) );
 
-            auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->hydra->getFlatNonlinearLHS( )->data( ), solver->getNumUnknowns( ), solver->getNumUnknowns( ) );
+            auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), solver->getNumUnknowns( ), solver->getNumUnknowns( ) );
 
             auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), solver->getNumUnknowns( ) );
 

@@ -5183,13 +5183,13 @@ BOOST_AUTO_TEST_CASE( test_getNonlinearLMTerms, * boost::unit_test::tolerance( 1
 
     BOOST_TEST( hydra.residual == *hydra.getSolver( )->step->getNonlinearRHS( ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( hydra.jacobian == *hydra.getFlatNonlinearLHS( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( hydra.jacobian == *hydra.getSolver( )->step->getFlatNonlinearLHS( ), CHECK_PER_ELEMENT );
 
     hydra.setUseLevenbergMarquardt( true );
 
     BOOST_TEST( answerRHS == *hydra.getSolver( )->step->getNonlinearRHS( ), CHECK_PER_ELEMENT );
 
-    BOOST_TEST( answerLHS == *hydra.getFlatNonlinearLHS( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( answerLHS == *hydra.getSolver( )->step->getFlatNonlinearLHS( ), CHECK_PER_ELEMENT );
 
 }
 
