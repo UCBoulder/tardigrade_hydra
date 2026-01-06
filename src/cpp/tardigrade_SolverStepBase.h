@@ -116,6 +116,8 @@ namespace tardigradeHydra{
 
             void resetLSIteration( );
 
+            bool checkLSIteration( );
+
             // END LINESEARCH FUNCTIONS
 
         protected:

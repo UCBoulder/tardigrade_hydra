@@ -964,8 +964,6 @@ namespace tardigradeHydra{
 
             bool checkIteration( ){ return _iteration < _maxIterations; }
 
-            bool checkLSIteration( );
-
             bool checkGradientIteration( ){ return _gradientIteration < _maxGradientIterations; }
 
             void resetIterationData( );

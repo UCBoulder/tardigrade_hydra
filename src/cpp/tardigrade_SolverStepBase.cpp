@@ -710,6 +710,13 @@ namespace tardigradeHydra{
     };
 
     /*!
+     * Check the current line search iteration
+     */
+    bool SolverStepBase::checkLSIteration( ){
+        return getLSIteration( ) < getMaxLSIterations( );
+    }
+
+    /*!
      * Set the maximum number of line-search iterations
      *
      * \param &value: The incoming value

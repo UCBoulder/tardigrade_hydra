@@ -1548,13 +1548,6 @@ namespace tardigradeHydra{
                                          _lsResidualNorm.second = tardigradeVectorTools::l2norm( *getResidual( ) );
                                          _lsResidualNorm.first = true; }
 
-    /*!
-     * Check the current line search iteration
-     */
-    bool hydraBase::checkLSIteration( ){
-        return solver->step->getLSIteration( ) < solver->step->getMaxLSIterations( );
-    }
-
     void SolverStepBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
         /*!
          * Perform an Armijo-type line search
@@ -1563,7 +1556,7 @@ namespace tardigradeHydra{
          * \param &deltaX: The proposed change in X
          */
 
-        while ( !checkLSConvergence( ) && solver->hydra->checkLSIteration( ) ){
+        while ( !checkLSConvergence( ) && checkLSIteration( ) ){
 
             if ( solver->getFailureVerbosityLevel( ) > 0 ){
                 solver->addToFailureOutput( "    lambda, |R|: " );
@@ -1587,7 +1580,7 @@ namespace tardigradeHydra{
             solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
         }
 
-        if ( !solver->step->checkLSConvergence( ) ){
+        if ( !checkLSConvergence( ) ){
 
             solver->hydra->resetToleranceScaleFactor( );
 
