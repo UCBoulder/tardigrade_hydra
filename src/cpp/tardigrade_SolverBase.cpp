@@ -71,6 +71,17 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Update the unknown vector
+     *
+     * \param &value: The new value of the unknown vector
+     */
+    void SolverBase::updateUnknownVector( const floatVector &value ){
+
+        hydra->updateUnknownVector( value );
+
+    }
+
+    /*!
      * Get the residual from hydra
      */
     const floatVector *SolverBase::getResidual( ){

@@ -2109,7 +2109,7 @@ namespace tardigradeHydra{
             solver->addToFailureOutput( deltaX );
         }
 
-        solver->hydra->updateUnknownVector( X0 + solver->hydra->getLambda( ) * deltaX );
+        solver->updateUnknownVector( X0 + solver->hydra->getLambda( ) * deltaX );
 
         // Refine the estimate if the new point has a higher residual
         if ( !solver->hydra->checkLSConvergence( ) ){

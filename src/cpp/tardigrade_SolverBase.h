@@ -61,6 +61,8 @@ namespace tardigradeHydra{
 
             const floatVector *getUnknownVector( ); //TODO: Want to generalize this
 
+            void updateUnknownVector( const floatVector &value ); //TODO: Want to generalize this
+
             const floatVector *getResidual( ); //TODO: Want to generalize this
 
             const floatVector *getFlatJacobian( ); //TODO: Want to generalize this
