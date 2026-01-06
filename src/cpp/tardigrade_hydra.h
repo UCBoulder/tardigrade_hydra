@@ -362,8 +362,6 @@ namespace tardigradeHydra{
 
             unsigned int getNumNewton( ){ /*! Get the number of newton steps performed */  return _NUM_NEWTON; }
 
-            unsigned int getNumLS( ){ /*! Get the number of line search steps performed */ return _NUM_LS; }
-
             unsigned int getNumGrad( ){ /*! Get the number of gradient descent steps performed */  return _NUM_GRAD; }
 
             const void setMaxRelaxedIterations( const unsigned int &value ){
@@ -680,17 +678,13 @@ namespace tardigradeHydra{
 
             void resetNumNewton( ){ /*! Reset the number of newton steps */ _NUM_NEWTON = 0; }
 
-            void resetNumLS( ){ /*! Reset the number of line search steps */ _NUM_LS = 0; }
-
             void resetNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD = 0; }
 
             void incrementNumNewton( ){ /*! Reset the number of newton steps */ _NUM_NEWTON++; }
 
-            void incrementNumLS( ){ /*! Reset the number of line search steps */ _NUM_LS++; }
+            void incrementNumGrad( ){ /*! Set the number of gradient descent steps */ _NUM_GRAD++; }
 
-            void incrementNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD++; }
-
-            void resetIterations( ){ /*! Reset the number of iterations */ _iteration = 0; }
+            void resetIterations( ){ /*! Set the number of iterations */ _iteration = 0; }
 
             virtual void callResidualSuccessfulNLStep( );
 
@@ -878,8 +872,6 @@ namespace tardigradeHydra{
             unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
 
             unsigned int _NUM_NEWTON = 0; //!< The number of Newton steps performed
-
-            unsigned int _NUM_LS = 0; //!< The number of line search steps performed
 
             unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
 

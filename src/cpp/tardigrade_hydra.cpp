@@ -1582,15 +1582,15 @@ namespace tardigradeHydra{
 
         if ( !checkLSConvergence( ) ){
 
-            solver->hydra->resetToleranceScaleFactor( );
+            solver->resetToleranceScaleFactor( );
 
             throw convergence_error( "Failure in line search:\n  scale factor: " + std::to_string( solver->hydra->getScaleFactor( ) ) + "\n" );
 
         }
 
-        solver->hydra->resetToleranceScaleFactor( );
+        solver->resetToleranceScaleFactor( );
 
-        solver->hydra->incrementNumLS( );
+        incrementNumLS( );
 
         solver->hydra->resetLSIteration( );
 
@@ -2379,7 +2379,7 @@ namespace tardigradeHydra{
         // Reset the counters for the number of steps being performed
         resetNumNewton( );
 
-        resetNumLS( );
+        solver->step->resetNumLS( );
 
         resetNumGrad( );
 

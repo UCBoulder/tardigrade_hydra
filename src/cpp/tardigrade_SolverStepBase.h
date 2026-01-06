@@ -121,6 +121,8 @@ namespace tardigradeHydra{
             //! Get the linesearch lambda parameter
             const floatType getLambda( ){ return _lambda; }
 
+            unsigned int getNumLS( ){ /*! Get the number of line search steps performed */ return _NUM_LS; }
+
             // END LINESEARCH FUNCTIONS
 
         protected:
@@ -196,6 +198,10 @@ namespace tardigradeHydra{
             //! Update the line-search lambda parameter
             virtual void updateLambda( ){ _lambda *= 0.5; }
 
+            void resetNumLS( ){ /*! Reset the number of line search steps */ _NUM_LS = 0; }
+
+            void incrementNumLS( ){ /*! Set the number of line search steps */ _NUM_LS++; }
+
             // END LINESEARCH PARAMETERS
 
         private:
@@ -247,6 +253,8 @@ namespace tardigradeHydra{
             void incrementLSIteration( ){ _LSIteration++; }
 
             floatType _lambda = 1;
+
+            unsigned int _NUM_LS = 0; //!< The number of line search steps performed
 
             // END LS FUNCTIONS
 

@@ -210,6 +210,15 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Reset the tolerance scale factor
+     */
+    void SolverBase::resetToleranceScaleFactor( ){
+
+        hydra->resetToleranceScaleFactor( );
+
+    }
+
+    /*!
      * Get a pointer to the nonlinear LHS vector
      */
     const floatVector *SolverBase::getFlatNonlinearLHS( ){

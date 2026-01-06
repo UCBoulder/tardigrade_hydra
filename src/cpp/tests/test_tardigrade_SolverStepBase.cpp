@@ -1462,6 +1462,8 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkLSConvergence, * boost::unit_test
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     tardigradeHydra::SolverStepBase step;
+    step.setLSAlpha( 1e-4 );
+    step.setMaxLSIterations( 5 );
 
     hydra.getSolver( )->step = &step;
     step.setSolver( hydra.getSolver( ) );

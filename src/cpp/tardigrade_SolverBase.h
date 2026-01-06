@@ -89,6 +89,8 @@ namespace tardigradeHydra{
 
             const floatType getToleranceScaleFactor( );
 
+            void resetToleranceScaleFactor( );
+
             const floatVector *getFlatNonlinearLHS( ); //TODO: Want to generalize this
 
             /*!

@@ -4179,7 +4179,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     BOOST_TEST( hydra.num_successful_nlstep_calls == 4 );
 
-    BOOST_TEST( hydra.getNumLS( ) == 1 );
+    BOOST_TEST( step.getNumLS( ) == 1 );
 
     BOOST_TEST( hydra.getNumGrad( ) == 1 );
 
@@ -4219,7 +4219,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     BOOST_TEST( hydra_pre.num_successful_nlstep_calls == 4 );
 
-    BOOST_TEST( hydra_pre.getNumLS( ) == 1 );
+    BOOST_TEST( step_pre.getNumLS( ) == 1 );
 
     BOOST_TEST( hydra_pre.getNumGrad( ) == 1 );
 
