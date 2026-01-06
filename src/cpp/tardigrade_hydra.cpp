@@ -1619,13 +1619,13 @@ namespace tardigradeHydra{
          * \param &dx: The proposed change in x
          */
 
-        const unsigned int xsize = getNumUnknowns( );
+        const unsigned int xsize = solver->getNumUnknowns( );
 
         const floatType RHS = -getGradientRho( ) * std::pow( tardigradeVectorTools::l2norm( dx ), getGradientP( ) );
 
         floatType LHS = 0;
 
-        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
+        const floatVector *dResidualNormdX = solver->step->get_basedResidualNormdX( );
 
         for ( unsigned int i = 0; i < xsize; i++ ){
 
