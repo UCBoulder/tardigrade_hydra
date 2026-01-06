@@ -105,6 +105,8 @@ namespace tardigradeHydra{
             //! Get the line-search alpha parameter
             constexpr floatType getLSAlpha( ){ return _lsAlpha; }
 
+            virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
+
             // END LINESEARCH FUNCTIONS
 
         protected:

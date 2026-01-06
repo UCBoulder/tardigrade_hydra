@@ -1540,7 +1540,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
+    void SolverStepBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
         /*!
          * Perform an Armijo-type line search
          *
@@ -1548,43 +1548,43 @@ namespace tardigradeHydra{
          * \param &deltaX: The proposed change in X
          */
 
-        while ( !solver->step->checkLSConvergence( ) && checkLSIteration( ) ){
+        while ( !checkLSConvergence( ) && solver->hydra->checkLSIteration( ) ){
 
             if ( solver->getFailureVerbosityLevel( ) > 0 ){
                 solver->addToFailureOutput( "    lambda, |R|: " );
-                solver->addToFailureOutput( getLambda( ), false );
+                solver->addToFailureOutput( solver->hydra->getLambda( ), false );
                 solver->addToFailureOutput( ", " );
                 solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
             }
 
-            updateLambda( );
+            solver->hydra->updateLambda( );
 
-            incrementLSIteration( );
+            solver->hydra->incrementLSIteration( );
 
-            updateUnknownVector( X0 + getLambda( ) * deltaX );
+            solver->updateUnknownVector( X0 + solver->hydra->getLambda( ) * deltaX );
 
         }
 
         if ( solver->getFailureVerbosityLevel( ) > 0 ){
             solver->addToFailureOutput( "    lambda, |R|: " );
-            solver->addToFailureOutput( getLambda( ), false );
+            solver->addToFailureOutput( solver->hydra->getLambda( ), false );
             solver->addToFailureOutput( ", " );
             solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
         }
 
         if ( !solver->step->checkLSConvergence( ) ){
 
-            resetToleranceScaleFactor( );
+            solver->hydra->resetToleranceScaleFactor( );
 
-            throw convergence_error( "Failure in line search:\n  scale factor: " + std::to_string( getScaleFactor( ) ) + "\n" );
+            throw convergence_error( "Failure in line search:\n  scale factor: " + std::to_string( solver->hydra->getScaleFactor( ) ) + "\n" );
 
         }
 
-        resetToleranceScaleFactor( );
+        solver->hydra->resetToleranceScaleFactor( );
 
-        incrementNumLS( );
+        solver->hydra->incrementNumLS( );
 
-        resetLSIteration( );
+        solver->hydra->resetLSIteration( );
 
     }
 
@@ -1980,7 +1980,7 @@ namespace tardigradeHydra{
             if ( solver->hydra->checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
 
                 // Perform an Armijo type line search when the search direction is aligned with the gradient
-                solver->hydra->performArmijoTypeLineSearch( X0, deltaX );
+                performArmijoTypeLineSearch( X0, deltaX );
 
             }
             else{

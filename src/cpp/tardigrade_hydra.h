@@ -668,8 +668,6 @@ namespace tardigradeHydra{
 
             virtual void calculateFirstConfigurationJacobians( const floatVector &configurations, fourthOrderTensor &dC1dC, floatVector &dC1dCn );
 
-            virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
-
             virtual void performGradientStep( const floatVector &X0 );
 
             //! Update the scaled quantities
