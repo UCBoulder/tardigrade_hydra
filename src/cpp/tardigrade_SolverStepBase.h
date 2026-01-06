@@ -54,6 +54,10 @@ namespace tardigradeHydra{
             virtual void addNLStepData( dataBase *data ) override;
             // END CACHED DATA STORAGE OPERATIONS
 
+            virtual const floatVector* getNonlinearRHS( );
+
+//            virtual const floatVector* getFlatNonlinearLHS( );
+
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
             const floatType *get_baseResidualNorm( );
@@ -152,6 +156,12 @@ namespace tardigradeHydra{
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, residualNorm,       floatType,          setResidualNorm )
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
+
+            // NONLINEAR DATA STORAGE
+
+            DataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
+
+            // END NONLINEAR DATA STORAGE
 
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 

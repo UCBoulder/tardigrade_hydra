@@ -1095,24 +1095,24 @@ namespace tardigradeHydra{
 
     }
 
-    const floatVector* hydraBase::getNonlinearRHS( ){
+    const floatVector* SolverStepBase::getNonlinearRHS( ){
         /*!
          * Get the RHS vector for the non-linear problem
          */
 
-        if ( _use_LM_step ){
+        if ( solver->hydra->getUseLevenbergMarquardt( ) ){
 
             if ( !_nonlinearRHS.first ){
 
-                const unsigned int xsize = getNumUnknowns( );
+                const unsigned int xsize = solver->getNumUnknowns( );
 
                 _nonlinearRHS.first = true;
 
                 _nonlinearRHS.second = floatVector( xsize, 0 );
 
-                const floatVector *residual = getResidual( );
+                const floatVector *residual = solver->getResidual( );
 
-                const floatVector *jacobian = getFlatJacobian( );
+                const floatVector *jacobian = solver->getFlatJacobian( );
 
                 auto Jmap = tardigradeHydra::getDynamicSizeMatrixMap( jacobian->data( ), xsize, xsize );
 
@@ -1130,7 +1130,7 @@ namespace tardigradeHydra{
 
         }
 
-        return getResidual( );
+        return solver->getResidual( );
 
     }
 
@@ -1646,7 +1646,7 @@ namespace tardigradeHydra{
 
         auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
 
-        auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
+        auto R_map = tardigradeHydra::getDynamicSizeVectorMap( solver->step->getNonlinearRHS( )->data( ), getNumUnknowns( ) );
 
         if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
 

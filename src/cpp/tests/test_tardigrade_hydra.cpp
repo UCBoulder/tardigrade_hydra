@@ -5159,6 +5159,8 @@ BOOST_AUTO_TEST_CASE( test_getNonlinearLMTerms, * boost::unit_test::tolerance( 1
             virtual void decomposeUnknownVector( ) override{ return; }
             virtual const unsigned int getNumUnknowns( ) override{ return 5; }
 
+            tardigradeHydra::SolverBase *getSolver( ){ return solver; }
+
     };
 
     floatVector answerRHS = { -0.04830576,  1.38601851, -2.74506611, -2.78478784,  2.6566859 };
@@ -5179,13 +5181,13 @@ BOOST_AUTO_TEST_CASE( test_getNonlinearLMTerms, * boost::unit_test::tolerance( 1
 
     hydra.setUseLevenbergMarquardt( false );
 
-    BOOST_TEST( hydra.residual == *hydra.getNonlinearRHS( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( hydra.residual == *hydra.getSolver( )->step->getNonlinearRHS( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( hydra.jacobian == *hydra.getFlatNonlinearLHS( ), CHECK_PER_ELEMENT );
 
     hydra.setUseLevenbergMarquardt( true );
 
-    BOOST_TEST( answerRHS == *hydra.getNonlinearRHS( ), CHECK_PER_ELEMENT );
+    BOOST_TEST( answerRHS == *hydra.getSolver( )->step->getNonlinearRHS( ), CHECK_PER_ELEMENT );
 
     BOOST_TEST( answerLHS == *hydra.getFlatNonlinearLHS( ), CHECK_PER_ELEMENT );
 
