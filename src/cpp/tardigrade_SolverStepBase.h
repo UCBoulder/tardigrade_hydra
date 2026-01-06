@@ -96,6 +96,12 @@ namespace tardigradeHydra{
 
             void performPreconditionedSolve( floatVector &deltaX_tr ); // TEMP REMOVE THIS
 
+            // LINESEARCH FUNCTIONS (MOVE TO OWN CLASS)
+
+            virtual bool checkLSConvergence( );
+
+            // END LINESEARCH FUNCTIONS
+
         protected:
 
             SolverBase *solver; //!< Pointer to the containing SolverBase object

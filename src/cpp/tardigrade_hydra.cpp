@@ -1498,12 +1498,12 @@ namespace tardigradeHydra{
 
     }
 
-    bool hydraBase::checkLSConvergence( ){
+    bool SolverStepBase::checkLSConvergence( ){
         /*!
          * Check the line-search convergence
          */
 
-        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < getToleranceScaleFactor( ) * ( 1 - getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
+        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->hydra->getToleranceScaleFactor( ) * ( 1 - solver->hydra->getLSAlpha( ) ) * ( *( solver->hydra->getLSResidualNorm( ) ) ) ){
 
             return true;
 
@@ -1563,7 +1563,7 @@ namespace tardigradeHydra{
          * \param &deltaX: The proposed change in X
          */
 
-        while ( !checkLSConvergence( ) && checkLSIteration( ) ){
+        while ( !solver->step->checkLSConvergence( ) && checkLSIteration( ) ){
 
             if ( getFailureVerbosityLevel( ) > 0 ){
                 addToFailureOutput( "    lambda, |R|: " );
@@ -1587,7 +1587,7 @@ namespace tardigradeHydra{
             addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
         }
 
-        if ( !checkLSConvergence( ) ){
+        if ( !solver->step->checkLSConvergence( ) ){
 
             resetToleranceScaleFactor( );
 
@@ -1990,7 +1990,7 @@ namespace tardigradeHydra{
         solver->updateUnknownVector( X0 + solver->hydra->getLambda( ) * deltaX );
 
         // Refine the estimate if the new point has a higher residual
-        if ( !solver->hydra->checkLSConvergence( ) ){
+        if ( !checkLSConvergence( ) ){
 
             if ( solver->hydra->checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
 
