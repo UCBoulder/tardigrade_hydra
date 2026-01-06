@@ -56,6 +56,8 @@ namespace tardigradeHydra{
             virtual void addNLStepData( dataBase *data ) override;
             // END CACHED DATA STORAGE OPERATIONS
 
+            const unsigned int getNumUnknowns( ); //TODO: Want to allow this to be constexpr
+
         protected:
 
         private:

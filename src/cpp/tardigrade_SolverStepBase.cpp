@@ -53,7 +53,7 @@ namespace tardigradeHydra{
          * Set the derivative of the residual norm w.r.t. the unknown vector
          */
 
-        const unsigned int xsize = solver->hydra->getNumUnknowns( );
+        const unsigned int xsize = solver->getNumUnknowns( );
 
         auto dResidualNormdX = get_SetDataStorage_dResidualNormdX( );
 
@@ -159,11 +159,11 @@ namespace tardigradeHydra{
         }
         else{
 
-            auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), solver->hydra->getNumUnknowns( ) );
+            auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), solver->getNumUnknowns( ) );
 
-            auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->hydra->getFlatNonlinearLHS( )->data( ), solver->hydra->getNumUnknowns( ), solver->hydra->getNumUnknowns( ) );
+            auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->hydra->getFlatNonlinearLHS( )->data( ), solver->getNumUnknowns( ), solver->getNumUnknowns( ) );
 
-            auto R_map = tardigradeHydra::getDynamicSizeVectorMap( solver->hydra->getNonlinearRHS( )->data( ), solver->hydra->getNumUnknowns( ) );
+            auto R_map = tardigradeHydra::getDynamicSizeVectorMap( solver->hydra->getNonlinearRHS( )->data( ), solver->getNumUnknowns( ) );
 
             tardigradeVectorTools::solverType< floatType > linearSolver( J_map );
             dx_map = -linearSolver.solve( R_map );
@@ -212,7 +212,7 @@ namespace tardigradeHydra{
          * \param &active_constraints: The active constraint vector
          */
 
-        const unsigned int numUnknowns = solver->hydra->getNumUnknowns( );
+        const unsigned int numUnknowns = solver->getNumUnknowns( );
 
         const unsigned int numConstraints = solver->hydra->getNumConstraints( );
 
@@ -254,7 +254,7 @@ namespace tardigradeHydra{
          * \param &active_constraints: The vector of currently active constraints.
          */
 
-        const unsigned int numUnknowns = solver->hydra->getNumUnknowns( );
+        const unsigned int numUnknowns = solver->getNumUnknowns( );
 
         const unsigned int numConstraints = solver->hydra->getNumConstraints( );
 
@@ -302,7 +302,7 @@ namespace tardigradeHydra{
          * \param &active_constraints: The vector of currently active constraints.
          */
 
-        const unsigned int numUnknowns = solver->hydra->getNumUnknowns( );
+        const unsigned int numUnknowns = solver->getNumUnknowns( );
 
         const unsigned int numConstraints = solver->hydra->getNumConstraints( );
 
@@ -344,7 +344,7 @@ namespace tardigradeHydra{
          * \param kmax: The maximum number of iterations (defaults to 100)
          */
 
-        const unsigned int numUnknowns = solver->hydra->getNumUnknowns( );
+        const unsigned int numUnknowns = solver->getNumUnknowns( );
 
         const unsigned int numConstraints = solver->hydra->getNumConstraints( );
 

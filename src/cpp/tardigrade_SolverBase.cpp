@@ -52,4 +52,12 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Get the number of unknowns from hydra
+     */
+    const unsigned int SolverBase::getNumUnknowns( ){
+
+        return hydra->getNumUnknowns( );
+
+    }
 }
