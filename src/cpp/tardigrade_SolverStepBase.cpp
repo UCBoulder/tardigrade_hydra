@@ -11,6 +11,7 @@
 #include"tardigrade_vector_tools.h"
 #include"tardigrade_CustomErrors.h"
 #include"tardigrade_SolverBase.h"
+#include"tardigrade_hydra.h"
 
 namespace tardigradeHydra{
 
@@ -670,5 +671,24 @@ namespace tardigradeHydra{
     }
 
 // END SQP SOLVER FUNCTIONS
+
+// LINESEARCH FUNCTIONS (MOVE TO OWN CLASS)
+
+    /*!
+     * Check the line-search convergence
+     */
+    bool SolverStepBase::checkLSConvergence( ){
+
+        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->hydra->getToleranceScaleFactor( ) * ( 1 - solver->hydra->getLSAlpha( ) ) * ( *( solver->hydra->getLSResidualNorm( ) ) ) ){
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
+// END LINESEARCH FUNCTIONS
 
 }

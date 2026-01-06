@@ -1498,21 +1498,6 @@ namespace tardigradeHydra{
 
     }
 
-    bool SolverStepBase::checkLSConvergence( ){
-        /*!
-         * Check the line-search convergence
-         */
-
-        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->hydra->getToleranceScaleFactor( ) * ( 1 - solver->hydra->getLSAlpha( ) ) * ( *( solver->hydra->getLSResidualNorm( ) ) ) ){
-
-            return true;
-
-        }
-
-        return false;
-
-    }
-
     void hydraBase::updateUnknownVector( const floatVector &newUnknownVector ){
         /*!
          * Update the unknown vector
