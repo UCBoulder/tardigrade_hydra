@@ -2076,18 +2076,18 @@ namespace tardigradeHydra{
          * Increment the solution of the problem
          */
 
-        if ( solver->hydra->getFailureVerbosityLevel( ) > 0 ){
-            solver->hydra->addToFailureOutput( "\n\n  iteration: " );
-            solver->hydra->addToFailureOutput( solver->getIteration( ) );
+        if ( solver->getFailureVerbosityLevel( ) > 0 ){
+            solver->addToFailureOutput( "\n\n  iteration: " );
+            solver->addToFailureOutput( solver->getIteration( ) );
         }
 
-        X0 = *solver->hydra->getUnknownVector( );
-        deltaX = floatVector( solver->hydra->getNumUnknowns( ), 0 );
+        X0 = *solver->getUnknownVector( );
+        deltaX = floatVector( solver->getNumUnknowns( ), 0 );
 
-        if ( solver->hydra->getFailureVerbosityLevel( ) > 0 ){
-            solver->hydra->addToFailureOutput( "  X0:\n" );
-            solver->hydra->addToFailureOutput( "  " );
-            solver->hydra->addToFailureOutput( *solver->hydra->getUnknownVector( ) );
+        if ( solver->getFailureVerbosityLevel( ) > 0 ){
+            solver->addToFailureOutput( "  X0:\n" );
+            solver->addToFailureOutput( "  " );
+            solver->addToFailureOutput( *solver->getUnknownVector( ) );
         }
 
         setBaseQuantities( );
@@ -2103,10 +2103,10 @@ namespace tardigradeHydra{
 
         }
 
-        if ( solver->hydra->getFailureVerbosityLevel( ) > 0 ){
-            solver->hydra->addToFailureOutput( "  deltaX:\n" );
-            solver->hydra->addToFailureOutput( "  " );
-            solver->hydra->addToFailureOutput( deltaX );
+        if ( solver->getFailureVerbosityLevel( ) > 0 ){
+            solver->addToFailureOutput( "  deltaX:\n" );
+            solver->addToFailureOutput( "  " );
+            solver->addToFailureOutput( deltaX );
         }
 
         solver->hydra->updateUnknownVector( X0 + solver->hydra->getLambda( ) * deltaX );

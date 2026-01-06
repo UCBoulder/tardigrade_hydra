@@ -59,11 +59,43 @@ namespace tardigradeHydra{
             // Pass-through functions
             const unsigned int getNumUnknowns( ); //TODO: Want to allow this to be constexpr
 
+            const floatVector *getUnknownVector( ); //TODO: Want to generalize this
+
             const floatVector *getResidual( ); //TODO: Want to generalize this
 
             const floatVector *getFlatJacobian( ); //TODO: Want to generalize this
 
             const unsigned int getNumConstraints( ); //TODO: Want to allow this to be constexpr
+
+            const unsigned int getFailureVerbosityLevel( );
+
+            void addToFailureOutput( const std::string &string );
+
+            void addToFailureOutput( const floatVector &value, bool add_endline = true );
+
+            void addToFailureOutput( const std::vector<bool> &value, bool add_endline = true );
+
+            void addToFailureOutput( const floatType &value, bool add_endline = true );
+
+            /*!
+             * Add a general iterable object to the output string
+             * 
+             * \param &v_begin: The starting iterator
+             * \param &v_end: The stopping iterator
+             * \param add_endline: Whether to add an endline to the string or not
+             */
+            template< class v_iterator >
+            void addToFailureOutput( const v_iterator &v_begin, const v_iterator &v_end, bool add_endline = true ){
+
+                std::stringstream failure_output;
+
+                for ( auto v = v_begin; v != v_end; ++v ){ failure_output << *v << ", "; }
+
+                if ( add_endline ){ failure_output << "\n"; }
+
+                addToFailureOutput( failure_output.str( ) );
+
+            }
 
         protected:
 
