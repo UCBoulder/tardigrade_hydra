@@ -53,6 +53,24 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Get the relative tolerance from hydra
+     */
+    const floatType SolverBase::getRelativeTolerance( ){
+
+        return hydra->getRelativeTolerance( );
+
+    }
+
+    /*!
+     * Get the absolute tolerance from hydra
+     */
+    const floatType SolverBase::getAbsoluteTolerance( ){
+
+        return hydra->getAbsoluteTolerance( );
+
+    }
+
+    /*!
      * Get the number of unknowns from hydra
      */
     const unsigned int SolverBase::getNumUnknowns( ){

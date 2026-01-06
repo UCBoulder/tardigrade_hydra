@@ -359,7 +359,7 @@ namespace tardigradeHydra{
 
         assembleKKTMatrix( K, active_constraints );
 
-        floatType tol = solver->hydra->getRelativeTolerance( ) * ( tardigradeVectorTools::l2norm( RHS ) ) + solver->hydra->getAbsoluteTolerance( );
+        floatType tol = solver->getRelativeTolerance( ) * ( tardigradeVectorTools::l2norm( RHS ) ) + solver->getAbsoluteTolerance( );
 
         unsigned int k = 0;
 

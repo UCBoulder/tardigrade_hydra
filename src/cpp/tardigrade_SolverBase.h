@@ -57,6 +57,10 @@ namespace tardigradeHydra{
             // END CACHED DATA STORAGE OPERATIONS
 
             // Pass-through functions
+            const floatType getRelativeTolerance( ); //TODO: Want to allow this to be constexpr
+
+            const floatType getAbsoluteTolerance( ); //TODO: Want to allow this to be constexpr
+
             const unsigned int getNumUnknowns( ); //TODO: Want to allow this to be constexpr
 
             const floatVector *getUnknownVector( ); //TODO: Want to generalize this
