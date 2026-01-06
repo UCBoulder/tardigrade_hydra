@@ -40,7 +40,7 @@ namespace tardigradeHydra{
 
         auto residualNorm = get_SetDataStorage_residualNorm( );
 
-        auto residual = solver->hydra->getResidual( );
+        auto residual = solver->getResidual( );
 
         using residual_type = std::remove_reference_t<decltype( ( *residual )[ 0 ] )>;
 
@@ -59,7 +59,7 @@ namespace tardigradeHydra{
 
         dResidualNormdX.zero( xsize );
 
-        const floatVector *residual = solver->hydra->getResidual( );
+        const floatVector *residual = solver->getResidual( );
 
         const floatVector *jacobian = solver->hydra->getFlatJacobian( );
 
@@ -170,7 +170,7 @@ namespace tardigradeHydra{
 
             unsigned int rank = linearSolver.rank( );
 
-            if ( solver->getRankDeficientError( ) && ( rank != solver->hydra->getResidual( )->size( ) ) ){
+            if ( solver->getRankDeficientError( ) && ( rank != solver->getResidual( )->size( ) ) ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 
@@ -222,7 +222,7 @@ namespace tardigradeHydra{
 
         Eigen::Map< Eigen::Vector< floatType, -1 > > RHS( KKTRHSVector.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
 
-        Eigen::Map< const Eigen::Vector< floatType, -1 > > R( solver->hydra->getResidual( )->data( ), numUnknowns );
+        Eigen::Map< const Eigen::Vector< floatType, -1 > > R( solver->getResidual( )->data( ), numUnknowns );
 
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( solver->hydra->getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 

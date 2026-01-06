@@ -56,7 +56,10 @@ namespace tardigradeHydra{
             virtual void addNLStepData( dataBase *data ) override;
             // END CACHED DATA STORAGE OPERATIONS
 
+            // Pass-through functions
             const unsigned int getNumUnknowns( ); //TODO: Want to allow this to be constexpr
+
+            const floatVector *getResidual( ); //TODO: Want to generalize this
 
         protected:
 

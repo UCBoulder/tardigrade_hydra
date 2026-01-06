@@ -19,7 +19,7 @@ namespace tardigradeHydra{
      */
     void PreconditionerBase::addIterationData( dataBase *data ){
 
-        solver->hydra->addIterationData( data );
+        solver->addIterationData( data );
 
     }
 
@@ -30,7 +30,7 @@ namespace tardigradeHydra{
      */
     void PreconditionerBase::addNLStepData( dataBase *data ){
 
-        solver->hydra->addNLStepData( data );
+        solver->addNLStepData( data );
 
     }
 
@@ -76,7 +76,7 @@ namespace tardigradeHydra{
      */
     void PreconditionerBase::formMaxRowPreconditioner( ){
 
-        const unsigned int problem_size = solver->hydra->getNumUnknowns( );
+        const unsigned int problem_size = solver->getNumUnknowns( );
 
         _preconditioner.second = floatVector( problem_size, 0 );
 

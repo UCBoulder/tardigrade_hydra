@@ -60,4 +60,14 @@ namespace tardigradeHydra{
         return hydra->getNumUnknowns( );
 
     }
+
+    /*!
+     * Get the residual from hydra
+     */
+    const floatVector *SolverBase::getResidual( ){
+
+        return hydra->getResidual( );
+
+    }
+
 }
