@@ -1526,59 +1526,6 @@ namespace tardigradeHydra{
 
     }
 
-    /*!
-     * Reset the line-search iteration
-     */
-    void hydraBase::resetLSIteration( ){ solver->step->resetLSIteration( ); }
-
-    void SolverStepBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
-        /*!
-         * Perform an Armijo-type line search
-         *
-         * \param &X0: The base value of the unknown vector
-         * \param &deltaX: The proposed change in X
-         */
-
-        while ( !checkLSConvergence( ) && checkLSIteration( ) ){
-
-            if ( solver->getFailureVerbosityLevel( ) > 0 ){
-                solver->addToFailureOutput( "    lambda, |R|: " );
-                solver->addToFailureOutput( getLambda( ), false );
-                solver->addToFailureOutput( ", " );
-                solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
-            }
-
-            updateLambda( );
-
-            incrementLSIteration( );
-
-            solver->updateUnknownVector( X0 + getLambda( ) * deltaX );
-
-        }
-
-        if ( solver->getFailureVerbosityLevel( ) > 0 ){
-            solver->addToFailureOutput( "    lambda, |R|: " );
-            solver->addToFailureOutput( getLambda( ), false );
-            solver->addToFailureOutput( ", " );
-            solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
-        }
-
-        if ( !checkLSConvergence( ) ){
-
-            solver->resetToleranceScaleFactor( );
-
-            throw convergence_error( "Failure in line search:\n  scale factor: " + std::to_string( solver->hydra->getScaleFactor( ) ) + "\n" );
-
-        }
-
-        solver->resetToleranceScaleFactor( );
-
-        incrementNumLS( );
-
-        solver->hydra->resetLSIteration( );
-
-    }
-
     const floatType *hydraBase::get_baseResidualNorm( ){
         /*!
          * Get the base value for the residual norm.
@@ -2012,10 +1959,15 @@ namespace tardigradeHydra{
 
     // End SolverBase methods
 
+    /*!
+     * Increment the iteration
+     */
+    void hydraBase::incrementIteration( ){ _iteration++; solver->step->resetLSIteration( ); }
+
+    /*!
+     * Solve the non-linear problem
+     */
     void hydraBase::solveNonLinearProblem( ){
-        /*!
-         * Solve the non-linear problem
-         */
 
         // Form the initial unknown vector
         if ( getInitializeUnknownVector( ) ){
@@ -2028,7 +1980,7 @@ namespace tardigradeHydra{
 
         callResidualPreNLSolve( );
 
-        resetLSIteration( );
+        solver->step->resetLSIteration( );
 
         resetGradientIteration( );
 

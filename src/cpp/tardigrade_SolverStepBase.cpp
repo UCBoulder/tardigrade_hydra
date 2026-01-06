@@ -748,6 +748,54 @@ namespace tardigradeHydra{
 
     }
 
+    void SolverStepBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
+        /*!
+         * Perform an Armijo-type line search
+         *
+         * \param &X0: The base value of the unknown vector
+         * \param &deltaX: The proposed change in X
+         */
+
+        while ( !checkLSConvergence( ) && checkLSIteration( ) ){
+
+            if ( solver->getFailureVerbosityLevel( ) > 0 ){
+                solver->addToFailureOutput( "    lambda, |R|: " );
+                solver->addToFailureOutput( getLambda( ), false );
+                solver->addToFailureOutput( ", " );
+                solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
+            }
+
+            updateLambda( );
+
+            incrementLSIteration( );
+
+            solver->updateUnknownVector( X0 + getLambda( ) * deltaX );
+
+        }
+
+        if ( solver->getFailureVerbosityLevel( ) > 0 ){
+            solver->addToFailureOutput( "    lambda, |R|: " );
+            solver->addToFailureOutput( getLambda( ), false );
+            solver->addToFailureOutput( ", " );
+            solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
+        }
+
+        if ( !checkLSConvergence( ) ){
+
+            solver->resetToleranceScaleFactor( );
+
+            throw convergence_error( "Failure in line search\n" );
+
+        }
+
+        solver->resetToleranceScaleFactor( );
+
+        incrementNumLS( );
+
+        resetLSIteration( );
+
+    }
+
 // END LINESEARCH FUNCTIONS
 
 }
