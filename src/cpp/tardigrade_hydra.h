@@ -338,8 +338,6 @@ namespace tardigradeHydra{
 
             virtual const floatVector* getNonlinearRHS( );
 
-//            const floatVector* getFlatPreconditioner( );
-
             floatMatrix getJacobian( );
 
             const floatVector* getFlatdRdF( );
@@ -696,17 +694,11 @@ namespace tardigradeHydra{
 
             virtual void formNonLinearDerivatives( );
 
-//            virtual void formPreconditioner( );
-
             virtual void solveNonLinearProblem( );
-
-//            virtual void formMaxRowPreconditioner( );
 
             virtual void initializeUnknownVector( );
 
             virtual void setTolerance( );
-
-//            virtual void initializePreconditioner( );
 
             virtual void evaluateInternal( );
 
