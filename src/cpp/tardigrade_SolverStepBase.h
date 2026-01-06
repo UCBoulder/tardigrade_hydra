@@ -60,6 +60,15 @@ namespace tardigradeHydra{
             virtual const floatVector* getFlatNonlinearLHS( );
             // END NONLINEAR FUNCTIONS
 
+            // GRADIENT FUNCTIONS (MOVE TO OWN CLASS)
+
+            //!< Get whether Gradient descent is allowed
+            const bool getUseGradientDescent( ){ return _use_gradient_descent; }
+
+            void setUseGradientDescent( const bool &value );
+
+            // END GRADIENT FUNCTIONS
+
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
             //!< Get the Newton step should be a LevenbergMarquardt step
@@ -171,6 +180,12 @@ namespace tardigradeHydra{
             DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
             // END NONLINEAR DATA STORAGE
+
+            // GRADIENT FUNCTIONS (MOVE TO OWN CLASS)
+
+            bool _use_gradient_descent = false; //!< Flag for whether to attempt a gradient descent step
+
+            // END GRADIENT FUNCTIONS
 
             // LM Functions (MOVE TO OWN CLASS)
 

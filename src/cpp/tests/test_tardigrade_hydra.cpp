@@ -281,12 +281,6 @@ namespace tardigradeHydra{
 
                 }
 
-                static void checkUseGradientDescent( hydraBase &hydra ){
-
-                    BOOST_CHECK( hydra._use_gradient_descent == hydra.getUseGradientDescent( ) );
-
-                }
-
                 static void formNonLinearResidual( hydraBase &hydra ){
 
                     BOOST_CHECK_NO_THROW( hydra.formNonLinearResidual( ) );
@@ -671,14 +665,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getGradientP, * boost::unit_test::tolerance
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getUseGradientDescent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkUseGradientDescent( hydra );
-
-}
-
 BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
@@ -726,16 +712,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientP, * boost::unit_test::tolerance
     hydra.setGradientP( 123.4 );
 
     BOOST_TEST( 123.4 == hydra.getGradientP( ) );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_hydraBase_setUseGradientDescent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    hydra.setUseGradientDescent( true );
-
-    BOOST_TEST( true == hydra.getUseGradientDescent( ) );
 
 }
 
@@ -4083,6 +4059,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             unsigned int num_post_nlsolve_calls = 0;
 
+            tardigradeHydra::SolverBase *getSolver( ){ return solver; }
+
         private:
 
             using tardigradeHydra::hydraBase::getResidual;
@@ -4303,7 +4281,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    hydra.setUseGradientDescent( true );
+    hydra.getSolver( )->step->setUseGradientDescent( true );
 
     tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra );
 
@@ -4328,7 +4306,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension,
                              9, 1e-9, 1e-9, 20, 5, 1e-4, true, 0 );
 
-    hydra_pre.setUseGradientDescent( true );
+    hydra_pre.getSolver( )->step->setUseGradientDescent( true );
 
     tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra_pre );
 

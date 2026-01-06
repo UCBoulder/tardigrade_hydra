@@ -186,9 +186,6 @@ namespace tardigradeHydra{
             //!< Get a reference to whether the Newton step should be a relaxed solve
             const bool getUseRelaxedSolve( ){ return _use_relaxed_solve; }
 
-            //!< Get a reference to whether Gradient descent is allowed
-            const bool getUseGradientDescent( ){ return _use_gradient_descent; }
-
             //!< Set the gradient descent sigma parameter
             void setGradientSigma( const floatType &value ){
                /*!
@@ -258,18 +255,6 @@ namespace tardigradeHydra{
                  */
 
                 _use_relaxed_solve = value;
-
-            }
-
-            //!< Set whether to use gradient descent
-            void setUseGradientDescent( const bool &value ){
-                /*!
-                 * Set whether to attempt a gradient descent step
-                 * 
-                 * \param &value: The value of the parameter
-                 */
-
-                _use_gradient_descent = value;
 
             }
 
@@ -911,8 +896,6 @@ namespace tardigradeHydra{
             unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
 
             bool _use_relaxed_solve = true; //!< Flag for whether to attempt a relaxed solve in case of failure
-
-            bool _use_gradient_descent = false; //!< Flag for whether to attempt a gradient descent step
 
             bool _rank_deficient_error = true; //!< Flag for whether a rank-deficient LHS will throw a convergence error
 

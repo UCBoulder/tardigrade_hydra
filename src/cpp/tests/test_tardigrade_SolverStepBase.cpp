@@ -122,6 +122,12 @@ namespace tardigradeHydra{
 
                 }
 
+                static void checkUseGradientDescent( SolverStepBase &step ){
+
+                    BOOST_CHECK( step._use_gradient_descent == step.getUseGradientDescent( ) );
+
+                }
+
                 static void setMuk( SolverStepBase &step, const tardigradeHydra::floatType &value ){
 
                     step.setMuk( value );
@@ -147,7 +153,7 @@ namespace tardigradeHydra{
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_getMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::SolverStepBase step;
 
@@ -155,7 +161,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getMuk, * boost::unit_test::tolerance( DEFA
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_getLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::SolverStepBase step;
 
@@ -163,7 +169,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getLMMu, * boost::unit_test::tolerance( DEF
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_getUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::SolverStepBase step;
 
@@ -171,7 +177,15 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getUseLevenbergMarquardt, * boost::unit_tes
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_setMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_getUseGradientDescent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::SolverStepBase step;
+
+    tardigradeHydra::unit_test::SolverStepBaseTester::checkUseGradientDescent( step );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_setMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
 
@@ -195,7 +209,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setMuk, * boost::unit_test::tolerance( DEFA
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_setLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_setLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
 
@@ -219,35 +233,25 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setLMMu, * boost::unit_test::tolerance( DEF
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_setUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_setUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class hydraBaseMock : public tardigradeHydra::hydraBase{
-
-        public:
-
-            using tardigradeHydra::hydraBase::hydraBase;
-
-            void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
-            tardigradeHydra::SolverBase *getSolver( ){ return solver; }
-
-    };
-
-    hydraBaseMock  hydra;
-    tardigradeHydra::SolverBase solver;
     tardigradeHydra::SolverStepBase step;
-
-    hydra.setSolver( &solver );
-
-    solver.hydra = &hydra;
-    solver.step  = &step;
-
-    step.setSolver( &solver );
 
     step.setUseLevenbergMarquardt( true );
 
     BOOST_TEST( true == step.getUseLevenbergMarquardt( ) );
 
-    BOOST_TEST( true == hydra.getUseGradientDescent( ) );
+    BOOST_TEST( true == step.getUseGradientDescent( ) );
+}
+
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_setUseGradientDescent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::SolverStepBase step;
+
+    step.setUseGradientDescent( true );
+
+    BOOST_TEST( true == step.getUseGradientDescent( ) );
+
 }
 
 BOOST_AUTO_TEST_CASE( test_setResidualNorm, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){

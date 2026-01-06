@@ -2036,7 +2036,7 @@ namespace tardigradeHydra{
         // Refine the estimate if the new point has a higher residual
         if ( !solver->hydra->checkLSConvergence( ) ){
 
-            if ( solver->hydra->checkDescentDirection( deltaX ) || !solver->hydra->getUseGradientDescent( ) ){
+            if ( solver->hydra->checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
 
                 // Perform an Armijo type line search when the search direction is aligned with the gradient
                 solver->hydra->performArmijoTypeLineSearch( X0, deltaX );
