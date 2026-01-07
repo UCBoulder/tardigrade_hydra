@@ -239,6 +239,43 @@ namespace tardigradeHydra{
         _initializeUnknownVector = value;
 
     }
+
+    /*!
+     * Call all of the residuals prior to a non-linear solve
+     */
+    void SolverBase::callResidualPreNLSolve( ){
+
+        hydra->callResidualPreNLSolve( );
+
+    }
+
+    /*!
+     * Call all of the residuals after a successful non-linear step
+     */
+    void SolverBase::callResidualSuccessfulNLStep( ){
+
+        hydra->callResidualSuccessfulNLStep( );
+
+    }
+
+    /*!
+     * Reset all nonlinear step data
+     */
+    void SolverBase::resetNLStepData( ){
+
+        hydra->resetNLStepData( );
+
+    }
+
+    /*!
+     * Call the residuals after a successful non-linear solve
+     */
+    void SolverBase::callResidualPostNLSolve( ){
+
+        hydra->callResidualPostNLSolve( );
+
+    }
+
 // END NONLINEAR FUNCTIONS
 
 }
