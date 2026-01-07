@@ -350,7 +350,7 @@ namespace tardigradeHydra{
      */
     bool SolverBase::checkConvergence( ){
 
-        const floatVector *tolerance = hydra->getTolerance( );
+        const floatVector *tolerance = getTolerance( );
 
         const floatVector *residual = getResidual( );
 

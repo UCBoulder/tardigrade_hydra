@@ -240,8 +240,6 @@ namespace tardigradeHydra{
 
             const floatVector* getUnknownVector( );
 
-            const floatVector* getTolerance( );
-
             const floatVector* getStress( );
 
             const floatVector* getPreviousStress( );
@@ -565,8 +563,6 @@ namespace tardigradeHydra{
 
             virtual void initializeUnknownVector( );
 
-            virtual void setTolerance( );
-
             virtual void evaluateInternal( );
 
             virtual void updateUnknownVector( const floatVector &newUnknownVector );
@@ -615,8 +611,6 @@ namespace tardigradeHydra{
             floatVector _prerelaxed_initialX; //!< The initial value of the unknown vector prior to a relaxed step
 
             floatVector _initialX; //!< The initial value of the unknown vector
-
-            virtual tardigradeHydra::hydraBase::SetDataStorageConstant<floatVector> get_SetDataStorage_tolerance( );
 
             virtual tardigradeHydra::hydraBase::SetDataStorageIteration<secondOrderTensor> get_SetDataStorage_stress( );
 
@@ -768,8 +762,6 @@ namespace tardigradeHydra{
 
             DataStorage< floatVector > _X; //!< The unknown vector { stress, F1, ..., Fn, xi1, ..., xim }
 
-            DataStorage< floatVector > _tolerance; //!< The tolerance vector for the non-linear solve
-
             DataStorage< floatVector > _stress; //!< The stress in the current configuration as determined from the current state
 
             DataStorage< floatVector > _previousStress; //!< The previous value of the stress in the current configuration as determined from the previous state
@@ -785,8 +777,6 @@ namespace tardigradeHydra{
             void setFirstConfigurationJacobians( );
 
             void setPreviousFirstConfigurationJacobians( );
-
-            void setTolerance( const floatVector &tolerance );
 
             void resetIterationData( );
 

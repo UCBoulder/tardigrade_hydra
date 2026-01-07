@@ -3226,6 +3226,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setTolerance, * boost::unit_test::tolerance
 
             using tardigradeHydra::hydraBase::hydraBase;
 
+            void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
+
     };
 
     floatType time = 1.1;
@@ -3265,6 +3267,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setTolerance, * boost::unit_test::tolerance
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    tardigradeHydra::SolverBase solver;
+
+    hydra.setSolver( &solver );
+    solver.hydra = &hydra;
+
     floatVector residual = { 1, 2, -3, 0 };
 
     floatVector unknownVector = { -2, 5, 10, 0.3 };
@@ -3275,7 +3282,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setTolerance, * boost::unit_test::tolerance
 
     tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
 
-    BOOST_TEST( *hydra.getTolerance( ) == toleranceAnswer, CHECK_PER_ELEMENT );
+    BOOST_TEST( *solver.getTolerance( ) == toleranceAnswer, CHECK_PER_ELEMENT );
 
 }
 

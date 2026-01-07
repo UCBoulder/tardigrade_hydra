@@ -1401,12 +1401,12 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::setTolerance( ){
-        /*!
-         * Set the tolerance
-         * 
-         * \f$ tol = tolr * ( |R_0| + |X| ) + tola \f$
-         */
+    /*!
+     * Set the tolerance
+     * 
+     * \f$ tol = tolr * ( |R_0| + |X| ) + tola \f$
+     */
+    void SolverBase::setTolerance( ){
 
         auto tolerance = get_SetDataStorage_tolerance( );
 
@@ -1416,30 +1416,30 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::setTolerance( const floatVector &tolerance ){
-        /*!
-         * Set the tolerance
-         *
-         * \param tolerance: The tolerance vector for each value of the residual
-         */
+    /*!
+     * Set the tolerance
+     *
+     * \param tolerance: The tolerance vector for each value of the residual
+     */
+    void SolverBase::setTolerance( const floatVector &tolerance ){
 
         setConstantData( tolerance, _tolerance );
 
     }
 
-    hydraBase::SetDataStorageConstant<floatVector> hydraBase::get_SetDataStorage_tolerance( ){
-        /*!
-         * Return a SetDataStorageConstant setter for the tolerance
-         */
+    /*!
+     * Return a SetDataStorageConstant setter for the tolerance
+     */
+    SolverBase::SetDataStorageConstant<floatVector> SolverBase::get_SetDataStorage_tolerance( ){
 
         return SetDataStorageConstant<floatVector>( &_tolerance );
 
     }
 
-    const floatVector* hydraBase::getTolerance( ){
-        /*!
-         * Get the tolerance
-         */
+    /*!
+     * Get the tolerance
+     */
+    const floatVector* SolverBase::getTolerance( ){
 
         if ( !_tolerance.first ){
 
