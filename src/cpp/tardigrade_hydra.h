@@ -165,23 +165,8 @@ namespace tardigradeHydra{
             //! Get the absolute tolerance
             constexpr floatType getAbsoluteTolerance( ){ return _tola; }
 
-            //!< Get the gradient descent sigma parameter
-            const floatType getGradientSigma( ){ return _gradientSigma; }
-
             //!< Get a reference to whether the Newton step should be a relaxed solve
             const bool getUseRelaxedSolve( ){ return _use_relaxed_solve; }
-
-            //!< Set the gradient descent sigma parameter
-            void setGradientSigma( const floatType &value ){
-               /*!
-                * Set the value of the sigma parameter for gradient descent steps
-                *
-                * \param &value: The value of the parameter
-                */
-
-                _gradientSigma = value;
-
-            }
 
             //!< Set whether to attempt a Relaxed-solve
             void setUseRelaxedSolve( const bool &value ){
@@ -828,8 +813,6 @@ namespace tardigradeHydra{
             DataStorage< floatVector > _jacobian; //!< The jacobian matrix in row-major form for the global solve
 
             DataStorage< floatVector > _previouslyConvergedStress; //!< The previously converged stress
-
-            floatType _gradientSigma = 1e-4; //!< The sigma parameter for the gradient descent step
 
             DataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
 

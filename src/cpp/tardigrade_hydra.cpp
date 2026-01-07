@@ -1551,28 +1551,19 @@ namespace tardigradeHydra{
          * \param &X0: The initial value of the unknown vector
          */
 
-        const unsigned int xsize = getNumUnknowns( );
+        const unsigned int xsize = solver->getNumUnknowns( );
 
-        floatVector dx = ( *getUnknownVector( ) ) - X0;
+        floatVector dx = ( *( solver->getUnknownVector( ) ) ) - X0;
 
         floatType RHS = *solver->step->get_baseResidualNorm( );
 
-        for ( unsigned int i = 0; i < xsize; i++ ){
+        for ( unsigned int i = 0; i < xsize; ++i ){
 
-            RHS += getGradientSigma( ) * ( *get_basedResidualNormdX( ) )[ i ] * dx[ i ];
+            RHS += solver->step->getGradientSigma( ) * ( *( solver->step->get_basedResidualNormdX( ) ) )[ i ] * dx[ i ];
 
         }
 
-        return ( *solver->step->get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
-
-    }
-
-    /*!
-     * Check if the gradient hasn't exceeded the number of allowed iterations
-     */
-    bool SolverStepBase::checkGradientIteration( ){
-
-        return getGradientIteration( ) < solver->step->getMaxGradientIterations( );
+        return ( *solver->step->get_residualNorm( ) ) < solver->getToleranceScaleFactor( ) * RHS;
 
     }
 

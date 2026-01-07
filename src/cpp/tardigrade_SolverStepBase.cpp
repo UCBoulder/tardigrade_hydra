@@ -834,6 +834,17 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Set the value of the sigma parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void SolverStepBase::setGradientSigma( const floatType &value ){
+
+        _gradientSigma = value;
+
+    }
+
+    /*!
      * Check if the search direction is a descent direction of the Jacobian
      * 
      * \param &dx: The proposed change in x
@@ -866,6 +877,15 @@ namespace tardigradeHydra{
     void SolverStepBase::setMaxGradientIterations( const unsigned int &value ){
 
         _maxGradientIterations = value;
+
+    }
+
+    /*!
+     * Check if the gradient hasn't exceeded the number of allowed iterations
+     */
+    bool SolverStepBase::checkGradientIteration( ){
+
+        return getGradientIteration( ) < getMaxGradientIterations( );
 
     }
 

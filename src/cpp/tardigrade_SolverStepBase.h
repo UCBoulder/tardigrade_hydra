@@ -138,11 +138,16 @@ namespace tardigradeHydra{
             //! Get the gradient descent beta parameter
             const floatType getGradientBeta( ){ return _gradientBeta; }
 
+            //! Get the gradient descent sigma parameter
+            const floatType getGradientSigma( ){ return _gradientSigma; }
+
             void setGradientRho( const floatType &value );
 
             void setGradientP( const floatType &value );
 
             void setGradientBeta( const floatType &value );
+
+            void setGradientSigma( const floatType &value );
 
             virtual bool checkDescentDirection( const floatVector &dx );
 
@@ -312,6 +317,8 @@ namespace tardigradeHydra{
             floatType _gradientP     = 2.1; //!< The p parameter for the gradient descent step
 
             floatType _gradientBeta  = 0.9; //!< The beta parameter for the gradient descent step
+
+            floatType _gradientSigma = 1e-4; //!< The sigma parameter for the gradient descent step
 
             unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
 

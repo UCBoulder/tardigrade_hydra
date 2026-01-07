@@ -257,12 +257,6 @@ namespace tardigradeHydra{
 
                 }
 
-                static void checkGradientSigma( hydraBase &hydra ){
-
-                    BOOST_CHECK( hydra._gradientSigma == hydra.getGradientSigma( ) );
-
-                }
-
                 static void formNonLinearResidual( hydraBase &hydra ){
 
                     BOOST_CHECK_NO_THROW( hydra.formNonLinearResidual( ) );
@@ -578,24 +572,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getAbsoluteTolerance, * boost::unit_test::t
     tardigradeHydra::hydraBase hydra;
 
     tardigradeHydra::unit_test::hydraBaseTester::checkAbsoluteTolerance( hydra );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_hydraBase_getGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkGradientSigma( hydra );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    hydra.setGradientSigma( 123.4 );
-
-    BOOST_TEST( 123.4 == hydra.getGradientSigma( ) );
 
 }
 
