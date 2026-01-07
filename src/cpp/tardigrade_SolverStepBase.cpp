@@ -912,6 +912,51 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Perform a gradient descent step
+     *
+     * \param &X0: The base value of the unknown vector
+     */
+    void SolverStepBase::performGradientStep( const floatVector &X0 ){
+
+        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
+
+        unsigned int l                     = 0;
+
+        const unsigned int maxiter         = getMaxGradientIterations( );
+
+        while( checkGradientIteration( ) ){
+
+            floatType t = std::pow( getGradientBeta( ), l );
+
+            solver->updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
+
+            if ( checkGradientConvergence( X0 ) ){
+
+                break;
+
+            }
+
+            l++;
+
+            incrementGradientIteration( );
+
+        }
+
+        solver->resetToleranceScaleFactor( );
+
+        if ( l >= maxiter ){
+
+            throw convergence_error( "Failure in gradient step" );
+
+        }
+
+        incrementNumGrad( );
+
+        resetGradientIteration( );
+
+    }
+
 // END GRADIENT DESCENT FUNCTIONS
 
 }
