@@ -61,8 +61,6 @@ namespace tardigradeHydra{
             //! Return the flag which indicates whether hydra should initialize the unknown vector
             const bool getInitializeUnknownVector( ){ return _initializeUnknownVector; }
 
-            void callResidualPreNLSolve( );
-
             void callResidualSuccessfulNLStep( );
 
             void callResidualPostNLSolve( );
@@ -133,6 +131,8 @@ namespace tardigradeHydra{
             // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
 
             void setInitializeUnknownVector( const bool &value );
+
+            virtual void callResidualPreNLSolve( );
 
             // END NONLINEAR FUNCTIONS
 

@@ -241,15 +241,6 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Call all of the residuals prior to a non-linear solve
-     */
-    void SolverBase::callResidualPreNLSolve( ){
-
-        hydra->callResidualPreNLSolve( );
-
-    }
-
-    /*!
      * Call all of the residuals after a successful non-linear step
      */
     void SolverBase::callResidualSuccessfulNLStep( ){
@@ -264,6 +255,25 @@ namespace tardigradeHydra{
     void SolverBase::resetNLStepData( ){
 
         hydra->resetNLStepData( );
+
+    }
+
+    /*!
+     * Signal to the residuals that we are about to start a nonlinear solve
+     */
+    void SolverBase::callResidualPreNLSolve( ){
+
+        hydra->setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = std::begin( *( hydra->getResidualClasses( ) ) ); residual_ptr != std::end( *( hydra->getResidualClasses( ) ) ); ++residual_ptr ){
+
+            hydra->setCurrentResidualIndex( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) );
+
+            ( *residual_ptr )->preNLSolve( );
+
+        }
+
+        hydra->setCurrentResidualIndexMeaningful( false );
 
     }
 

@@ -3766,8 +3766,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             unsigned int num_successful_nlstep_calls = 0;
 
-            unsigned int num_pre_nlsolve_calls = 0;
-
             unsigned int num_post_nlsolve_calls = 0;
 
             void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
@@ -3875,10 +3873,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             }
 
-            virtual void callResidualPreNLSolve( ) override{
-                num_pre_nlsolve_calls++;
-            }
-
             virtual void callResidualPostNLSolve( ) override{
                 num_post_nlsolve_calls++;
             }
@@ -3982,6 +3976,20 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     };
 
+    class SolverBaseMock : public tardigradeHydra::SolverBase{
+
+        public:
+
+            unsigned int num_pre_nlsolve_calls = 0;
+
+            using tardigradeHydra::SolverBase::SolverBase;
+
+            virtual void callResidualPreNLSolve( ) override{
+                num_pre_nlsolve_calls++;
+            }
+
+    };
+
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -4020,7 +4028,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    tardigradeHydra::SolverBase solver;
+    SolverBaseMock solver;
     SolverStepBaseMock step;
     step.setMaxLSIterations( 5 );
     step.setLSAlpha( 1e-4 );
@@ -4041,7 +4049,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     BOOST_TEST( step.getNumNewton( ) == 2 );
 
-    BOOST_TEST( hydra.num_pre_nlsolve_calls == 1 );
+    BOOST_TEST( solver.num_pre_nlsolve_calls == 1 );
 
     BOOST_TEST( hydra.num_post_nlsolve_calls == 1 );
 
@@ -4061,7 +4069,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension,
                              9, 1e-9, 1e-9, 20, 5, 1e-4, true, 0 );
 
-    tardigradeHydra::SolverBase solver_pre;
+    SolverBaseMock solver_pre;
     SolverStepBaseMock step_pre;
     step_pre.setMaxLSIterations( 5 );
     step_pre.setLSAlpha( 1e-4 );
@@ -4082,7 +4090,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     BOOST_TEST( step_pre.getNumNewton( ) == 2 );
 
-    BOOST_TEST( hydra_pre.num_pre_nlsolve_calls == 1 );
+    BOOST_TEST( solver_pre.num_pre_nlsolve_calls == 1 );
 
     BOOST_TEST( hydra_pre.num_post_nlsolve_calls == 1 );
 
@@ -6630,7 +6638,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getCurrentResidualOffset, * boost::unit_tes
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPreNLSolve, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SolverBase_callResidualPreNLSolve, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>{
 
@@ -6690,7 +6698,18 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPreNLSolve, * boost::unit_test:
 
             }
 
-            virtual void public_callResidualPreNLSolve( ){
+            void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
+            tardigradeHydra::SolverBase *getSolver( ){ return solver; }
+
+    };
+
+    class SolverBaseMock : public tardigradeHydra::SolverBase {
+
+        public:
+
+            using tardigradeHydra::SolverBase::SolverBase;
+
+            void public_callResidualPreNLSolve( ){
 
                 callResidualPreNLSolve( );
 
@@ -6735,7 +6754,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualPreNLSolve, * boost::unit_test:
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    hydra.public_callResidualPreNLSolve( );
+    SolverBaseMock solver;
+    solver.hydra = &hydra;
+    hydra.setSolver( &solver );
+
+    solver.public_callResidualPreNLSolve( );
 
     BOOST_TEST( hydra.r1.numPreNLSolveCalls == 1 );
 

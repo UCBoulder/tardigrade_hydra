@@ -1549,25 +1549,6 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::callResidualPreNLSolve( ){
-        /*!
-         * Signal to the residuals that we are about to start a nonlinear solve
-         */
-
-        setCurrentResidualIndexMeaningful( true );
-
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
-
-            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
-
-            ( *residual_ptr )->preNLSolve( );
-
-        }
-
-        setCurrentResidualIndexMeaningful( false );
-
-    }
-
     void hydraBase::callResidualPostNLSolve( ){
         /*!
          * Signal to the residuals that we have finisehd a nonlinear solve
@@ -1801,7 +1782,7 @@ namespace tardigradeHydra{
 
         floatVector deltaX( getNumUnknowns( ), 0 );
 
-        callResidualPreNLSolve( );
+        solver->callResidualPreNLSolve( );
 
         solver->step->resetLSIteration( );
 

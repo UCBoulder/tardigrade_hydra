@@ -582,8 +582,6 @@ namespace tardigradeHydra{
 
             virtual void callResidualSuccessfulNLStep( );
 
-            virtual void callResidualPreNLSolve( );
-
             virtual void callResidualPostNLSolve( );
 
             virtual void callResidualPreSubcycler( );
