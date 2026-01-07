@@ -580,8 +580,6 @@ namespace tardigradeHydra{
 
             void resetIterations( ){ /*! Set the number of iterations */ _iteration = 0; }
 
-            virtual void callResidualSuccessfulNLStep( );
-
             virtual void callResidualPostNLSolve( );
 
             virtual void callResidualPreSubcycler( );

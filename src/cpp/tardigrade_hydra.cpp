@@ -1526,29 +1526,6 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::callResidualSuccessfulNLStep( ){
-        /*!
-         * Signal to the residuals that a successful nonlinear step has been performed
-         */
-
-        setAllowModifyGlobalResidual( true );
-
-        setCurrentResidualIndexMeaningful( true );
-
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
-
-            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
-
-            ( *residual_ptr )->successfulNLStep( );
-
-        }
-
-        setCurrentResidualIndexMeaningful( false );
-
-        setAllowModifyGlobalResidual( false );
-
-    }
-
     void hydraBase::callResidualPostNLSolve( ){
         /*!
          * Signal to the residuals that we have finisehd a nonlinear solve
@@ -1798,7 +1775,7 @@ namespace tardigradeHydra{
             solver->step->incrementSolution( );
 
             // Call residual end of a successful nonlinear step functions
-            callResidualSuccessfulNLStep( );
+            solver->callResidualSuccessfulNLStep( );
 
             // Increment the iteration count
             solver->hydra->incrementIteration( );

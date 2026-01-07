@@ -241,20 +241,34 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Call all of the residuals after a successful non-linear step
-     */
-    void SolverBase::callResidualSuccessfulNLStep( ){
-
-        hydra->callResidualSuccessfulNLStep( );
-
-    }
-
-    /*!
      * Reset all nonlinear step data
      */
     void SolverBase::resetNLStepData( ){
 
         hydra->resetNLStepData( );
+
+    }
+
+    /*!
+     * Signal to the residuals that a successful nonlinear step has been performed
+     */
+    void SolverBase::callResidualSuccessfulNLStep( ){
+
+        hydra->setAllowModifyGlobalResidual( true );
+
+        hydra->setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = std::begin( *( hydra->getResidualClasses( ) ) ); residual_ptr != std::end( *( hydra->getResidualClasses( ) ) ); ++residual_ptr ){
+
+            hydra->setCurrentResidualIndex( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) );
+
+            ( *residual_ptr )->successfulNLStep( );
+
+        }
+
+        hydra->setCurrentResidualIndexMeaningful( false );
+
+        hydra->setAllowModifyGlobalResidual( false );
 
     }
 
