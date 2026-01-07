@@ -1612,7 +1612,7 @@ namespace tardigradeHydra{
 
     }
 
-    bool hydraBase::checkDescentDirection( const floatVector &dx ){
+    bool SolverStepBase::checkDescentDirection( const floatVector &dx ){
         /*!
          * Check if the search direction is a descent direction of the Jacobian
          * 
@@ -1621,7 +1621,7 @@ namespace tardigradeHydra{
 
         const unsigned int xsize = solver->getNumUnknowns( );
 
-        const floatType RHS = -getGradientRho( ) * std::pow( tardigradeVectorTools::l2norm( dx ), getGradientP( ) );
+        const floatType RHS = -solver->step->getGradientRho( ) * std::pow( tardigradeVectorTools::l2norm( dx ), solver->step->getGradientP( ) );
 
         floatType LHS = 0;
 
@@ -1915,7 +1915,7 @@ namespace tardigradeHydra{
         // Refine the estimate if the new point has a higher residual
         if ( !checkLSConvergence( ) ){
 
-            if ( solver->hydra->checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
+            if ( checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
 
                 // Perform an Armijo type line search when the search direction is aligned with the gradient
                 performArmijoTypeLineSearch( X0, deltaX );

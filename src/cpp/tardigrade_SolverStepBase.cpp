@@ -748,13 +748,13 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Perform an Armijo-type line search
+     *
+     * \param &X0: The base value of the unknown vector
+     * \param &deltaX: The proposed change in X
+     */
     void SolverStepBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
-        /*!
-         * Perform an Armijo-type line search
-         *
-         * \param &X0: The base value of the unknown vector
-         * \param &deltaX: The proposed change in X
-         */
 
         while ( !checkLSConvergence( ) && checkLSIteration( ) ){
 
@@ -797,5 +797,31 @@ namespace tardigradeHydra{
     }
 
 // END LINESEARCH FUNCTIONS
+
+// GRADIENT DESCENT FUNCTIONS
+
+    /*!
+     * Set the value of the rho parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void SolverStepBase::setGradientRho( const floatType &value ){
+ 
+        _gradientRho = value;
+
+    }
+
+    /*!
+     * Set the value of the p parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void SolverStepBase::setGradientP( const floatType &value ){
+ 
+        _gradientP = value;
+
+    }
+
+// END GRADIENT DESCENT FUNCTIONS
 
 }

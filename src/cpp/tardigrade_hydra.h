@@ -174,12 +174,6 @@ namespace tardigradeHydra{
             //!< Get the max allowable number of gradient iterations
             const unsigned int getMaxGradientIterations( ){ return _maxGradientIterations; }
 
-            //!< Get the gradient descent rho parameter
-            const floatType getGradientRho( ){ return _gradientRho; }
-
-            //!< Get the gradient descent p parameter
-            const floatType getGradientP( ){ return _gradientP; }
-
             //!< Get a reference to whether the Newton step should be a relaxed solve
             const bool getUseRelaxedSolve( ){ return _use_relaxed_solve; }
 
@@ -216,30 +210,6 @@ namespace tardigradeHydra{
                 */
 
                 _maxGradientIterations = value;
-
-            }
-
-            //!< Set the gradient descent rho parameter
-            void setGradientRho( const floatType &value ){
-               /*!
-                * Set the value of the rho parameter for gradient descent steps
-                *
-                * \param &value: The value of the parameter
-                */
- 
-                _gradientRho = value;
-
-            }
-
-            //!< Set the gradient descent p parameter
-            void setGradientP( const floatType &value ){
-               /*!
-                * Set the value of the p parameter for gradient descent steps
-                *
-                * \param &value: The value of the parameter
-                */
- 
-                _gradientP = value;
 
             }
 
@@ -320,8 +290,6 @@ namespace tardigradeHydra{
             virtual bool checkConvergence( );
 
             virtual bool checkGradientConvergence( const floatVector &X0 );
-
-            virtual bool checkDescentDirection( const floatVector &dx );
 
             const floatVector* getStress( );
 
@@ -896,10 +864,6 @@ namespace tardigradeHydra{
             floatType _gradientSigma = 1e-4; //!< The sigma parameter for the gradient descent step
 
             floatType _gradientBeta  = 0.9; //!< The beta parameter for the gradient descent step
-
-            floatType _gradientRho   = 1e-8; //!< The rho parameter for the gradient descent step
-
-            floatType _gradientP     = 2.1; //!< The p parameter for the gradient descent step
 
             DataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
 

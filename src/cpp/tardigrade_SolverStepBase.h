@@ -127,6 +127,22 @@ namespace tardigradeHydra{
             const floatType* getLSResidualNorm( );
             // END LINESEARCH FUNCTIONS
 
+            // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
+
+            //! Get the gradient descent rho parameter
+            const floatType getGradientRho( ){ return _gradientRho; }
+
+            //! Get the gradient descent p parameter
+            const floatType getGradientP( ){ return _gradientP; }
+
+            void setGradientRho( const floatType &value );
+
+            void setGradientP( const floatType &value );
+
+            virtual bool checkDescentDirection( const floatVector &dx );
+
+            // END GRADIENT DESCENT FUNCTIONS
+
         protected:
 
             SolverBase *solver; //!< Pointer to the containing SolverBase object
@@ -262,6 +278,13 @@ namespace tardigradeHydra{
 
             // END LS FUNCTIONS
 
+            // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
+
+            floatType _gradientRho   = 1e-8; //!< The rho parameter for the gradient descent step
+
+            floatType _gradientP     = 2.1; //!< The p parameter for the gradient descent step
+
+            // END GRADIENT DESCENT FUNCTIONS
     };
 
 }
