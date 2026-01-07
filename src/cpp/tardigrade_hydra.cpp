@@ -1797,9 +1797,9 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
         }
 
-        _initialX = *getUnknownVector( );
+        _initialX = *( solver->getUnknownVector( ) );
 
-        floatVector deltaX( getNumUnknowns( ), 0 );
+        floatVector deltaX( solver->getNumUnknowns( ), 0 );
 
         callResidualPreNLSolve( );
 
@@ -1825,10 +1825,10 @@ namespace tardigradeHydra{
             // Reset the nonlinear step data
             resetNLStepData( );
 
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "  final residual: " );
-                addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
-                addToFailureOutput( "\n" );
+            if ( solver->getFailureVerbosityLevel( ) > 0 ){
+                solver->addToFailureOutput( "  final residual: " );
+                solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
+                solver->addToFailureOutput( "\n" );
             }
 
         }
