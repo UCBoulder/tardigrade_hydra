@@ -281,8 +281,6 @@ namespace tardigradeHydra{
 
             unsigned int getNumNewton( ){ /*! Get the number of newton steps performed */  return _NUM_NEWTON; }
 
-            unsigned int getNumGrad( ){ /*! Get the number of gradient descent steps performed */  return _NUM_GRAD; }
-
             const void setMaxRelaxedIterations( const unsigned int &value ){
                 /*!
                  * Set the maximum allowable number of relaxed iterations
@@ -589,11 +587,7 @@ namespace tardigradeHydra{
 
             void resetNumNewton( ){ /*! Reset the number of newton steps */ _NUM_NEWTON = 0; }
 
-            void resetNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD = 0; }
-
             void incrementNumNewton( ){ /*! Reset the number of newton steps */ _NUM_NEWTON++; }
-
-            void incrementNumGrad( ){ /*! Set the number of gradient descent steps */ _NUM_GRAD++; }
 
             void resetIterations( ){ /*! Set the number of iterations */ _iteration = 0; }
 
@@ -781,8 +775,6 @@ namespace tardigradeHydra{
             unsigned int _maxIterations; //!< The maximum number of allowable iterations
 
             unsigned int _NUM_NEWTON = 0; //!< The number of Newton steps performed
-
-            unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
 
             bool _use_relaxed_solve = true; //!< Flag for whether to attempt a relaxed solve in case of failure
 

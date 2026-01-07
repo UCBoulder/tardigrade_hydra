@@ -4050,7 +4050,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     BOOST_TEST( step.getNumLS( ) == 1 );
 
-    BOOST_TEST( hydra.getNumGrad( ) == 1 );
+    BOOST_TEST( step.getNumGrad( ) == 1 );
 
     BOOST_TEST( hydra.num_residual_calls == 8 ); //8 because we initialize the residual
 
@@ -4091,7 +4091,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     BOOST_TEST( step_pre.getNumLS( ) == 1 );
 
-    BOOST_TEST( hydra_pre.getNumGrad( ) == 1 );
+    BOOST_TEST( step_pre.getNumGrad( ) == 1 );
 
     BOOST_TEST( hydra.num_residual_calls == 8 ); //8 because we initialize the residual
 

@@ -122,7 +122,8 @@ namespace tardigradeHydra{
             //! Get the linesearch lambda parameter
             const floatType getLambda( ){ return _lambda; }
 
-            unsigned int getNumLS( ){ /*! Get the number of line search steps performed */ return _NUM_LS; }
+            //! Get the number of line search steps performed
+            unsigned int getNumLS( ){ return _NUM_LS; }
 
             const floatType* getLSResidualNorm( );
             // END LINESEARCH FUNCTIONS
@@ -162,6 +163,9 @@ namespace tardigradeHydra{
             bool checkGradientIteration( );
 
             virtual bool checkGradientConvergence( const floatVector &X0 );
+
+            //! Get the number of gradient descent steps performed
+            unsigned int getNumGrad( ){ return _NUM_GRAD; }
 
             // END GRADIENT DESCENT FUNCTIONS
 
@@ -254,6 +258,12 @@ namespace tardigradeHydra{
             //! Reset the number of gradient descent steps
             void resetGradientIteration( ){ _gradientIteration = 0; }
 
+            //! Reset the number of gradient descent steps
+            void resetNumGrad( ){ _NUM_GRAD = 0; }
+
+            //! Increment the number of gradient descent steps
+            void incrementNumGrad( ){ _NUM_GRAD++; }
+
             // END GRADIENT DESCENT FUNCTIONS
 
         private:
@@ -325,6 +335,8 @@ namespace tardigradeHydra{
             unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
 
             unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
+
+            unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
 
             // END GRADIENT DESCENT FUNCTIONS
     };

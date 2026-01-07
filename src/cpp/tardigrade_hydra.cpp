@@ -1565,7 +1565,7 @@ namespace tardigradeHydra{
 
         }
 
-        solver->hydra->incrementNumGrad( );
+        solver->step->incrementNumGrad( );
 
         solver->step->resetGradientIteration( );
 
@@ -2250,7 +2250,7 @@ namespace tardigradeHydra{
 
         solver->step->resetNumLS( );
 
-        resetNumGrad( );
+        solver->step->resetNumGrad( );
 
         solver->setRankDeficientError( false );
 
