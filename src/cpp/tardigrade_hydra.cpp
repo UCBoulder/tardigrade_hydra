@@ -1526,12 +1526,12 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::performGradientStep( const floatVector &X0 ){
-        /*!
-         * Perform a gradient descent step
-         *
-         * \param &X0: The base value of the unknown vector
-         */
+    /*!
+     * Perform a gradient descent step
+     *
+     * \param &X0: The base value of the unknown vector
+     */
+    void SolverStepBase::performGradientStep( const floatVector &X0 ){
 
         const floatVector *dResidualNormdX = solver->step->get_basedResidualNormdX( );
 
@@ -1561,7 +1561,7 @@ namespace tardigradeHydra{
 
         if ( l >= maxiter ){
 
-            throw convergence_error( "Failure in gradient step:\n  scale_factor: " + std::to_string( getScaleFactor( ) ) );
+            throw convergence_error( "Failure in gradient step" );
 
         }
 
@@ -1858,7 +1858,7 @@ namespace tardigradeHydra{
             else{
 
                 // Perform gradient descent if the search direction is not aligned with the gradient
-                solver->hydra->performGradientStep( X0 );
+                performGradientStep( X0 );
 
             }
 

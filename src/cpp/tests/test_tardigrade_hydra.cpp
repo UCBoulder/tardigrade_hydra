@@ -3803,14 +3803,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             }
 
-            virtual void performGradientStep( const floatVector &X0 ) override{
-
-                test_hydraBase_solveNonlinearProblem_in_gradient_convergence = 1;
-
-                tardigradeHydra::hydraBase::performGradientStep( X0 );
-
-            }
-
             virtual void formNonLinearResidual( ) override{
 
                 unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
@@ -3980,6 +3972,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             }
 
+            virtual void performGradientStep( const floatVector &X0 ) override{
+
+                test_hydraBase_solveNonlinearProblem_in_gradient_convergence = 1;
+
+                tardigradeHydra::SolverStepBase::performGradientStep( X0 );
+
+            }
 
     };
 
@@ -4473,7 +4472,7 @@ BOOST_AUTO_TEST_CASE( test_computeFlatdXdAdditionalDOF, * boost::unit_test::tole
 
 }
 
-BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1e-5 ) ){
+BOOST_AUTO_TEST_CASE( test_SolverStepBase_performGradientStep, * boost::unit_test::tolerance( 1e-5 ) ){
     /*!
      * Test checking the gradient convergence
      */
@@ -4515,8 +4514,6 @@ BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1
 
         public:
 
-            floatVector X0 = { -0.81579012, -0.13259765, -0.13827447, -0.0126298 , -0.14833942 };
-
             floatVector A = { -0.15378708,  0.9615284 ,  0.36965948, -0.0381362 , -0.21576496,
                               -0.31364397,  0.45809941, -0.12285551, -0.88064421, -0.20391149,
                                0.47599081, -0.63501654, -0.64909649,  0.06310275,  0.06365517,
@@ -4524,12 +4521,6 @@ BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1
                               -0.35408217, -0.27642269, -0.54347354, -0.41257191,  0.26195225 };
 
             using tardigradeHydra::hydraBase::hydraBase;
-
-            virtual void runGradientStep( ){
-
-                performGradientStep( X0 );
-
-            }
 
             virtual void formNonLinearResidual( ) override{
 
@@ -4589,6 +4580,8 @@ BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1
 
     };
 
+    floatVector X0 = { -0.81579012, -0.13259765, -0.13827447, -0.0126298 , -0.14833942 };
+
     floatVector answer = { 0.36320787, -0.21103717, -0.12118634,  0.00516978, -0.08423 };
 
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
@@ -4606,7 +4599,7 @@ BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1
 
     step.mockInitialize( );
 
-    hydra.runGradientStep( );
+    step.performGradientStep( X0 );
 
     BOOST_TEST( answer == *hydra.getUnknownVector( ), CHECK_PER_ELEMENT );
 

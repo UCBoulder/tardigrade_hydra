@@ -167,6 +167,8 @@ namespace tardigradeHydra{
             //! Get the number of gradient descent steps performed
             unsigned int getNumGrad( ){ return _NUM_GRAD; }
 
+            virtual void performGradientStep( const floatVector &X0 );
+
             // END GRADIENT DESCENT FUNCTIONS
 
         protected:
