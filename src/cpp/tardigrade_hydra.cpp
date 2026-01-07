@@ -1574,19 +1574,19 @@ namespace tardigradeHydra{
          * \param &X0: The base value of the unknown vector
          */
 
-        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
+        const floatVector *dResidualNormdX = solver->step->get_basedResidualNormdX( );
 
         unsigned int l                     = 0;
 
-        const unsigned int maxiter         = getMaxGradientIterations( );
+        const unsigned int maxiter         = solver->hydra->getMaxGradientIterations( );
 
-        while( checkGradientIteration( ) ){
+        while( solver->hydra->checkGradientIteration( ) ){
 
-            floatType t = std::pow( getGradientBeta( ), l );
+            floatType t = std::pow( solver->hydra->getGradientBeta( ), l );
 
-            updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
+            solver->updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
 
-            if ( checkGradientConvergence( X0 ) ){
+            if ( solver->hydra->checkGradientConvergence( X0 ) ){
 
                 break;
 
@@ -1594,11 +1594,11 @@ namespace tardigradeHydra{
 
             l++;
 
-            incrementGradientIteration( );
+            solver->hydra->incrementGradientIteration( );
 
         }
 
-        resetToleranceScaleFactor( );
+        solver->hydra->resetToleranceScaleFactor( );
 
         if ( l >= maxiter ){
 
@@ -1606,9 +1606,9 @@ namespace tardigradeHydra{
 
         }
 
-        incrementNumGrad( );
+        solver->hydra->incrementNumGrad( );
 
-        resetGradientIteration( );
+        solver->hydra->resetGradientIteration( );
 
     }
 
