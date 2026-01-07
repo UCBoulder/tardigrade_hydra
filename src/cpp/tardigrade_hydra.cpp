@@ -1570,9 +1570,9 @@ namespace tardigradeHydra{
     /*!
      * Check if the gradient hasn't exceeded the number of allowed iterations
      */
-    bool hydraBase::checkGradientIteration( ){
+    bool SolverStepBase::checkGradientIteration( ){
 
-        return _gradientIteration < solver->step->getMaxGradientIterations( );
+        return getGradientIteration( ) < solver->step->getMaxGradientIterations( );
 
     }
 
@@ -1589,7 +1589,7 @@ namespace tardigradeHydra{
 
         const unsigned int maxiter         = solver->step->getMaxGradientIterations( );
 
-        while( solver->hydra->checkGradientIteration( ) ){
+        while( solver->step->checkGradientIteration( ) ){
 
             floatType t = std::pow( solver->hydra->getGradientBeta( ), l );
 
@@ -1603,7 +1603,7 @@ namespace tardigradeHydra{
 
             l++;
 
-            solver->hydra->incrementGradientIteration( );
+            solver->step->incrementGradientIteration( );
 
         }
 
@@ -1617,7 +1617,7 @@ namespace tardigradeHydra{
 
         solver->hydra->incrementNumGrad( );
 
-        solver->hydra->resetGradientIteration( );
+        solver->step->resetGradientIteration( );
 
     }
 
@@ -1966,7 +1966,7 @@ namespace tardigradeHydra{
 
         solver->step->resetLSIteration( );
 
-        resetGradientIteration( );
+        solver->step->resetGradientIteration( );
 
         if ( getFailureVerbosityLevel( ) > 0 ){
             addToFailureOutput( "Initial Unknown:\n" );

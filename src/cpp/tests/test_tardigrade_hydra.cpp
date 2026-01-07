@@ -63,6 +63,12 @@ namespace tardigradeHydra{
 
                 }
 
+                static unsigned int get_gradientIteration( SolverStepBase &step ){
+
+                    return step._gradientIteration;
+
+                }
+
         };
 
         class hydraBaseTester{
@@ -346,12 +352,6 @@ namespace tardigradeHydra{
                 static unsigned int get_iteration( hydraBase &hydra ){
 
                     return hydra._iteration;
-
-                }
-
-                static unsigned int get_gradientIteration( hydraBase &hydra ){
-
-                    return hydra._gradientIteration;
 
                 }
 
@@ -3863,7 +3863,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                 unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
 
-                unsigned int gradientIteration = tardigradeHydra::unit_test::hydraBaseTester::get_gradientIteration( *this );
+                unsigned int gradientIteration = tardigradeHydra::unit_test::SolverStepBaseTester::get_gradientIteration( *( solver->step ) );
 
                 in_gradient_convergence = 1;
 
@@ -3887,7 +3887,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                 unsigned int LSIteration = tardigradeHydra::unit_test::SolverStepBaseTester::get_LSIteration( *( solver->step ) );
 
-                unsigned int gradIteration = tardigradeHydra::unit_test::hydraBaseTester::get_gradientIteration( *this );
+                unsigned int gradIteration = tardigradeHydra::unit_test::SolverStepBaseTester::get_gradientIteration( *( solver->step ) );
 
                 unsigned int iterationOffset = 0;
 
@@ -3935,7 +3935,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                 unsigned int LSIteration = tardigradeHydra::unit_test::SolverStepBaseTester::get_LSIteration( *( solver->step ) );
 
-                unsigned int gradIteration = tardigradeHydra::unit_test::hydraBaseTester::get_gradientIteration( *this );
+                unsigned int gradIteration = tardigradeHydra::unit_test::SolverStepBaseTester::get_gradientIteration( *( solver->step ) );
 
                 unsigned int subIteration = LSIteration + gradIteration + in_gradient_convergence;
 

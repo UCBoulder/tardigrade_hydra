@@ -141,10 +141,15 @@ namespace tardigradeHydra{
 
             virtual bool checkDescentDirection( const floatVector &dx );
 
-            //!< Get the max allowable number of gradient iterations
+            //! Get the max allowable number of gradient iterations
             const unsigned int getMaxGradientIterations( ){ return _maxGradientIterations; }
 
+            //! Get the current gradient iteration
+            const unsigned int getGradientIteration( ){ return _gradientIteration; }
+
             void setMaxGradientIterations( const unsigned int &value );
+
+            bool checkGradientIteration( );
 
             // END GRADIENT DESCENT FUNCTIONS
 
@@ -221,11 +226,23 @@ namespace tardigradeHydra{
             //! Update the line-search lambda parameter
             virtual void updateLambda( ){ _lambda *= 0.5; }
 
-            void resetNumLS( ){ /*! Reset the number of line search steps */ _NUM_LS = 0; }
+            //! Reset the number of line search steps
+            void resetNumLS( ){ _NUM_LS = 0; }
 
-            void incrementNumLS( ){ /*! Set the number of line search steps */ _NUM_LS++; }
+            //! Increment the number of line search steps
+            void incrementNumLS( ){ _NUM_LS++; }
 
             // END LINESEARCH PARAMETERS
+
+            // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
+
+            //! Increment the number of gradient descent steps
+            void incrementGradientIteration( ){ _gradientIteration++; }
+
+            //! Reset the number of gradient descent steps
+            void resetGradientIteration( ){ _gradientIteration = 0; }
+
+            // END GRADIENT DESCENT FUNCTIONS
 
         private:
 
@@ -288,6 +305,8 @@ namespace tardigradeHydra{
             floatType _gradientRho   = 1e-8; //!< The rho parameter for the gradient descent step
 
             floatType _gradientP     = 2.1; //!< The p parameter for the gradient descent step
+
+            unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
 
             unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
 

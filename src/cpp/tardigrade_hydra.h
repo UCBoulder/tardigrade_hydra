@@ -872,8 +872,6 @@ namespace tardigradeHydra{
 
             unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
-            unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
-
             unsigned int _relaxedIteration = 0; //!< The current relaxed iteration of the non-linear problem
 
             void setFirstConfigurationJacobians( );
@@ -884,13 +882,7 @@ namespace tardigradeHydra{
 
             void incrementIteration( );
 
-            void incrementGradientIteration( ){ _gradientIteration++; }
-
-            void resetGradientIteration( ){ _gradientIteration = 0; }
-
             bool checkIteration( ){ return _iteration < _maxIterations; }
-
-            bool checkGradientIteration( );
 
             void resetIterationData( );
 
