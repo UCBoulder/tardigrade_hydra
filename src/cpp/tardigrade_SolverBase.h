@@ -44,8 +44,6 @@ namespace tardigradeHydra{
 
             virtual void solve( );
 
-            const unsigned int getIteration( );
-
             const bool getRankDeficientError( );
 
             void setRankDeficientError( const bool &value );
@@ -67,6 +65,9 @@ namespace tardigradeHydra{
             const unsigned int getMaxIterations( ){ return _maxIterations; }
 
             void setMaxIterations( const unsigned int &value );
+
+            //! Get the current nonlinear iteration number
+            const unsigned int getIteration( ){ return _iteration; }
 
             // END NONLINEAR FUNCTIONS
 
@@ -139,6 +140,11 @@ namespace tardigradeHydra{
 
             virtual void callResidualPostNLSolve( );
 
+            //! Reset the number of iterations
+            void resetIterations( ){ _iteration = 0; }
+
+            void incrementIteration( );
+
             // END NONLINEAR FUNCTIONS
 
         private:
@@ -153,6 +159,8 @@ namespace tardigradeHydra{
             bool _initializeUnknownVector = true; //!< Flag for whether to initialize the unknown vector in the non-linear solve
 
             unsigned int _maxIterations = 20; //!< The maximum number of allowable iterations
+
+            unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
 
             // END NONLINEAR FUNCTIONS
 

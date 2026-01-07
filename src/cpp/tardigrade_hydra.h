@@ -578,8 +578,6 @@ namespace tardigradeHydra{
             //! Update the scaled quantities
             virtual void setScaledQuantities( );
 
-            void resetIterations( ){ /*! Set the number of iterations */ _iteration = 0; }
-
             virtual void callResidualPreSubcycler( );
 
             virtual void callResidualPostSubcyclerSuccess( );
@@ -784,8 +782,6 @@ namespace tardigradeHydra{
 
             DataStorage< floatVector > _flatdXdAdditionalDOF; //!< The total derivative of the unknown vector w.r.t. the additional DOF
 
-            unsigned int _iteration = 0; //!< The current iteration of the non-linear problem
-
             unsigned int _relaxedIteration = 0; //!< The current relaxed iteration of the non-linear problem
 
             void setFirstConfigurationJacobians( );
@@ -794,9 +790,7 @@ namespace tardigradeHydra{
 
             void setTolerance( const floatVector &tolerance );
 
-            void incrementIteration( );
-
-            bool checkIteration( ){ return _iteration < solver->getMaxIterations( ); }
+            bool checkIteration( ){ return solver->getIteration( ) < solver->getMaxIterations( ); }
 
             void resetIterationData( );
 

@@ -1686,15 +1686,6 @@ namespace tardigradeHydra{
     // END SolverStepBase methods
     // SolverBase methods
 
-    const unsigned int SolverBase::getIteration( ){
-        /*!
-         * Get the current iteration number
-         */
-
-        return hydra->_iteration;
-
-    }
-
     void SolverBase::solve( ){
         /*!
          * Solve the system of equations
@@ -1702,11 +1693,6 @@ namespace tardigradeHydra{
     }
 
     // End SolverBase methods
-
-    /*!
-     * Increment the iteration
-     */
-    void hydraBase::incrementIteration( ){ _iteration++; solver->step->resetLSIteration( ); }
 
     /*!
      * Solve the non-linear problem
@@ -1741,7 +1727,7 @@ namespace tardigradeHydra{
             solver->callResidualSuccessfulNLStep( );
 
             // Increment the iteration count
-            solver->hydra->incrementIteration( );
+            solver->incrementIteration( );
 
             // Reset the nonlinear step data
             resetNLStepData( );
@@ -1857,7 +1843,7 @@ namespace tardigradeHydra{
 
             // Reset hydra
             updateUnknownVector( *getUnknownVector( ) ); //This allows for the relaxed to change the projection and adjust the decomposition
-            resetIterations( );
+            solver->resetIterations( );
 
         }
 
@@ -1992,7 +1978,7 @@ namespace tardigradeHydra{
 
                     setScaleFactor( sp + ds ); // Update the scaling factor
 
-                    resetIterations( ); // Reset the non-linear iteration count
+                    solver->resetIterations( ); // Reset the non-linear iteration count
 
                     evaluateInternal( ); // Try to solve the non-linear problem
 
@@ -2079,7 +2065,7 @@ namespace tardigradeHydra{
 
                 try{
 
-                    resetIterations( );
+                    solver->resetIterations( );
                     _prerelaxed_initialX = _initialX;
                     updateUnknownVector( _initialX );
                     performRelaxedSolve( );
@@ -2111,7 +2097,7 @@ namespace tardigradeHydra{
                 }
                 setCurrentResidualIndexMeaningful( false );
     
-                resetIterations( );
+                solver->resetIterations( );
                 updateUnknownVector( _initialX );
     
                 try{

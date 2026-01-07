@@ -252,6 +252,11 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Increment the iteration
+     */
+    void SolverBase::incrementIteration( ){ _iteration++; step->resetLSIteration( ); }
+
+    /*!
      * Reset all nonlinear step data
      */
     void SolverBase::resetNLStepData( ){
