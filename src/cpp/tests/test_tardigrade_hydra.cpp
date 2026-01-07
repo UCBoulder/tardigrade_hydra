@@ -269,18 +269,6 @@ namespace tardigradeHydra{
 
                 }
 
-                static void checkGradientRho( hydraBase &hydra ){
-
-                    BOOST_CHECK( hydra._gradientRho == hydra.getGradientRho( ) );
-
-                }
-
-                static void checkGradientP( hydraBase &hydra ){
-
-                    BOOST_CHECK( hydra._gradientP == hydra.getGradientP( ) );
-
-                }
-
                 static void formNonLinearResidual( hydraBase &hydra ){
 
                     BOOST_CHECK_NO_THROW( hydra.formNonLinearResidual( ) );
@@ -629,22 +617,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_getMaxGradientIterations, * boost::unit_tes
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_getGradientRho, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkGradientRho( hydra );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_hydraBase_getGradientP, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    tardigradeHydra::unit_test::hydraBaseTester::checkGradientP( hydra );
-
-}
-
 BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::hydraBase hydra;
@@ -672,26 +644,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_setMaxGradientIterations, * boost::unit_tes
     hydra.setMaxGradientIterations( 123 );
 
     BOOST_TEST( 123 == hydra.getMaxGradientIterations( ) );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientRho, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    hydra.setGradientRho( 123.4 );
-
-    BOOST_TEST( 123.4 == hydra.getGradientRho( ) );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_hydraBase_setGradientP, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::hydraBase hydra;
-
-    hydra.setGradientP( 123.4 );
-
-    BOOST_TEST( 123.4 == hydra.getGradientP( ) );
 
 }
 
@@ -3923,20 +3875,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             }
 
-            virtual bool checkDescentDirection( const floatVector &dx ) override{
-
-                unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *this );
-
-                if ( iteration == 1 ){
-
-                    return false;
-
-                }
-
-                return true;
-
-            }
-
             virtual void performGradientStep( const floatVector &X0 ) override{
 
                 in_gradient_convergence = 1;
@@ -4091,6 +4029,20 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
                 solver->getResidual( );
 
                 if ( LSIteration < residual[ iteration ].size( ) - 1 ){
+
+                    return false;
+
+                }
+
+                return true;
+
+            }
+
+            virtual bool checkDescentDirection( const floatVector &dx ) override{
+
+                unsigned int iteration = tardigradeHydra::unit_test::hydraBaseTester::get_iteration( *( solver->hydra ) );
+
+                if ( iteration == 1 ){
 
                     return false;
 
@@ -4826,105 +4778,6 @@ BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1
     hydra.runGradientStep( );
 
     BOOST_TEST( answer == *hydra.getUnknownVector( ), CHECK_PER_ELEMENT );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_checkDescentDirection, * boost::unit_test::tolerance( 1e-5 ) ){
-    /*!
-     * Test checking the descent direction
-     */
-
-    floatType time = 1.1;
-
-    floatType deltaTime = 2.2;
-
-    floatType temperature = 5.3;
-
-    floatType previousTemperature = 23.4;
-
-    floatVector deformationGradient = { 0.39293837, -0.42772133, -0.54629709,
-                                        0.10262954,  0.43893794, -0.15378708,
-                                        0.9615284 ,  0.36965948, -0.0381362 };
-
-    floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
-                                                -0.12285551, -0.88064421, -0.20391149,
-                                                 0.47599081, -0.63501654, -0.64909649 };
-
-    floatVector previousStateVariables = { 0.53155137, 0.53182759, 0.63440096, 0.84943179, 0.72445532,
-                                           0.61102351, 0.72244338, 0.32295891, 0.36178866, 0.22826323,
-                                           0.29371405, 0.63097612, 0.09210494, 0.43370117, 0.43086276,
-                                           0.4936851 , 0.42583029, 0.31226122, 0.42635131, 0.89338916,
-                                           0.94416002, 0.50183668, 0.62395295, 0.1156184 , 0.31728548,
-                                           0.41482621, 0.86630916, 0.25045537, 0.48303426, 0.98555979,
-                                           0.51948512, 0.61289453, 0.12062867, 0.8263408 , 0.60306013,
-                                           0.54506801, 0.34276383, 0.30412079 }; 
-
-    floatVector parameters = { 1, 2, 3, 4, 5 };
-
-    unsigned int numConfigurations = 4;
-
-    unsigned int numNonLinearSolveStateVariables = 5;
-
-    unsigned int dimension = 3;
-
-    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
-
-        public:
-
-            floatType residualNorm = 0.2408779076031648;
-
-            floatVector dResidualNormdX = { -1.17899799,  0.07843952, -0.01708813, -0.01779959, -0.06410942 };
-
-            using tardigradeHydra::SolverStepBase::SolverStepBase;
-
-            void mockInitialize( ){
-
-                set_residualNorm( residualNorm );
-
-                set_basedResidualNormdX( dResidualNormdX );
-
-            }
-
-    };
-
-    class hydraBaseMock : public tardigradeHydra::hydraBase{
-
-        public:
-
-            using tardigradeHydra::hydraBase::hydraBase;
-
-            void set_solver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
-
-            virtual bool runCheckDescentDirection( const floatVector &dx ){
-
-                return checkDescentDirection( dx );
-
-            }
-
-            virtual const unsigned int getNumUnknowns( ) override{ return 5; }
-
-    };
-
-    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
-                         { }, { },
-                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
-
-    tardigradeHydra::SolverBase solver;
-    SolverStepBaseMock step;
-    hydra.set_solver( &solver );
-    solver.hydra = &hydra;
-    solver.step = &step;
-    step.setSolver( &solver );
-
-    floatVector dx = step.dResidualNormdX;
-
-    step.mockInitialize( );
-
-    BOOST_TEST( !hydra.runCheckDescentDirection( dx ) );
-
-    dx = -step.dResidualNormdX;
-
-    BOOST_TEST( hydra.runCheckDescentDirection( dx ) );
 
 }
 
