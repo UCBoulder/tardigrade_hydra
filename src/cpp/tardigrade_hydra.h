@@ -744,8 +744,6 @@ namespace tardigradeHydra{
 
             floatType _tola; //!< The absolute tolerance
 
-            unsigned int _maxIterations; //!< The maximum number of allowable iterations
-
             bool _use_relaxed_solve = true; //!< Flag for whether to attempt a relaxed solve in case of failure
 
             bool _rank_deficient_error = true; //!< Flag for whether a rank-deficient LHS will throw a convergence error
@@ -798,7 +796,7 @@ namespace tardigradeHydra{
 
             void incrementIteration( );
 
-            bool checkIteration( ){ return _iteration < _maxIterations; }
+            bool checkIteration( ){ return _iteration < solver->getMaxIterations( ); }
 
             void resetIterationData( );
 

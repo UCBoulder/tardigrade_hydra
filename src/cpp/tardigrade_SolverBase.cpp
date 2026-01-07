@@ -241,6 +241,17 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Set the maximum number of allowable nonlinear iterations
+     *
+     * \param &value: The maximum number of iterations
+     */
+    void SolverBase::setMaxIterations( const unsigned int &value ){
+
+        _maxIterations = value;
+
+    }
+
+    /*!
      * Reset all nonlinear step data
      */
     void SolverBase::resetNLStepData( ){

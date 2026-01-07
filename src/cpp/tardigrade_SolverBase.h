@@ -63,6 +63,11 @@ namespace tardigradeHydra{
 
             void resetNLStepData( );
 
+            //! Return the maximum number of allowable iterations
+            const unsigned int getMaxIterations( ){ return _maxIterations; }
+
+            void setMaxIterations( const unsigned int &value );
+
             // END NONLINEAR FUNCTIONS
 
             // Pass-through functions
@@ -146,6 +151,8 @@ namespace tardigradeHydra{
             // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
 
             bool _initializeUnknownVector = true; //!< Flag for whether to initialize the unknown vector in the non-linear solve
+
+            unsigned int _maxIterations = 20; //!< The maximum number of allowable iterations
 
             // END NONLINEAR FUNCTIONS
 
