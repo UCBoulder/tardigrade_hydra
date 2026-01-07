@@ -168,9 +168,6 @@ namespace tardigradeHydra{
             //!< Get the gradient descent sigma parameter
             const floatType getGradientSigma( ){ return _gradientSigma; }
 
-            //!< Get the gradient descent beta parameter
-            const floatType getGradientBeta( ){ return _gradientBeta; }
-
             //!< Get a reference to whether the Newton step should be a relaxed solve
             const bool getUseRelaxedSolve( ){ return _use_relaxed_solve; }
 
@@ -183,18 +180,6 @@ namespace tardigradeHydra{
                 */
 
                 _gradientSigma = value;
-
-            }
-
-            //!< Set the gradient descent beta parameter
-            void setGradientBeta( const floatType &value ){
-               /*!
-                * Set the value of the beta parameter for gradient descent steps
-                *
-                * \param &value: The value of the parameter
-                */
- 
-                _gradientBeta = value;
 
             }
 
@@ -845,8 +830,6 @@ namespace tardigradeHydra{
             DataStorage< floatVector > _previouslyConvergedStress; //!< The previously converged stress
 
             floatType _gradientSigma = 1e-4; //!< The sigma parameter for the gradient descent step
-
-            floatType _gradientBeta  = 0.9; //!< The beta parameter for the gradient descent step
 
             DataStorage< floatVector > _dRdF; //!< The gradient of the residual w.r.t. the deformation gradient in row-major form for the global solve
 

@@ -1591,7 +1591,7 @@ namespace tardigradeHydra{
 
         while( solver->step->checkGradientIteration( ) ){
 
-            floatType t = std::pow( solver->hydra->getGradientBeta( ), l );
+            floatType t = std::pow( solver->step->getGradientBeta( ), l );
 
             solver->updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
 
@@ -1607,7 +1607,7 @@ namespace tardigradeHydra{
 
         }
 
-        solver->hydra->resetToleranceScaleFactor( );
+        solver->resetToleranceScaleFactor( );
 
         if ( l >= maxiter ){
 
