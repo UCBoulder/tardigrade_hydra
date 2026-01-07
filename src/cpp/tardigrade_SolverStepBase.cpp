@@ -388,7 +388,7 @@ namespace tardigradeHydra{
 
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( solver->getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 
-        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + solver->step->getMuk( ) * _dx ).eval( );
+        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + getMuk( ) * _dx ).eval( );
 
         for ( unsigned int i = 0; i < numConstraints; i++ ){
 
