@@ -1865,7 +1865,7 @@ namespace tardigradeHydra{
         }
         else{
 
-            solver->hydra->resetToleranceScaleFactor( );
+            solver->resetToleranceScaleFactor( );
 
             solver->hydra->incrementNumNewton( );
 
