@@ -1544,29 +1544,6 @@ namespace tardigradeHydra{
 
     }
 
-    bool hydraBase::checkGradientConvergence( const floatVector &X0 ){
-        /*!
-         * Check the convergence of a gradient step
-         *
-         * \param &X0: The initial value of the unknown vector
-         */
-
-        const unsigned int xsize = solver->getNumUnknowns( );
-
-        floatVector dx = ( *( solver->getUnknownVector( ) ) ) - X0;
-
-        floatType RHS = *solver->step->get_baseResidualNorm( );
-
-        for ( unsigned int i = 0; i < xsize; ++i ){
-
-            RHS += solver->step->getGradientSigma( ) * ( *( solver->step->get_basedResidualNormdX( ) ) )[ i ] * dx[ i ];
-
-        }
-
-        return ( *solver->step->get_residualNorm( ) ) < solver->getToleranceScaleFactor( ) * RHS;
-
-    }
-
     void hydraBase::performGradientStep( const floatVector &X0 ){
         /*!
          * Perform a gradient descent step
@@ -1586,7 +1563,7 @@ namespace tardigradeHydra{
 
             solver->updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
 
-            if ( solver->hydra->checkGradientConvergence( X0 ) ){
+            if ( solver->step->checkGradientConvergence( X0 ) ){
 
                 break;
 

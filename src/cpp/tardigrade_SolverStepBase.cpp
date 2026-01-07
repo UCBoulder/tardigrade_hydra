@@ -889,6 +889,29 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Check the convergence of a gradient step
+     *
+     * \param &X0: The initial value of the unknown vector
+     */
+    bool SolverStepBase::checkGradientConvergence( const floatVector &X0 ){
+
+        const unsigned int xsize = solver->getNumUnknowns( );
+
+        floatVector dx = ( *( solver->getUnknownVector( ) ) ) - X0;
+
+        floatType RHS = *get_baseResidualNorm( );
+
+        for ( unsigned int i = 0; i < xsize; ++i ){
+
+            RHS += getGradientSigma( ) * ( *( get_basedResidualNormdX( ) ) )[ i ] * dx[ i ];
+
+        }
+
+        return ( *get_residualNorm( ) ) < solver->getToleranceScaleFactor( ) * RHS;
+
+    }
+
 // END GRADIENT DESCENT FUNCTIONS
 
 }

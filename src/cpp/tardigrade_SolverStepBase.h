@@ -161,6 +161,8 @@ namespace tardigradeHydra{
 
             bool checkGradientIteration( );
 
+            virtual bool checkGradientConvergence( const floatVector &X0 );
+
             // END GRADIENT DESCENT FUNCTIONS
 
         protected:

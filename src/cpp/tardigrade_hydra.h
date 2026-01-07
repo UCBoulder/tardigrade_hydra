@@ -244,8 +244,6 @@ namespace tardigradeHydra{
 
             virtual bool checkConvergence( );
 
-            virtual bool checkGradientConvergence( const floatVector &X0 );
-
             const floatVector* getStress( );
 
             const floatVector* getPreviousStress( );
