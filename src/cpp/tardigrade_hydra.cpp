@@ -7,52 +7,14 @@
   ******************************************************************************
   */
 
-#include<tardigrade_hydra.h>
-
-#include<tardigrade_abaqus_tools.h>
+#include"tardigrade_hydra.h"
+#include"tardigrade_SolverStepBase.h"
 
 namespace tardigradeHydra{
 
     //Define hydra global constants in a place that Doxygen can pick up for documentation
-    /** \brief Define the expected number of tensor spatial dimensions for the Abaqus interface. */
+    /** \brief Define the expected number of tensor spatial dimensions. */
     const int spatialDimensions = 3;
-
-    /** \brief Define required number of Abaqus material constants for the Abaqus interface. */
-    const int nStateVariables = 2;
-
-    /** \brief Define required number of Abaqus material constants for the Abaqus interface. */
-    const int nMaterialParameters = 2;
-
-    void residualBase::addIterationData( dataBase *data ){
-        /*!
-         * Add data to the vector of values which will be cleared after each iteration
-         * 
-         * \param *data: The dataBase object to be cleared
-         */
-
-        hydra->addIterationData( data );
-
-    }
-
-    void residualBase::addNLStepData( dataBase *data ){
-        /*!
-         * Add data to the vector of values which will be cleared after each nonlinear step
-         * 
-         * \param *data: The dataBase object to be cleared
-         */
-
-        hydra->addNLStepData( data );
-
-    }
-
-    void residualBase::setupRelaxedStep( const unsigned int &relaxedStep ){
-        /*!
-         * When performing a relaxed iteration this function is called prior to the solution of the non-linear
-         * problem. Users can use this function to dynamically adjust parameters or perform other tuning tasks.
-         *
-         * \param &relaxedStep: The current relaxed step.
-         */
-    }
 
     hydraBase::hydraBase( const floatType &time, const floatType &deltaTime,
                           const floatType &temperature, const floatType &previousTemperature,
@@ -76,9 +38,7 @@ namespace tardigradeHydra{
                                                            _numConfigurations( numConfigurations ),
                                                            _numNonLinearSolveStateVariables( numNonLinearSolveStateVariables ),
                                                            _tolr( tolr ), _tola( tola ),
-                                                           _maxIterations( maxIterations ), _maxLSIterations( maxLSIterations ),
-                                                           _lsAlpha( lsAlpha ),
-                                                           _use_preconditioner( use_preconditioner ), _preconditioner_type( preconditioner_type ){
+                                                           _maxIterations( maxIterations ){
         /*!
          * The main constructor for the hydra base class. Inputs are all the required values for most solves.
          * 
@@ -115,12 +75,15 @@ namespace tardigradeHydra{
         // Set the residual classes
         setResidualClasses( );
 
-        // Initialize the preconditioner if required
-        if ( _use_preconditioner ){
-
-            initializePreconditioner( );
-
-        }
+        // TEMP
+        _solver.hydra = this;
+        solver->step->setSolver( solver );
+        solver->step->setLSAlpha( lsAlpha );
+        solver->step->setMaxLSIterations( maxLSIterations );
+        solver->preconditioner->setSolver( solver );
+        solver->preconditioner->_use_preconditioner = use_preconditioner;
+        solver->preconditioner->_preconditioner_type = preconditioner_type;
+        // END TEMP
 
     }
 
@@ -135,12 +98,12 @@ namespace tardigradeHydra{
 
     }
 
-    hydraBase::setDataStorageIteration<secondOrderTensor> hydraBase::get_setDataStorage_stress( ){
+    hydraBase::SetDataStorageIteration<secondOrderTensor> hydraBase::get_SetDataStorage_stress( ){
         /*!
-         * Get a setDataStorage object for the stress
+         * Get a SetDataStorage object for the stress
          */
 
-        return hydraBase::setDataStorageIteration<secondOrderTensor>( &_stress, this );
+        return hydraBase::SetDataStorageIteration<secondOrderTensor>( &_stress, this );
 
     }
 
@@ -151,7 +114,7 @@ namespace tardigradeHydra{
 
         const floatVector *unknownVector = getUnknownVector( );
 
-        auto stress = get_setDataStorage_stress( );
+        auto stress = get_SetDataStorage_stress( );
 
         stress.zero( getConfigurationUnknownCount( ) );
 
@@ -186,14 +149,14 @@ namespace tardigradeHydra{
 
         inverseConfigurations = floatVector( num_configs * sot_dim, 0 );
 
-        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat( NULL, 3, 3 );
+        auto mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>( inverseConfigurations.data() );
 #ifdef TARDIGRADE_HYDRA_USE_LLXSMM
         kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0 );
 
         // Initialize the first configuration with the total deformation gradient
         secondOrderTensor temp( sot_dim, 0 );
 #else
-        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor> > mat2( NULL, 3, 3 );
+        auto mat2 = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>( configurations.data() );
 #endif
 
         std::copy( total_transformation.begin( ), total_transformation.end( ), configurations.begin( ) );
@@ -253,14 +216,14 @@ namespace tardigradeHydra{
         const floatVector *unknownVector = getUnknownVector( );
 
         // Set the configurations
-        auto configurations = get_setDataStorage_configurations( );
+        auto configurations = get_SetDataStorage_configurations( );
 
-        auto inverseConfigurations = get_setDataStorage_inverseConfigurations( );
+        auto inverseConfigurations = get_SetDataStorage_inverseConfigurations( );
 
         computeConfigurations( unknownVector, getStressSize( ), *getDeformationGradient( ), *configurations.value, *inverseConfigurations.value );
 
         // Extract the remaining state variables required for the non-linear solve
-        auto nonLinearSolveStateVariables = get_setDataStorage_nonLinearSolveStateVariables( );
+        auto nonLinearSolveStateVariables = get_SetDataStorage_nonLinearSolveStateVariables( );
 
         auto nNLISV = getNumNonLinearSolveStateVariables( );
 
@@ -319,13 +282,13 @@ namespace tardigradeHydra{
 
         }
 
-        auto configurations = get_setDataStorage_configurations( );
+        auto configurations = get_SetDataStorage_configurations( );
 
-        auto previousConfigurations = get_setDataStorage_previousConfigurations( );
+        auto previousConfigurations = get_SetDataStorage_previousConfigurations( );
 
-        auto inverseConfigurations = get_setDataStorage_inverseConfigurations( );
+        auto inverseConfigurations = get_SetDataStorage_inverseConfigurations( );
 
-        auto previousInverseConfigurations = get_setDataStorage_previousInverseConfigurations( );
+        auto previousInverseConfigurations = get_SetDataStorage_previousInverseConfigurations( );
 
         // Compute the configurations
         computeConfigurations( getPreviousStateVariables( ), 0, *getDeformationGradient( ), *configurations.value, *inverseConfigurations.value, true );
@@ -333,8 +296,8 @@ namespace tardigradeHydra{
         computeConfigurations( getPreviousStateVariables( ), 0, *getPreviousDeformationGradient( ), *previousConfigurations.value, *previousInverseConfigurations.value, true );
 
         // Extract the remaining state variables required for the non-linear solve
-        auto nonLinearSolveStateVariables         = get_setDataStorage_nonLinearSolveStateVariables( );
-        auto previousNonLinearSolveStateVariables = get_setDataStorage_previousNonLinearSolveStateVariables( );
+        auto nonLinearSolveStateVariables         = get_SetDataStorage_nonLinearSolveStateVariables( );
+        auto previousNonLinearSolveStateVariables = get_SetDataStorage_previousNonLinearSolveStateVariables( );
 
         previousNonLinearSolveStateVariables.zero( nNLISV );
 
@@ -345,8 +308,8 @@ namespace tardigradeHydra{
         *nonLinearSolveStateVariables.value = *previousNonLinearSolveStateVariables.value;
 
         // Extract the additional state variables
-        auto additionalStateVariables         = get_setDataStorage_additionalStateVariables( );
-        auto previousAdditionalStateVariables = get_setDataStorage_previousAdditionalStateVariables( );
+        auto additionalStateVariables         = get_SetDataStorage_additionalStateVariables( );
+        auto previousAdditionalStateVariables = get_SetDataStorage_previousAdditionalStateVariables( );
 
         unsigned int nAISV = ( unsigned int )( std::end( *getPreviousStateVariables( ) ) - ( std::begin( *getPreviousStateVariables( ) ) + ( nConfig - 1 ) * getConfigurationUnknownCount( ) + nNLISV ) );
 
@@ -420,8 +383,8 @@ namespace tardigradeHydra{
         floatVector temp;
         kernel_type kernel(LIBXSMM_GEMM_FLAG_NONE, dim, dim, dim, 1, 0 );
 #else
-        Eigen::Map<Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor>> Fsc_mat( Fsc.data( ), 3, 3 );
-        Eigen::Map<const Eigen::Matrix<floatType, 3, 3, Eigen::RowMajor>> mat( NULL, 3, 3 );
+        auto Fsc_mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>( Fsc.data( ) );
+        auto mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>( configurations.data() );
 #endif
 
         for ( unsigned int i = lowerIndex; i < upperIndex; i++ ){
@@ -464,11 +427,11 @@ namespace tardigradeHydra{
 
         floatVector gradient( sot_dim * sot_dim * num_incoming_configs, 0 );
 
-        Eigen::Map< Eigen::Matrix< floatType, 3, 3 > > map( NULL, dim, dim );
+        secondOrderTensor Fm, FpT;
+
+        auto map = tardigradeHydra::getFixedSizeMatrixMap<floatType,3,3>(FpT.data());
 
         for ( unsigned int index = lowerIndex; index < upperIndex; index++ ){
-
-            secondOrderTensor Fm, FpT;
 
             TARDIGRADE_ERROR_TOOLS_CATCH( Fm = getSubConfiguration( configurations, lowerIndex, index ) );
 
@@ -696,17 +659,17 @@ namespace tardigradeHydra{
         secondOrderTensor fullConfiguration = getSubConfiguration( configurations, 0, num_configs );
 
         secondOrderTensor invCsc = getSubConfiguration( configurations, 1, num_configs );
-        Eigen::Map < Eigen::Matrix< floatType, 3, 3, Eigen::RowMajor > > mat( invCsc.data( ), dim, dim );
+        auto mat = tardigradeHydra::getFixedSizeMatrixMap<floatType, 3, 3>( invCsc.data( ) );
         mat = mat.inverse( ).eval( );
 
         fourthOrderTensor dInvCscdCsc = tardigradeVectorTools::computeFlatDInvADA( invCsc, dim, dim );
-        Eigen::Map< const Eigen::Matrix< floatType, sot_dim, sot_dim, Eigen::RowMajor > > map_dInvCscdCsc( dInvCscdCsc.data( ), sot_dim, sot_dim );
+        auto map_dInvCscdCsc = tardigradeHydra::getFixedSizeMatrixMap<floatType, sot_dim, sot_dim>( dInvCscdCsc.data( ) );
 
         floatVector dCscdCs = getSubConfigurationJacobian( configurations, 1, num_configs );
-        Eigen::Map< const Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dCscdCs( dCscdCs.data( ), sot_dim, num_configs * sot_dim );
+        auto map_dCscdCs = tardigradeHydra::getDynamicSizeMatrixMap( dCscdCs.data( ), sot_dim, num_configs * sot_dim );
 
         floatVector dInvCscdCs( sot_dim * num_configs * sot_dim, 0 );
-        Eigen::Map< Eigen::Matrix< floatType, sot_dim, -1, Eigen::RowMajor > > map_dInvCscdCs( dInvCscdCs.data( ), sot_dim, num_configs * sot_dim ); 
+        auto map_dInvCscdCs = tardigradeHydra::getDynamicSizeMatrixMap( dInvCscdCs.data( ), sot_dim, num_configs * sot_dim ); 
 
         map_dInvCscdCs = ( map_dInvCscdCsc * map_dCscdCs ).eval( );
 
@@ -749,9 +712,9 @@ namespace tardigradeHydra{
          * Set the Jacobians of the first configuration w.r.t. the total configuration and the remaining sub-configurations
          */
 
-        auto dF1dF = get_setDataStorage_dF1dF( );
+        auto dF1dF = get_SetDataStorage_dF1dF( );
 
-        auto dF1dFn = get_setDataStorage_dF1dFn( );
+        auto dF1dFn = get_SetDataStorage_dF1dFn( );
 
         calculateFirstConfigurationJacobians( *get_configurations( ), *dF1dF.value, *dF1dFn.value );
 
@@ -762,9 +725,9 @@ namespace tardigradeHydra{
          * Set the Jacobians of the previous first configuration w.r.t. the total configuration and the remaining sub-configurations
          */
 
-        auto dF1dF = get_setDataStorage_previousdF1dF( );
+        auto dF1dF = get_SetDataStorage_previousdF1dF( );
 
-        auto dF1dFn = get_setDataStorage_previousdF1dFn( );
+        auto dF1dFn = get_SetDataStorage_previousdF1dFn( );
 
         calculateFirstConfigurationJacobians( *get_previousConfigurations( ), *dF1dF.value, *dF1dFn.value );
 
@@ -808,8 +771,8 @@ namespace tardigradeHydra{
          * state variables though only the residual on the cauchy stress must come
          * in this specific order if the deconstructSolutionVector function is redefined.
          * 
-         * The user should define a vector of residualBase objects and use the
-         * setResidualClasses( std::vector< residualBase > & ) function here.
+         * The user should define a vector of ResidualBase objects and use the
+         * setResidualClasses( std::vector< ResidualBase > & ) function here.
          * 
          * The resulting residual should have the form
          * 
@@ -822,7 +785,7 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::setResidualClasses( std::vector< residualBase* > &residualClasses ){
+    void hydraBase::setResidualClasses( std::vector< ResidualBase<hydraBase>* > &residualClasses ){
         /*!
          * Set the residual classes
          * 
@@ -832,7 +795,7 @@ namespace tardigradeHydra{
 
         unsigned int numEquations = 0;
 
-        _residualClasses.second = std::vector< residualBase* >( residualClasses.size( ) );
+        _residualClasses.second = std::vector< ResidualBase<hydraBase>* >( residualClasses.size( ) );
 
         for ( auto c = residualClasses.begin( ); c != residualClasses.end( ); c++ ){
 
@@ -856,7 +819,7 @@ namespace tardigradeHydra{
 
     }
 
-    std::vector< residualBase* >* hydraBase::getResidualClasses( ){
+    std::vector< ResidualBase<hydraBase>* >* hydraBase::getResidualClasses( ){
         /*!
          * Get a pointer to the vector of residual class pointers
          */
@@ -1103,48 +1066,6 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::formPreconditioner( ){
-        /*!
-         * Form the preconditioner matrix
-         */
-
-        if ( _preconditioner_type == 0 ){
-
-            formMaxRowPreconditioner( );
-
-        }
-        else{
-
-            throw std::runtime_error( "Preconditioner type not recognized" );
-
-        }
-
-        _preconditioner.first = true;
-
-        addIterationData( &_preconditioner );
-
-    }
-
-    void hydraBase::formMaxRowPreconditioner( ){
-        /*!
-         * Form a left preconditioner comprised of the inverse of the maximum value of each row
-         */
-
-        const unsigned int problem_size = getNumUnknowns( );
-
-        _preconditioner.second = floatVector( problem_size, 0 );
-
-        // Find the absolute maximum value in each row
-        for ( unsigned int i = 0; i < problem_size; i++ ){
-
-            _preconditioner.second[ i ] = 1 / std::max( std::fabs( *std::max_element( getFlatNonlinearLHS( )->begin( ) + problem_size * i,
-                                                                                      getFlatNonlinearLHS( )->begin( ) + problem_size * ( i + 1 ),
-                                                                                      [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
-
-        }
-
-    }
-
     const floatVector* hydraBase::getResidual( ){
         /*!
          * Get the residual vector for the non-linear problem
@@ -1172,99 +1093,6 @@ namespace tardigradeHydra{
         }
 
         return &_jacobian.second;
-
-    }
-
-    const floatVector* hydraBase::getNonlinearRHS( ){
-        /*!
-         * Get the RHS vector for the non-linear problem
-         */
-
-        if ( _use_LM_step ){
-
-            if ( !_nonlinearRHS.first ){
-
-                const unsigned int xsize = getNumUnknowns( );
-
-                _nonlinearRHS.first = true;
-
-                _nonlinearRHS.second = floatVector( xsize, 0 );
-
-                const floatVector *residual = getResidual( );
-
-                const floatVector *jacobian = getFlatJacobian( );
-
-                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Jmap( jacobian->data( ), xsize, xsize );
-
-                Eigen::Map< const Eigen::Matrix< floatType, -1,  1 > > Rmap( residual->data( ), xsize );
-
-                Eigen::Map< Eigen::Matrix< floatType, -1,  1 > > RHSmap( _nonlinearRHS.second.data( ), xsize );
-
-                RHSmap = ( Jmap.transpose( ) * Rmap ).eval( );
-
-                addIterationData( &_nonlinearRHS );
-
-            }
-
-            return &_nonlinearRHS.second;
-
-        }
-
-        return getResidual( );
-
-    }
-
-    const floatVector* hydraBase::getFlatNonlinearLHS( ){
-        /*!
-         * Get the flat LHS matrix for the non-linear problem
-         */
-
-        if ( _use_LM_step ){
-
-            if ( !_flatNonlinearLHS.first ){
-
-                const unsigned int xsize = getNumUnknowns( );
-
-                _flatNonlinearLHS.first = true;
-
-                _flatNonlinearLHS.second = floatVector( xsize * xsize, 0 );
-
-                const floatVector * jacobian = getFlatJacobian( );
-
-                Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Jmap( jacobian->data( ), xsize, xsize );
-
-                Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > LHSmap( _flatNonlinearLHS.second.data( ), xsize, xsize );
-
-                LHSmap = ( Jmap.transpose( ) * Jmap ).eval( );
-
-                for ( unsigned int i = 0; i < xsize; i++ ){
-                    _flatNonlinearLHS.second[ xsize * i + i ] += getMuk( );
-                }
-
-                addIterationData( &_flatNonlinearLHS );
-
-            }
-
-            return &_flatNonlinearLHS.second;
-
-        }
-
-        return getFlatJacobian( );
-
-    }
-
-    const floatVector* hydraBase::getFlatPreconditioner( ){
-        /*!
-         * Get the flattened row-major preconditioner for the non-linear problem
-         */
-
-        if ( !_preconditioner.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( formPreconditioner( ) );
-
-        }
-        
-        return &_preconditioner.second;
 
     }
 
@@ -1366,14 +1194,6 @@ namespace tardigradeHydra{
 
         return floatMatrix( 0, floatVector( 0, 0 ) );
 
-    }
-
-    /// Say hello
-    /// @param message The message to print
-    void sayHello( std::string message ) {
-        TARDIGRADE_ERROR_TOOLS_CHECK( ( message.compare( "George" ) != 0 ), "ERROR: George is a wolf in sheep's clothing!");
-        std::cout << "Hello " << message << std::endl;
-        return;
     }
 
     const floatVector* hydraBase::getStress( ){
@@ -1588,7 +1408,7 @@ namespace tardigradeHydra{
          * \f$ tol = tolr * ( |R_0| + |X| ) + tola \f$
          */
 
-        auto tolerance = get_setDataStorage_tolerance( );
+        auto tolerance = get_SetDataStorage_tolerance( );
 
         *tolerance.value = tardigradeVectorTools::abs( *getResidual( ) ) + tardigradeVectorTools::abs( *getUnknownVector( ) );
 
@@ -1607,12 +1427,12 @@ namespace tardigradeHydra{
 
     }
 
-    hydraBase::setDataStorageConstant<floatVector> hydraBase::get_setDataStorage_tolerance( ){
+    hydraBase::SetDataStorageConstant<floatVector> hydraBase::get_SetDataStorage_tolerance( ){
         /*!
-         * Return a setDataStorageConstant setter for the tolerance
+         * Return a SetDataStorageConstant setter for the tolerance
          */
 
-        return setDataStorageConstant<floatVector>( &_tolerance );
+        return SetDataStorageConstant<floatVector>( &_tolerance );
 
     }
 
@@ -1664,36 +1484,6 @@ namespace tardigradeHydra{
 
     }
 
-    const floatType* hydraBase::getLSResidualNorm( ){
-        /*!
-         * Get the residual norm for the line-search convergence criterion
-         */
-
-        if ( !_lsResidualNorm.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( resetLSIteration( ) );
-
-        }
-
-        return &_lsResidualNorm.second;
-
-    }
-
-    bool hydraBase::checkLSConvergence( ){
-        /*!
-         * Check the line-search convergence
-         */
-
-        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < getToleranceScaleFactor( ) * ( 1 - getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
-
-            return true;
-
-        }
-
-        return false;
-
-    }
-
     void hydraBase::updateUnknownVector( const floatVector &newUnknownVector ){
         /*!
          * Update the unknown vector
@@ -1733,278 +1523,6 @@ namespace tardigradeHydra{
 
         // Decompose the unknown vector and update the state
         TARDIGRADE_ERROR_TOOLS_CATCH( decomposeUnknownVector( ) );
-
-    }
-
-    void hydraBase::performPreconditionedSolve( floatVector &deltaX_tr ){
-        /*!
-         * Perform a pre-conditioned solve
-         *
-         * \param &deltaX_tr: The trial chcange in the unknown vector
-         */
-
-        tardigradeVectorTools::solverType< floatType > linearSolver;
-
-        Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX_tr.data( ), getNumUnknowns( ) );
-
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
-
-        Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
-
-        if( getPreconditionerIsDiagonal( ) ){
-
-            Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
-
-            linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
-
-            dx_map = -linearSolver.solve( p_map.asDiagonal( ) * R_map );
-
-        }
-        else{
-
-            Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
-
-            linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
-
-            dx_map = -linearSolver.solve( p_map * R_map );
-
-        }
-
-        unsigned int rank = linearSolver.rank( );
-
-        if ( getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
-
-        }
-
-    }
-
-    void hydraBase::solveNewtonUpdate( floatVector &deltaX_tr ){
-        /*!
-         * Solve the Newton update returning the trial value of the unknown vector
-         *
-         * \param &deltaX_tr: The trial change in the unknown vector
-         */
-
-        if ( getUsePreconditioner( ) ){
-
-            performPreconditionedSolve( deltaX_tr );
-
-        }
-        else{
-
-            Eigen::Map< Eigen::Vector< floatType, -1 > > dx_map( deltaX_tr.data( ), getNumUnknowns( ) );
-
-            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J_map( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
-
-            Eigen::Map< const Eigen::Vector< floatType, -1 > > R_map( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
-
-            tardigradeVectorTools::solverType< floatType > linearSolver( J_map );
-            dx_map = -linearSolver.solve( R_map );
-
-            unsigned int rank = linearSolver.rank( );
-
-            if ( getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
-
-            }
-
-        }
-
-    }
-
-    void hydraBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
-        /*!
-         * Perform an Armijo-type line search
-         *
-         * \param &X0: The base value of the unknown vector
-         * \param &deltaX: The proposed change in X
-         */
-
-        while ( !checkLSConvergence( ) && checkLSIteration( ) ){
-
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "    lambda, |R|: " );
-                addToFailureOutput( getLambda( ), false );
-                addToFailureOutput( ", " );
-                addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
-            }
-
-            updateLambda( );
-
-            incrementLSIteration( );
-
-            updateUnknownVector( X0 + getLambda( ) * deltaX );
-
-        }
-
-        if ( getFailureVerbosityLevel( ) > 0 ){
-            addToFailureOutput( "    lambda, |R|: " );
-            addToFailureOutput( getLambda( ), false );
-            addToFailureOutput( ", " );
-            addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
-        }
-
-        if ( !checkLSConvergence( ) ){
-
-            resetToleranceScaleFactor( );
-
-            throw convergence_error( "Failure in line search:\n  scale factor: " + std::to_string( getScaleFactor( ) ) + "\n" );
-
-        }
-
-        resetToleranceScaleFactor( );
-
-        incrementNumLS( );
-
-        resetLSIteration( );
-
-    }
-
-    const floatType *hydraBase::get_baseResidualNorm( ){
-        /*!
-         * Get the base value for the residual norm.
-         */
-
-        if ( !_baseResidualNorm.first ){
-
-            throw std::runtime_error( "The base residual norm must be set with set_baseResidualNorm before it can be called" );
-
-        }
-
-        return &_baseResidualNorm.second;
-
-    }
-
-    const floatVector *hydraBase::get_basedResidualNormdX( ){
-        /*!
-         * Get the base value for the derivative of the residual norm w.r.t. the unknown vector
-         */
-
-        if ( !_basedResidualNormdX.first ){
-
-            throw std::runtime_error( "The base residual norm must be set with set_dbaseResidualNormdX before it can be called" );
-
-        }
-
-        return &_basedResidualNormdX.second;
-
-    }
-
-    bool hydraBase::checkGradientConvergence( const floatVector &X0 ){
-        /*!
-         * Check the convergence of a gradient step
-         *
-         * \param &X0: The initial value of the unknown vector
-         */
-
-        const unsigned int xsize = getNumUnknowns( );
-
-        floatVector dx = ( *getUnknownVector( ) ) - X0;
-
-        floatType RHS = *get_baseResidualNorm( );
-
-        for ( unsigned int i = 0; i < xsize; i++ ){
-
-            RHS += getGradientSigma( ) * ( *get_basedResidualNormdX( ) )[ i ] * dx[ i ];
-
-        }
-
-        return ( *get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
-
-    }
-
-    void hydraBase::performGradientStep( const floatVector &X0 ){
-        /*!
-         * Perform a gradient descent step
-         *
-         * \param &X0: The base value of the unknown vector
-         */
-
-        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
-
-        unsigned int l                     = 0;
-
-        const unsigned int maxiter         = getMaxGradientIterations( );
-
-        while( checkGradientIteration( ) ){
-
-            floatType t = std::pow( getGradientBeta( ), l );
-
-            updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
-
-            if ( checkGradientConvergence( X0 ) ){
-
-                break;
-
-            }
-
-            l++;
-
-            incrementGradientIteration( );
-
-        }
-
-        resetToleranceScaleFactor( );
-
-        if ( l >= maxiter ){
-
-            throw convergence_error( "Failure in gradient step:\n  scale_factor: " + std::to_string( getScaleFactor( ) ) );
-
-        }
-
-        incrementNumGrad( );
-
-        resetGradientIteration( );
-
-    }
-
-    bool hydraBase::checkDescentDirection( const floatVector &dx ){
-        /*!
-         * Check if the search direction is a descent direction of the Jacobian
-         * 
-         * \param &dx: The proposed change in x
-         */
-
-        const unsigned int xsize = getNumUnknowns( );
-
-        const floatType RHS = -getGradientRho( ) * std::pow( tardigradeVectorTools::l2norm( dx ), getGradientP( ) );
-
-        floatType LHS = 0;
-
-        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
-
-        for ( unsigned int i = 0; i < xsize; i++ ){
-
-            LHS += ( *dResidualNormdX )[ i ] * dx[ i ];
-
-        }
-
-        return LHS <= RHS;
-
-    }
-
-    void hydraBase::setBaseQuantities( ){
-        /*!
-         * Set the base quantities required for gradient steps
-         */
-
-        set_baseResidualNorm( *get_residualNorm( ) );
-
-        set_basedResidualNormdX( *get_dResidualNormdX( ) );
-
-        if ( _mu_k < 0 ){
-
-            setMuk( 0.5 * getLMMu( ) * ( *get_baseResidualNorm( ) ) );
-
-        }
-        else{
-
-            setMuk( std::fmin( _mu_k, ( *get_baseResidualNorm( ) ) ) );
-
-        }
 
     }
 
@@ -2242,25 +1760,52 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::solveNonLinearProblem( ){
+    // SolverStepBase methods
+
+    // END SolverStepBase methods
+    // SolverBase methods
+
+    const unsigned int SolverBase::getIteration( ){
         /*!
-         * Solve the non-linear problem
+         * Get the current iteration number
          */
+
+        return hydra->_iteration;
+
+    }
+
+    void SolverBase::solve( ){
+        /*!
+         * Solve the system of equations
+         */
+    }
+
+    // End SolverBase methods
+
+    /*!
+     * Increment the iteration
+     */
+    void hydraBase::incrementIteration( ){ _iteration++; solver->step->resetLSIteration( ); }
+
+    /*!
+     * Solve the non-linear problem
+     */
+    void hydraBase::solveNonLinearProblem( ){
 
         // Form the initial unknown vector
         if ( getInitializeUnknownVector( ) ){
             TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
         }
 
-        _initialX = *getUnknownVector( );
+        _initialX = *( solver->getUnknownVector( ) );
 
-        floatVector deltaX( getNumUnknowns( ), 0 );
+        floatVector deltaX( solver->getNumUnknowns( ), 0 );
 
         callResidualPreNLSolve( );
 
-        resetLSIteration( );
+        solver->step->resetLSIteration( );
 
-        resetGradientIteration( );
+        solver->step->resetGradientIteration( );
 
         if ( getFailureVerbosityLevel( ) > 0 ){
             addToFailureOutput( "Initial Unknown:\n" );
@@ -2269,63 +1814,7 @@ namespace tardigradeHydra{
 
         while( !checkConvergence( ) && checkIteration( ) ){
 
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "\n\n  iteration: " );
-                addToFailureOutput( _iteration );
-            }
-            floatVector X0 = *getUnknownVector( );
-
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "  X0:\n" );
-                addToFailureOutput( "  " );
-                addToFailureOutput( *getUnknownVector( ) );
-            }
-            setBaseQuantities( );
-
-            if ( getUseSQPSolver( ) ){
-
-                std::fill( deltaX.begin( ), deltaX.end( ), 0 );
-
-                solveConstrainedQP( deltaX );
-
-            }
-            else{
-
-                solveNewtonUpdate( deltaX );
-
-            }
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "  deltaX:\n" );
-                addToFailureOutput( "  " );
-                addToFailureOutput( deltaX );
-            }
-
-            updateUnknownVector( X0 + getLambda( ) * deltaX );
-
-            // Refine the estimate if the new point has a higher residual
-            if ( !checkLSConvergence( ) ){
-
-                if ( checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
-
-                    // Perform an Armijo type line search when the search direction is aligned with the gradient
-                    performArmijoTypeLineSearch( X0, deltaX );
-
-                }
-                else{
-
-                    // Perform gradient descent if the search direction is not aligned with the gradient
-                    performGradientStep( X0 );
-
-                }
-
-            }
-            else{
-
-                resetToleranceScaleFactor( );
-
-                incrementNumNewton( );
-
-            }
+            solver->step->incrementSolution( );
 
             // Call residual end of a successful nonlinear step functions
             callResidualSuccessfulNLStep( );
@@ -2336,10 +1825,10 @@ namespace tardigradeHydra{
             // Reset the nonlinear step data
             resetNLStepData( );
 
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "  final residual: " );
-                addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
-                addToFailureOutput( "\n" );
+            if ( solver->getFailureVerbosityLevel( ) > 0 ){
+                solver->addToFailureOutput( "  final residual: " );
+                solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
+                solver->addToFailureOutput( "\n" );
             }
 
         }
@@ -2646,13 +2135,13 @@ namespace tardigradeHydra{
          */
 
         // Reset the counters for the number of steps being performed
-        resetNumNewton( );
+        solver->step->resetNumNewton( );
 
-        resetNumLS( );
+        solver->step->resetNumLS( );
 
-        resetNumGrad( );
+        solver->step->resetNumGrad( );
 
-        setRankDeficientError( false );
+        solver->setRankDeficientError( false );
 
         try{
 
@@ -2689,9 +2178,9 @@ namespace tardigradeHydra{
             }
             else{
                 //Try a Levenberg-Marquardt solve if there is a convergence error
-                setRankDeficientError( false );
+                solver->setRankDeficientError( false );
     
-                setUseLevenbergMarquardt( true );
+                solver->step->setUseLevenbergMarquardt( true );
     
                 // Turn on projection
                 setCurrentResidualIndexMeaningful( true );
@@ -2716,7 +2205,7 @@ namespace tardigradeHydra{
                 }
                 catch( std::exception &e ){
     
-                    setUseLevenbergMarquardt( false );
+                    solver->step->setUseLevenbergMarquardt( false );
     
                     TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
     
@@ -2739,64 +2228,64 @@ namespace tardigradeHydra{
          */
 
         //Form the solver based on the current value of the jacobian
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Amat( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+        auto Amat = tardigradeHydra::getDynamicSizeMatrixMap( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
         // Form the maps for dXdF
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdFmat( getFlatdRdF( )->data( ), getResidual( )->size( ), getConfigurationUnknownCount( ) );
+        auto dRdFmat = tardigradeHydra::getDynamicSizeMatrixMap( getFlatdRdF( )->data( ), getResidual( )->size( ), getConfigurationUnknownCount( ) );
 
         _flatdXdF.second = floatVector( getNumUnknowns( ) * getConfigurationUnknownCount( ) );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdFmat( _flatdXdF.second.data( ), getNumUnknowns( ), getConfigurationUnknownCount( ) );
+        auto dXdFmat = tardigradeHydra::getDynamicSizeMatrixMap( _flatdXdF.second.data( ), getNumUnknowns( ), getConfigurationUnknownCount( ) );
 
         // Form the maps for dXdT
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdTmat( getdRdT( )->data( ), getResidual( )->size( ), 1 );
+        auto dRdTmat = tardigradeHydra::getDynamicSizeVectorMap( getdRdT( )->data( ), getResidual( )->size( ) );
 
         _flatdXdT.second = floatVector( getNumUnknowns( ) );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdTmat( _flatdXdT.second.data( ), getNumUnknowns( ), 1 );
+        auto dXdTmat = tardigradeHydra::getDynamicSizeVectorMap( _flatdXdT.second.data( ), getNumUnknowns( ) );
 
         // Solve
-        tardigradeVectorTools::solverType< floatType > solver;
+        tardigradeVectorTools::solverType< floatType > linear_solver;
 
-        if ( getUsePreconditioner( ) ){
+        if ( solver->preconditioner->getUsePreconditioner( ) ){
 
-            if( getPreconditionerIsDiagonal( ) ){
+            if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
 
-                Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
 
-                solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
+                linear_solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
 
-                dXdFmat = -solver.solve( p_map.asDiagonal( ) * dRdFmat );
+                dXdFmat = -linear_solver.solve( p_map.asDiagonal( ) * dRdFmat );
 
-                dXdTmat = -solver.solve( p_map.asDiagonal( ) * dRdTmat );
+                dXdTmat = -linear_solver.solve( p_map.asDiagonal( ) * dRdTmat );
 
             }
             else{
 
-                Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
-                solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
+                linear_solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
 
-                dXdFmat = -solver.solve( p_map * dRdFmat );
+                dXdFmat = -linear_solver.solve( p_map * dRdFmat );
 
-                dXdTmat = -solver.solve( p_map * dRdTmat );
+                dXdTmat = -linear_solver.solve( p_map * dRdTmat );
 
             }
 
         }
         else{
 
-            solver = tardigradeVectorTools::solverType< floatType >( Amat );
+            linear_solver = tardigradeVectorTools::solverType< floatType >( Amat );
 
-            dXdFmat = -solver.solve( dRdFmat );
+            dXdFmat = -linear_solver.solve( dRdFmat );
 
-            dXdTmat = -solver.solve( dRdTmat );
+            dXdTmat = -linear_solver.solve( dRdTmat );
 
         }
 
-        unsigned int rank = solver.rank( );
+        unsigned int rank = linear_solver.rank( );
 
         TARDIGRADE_ERROR_TOOLS_CATCH(
 
-            if ( getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
+            if ( solver->getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
                 throw convergence_error( "The Jacobian is not full rank" );
 
@@ -2816,44 +2305,44 @@ namespace tardigradeHydra{
          */
 
         //Form the solver based on the current value of the jacobian
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > Amat( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+        auto Amat = tardigradeHydra::getDynamicSizeMatrixMap( getFlatJacobian( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dRdAdditionalDOF( getFlatdRdAdditionalDOF( )->data( ), getResidual( )->size( ), getAdditionalDOF( )->size( ) );
+        auto dRdAdditionalDOF = tardigradeHydra::getDynamicSizeMatrixMap( getFlatdRdAdditionalDOF( )->data( ), getResidual( )->size( ), getAdditionalDOF( )->size( ) );
 
         // Form the map for dXdF
         _flatdXdAdditionalDOF.second = floatVector( getNumUnknowns( ) * getAdditionalDOF( )->size( ), 0 );
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > dXdAdditionalDOF( _flatdXdAdditionalDOF.second.data( ), getNumUnknowns( ), getAdditionalDOF( )->size( ) );
+        auto dXdAdditionalDOF = tardigradeHydra::getDynamicSizeMatrixMap( _flatdXdAdditionalDOF.second.data( ), getNumUnknowns( ), getAdditionalDOF( )->size( ) );
 
         // Solve
-        tardigradeVectorTools::solverType< floatType > solver;
+        tardigradeVectorTools::solverType< floatType > linear_solver;
 
-        if ( getUsePreconditioner( ) ){
+        if ( solver->preconditioner->getUsePreconditioner( ) ){
 
-            if( getPreconditionerIsDiagonal( ) ){
+            if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
 
-                Eigen::Map< const Eigen::Vector< floatType, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ) );
 
-                solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
+                linear_solver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * Amat );
 
-                dXdAdditionalDOF = -solver.solve( p_map.asDiagonal( ) * dRdAdditionalDOF );
+                dXdAdditionalDOF = -linear_solver.solve( p_map.asDiagonal( ) * dRdAdditionalDOF );
 
             }
             else{
 
-                Eigen::Map< const Eigen::Matrix< floatType, -1, -1 > > p_map( getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
+                auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getResidual( )->size( ), getResidual( )->size( ) );
 
-                solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
+                linear_solver = tardigradeVectorTools::solverType< floatType >( p_map * Amat );
 
-                dXdAdditionalDOF = -solver.solve( p_map * dRdAdditionalDOF );
+                dXdAdditionalDOF = -linear_solver.solve( p_map * dRdAdditionalDOF );
 
             }
 
         }
         else{
 
-            solver = tardigradeVectorTools::solverType< floatType >( Amat );
+            linear_solver = tardigradeVectorTools::solverType< floatType >( Amat );
 
-            dXdAdditionalDOF = -solver.solve( dRdAdditionalDOF );
+            dXdAdditionalDOF = -linear_solver.solve( dRdAdditionalDOF );
 
         }
 
@@ -2906,395 +2395,6 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::initializePreconditioner( ){
-        /*!
-         * Initialize the preconditioner
-         */
-
-        _preconditioner_is_diagonal = false;
-
-        if ( _preconditioner_type == 0 ){
-
-            _preconditioner_is_diagonal = true;
-
-        }
-        else{
-
-            throw std::runtime_error( "Preconditioner type " + std::to_string( _preconditioner_type ) + " is not recognized." );
-
-        }
-
-    }
-
-    void hydraBase::setResidualNorm( ){
-        /*!
-         * Set the norm of the residual vector
-         */
-
-        auto residualNorm = get_setDataStorage_residualNorm( );
-
-        residualNorm.zero( );
-
-        const unsigned int xsize = getNumUnknowns( );
-
-        const floatVector *residual = getResidual( );
-
-        for ( unsigned int i = 0; i < xsize; i++ ){
-
-            *residualNorm.value += ( *residual )[ i ] * ( *residual )[ i ];
-
-        }
-
-    }
-
-    void hydraBase::setdResidualNormdX( ){
-        /*!
-         * Set the derivative of the residual norm w.r.t. the unknown vector
-         */
-
-        const unsigned int xsize = getNumUnknowns( );
-
-        auto dResidualNormdX = get_setDataStorage_dResidualNormdX( );
-
-        dResidualNormdX.zero( xsize );
-
-        const floatVector *residual = getResidual( );
-
-        const floatVector *jacobian = getFlatJacobian( );
-
-        for ( unsigned int i = 0; i < xsize; i++ ){
-            for ( unsigned int j = 0; j < xsize; j++ ){
-                ( *dResidualNormdX.value )[ j ] += 2 * ( *jacobian )[ xsize * i + j ] * ( *residual )[ i ];
-            }
-        }
-
-    }
-
-    void hydraBase::assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints ){
-        /*!
-         * Assemble the Karush-Kuhn-Tucker matrix for an inequality constrained Newton-Raphson solve
-         * 
-         * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
-         * \param &active_constraints: The vector of currently active constraints.
-         */
-
-        const unsigned int numUnknowns = getNumUnknowns( );
-
-        const unsigned int numConstraints = getNumConstraints( );
-
-        KKTMatrix = floatVector( ( numUnknowns + numConstraints ) * ( numUnknowns + numConstraints ), 0 );
-
-
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > K( KKTMatrix.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
-
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
-
-        K.block( 0, 0, numUnknowns, numUnknowns ) = ( J.transpose( ) * J ).eval( );
-
-        for ( unsigned int I = 0; I < numUnknowns; I++ ){
-
-            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] += getMuk( );
-
-        }
-
-        for ( unsigned int i = 0; i < numConstraints; i++ ){
-
-            if ( active_constraints[ i ] ){
-
-                for ( unsigned int I = 0; I < numUnknowns; I++ ){
-
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
-
-                }
-
-            }
-            else{
-
-                KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + numUnknowns + i ] = 1;
-
-            }
-
-        }
-
-    }
-
-    void hydraBase::updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints ){
-        /*!
-         * Update the KKTMatrix if the active constraints have changed
-         * 
-         * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
-         * \param &active_constraints: The vector of currently active constraints.
-         */
-
-        const unsigned int numUnknowns = getNumUnknowns( );
-
-        const unsigned int numConstraints = getNumConstraints( );
-
-        Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > K( KKTMatrix.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
-
-        K.block( 0, numUnknowns, numUnknowns, numConstraints ).setZero( );
-
-        K.block( numUnknowns, 0, numConstraints, numUnknowns ).setZero( );
-
-        K.block( numUnknowns, numUnknowns, numConstraints, numConstraints ).setZero( );
-
-        for ( unsigned int i = 0; i < numConstraints; i++ ){
-
-            if ( active_constraints[ i ] ){
-
-                for ( unsigned int I = 0; I < numUnknowns; I++ ){
-
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
-
-                }
-
-            }
-            else{
-
-                KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + numUnknowns + i ] = 1;
-
-            }
-
-        }
-
-    }
-
-    void hydraBase::assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints ){
-        /*!
-         * Assemble the right hand side vector for the KKT matrix
-         * 
-         * \param &dx: The delta vector being solved for
-         * \param &KKTRHSVector: The right hand size vector for the KKT matrix
-         * \param &active_constraints: The active constraint vector
-         */
-
-        const unsigned int numUnknowns = getNumUnknowns( );
-
-        const unsigned int numConstraints = getNumConstraints( );
-
-        KKTRHSVector = floatVector( numUnknowns + numConstraints, 0 );
-
-        Eigen::Map< const Eigen::Vector< floatType, -1 > > _dx( dx.data( ), numUnknowns );
-
-        Eigen::Map< Eigen::Vector< floatType, -1 > > RHS( KKTRHSVector.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
-
-        Eigen::Map< const Eigen::Vector< floatType, -1 > > R( getResidual( )->data( ), numUnknowns );
-
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
-
-        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + getMuk( ) * _dx ).eval( );
-
-        for ( unsigned int i = 0; i < numConstraints; i++ ){
-
-            if ( active_constraints[ i ] ){
-
-                KKTRHSVector[ numUnknowns + i ] = ( *getConstraints( ) )[ i ];
-
-                for ( unsigned int I = 0; I < numUnknowns; I++ ){
-
-                    KKTRHSVector[ numUnknowns + i ] += ( *getConstraintJacobians( ) )[ numUnknowns * i + I ] * dx[ I ];
-
-                }
-
-            }
-
-        }
-
-    }
-
-    void hydraBase::initializeActiveConstraints( std::vector< bool > &active_constraints ){
-        /*!
-         * Initialize the active constraint vector
-         * 
-         * \param &active_constraints: The current constraints that are active
-         */
-
-        active_constraints = std::vector< bool >( getNumConstraints( ), false );
-
-        for ( auto c = getConstraints( )->begin( ); c != getConstraints( )->end( ); c++ ){
-
-            unsigned int index = ( unsigned int )( c - getConstraints( )->begin( ) );
-
-            active_constraints[ index ] = ( ( *c ) < 0. );
-
-        }
-
-    }
-
-    void hydraBase::solveConstrainedQP( floatVector &dx, const unsigned int kmax ){
-        /*!
-         * Solve the constrained QP problem to estimate the desired step size
-         * 
-         * \param &dx: The change in the unknown vector
-         * \param kmax: The maximum number of iterations (defaults to 100)
-         */
-
-        const unsigned int numUnknowns = getNumUnknowns( );
-
-        const unsigned int numConstraints = getNumConstraints( );
-
-        floatVector K;
-
-        floatVector RHS;
-
-        std::vector< bool > active_constraints;
-        initializeActiveConstraints( active_constraints );
-
-        assembleKKTRHSVector( dx, RHS, active_constraints );
-
-        assembleKKTMatrix( K, active_constraints );
-
-        floatType tol = getRelativeTolerance( ) * ( tardigradeVectorTools::l2norm( RHS ) ) + getAbsoluteTolerance( );
-
-        unsigned int k = 0;
-
-        floatVector y( numUnknowns + numConstraints, 0 );
-
-        floatVector ck = *getConstraints( );
-
-        floatVector ctilde( numConstraints, 0 );
-
-        floatVector negp( numUnknowns, 0 );
-
-        floatVector lambda( numConstraints, 0 );
-
-        floatVector P( numUnknowns + numConstraints, 0 );
-
-        for ( unsigned int i = 0; i < ( numUnknowns + numConstraints ); i++ ){
-
-            P[ i ] = 1 / std::max( std::fabs( *std::max_element( K.begin( ) + ( numUnknowns + numConstraints ) * i,
-                                                                 K.begin( ) + ( numUnknowns + numConstraints ) * ( i + 1 ),
-                                                                 [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
-
-        }
-
-        Eigen::Map< const Eigen::Vector< floatType, -1 > > _P( P.data( ), numUnknowns + numConstraints );
-
-        tardigradeVectorTools::solverType< floatType > linearSolver;
-
-        while ( k < kmax ){
-
-            Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > _K( K.data( ), numConstraints + numUnknowns, numConstraints + numUnknowns );
-            Eigen::Map< const Eigen::Vector< floatType, -1 > > _RHS( RHS.data( ), numConstraints + numUnknowns );
-            Eigen::Map< Eigen::Vector< floatType, -1 > > _y( y.data( ), numConstraints + numUnknowns );
-
-            linearSolver = tardigradeVectorTools::solverType< floatType >( _P.asDiagonal( ) * _K );
-
-            _y = linearSolver.solve( _P.asDiagonal( ) * _RHS );
-
-            std::copy( y.begin( ), y.begin( ) + numUnknowns, negp.begin( ) );
-
-            std::copy( y.begin( ) + numUnknowns, y.end( ), lambda.begin( ) );
-
-            if ( tardigradeVectorTools::l2norm( negp ) <= tol ){
-
-                bool negLambda = false;
-
-                floatType minLambda = 1;
-
-                unsigned int imin = 0;
-
-                for ( auto v = std::begin( lambda ); v != std::end( lambda ); v++ ){
-
-                    if ( *v < 0 ){
-
-                        negLambda = true;
-
-                        if ( ( *v ) < minLambda ){
-
-                            imin = ( unsigned int )( v - std::begin( lambda ) );
-
-                            minLambda = *v;
-
-                        }
-
-                    }
-
-                }
-
-                if ( negLambda ){
-
-                    active_constraints[ imin ] = false;
-
-                }
-                else{
-
-                    return;
-
-                }
-
-            }
-            else{
-
-                ck     = *getConstraints( );
-                ctilde = *getConstraints( );
-                for ( unsigned int i = 0; i < numConstraints; i++ ){
-                    for ( unsigned int j = 0; j < numUnknowns; j++ ){
-                        ck[ i ]     += ( *getConstraintJacobians( ) )[ numUnknowns * i + j ] * dx[ j ];
-                        ctilde[ i ] += ( *getConstraintJacobians( ) )[ numUnknowns * i + j ] * ( dx[ j ] - negp[ j ] );
-                    }
-                }
-
-                floatType alpha = 1.0;
-
-                unsigned int iblock = 0;
-
-                bool newBlock = false;
-
-                for ( unsigned int i = 0; i < numConstraints; i++ ){
-
-                    if ( !active_constraints[ i ] ){
-
-                        if ( ctilde[ i ] < -tol ){
-
-                            floatType alpha_trial = -ck[ i ] / ( ctilde[ i ] - ck[ i ] );
-
-                            if ( alpha_trial <= alpha ){
-
-                                iblock = i;
-
-                                alpha = alpha_trial;
-
-                                newBlock = true;
-
-                            }
-
-                        }
-
-                    }
-
-                }
-
-                if ( newBlock ){
-
-                    active_constraints[ iblock ] = true;
-
-                }
-
-                dx -= alpha * negp;
-
-            }
-
-            updateKKTMatrix( K, active_constraints );
-
-            assembleKKTRHSVector(  dx, RHS, active_constraints );
-
-            for ( unsigned int i = 0; i < ( numUnknowns + numConstraints ); i++ ){
-
-                P[ i ] = 1 / std::max( std::fabs( *std::max_element( K.begin( ) + ( numUnknowns + numConstraints ) * i,
-                                                                     K.begin( ) + ( numUnknowns + numConstraints ) * ( i + 1 ),
-                                                                     [ ]( const floatType &a, const floatType &b ){ return std::fabs( a ) < std::fabs( b ); } ) ), 1e-15 );
-
-            }
-
-            k++;
-
-        }
-
-    }
-
     void hydraBase::setConstraints( ){
         /*!
          * Set the constraint values
@@ -3302,7 +2402,7 @@ namespace tardigradeHydra{
 
         const unsigned int numConstraints = getNumConstraints( );
 
-        auto constraints = get_setDataStorage_constraints( );
+        auto constraints = get_SetDataStorage_constraints( );
 
         constraints.zero( numConstraints );
 
@@ -3334,7 +2434,7 @@ namespace tardigradeHydra{
 
         const unsigned int numConstraints = getNumConstraints( );
 
-        auto constraintJacobians = get_setDataStorage_constraintJacobians( );
+        auto constraintJacobians = get_SetDataStorage_constraintJacobians( );
 
         constraintJacobians.zero( numConstraints * numUnknowns );
 
@@ -3357,116 +2457,55 @@ namespace tardigradeHydra{
 
     }
 
-    void dummyMaterialModel( floatVector &stress,             floatVector &statev,        floatMatrix &ddsdde,       floatType &SSE,            floatType &SPD,
-                             floatType &SCD,                  floatType &RPL,             floatVector &ddsddt,       floatVector &drplde,       floatType &DRPLDT,
-                             const floatVector &strain,       const floatVector &dstrain, const floatVector &time,   const floatType &DTIME,    const floatType &TEMP,
-                             const floatType &DTEMP,          const floatVector &predef,  const floatVector &dpred,  const std::string &cmname, const int &NDI,
-                             const int &NSHR,                 const int &NTENS,           const int &NSTATV,         const floatVector &props,  const int &NPROPS,
-                             const floatVector &coords,       const floatMatrix &drot,    floatType &PNEWDT,         const floatType &CELENT,   const floatMatrix &dfgrd0,
-                             const floatMatrix &dfgrd1,       const int &NOEL,            const int &NPT,            const int &LAYER,          const int &KSPT,
-                             const std::vector< int > &jstep, const int &KINC ){
+    const unsigned int hydraBase::getCurrentResidualOffset( ){
         /*!
-         * A template Abaqus c++ UMAT using c++ STL types. Variables in all caps reference ABAQUS FORTRAN
-         * memory directly. Variables in lower case are native c++ type conversions stored separately from the original
-         * ABAQUS FORTRAN memory.
+         * Get the offset of the current residual
          */
-
-        //Call functions of constitutive model to do things
-        TARDIGRADE_ERROR_TOOLS_CATCH( sayHello( "Abaqus" ) );
-
-        return;
+        unsigned int offset = 0;
+        for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->begin( ) + getCurrentResidualIndex( ); ++v ){
+            offset += ( *v )->getNumEquations( );
+        }
+        return offset;
     }
 
-    void abaqusInterface( double *STRESS,       double *STATEV,       double *DDSDDE,       double &SSE,          double &SPD,
-                          double &SCD,          double &RPL,          double *DDSDDT,       double *DRPLDE,       double &DRPLDT,
-                          const double *STRAN,  const double *DSTRAN, const double *TIME,   const double &DTIME,  const double &TEMP,
-                          const double &DTEMP,  const double *PREDEF, const double *DPRED,  const char *CMNAME,   const int &NDI,
-                          const int &NSHR,      const int &NTENS,     const int &NSTATV,    const double *PROPS,  const int &NPROPS,
-                          const double *COORDS, const double *DROT,   double &PNEWDT,       const double &CELENT, const double *DFGRD0,
-                          const double *DFGRD1, const int &NOEL,      const int &NPT,       const int &LAYER,     const int &KSPT,
-                          const int *JSTEP,     const int &KINC ){
+    const unsigned int hydraBase::getNumConstraints( ){
         /*!
-         * A template Abaqus UMAT c++ interface that performs Fortran to C++ type conversions, calculates the material
-         * model's expected input, handles tensor shape changes, and calls a c++ material model.
+         * Get the value of the number of constraint equations
          */
 
-        //Provide a variable string message for error nodes
-        std::ostringstream message;
+        unsigned int value = 0;
 
-        //Map FORTRAN UMAT variables to C++ types as necessary. Use case sensitivity to distinguish.
-        //TODO: Decide if case sensitive variable names is a terrible idea or not
-        //Vectors can be created directly with pointer arithmetic
-        std::vector< double > stress( STRESS, STRESS + NTENS );
-        std::vector< double > statev( STATEV, STATEV + NSTATV );
-        std::vector< double > ddsddt( DDSDDT, DDSDDT + NTENS );
-        std::vector< double > drplde( DRPLDE, DRPLDE + NTENS );
-        const std::vector< double > strain( STRAN, STRAN + NTENS );
-        const std::vector< double > dstrain( DSTRAN, DSTRAN + NTENS );
-        const std::vector< double > time( TIME, TIME + 2 );
-        const std::vector< double > predef( PREDEF, PREDEF + 1 );
-        const std::vector< double > dpred( DPRED, DPRED + 1 );
-        const std::string cmname( tardigradeAbaqusTools::FtoCString( 80, CMNAME ) );
-        const std::vector< double > props( PROPS, PROPS + NPROPS );
-        const std::vector< double > coords( COORDS, COORDS + spatialDimensions );
-        const std::vector< int > jstep( JSTEP, JSTEP + 4 );
-        //Fortran two-dimensional arrays require careful column to row major conversions to c++ types
-        std::vector< std::vector< double > > ddsdde = tardigradeAbaqusTools::columnToRowMajor( DDSDDE, NTENS, NTENS );
-        const std::vector< std::vector< double > > drot = tardigradeAbaqusTools::columnToRowMajor( DROT, spatialDimensions, spatialDimensions );
-        const std::vector< std::vector< double > > dfgrd0 = tardigradeAbaqusTools::columnToRowMajor( DFGRD0, spatialDimensions, spatialDimensions );
-        const std::vector< std::vector< double > > dfgrd1 = tardigradeAbaqusTools::columnToRowMajor( DFGRD1, spatialDimensions, spatialDimensions );
+        for ( auto v = getResidualClasses( )->begin( ); v != getResidualClasses( )->end( ); v++ ){
 
-        //Verify number of state variables against hydra expectations
-        if ( statev.size( ) != nStateVariables ){
-            message.clear();
-            message << "ERROR:" << __FILENAME__ << "." << __func__ << ": The hydra Abaqus interface requires exactly "
-                << nStateVariables << " state variables. Found " << statev.size( ) << ".";
-            throw std::runtime_error( message.str( ) );
+            value += ( *v )->getNumConstraints( );
+
         }
 
-        //Verify number of material parameters against hydra expectations
-        if ( props.size( ) != nMaterialParameters ){
-            message.clear();
-            message << "ERROR:" << __FILENAME__ << "." << __func__ << ": The hydra Abaqus interface requires exactly "
-                << nMaterialParameters << " material constants. Found " << props.size( ) << ".";
-            throw std::runtime_error( message.str( ) );
-        }
-
-        //Call the constitutive model c++ interface
-        if ( KINC == 1 && NOEL == 1 && NPT == 1 ){
-
-            try{
-
-                dummyMaterialModel( stress, statev,  ddsdde, SSE,    SPD,
-                                            SCD,    RPL,     ddsddt, drplde, DRPLDT,
-                                            strain, dstrain, time,   DTIME,  TEMP,
-                                            DTEMP,  predef,  dpred,  cmname, NDI,
-                                            NSHR,   NTENS,   NSTATV, props,  NPROPS,
-                                            coords, drot,    PNEWDT, CELENT, dfgrd0,
-                                            dfgrd1, NOEL,    NPT,    LAYER,  KSPT,
-                                            jstep,  KINC );
-
-            }
-            catch(std::exception &e){
-
-                if ( PNEWDT >= 1. ){
-
-                    throw e;
-
-                }
-
-            }
-        }
-
-        //Re-pack C++ objects into FORTRAN memory to return values to Abaqus
-        //Scalars were passed by reference and will update correctly
-        //Vectors don't require row/column major considerations, but do require re-packing to the Fortran pointer
-        tardigradeAbaqusTools::rowToColumnMajor( STRESS, stress, 1, NTENS );
-        tardigradeAbaqusTools::rowToColumnMajor( DDSDDT, ddsddt, 1, NTENS );
-        tardigradeAbaqusTools::rowToColumnMajor( DRPLDE, drplde, 1, NTENS );
-        tardigradeAbaqusTools::rowToColumnMajor( STATEV, statev, 1, NSTATV );
-        //Arrays require vector of vector to column major conversion
-        tardigradeAbaqusTools::rowToColumnMajor( DDSDDE, ddsdde, NTENS, NTENS );
+        return value;
 
     }
+
+    std::string hydraBase::getResidualParameterizationInfo( ){
+        /*!
+         * Get the parameterization information of the residual classes
+         */
+
+        std::string parameterization_info = "########################################\n# RESIDUAL PARAMETERIZATION INFORMATION#\n########################################\n\n";
+
+        for ( auto v = std::begin( *getResidualClasses( ) ); v != std::end( *getResidualClasses( ) ); ++v ){
+
+            parameterization_info += "RESIDUAL CLASS:";
+            parameterization_info += " " + std::to_string( ( unsigned int )( v - std::begin( *getResidualClasses( ) ) ) ) + "\n\n";
+
+            ( *v )->addParameterizationInfo( parameterization_info );
+
+            parameterization_info += "\n";
+
+        }
+
+        return parameterization_info;
+
+    }
+
 
 }

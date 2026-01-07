@@ -190,11 +190,12 @@ namespace tardigradeHydra{
     };
 
     //! The base class for micromorphic residuals
-    class residualBaseMicromorphic : public residualBase{
+    template<class container=hydraBaseMicromorphic>
+    class ResidualBaseMicromorphic : public ResidualBase<hydraBase>{
 
         public:
 
-            using tardigradeHydra::residualBase::residualBase;
+            using tardigradeHydra::ResidualBase<hydraBase>::ResidualBase;
 
             /*!
              * Base class for micromorphic residuals
@@ -202,9 +203,9 @@ namespace tardigradeHydra{
              * \param *_hydra: A pointer to the containing hydra object
              * \param _numEquations: The number of equations the residual defines
              */
-            residualBaseMicromorphic( hydraBaseMicromorphic *_hydra, unsigned int _numEquations ) : residualBase( _hydra, _numEquations ), hydra( _hydra ){ }
+            ResidualBaseMicromorphic( hydraBaseMicromorphic *_hydra, unsigned int _numEquations ) : ResidualBase( _hydra, _numEquations ), hydra( _hydra ){ }
 
-            hydraBaseMicromorphic *hydra; //!< A pointer to the containing hydra object
+            container *hydra; //!< A pointer to the containing hydra object
 
             virtual void setdRdD( ){
                 /*!
@@ -233,7 +234,7 @@ namespace tardigradeHydra{
                  * \param &dRdD: The derivative of the resdual with respect to the deformation (F, chi, gradChi )
                  */
 
-                TARDIGRADE_ERROR_TOOLS_CATCH( residualBase::setdRdF( dRdD ) );
+                TARDIGRADE_ERROR_TOOLS_CATCH( ResidualBase<hydraBase>::setdRdF( dRdD ) );
 
             }
 
@@ -244,18 +245,18 @@ namespace tardigradeHydra{
                  * Pass-through to getdRdF just changing the naming convention
                  */
 
-                return residualBase::getdRdF( );
+                return ResidualBase<hydraBase>::getdRdF( );
 
             }
 
-            tardigradeHydra::residualBase::setDataStorageIteration< floatVector > get_setDataStorage_dRdD( ){
+            tardigradeHydra::ResidualBase<hydraBase>::SetDataStorageIteration< floatVector > get_SetDataStorage_dRdD( ){
                 /*!
                  * Get the setting term for dRdD
                  * 
-                 * Pass-through to get_setDataStorage_dRdF just changing the naming convention
+                 * Pass-through to get_SetDataStorage_dRdF just changing the naming convention
                  */
 
-                return residualBase::get_setDataStorage_dRdF( );
+                return ResidualBase<hydraBase>::get_SetDataStorage_dRdF( );
 
             }
 

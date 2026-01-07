@@ -23,17 +23,17 @@ namespace tardigradeHydra{
 
             TARDIGRADE_ERROR_TOOLS_CHECK( hydra->getPreviousAdditionalDOF( )->size( ) >= 5, "The previous additional DOF vector is of size " + std::to_string( hydra->getPreviousAdditionalDOF( )->size( ) ) + " which is less than the required size of 5" );
 
-            auto density                 = get_setDataStorage_density( );
+            auto density                 = get_SetDataStorage_density( );
 
-            auto massChangeRate          = get_setDataStorage_massChangeRate( );
+            auto massChangeRate          = get_SetDataStorage_massChangeRate( );
 
-            auto directionVector         = get_setDataStorage_directionVector( );
+            auto directionVector         = get_SetDataStorage_directionVector( );
 
-            auto previousDensity         = get_setDataStorage_previousDensity( );
+            auto previousDensity         = get_SetDataStorage_previousDensity( );
 
-            auto previousMassChangeRate  = get_setDataStorage_previousMassChangeRate( );
+            auto previousMassChangeRate  = get_SetDataStorage_previousMassChangeRate( );
 
-            auto previousDirectionVector = get_setDataStorage_previousDirectionVector( );
+            auto previousDirectionVector = get_SetDataStorage_previousDirectionVector( );
 
             *density.value = ( *hydra->getAdditionalDOF( ) )[ 0 ];
 
@@ -62,7 +62,7 @@ namespace tardigradeHydra{
 
             const floatType *mass_change_rate;
 
-            setDataStorageBase< floatType > massChangeVelocityGradientTrace;
+            SetDataStorageBase< floatType > massChangeVelocityGradientTrace;
 
             if ( isPrevious ){
 
@@ -70,7 +70,7 @@ namespace tardigradeHydra{
 
                 mass_change_rate = get_previousMassChangeRate( );
 
-                massChangeVelocityGradientTrace = get_setDataStorage_previousMassChangeVelocityGradientTrace( );
+                massChangeVelocityGradientTrace = get_SetDataStorage_previousMassChangeVelocityGradientTrace( );
 
             }
             else{
@@ -79,7 +79,7 @@ namespace tardigradeHydra{
 
                 mass_change_rate = get_massChangeRate( );
 
-                massChangeVelocityGradientTrace = get_setDataStorage_massChangeVelocityGradientTrace( );
+                massChangeVelocityGradientTrace = get_SetDataStorage_massChangeVelocityGradientTrace( );
 
             }
 
@@ -98,11 +98,11 @@ namespace tardigradeHydra{
 
             const floatType *mass_change_rate;
 
-            setDataStorageBase< floatType > massChangeVelocityGradientTrace;
+            SetDataStorageBase< floatType > massChangeVelocityGradientTrace;
 
-            setDataStorageBase< floatType > dMassChangeVelocityGradientTracedDensity;
+            SetDataStorageBase< floatType > dMassChangeVelocityGradientTracedDensity;
 
-            setDataStorageBase< floatType > dMassChangeVelocityGradientTracedMassChangeRate;
+            SetDataStorageBase< floatType > dMassChangeVelocityGradientTracedMassChangeRate;
 
             if ( isPrevious ){
 
@@ -110,11 +110,11 @@ namespace tardigradeHydra{
 
                 mass_change_rate = get_previousMassChangeRate( );
 
-                massChangeVelocityGradientTrace = get_setDataStorage_previousMassChangeVelocityGradientTrace( );
+                massChangeVelocityGradientTrace = get_SetDataStorage_previousMassChangeVelocityGradientTrace( );
 
-                dMassChangeVelocityGradientTracedDensity = get_setDataStorage_dPreviousMassChangeVelocityGradientTracedPreviousDensity( );
+                dMassChangeVelocityGradientTracedDensity = get_SetDataStorage_dPreviousMassChangeVelocityGradientTracedPreviousDensity( );
 
-                dMassChangeVelocityGradientTracedMassChangeRate = get_setDataStorage_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( );
+                dMassChangeVelocityGradientTracedMassChangeRate = get_SetDataStorage_dPreviousMassChangeVelocityGradientTracedPreviousMassChangeRate( );
 
             }
             else{
@@ -123,11 +123,11 @@ namespace tardigradeHydra{
 
                 mass_change_rate = get_massChangeRate( );
 
-                massChangeVelocityGradientTrace = get_setDataStorage_massChangeVelocityGradientTrace( );
+                massChangeVelocityGradientTrace = get_SetDataStorage_massChangeVelocityGradientTrace( );
 
-                dMassChangeVelocityGradientTracedDensity = get_setDataStorage_dMassChangeVelocityGradientTracedDensity( );
+                dMassChangeVelocityGradientTracedDensity = get_SetDataStorage_dMassChangeVelocityGradientTracedDensity( );
 
-                dMassChangeVelocityGradientTracedMassChangeRate = get_setDataStorage_dMassChangeVelocityGradientTracedMassChangeRate( );
+                dMassChangeVelocityGradientTracedMassChangeRate = get_SetDataStorage_dMassChangeVelocityGradientTracedMassChangeRate( );
 
             }
 
@@ -204,20 +204,20 @@ namespace tardigradeHydra{
 
             const dimVector *directionVector;
 
-            setDataStorageBase< dimVector > unitDirectionVector;
+            SetDataStorageBase< dimVector > unitDirectionVector;
 
             if ( isPrevious ){
 
                 directionVector = get_previousDirectionVector( );
 
-                unitDirectionVector = get_setDataStorage_previousUnitDirectionVector( );
+                unitDirectionVector = get_SetDataStorage_previousUnitDirectionVector( );
 
             }
             else{
 
                 directionVector = get_directionVector( );
 
-                unitDirectionVector = get_setDataStorage_unitDirectionVector( );
+                unitDirectionVector = get_SetDataStorage_unitDirectionVector( );
 
             }
 
@@ -264,26 +264,26 @@ namespace tardigradeHydra{
 
             const dimVector *directionVector;
 
-            setDataStorageBase< dimVector > unitDirectionVector;
+            SetDataStorageBase< dimVector > unitDirectionVector;
 
-            setDataStorageBase< secondOrderTensor > dUnitDirectionVectordDirectionVector;
+            SetDataStorageBase< secondOrderTensor > dUnitDirectionVectordDirectionVector;
 
             if ( isPrevious ){
 
                 directionVector = get_previousDirectionVector( );
 
-                unitDirectionVector = get_setDataStorage_previousUnitDirectionVector( );
+                unitDirectionVector = get_SetDataStorage_previousUnitDirectionVector( );
 
-                dUnitDirectionVectordDirectionVector = get_setDataStorage_dPreviousUnitDirectionVectordPreviousDirectionVector( );
+                dUnitDirectionVectordDirectionVector = get_SetDataStorage_dPreviousUnitDirectionVectordPreviousDirectionVector( );
 
             }
             else{
 
                 directionVector = get_directionVector( );
 
-                unitDirectionVector = get_setDataStorage_unitDirectionVector( );
+                unitDirectionVector = get_SetDataStorage_unitDirectionVector( );
 
-                dUnitDirectionVectordDirectionVector = get_setDataStorage_dUnitDirectionVectordDirectionVector( );
+                dUnitDirectionVectordDirectionVector = get_SetDataStorage_dUnitDirectionVectordDirectionVector( );
 
             }
 
@@ -352,7 +352,7 @@ namespace tardigradeHydra{
 
             const dimVector *unitDirectionVector;
 
-            setDataStorageBase< secondOrderTensor > velocityGradient;
+            SetDataStorageBase< secondOrderTensor > velocityGradient;
 
             if ( isPrevious ){
 
@@ -360,7 +360,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_previousUnitDirectionVector( ) );
 
-                velocityGradient = get_setDataStorage_previousMassChangeVelocityGradient( );
+                velocityGradient = get_SetDataStorage_previousMassChangeVelocityGradient( );
 
             }
             else{
@@ -369,7 +369,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_unitDirectionVector( ) );
 
-                velocityGradient = get_setDataStorage_massChangeVelocityGradient( );
+                velocityGradient = get_SetDataStorage_massChangeVelocityGradient( );
 
             }
 
@@ -433,13 +433,13 @@ namespace tardigradeHydra{
 
             const secondOrderTensor *dUnitDirectionVectordDirectionVector;
 
-            setDataStorageBase< secondOrderTensor > velocityGradient;
+            SetDataStorageBase< secondOrderTensor > velocityGradient;
 
-            setDataStorageBase< secondOrderTensor > dVelocityGradientdDensity;
+            SetDataStorageBase< secondOrderTensor > dVelocityGradientdDensity;
 
-            setDataStorageBase< secondOrderTensor > dVelocityGradientdMassChangeRate;
+            SetDataStorageBase< secondOrderTensor > dVelocityGradientdMassChangeRate;
 
-            setDataStorageBase< thirdOrderTensor > dVelocityGradientdDirectionVector;
+            SetDataStorageBase< thirdOrderTensor > dVelocityGradientdDirectionVector;
 
             if ( isPrevious ){
 
@@ -453,13 +453,13 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_previousUnitDirectionVector( ) )
 
-                velocityGradient = get_setDataStorage_previousMassChangeVelocityGradient( );
+                velocityGradient = get_SetDataStorage_previousMassChangeVelocityGradient( );
 
-                dVelocityGradientdDensity = get_setDataStorage_dPreviousMassChangeVelocityGradientdPreviousDensity( );
+                dVelocityGradientdDensity = get_SetDataStorage_dPreviousMassChangeVelocityGradientdPreviousDensity( );
 
-                dVelocityGradientdMassChangeRate = get_setDataStorage_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( );
+                dVelocityGradientdMassChangeRate = get_SetDataStorage_dPreviousMassChangeVelocityGradientdPreviousMassChangeRate( );
 
-                dVelocityGradientdDirectionVector = get_setDataStorage_dPreviousMassChangeVelocityGradientdPreviousDirectionVector( );
+                dVelocityGradientdDirectionVector = get_SetDataStorage_dPreviousMassChangeVelocityGradientdPreviousDirectionVector( );
 
             }
             else{
@@ -474,13 +474,13 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( unitDirectionVector = get_unitDirectionVector( ) )
 
-                velocityGradient = get_setDataStorage_massChangeVelocityGradient( );
+                velocityGradient = get_SetDataStorage_massChangeVelocityGradient( );
 
-                dVelocityGradientdDensity = get_setDataStorage_dMassChangeVelocityGradientdDensity( );
+                dVelocityGradientdDensity = get_SetDataStorage_dMassChangeVelocityGradientdDensity( );
 
-                dVelocityGradientdMassChangeRate = get_setDataStorage_dMassChangeVelocityGradientdMassChangeRate( );
+                dVelocityGradientdMassChangeRate = get_SetDataStorage_dMassChangeVelocityGradientdMassChangeRate( );
 
-                dVelocityGradientdDirectionVector = get_setDataStorage_dMassChangeVelocityGradientdDirectionVector( );
+                dVelocityGradientdDirectionVector = get_SetDataStorage_dMassChangeVelocityGradientdDirectionVector( );
 
             }
 
@@ -630,13 +630,13 @@ namespace tardigradeHydra{
 
             if ( isPrevious ){
 
-                auto precedingDeformationGradient = get_setDataStorage_previousPrecedingDeformationGradient( );
+                auto precedingDeformationGradient = get_SetDataStorage_previousPrecedingDeformationGradient( );
                 *precedingDeformationGradient.value = hydra->getPreviousPrecedingConfiguration( getMassChangeConfigurationIndex( ) );
 
             }
             else{
 
-                auto precedingDeformationGradient = get_setDataStorage_precedingDeformationGradient( );
+                auto precedingDeformationGradient = get_SetDataStorage_precedingDeformationGradient( );
                 *precedingDeformationGradient.value = hydra->getPrecedingConfiguration( getMassChangeConfigurationIndex( ) );
 
             }
@@ -662,11 +662,11 @@ namespace tardigradeHydra{
 
             floatVector dpFdFs;
 
-            setDataStorageBase< secondOrderTensor > precedingDeformationGradient;
+            SetDataStorageBase< secondOrderTensor > precedingDeformationGradient;
 
-            setDataStorageBase< fourthOrderTensor > dpFdF;
+            SetDataStorageBase< fourthOrderTensor > dpFdF;
 
-            setDataStorageBase< floatVector > dpFdFn;
+            SetDataStorageBase< floatVector > dpFdFn;
 
             if ( isPrevious ){
 
@@ -676,12 +676,12 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dpFdFs = hydra->getPreviousPrecedingConfigurationJacobian( getMassChangeConfigurationIndex( ) ) )
 
-                auto precedingDeformationGradient = get_setDataStorage_previousPrecedingDeformationGradient( );
+                auto precedingDeformationGradient = get_SetDataStorage_previousPrecedingDeformationGradient( );
                 *precedingDeformationGradient.value = hydra->getPreviousPrecedingConfiguration( getMassChangeConfigurationIndex( ) );
 
-                dpFdF = get_setDataStorage_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient( );
+                dpFdF = get_SetDataStorage_dPreviousPrecedingDeformationGradientdPreviousDeformationGradient( );
 
-                dpFdFn = get_setDataStorage_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( );
+                dpFdFn = get_SetDataStorage_dPreviousPrecedingDeformationGradientdPreviousSubDeformationGradients( );
 
             }
             else{
@@ -692,12 +692,12 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dpFdFs = hydra->getPrecedingConfigurationJacobian( getMassChangeConfigurationIndex( ) ) )
 
-                auto precedingDeformationGradient = get_setDataStorage_precedingDeformationGradient( );
+                auto precedingDeformationGradient = get_SetDataStorage_precedingDeformationGradient( );
                 *precedingDeformationGradient.value = hydra->getPrecedingConfiguration( getMassChangeConfigurationIndex( ) );
 
-                dpFdF = get_setDataStorage_dPrecedingDeformationGradientdDeformationGradient( );
+                dpFdF = get_SetDataStorage_dPrecedingDeformationGradientdDeformationGradient( );
 
-                dpFdFn = get_setDataStorage_dPrecedingDeformationGradientdSubDeformationGradients( );
+                dpFdFn = get_SetDataStorage_dPrecedingDeformationGradientdSubDeformationGradients( );
 
             }
 
@@ -802,7 +802,7 @@ namespace tardigradeHydra{
 
             const secondOrderTensor *precedingDeformationGradient;
 
-            setDataStorageBase< secondOrderTensor > intermediateVelocityGradient;
+            SetDataStorageBase< secondOrderTensor > intermediateVelocityGradient;
 
             if ( isPrevious ){
 
@@ -810,7 +810,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_previousPrecedingDeformationGradient( ) )
 
-                intermediateVelocityGradient = get_setDataStorage_previousMassChangeIntermediateVelocityGradient( );
+                intermediateVelocityGradient = get_SetDataStorage_previousMassChangeIntermediateVelocityGradient( );
 
             }
             else{
@@ -819,7 +819,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_precedingDeformationGradient( ) )
 
-                intermediateVelocityGradient = get_setDataStorage_massChangeIntermediateVelocityGradient( );
+                intermediateVelocityGradient = get_SetDataStorage_massChangeIntermediateVelocityGradient( );
 
             }
 
@@ -856,17 +856,17 @@ namespace tardigradeHydra{
 
             const floatVector *dPFdFn;
 
-            setDataStorageBase< secondOrderTensor > intermediateVelocityGradient;
+            SetDataStorageBase< secondOrderTensor > intermediateVelocityGradient;
 
-            setDataStorageBase< secondOrderTensor > dILdRho;
+            SetDataStorageBase< secondOrderTensor > dILdRho;
 
-            setDataStorageBase< secondOrderTensor > dILdC;
+            SetDataStorageBase< secondOrderTensor > dILdC;
 
-            setDataStorageBase< secondOrderTensor > dILdGradC;
+            SetDataStorageBase< secondOrderTensor > dILdGradC;
 
-            setDataStorageBase< fourthOrderTensor > dILdF;
+            SetDataStorageBase< fourthOrderTensor > dILdF;
 
-            setDataStorageBase< fourthOrderTensor > dILdFn;
+            SetDataStorageBase< fourthOrderTensor > dILdFn;
 
             if ( isPrevious ){
 
@@ -884,17 +884,17 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_previousPrecedingDeformationGradient( ) )
 
-                intermediateVelocityGradient = get_setDataStorage_previousMassChangeIntermediateVelocityGradient( );
+                intermediateVelocityGradient = get_SetDataStorage_previousMassChangeIntermediateVelocityGradient( );
 
-                dILdRho                      = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity( );
+                dILdRho                      = get_SetDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousDensity( );
 
-                dILdC                        = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate( );
+                dILdC                        = get_SetDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousMassChangeRate( );
 
-                dILdGradC                    = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector( );
+                dILdGradC                    = get_SetDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousDirectionVector( );
 
-                dILdF                        = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( );
+                dILdF                        = get_SetDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousDeformationGradient( );
 
-                dILdFn                       = get_setDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( );
+                dILdFn                       = get_SetDataStorage_dPreviousMassChangeIntermediateVelocityGradientdPreviousSubDeformationGradients( );
 
             }
             else{
@@ -913,17 +913,17 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( precedingDeformationGradient = get_precedingDeformationGradient( ) )
 
-                intermediateVelocityGradient = get_setDataStorage_massChangeIntermediateVelocityGradient( );
+                intermediateVelocityGradient = get_SetDataStorage_massChangeIntermediateVelocityGradient( );
 
-                dILdRho                      = get_setDataStorage_dMassChangeIntermediateVelocityGradientdDensity( );
+                dILdRho                      = get_SetDataStorage_dMassChangeIntermediateVelocityGradientdDensity( );
 
-                dILdC                        = get_setDataStorage_dMassChangeIntermediateVelocityGradientdMassChangeRate( );
+                dILdC                        = get_SetDataStorage_dMassChangeIntermediateVelocityGradientdMassChangeRate( );
 
-                dILdGradC                    = get_setDataStorage_dMassChangeIntermediateVelocityGradientdDirectionVector( );
+                dILdGradC                    = get_SetDataStorage_dMassChangeIntermediateVelocityGradientdDirectionVector( );
 
-                dILdF                        = get_setDataStorage_dMassChangeIntermediateVelocityGradientdDeformationGradient( );
+                dILdF                        = get_SetDataStorage_dMassChangeIntermediateVelocityGradientdDeformationGradient( );
 
-                dILdFn                       = get_setDataStorage_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( );
+                dILdFn                       = get_SetDataStorage_dMassChangeIntermediateVelocityGradientdSubDeformationGradients( );
 
             }
 
@@ -1092,7 +1092,7 @@ namespace tardigradeHydra{
 
             const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( getMassChangeConfigurationIndex( ) );
 
-            auto massChangeDeformationGradient = get_setDataStorage_massChangeDeformationGradient( );
+            auto massChangeDeformationGradient = get_SetDataStorage_massChangeDeformationGradient( );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( tardigradeConstitutiveTools::evolveFExponentialMap( hydra->getDeltaTime( ), previousMassChangeDeformationGradient,
                                                                                               *previousIntermediateVelocityGradient, *intermediateVelocityGradient,
@@ -1132,7 +1132,7 @@ namespace tardigradeHydra{
 
             const secondOrderTensor previousMassChangeDeformationGradient = hydra->getPreviousConfiguration( getMassChangeConfigurationIndex( ) );
 
-            auto massChangeDeformationGradient = get_setDataStorage_massChangeDeformationGradient( );
+            auto massChangeDeformationGradient = get_SetDataStorage_massChangeDeformationGradient( );
 
             fourthOrderTensor dFmdL;
 
@@ -1158,19 +1158,19 @@ namespace tardigradeHydra{
                                                                                                   dFmdL, dFmdFp, dFmdLp,
                                                                                                   getIntegrationParameter( ) ) )
 
-                auto dFmdPreviousRho = get_setDataStorage_dMassChangeDeformationGradientdPreviousDensity( );
+                auto dFmdPreviousRho = get_SetDataStorage_dMassChangeDeformationGradientdPreviousDensity( );
                 dFmdPreviousRho.zero( sot_dim );
 
-                auto dFmdPreviousC = get_setDataStorage_dMassChangeDeformationGradientdPreviousMassChangeRate( );
+                auto dFmdPreviousC = get_SetDataStorage_dMassChangeDeformationGradientdPreviousMassChangeRate( );
                 dFmdPreviousC.zero( sot_dim );
 
-                auto dFmdPreviousGradC = get_setDataStorage_dMassChangeDeformationGradientdPreviousDirectionVector( );
+                auto dFmdPreviousGradC = get_SetDataStorage_dMassChangeDeformationGradientdPreviousDirectionVector( );
                 dFmdPreviousGradC.zero( tot_dim );
 
-                auto dFmdPreviousF = get_setDataStorage_dMassChangeDeformationGradientdPreviousDeformationGradient( );
+                auto dFmdPreviousF = get_SetDataStorage_dMassChangeDeformationGradientdPreviousDeformationGradient( );
                 dFmdPreviousF.zero( sot_dim * sot_dim );
 
-                auto dFmdPreviousFn = get_setDataStorage_dMassChangeDeformationGradientdPreviousSubDeformationGradients( );
+                auto dFmdPreviousFn = get_SetDataStorage_dMassChangeDeformationGradientdPreviousSubDeformationGradients( );
                 dFmdPreviousFn.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
 
                 for ( unsigned int i = 0; i < sot_dim; i++ ){
@@ -1217,19 +1217,19 @@ namespace tardigradeHydra{
 
             }
 
-            auto dFmdRho = get_setDataStorage_dMassChangeDeformationGradientdDensity( );
+            auto dFmdRho = get_SetDataStorage_dMassChangeDeformationGradientdDensity( );
             dFmdRho.zero( sot_dim );
 
-            auto dFmdC = get_setDataStorage_dMassChangeDeformationGradientdMassChangeRate( );
+            auto dFmdC = get_SetDataStorage_dMassChangeDeformationGradientdMassChangeRate( );
             dFmdC.zero( sot_dim );
 
-            auto dFmdGradC = get_setDataStorage_dMassChangeDeformationGradientdDirectionVector( );
+            auto dFmdGradC = get_SetDataStorage_dMassChangeDeformationGradientdDirectionVector( );
             dFmdGradC.zero( tot_dim );
 
-            auto dFmdF = get_setDataStorage_dMassChangeDeformationGradientdDeformationGradient( );
+            auto dFmdF = get_SetDataStorage_dMassChangeDeformationGradientdDeformationGradient( );
             dFmdF.zero( sot_dim * sot_dim );
 
-            auto dFmdFn = get_setDataStorage_dMassChangeDeformationGradientdSubDeformationGradients( );
+            auto dFmdFn = get_SetDataStorage_dMassChangeDeformationGradientdSubDeformationGradients( );
             dFmdFn.zero( sot_dim * sot_dim * ( num_configs - 1 ) );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){
@@ -1363,7 +1363,7 @@ namespace tardigradeHydra{
 
             auto massChangeConfigurationIndex = getMassChangeConfigurationIndex( );
 
-            auto residual = get_setDataStorage_residual( );
+            auto residual = get_SetDataStorage_residual( );
 
             *residual.value = *get_massChangeDeformationGradient( ) - secondOrderTensor( hydra->get_configurations( )->begin( ) +   massChangeConfigurationIndex * 9,
                                                                                          hydra->get_configurations( )->begin( ) + ( massChangeConfigurationIndex + 1 ) * 9 );
@@ -1383,7 +1383,7 @@ namespace tardigradeHydra{
 
             auto num_configs = hydra->getNumConfigurations( );
 
-            auto jacobian = get_setDataStorage_jacobian( );
+            auto jacobian = get_SetDataStorage_jacobian( );
             jacobian.zero( num_equations * num_unknowns );
 
             const floatVector *dFmdFn = get_dMassChangeDeformationGradientdSubDeformationGradients( );
@@ -1409,7 +1409,7 @@ namespace tardigradeHydra{
 
             const unsigned int sot_dim = hydra->getSOTDimension( );
 
-            auto dRdT = get_setDataStorage_dRdT( );
+            auto dRdT = get_SetDataStorage_dRdT( );
 
             dRdT.zero( sot_dim );
 
@@ -1420,7 +1420,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            auto dRdF = get_setDataStorage_dRdF( );
+            auto dRdF = get_SetDataStorage_dRdF( );
             *dRdF.value = *get_dMassChangeDeformationGradientdDeformationGradient( );
 
         }
@@ -1444,7 +1444,7 @@ namespace tardigradeHydra{
 
             const thirdOrderTensor  *dMassChangeDeformationdDirectionVector = get_dMassChangeDeformationGradientdDirectionVector( );
 
-            auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
+            auto dRdAdditionalDOF = get_SetDataStorage_dRdAdditionalDOF( );
             dRdAdditionalDOF.zero( num_equations * num_additional_dof );
 
             for ( unsigned int i = 0; i < sot_dim; i++ ){

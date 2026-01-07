@@ -33,7 +33,7 @@ namespace tardigradeHydra{
              * Set the specific heat
              */
 
-            auto specificHeat = get_setDataStorage_specificHeat( );
+            auto specificHeat = get_SetDataStorage_specificHeat( );
 
             *specificHeat.value = ( *get_specificHeatParameters( ) )[ 0 ];
 
@@ -44,7 +44,7 @@ namespace tardigradeHydra{
              * Set the previous specific heat
              */
 
-            auto specificHeat = get_setDataStorage_previousSpecificHeat( );
+            auto specificHeat = get_SetDataStorage_previousSpecificHeat( );
 
             *specificHeat.value = ( *get_specificHeatParameters( ) )[ 0 ];
 
@@ -55,7 +55,7 @@ namespace tardigradeHydra{
              * Set the internal energy
              */
 
-            auto internal_energy = get_setDataStorage_internalEnergy( );
+            auto internal_energy = get_SetDataStorage_internalEnergy( );
 
             ( *internal_energy.value ) = ( *get_specificHeat( ) ) * hydra->getTemperature( );
 
@@ -66,7 +66,7 @@ namespace tardigradeHydra{
              * Set the previous internal energy
              */
 
-            auto internal_energy = get_setDataStorage_previousInternalEnergy( );
+            auto internal_energy = get_SetDataStorage_previousInternalEnergy( );
 
             ( *internal_energy.value ) = ( *get_specificHeat( ) ) * hydra->getPreviousTemperature( );
 
@@ -77,7 +77,7 @@ namespace tardigradeHydra{
              * Get the derivative of the internal energy w.r.t. the temperature
              */
 
-            auto dInternalEnergydT = get_setDataStorage_dInternalEnergydT( );
+            auto dInternalEnergydT = get_SetDataStorage_dInternalEnergydT( );
 
             ( *dInternalEnergydT.value ) = *get_specificHeat( );
 
@@ -88,7 +88,7 @@ namespace tardigradeHydra{
              * Set the residual value
              */
 
-            auto residual = get_setDataStorage_residual( );
+            auto residual = get_SetDataStorage_residual( );
 
             residual.zero( getNumEquations( ) );
 
@@ -104,7 +104,7 @@ namespace tardigradeHydra{
             auto num_unknowns = hydra->getNumUnknowns( );
 
             // Form the Jacobian
-            auto jacobian = get_setDataStorage_jacobian( );
+            auto jacobian = get_SetDataStorage_jacobian( );
 
             jacobian.zero( getNumEquations( ) * num_unknowns );
 
@@ -117,7 +117,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            auto dRdT = get_setDataStorage_dRdT( );
+            auto dRdT = get_SetDataStorage_dRdT( );
 
             dRdT.zero( getNumEquations( ) );
 
@@ -130,7 +130,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            auto dRdF = get_setDataStorage_dRdF( );
+            auto dRdF = get_SetDataStorage_dRdF( );
 
             dRdF.zero( getNumEquations( ) * hydra->getDimension( ) * hydra->getDimension( ) );
 
@@ -141,7 +141,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the additional DOF vector
              */
 
-            auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
+            auto dRdAdditionalDOF = get_SetDataStorage_dRdAdditionalDOF( );
 
             dRdAdditionalDOF.zero( getNumEquations( ) * hydra->getNumAdditionalDOF( ) );
 

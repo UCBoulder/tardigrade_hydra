@@ -111,7 +111,7 @@ namespace tardigradeHydra{
 
             floatVector precedingConfiguration;
 
-            setDataStorageBase< secondOrderTensor > drivingStress;
+            SetDataStorageBase< secondOrderTensor > drivingStress;
 
             if ( isPrevious ){
 
@@ -119,7 +119,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getPreviousStress( ) );
 
-                drivingStress = get_setDataStorage_previousDrivingStress( );
+                drivingStress = get_SetDataStorage_previousDrivingStress( );
 
             }
             else{
@@ -128,7 +128,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( cauchyStress = hydra->getStress( ) );
 
-                drivingStress = get_setDataStorage_drivingStress( );
+                drivingStress = get_SetDataStorage_drivingStress( );
 
             }
 
@@ -158,13 +158,13 @@ namespace tardigradeHydra{
 
             secondOrderTensor precedingConfiguration;
 
-            setDataStorageBase< secondOrderTensor > drivingStress;
+            SetDataStorageBase< secondOrderTensor > drivingStress;
 
-            setDataStorageBase< fourthOrderTensor > dDrivingStressdCauchyStress;
+            SetDataStorageBase< fourthOrderTensor > dDrivingStressdCauchyStress;
 
-            setDataStorageBase< fourthOrderTensor > dDrivingStressdF;
+            SetDataStorageBase< fourthOrderTensor > dDrivingStressdF;
 
-            setDataStorageBase< floatVector > dDrivingStressdSubFs;
+            SetDataStorageBase< floatVector > dDrivingStressdSubFs;
 
             floatVector precedingConfigurationJacobian;
 
@@ -184,13 +184,13 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->get_previousdF1dFn( ) );
 
-                drivingStress = get_setDataStorage_previousDrivingStress( );
+                drivingStress = get_SetDataStorage_previousDrivingStress( );
 
-                dDrivingStressdCauchyStress = get_setDataStorage_dPreviousDrivingStressdPreviousCauchyStress( );
+                dDrivingStressdCauchyStress = get_SetDataStorage_dPreviousDrivingStressdPreviousCauchyStress( );
 
-                dDrivingStressdF            = get_setDataStorage_dPreviousDrivingStressdPreviousF( );
+                dDrivingStressdF            = get_SetDataStorage_dPreviousDrivingStressdPreviousF( );
 
-                dDrivingStressdSubFs        = get_setDataStorage_dPreviousDrivingStressdPreviousSubFs( );
+                dDrivingStressdSubFs        = get_SetDataStorage_dPreviousDrivingStressdPreviousSubFs( );
 
             }
             else{
@@ -205,13 +205,13 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( dF1dSubFs = hydra->get_dF1dFn( ) );
 
-                drivingStress = get_setDataStorage_drivingStress( );
+                drivingStress = get_SetDataStorage_drivingStress( );
 
-                dDrivingStressdCauchyStress = get_setDataStorage_dDrivingStressdCauchyStress( );
+                dDrivingStressdCauchyStress = get_SetDataStorage_dDrivingStressdCauchyStress( );
 
-                dDrivingStressdF            = get_setDataStorage_dDrivingStressdF( );
+                dDrivingStressdF            = get_SetDataStorage_dDrivingStressdF( );
 
-                dDrivingStressdSubFs        = get_setDataStorage_dDrivingStressdSubFs( );
+                dDrivingStressdSubFs        = get_SetDataStorage_dDrivingStressdSubFs( );
 
             }
 
@@ -555,20 +555,20 @@ namespace tardigradeHydra{
 
             floatType g;
 
-            setDataStorageBase< floatVector > flowDirection;
+            SetDataStorageBase< floatVector > flowDirection;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_previousDrivingStress( ) );
 
-                flowDirection = get_setDataStorage_previousFlowDirection( );
+                flowDirection = get_SetDataStorage_previousFlowDirection( );
 
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_drivingStress( ) );
 
-                flowDirection = get_setDataStorage_flowDirection( );
+                flowDirection = get_SetDataStorage_flowDirection( );
 
             }
 
@@ -620,13 +620,13 @@ namespace tardigradeHydra{
 
             floatType g;
 
-            setDataStorageBase< floatVector > flowDirection;
+            SetDataStorageBase< floatVector > flowDirection;
 
-            setDataStorageBase< fourthOrderTensor > dFlowDirectiondCauchyStress;
+            SetDataStorageBase< fourthOrderTensor > dFlowDirectiondCauchyStress;
 
-            setDataStorageBase< fourthOrderTensor > dFlowDirectiondF;
+            SetDataStorageBase< fourthOrderTensor > dFlowDirectiondF;
 
-            setDataStorageBase< floatVector > dFlowDirectiondSubFs;
+            SetDataStorageBase< floatVector > dFlowDirectiondSubFs;
 
             if ( isPrevious ){
 
@@ -638,13 +638,13 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_previousDrivingStress( ) );
 
-                flowDirection = get_setDataStorage_previousFlowDirection( );
+                flowDirection = get_SetDataStorage_previousFlowDirection( );
 
-                dFlowDirectiondCauchyStress = get_setDataStorage_dPreviousFlowDirectiondPreviousCauchyStress( );
+                dFlowDirectiondCauchyStress = get_SetDataStorage_dPreviousFlowDirectiondPreviousCauchyStress( );
 
-                dFlowDirectiondF            = get_setDataStorage_dPreviousFlowDirectiondPreviousF( );
+                dFlowDirectiondF            = get_SetDataStorage_dPreviousFlowDirectiondPreviousF( );
 
-                dFlowDirectiondSubFs        = get_setDataStorage_dPreviousFlowDirectiondPreviousSubFs( );
+                dFlowDirectiondSubFs        = get_SetDataStorage_dPreviousFlowDirectiondPreviousSubFs( );
 
             }
             else{
@@ -657,13 +657,13 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_drivingStress( ) );
 
-                flowDirection = get_setDataStorage_flowDirection( );
+                flowDirection = get_SetDataStorage_flowDirection( );
 
-                dFlowDirectiondCauchyStress = get_setDataStorage_dFlowDirectiondCauchyStress( );
+                dFlowDirectiondCauchyStress = get_SetDataStorage_dFlowDirectiondCauchyStress( );
 
-                dFlowDirectiondF            = get_setDataStorage_dFlowDirectiondF( );
+                dFlowDirectiondF            = get_SetDataStorage_dFlowDirectiondF( );
 
-                dFlowDirectiondSubFs        = get_setDataStorage_dFlowDirectiondSubFs( );
+                dFlowDirectiondSubFs        = get_SetDataStorage_dFlowDirectiondSubFs( );
 
             }
 
@@ -845,20 +845,20 @@ namespace tardigradeHydra{
 
             const floatVector* yieldParameters;
 
-            setDataStorageBase< floatType > yieldFunction;
+            SetDataStorageBase< floatType > yieldFunction;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_previousDrivingStress( ) );
 
-                yieldFunction = get_setDataStorage_previousYieldFunction( );
+                yieldFunction = get_SetDataStorage_previousYieldFunction( );
 
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_drivingStress( ) );
 
-                yieldFunction = get_setDataStorage_yieldFunction( );
+                yieldFunction = get_SetDataStorage_yieldFunction( );
 
             }
 
@@ -891,15 +891,15 @@ namespace tardigradeHydra{
 
             const floatVector* yieldParameters;
 
-            setDataStorageBase< floatType > yieldFunction;
+            SetDataStorageBase< floatType > yieldFunction;
 
-            setDataStorageBase< secondOrderTensor > dYieldFunctiondCauchyStress;
+            SetDataStorageBase< secondOrderTensor > dYieldFunctiondCauchyStress;
 
-            setDataStorageBase< secondOrderTensor > dYieldFunctiondF;
+            SetDataStorageBase< secondOrderTensor > dYieldFunctiondF;
 
-            setDataStorageBase< floatVector > dYieldFunctiondSubFs;
+            SetDataStorageBase< floatVector > dYieldFunctiondSubFs;
 
-            setDataStorageBase< floatVector > dYieldFunctiondStateVariables;
+            SetDataStorageBase< floatVector > dYieldFunctiondStateVariables;
 
             if ( isPrevious ){
 
@@ -911,15 +911,15 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_previousDrivingStress( ) );
 
-                yieldFunction = get_setDataStorage_previousYieldFunction( );
+                yieldFunction = get_SetDataStorage_previousYieldFunction( );
 
-                dYieldFunctiondCauchyStress   = get_setDataStorage_dPreviousYieldFunctiondPreviousCauchyStress( );
+                dYieldFunctiondCauchyStress   = get_SetDataStorage_dPreviousYieldFunctiondPreviousCauchyStress( );
 
-                dYieldFunctiondF              = get_setDataStorage_dPreviousYieldFunctiondPreviousF( );
+                dYieldFunctiondF              = get_SetDataStorage_dPreviousYieldFunctiondPreviousF( );
 
-                dYieldFunctiondSubFs          = get_setDataStorage_dPreviousYieldFunctiondPreviousSubFs( );
+                dYieldFunctiondSubFs          = get_SetDataStorage_dPreviousYieldFunctiondPreviousSubFs( );
 
-                dYieldFunctiondStateVariables = get_setDataStorage_dPreviousYieldFunctiondPreviousStateVariables( );
+                dYieldFunctiondStateVariables = get_SetDataStorage_dPreviousYieldFunctiondPreviousStateVariables( );
 
             }
             else{
@@ -932,15 +932,15 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( drivingStress = get_drivingStress( ) );
 
-                yieldFunction = get_setDataStorage_yieldFunction( );
+                yieldFunction = get_SetDataStorage_yieldFunction( );
 
-                dYieldFunctiondCauchyStress   = get_setDataStorage_dYieldFunctiondCauchyStress( );
+                dYieldFunctiondCauchyStress   = get_SetDataStorage_dYieldFunctiondCauchyStress( );
 
-                dYieldFunctiondF              = get_setDataStorage_dYieldFunctiondF( );
+                dYieldFunctiondF              = get_SetDataStorage_dYieldFunctiondF( );
 
-                dYieldFunctiondSubFs          = get_setDataStorage_dYieldFunctiondSubFs( );
+                dYieldFunctiondSubFs          = get_SetDataStorage_dYieldFunctiondSubFs( );
 
-                dYieldFunctiondStateVariables = get_setDataStorage_dYieldFunctiondStateVariables( );
+                dYieldFunctiondStateVariables = get_SetDataStorage_dYieldFunctiondStateVariables( );
 
             }
 
@@ -1029,20 +1029,20 @@ namespace tardigradeHydra{
 
             const floatVector *temperatureParameters;
 
-            setDataStorageBase< floatType > plasticThermalMultiplier;
+            SetDataStorageBase< floatType > plasticThermalMultiplier;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( temperature = hydra->getPreviousTemperature( ) );
 
-                plasticThermalMultiplier    = get_setDataStorage_previousPlasticThermalMultiplier( );
+                plasticThermalMultiplier    = get_SetDataStorage_previousPlasticThermalMultiplier( );
 
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( temperature = hydra->getTemperature( ) );
 
-                plasticThermalMultiplier    = get_setDataStorage_plasticThermalMultiplier( );
+                plasticThermalMultiplier    = get_SetDataStorage_plasticThermalMultiplier( );
 
             }
 
@@ -1064,26 +1064,26 @@ namespace tardigradeHydra{
 
             const floatVector *temperatureParameters;
 
-            setDataStorageBase< floatType > plasticThermalMultiplier;
+            SetDataStorageBase< floatType > plasticThermalMultiplier;
 
-            setDataStorageBase< floatType > dPlasticThermalMultiplierdT;
+            SetDataStorageBase< floatType > dPlasticThermalMultiplierdT;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( temperature = hydra->getPreviousTemperature( ) );
 
-                plasticThermalMultiplier    = get_setDataStorage_previousPlasticThermalMultiplier( );
+                plasticThermalMultiplier    = get_SetDataStorage_previousPlasticThermalMultiplier( );
 
-                dPlasticThermalMultiplierdT = get_setDataStorage_dPreviousPlasticThermalMultiplierdPreviousT( );
+                dPlasticThermalMultiplierdT = get_SetDataStorage_dPreviousPlasticThermalMultiplierdPreviousT( );
 
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( temperature = hydra->getTemperature( ) );
 
-                plasticThermalMultiplier = get_setDataStorage_plasticThermalMultiplier( );
+                plasticThermalMultiplier = get_SetDataStorage_plasticThermalMultiplier( );
 
-                dPlasticThermalMultiplierdT = get_setDataStorage_dPlasticThermalMultiplierdT( );
+                dPlasticThermalMultiplierdT = get_SetDataStorage_dPlasticThermalMultiplierdT( );
 
             }
 
@@ -1153,20 +1153,20 @@ namespace tardigradeHydra{
 
             const floatVector *dragStressParameters;
 
-            setDataStorageBase< floatType > dragStress;
+            SetDataStorageBase< floatType > dragStress;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
 
-                dragStress = get_setDataStorage_previousDragStress( );
+                dragStress = get_SetDataStorage_previousDragStress( );
 
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
 
-                dragStress = get_setDataStorage_dragStress( );
+                dragStress = get_SetDataStorage_dragStress( );
 
             }
 
@@ -1188,26 +1188,26 @@ namespace tardigradeHydra{
 
             const floatVector *dragStressParameters;
 
-            setDataStorageBase< floatType > dragStress;
+            SetDataStorageBase< floatType > dragStress;
 
-            setDataStorageBase< floatVector > dDragStressdStateVariables;
+            SetDataStorageBase< floatVector > dDragStressdStateVariables;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
 
-                dragStress = get_setDataStorage_previousDragStress( );
+                dragStress = get_SetDataStorage_previousDragStress( );
 
-                dDragStressdStateVariables = get_setDataStorage_dPreviousDragStressdPreviousStateVariables( );
+                dDragStressdStateVariables = get_SetDataStorage_dPreviousDragStressdPreviousStateVariables( );
 
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
 
-                dragStress = get_setDataStorage_dragStress( );
+                dragStress = get_SetDataStorage_dragStress( );
 
-                dDragStressdStateVariables = get_setDataStorage_dDragStressdStateVariables( );
+                dDragStressdStateVariables = get_SetDataStorage_dDragStressdStateVariables( );
 
             }
 
@@ -1276,20 +1276,20 @@ namespace tardigradeHydra{
 
             const floatVector *hardeningParameters;
 
-            setDataStorageBase< floatVector > hardeningFunction;
+            SetDataStorageBase< floatVector > hardeningFunction;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
 
-                hardeningFunction = get_setDataStorage_previousHardeningFunction( );
+                hardeningFunction = get_SetDataStorage_previousHardeningFunction( );
 
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
 
-                hardeningFunction = get_setDataStorage_hardeningFunction( );
+                hardeningFunction = get_SetDataStorage_hardeningFunction( );
 
             }
 
@@ -1315,26 +1315,26 @@ namespace tardigradeHydra{
 
             const floatVector *hardeningParameters;
 
-            setDataStorageBase< floatVector > hardeningFunction;
+            SetDataStorageBase< floatVector > hardeningFunction;
 
-            setDataStorageBase< floatVector > dHardeningFunctiondStateVariables;
+            SetDataStorageBase< floatVector > dHardeningFunctiondStateVariables;
 
             if ( isPrevious ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_previousStateVariables( ) );
 
-                hardeningFunction = get_setDataStorage_previousHardeningFunction( );
+                hardeningFunction = get_SetDataStorage_previousHardeningFunction( );
 
-                dHardeningFunctiondStateVariables = get_setDataStorage_dPreviousHardeningFunctiondPreviousStateVariables( );
+                dHardeningFunctiondStateVariables = get_SetDataStorage_dPreviousHardeningFunctiondPreviousStateVariables( );
 
             }
             else{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( stateVariables = get_stateVariables( ) );
 
-                hardeningFunction = get_setDataStorage_hardeningFunction( );
+                hardeningFunction = get_SetDataStorage_hardeningFunction( );
 
-                dHardeningFunctiondStateVariables = get_setDataStorage_dHardeningFunctiondStateVariables( );
+                dHardeningFunctiondStateVariables = get_SetDataStorage_dHardeningFunctiondStateVariables( );
 
             }
 
@@ -1545,7 +1545,7 @@ namespace tardigradeHydra{
 
             const floatVector *perzynaParameters;
 
-            setDataStorageBase< floatType > plasticMultiplier;
+            SetDataStorageBase< floatType > plasticMultiplier;
 
             if ( isPrevious ){
 
@@ -1555,7 +1555,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = get_previousPlasticThermalMultiplier( ) );
 
-                plasticMultiplier = get_setDataStorage_previousPlasticMultiplier( );
+                plasticMultiplier = get_SetDataStorage_previousPlasticMultiplier( );
 
             }
             else{
@@ -1566,7 +1566,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = get_plasticThermalMultiplier( ) );
 
-                plasticMultiplier = get_setDataStorage_plasticMultiplier( );
+                plasticMultiplier = get_SetDataStorage_plasticMultiplier( );
 
             }
 
@@ -1605,17 +1605,17 @@ namespace tardigradeHydra{
 
             const floatType   *dPlasticThermalMultiplierdT;
 
-            setDataStorageBase< floatType > plasticMultiplier;
+            SetDataStorageBase< floatType > plasticMultiplier;
 
-            setDataStorageBase< secondOrderTensor > dPlasticMultiplierdCauchyStress;
+            SetDataStorageBase< secondOrderTensor > dPlasticMultiplierdCauchyStress;
 
-            setDataStorageBase< secondOrderTensor > dPlasticMultiplierdF;
+            SetDataStorageBase< secondOrderTensor > dPlasticMultiplierdF;
 
-            setDataStorageBase< secondOrderTensor > dPlasticMultiplierdSubFs;
+            SetDataStorageBase< secondOrderTensor > dPlasticMultiplierdSubFs;
 
-            setDataStorageBase< floatType > dPlasticMultiplierdT;
+            SetDataStorageBase< floatType > dPlasticMultiplierdT;
 
-            setDataStorageBase< floatVector > dPlasticMultiplierdStateVariables;
+            SetDataStorageBase< floatVector > dPlasticMultiplierdStateVariables;
 
             if ( isPrevious ){
 
@@ -1637,17 +1637,17 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = get_previousPlasticThermalMultiplier( ) );
 
-                plasticMultiplier                 = get_setDataStorage_previousPlasticMultiplier( );
+                plasticMultiplier                 = get_SetDataStorage_previousPlasticMultiplier( );
 
-                dPlasticMultiplierdCauchyStress   = get_setDataStorage_dPreviousPlasticMultiplierdPreviousCauchyStress( );
+                dPlasticMultiplierdCauchyStress   = get_SetDataStorage_dPreviousPlasticMultiplierdPreviousCauchyStress( );
 
-                dPlasticMultiplierdF              = get_setDataStorage_dPreviousPlasticMultiplierdPreviousF( );
+                dPlasticMultiplierdF              = get_SetDataStorage_dPreviousPlasticMultiplierdPreviousF( );
 
-                dPlasticMultiplierdSubFs          = get_setDataStorage_dPreviousPlasticMultiplierdPreviousSubFs( );
+                dPlasticMultiplierdSubFs          = get_SetDataStorage_dPreviousPlasticMultiplierdPreviousSubFs( );
 
-                dPlasticMultiplierdT              = get_setDataStorage_dPreviousPlasticMultiplierdPreviousT( );
+                dPlasticMultiplierdT              = get_SetDataStorage_dPreviousPlasticMultiplierdPreviousT( );
 
-                dPlasticMultiplierdStateVariables = get_setDataStorage_dPreviousPlasticMultiplierdPreviousStateVariables( );
+                dPlasticMultiplierdStateVariables = get_SetDataStorage_dPreviousPlasticMultiplierdPreviousStateVariables( );
 
             }
             else{
@@ -1670,17 +1670,17 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( plasticThermalMultiplier = get_plasticThermalMultiplier( ) );
 
-                plasticMultiplier                 = get_setDataStorage_plasticMultiplier( );
+                plasticMultiplier                 = get_SetDataStorage_plasticMultiplier( );
 
-                dPlasticMultiplierdCauchyStress   = get_setDataStorage_dPlasticMultiplierdCauchyStress( );
+                dPlasticMultiplierdCauchyStress   = get_SetDataStorage_dPlasticMultiplierdCauchyStress( );
 
-                dPlasticMultiplierdF              = get_setDataStorage_dPlasticMultiplierdF( );
+                dPlasticMultiplierdF              = get_SetDataStorage_dPlasticMultiplierdF( );
 
-                dPlasticMultiplierdSubFs          = get_setDataStorage_dPlasticMultiplierdSubFs( );
+                dPlasticMultiplierdSubFs          = get_SetDataStorage_dPlasticMultiplierdSubFs( );
 
-                dPlasticMultiplierdT              = get_setDataStorage_dPlasticMultiplierdT( );
+                dPlasticMultiplierdT              = get_SetDataStorage_dPlasticMultiplierdT( );
 
-                dPlasticMultiplierdStateVariables = get_setDataStorage_dPlasticMultiplierdStateVariables( );
+                dPlasticMultiplierdStateVariables = get_SetDataStorage_dPlasticMultiplierdStateVariables( );
 
             }
 
@@ -1900,7 +1900,7 @@ namespace tardigradeHydra{
 
             const floatVector *flowDirection;
 
-            setDataStorageBase< secondOrderTensor > velocityGradient;
+            SetDataStorageBase< secondOrderTensor > velocityGradient;
 
             if ( isPrevious ){
 
@@ -1908,7 +1908,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = get_previousFlowDirection( ) );
 
-                velocityGradient = get_setDataStorage_previousVelocityGradient( );
+                velocityGradient = get_SetDataStorage_previousVelocityGradient( );
 
             }
             else{
@@ -1917,7 +1917,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = get_flowDirection( ) );
 
-                velocityGradient = get_setDataStorage_velocityGradient( );
+                velocityGradient = get_SetDataStorage_velocityGradient( );
 
             }
 
@@ -1960,17 +1960,17 @@ namespace tardigradeHydra{
 
             const floatVector *dFlowDirectiondSubFs;
 
-            setDataStorageBase< secondOrderTensor > velocityGradient;
+            SetDataStorageBase< secondOrderTensor > velocityGradient;
 
-            setDataStorageBase< fourthOrderTensor > dVelocityGradientdCauchyStress;
+            SetDataStorageBase< fourthOrderTensor > dVelocityGradientdCauchyStress;
 
-            setDataStorageBase< fourthOrderTensor > dVelocityGradientdF;
+            SetDataStorageBase< fourthOrderTensor > dVelocityGradientdF;
 
-            setDataStorageBase< floatVector > dVelocityGradientdSubFs;
+            SetDataStorageBase< floatVector > dVelocityGradientdSubFs;
 
-            setDataStorageBase< secondOrderTensor > dVelocityGradientdT;
+            SetDataStorageBase< secondOrderTensor > dVelocityGradientdT;
 
-            setDataStorageBase< floatVector > dVelocityGradientdStateVariables;
+            SetDataStorageBase< floatVector > dVelocityGradientdStateVariables;
 
             if ( isPrevious ){
 
@@ -1994,17 +1994,17 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = get_previousFlowDirection( ) );
 
-                velocityGradient = get_setDataStorage_previousVelocityGradient( );
+                velocityGradient = get_SetDataStorage_previousVelocityGradient( );
 
-                dVelocityGradientdCauchyStress   = get_setDataStorage_dPreviousVelocityGradientdPreviousCauchyStress( );
+                dVelocityGradientdCauchyStress   = get_SetDataStorage_dPreviousVelocityGradientdPreviousCauchyStress( );
 
-                dVelocityGradientdF              = get_setDataStorage_dPreviousVelocityGradientdPreviousF( );
+                dVelocityGradientdF              = get_SetDataStorage_dPreviousVelocityGradientdPreviousF( );
 
-                dVelocityGradientdSubFs          = get_setDataStorage_dPreviousVelocityGradientdPreviousSubFs( );
+                dVelocityGradientdSubFs          = get_SetDataStorage_dPreviousVelocityGradientdPreviousSubFs( );
 
-                dVelocityGradientdT              = get_setDataStorage_dPreviousVelocityGradientdPreviousT( );
+                dVelocityGradientdT              = get_SetDataStorage_dPreviousVelocityGradientdPreviousT( );
 
-                dVelocityGradientdStateVariables = get_setDataStorage_dPreviousVelocityGradientdPreviousStateVariables( );
+                dVelocityGradientdStateVariables = get_SetDataStorage_dPreviousVelocityGradientdPreviousStateVariables( );
 
             }
             else{
@@ -2029,17 +2029,17 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( flowDirection = get_flowDirection( ) );
 
-                velocityGradient = get_setDataStorage_velocityGradient( );
+                velocityGradient = get_SetDataStorage_velocityGradient( );
 
-                dVelocityGradientdCauchyStress   = get_setDataStorage_dVelocityGradientdCauchyStress( );
+                dVelocityGradientdCauchyStress   = get_SetDataStorage_dVelocityGradientdCauchyStress( );
 
-                dVelocityGradientdF              = get_setDataStorage_dVelocityGradientdF( );
+                dVelocityGradientdF              = get_SetDataStorage_dVelocityGradientdF( );
 
-                dVelocityGradientdSubFs          = get_setDataStorage_dVelocityGradientdSubFs( );
+                dVelocityGradientdSubFs          = get_SetDataStorage_dVelocityGradientdSubFs( );
 
-                dVelocityGradientdT              = get_setDataStorage_dVelocityGradientdT( );
+                dVelocityGradientdT              = get_SetDataStorage_dVelocityGradientdT( );
 
-                dVelocityGradientdStateVariables = get_setDataStorage_dVelocityGradientdStateVariables( );
+                dVelocityGradientdStateVariables = get_SetDataStorage_dVelocityGradientdStateVariables( );
             }
 
             auto map_flowDirection                     = getFixedSizeVectorMap< floatType, sot_dim >( flowDirection->data( ) );
@@ -2246,7 +2246,7 @@ namespace tardigradeHydra{
 
             const floatVector *hardeningFunction;
 
-            setDataStorageBase< floatVector > stateVariableEvolutionRates;
+            SetDataStorageBase< floatVector > stateVariableEvolutionRates;
 
             if ( isPrevious ){
 
@@ -2254,7 +2254,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = get_previousHardeningFunction( ) );
 
-                stateVariableEvolutionRates = get_setDataStorage_previousStateVariableEvolutionRates( );
+                stateVariableEvolutionRates = get_SetDataStorage_previousStateVariableEvolutionRates( );
 
             }
             else{
@@ -2263,7 +2263,7 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = get_hardeningFunction( ) );
 
-                stateVariableEvolutionRates = get_setDataStorage_stateVariableEvolutionRates( );
+                stateVariableEvolutionRates = get_SetDataStorage_stateVariableEvolutionRates( );
 
             }
 
@@ -2303,17 +2303,17 @@ namespace tardigradeHydra{
 
             const floatVector *dHardeningFunctiondStateVariables;
 
-            setDataStorageBase< floatVector > stateVariableEvolutionRates;
+            SetDataStorageBase< floatVector > stateVariableEvolutionRates;
 
-            setDataStorageBase< floatVector > dStateVariableEvolutionRatesdCauchyStress;
+            SetDataStorageBase< floatVector > dStateVariableEvolutionRatesdCauchyStress;
 
-            setDataStorageBase< floatVector > dStateVariableEvolutionRatesdF;
+            SetDataStorageBase< floatVector > dStateVariableEvolutionRatesdF;
 
-            setDataStorageBase< floatVector > dStateVariableEvolutionRatesdSubFs;
+            SetDataStorageBase< floatVector > dStateVariableEvolutionRatesdSubFs;
 
-            setDataStorageBase< floatVector > dStateVariableEvolutionRatesdT;
+            SetDataStorageBase< floatVector > dStateVariableEvolutionRatesdT;
 
-            setDataStorageBase< floatVector > dStateVariableEvolutionRatesdStateVariables;
+            SetDataStorageBase< floatVector > dStateVariableEvolutionRatesdStateVariables;
 
             if ( isPrevious ){
 
@@ -2333,17 +2333,17 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = get_previousHardeningFunction( ) );
 
-                stateVariableEvolutionRates = get_setDataStorage_previousStateVariableEvolutionRates( );
+                stateVariableEvolutionRates = get_SetDataStorage_previousStateVariableEvolutionRates( );
 
-                dStateVariableEvolutionRatesdCauchyStress   = get_setDataStorage_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( );
+                dStateVariableEvolutionRatesdCauchyStress   = get_SetDataStorage_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress( );
 
-                dStateVariableEvolutionRatesdF              = get_setDataStorage_dPreviousStateVariableEvolutionRatesdPreviousF( );
+                dStateVariableEvolutionRatesdF              = get_SetDataStorage_dPreviousStateVariableEvolutionRatesdPreviousF( );
 
-                dStateVariableEvolutionRatesdSubFs          = get_setDataStorage_dPreviousStateVariableEvolutionRatesdPreviousSubFs( );
+                dStateVariableEvolutionRatesdSubFs          = get_SetDataStorage_dPreviousStateVariableEvolutionRatesdPreviousSubFs( );
 
-                dStateVariableEvolutionRatesdT              = get_setDataStorage_dPreviousStateVariableEvolutionRatesdPreviousT( );
+                dStateVariableEvolutionRatesdT              = get_SetDataStorage_dPreviousStateVariableEvolutionRatesdPreviousT( );
 
-                dStateVariableEvolutionRatesdStateVariables = get_setDataStorage_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( );
+                dStateVariableEvolutionRatesdStateVariables = get_SetDataStorage_dPreviousStateVariableEvolutionRatesdPreviousStateVariables( );
 
             }
             else{
@@ -2364,17 +2364,17 @@ namespace tardigradeHydra{
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( hardeningFunction = get_hardeningFunction( ) );
 
-                stateVariableEvolutionRates = get_setDataStorage_stateVariableEvolutionRates( );
+                stateVariableEvolutionRates = get_SetDataStorage_stateVariableEvolutionRates( );
 
-                dStateVariableEvolutionRatesdCauchyStress   = get_setDataStorage_dStateVariableEvolutionRatesdCauchyStress( );
+                dStateVariableEvolutionRatesdCauchyStress   = get_SetDataStorage_dStateVariableEvolutionRatesdCauchyStress( );
 
-                dStateVariableEvolutionRatesdF              = get_setDataStorage_dStateVariableEvolutionRatesdF( );
+                dStateVariableEvolutionRatesdF              = get_SetDataStorage_dStateVariableEvolutionRatesdF( );
 
-                dStateVariableEvolutionRatesdSubFs          = get_setDataStorage_dStateVariableEvolutionRatesdSubFs( );
+                dStateVariableEvolutionRatesdSubFs          = get_SetDataStorage_dStateVariableEvolutionRatesdSubFs( );
 
-                dStateVariableEvolutionRatesdT              = get_setDataStorage_dStateVariableEvolutionRatesdT( );
+                dStateVariableEvolutionRatesdT              = get_SetDataStorage_dStateVariableEvolutionRatesdT( );
 
-                dStateVariableEvolutionRatesdStateVariables = get_setDataStorage_dStateVariableEvolutionRatesdStateVariables( );
+                dStateVariableEvolutionRatesdStateVariables = get_SetDataStorage_dStateVariableEvolutionRatesdStateVariables( );
 
             }
 
@@ -2425,7 +2425,7 @@ namespace tardigradeHydra{
 
             floatVector dFp;
 
-            auto plasticDeformationGradient = get_setDataStorage_plasticDeformationGradient( );
+            auto plasticDeformationGradient = get_SetDataStorage_plasticDeformationGradient( );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( velocityGradient = get_velocityGradient( ) );
 
@@ -2553,7 +2553,7 @@ namespace tardigradeHydra{
 
             secondOrderTensor dFp;
 
-            auto plasticDeformationGradient = get_setDataStorage_plasticDeformationGradient( );
+            auto plasticDeformationGradient = get_SetDataStorage_plasticDeformationGradient( );
 
             secondOrderTensor dFdL;
 
@@ -2584,19 +2584,19 @@ namespace tardigradeHydra{
                 auto map_dPreviousVelocityGradientdPreviousSubFs          = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_dPreviousVelocityGradientdPreviousSubFs( )->data( ), ( num_configs - 1 ) * sot_dim );
                 auto map_dPreviousVelocityGradientdPreviousStateVariables = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_dPreviousVelocityGradientdPreviousStateVariables( )->data( ), num_isvs );
 
-                auto dPlasticDeformationGradientdPreviousCauchyStress = get_setDataStorage_dPlasticDeformationGradientdPreviousCauchyStress( );
+                auto dPlasticDeformationGradientdPreviousCauchyStress = get_SetDataStorage_dPlasticDeformationGradientdPreviousCauchyStress( );
                 auto map_dPlasticDeformationGradientdPreviousCauchyStress = dPlasticDeformationGradientdPreviousCauchyStress.zeroMap< floatType, sot_dim, sot_dim >( );
 
-                auto dPlasticDeformationGradientdPreviousF = get_setDataStorage_dPlasticDeformationGradientdPreviousF( );
+                auto dPlasticDeformationGradientdPreviousF = get_SetDataStorage_dPlasticDeformationGradientdPreviousF( );
                 auto map_dPlasticDeformationGradientdPreviousF = dPlasticDeformationGradientdPreviousF.zeroMap< floatType, sot_dim, sot_dim >( );
 
-                auto dPlasticDeformationGradientdPreviousSubFs = get_setDataStorage_dPlasticDeformationGradientdPreviousSubFs( );
+                auto dPlasticDeformationGradientdPreviousSubFs = get_SetDataStorage_dPlasticDeformationGradientdPreviousSubFs( );
                 auto map_dPlasticDeformationGradientdPreviousSubFs = dPlasticDeformationGradientdPreviousSubFs.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
 
-                auto dPlasticDeformationGradientdPreviousT = get_setDataStorage_dPlasticDeformationGradientdPreviousT( );
+                auto dPlasticDeformationGradientdPreviousT = get_SetDataStorage_dPlasticDeformationGradientdPreviousT( );
                 auto map_dPlasticDeformationGradientdPreviousT = dPlasticDeformationGradientdPreviousT.zeroMap< floatType, sot_dim >( );
 
-                auto dPlasticDeformationGradientdPreviousStateVariables = get_setDataStorage_dPlasticDeformationGradientdPreviousStateVariables( );
+                auto dPlasticDeformationGradientdPreviousStateVariables = get_SetDataStorage_dPlasticDeformationGradientdPreviousStateVariables( );
                 auto map_dPlasticDeformationGradientdPreviousStateVariables = dPlasticDeformationGradientdPreviousStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
 
                 map_dPlasticDeformationGradientdPreviousCauchyStress = ( map_dFdPreviousL * map_dPreviousVelocityGradientdPreviousCauchyStress ).eval( );
@@ -2637,19 +2637,19 @@ namespace tardigradeHydra{
             auto map_dVelocityGradientdSubFs          = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_dVelocityGradientdSubFs( )->data( ), ( num_configs - 1 ) * sot_dim );
             auto map_dVelocityGradientdStateVariables = getDynamicColumnSizeMatrixMap< floatType, sot_dim >( get_dVelocityGradientdStateVariables( )->data( ), num_isvs );
 
-            auto dPlasticDeformationGradientdCauchyStress = get_setDataStorage_dPlasticDeformationGradientdCauchyStress( );
+            auto dPlasticDeformationGradientdCauchyStress = get_SetDataStorage_dPlasticDeformationGradientdCauchyStress( );
             auto map_dPlasticDeformationGradientdCauchyStress = dPlasticDeformationGradientdCauchyStress.zeroMap< floatType, sot_dim, sot_dim >( );
 
-            auto dPlasticDeformationGradientdF = get_setDataStorage_dPlasticDeformationGradientdF( );
+            auto dPlasticDeformationGradientdF = get_SetDataStorage_dPlasticDeformationGradientdF( );
             auto map_dPlasticDeformationGradientdF = dPlasticDeformationGradientdF.zeroMap< floatType, sot_dim, sot_dim >( );
 
-            auto dPlasticDeformationGradientdSubFs = get_setDataStorage_dPlasticDeformationGradientdSubFs( );
+            auto dPlasticDeformationGradientdSubFs = get_SetDataStorage_dPlasticDeformationGradientdSubFs( );
             auto map_dPlasticDeformationGradientdSubFs = dPlasticDeformationGradientdSubFs.zeroMap< floatType, sot_dim >( ( num_configs - 1 ) * sot_dim );
 
-            auto dPlasticDeformationGradientdT = get_setDataStorage_dPlasticDeformationGradientdT( );
+            auto dPlasticDeformationGradientdT = get_SetDataStorage_dPlasticDeformationGradientdT( );
             auto map_dPlasticDeformationGradientdT = dPlasticDeformationGradientdT.zeroMap< floatType, sot_dim >( );
 
-            auto dPlasticDeformationGradientdStateVariables = get_setDataStorage_dPlasticDeformationGradientdStateVariables( );
+            auto dPlasticDeformationGradientdStateVariables = get_SetDataStorage_dPlasticDeformationGradientdStateVariables( );
             auto map_dPlasticDeformationGradientdStateVariables = dPlasticDeformationGradientdStateVariables.zeroMap< floatType, sot_dim >( num_isvs );
 
             map_dPlasticDeformationGradientdCauchyStress   = ( map_dFdL * map_dVelocityGradientdCauchyStress ).eval( );
@@ -2677,7 +2677,7 @@ namespace tardigradeHydra{
 
             floatVector deltaPlasticStateVariables;
 
-            auto plasticStateVariables = get_setDataStorage_plasticStateVariables( );
+            auto plasticStateVariables = get_SetDataStorage_plasticStateVariables( );
 
             TARDIGRADE_ERROR_TOOLS_CATCH( stateVariableEvolutionRates = get_stateVariableEvolutionRates( ) );
 
@@ -2818,7 +2818,7 @@ namespace tardigradeHydra{
 
             floatVector deltaPlasticStateVariables;
 
-            auto plasticStateVariables = get_setDataStorage_plasticStateVariables( );
+            auto plasticStateVariables = get_SetDataStorage_plasticStateVariables( );
 
             if ( setPreviousDerivatives ){
 
@@ -2870,19 +2870,19 @@ namespace tardigradeHydra{
 
                 auto map_dPreviousStateVariableEvolutionRatesdPreviousStateVariables = getDynamicSizeMatrixMap< floatType >( dPreviousStateVariableEvolutionRatesdPreviousStateVariables->data( ), num_isvs, num_isvs );
 
-                auto dPlasticStateVariablesdPreviousCauchyStress = get_setDataStorage_dPlasticStateVariablesdPreviousCauchyStress( );
+                auto dPlasticStateVariablesdPreviousCauchyStress = get_SetDataStorage_dPlasticStateVariablesdPreviousCauchyStress( );
                 auto map_dPlasticStateVariablesdPreviousCauchyStress = dPlasticStateVariablesdPreviousCauchyStress.zeroMap< floatType >( num_isvs, sot_dim );
 
-                auto dPlasticStateVariablesdPreviousF = get_setDataStorage_dPlasticStateVariablesdPreviousF( );
+                auto dPlasticStateVariablesdPreviousF = get_SetDataStorage_dPlasticStateVariablesdPreviousF( );
                 auto map_dPlasticStateVariablesdPreviousF = dPlasticStateVariablesdPreviousF.zeroMap< floatType >( num_isvs, sot_dim );
 
-                auto dPlasticStateVariablesdPreviousSubFs = get_setDataStorage_dPlasticStateVariablesdPreviousSubFs( );
+                auto dPlasticStateVariablesdPreviousSubFs = get_SetDataStorage_dPlasticStateVariablesdPreviousSubFs( );
                 auto map_dPlasticStateVariablesdPreviousSubFs = dPlasticStateVariablesdPreviousSubFs.zeroMap< floatType >( num_isvs, ( num_configs - 1 ) * sot_dim );
 
-                auto dPlasticStateVariablesdPreviousT = get_setDataStorage_dPlasticStateVariablesdPreviousT( );
+                auto dPlasticStateVariablesdPreviousT = get_SetDataStorage_dPlasticStateVariablesdPreviousT( );
                 auto map_dPlasticStateVariablesdPreviousT = dPlasticStateVariablesdPreviousT.zeroMap< floatType >( num_isvs );
 
-                auto dPlasticStateVariablesdPreviousStateVariables = get_setDataStorage_dPlasticStateVariablesdPreviousStateVariables( );
+                auto dPlasticStateVariablesdPreviousStateVariables = get_SetDataStorage_dPlasticStateVariablesdPreviousStateVariables( );
                 auto map_dPlasticStateVariablesdPreviousStateVariables = dPlasticStateVariablesdPreviousStateVariables.zeroMap< floatType >( num_isvs, num_isvs );
 
                 map_dPlasticStateVariablesdPreviousCauchyStress   = ( map_dXidXidotp * map_dPreviousStateVariableEvolutionRatesdPreviousCauchyStress ).eval( );
@@ -2916,19 +2916,19 @@ namespace tardigradeHydra{
 
             auto map_dStateVariableEvolutionRatesdStateVariables = getDynamicSizeMatrixMap< floatType >( dStateVariableEvolutionRatesdStateVariables->data( ), num_isvs, num_isvs );
 
-            auto dPlasticStateVariablesdCauchyStress = get_setDataStorage_dPlasticStateVariablesdCauchyStress( );
+            auto dPlasticStateVariablesdCauchyStress = get_SetDataStorage_dPlasticStateVariablesdCauchyStress( );
             auto map_dPlasticStateVariablesdCauchyStress = dPlasticStateVariablesdCauchyStress.zeroMap< floatType >( num_isvs, sot_dim );
 
-            auto dPlasticStateVariablesdF = get_setDataStorage_dPlasticStateVariablesdF( );
+            auto dPlasticStateVariablesdF = get_SetDataStorage_dPlasticStateVariablesdF( );
             auto map_dPlasticStateVariablesdF = dPlasticStateVariablesdF.zeroMap< floatType >( num_isvs, sot_dim );
 
-            auto dPlasticStateVariablesdSubFs = get_setDataStorage_dPlasticStateVariablesdSubFs( );
+            auto dPlasticStateVariablesdSubFs = get_SetDataStorage_dPlasticStateVariablesdSubFs( );
             auto map_dPlasticStateVariablesdSubFs = dPlasticStateVariablesdSubFs.zeroMap< floatType >( num_isvs, ( num_configs - 1 ) * sot_dim );
 
-            auto dPlasticStateVariablesdT = get_setDataStorage_dPlasticStateVariablesdT( );
+            auto dPlasticStateVariablesdT = get_SetDataStorage_dPlasticStateVariablesdT( );
             auto map_dPlasticStateVariablesdT = dPlasticStateVariablesdT.zeroMap< floatType >( num_isvs );
 
-            auto dPlasticStateVariablesdStateVariables = get_setDataStorage_dPlasticStateVariablesdStateVariables( );
+            auto dPlasticStateVariablesdStateVariables = get_SetDataStorage_dPlasticStateVariablesdStateVariables( );
             auto map_dPlasticStateVariablesdStateVariables = dPlasticStateVariablesdStateVariables.zeroMap< floatType >( num_isvs, num_isvs );
 
             map_dPlasticStateVariablesdCauchyStress   = ( map_dXidXidot * map_dStateVariableEvolutionRatesdCauchyStress ).eval( );
@@ -2970,20 +2970,20 @@ namespace tardigradeHydra{
 
             const floatVector *allStateVariables;
 
-            setDataStorageBase< floatVector > stateVariables;
+            SetDataStorageBase< floatVector > stateVariables;
 
             if ( isPrevious ){
 
                 allStateVariables =  hydra->get_previousNonLinearSolveStateVariables( );
 
-                stateVariables    = get_setDataStorage_previousStateVariables( );
+                stateVariables    = get_SetDataStorage_previousStateVariables( );
 
             }
             else{
 
                 allStateVariables =  hydra->get_nonLinearSolveStateVariables( );
 
-                stateVariables    = get_setDataStorage_stateVariables( );
+                stateVariables    = get_SetDataStorage_stateVariables( );
 
             }
 
@@ -3022,7 +3022,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_isvs = get_stateVariables( )->size( );
 
-            auto residual = get_setDataStorage_residual( );
+            auto residual = get_SetDataStorage_residual( );
             residual.zero( getNumEquations( ) );
 
             // Set the residual for the plastic deformation gradient
@@ -3054,7 +3054,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_unknowns = hydra->getNumUnknowns( );
 
-            auto jacobian = get_setDataStorage_jacobian( );
+            auto jacobian = get_SetDataStorage_jacobian( );
             jacobian.zero( getNumEquations( ) * num_unknowns );
 
             // Set the derivatives
@@ -3132,7 +3132,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature.
              */
 
-            auto dRdT = get_setDataStorage_dRdT( );
+            auto dRdT = get_SetDataStorage_dRdT( );
             dRdT.zero( getNumEquations( ) );
 
             // Set the derivatives
@@ -3165,7 +3165,7 @@ namespace tardigradeHydra{
 
             const unsigned int num_isvs = get_plasticStateVariables( )->size( );
 
-            auto dRdF = get_setDataStorage_dRdF( );
+            auto dRdF = get_SetDataStorage_dRdF( );
             dRdF.zero( sot_dim * ( getNumEquations( ) ) );
 
             // Set the derivatives

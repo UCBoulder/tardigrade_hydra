@@ -11,7 +11,7 @@ build:
     - mkdir build-package
     - cd build-package
     - cmake .. -DCMAKE_BUILD_TYPE=Release
-    - cmake --build . --target tardigrade_hydra tardigrade_hydra_umat
+    - cmake --build . --target tardigrade_hydra
     - cmake --install . --prefix ${PREFIX}
   ignore_run_exports:
     - python_abi
@@ -25,7 +25,6 @@ requirements:
     - tardigrade_constitutive_tools>=0.7.2
     - tardigrade_stress_tools
     - tardigrade_solver_tools
-    - tardigrade_abaqus_tools>=0.4
     - boost >=1.59  # TODO: Separate the package/test configuration to make BOOST an optional build dependency
     - setuptools_scm >=6.2
     - libcxx <16  # [osx]
@@ -44,7 +43,6 @@ requirements:
     - tardigrade_constitutive_tools>=0.7.2
     - tardigrade_stress_tools
     - tardigrade_solver_tools
-    - tardigrade_abaqus_tools>=0.4
 
 test:
   requires:
@@ -56,10 +54,6 @@ test:
     - CMakeLists.txt
     - src/cpp/tests/CMakeLists.txt
     - src/cpp/tests/*.cpp
-    - src/abaqus/CMakeLists.txt
-    - src/abaqus/single_element_c3d8.inp
-    - src/abaqus/tests/CMakeLists.txt
-    - src/abaqus/tests/test_abaqus.sh
   commands:
     - mkdir build-tests
     - cd build-tests

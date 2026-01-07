@@ -65,11 +65,11 @@ namespace tardigradeHydra{
         /*!
          * A class which defines a viscoplastic residual
          */
-        class residual : public tardigradeHydra::residualBase{
+        class residual : public tardigradeHydra::ResidualBase<>{
 
             public:
 
-                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int &plasticConfigurationIndex, const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5 ) : tardigradeHydra::residualBase( hydra, numEquations ){
+                residual( tardigradeHydra::hydraBase* hydra, const unsigned int &numEquations, const unsigned int &plasticConfigurationIndex, const std::vector< unsigned int > &stateVariableIndices, const floatVector &parameters, const floatType integrationParameter = 0.5 ) : tardigradeHydra::ResidualBase<>( hydra, numEquations ){
                     /*!
                      * The main constructor function
                      *
@@ -98,17 +98,17 @@ namespace tardigradeHydra{
                  // Friend classes
                 friend class tardigradeHydra::perzynaViscoplasticity::unit_test::residualTester; //!< Friend class which allows modification of private variables. ONLY TO BE USED FOR TESTING!
 
-                using tardigradeHydra::residualBase::residualBase;
+                using tardigradeHydra::ResidualBase<>::ResidualBase;
 
-                using tardigradeHydra::residualBase::setResidual;
+                using tardigradeHydra::ResidualBase<>::setResidual;
 
-                using tardigradeHydra::residualBase::setJacobian;
+                using tardigradeHydra::ResidualBase<>::setJacobian;
 
-                using tardigradeHydra::residualBase::setdRdF;
+                using tardigradeHydra::ResidualBase<>::setdRdF;
 
-                using tardigradeHydra::residualBase::setdRdT;
+                using tardigradeHydra::ResidualBase<>::setdRdT;
 
-                using tardigradeHydra::residualBase::setAdditionalDerivatives;
+                using tardigradeHydra::ResidualBase<>::setAdditionalDerivatives;
 
                 const unsigned int getPlasticConfigurationIndex( );
 

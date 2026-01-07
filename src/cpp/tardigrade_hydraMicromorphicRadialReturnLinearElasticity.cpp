@@ -18,7 +18,7 @@ namespace tardigradeHydra{
              * Set the value of the trial stress
              */
 
-            auto trialStress = get_setDataStorage_trialStress( );
+            auto trialStress = get_SetDataStorage_trialStress( );
 
             getStress( );
 
@@ -39,7 +39,7 @@ namespace tardigradeHydra{
              * Set the value of the derivative of the trial stress w.r.t. the deformation
              */
 
-            auto dTrialStressdD = get_setDataStorage_dTrialStressdD( );
+            auto dTrialStressdD = get_SetDataStorage_dTrialStressdD( );
 
             auto sot_dim = hydra->getSOTDimension( );
 
@@ -117,7 +117,7 @@ namespace tardigradeHydra{
              * Set the value of the residual
              */
 
-            auto residual = get_setDataStorage_residual( );
+            auto residual = get_SetDataStorage_residual( );
 
             residual.zero( getNumEquations( ) );
 
@@ -138,7 +138,7 @@ namespace tardigradeHydra{
 
             tardigradeHydra::micromorphicLinearElasticity::residual::setJacobian( );
 
-            auto jacobian = get_setDataStorage_jacobian( );
+            auto jacobian = get_SetDataStorage_jacobian( );
 
             auto num_equations = getNumEquations( );
 
@@ -159,7 +159,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation
              */
 
-            auto dRdD = get_setDataStorage_dRdD( );
+            auto dRdD = get_SetDataStorage_dRdD( );
 
             auto num_equations = getNumEquations( );
 

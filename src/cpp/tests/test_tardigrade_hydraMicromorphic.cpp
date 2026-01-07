@@ -302,17 +302,17 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor2, * boos
 
     floatType lsAlpha = 2.3;
 
-    class residualBaseMock : public tardigradeHydra::residualBase{
+    class ResidualBaseMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>{
 
-        using tardigradeHydra::residualBase::residualBase;
+        using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
     };
 
-    class residualBaseMockStress : public tardigradeHydra::residualBase{
+    class ResidualBaseMockStress : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>{
 
-        using tardigradeHydra::residualBase::residualBase;
+        using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
 
-        using tardigradeHydra::residualBase::setStress;
+        using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::setStress;
 
         floatVector stress = { 1,  2,  3,  4,  5,  6,  7,  8,  9,
                               10, 11, 12, 13, 14, 15, 16, 17, 18,
@@ -336,9 +336,9 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor2, * boos
     
             unsigned int nsrc = 0;
 
-            residualBaseMockStress r1;
+            ResidualBaseMockStress r1;
         
-            residualBaseMock r2;
+            ResidualBaseMock r2;
 
             unsigned int s1 = 45;
 
@@ -350,11 +350,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_constructor2, * boos
 
             virtual void setResidualClasses( ){
 
-                r1 = residualBaseMockStress( this, s1 );
+                r1 = ResidualBaseMockStress( this, s1 );
 
-                r2 = residualBaseMock( this, s2 );
+                r2 = ResidualBaseMock( this, s2 );
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 2 );
 
                 residuals[ 0 ] = &r1;
 
@@ -804,11 +804,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getUnknownVector, * 
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
             floatVector PK2   = { 1, 2, 3, 4, 5, 6, 7, 8, 9 };
 
@@ -820,7 +820,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getUnknownVector, * 
 
         protected:
 
-            using tardigradeHydra::residualBaseMicromorphic::setStress;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::setStress;
 
             virtual void setStress( ) override{
 
@@ -830,11 +830,11 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getUnknownVector, * 
 
     };
 
-    class residualMock : public tardigradeHydra::residualBaseMicromorphic{
+    class residualMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
             floatVector plasticParameters = { 2, 0.53895133, 0.37172145,
                                               2, 0.37773052, 0.92739145,
@@ -884,7 +884,7 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_getUnknownVector, * 
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -4285,12 +4285,12 @@ BOOST_AUTO_TEST_CASE( test_tardigrade_hydraBaseMicromorphic_get_previousGradient
 
 }
 
-BOOST_AUTO_TEST_CASE( test_residualBaseMicromorphic, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_ResidualBaseMicromorphic, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
-    class residualMock : public tardigradeHydra::residualBaseMicromorphic{
+    class residualMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
     };
 
@@ -4384,7 +4384,7 @@ BOOST_AUTO_TEST_CASE( test_residualBaseMicromorphic, * boost::unit_test::toleran
 
     residualMock residual( &hydra, 10 );
 
-    BOOST_CHECK( &( *residual.hydra ) == &( *residual.residualBase::hydra ) );
+    BOOST_CHECK( &( *residual.hydra ) == &( *residual.ResidualBase::hydra ) );
 
 }
 

@@ -236,7 +236,7 @@ BOOST_AUTO_TEST_CASE( test_setActiveConstraints, * boost::unit_test::tolerance( 
 
             virtual void setMacroYield( ) override{
 
-                auto yield = get_setDataStorage_macroYield( );
+                auto yield = get_SetDataStorage_macroYield( );
 
                 *yield.value = _macYield;
 
@@ -244,7 +244,7 @@ BOOST_AUTO_TEST_CASE( test_setActiveConstraints, * boost::unit_test::tolerance( 
 
             virtual void setMicroYield( ) override{
 
-                auto yield = get_setDataStorage_microYield( );
+                auto yield = get_SetDataStorage_microYield( );
 
                 *yield.value = _micYield;
 
@@ -252,7 +252,7 @@ BOOST_AUTO_TEST_CASE( test_setActiveConstraints, * boost::unit_test::tolerance( 
 
             virtual void setMicroGradientYield( ) override{
 
-                auto yield = get_setDataStorage_microGradientYield( );
+                auto yield = get_SetDataStorage_microGradientYield( );
 
                 *yield.value = _micGradYield;
 
@@ -471,7 +471,7 @@ BOOST_AUTO_TEST_CASE( test_updateActiveConstraints, * boost::unit_test::toleranc
 
             virtual void setMacroYield( ) override{
 
-                auto yield = get_setDataStorage_macroYield( );
+                auto yield = get_SetDataStorage_macroYield( );
 
                 *yield.value = _macYield;
 
@@ -479,7 +479,7 @@ BOOST_AUTO_TEST_CASE( test_updateActiveConstraints, * boost::unit_test::toleranc
 
             virtual void setMicroYield( ) override{
 
-                auto yield = get_setDataStorage_microYield( );
+                auto yield = get_SetDataStorage_microYield( );
 
                 *yield.value = _micYield;
 
@@ -487,7 +487,7 @@ BOOST_AUTO_TEST_CASE( test_updateActiveConstraints, * boost::unit_test::toleranc
 
             virtual void setMicroGradientYield( ) override{
 
-                auto yield = get_setDataStorage_microGradientYield( );
+                auto yield = get_SetDataStorage_microGradientYield( );
 
                 *yield.value = _micGradYield;
 
@@ -495,7 +495,7 @@ BOOST_AUTO_TEST_CASE( test_updateActiveConstraints, * boost::unit_test::toleranc
 
             virtual void setPlasticMultipliers( ) override{
 
-               auto plasticMultipliers = get_setDataStorage_plasticMultipliers( );
+               auto plasticMultipliers = get_SetDataStorage_plasticMultipliers( );
 
 	       *plasticMultipliers.value = _pMult;
 
@@ -699,14 +699,14 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
 
                 if ( isPrevious ){
 
-                    auto gammaDot = get_setDataStorage_previousPlasticMultipliers( );
+                    auto gammaDot = get_SetDataStorage_previousPlasticMultipliers( );
 
                     *gammaDot.value = _previousGammaDot;
 
                 }
                 else{
 
-                    auto gammaDot = get_setDataStorage_plasticMultipliers( );
+                    auto gammaDot = get_SetDataStorage_plasticMultipliers( );
 
                     *gammaDot.value = _gammaDot;
 
@@ -718,7 +718,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
 
             virtual void setUpdatedPlasticStrainLikeISVs( ) override{
 
-                auto z = get_setDataStorage_updatedPlasticStrainLikeISVs( );
+                auto z = get_SetDataStorage_updatedPlasticStrainLikeISVs( );
 
                 *z.value = _updatedZ;
 
@@ -728,7 +728,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
 
             virtual void setPlasticStrainLikeISVs( ) override{
 
-                auto z = get_setDataStorage_plasticStrainLikeISVs( );
+                auto z = get_SetDataStorage_plasticStrainLikeISVs( );
 
                 *z.value = _Z;
 
@@ -742,7 +742,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
 
             virtual void setMacroYield( ) override{
 
-                auto yield = get_setDataStorage_macroYield( );
+                auto yield = get_SetDataStorage_macroYield( );
 
                 *yield.value = _macYield;
 
@@ -750,7 +750,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
 
             virtual void setMicroYield( ) override{
 
-                auto yield = get_setDataStorage_microYield( );
+                auto yield = get_SetDataStorage_microYield( );
 
                 *yield.value = _micYield;
 
@@ -758,7 +758,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
 
             virtual void setMicroGradientYield( ) override{
 
-                auto yield = get_setDataStorage_microGradientYield( );
+                auto yield = get_SetDataStorage_microGradientYield( );
 
                 *yield.value = _micGradYield;
 
@@ -768,7 +768,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
 
             virtual void setActiveConstraints( ) override{
 
-                auto activeConstraints = get_setDataStorage_activeConstraints( );
+                auto activeConstraints = get_SetDataStorage_activeConstraints( );
 
                 *activeConstraints.value = _ac;
 
@@ -778,7 +778,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableResiduals, * boost::unit_test::tolera
 
             virtual void setPlasticStateVariables( ) override{
 
-                auto plasticStateVariables = get_setDataStorage_plasticStateVariables( );
+                auto plasticStateVariables = get_SetDataStorage_plasticStateVariables( );
 
                 *plasticStateVariables.value = _pISVS;
 
@@ -922,11 +922,11 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -938,7 +938,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase<>::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -1043,7 +1043,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians, * boost::unit_test::tolera
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<>* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -1260,11 +1260,11 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians2, * boost::unit_test::toler
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -1276,7 +1276,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians2, * boost::unit_test::toler
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase<>::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -1381,7 +1381,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians2, * boost::unit_test::toler
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<>* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -1598,11 +1598,11 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians3, * boost::unit_test::toler
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -1614,7 +1614,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians3, * boost::unit_test::toler
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase<>::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -1719,7 +1719,7 @@ BOOST_AUTO_TEST_CASE( test_setStateVariableJacobians3, * boost::unit_test::toler
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<>* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -1936,11 +1936,11 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD, * boost::unit_test::tol
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -1952,7 +1952,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD, * boost::unit_test::tol
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase<>::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -2063,7 +2063,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD, * boost::unit_test::tol
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<>* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -2289,11 +2289,11 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD2, * boost::unit_test::to
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -2305,7 +2305,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD2, * boost::unit_test::to
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase<>::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -2416,7 +2416,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD2, * boost::unit_test::to
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<>* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -2642,11 +2642,11 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD3, * boost::unit_test::to
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -2658,7 +2658,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD3, * boost::unit_test::to
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase<>::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -2769,7 +2769,7 @@ BOOST_AUTO_TEST_CASE( test_setdStateVariableResidualsdD3, * boost::unit_test::to
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<>* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -2995,11 +2995,11 @@ BOOST_AUTO_TEST_CASE( test_correctResiduals, * boost::unit_test::tolerance( DEFA
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -3011,7 +3011,7 @@ BOOST_AUTO_TEST_CASE( test_correctResiduals, * boost::unit_test::tolerance( DEFA
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase<>::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -3021,7 +3021,7 @@ BOOST_AUTO_TEST_CASE( test_correctResiduals, * boost::unit_test::tolerance( DEFA
 
             virtual void setResidual( ) override{
 
-                auto residual = get_setDataStorage_residual( );
+                auto residual = get_SetDataStorage_residual( );
                 residual.zero( getNumEquations( ) );
                 for ( auto v = residual.begin( ); v != residual.end( ); ++v ){
                     *v = -0.125 * ( v - residual.begin( ) );
@@ -3047,35 +3047,35 @@ BOOST_AUTO_TEST_CASE( test_correctResiduals, * boost::unit_test::tolerance( DEFA
             using tardigradeHydra::micromorphicRadialReturnDruckerPragerPlasticity::residual::setUpdatedPlasticStrainLikeISVs;
 
             virtual void setActiveConstraints( ) override{
-                *get_setDataStorage_activeConstraints( ).value = _AS;
+                *get_SetDataStorage_activeConstraints( ).value = _AS;
             }
 
             virtual void setMacroYield( ) override{
-                *get_setDataStorage_macroYield( ).value = _yields[ 0 ];
+                *get_SetDataStorage_macroYield( ).value = _yields[ 0 ];
             }
 
             virtual void setMicroYield( ) override{
-                *get_setDataStorage_microYield( ).value = _yields[ 1 ];
+                *get_SetDataStorage_microYield( ).value = _yields[ 1 ];
             }
 
             virtual void setMicroGradientYield( ) override{
-                *get_setDataStorage_microGradientYield( ).value = floatVector( _yields.begin( ) + 2, _yields.end( ) );
+                *get_SetDataStorage_microGradientYield( ).value = floatVector( _yields.begin( ) + 2, _yields.end( ) );
             }
 
             virtual void setPlasticStrainLikeISVs( ) override{
-                *get_setDataStorage_plasticStrainLikeISVs( ).value = _Z;
+                *get_SetDataStorage_plasticStrainLikeISVs( ).value = _Z;
             }
 
             virtual void setUpdatedPlasticStrainLikeISVs( ) override{
-                *get_setDataStorage_updatedPlasticStrainLikeISVs( ).value = _Zupdate;
+                *get_SetDataStorage_updatedPlasticStrainLikeISVs( ).value = _Zupdate;
             }
 
             virtual void setPlasticMultipliers( ) override{
-                *get_setDataStorage_plasticMultipliers( ).value = _gammaDot;
+                *get_SetDataStorage_plasticMultipliers( ).value = _gammaDot;
             }
 
             virtual void setResidual( ){
-                auto value = get_setDataStorage_residual( );
+                auto value = get_SetDataStorage_residual( );
                 value.zero( 55 );
                 for ( auto v = value.begin( ); v != value.begin( ) + 45; ++v ){
                     *v += ( v - value.begin( ) ) + 0;
@@ -3142,7 +3142,7 @@ BOOST_AUTO_TEST_CASE( test_correctResiduals, * boost::unit_test::tolerance( DEFA
 
             virtual void setResidualClasses( ) override{
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 2 );
+                std::vector< tardigradeHydra::ResidualBase<>* > residuals( 2 );
 
                 elasticity = stressMock( this, 45 );
 
@@ -3296,11 +3296,11 @@ BOOST_AUTO_TEST_CASE( test_successfulNLStep, * boost::unit_test::tolerance( DEFA
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -3312,7 +3312,7 @@ BOOST_AUTO_TEST_CASE( test_successfulNLStep, * boost::unit_test::tolerance( DEFA
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase<>::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -3322,7 +3322,7 @@ BOOST_AUTO_TEST_CASE( test_successfulNLStep, * boost::unit_test::tolerance( DEFA
 
             virtual void setResidual( ) override{
 
-                auto residual = get_setDataStorage_residual( );
+                auto residual = get_SetDataStorage_residual( );
                 residual.zero( getNumEquations( ) );
                 for ( auto v = residual.begin( ); v != residual.end( ); ++v ){
                     *v = -0.125 * ( v - residual.begin( ) );
@@ -3511,11 +3511,11 @@ BOOST_AUTO_TEST_CASE( test_preNLSolve, * boost::unit_test::tolerance( DEFAULT_TE
 
     floatType lsAlpha = 2.3;
 
-    class stressMock : public tardigradeHydra::residualBaseMicromorphic{
+    class stressMock : public tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>{
 
         public:
 
-            using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+            using tardigradeHydra::ResidualBaseMicromorphic<tardigradeHydra::hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
             floatVector previousPK2       = {  1,  2,  3,  4,  5,  6,  7,  8,  9 };
 
@@ -3527,7 +3527,7 @@ BOOST_AUTO_TEST_CASE( test_preNLSolve, * boost::unit_test::tolerance( DEFAULT_TE
 
         protected:
 
-            using tardigradeHydra::residualBase::setPreviousStress;
+            using tardigradeHydra::ResidualBase<>::setPreviousStress;
 
             virtual void setPreviousStress( ) override{
 
@@ -3537,7 +3537,7 @@ BOOST_AUTO_TEST_CASE( test_preNLSolve, * boost::unit_test::tolerance( DEFAULT_TE
 
             virtual void setResidual( ) override{
 
-                auto residual = get_setDataStorage_residual( );
+                auto residual = get_SetDataStorage_residual( );
                 residual.zero( getNumEquations( ) );
                 for ( auto v = residual.begin( ); v != residual.end( ); ++v ){
                     *v = -0.125 * ( v - residual.begin( ) );

@@ -1552,11 +1552,11 @@ namespace tardigradeHydra{
 
             floatVector gradientMicroDeformation1;
 
-            setDataStorageBase< secondOrderTensor > rightCauchyGreen;
+            SetDataStorageBase< secondOrderTensor > rightCauchyGreen;
 
-            setDataStorageBase< secondOrderTensor > Psi;
+            SetDataStorageBase< secondOrderTensor > Psi;
 
-            setDataStorageBase< thirdOrderTensor > Gamma;
+            SetDataStorageBase< thirdOrderTensor > Gamma;
 
             if ( isPrevious ){
 
@@ -1569,11 +1569,11 @@ namespace tardigradeHydra{
                 gradientMicroDeformation1 = floatVector( hydra->get_previousGradientMicroConfigurations( )->begin( ),
                                                          hydra->get_previousGradientMicroConfigurations( )->begin( ) + tot_dim );
 
-                rightCauchyGreen = get_setDataStorage_previousRightCauchyGreen( );
+                rightCauchyGreen = get_SetDataStorage_previousRightCauchyGreen( );
 
-                Psi              = get_setDataStorage_previousPsi( );
+                Psi              = get_SetDataStorage_previousPsi( );
 
-                Gamma            = get_setDataStorage_previousGamma( );
+                Gamma            = get_SetDataStorage_previousGamma( );
 
             }
             else{
@@ -1587,11 +1587,11 @@ namespace tardigradeHydra{
                 gradientMicroDeformation1 = floatVector( hydra->get_gradientMicroConfigurations( )->begin( ),
                                                          hydra->get_gradientMicroConfigurations( )->begin( ) + tot_dim );
 
-                rightCauchyGreen = get_setDataStorage_rightCauchyGreen( );
+                rightCauchyGreen = get_SetDataStorage_rightCauchyGreen( );
 
-                Psi              = get_setDataStorage_psi( );
+                Psi              = get_SetDataStorage_psi( );
 
-                Gamma            = get_setDataStorage_gamma( );
+                Gamma            = get_SetDataStorage_gamma( );
 
             }
 
@@ -1887,11 +1887,11 @@ namespace tardigradeHydra{
 
             variableVector followingMicroConfiguration;
 
-            setDataStorageBase< secondOrderTensor > PK2Stress;
+            SetDataStorageBase< secondOrderTensor > PK2Stress;
 
-            setDataStorageBase< secondOrderTensor > referenceSymmetricMicroStress;
+            SetDataStorageBase< secondOrderTensor > referenceSymmetricMicroStress;
 
-            setDataStorageBase< thirdOrderTensor > referenceHigherOrderStress;
+            SetDataStorageBase< thirdOrderTensor > referenceHigherOrderStress;
 
             if ( isPrevious ){
 
@@ -1905,11 +1905,11 @@ namespace tardigradeHydra{
 
                 followingMicroConfiguration = hydra->getPreviousFollowingMicroConfiguration( 0 );
 
-                PK2Stress = get_setDataStorage_previousPK2Stress( );
+                PK2Stress = get_SetDataStorage_previousPK2Stress( );
 
-                referenceSymmetricMicroStress = get_setDataStorage_previousReferenceSymmetricMicroStress( );
+                referenceSymmetricMicroStress = get_SetDataStorage_previousReferenceSymmetricMicroStress( );
 
-                referenceHigherOrderStress = get_setDataStorage_previousReferenceHigherOrderStress( );
+                referenceHigherOrderStress = get_SetDataStorage_previousReferenceHigherOrderStress( );
 
             }
             else{
@@ -1924,11 +1924,11 @@ namespace tardigradeHydra{
     
                 followingMicroConfiguration = hydra->getFollowingMicroConfiguration( 0 );
 
-                PK2Stress = get_setDataStorage_PK2Stress( );
+                PK2Stress = get_SetDataStorage_PK2Stress( );
 
-                referenceSymmetricMicroStress = get_setDataStorage_referenceSymmetricMicroStress( );
+                referenceSymmetricMicroStress = get_SetDataStorage_referenceSymmetricMicroStress( );
 
-                referenceHigherOrderStress = get_setDataStorage_referenceHigherOrderStress( );
+                referenceHigherOrderStress = get_SetDataStorage_referenceHigherOrderStress( );
 
             }
 
@@ -2335,47 +2335,47 @@ namespace tardigradeHydra{
 
             variableVector followingMicroConfiguration;
 
-            setDataStorageBase< secondOrderTensor > PK2Stress;
+            SetDataStorageBase< secondOrderTensor > PK2Stress;
 
-            setDataStorageBase< secondOrderTensor > referenceSymmetricMicroStress;
+            SetDataStorageBase< secondOrderTensor > referenceSymmetricMicroStress;
 
-            setDataStorageBase< thirdOrderTensor  > referenceHigherOrderStress;
+            SetDataStorageBase< thirdOrderTensor  > referenceHigherOrderStress;
 
-            setDataStorageBase< fourthOrderTensor > dPK2dF;
+            SetDataStorageBase< fourthOrderTensor > dPK2dF;
 
-            setDataStorageBase< floatVector >       dPK2dFn;
+            SetDataStorageBase< floatVector >       dPK2dFn;
 
-            setDataStorageBase< fourthOrderTensor > dPK2dChi;
+            SetDataStorageBase< fourthOrderTensor > dPK2dChi;
 
-            setDataStorageBase< floatVector >       dPK2dChin;
+            SetDataStorageBase< floatVector >       dPK2dChin;
 
-            setDataStorageBase< fifthOrderTensor >  dPK2dGradChi;
+            SetDataStorageBase< fifthOrderTensor >  dPK2dGradChi;
 
-            setDataStorageBase< floatVector >       dPK2dGradChin;
+            SetDataStorageBase< floatVector >       dPK2dGradChin;
 
-            setDataStorageBase< fourthOrderTensor > dSIGMAdF;
+            SetDataStorageBase< fourthOrderTensor > dSIGMAdF;
 
-            setDataStorageBase< floatVector >       dSIGMAdFn;
+            SetDataStorageBase< floatVector >       dSIGMAdFn;
 
-            setDataStorageBase< fourthOrderTensor > dSIGMAdChi;
+            SetDataStorageBase< fourthOrderTensor > dSIGMAdChi;
 
-            setDataStorageBase< floatVector >       dSIGMAdChin;
+            SetDataStorageBase< floatVector >       dSIGMAdChin;
 
-            setDataStorageBase< fifthOrderTensor >  dSIGMAdGradChi;
+            SetDataStorageBase< fifthOrderTensor >  dSIGMAdGradChi;
 
-            setDataStorageBase< floatVector >       dSIGMAdGradChin;
+            SetDataStorageBase< floatVector >       dSIGMAdGradChin;
 
-            setDataStorageBase< fifthOrderTensor >  dMdF;
+            SetDataStorageBase< fifthOrderTensor >  dMdF;
 
-            setDataStorageBase< floatVector >       dMdFn;
+            SetDataStorageBase< floatVector >       dMdFn;
 
-            setDataStorageBase< fifthOrderTensor >  dMdChi;
+            SetDataStorageBase< fifthOrderTensor >  dMdChi;
 
-            setDataStorageBase< floatVector >       dMdChin;
+            SetDataStorageBase< floatVector >       dMdChin;
 
-            setDataStorageBase< sixthOrderTensor >  dMdGradChi;
+            SetDataStorageBase< sixthOrderTensor >  dMdGradChi;
 
-            setDataStorageBase< floatVector >       dMdGradChin;
+            SetDataStorageBase< floatVector >       dMdGradChin;
 
             if ( isPrevious ){
 
@@ -2417,47 +2417,47 @@ namespace tardigradeHydra{
 
                 followingMicroConfiguration = hydra->getPreviousFollowingMicroConfiguration( 0 );
 
-                PK2Stress                     = get_setDataStorage_previousPK2Stress( );
+                PK2Stress                     = get_SetDataStorage_previousPK2Stress( );
 
-                referenceSymmetricMicroStress = get_setDataStorage_previousReferenceSymmetricMicroStress( );
+                referenceSymmetricMicroStress = get_SetDataStorage_previousReferenceSymmetricMicroStress( );
 
-                referenceHigherOrderStress    = get_setDataStorage_previousReferenceHigherOrderStress( );
+                referenceHigherOrderStress    = get_SetDataStorage_previousReferenceHigherOrderStress( );
 
-                dPK2dF                        = get_setDataStorage_previousdPK2dF( );
+                dPK2dF                        = get_SetDataStorage_previousdPK2dF( );
 
-                dPK2dFn                       = get_setDataStorage_previousdPK2dFn( );
+                dPK2dFn                       = get_SetDataStorage_previousdPK2dFn( );
 
-                dPK2dChi                      = get_setDataStorage_previousdPK2dChi( );
+                dPK2dChi                      = get_SetDataStorage_previousdPK2dChi( );
 
-                dPK2dChin                     = get_setDataStorage_previousdPK2dChin( );
+                dPK2dChin                     = get_SetDataStorage_previousdPK2dChin( );
 
-                dPK2dGradChi                  = get_setDataStorage_previousdPK2dGradChi( );
+                dPK2dGradChi                  = get_SetDataStorage_previousdPK2dGradChi( );
 
-                dPK2dGradChin                 = get_setDataStorage_previousdPK2dGradChin( );
+                dPK2dGradChin                 = get_SetDataStorage_previousdPK2dGradChin( );
 
-                dSIGMAdF                      = get_setDataStorage_previousdSIGMAdF( );
+                dSIGMAdF                      = get_SetDataStorage_previousdSIGMAdF( );
 
-                dSIGMAdFn                     = get_setDataStorage_previousdSIGMAdFn( );
+                dSIGMAdFn                     = get_SetDataStorage_previousdSIGMAdFn( );
 
-                dSIGMAdChi                    = get_setDataStorage_previousdSIGMAdChi( );
+                dSIGMAdChi                    = get_SetDataStorage_previousdSIGMAdChi( );
 
-                dSIGMAdChin                   = get_setDataStorage_previousdSIGMAdChin( );
+                dSIGMAdChin                   = get_SetDataStorage_previousdSIGMAdChin( );
 
-                dSIGMAdGradChi                = get_setDataStorage_previousdSIGMAdGradChi( );
+                dSIGMAdGradChi                = get_SetDataStorage_previousdSIGMAdGradChi( );
 
-                dSIGMAdGradChin               = get_setDataStorage_previousdSIGMAdGradChin( );
+                dSIGMAdGradChin               = get_SetDataStorage_previousdSIGMAdGradChin( );
 
-                dMdF                          = get_setDataStorage_previousdMdF( );
+                dMdF                          = get_SetDataStorage_previousdMdF( );
 
-                dMdFn                         = get_setDataStorage_previousdMdFn( );
+                dMdFn                         = get_SetDataStorage_previousdMdFn( );
 
-                dMdChi                        = get_setDataStorage_previousdMdChi( );
+                dMdChi                        = get_SetDataStorage_previousdMdChi( );
 
-                dMdChin                       = get_setDataStorage_previousdMdChin( );
+                dMdChin                       = get_SetDataStorage_previousdMdChin( );
 
-                dMdGradChi                    = get_setDataStorage_previousdMdGradChi( );
+                dMdGradChi                    = get_SetDataStorage_previousdMdGradChi( );
 
-                dMdGradChin                   = get_setDataStorage_previousdMdGradChin( );
+                dMdGradChin                   = get_SetDataStorage_previousdMdGradChin( );
 
             }
             else{
@@ -2500,47 +2500,47 @@ namespace tardigradeHydra{
     
                 followingMicroConfiguration = hydra->getFollowingMicroConfiguration( 0 );
 
-                PK2Stress                     = get_setDataStorage_PK2Stress( );
+                PK2Stress                     = get_SetDataStorage_PK2Stress( );
 
-                referenceSymmetricMicroStress = get_setDataStorage_referenceSymmetricMicroStress( );
+                referenceSymmetricMicroStress = get_SetDataStorage_referenceSymmetricMicroStress( );
 
-                referenceHigherOrderStress    = get_setDataStorage_referenceHigherOrderStress( );
+                referenceHigherOrderStress    = get_SetDataStorage_referenceHigherOrderStress( );
 
-                dPK2dF                        = get_setDataStorage_dPK2dF( );
+                dPK2dF                        = get_SetDataStorage_dPK2dF( );
 
-                dPK2dFn                       = get_setDataStorage_dPK2dFn( );
+                dPK2dFn                       = get_SetDataStorage_dPK2dFn( );
 
-                dPK2dChi                      = get_setDataStorage_dPK2dChi( );
+                dPK2dChi                      = get_SetDataStorage_dPK2dChi( );
 
-                dPK2dChin                     = get_setDataStorage_dPK2dChin( );
+                dPK2dChin                     = get_SetDataStorage_dPK2dChin( );
 
-                dPK2dGradChi                  = get_setDataStorage_dPK2dGradChi( );
+                dPK2dGradChi                  = get_SetDataStorage_dPK2dGradChi( );
 
-                dPK2dGradChin                 = get_setDataStorage_dPK2dGradChin( );
+                dPK2dGradChin                 = get_SetDataStorage_dPK2dGradChin( );
 
-                dSIGMAdF                      = get_setDataStorage_dSIGMAdF( );
+                dSIGMAdF                      = get_SetDataStorage_dSIGMAdF( );
 
-                dSIGMAdFn                     = get_setDataStorage_dSIGMAdFn( );
+                dSIGMAdFn                     = get_SetDataStorage_dSIGMAdFn( );
 
-                dSIGMAdChi                    = get_setDataStorage_dSIGMAdChi( );
+                dSIGMAdChi                    = get_SetDataStorage_dSIGMAdChi( );
 
-                dSIGMAdChin                   = get_setDataStorage_dSIGMAdChin( );
+                dSIGMAdChin                   = get_SetDataStorage_dSIGMAdChin( );
 
-                dSIGMAdGradChi                = get_setDataStorage_dSIGMAdGradChi( );
+                dSIGMAdGradChi                = get_SetDataStorage_dSIGMAdGradChi( );
 
-                dSIGMAdGradChin               = get_setDataStorage_dSIGMAdGradChin( );
+                dSIGMAdGradChin               = get_SetDataStorage_dSIGMAdGradChin( );
 
-                dMdF                          = get_setDataStorage_dMdF( );
+                dMdF                          = get_SetDataStorage_dMdF( );
 
-                dMdFn                         = get_setDataStorage_dMdFn( );
+                dMdFn                         = get_SetDataStorage_dMdFn( );
 
-                dMdChi                        = get_setDataStorage_dMdChi( );
+                dMdChi                        = get_SetDataStorage_dMdChi( );
 
-                dMdChin                       = get_setDataStorage_dMdChin( );
+                dMdChin                       = get_SetDataStorage_dMdChin( );
 
-                dMdGradChi                    = get_setDataStorage_dMdGradChi( );
+                dMdGradChi                    = get_SetDataStorage_dMdGradChi( );
 
-                dMdGradChin                   = get_setDataStorage_dMdGradChin( );
+                dMdGradChin                   = get_SetDataStorage_dMdGradChin( );
 
             }
 
@@ -2916,11 +2916,11 @@ namespace tardigradeHydra{
 
             const floatVector *microDeformation;
 
-            setDataStorageBase< secondOrderTensor > cauchyStress;
+            SetDataStorageBase< secondOrderTensor > cauchyStress;
 
-            setDataStorageBase< secondOrderTensor > symmetricMicroStress;
+            SetDataStorageBase< secondOrderTensor > symmetricMicroStress;
 
-            setDataStorageBase< thirdOrderTensor >  higherOrderStress;
+            SetDataStorageBase< thirdOrderTensor >  higherOrderStress;
 
             if ( isPrevious ){
 
@@ -2934,11 +2934,11 @@ namespace tardigradeHydra{
 
                 microDeformation = hydra->getPreviousMicroDeformation( );
 
-                cauchyStress         = get_setDataStorage_previousCauchyStress( );
+                cauchyStress         = get_SetDataStorage_previousCauchyStress( );
 
-                symmetricMicroStress = get_setDataStorage_previousSymmetricMicroStress( );
+                symmetricMicroStress = get_SetDataStorage_previousSymmetricMicroStress( );
 
-                higherOrderStress    = get_setDataStorage_previousHigherOrderStress( );
+                higherOrderStress    = get_SetDataStorage_previousHigherOrderStress( );
 
             }
             else{
@@ -2953,11 +2953,11 @@ namespace tardigradeHydra{
 
                 microDeformation = hydra->getMicroDeformation( );
 
-                cauchyStress         = get_setDataStorage_cauchyStress( );
+                cauchyStress         = get_SetDataStorage_cauchyStress( );
 
-                symmetricMicroStress = get_setDataStorage_symmetricMicroStress( );
+                symmetricMicroStress = get_SetDataStorage_symmetricMicroStress( );
 
-                higherOrderStress    = get_setDataStorage_higherOrderStress( );
+                higherOrderStress    = get_SetDataStorage_higherOrderStress( );
 
             }
 
@@ -3357,47 +3357,47 @@ namespace tardigradeHydra{
 
             const floatVector *dMdGradChin;
 
-            setDataStorageBase< secondOrderTensor > cauchyStress;
+            SetDataStorageBase< secondOrderTensor > cauchyStress;
 
-            setDataStorageBase< secondOrderTensor > symmetricMicroStress;
+            SetDataStorageBase< secondOrderTensor > symmetricMicroStress;
 
-            setDataStorageBase< thirdOrderTensor >  higherOrderStress;
+            SetDataStorageBase< thirdOrderTensor >  higherOrderStress;
 
-            setDataStorageBase< fourthOrderTensor > dCauchyStressdF;
+            SetDataStorageBase< fourthOrderTensor > dCauchyStressdF;
 
-            setDataStorageBase< floatVector >       dCauchyStressdFn;
+            SetDataStorageBase< floatVector >       dCauchyStressdFn;
 
-            setDataStorageBase< fourthOrderTensor > dCauchyStressdChi;
+            SetDataStorageBase< fourthOrderTensor > dCauchyStressdChi;
 
-            setDataStorageBase< floatVector >       dCauchyStressdChin;
+            SetDataStorageBase< floatVector >       dCauchyStressdChin;
 
-            setDataStorageBase< fifthOrderTensor >  dCauchyStressdGradChi;
+            SetDataStorageBase< fifthOrderTensor >  dCauchyStressdGradChi;
 
-            setDataStorageBase< floatVector >       dCauchyStressdGradChin;
+            SetDataStorageBase< floatVector >       dCauchyStressdGradChin;
 
-            setDataStorageBase< fourthOrderTensor > dMicroStressdF;
+            SetDataStorageBase< fourthOrderTensor > dMicroStressdF;
 
-            setDataStorageBase< floatVector >       dMicroStressdFn;
+            SetDataStorageBase< floatVector >       dMicroStressdFn;
 
-            setDataStorageBase< fourthOrderTensor > dMicroStressdChi;
+            SetDataStorageBase< fourthOrderTensor > dMicroStressdChi;
 
-            setDataStorageBase< floatVector >       dMicroStressdChin;
+            SetDataStorageBase< floatVector >       dMicroStressdChin;
 
-            setDataStorageBase< fifthOrderTensor >  dMicroStressdGradChi;
+            SetDataStorageBase< fifthOrderTensor >  dMicroStressdGradChi;
 
-            setDataStorageBase< floatVector >       dMicroStressdGradChin;
+            SetDataStorageBase< floatVector >       dMicroStressdGradChin;
 
-            setDataStorageBase< fifthOrderTensor >  dHigherOrderStressdF;
+            SetDataStorageBase< fifthOrderTensor >  dHigherOrderStressdF;
 
-            setDataStorageBase< floatVector >       dHigherOrderStressdFn;
+            SetDataStorageBase< floatVector >       dHigherOrderStressdFn;
 
-            setDataStorageBase< fifthOrderTensor >  dHigherOrderStressdChi;
+            SetDataStorageBase< fifthOrderTensor >  dHigherOrderStressdChi;
 
-            setDataStorageBase< floatVector >       dHigherOrderStressdChin;
+            SetDataStorageBase< floatVector >       dHigherOrderStressdChin;
 
-            setDataStorageBase< sixthOrderTensor >  dHigherOrderStressdGradChi;
+            SetDataStorageBase< sixthOrderTensor >  dHigherOrderStressdGradChi;
 
-            setDataStorageBase< floatVector >       dHigherOrderStressdGradChin;
+            SetDataStorageBase< floatVector >       dHigherOrderStressdGradChin;
 
             if ( isPrevious ){
 
@@ -3447,47 +3447,47 @@ namespace tardigradeHydra{
 
                 microDeformation = hydra->getPreviousMicroDeformation( );
 
-                cauchyStress                = get_setDataStorage_previousCauchyStress( );
+                cauchyStress                = get_SetDataStorage_previousCauchyStress( );
 
-                symmetricMicroStress        = get_setDataStorage_previousSymmetricMicroStress( );
+                symmetricMicroStress        = get_SetDataStorage_previousSymmetricMicroStress( );
 
-                higherOrderStress           = get_setDataStorage_previousHigherOrderStress( );
+                higherOrderStress           = get_SetDataStorage_previousHigherOrderStress( );
 
-                dCauchyStressdF             = get_setDataStorage_previousdCauchyStressdF( );
+                dCauchyStressdF             = get_SetDataStorage_previousdCauchyStressdF( );
 
-                dCauchyStressdFn            = get_setDataStorage_previousdCauchyStressdFn( );
+                dCauchyStressdFn            = get_SetDataStorage_previousdCauchyStressdFn( );
 
-                dCauchyStressdChi           = get_setDataStorage_previousdCauchyStressdChi( );
+                dCauchyStressdChi           = get_SetDataStorage_previousdCauchyStressdChi( );
 
-                dCauchyStressdChin          = get_setDataStorage_previousdCauchyStressdChin( );
+                dCauchyStressdChin          = get_SetDataStorage_previousdCauchyStressdChin( );
 
-                dCauchyStressdGradChi       = get_setDataStorage_previousdCauchyStressdGradChi( );
+                dCauchyStressdGradChi       = get_SetDataStorage_previousdCauchyStressdGradChi( );
 
-                dCauchyStressdGradChin      = get_setDataStorage_previousdCauchyStressdGradChin( );
+                dCauchyStressdGradChin      = get_SetDataStorage_previousdCauchyStressdGradChin( );
 
-                dMicroStressdF              = get_setDataStorage_previousdSymmetricMicroStressdF( );
+                dMicroStressdF              = get_SetDataStorage_previousdSymmetricMicroStressdF( );
 
-                dMicroStressdFn             = get_setDataStorage_previousdSymmetricMicroStressdFn( );
+                dMicroStressdFn             = get_SetDataStorage_previousdSymmetricMicroStressdFn( );
 
-                dMicroStressdChi            = get_setDataStorage_previousdSymmetricMicroStressdChi( );
+                dMicroStressdChi            = get_SetDataStorage_previousdSymmetricMicroStressdChi( );
 
-                dMicroStressdChin           = get_setDataStorage_previousdSymmetricMicroStressdChin( );
+                dMicroStressdChin           = get_SetDataStorage_previousdSymmetricMicroStressdChin( );
 
-                dMicroStressdGradChi        = get_setDataStorage_previousdSymmetricMicroStressdGradChi( );
+                dMicroStressdGradChi        = get_SetDataStorage_previousdSymmetricMicroStressdGradChi( );
 
-                dMicroStressdGradChin       = get_setDataStorage_previousdSymmetricMicroStressdGradChin( );
+                dMicroStressdGradChin       = get_SetDataStorage_previousdSymmetricMicroStressdGradChin( );
 
-                dHigherOrderStressdF        = get_setDataStorage_previousdHigherOrderStressdF( );
+                dHigherOrderStressdF        = get_SetDataStorage_previousdHigherOrderStressdF( );
 
-                dHigherOrderStressdFn       = get_setDataStorage_previousdHigherOrderStressdFn( );
+                dHigherOrderStressdFn       = get_SetDataStorage_previousdHigherOrderStressdFn( );
 
-                dHigherOrderStressdChi      = get_setDataStorage_previousdHigherOrderStressdChi( );
+                dHigherOrderStressdChi      = get_SetDataStorage_previousdHigherOrderStressdChi( );
 
-                dHigherOrderStressdChin     = get_setDataStorage_previousdHigherOrderStressdChin( );
+                dHigherOrderStressdChin     = get_SetDataStorage_previousdHigherOrderStressdChin( );
 
-                dHigherOrderStressdGradChi  = get_setDataStorage_previousdHigherOrderStressdGradChi( );
+                dHigherOrderStressdGradChi  = get_SetDataStorage_previousdHigherOrderStressdGradChi( );
 
-                dHigherOrderStressdGradChin = get_setDataStorage_previousdHigherOrderStressdGradChin( );
+                dHigherOrderStressdGradChin = get_SetDataStorage_previousdHigherOrderStressdGradChin( );
 
             }
             else{
@@ -3538,47 +3538,47 @@ namespace tardigradeHydra{
 
                 microDeformation = hydra->getMicroDeformation( );
 
-                cauchyStress                = get_setDataStorage_cauchyStress( );
+                cauchyStress                = get_SetDataStorage_cauchyStress( );
 
-                symmetricMicroStress        = get_setDataStorage_symmetricMicroStress( );
+                symmetricMicroStress        = get_SetDataStorage_symmetricMicroStress( );
 
-                higherOrderStress           = get_setDataStorage_higherOrderStress( );
+                higherOrderStress           = get_SetDataStorage_higherOrderStress( );
 
-                dCauchyStressdF             = get_setDataStorage_dCauchyStressdF( );
+                dCauchyStressdF             = get_SetDataStorage_dCauchyStressdF( );
 
-                dCauchyStressdFn            = get_setDataStorage_dCauchyStressdFn( );
+                dCauchyStressdFn            = get_SetDataStorage_dCauchyStressdFn( );
 
-                dCauchyStressdChi           = get_setDataStorage_dCauchyStressdChi( );
+                dCauchyStressdChi           = get_SetDataStorage_dCauchyStressdChi( );
 
-                dCauchyStressdChin          = get_setDataStorage_dCauchyStressdChin( );
+                dCauchyStressdChin          = get_SetDataStorage_dCauchyStressdChin( );
 
-                dCauchyStressdGradChi       = get_setDataStorage_dCauchyStressdGradChi( );
+                dCauchyStressdGradChi       = get_SetDataStorage_dCauchyStressdGradChi( );
 
-                dCauchyStressdGradChin      = get_setDataStorage_dCauchyStressdGradChin( );
+                dCauchyStressdGradChin      = get_SetDataStorage_dCauchyStressdGradChin( );
 
-                dMicroStressdF              = get_setDataStorage_dSymmetricMicroStressdF( );
+                dMicroStressdF              = get_SetDataStorage_dSymmetricMicroStressdF( );
 
-                dMicroStressdFn             = get_setDataStorage_dSymmetricMicroStressdFn( );
+                dMicroStressdFn             = get_SetDataStorage_dSymmetricMicroStressdFn( );
 
-                dMicroStressdChi            = get_setDataStorage_dSymmetricMicroStressdChi( );
+                dMicroStressdChi            = get_SetDataStorage_dSymmetricMicroStressdChi( );
 
-                dMicroStressdChin           = get_setDataStorage_dSymmetricMicroStressdChin( );
+                dMicroStressdChin           = get_SetDataStorage_dSymmetricMicroStressdChin( );
 
-                dMicroStressdGradChi        = get_setDataStorage_dSymmetricMicroStressdGradChi( );
+                dMicroStressdGradChi        = get_SetDataStorage_dSymmetricMicroStressdGradChi( );
 
-                dMicroStressdGradChin       = get_setDataStorage_dSymmetricMicroStressdGradChin( );
+                dMicroStressdGradChin       = get_SetDataStorage_dSymmetricMicroStressdGradChin( );
 
-                dHigherOrderStressdF        = get_setDataStorage_dHigherOrderStressdF( );
+                dHigherOrderStressdF        = get_SetDataStorage_dHigherOrderStressdF( );
 
-                dHigherOrderStressdFn       = get_setDataStorage_dHigherOrderStressdFn( );
+                dHigherOrderStressdFn       = get_SetDataStorage_dHigherOrderStressdFn( );
 
-                dHigherOrderStressdChi      = get_setDataStorage_dHigherOrderStressdChi( );
+                dHigherOrderStressdChi      = get_SetDataStorage_dHigherOrderStressdChi( );
 
-                dHigherOrderStressdChin     = get_setDataStorage_dHigherOrderStressdChin( );
+                dHigherOrderStressdChin     = get_SetDataStorage_dHigherOrderStressdChin( );
 
-                dHigherOrderStressdGradChi  = get_setDataStorage_dHigherOrderStressdGradChi( );
+                dHigherOrderStressdGradChi  = get_SetDataStorage_dHigherOrderStressdGradChi( );
 
-                dHigherOrderStressdGradChin = get_setDataStorage_dHigherOrderStressdGradChin( );
+                dHigherOrderStressdGradChin = get_SetDataStorage_dHigherOrderStressdGradChin( );
 
             }
 
@@ -3775,35 +3775,35 @@ namespace tardigradeHydra{
 
             const floatVector *dGradChi1dGradChin;
 
-            setDataStorageBase< secondOrderTensor > rightCauchyGreen;
+            SetDataStorageBase< secondOrderTensor > rightCauchyGreen;
 
-            setDataStorageBase< secondOrderTensor > Psi;
+            SetDataStorageBase< secondOrderTensor > Psi;
 
-            setDataStorageBase< thirdOrderTensor >  Gamma;
+            SetDataStorageBase< thirdOrderTensor >  Gamma;
 
-            setDataStorageBase< fourthOrderTensor > dRightCauchyGreendF;
+            SetDataStorageBase< fourthOrderTensor > dRightCauchyGreendF;
 
-            setDataStorageBase< floatVector > dRightCauchyGreendFn;
+            SetDataStorageBase< floatVector > dRightCauchyGreendFn;
 
-            setDataStorageBase< fourthOrderTensor > dPsidF;
+            SetDataStorageBase< fourthOrderTensor > dPsidF;
 
-            setDataStorageBase< floatVector > dPsidFn;
+            SetDataStorageBase< floatVector > dPsidFn;
 
-            setDataStorageBase< fourthOrderTensor > dPsidChi;
+            SetDataStorageBase< fourthOrderTensor > dPsidChi;
 
-            setDataStorageBase< floatVector > dPsidChin;
+            SetDataStorageBase< floatVector > dPsidChin;
 
-            setDataStorageBase< fifthOrderTensor > dGammadF;
+            SetDataStorageBase< fifthOrderTensor > dGammadF;
 
-            setDataStorageBase< floatVector > dGammadFn;
+            SetDataStorageBase< floatVector > dGammadFn;
 
-            setDataStorageBase< fifthOrderTensor > dGammadChi;
+            SetDataStorageBase< fifthOrderTensor > dGammadChi;
 
-            setDataStorageBase< floatVector > dGammadChin;
+            SetDataStorageBase< floatVector > dGammadChin;
 
-            setDataStorageBase< sixthOrderTensor > dGammadGradChi;
+            SetDataStorageBase< sixthOrderTensor > dGammadGradChi;
 
-            setDataStorageBase< floatVector > dGammadGradChin;
+            SetDataStorageBase< floatVector > dGammadGradChin;
 
             if ( isPrevious ){
 
@@ -3834,35 +3834,35 @@ namespace tardigradeHydra{
 
                 dGradChi1dGradChin = hydra->get_previousdGradChi1dGradChin( );
 
-                rightCauchyGreen   = get_setDataStorage_previousRightCauchyGreen( );
+                rightCauchyGreen   = get_SetDataStorage_previousRightCauchyGreen( );
 
-                Psi                = get_setDataStorage_previousPsi( );
+                Psi                = get_SetDataStorage_previousPsi( );
 
-                Gamma              = get_setDataStorage_previousGamma( );
+                Gamma              = get_SetDataStorage_previousGamma( );
 
-                dRightCauchyGreendF = get_setDataStorage_previousdRightCauchyGreendF( );
+                dRightCauchyGreendF = get_SetDataStorage_previousdRightCauchyGreendF( );
 
-                dRightCauchyGreendFn = get_setDataStorage_previousdRightCauchyGreendFn( );
+                dRightCauchyGreendFn = get_SetDataStorage_previousdRightCauchyGreendFn( );
 
-                dPsidF               = get_setDataStorage_previousdPsidF( );
+                dPsidF               = get_SetDataStorage_previousdPsidF( );
 
-                dPsidFn              = get_setDataStorage_previousdPsidFn( );
+                dPsidFn              = get_SetDataStorage_previousdPsidFn( );
 
-                dPsidChi             = get_setDataStorage_previousdPsidChi( );
+                dPsidChi             = get_SetDataStorage_previousdPsidChi( );
 
-                dPsidChin            = get_setDataStorage_previousdPsidChin( );
+                dPsidChin            = get_SetDataStorage_previousdPsidChin( );
 
-                dGammadF             = get_setDataStorage_previousdGammadF( );
+                dGammadF             = get_SetDataStorage_previousdGammadF( );
 
-                dGammadFn            = get_setDataStorage_previousdGammadFn( );
+                dGammadFn            = get_SetDataStorage_previousdGammadFn( );
 
-                dGammadChi           = get_setDataStorage_previousdGammadChi( );
+                dGammadChi           = get_SetDataStorage_previousdGammadChi( );
 
-                dGammadChin          = get_setDataStorage_previousdGammadChin( );
+                dGammadChin          = get_SetDataStorage_previousdGammadChin( );
 
-                dGammadGradChi       = get_setDataStorage_previousdGammadGradChi( );
+                dGammadGradChi       = get_SetDataStorage_previousdGammadGradChi( );
 
-                dGammadGradChin      = get_setDataStorage_previousdGammadGradChin( );
+                dGammadGradChin      = get_SetDataStorage_previousdGammadGradChin( );
 
             }
             else{
@@ -3894,35 +3894,35 @@ namespace tardigradeHydra{
 
                 dGradChi1dGradChin = hydra->get_dGradChi1dGradChin( );
 
-                rightCauchyGreen   = get_setDataStorage_rightCauchyGreen( );
+                rightCauchyGreen   = get_SetDataStorage_rightCauchyGreen( );
 
-                Psi                = get_setDataStorage_psi( );
+                Psi                = get_SetDataStorage_psi( );
 
-                Gamma              = get_setDataStorage_gamma( );
+                Gamma              = get_SetDataStorage_gamma( );
 
-                dRightCauchyGreendF = get_setDataStorage_dRightCauchyGreendF( );
+                dRightCauchyGreendF = get_SetDataStorage_dRightCauchyGreendF( );
 
-                dRightCauchyGreendFn = get_setDataStorage_dRightCauchyGreendFn( );
+                dRightCauchyGreendFn = get_SetDataStorage_dRightCauchyGreendFn( );
 
-                dPsidF               = get_setDataStorage_dPsidF( );
+                dPsidF               = get_SetDataStorage_dPsidF( );
 
-                dPsidFn              = get_setDataStorage_dPsidFn( );
+                dPsidFn              = get_SetDataStorage_dPsidFn( );
 
-                dPsidChi             = get_setDataStorage_dPsidChi( );
+                dPsidChi             = get_SetDataStorage_dPsidChi( );
 
-                dPsidChin            = get_setDataStorage_dPsidChin( );
+                dPsidChin            = get_SetDataStorage_dPsidChin( );
 
-                dGammadF             = get_setDataStorage_dGammadF( );
+                dGammadF             = get_SetDataStorage_dGammadF( );
 
-                dGammadFn            = get_setDataStorage_dGammadFn( );
+                dGammadFn            = get_SetDataStorage_dGammadFn( );
 
-                dGammadChi           = get_setDataStorage_dGammadChi( );
+                dGammadChi           = get_SetDataStorage_dGammadChi( );
 
-                dGammadChin          = get_setDataStorage_dGammadChin( );
+                dGammadChin          = get_SetDataStorage_dGammadChin( );
 
-                dGammadGradChi       = get_setDataStorage_dGammadGradChi( );
+                dGammadGradChi       = get_SetDataStorage_dGammadGradChi( );
 
-                dGammadGradChin      = get_setDataStorage_dGammadGradChin( );
+                dGammadGradChin      = get_SetDataStorage_dGammadGradChin( );
 
             }
 
@@ -4036,7 +4036,7 @@ namespace tardigradeHydra{
              * Set the residual w.r.t. the unknown vector
              */
 
-            auto residual = get_setDataStorage_residual( );
+            auto residual = get_SetDataStorage_residual( );
 
             const floatVector *stress = hydra->getStress( );
 
@@ -4058,7 +4058,7 @@ namespace tardigradeHydra{
 
             auto num_unknowns = hydra->getNumUnknowns( );
 
-            auto jacobian = get_setDataStorage_jacobian( );
+            auto jacobian = get_SetDataStorage_jacobian( );
             jacobian.zero( getNumEquations( ) * num_unknowns );
 
             //Get references to the stress Jacobians. Doing it this way to allow changing the residual to the current configuration in the future.
@@ -4134,7 +4134,7 @@ namespace tardigradeHydra{
 
             auto num_configurationUnknowns = hydra->getConfigurationUnknownCount( );
 
-            auto dRdD = get_setDataStorage_dRdD( );
+            auto dRdD = get_SetDataStorage_dRdD( );
 
             dRdD.zero( num_equations * num_configurationUnknowns );
 
@@ -4205,7 +4205,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            auto stress = get_setDataStorage_stress( );
+            auto stress = get_SetDataStorage_stress( );
 
             stress.zero( 2 * sot_dim + tot_dim );
 
@@ -4228,7 +4228,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int tot_dim = sot_dim * dim;
 
-            auto previousStress = get_setDataStorage_previousStress( );
+            auto previousStress = get_SetDataStorage_previousStress( );
 
             previousStress.zero( 2 * sot_dim + tot_dim );
 
@@ -4245,7 +4245,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            auto dRdT = get_setDataStorage_dRdT( );
+            auto dRdT = get_SetDataStorage_dRdT( );
             dRdT.zero( getNumEquations( ) );
 
         }

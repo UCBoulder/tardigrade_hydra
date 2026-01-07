@@ -2413,7 +2413,7 @@ BOOST_AUTO_TEST_CASE( test_residual_evaluate, * boost::unit_test::tolerance( DEF
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 elasticity = residualMock( this, 9, *getParameters( ), ISVlb, ISVub, 0.5 );
 
@@ -2574,7 +2574,7 @@ BOOST_AUTO_TEST_CASE( test_addParameterizationInfo, * boost::unit_test::toleranc
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 elasticity = residualMock( this, 9, *getParameters( ), ISVlb, ISVub, 0.5 );
 
@@ -2658,7 +2658,7 @@ BOOST_AUTO_TEST_CASE( test_residual_updateAdditionalStateVariables, * boost::uni
 
             virtual void setResidualClasses( ){
 
-                std::vector< tardigradeHydra::residualBase* > residuals( 1 );
+                std::vector< tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>* > residuals( 1 );
 
                 elasticity = residualMock( this, 9, *getParameters( ), ISVlb, ISVub, 0.5 );
 

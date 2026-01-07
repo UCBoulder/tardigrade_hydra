@@ -52,7 +52,7 @@ namespace tardigradeHydra{
 
             auto add_dof_params = get_add_dof_params( );
 
-            auto XPred = get_setDataStorage_XPred( );
+            auto XPred = get_SetDataStorage_XPred( );
 
             XPred.zero( getNumEquations( ) );
 
@@ -111,7 +111,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int dim = 3;
 
-            auto stress = get_setDataStorage_stress( );
+            auto stress = get_SetDataStorage_stress( );
 
             stress.zero( dim * dim );
 
@@ -139,7 +139,7 @@ namespace tardigradeHydra{
              * Set the residual value
              */
 
-            auto residual = get_setDataStorage_residual( );
+            auto residual = get_SetDataStorage_residual( );
 
             residual.zero( getNumEquations( ) );
 
@@ -158,7 +158,7 @@ namespace tardigradeHydra{
              * Set the Jacobian value
              */
 
-            auto jacobian = get_setDataStorage_jacobian( );
+            auto jacobian = get_SetDataStorage_jacobian( );
 
             jacobian.zero( getNumEquations( ) * hydra->getNumUnknowns( ) );
 
@@ -179,7 +179,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            auto dRdT = get_setDataStorage_dRdT( );
+            auto dRdT = get_SetDataStorage_dRdT( );
 
             dRdT.zero( getNumEquations( ) );
 
@@ -198,7 +198,7 @@ namespace tardigradeHydra{
 
             constexpr unsigned int dim = 3;
 
-            auto dRdF = get_setDataStorage_dRdF( );
+            auto dRdF = get_SetDataStorage_dRdF( );
 
             dRdF.zero( getNumEquations( ) * dim * dim );
 
@@ -215,7 +215,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the additional DOF
              */
 
-            auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
+            auto dRdAdditionalDOF = get_SetDataStorage_dRdAdditionalDOF( );
 
             dRdAdditionalDOF.zero( getNumEquations( ) * hydra->getNumAdditionalDOF( ) );
 

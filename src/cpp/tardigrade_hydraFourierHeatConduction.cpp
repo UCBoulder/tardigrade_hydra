@@ -37,7 +37,7 @@ namespace tardigradeHydra{
 
             auto dim = hydra->getDimension( );
 
-            auto temperature_gradient = get_setDataStorage_temperatureGradient( );
+            auto temperature_gradient = get_SetDataStorage_temperatureGradient( );
 
             temperature_gradient.zero( dim );
 
@@ -58,7 +58,7 @@ namespace tardigradeHydra{
 
             auto dim = hydra->getDimension( );
 
-            auto temperature_gradient = get_setDataStorage_previousTemperatureGradient( );
+            auto temperature_gradient = get_SetDataStorage_previousTemperatureGradient( );
 
             temperature_gradient.zero( dim );
 
@@ -75,7 +75,7 @@ namespace tardigradeHydra{
              * Set the conductivity
              */
 
-            auto conductivity = get_setDataStorage_conductivity( );
+            auto conductivity = get_SetDataStorage_conductivity( );
 
             *conductivity.value = ( *get_conductivityParameters( ) )[ 0 ];
 
@@ -86,7 +86,7 @@ namespace tardigradeHydra{
              * Set the previous conductivity
              */
 
-            auto conductivity = get_setDataStorage_previousConductivity( );
+            auto conductivity = get_SetDataStorage_previousConductivity( );
 
             *conductivity.value = ( *get_conductivityParameters( ) )[ 0 ];
 
@@ -99,7 +99,7 @@ namespace tardigradeHydra{
 
             auto dim = hydra->getDimension( );
 
-            auto heat_flux = get_setDataStorage_heatFlux( );
+            auto heat_flux = get_SetDataStorage_heatFlux( );
 
             heat_flux.zero( dim );
 
@@ -119,7 +119,7 @@ namespace tardigradeHydra{
 
             auto dim = hydra->getDimension( );
 
-            auto heat_flux = get_setDataStorage_previousHeatFlux( );
+            auto heat_flux = get_SetDataStorage_previousHeatFlux( );
 
             heat_flux.zero( dim );
 
@@ -141,7 +141,7 @@ namespace tardigradeHydra{
 
             auto sot_dim = dim * dim;
 
-            auto dHeatFluxdGradT = get_setDataStorage_dHeatFluxdGradT( );
+            auto dHeatFluxdGradT = get_SetDataStorage_dHeatFluxdGradT( );
 
             dHeatFluxdGradT.zero( sot_dim );
 
@@ -158,7 +158,7 @@ namespace tardigradeHydra{
 
             auto dim = hydra->getDimension( );
 
-            auto residual = get_setDataStorage_residual( );
+            auto residual = get_SetDataStorage_residual( );
 
             residual.zero( getNumEquations( ) );
 
@@ -180,7 +180,7 @@ namespace tardigradeHydra{
             auto num_unknowns = hydra->getNumUnknowns( );
 
             // Form the Jacobian
-            auto jacobian = get_setDataStorage_jacobian( );
+            auto jacobian = get_SetDataStorage_jacobian( );
 
             jacobian.zero( getNumEquations( ) * num_unknowns );
 
@@ -197,7 +197,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the temperature
              */
 
-            auto dRdT = get_setDataStorage_dRdT( );
+            auto dRdT = get_SetDataStorage_dRdT( );
 
             dRdT.zero( getNumEquations( ) );
 
@@ -208,7 +208,7 @@ namespace tardigradeHydra{
              * Set the derivative of the residual w.r.t. the deformation gradient
              */
 
-            auto dRdF = get_setDataStorage_dRdF( );
+            auto dRdF = get_SetDataStorage_dRdF( );
 
             dRdF.zero( getNumEquations( ) * hydra->getDimension( ) * hydra->getDimension( ) );
 
@@ -221,7 +221,7 @@ namespace tardigradeHydra{
 
             auto dim = hydra->getDimension( );
 
-            auto dRdAdditionalDOF = get_setDataStorage_dRdAdditionalDOF( );
+            auto dRdAdditionalDOF = get_SetDataStorage_dRdAdditionalDOF( );
 
             dRdAdditionalDOF.zero( getNumEquations( ) * hydra->getNumAdditionalDOF( ) );
 

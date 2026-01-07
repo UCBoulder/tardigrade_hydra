@@ -22,17 +22,3 @@ tardigrade_hydra.h
 ==================
 
 .. doxygenfile:: tardigrade_hydra.h
-
-****************
-Abaqus interface
-****************
-
-tardigrade_hydra_umat.cpp
-=========================
-
-.. doxygenfile:: tardigrade_hydra_umat.cpp
-
-tardigrade_hydra_umat.h
-=======================
-
-.. doxygenfile:: tardigrade_hydra_umat.h

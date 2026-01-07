@@ -87,7 +87,6 @@ during the Gitlab-CI ``conda-build`` job to limit the test phase to the as-insta
 The build type can be set with the ``-DCMAKE_BUILD_TYPE=<build type string>`` during project configuration. Both build
 types will require the upstream dependent libraries
 
-* ``abaqus_tools``: https://github.com/UCBoulder/tardigrade_abaqus_tools
 * ``error_tools``: https://github.com/UCBoulder/tardigrade_error_tools
 * ``vector_tools``: https://github.com/UCBoulder/tardigrade_vector_tools
 * ``constitutive_tools``: https://github.com/UCBoulder/tardigrade_constitutive_tools
@@ -154,7 +153,7 @@ Build on sstelmo
       $ cmake --build . --target all
 
       # Build the c++ primary libraries by target name(s)
-      $ cmake --build . --target tardigrade-hydra tardigrade-hydra_umat
+      $ cmake --build . --target tardigrade-hydra
 
       # Build the c++ primary libraries by sub-directory
       $ cmake --build src/cpp
@@ -174,21 +173,6 @@ Build on sstelmo
 
 6) Clean build directory to force a re-build
 
-       **HEALTH WARNING**
-
-       The abaqus input files and bash scripts used for integration testing are
-       built with the `CMake add_custom_target`_ feature. Consequently, the integration
-       test target is *always considered out of date*. The integration test target
-       copies all registered input files and the integration test bash script from
-       source to build directory. This means the file copy operation is always
-       performed when the integration test target is requested in the cmake build
-       command, e.g. ``cmake --build .`` or ``cmake --build src/abaqus/tests``. This
-       operation is computationally inexpensive with respect to building the
-       ``tardigrade-hydra`` source code.
-
-       Input files are registered in the ``src/abaqus/tests/CMakeLists.txt`` file
-       under the ``ABAQUS_INPUT_FILES`` CMake variable.
-
    .. code-block:: bash
 
       $ pwd
@@ -206,12 +190,11 @@ Test on sstelmo
       $ pwd
       /path/to/tardigrade-hydra/build
 
-      # Build c++ and abaqus tests by target name(s)
-      $ cmake --build . --target test_tardigrade-hydra test_abaqus_integration
+      # Build c++ tests by target name(s)
+      $ cmake --build . --target test_tardigrade-hydra
 
-      # Build c++ and abaqus tests by sub-directories
+      # Build c++ tests by sub-directories
       $ cmake --build src/cpp/tests
-      $ cmake --build src/abaqus/tests
 
 5) Run the tests
 

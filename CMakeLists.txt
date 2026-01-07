@@ -7,8 +7,6 @@ project(tardigrade_hydra)
 set(CPP_SRC_PATH "src/cpp")
 set(CPP_TEST_PATH "${CPP_SRC_PATH}/tests")
 set(CMAKE_SRC_PATH "src/cmake")
-set(ABAQUS_SRC_PATH "src/abaqus")
-set(ABAQUS_TEST_PATH "${ABAQUS_SRC_PATH}/tests")
 set(DOXYGEN_SRC_PATH "docs/doxygen")
 set(SPHINX_SRC_PATH "docs/sphinx")
 
@@ -20,8 +18,8 @@ set(TARDIGRADE_HYDRA_USE_LIBXSMM OFF CACHE BOOL "Flag for whether to use libxsmm
 set(TARDIGRADE_FULL_BUILD OFF CACHE BOOL "Flag for whether a full build of Tardigrade should be performed (i.e., all repos pulled from git and built)")
 
 # Set the internal support libraries
-set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearTestMaterial" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPerzynaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPerzynaViscodamage" "tardigrade_hydraMicromorphicDruckerPragerPlasticity" "tardigrade_hydraPerzynaJ2Viscoplasticity" "tardigrade_hydraMassChange" "tardigrade_hydraMicromorphicDruckerPragerPlasticityOptimization" "tardigrade_hydraFourierHeatConduction" "tardigrade_hydraLinearInternalEnergy" "tardigrade_hydraMicromorphicRadialReturnLinearElasticity" "tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity" "tardigrade_hydraDOFVelocityGradientDeformation")
-set(ADDITIONAL_HEADER_ONLY_LIBRARIES "tardigrade_DeformationBase")
+set(INTERNAL_SUPPORT_LIBRARIES "tardigrade_hydraMicromorphic" "tardigrade_hydraLinearElasticity" "tardigrade_hydraLinearTestMaterial" "tardigrade_hydraLinearViscoelasticity" "tardigrade_hydraThermalExpansion" "tardigrade_hydraPerzynaViscoplasticity" "tardigrade_hydraMicromorphicLinearElasticity" "tardigrade_hydraPerzynaViscodamage" "tardigrade_hydraMicromorphicDruckerPragerPlasticity" "tardigrade_hydraPerzynaJ2Viscoplasticity" "tardigrade_hydraMassChange" "tardigrade_hydraMicromorphicDruckerPragerPlasticityOptimization" "tardigrade_hydraFourierHeatConduction" "tardigrade_hydraLinearInternalEnergy" "tardigrade_hydraMicromorphicRadialReturnLinearElasticity" "tardigrade_hydraMicromorphicRadialReturnDruckerPragerPlasticity" "tardigrade_hydraDOFVelocityGradientDeformation" "tardigrade_SolverBase" "tardigrade_SolverStepBase" "tardigrade_PreconditionerBase")
+set(ADDITIONAL_HEADER_ONLY_LIBRARIES "tardigrade_DeformationBase" "tardigrade_SetDataStorage" "tardigrade_MatrixMap" "tardigrade_CoreDefinitions" "tardigrade_CustomErrors" "tardigrade_ResidualBase")
 set(PROJECT_SOURCE_FILES ${PROJECT_NAME}.cpp ${PROJECT_NAME}.h)
 set(PROJECT_PRIVATE_HEADERS "")
 foreach(package ${INTERNAL_SUPPORT_LIBRARIES})
@@ -47,9 +45,6 @@ set(TARDIGRADE_HYDRAMICROMORPHICLINEARELASTICITY_UPSTREAM_LIBRARIES "tardigrade_
 set(TARDIGRADE_HYDRAMICROMORPHICLINEARTESTMATERIAL_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
 set(TARDIGRADE_HYDRAMICROMORPHICDRUCKERPRAGERPLASTICITY_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools" "tardigrade_micromorphic_tools")
 set(TARDIGRADE_HYDRAMASSCHANGEDOF_UPSTREAM_LIBRARIES "tardigrade_constitutive_tools")
-# Set some Abaqus integration variables
-set(UMAT "${PROJECT_NAME}_umat")
-set(MISSING_INTEGRATION_DEPS_MESSAGE "Abaqus integration tests will be skipped.")
 
 # Add the cmake folder to locate project CMake module(s)
 set(CMAKE_MODULE_PATH "${PROJECT_SOURCE_DIR}/${CMAKE_SRC_PATH}" ${CMAKE_MODULE_PATH})
@@ -114,29 +109,9 @@ if(EIGEN3_FOUND)
     message(STATUS "Found Eigen3: ${EIGEN3_INCLUDE_DIR}")
 endif()
 
-# Find bash (Required for abaqus integration tests)
-find_program(BASH_PROGRAM bash)
-if(BASH_PROGRAM)
-    message(STATUS "Found bash: ${BASH_PROGRAM}")
-else()
-    message(STATUS "bash not found. ${MISSING_INTEGRATION_DEPS_MESSAGE}")
-endif()
-
-# Find Abaqus (Required for abaqus integration tests)
-find_program(ABAQUS_PROGRAM
-             NAMES abaqus abq2022 abq2021 abq2020 abq2019 abq2018 abq2017
-             # AEA path, HPC path
-             HINTS /apps/abaqus/Commands /usr/projects/ea/abaqus/Commands
-            )
-if(ABAQUS_PROGRAM)
-    message(STATUS "Found Abaqus: ${ABAQUS_PROGRAM}")
-else()
-    message(STATUS "Abaqus not found. ${MISSING_INTEGRATION_DEPS_MESSAGE}")
-endif()
-
 # Find related, but external, projects in installed environment
 include(FetchContent)
-set(upstream_packages "tardigrade_error_tools" "tardigrade_vector_tools" "tardigrade_constitutive_tools" "tardigrade_stress_tools" "tardigrade_abaqus_tools" "tardigrade_micromorphic_tools")
+set(upstream_packages "tardigrade_error_tools" "tardigrade_vector_tools" "tardigrade_constitutive_tools" "tardigrade_stress_tools" "tardigrade_micromorphic_tools")
 if(${not_conda_test} STREQUAL "false")
     # During conda-build testing, we must find the installed project files as if they were an external project
     set(upstream_packages ${upstream_packages} ${PROJECT_NAME})
@@ -193,7 +168,6 @@ if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
     find_package(Boost 1.53.0 REQUIRED COMPONENTS unit_test_framework)
     # Add c++ tests and docs
     add_subdirectory(${CPP_TEST_PATH})
-#    add_subdirectory(${ABAQUS_SRC_PATH})
     if(${not_conda_test} STREQUAL "true")
         add_subdirectory(${DOXYGEN_SRC_PATH})
         add_subdirectory(${SPHINX_SRC_PATH})
@@ -202,7 +176,7 @@ endif()
 
 #==================================================================================== SETUP INSTALLATION CMAKE FILES ===
 if(${not_conda_test} STREQUAL "true")
-    foreach(package ${PROJECT_NAME})# ${UMAT})
+    foreach(package ${PROJECT_NAME})
         include(CMakePackageConfigHelpers)
         write_basic_package_version_file("${package}ConfigVersion.cmake"
                                          VERSION ${PROJECT_VERSION}

@@ -220,11 +220,11 @@ namespace tardigradeHydra{
         /*!
          * The residual for a micromorphic linear elasticity constitutive equation
          */
-        class residual : public tardigradeHydra::residualBaseMicromorphic {
+        class residual : public tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic> {
 
             public:
 
-                residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const floatVector &parameters ) : tardigradeHydra::residualBaseMicromorphic( _hydra, _numEquations ){
+                residual( hydraBaseMicromorphic *_hydra, const unsigned int &_numEquations, const floatVector &parameters ) : tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>( _hydra, _numEquations ){
                     /*!
                      * The main initialization constructor for the linear elastic residual
                      * 
@@ -252,21 +252,21 @@ namespace tardigradeHydra{
 
             protected:
 
-                using tardigradeHydra::residualBaseMicromorphic::residualBaseMicromorphic;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::ResidualBaseMicromorphic;
 
-                using tardigradeHydra::residualBaseMicromorphic::setResidual;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setResidual;
 
-                using tardigradeHydra::residualBaseMicromorphic::setJacobian;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setJacobian;
 
-                using tardigradeHydra::residualBaseMicromorphic::setdRdD;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setdRdD;
 
-                using tardigradeHydra::residualBaseMicromorphic::setdRdT;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setdRdT;
 
-                using tardigradeHydra::residualBaseMicromorphic::setAdditionalDerivatives;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setAdditionalDerivatives;
 
-                using tardigradeHydra::residualBaseMicromorphic::setStress;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setStress;
 
-                using tardigradeHydra::residualBaseMicromorphic::setPreviousStress;
+                using tardigradeHydra::ResidualBaseMicromorphic<hydraBaseMicromorphic>::setPreviousStress;
 
                 //! Set the current values of the deformation
                 virtual void setDeformation( ){ setDeformation( false ); }

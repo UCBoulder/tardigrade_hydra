@@ -48,11 +48,6 @@
 .. Project specific links
 .. _`Gitlab project issues`: https://re-git.lanl.gov/aea/stub-repositories/tardigrade-hydra/-/issues
 
-.. Abaqus reference links
-.. _`Abaqus Solid Continuum Elements`: http://simulia.lanl.gov:8080/EstProdDocs2019/English/DSSIMULIA_Established.htm?show=SIMACAEELMRefMap/simaelm-c-solidcont.htm
-.. _`Abaqus scripting manual "Specifying a region"`: http://simulia.lanl.gov:8080/EstProdDocs2020/English/DSSIMULIA_Established.htm?show=SIMACAECMDRefMap/simacmd-c-intaclregions.htm
-.. _`Abaqus UMAT documentation`: http://simulia.lanl.gov:8080/EstProdDocs2019/English/DSSIMULIA_Established.htm?show=SIMACAESUBRefMap/simasub-c-umat.htm
-
 .. email addresses
 .. _`Kyle Brindley`: kbrindley@lanl.gov
 .. _`Nathan Miller`: Nathan.A.Miller@colorado.edu
