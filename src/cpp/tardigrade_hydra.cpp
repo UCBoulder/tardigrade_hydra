@@ -1460,15 +1460,11 @@ namespace tardigradeHydra{
 
         const floatVector *residual = getResidual( );
 
-        if ( tolerance->size( ) != residual->size( ) ){
-
-            std::string message = "The residual and tolerance vectors don't have the same size\n";
-            message            += "  tolerance: " + std::to_string( tolerance->size( ) ) + "\n";
-            message            += "  residual:  " + std::to_string( residual->size( ) ) + "\n";
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( throw std::runtime_error( message ) );
-
-        }
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            tolerance->size( ) == residual->size( ),
+            "The residual and tolerance vectors don't have the same size\n  tolerance: " + std::to_string( tolerance->size( ) ) +
+            "\n  residual:  " + std::to_string( residual->size( ) ) + "\n" 
+        );
 
         for ( unsigned int i = 0; i < tolerance->size( ); i++ ){
 
