@@ -141,6 +141,11 @@ namespace tardigradeHydra{
 
             virtual bool checkDescentDirection( const floatVector &dx );
 
+            //!< Get the max allowable number of gradient iterations
+            const unsigned int getMaxGradientIterations( ){ return _maxGradientIterations; }
+
+            void setMaxGradientIterations( const unsigned int &value );
+
             // END GRADIENT DESCENT FUNCTIONS
 
         protected:
@@ -283,6 +288,8 @@ namespace tardigradeHydra{
             floatType _gradientRho   = 1e-8; //!< The rho parameter for the gradient descent step
 
             floatType _gradientP     = 2.1; //!< The p parameter for the gradient descent step
+
+            unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
 
             // END GRADIENT DESCENT FUNCTIONS
     };

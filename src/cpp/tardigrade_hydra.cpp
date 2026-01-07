@@ -1567,6 +1567,15 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Check if the gradient hasn't exceeded the number of allowed iterations
+     */
+    bool hydraBase::checkGradientIteration( ){
+
+        return _gradientIteration < solver->step->getMaxGradientIterations( );
+
+    }
+
     void hydraBase::performGradientStep( const floatVector &X0 ){
         /*!
          * Perform a gradient descent step
@@ -1578,7 +1587,7 @@ namespace tardigradeHydra{
 
         unsigned int l                     = 0;
 
-        const unsigned int maxiter         = solver->hydra->getMaxGradientIterations( );
+        const unsigned int maxiter         = solver->step->getMaxGradientIterations( );
 
         while( solver->hydra->checkGradientIteration( ) ){
 

@@ -822,12 +822,12 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Check if the search direction is a descent direction of the Jacobian
+     * 
+     * \param &dx: The proposed change in x
+     */
     bool SolverStepBase::checkDescentDirection( const floatVector &dx ){
-        /*!
-         * Check if the search direction is a descent direction of the Jacobian
-         * 
-         * \param &dx: The proposed change in x
-         */
 
         const unsigned int xsize = solver->getNumUnknowns( );
 
@@ -844,6 +844,17 @@ namespace tardigradeHydra{
         }
 
         return LHS <= RHS;
+
+    }
+
+    /*!
+     * Set the value of the maximum number of iterations for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void SolverStepBase::setMaxGradientIterations( const unsigned int &value ){
+
+        _maxGradientIterations = value;
 
     }
 

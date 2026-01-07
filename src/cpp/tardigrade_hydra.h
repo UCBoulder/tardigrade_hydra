@@ -171,9 +171,6 @@ namespace tardigradeHydra{
             //!< Get the gradient descent beta parameter
             const floatType getGradientBeta( ){ return _gradientBeta; }
 
-            //!< Get the max allowable number of gradient iterations
-            const unsigned int getMaxGradientIterations( ){ return _maxGradientIterations; }
-
             //!< Get a reference to whether the Newton step should be a relaxed solve
             const bool getUseRelaxedSolve( ){ return _use_relaxed_solve; }
 
@@ -198,18 +195,6 @@ namespace tardigradeHydra{
                 */
  
                 _gradientBeta = value;
-
-            }
-
-            //!< Set the max allowable number of gradient iterations
-            void setMaxGradientIterations( const unsigned int &value ){
-               /*!
-                * Set the value of the maximum number of iterations for gradient descent steps
-                *
-                * \param &value: The value of the parameter
-                */
-
-                _maxGradientIterations = value;
 
             }
 
@@ -835,8 +820,6 @@ namespace tardigradeHydra{
 
             unsigned int _maxIterations; //!< The maximum number of allowable iterations
 
-            unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
-
             unsigned int _NUM_NEWTON = 0; //!< The number of Newton steps performed
 
             unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
@@ -907,7 +890,7 @@ namespace tardigradeHydra{
 
             bool checkIteration( ){ return _iteration < _maxIterations; }
 
-            bool checkGradientIteration( ){ return _gradientIteration < _maxGradientIterations; }
+            bool checkGradientIteration( );
 
             void resetIterationData( );
 
