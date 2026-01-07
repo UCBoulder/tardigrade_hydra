@@ -1533,19 +1533,19 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::performGradientStep( const floatVector &X0 ){
 
-        const floatVector *dResidualNormdX = solver->step->get_basedResidualNormdX( );
+        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
 
         unsigned int l                     = 0;
 
-        const unsigned int maxiter         = solver->step->getMaxGradientIterations( );
+        const unsigned int maxiter         = getMaxGradientIterations( );
 
-        while( solver->step->checkGradientIteration( ) ){
+        while( checkGradientIteration( ) ){
 
-            floatType t = std::pow( solver->step->getGradientBeta( ), l );
+            floatType t = std::pow( getGradientBeta( ), l );
 
             solver->updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
 
-            if ( solver->step->checkGradientConvergence( X0 ) ){
+            if ( checkGradientConvergence( X0 ) ){
 
                 break;
 
@@ -1553,7 +1553,7 @@ namespace tardigradeHydra{
 
             l++;
 
-            solver->step->incrementGradientIteration( );
+            incrementGradientIteration( );
 
         }
 
@@ -1565,9 +1565,9 @@ namespace tardigradeHydra{
 
         }
 
-        solver->step->incrementNumGrad( );
+        incrementNumGrad( );
 
-        solver->step->resetGradientIteration( );
+        resetGradientIteration( );
 
     }
 
