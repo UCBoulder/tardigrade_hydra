@@ -3287,6 +3287,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkConvergence, * boost::unit_test::toler
 
             using tardigradeHydra::hydraBase::hydraBase;
 
+            void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = solver; }
+
     };
 
     floatType time = 1.1;
@@ -3326,6 +3328,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkConvergence, * boost::unit_test::toler
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    tardigradeHydra::SolverBase solver;
+
+    hydra.setSolver( &solver );
+    solver.hydra = &hydra;
+
     floatVector residual = { 1, 2, -3, 0 };
 
     floatVector unknownVector = { -2, 5, 10, 0.3 };
@@ -3334,19 +3341,19 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_checkConvergence, * boost::unit_test::toler
 
     tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
 
-    BOOST_CHECK( !hydra.checkConvergence( ) );
+    BOOST_CHECK( !solver.checkConvergence( ) );
 
     residual = { 0, 2, -3, 0 };
 
     tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
-    BOOST_CHECK( !hydra.checkConvergence( ) );
+    BOOST_CHECK( !solver.checkConvergence( ) );
 
     residual = { 0, 0, 0, 0 };
 
     tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
 
-    BOOST_CHECK( hydra.checkConvergence( ) );
+    BOOST_CHECK( solver.checkConvergence( ) );
 
 }
 
@@ -3775,22 +3782,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             }
 
-            virtual bool checkConvergence( ) override{
-
-                getResidual( );
-
-                unsigned int iteration = solver->getIteration( );
-
-                if ( iteration < residual.size( ) ){
-
-                    return false;
-
-                }
-
-                return true;
-
-            }
-
             virtual void formNonLinearResidual( ) override{
 
                 unsigned int iteration = solver->getIteration( );
@@ -3957,6 +3948,24 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
         public:
 
+            std::vector< std::vector< floatVector > > residual = {
+                                                                     {
+                                                                       { 1, 2, 3 } 
+                                                                     },
+                                                                     { 
+                                                                       { 4, 5, 6 },
+                                                                       { 7, 8, 9 }
+                                                                     },
+                                                                     { 
+                                                                       { 10, 9, 8 }
+                                                                     },
+                                                                     { 
+                                                                       { 7, 6, 5 },
+                                                                       { 4, 3, 2 },
+                                                                       { 1, 1, 1 }
+                                                                     },
+                                                                 };
+
             unsigned int num_pre_nlsolve_calls = 0;
 
             unsigned int num_successful_nlstep_calls = 0;
@@ -3980,6 +3989,22 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
             virtual void callResidualPostNLSolve( ) override{
                 num_post_nlsolve_calls++;
+            }
+
+            virtual bool checkConvergence( ) override{
+
+                getResidual( );
+
+                unsigned int iteration = getIteration( );
+
+                if ( iteration < residual.size( ) ){
+
+                    return false;
+
+                }
+
+                return true;
+
             }
 
     };

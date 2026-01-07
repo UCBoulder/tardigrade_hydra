@@ -242,8 +242,6 @@ namespace tardigradeHydra{
 
             const floatVector* getTolerance( );
 
-            virtual bool checkConvergence( );
-
             const floatVector* getStress( );
 
             const floatVector* getPreviousStress( );

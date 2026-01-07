@@ -72,6 +72,8 @@ namespace tardigradeHydra{
             //! Check if the number of nonlinear iterations has exceeded the allowable count
             bool checkIteration( ){ return getIteration( ) < getMaxIterations( ); }
 
+            virtual bool checkConvergence( );
+
             // END NONLINEAR FUNCTIONS
 
             // Pass-through functions

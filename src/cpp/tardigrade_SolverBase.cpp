@@ -345,6 +345,35 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Check the convergence
+     */
+    bool SolverBase::checkConvergence( ){
+
+        const floatVector *tolerance = hydra->getTolerance( );
+
+        const floatVector *residual = getResidual( );
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(
+            tolerance->size( ) == residual->size( ),
+            "The residual and tolerance vectors don't have the same size\n  tolerance: " + std::to_string( tolerance->size( ) ) +
+            "\n  residual:  " + std::to_string( residual->size( ) ) + "\n" 
+        );
+
+        for ( unsigned int i = 0; i < tolerance->size( ); i++ ){
+
+            if ( std::fabs( ( *residual )[ i ] ) > ( *tolerance )[ i ] ){
+
+                return false;
+
+            }
+
+        }
+
+        return true;
+
+    }
+
 // END NONLINEAR FUNCTIONS
 
 }
