@@ -1526,43 +1526,6 @@ namespace tardigradeHydra{
 
     }
 
-    void hydraBase::callResidualPostNLSolve( ){
-        /*!
-         * Signal to the residuals that we have finisehd a nonlinear solve
-         */
-
-        setCurrentResidualIndexMeaningful( true );
-
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
-
-            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
-
-            try{
-
-                ( *residual_ptr )->postNLSolve( );
-
-            }
-            catch( std::exception &e ){
-
-                if ( getFailureVerbosityLevel( ) > 0 ){
-
-                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
-                    std::string message;
-                    tardigradeErrorTools::captureNestedExceptions(e, message);
-                    addToFailureOutput( message );
-
-                }
-
-                throw;
-
-            }
-
-        }
-
-        setCurrentResidualIndexMeaningful( false );
-
-    }
-
     void hydraBase::callResidualPreSubcycler( ){
         /*!
          * Signal to the residuals that we are entering the subcycler
@@ -1797,7 +1760,7 @@ namespace tardigradeHydra{
 
         }
 
-        callResidualPostNLSolve( );
+        solver->callResidualPostNLSolve( );
 
     }
 

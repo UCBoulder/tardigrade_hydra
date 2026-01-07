@@ -291,12 +291,41 @@ namespace tardigradeHydra{
 
     }
 
+
     /*!
-     * Call the residuals after a successful non-linear solve
+     * Signal to the residuals that we have finisehd a nonlinear solve
      */
     void SolverBase::callResidualPostNLSolve( ){
 
-        hydra->callResidualPostNLSolve( );
+        hydra->setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual_ptr = std::begin( *( hydra->getResidualClasses( ) ) ); residual_ptr != std::end( *( hydra->getResidualClasses( ) ) ); ++residual_ptr ){
+
+            hydra->setCurrentResidualIndex( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) );
+
+            try{
+
+                ( *residual_ptr )->postNLSolve( );
+
+            }
+            catch( std::exception &e ){
+
+                if ( getFailureVerbosityLevel( ) > 0 ){
+
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) ) + "\n" );
+                    std::string message;
+                    tardigradeErrorTools::captureNestedExceptions(e, message);
+                    addToFailureOutput( message );
+
+                }
+
+                throw;
+
+            }
+
+        }
+
+        hydra->setCurrentResidualIndexMeaningful( false );
 
     }
 
