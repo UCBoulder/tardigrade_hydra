@@ -1526,24 +1526,6 @@ namespace tardigradeHydra{
 
     }
 
-    const floatType *hydraBase::get_baseResidualNorm( ){
-        /*!
-         * Get the base value for the residual norm.
-         */
-
-        return solver->step->get_baseResidualNorm( );
-
-    }
-
-    const floatVector *hydraBase::get_basedResidualNormdX( ){
-        /*!
-         * Get the base value for the derivative of the residual norm w.r.t. the unknown vector
-         */
-
-        return solver->step->get_basedResidualNormdX( );
-
-    }
-
     void hydraBase::performGradientStep( const floatVector &X0 ){
         /*!
          * Perform a gradient descent step

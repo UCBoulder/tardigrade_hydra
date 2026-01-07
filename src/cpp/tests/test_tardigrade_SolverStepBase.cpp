@@ -629,10 +629,6 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
 
             using tardigradeHydra::hydraBase::hydraBase;
 
-            const tardigradeHydra::floatType *getBaseResidualNorm( ){ return get_baseResidualNorm( ); }
-
-            const tardigradeHydra::floatVector *getBasedResidualNormdX( ){ return get_basedResidualNormdX( ); }
-
             void set_solver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
 
             virtual void formNonLinearResidual( ) override{
@@ -671,9 +667,9 @@ BOOST_AUTO_TEST_CASE( test_setBaseQuantities, * boost::unit_test::tolerance( 1e-
 
     BOOST_TEST( answer1 == step.getMuk( ) );
 
-    BOOST_TEST( step.rnorm == *hydra.getBaseResidualNorm( ) );
+    BOOST_TEST( step.rnorm == *step.get_baseResidualNorm( ) );
 
-    BOOST_TEST( step.dRNormdX == *hydra.getBasedResidualNormdX( ) );
+    BOOST_TEST( step.dRNormdX == *step.get_basedResidualNormdX( ) );
 
     step.rnorm = 1e-9;
 

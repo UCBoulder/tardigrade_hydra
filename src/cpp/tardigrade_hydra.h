@@ -587,14 +587,6 @@ namespace tardigradeHydra{
             //! Update the scaled quantities
             virtual void setScaledQuantities( );
 
-            const floatType *get_baseResidualNorm( );
-
-            const floatVector *get_basedResidualNormdX( );
-
-            void set_baseResidualNorm( const floatType &value ){ /*! Set the base value of the residual norm \param &value: The new value */  solver->step->set_baseResidualNorm( value ); }
-
-            void set_basedResidualNormdX( const floatVector &value ){ /*! Set the base derivative of the residual norm w.r.t. the unknown vector \param &value: The new value */  solver->step->set_basedResidualNormdX( value ); }
-
             void resetNumNewton( ){ /*! Reset the number of newton steps */ _NUM_NEWTON = 0; }
 
             void resetNumGrad( ){ /*! Reset the number of gradient descent steps */ _NUM_GRAD = 0; }

@@ -3871,9 +3871,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
                 BOOST_TEST( expectedXVectors[ iteration ][ subIteration ] == newUnknownVector, CHECK_PER_ELEMENT );
 
-                BOOST_TEST( expectedBaseResidualNorms[ iteration ] == *get_baseResidualNorm( ) );
+                BOOST_TEST( expectedBaseResidualNorms[ iteration ] == *solver->step->get_baseResidualNorm( ) );
 
-                BOOST_TEST( expectedBasedResidualNormdXs[ iteration ] == *get_basedResidualNormdX( ), CHECK_PER_ELEMENT );
+                BOOST_TEST( expectedBasedResidualNormdXs[ iteration ] == *solver->step->get_basedResidualNormdX( ), CHECK_PER_ELEMENT );
 
                 BOOST_TEST( expectedMuk[ iteration ] == solver->step->getMuk( ) );
 
@@ -4517,10 +4517,6 @@ BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1
 
             floatVector X0 = { -0.81579012, -0.13259765, -0.13827447, -0.0126298 , -0.14833942 };
 
-            floatType baseResidualNorm = 0.2408779076031648;
-
-            floatVector basedResidualNormdX = { -1.17899799,  0.07843952, -0.01708813, -0.01779959, -0.06410942 };
-
             floatVector A = { -0.15378708,  0.9615284 ,  0.36965948, -0.0381362 , -0.21576496,
                               -0.31364397,  0.45809941, -0.12285551, -0.88064421, -0.20391149,
                                0.47599081, -0.63501654, -0.64909649,  0.06310275,  0.06365517,
@@ -4528,14 +4524,6 @@ BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1
                               -0.35408217, -0.27642269, -0.54347354, -0.41257191,  0.26195225 };
 
             using tardigradeHydra::hydraBase::hydraBase;
-
-            virtual void mockInitialize( ){
-
-                set_baseResidualNorm( baseResidualNorm );
-
-                set_basedResidualNormdX( basedResidualNormdX );
-
-            }
 
             virtual void runGradientStep( ){
 
@@ -4577,6 +4565,27 @@ BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1
 
             virtual void decomposeUnknownVector( ) override{ return; }
             virtual const unsigned int getNumUnknowns( ) override{ return 5; }
+            tardigradeHydra::SolverBase *getSolver( ){ return solver; }
+
+    };
+
+    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase {
+
+        public:
+
+            using tardigradeHydra::SolverStepBase::SolverStepBase;
+
+            floatType baseResidualNorm = 0.2408779076031648;
+
+            floatVector basedResidualNormdX = { -1.17899799,  0.07843952, -0.01708813, -0.01779959, -0.06410942 };
+
+            virtual void mockInitialize( ){
+
+                set_baseResidualNorm( baseResidualNorm );
+
+                set_basedResidualNormdX( basedResidualNormdX );
+
+            }
 
     };
 
@@ -4586,11 +4595,16 @@ BOOST_AUTO_TEST_CASE( test_performGradientStep, * boost::unit_test::tolerance( 1
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    SolverStepBaseMock step;
+
+    hydra.getSolver( )->step = &step;
+    step.setSolver( hydra.getSolver( ) );
+
     floatVector unknownVector = { 0.39293837, -0.42772133, -0.54629709,  0.10262954,  0.43893794 };
 
     tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
 
-    hydra.mockInitialize( );
+    step.mockInitialize( );
 
     hydra.runGradientStep( );
 
