@@ -56,6 +56,13 @@ namespace tardigradeHydra{
             virtual void addNLStepData( dataBase *data ) override;
             // END CACHED DATA STORAGE OPERATIONS
 
+            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
+
+            //! Return the flag which indicates whether hydra should initialize the unknown vector
+            const bool getInitializeUnknownVector( ){ return _initializeUnknownVector; }
+
+            // END NONLINEAR FUNCTIONS
+
             // Pass-through functions
             const floatType getRelativeTolerance( ); //TODO: Want to allow this to be constexpr
 
@@ -115,12 +122,24 @@ namespace tardigradeHydra{
 
         protected:
 
+            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
+
+            void setInitializeUnknownVector( const bool &value );
+
+            // END NONLINEAR FUNCTIONS
+
         private:
 
             bool _rank_deficient_error = false; //!< Flag for whether a rank-deficient Jacobian should cause an error
 
             friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
             friend class tardigradeHydra::unit_test::SolverBaseTester; //!< The unit tester for the class
+
+            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
+
+            bool _initializeUnknownVector = true; //!< Flag for whether to initialize the unknown vector in the non-linear solve
+
+            // END NONLINEAR FUNCTIONS
 
     };
 

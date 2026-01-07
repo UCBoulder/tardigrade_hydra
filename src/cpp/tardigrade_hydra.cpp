@@ -1793,8 +1793,8 @@ namespace tardigradeHydra{
     void hydraBase::solveNonLinearProblem( ){
 
         // Form the initial unknown vector
-        if ( getInitializeUnknownVector( ) ){
-            TARDIGRADE_ERROR_TOOLS_CATCH( initializeUnknownVector( ) );
+        if ( solver->getInitializeUnknownVector( ) ){
+            TARDIGRADE_ERROR_TOOLS_CATCH( solver->hydra->initializeUnknownVector( ) );
         }
 
         _initialX = *( solver->getUnknownVector( ) );
@@ -1914,9 +1914,9 @@ namespace tardigradeHydra{
             }
 
             // Use the current unknown vector as the initial estimate
-            if ( getInitializeUnknownVector( ) ){
+            if ( solver->getInitializeUnknownVector( ) ){
 
-                setInitializeUnknownVector( false );
+                solver->setInitializeUnknownVector( false );
 
             }
 

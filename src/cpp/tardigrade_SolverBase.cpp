@@ -227,4 +227,18 @@ namespace tardigradeHydra{
 
     }
 
+// NONLINEAR FUNCTIONS
+
+    /*!
+     * Set the initialize unknown vector flag
+     * 
+     * \param &value: The value of the flag
+     */
+    void SolverBase::setInitializeUnknownVector( const bool &value ){
+
+        _initializeUnknownVector = value;
+
+    }
+// END NONLINEAR FUNCTIONS
+
 }

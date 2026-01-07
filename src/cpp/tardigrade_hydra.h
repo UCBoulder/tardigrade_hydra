@@ -270,9 +270,6 @@ namespace tardigradeHydra{
 
             const floatVector *getFlatdXdAdditionalDOF( );
 
-            //! Return the flag which indicates whether hydra should initialize the unknown vector
-            const bool getInitializeUnknownVector( ){ return _initializeUnknownVector; }
-
             //! Add data to the vector of values which will be cleared after each iteration
             virtual void addIterationData( dataBase *data ) override { _iterationData.push_back( data ); }
 
@@ -637,17 +634,6 @@ namespace tardigradeHydra{
 
             virtual void setConstraintJacobians( );
 
-            void setInitializeUnknownVector( const bool &value ){
-                /*!
-                 * Set the initialize unknown vector flag
-                 * 
-                 * \param &value: The value of the flag
-                 */
-
-                _initializeUnknownVector = value;
-
-            }
-
             virtual void resetProblem( );
 
             virtual void performRelaxedSolve( );
@@ -769,8 +755,6 @@ namespace tardigradeHydra{
             bool _use_relaxed_solve = true; //!< Flag for whether to attempt a relaxed solve in case of failure
 
             bool _rank_deficient_error = true; //!< Flag for whether a rank-deficient LHS will throw a convergence error
-
-            bool _initializeUnknownVector = true; //!< Flag for whether to initialize the unknown vector in the non-linear solve
 
             unsigned int _maxRelaxedIterations = 5; //!< The number of allowed relaxed iterations
 
