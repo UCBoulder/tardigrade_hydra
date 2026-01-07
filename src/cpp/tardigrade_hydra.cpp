@@ -1797,9 +1797,9 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( solver->hydra->initializeUnknownVector( ) );
         }
 
-        _initialX = *( solver->getUnknownVector( ) );
+        _initialX = *getUnknownVector( );
 
-        floatVector deltaX( solver->getNumUnknowns( ), 0 );
+        floatVector deltaX( getNumUnknowns( ), 0 );
 
         callResidualPreNLSolve( );
 
@@ -1812,7 +1812,7 @@ namespace tardigradeHydra{
             addToFailureOutput( *getUnknownVector( ) );
         }
 
-        while( !checkConvergence( ) && checkIteration( ) ){
+        while( !solver->hydra->checkConvergence( ) && solver->hydra->checkIteration( ) ){
 
             solver->step->incrementSolution( );
 
@@ -1820,20 +1820,20 @@ namespace tardigradeHydra{
             callResidualSuccessfulNLStep( );
 
             // Increment the iteration count
-            incrementIteration( );
+            solver->hydra->incrementIteration( );
 
             // Reset the nonlinear step data
             resetNLStepData( );
 
-            if ( solver->getFailureVerbosityLevel( ) > 0 ){
-                solver->addToFailureOutput( "  final residual: " );
-                solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
-                solver->addToFailureOutput( "\n" );
+            if ( getFailureVerbosityLevel( ) > 0 ){
+                addToFailureOutput( "  final residual: " );
+                addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
+                addToFailureOutput( "\n" );
             }
 
         }
 
-        if ( !checkConvergence( ) ){
+        if ( !solver->hydra->checkConvergence( ) ){
 
             throw convergence_error( "Failure to converge main loop:\n  scale_factor: " + std::to_string( getScaleFactor( ) ) );
 
