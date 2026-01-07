@@ -1612,31 +1612,6 @@ namespace tardigradeHydra{
 
     }
 
-    bool SolverStepBase::checkDescentDirection( const floatVector &dx ){
-        /*!
-         * Check if the search direction is a descent direction of the Jacobian
-         * 
-         * \param &dx: The proposed change in x
-         */
-
-        const unsigned int xsize = solver->getNumUnknowns( );
-
-        const floatType RHS = -solver->step->getGradientRho( ) * std::pow( tardigradeVectorTools::l2norm( dx ), solver->step->getGradientP( ) );
-
-        floatType LHS = 0;
-
-        const floatVector *dResidualNormdX = solver->step->get_basedResidualNormdX( );
-
-        for ( unsigned int i = 0; i < xsize; i++ ){
-
-            LHS += ( *dResidualNormdX )[ i ] * dx[ i ];
-
-        }
-
-        return LHS <= RHS;
-
-    }
-
     void hydraBase::callResidualSuccessfulNLStep( ){
         /*!
          * Signal to the residuals that a successful nonlinear step has been performed
