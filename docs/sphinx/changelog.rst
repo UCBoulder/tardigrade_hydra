@@ -11,12 +11,17 @@ Changelog
 
 New Features
 ============
-- Added a general purpose deformation decomposition class (:pull:`237`). By `Nathan Miller`_.
+- Added a general purpose deformation decomposition class (:pull:`238`). By `Nathan Miller`_.
+
+Internal Changes
+================
+- Moved the configuration dimension definitions to the containing class (:pull:`239`). By `Nathan Miller`_.
 
 Breaking Changes
 ================
 - Changed scalar return pointers to return values instead for consistency and to prepare
   for refactor with constexpr where possible (:pull:`237`). By `Nathan Miller`_.
+- Major refactor to untangle the non-linear solve steps (:pull:`240`). By `Nathan Miller`_.
 
 ******************
 0.6.0 (11-06-2025)
@@ -64,6 +69,10 @@ Internal Changes
 - Fixed a formatting bug in perzynaJ2Viscoplasticity parameterization information output (:pull:`218`). By `Nathan Miller`_.
 - Fixed an issue where a test would fail due to a 1e-11 difference in value (:pull:`219`). By `Nathan Miller`_.
 - Improved stability of the micromorphic radial return plasticity undergoing softening (:pull:`227`). By `Nathan Miller`_.
+
+Release
+=======
+- Released version 0.6.0 (:pull:`236`). By `Nathan Miller`_.
 
 ******************
 0.5.0 (05-22-2025)
