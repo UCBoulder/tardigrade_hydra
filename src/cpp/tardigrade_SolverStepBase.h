@@ -41,10 +41,10 @@ namespace tardigradeHydra{
 
             floatVector deltaX; //!< The change in the unknown vector
 
+            /*! Set the containing solver object
+             * \param *_solver: The containing solver object
+             */
             void setSolver( SolverBase *_solver ){
-                /*! Set the containing solver object
-                 * \param *_solver: The containing solver object
-                 */
                 solver = _solver;
             }
 
@@ -200,29 +200,9 @@ namespace tardigradeHydra{
 
             virtual void setBaseQuantities( );
 
-            //!< Set the Levenberg-Marquardt mu_k
-            void setMuk( const floatType &value ){
-               /*!
-                * Set the value of the mu_k parameter for Levenberg-Marquardt steps
-                *
-                * \param &value: The value of the parameter
-                */
- 
-                _mu_k = value;
+            void setMuk( const floatType &value );
 
-            }
-
-            //!< Set the Levenberg-Marquardt mu parameter
-            void setLMMu( const floatType &value ){
-               /*!
-                * Set the value of the mu parameter for Levenberg-Marquardt steps
-                *
-                * \param &value: The value of the parameter
-                */
- 
-                _lm_mu = value;
-
-            }
+            void setLMMu( const floatType &value );
 
             floatType _mu_k = -1; //!< The Levenberg-Marquardt scaling parameter
 

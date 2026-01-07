@@ -408,6 +408,28 @@ namespace tardigradeHydra{
     
     }
 
+    /*!
+     * Set the value of the mu_k parameter for Levenberg-Marquardt steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void SolverStepBase::setMuk( const floatType &value ){
+ 
+        _mu_k = value;
+
+    }
+
+    /*!
+     * Set the value of the mu parameter for Levenberg-Marquardt steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void SolverStepBase::setLMMu( const floatType &value ){
+ 
+        _lm_mu = value;
+
+    }
+
 // END LM FUNCTIONS
 
 // BEGIN SQP SOLVER FUNCTIONS
