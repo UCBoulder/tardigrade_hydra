@@ -1719,7 +1719,7 @@ namespace tardigradeHydra{
             addToFailureOutput( *getUnknownVector( ) );
         }
 
-        while( !solver->hydra->checkConvergence( ) && solver->hydra->checkIteration( ) ){
+        while( !solver->hydra->checkConvergence( ) && solver->checkIteration( ) ){
 
             solver->step->incrementSolution( );
 

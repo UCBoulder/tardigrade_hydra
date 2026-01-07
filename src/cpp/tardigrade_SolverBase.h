@@ -69,6 +69,8 @@ namespace tardigradeHydra{
             //! Get the current nonlinear iteration number
             const unsigned int getIteration( ){ return _iteration; }
 
+            bool checkIteration( ){ return getIteration( ) < getMaxIterations( ); }
+
             // END NONLINEAR FUNCTIONS
 
             // Pass-through functions

@@ -790,8 +790,6 @@ namespace tardigradeHydra{
 
             void setTolerance( const floatVector &tolerance );
 
-            bool checkIteration( ){ return solver->getIteration( ) < solver->getMaxIterations( ); }
-
             void resetIterationData( );
 
             void resetNLStepData( );
