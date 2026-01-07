@@ -58,6 +58,9 @@ namespace tardigradeHydra{
             virtual const floatVector* getNonlinearRHS( );
 
             virtual const floatVector* getFlatNonlinearLHS( );
+
+            unsigned int getNumNewton( ){ /*! Get the number of newton steps performed */  return _NUM_NEWTON; }
+
             // END NONLINEAR FUNCTIONS
 
             // GRADIENT FUNCTIONS (MOVE TO OWN CLASS)
@@ -175,6 +178,16 @@ namespace tardigradeHydra{
 
             SolverBase *solver; //!< Pointer to the containing SolverBase object
 
+            // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
+
+            //! Reset the number of Newton steps
+            void resetNumNewton( ){ _NUM_NEWTON = 0; }
+
+            //! Increment the number of Newton steps
+            void incrementNumNewton( ){ _NUM_NEWTON++; }
+
+            // END NONLINEAR FUNCTIONS
+
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
             virtual void setResidualNorm( );
@@ -285,6 +298,8 @@ namespace tardigradeHydra{
             DataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
 
             DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
+
+            unsigned int _NUM_NEWTON = 0; //!< The number of Newton steps performed
 
             // END NONLINEAR DATA STORAGE
 

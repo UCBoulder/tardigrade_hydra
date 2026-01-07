@@ -279,8 +279,6 @@ namespace tardigradeHydra{
             //! Add data to the vector of values which will be cleared after each non-linear step
             virtual void addNLStepData( dataBase *data ) override { _nlStepData.push_back( data ); }
 
-            unsigned int getNumNewton( ){ /*! Get the number of newton steps performed */  return _NUM_NEWTON; }
-
             const void setMaxRelaxedIterations( const unsigned int &value ){
                 /*!
                  * Set the maximum allowable number of relaxed iterations
@@ -583,10 +581,6 @@ namespace tardigradeHydra{
             //! Update the scaled quantities
             virtual void setScaledQuantities( );
 
-            void resetNumNewton( ){ /*! Reset the number of newton steps */ _NUM_NEWTON = 0; }
-
-            void incrementNumNewton( ){ /*! Reset the number of newton steps */ _NUM_NEWTON++; }
-
             void resetIterations( ){ /*! Set the number of iterations */ _iteration = 0; }
 
             virtual void callResidualSuccessfulNLStep( );
@@ -771,8 +765,6 @@ namespace tardigradeHydra{
             floatType _tola; //!< The absolute tolerance
 
             unsigned int _maxIterations; //!< The maximum number of allowable iterations
-
-            unsigned int _NUM_NEWTON = 0; //!< The number of Newton steps performed
 
             bool _use_relaxed_solve = true; //!< Flag for whether to attempt a relaxed solve in case of failure
 

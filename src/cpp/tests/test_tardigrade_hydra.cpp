@@ -4039,7 +4039,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra );
 
-    BOOST_TEST( hydra.getNumNewton( ) == 2 );
+    BOOST_TEST( step.getNumNewton( ) == 2 );
 
     BOOST_TEST( hydra.num_pre_nlsolve_calls == 1 );
 
@@ -4080,7 +4080,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra_pre );
 
-    BOOST_TEST( hydra_pre.getNumNewton( ) == 2 );
+    BOOST_TEST( step_pre.getNumNewton( ) == 2 );
 
     BOOST_TEST( hydra_pre.num_pre_nlsolve_calls == 1 );
 

@@ -1822,7 +1822,7 @@ namespace tardigradeHydra{
 
             solver->resetToleranceScaleFactor( );
 
-            solver->hydra->incrementNumNewton( );
+            incrementNumNewton( );
 
         }
 
@@ -2201,7 +2201,7 @@ namespace tardigradeHydra{
          */
 
         // Reset the counters for the number of steps being performed
-        resetNumNewton( );
+        solver->step->resetNumNewton( );
 
         solver->step->resetNumLS( );
 
