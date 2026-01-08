@@ -26,6 +26,7 @@
 #include"tardigrade_SetDataStorage.h"
 #include"tardigrade_MatrixMap.h"
 #include"tardigrade_SolverBase.h"
+#include"tardigrade_RelaxedSolver.h"
 #include"tardigrade_ResidualBase.h"
 #include"tardigrade_PreconditionerBase.h"
 //#include"tardigrade_SolverStepBase.h"
@@ -503,7 +504,7 @@ namespace tardigradeHydra{
 
         protected:
 
-            SolverBase _solver; //!< Temporary
+            RelaxedSolver _solver; //!< Default solver
             SolverBase *solver = &_solver; //!< The class which performs the material point solve TODO: Make this an incoming pointer
 
             // Setters that the user may need to access but not override
