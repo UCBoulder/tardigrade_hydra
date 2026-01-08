@@ -279,26 +279,6 @@ namespace tardigradeHydra{
             //! Add data to the vector of values which will be cleared after each non-linear step
             virtual void addNLStepData( dataBase *data ) override { _nlStepData.push_back( data ); }
 
-            const void setMaxRelaxedIterations( const unsigned int &value ){
-                /*!
-                 * Set the maximum allowable number of relaxed iterations
-                 * 
-                 * \param &value: The number of relaxed iterations
-                 */
-
-                _maxRelaxedIterations = value;
-
-            }
-
-            const unsigned int getMaxRelaxedIterations( ){
-                /*!
-                 * Get the maximum number of relaxed iterations
-                 */
-
-                return _maxRelaxedIterations;
-
-            }
-
             void setFailureVerbosityLevel( const unsigned int &value ){
                 /*!
                  * Set the verbosity level for failures
@@ -712,8 +692,6 @@ namespace tardigradeHydra{
             bool _use_relaxed_solve = true; //!< Flag for whether to attempt a relaxed solve in case of failure
 
             bool _rank_deficient_error = true; //!< Flag for whether a rank-deficient LHS will throw a convergence error
-
-            unsigned int _maxRelaxedIterations = 5; //!< The number of allowed relaxed iterations
 
             std::vector< dataBase* > _iterationData; //!< A vector of pointers to data which should be cleared at each iteration
 

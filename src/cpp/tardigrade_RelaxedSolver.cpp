@@ -21,6 +21,26 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Get the maximum number of relaxed iterations
+     */
+    const unsigned int RelaxedSolver::getMaxRelaxedIterations( ){
+
+        return _maxRelaxedIterations;
+
+    }
+
+    /*!
+     * Set the maximum allowable number of relaxed iterations
+     * 
+     * \param &value: The number of relaxed iterations
+     */
+    const void RelaxedSolver::setMaxRelaxedIterations( const unsigned int &value ){
+
+        _maxRelaxedIterations = value;
+
+    }
+
+    /*!
      * Set the relaxed iteration number
      *
      * \param &value: The incoming value

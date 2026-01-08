@@ -25,6 +25,10 @@ namespace tardigradeHydra{
 
             const unsigned int getRelaxedIteration( );
 
+            const unsigned int getMaxRelaxedIterations( );
+
+            const void setMaxRelaxedIterations( const unsigned int &value );
+
             bool checkRelaxedConvergence( );
 
         protected:
@@ -42,6 +46,8 @@ namespace tardigradeHydra{
             friend class tardigradeHydra::hydraBase; //!< The base class for hydra TEMP
 
             unsigned int _relaxedIteration = 0; //!< The current relaxed iteration of the non-linear problem
+
+            unsigned int _maxRelaxedIterations = 5; //!< The number of allowed relaxed iterations
 
     };
 
