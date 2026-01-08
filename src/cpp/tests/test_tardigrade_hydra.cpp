@@ -337,12 +337,6 @@ namespace tardigradeHydra{
 
                 }
 
-                static void solveNonLinearProblem( hydraBase &hydra ){
-
-                    hydra.solveNonLinearProblem( );
-
-                }
-
                 static void resetIterationData( hydraBase &hydra ){
 
                     hydra.resetIterationData( );
@@ -3993,7 +3987,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     hydra.getSolver( )->step->setUseGradientDescent( true );
 
-    tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra );
+    solver.solveNonLinearProblem( );
 
     BOOST_TEST( step.getNumNewton( ) == 2 );
 
@@ -4034,7 +4028,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     hydra_pre.getSolver( )->step->setUseGradientDescent( true );
 
-    tardigradeHydra::unit_test::hydraBaseTester::solveNonLinearProblem( hydra_pre );
+    solver_pre.solveNonLinearProblem( );
 
     BOOST_TEST( step_pre.getNumNewton( ) == 2 );
 
@@ -4705,13 +4699,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
 
             using tardigradeHydra::hydraBase::hydraBase;
 
-            unsigned int num_calls = 0;
-
             void setInitialX( ){ _initialX = _mockInitialX; }
 
             void public_evaluateInternal( ){ evaluateInternal( ); }
 
             auto access_solver( ){ return solver; }
+
+            auto setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
 
         protected:
 
@@ -4722,6 +4716,18 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
                 BOOST_TEST( _initialX == newX, CHECK_PER_ELEMENT );
             }
 
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+    };
+
+    class SolverBaseMock : public tardigradeHydra::SolverBase{
+
+        public:
+
+            using tardigradeHydra::SolverBase::SolverBase;
+
+            unsigned int num_calls = 0;
+
             virtual void solveNonLinearProblem( ) override{
 
                 num_calls++;
@@ -4729,8 +4735,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
                 throw tardigradeHydra::convergence_error( "failure to converge" );
 
             }
-
-            using tardigradeHydra::hydraBase::setResidualClasses;
 
     };
 
@@ -4764,6 +4768,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    SolverBaseMock solver;
+
+    hydra.setSolver( &solver );
+    solver.hydra = &hydra;
+
     hydra.setUseRelaxedSolve( false );
 
     BOOST_CHECK_THROW( hydra.public_evaluateInternal( ), tardigradeHydra::convergence_error );
@@ -4772,7 +4781,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
 
     BOOST_TEST( !hydra.access_solver( )->getRankDeficientError( ) );
 
-    BOOST_TEST( hydra.num_calls == 2 );
+    BOOST_TEST( solver.num_calls == 2 );
 
 }
 
@@ -4805,14 +4814,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
             using tardigradeHydra::hydraBase::hydraBase;
 
-            unsigned int num_calls = 0;
-
             bool calledPerformRelaxedSolve = false;
 
             void setInitialX( ){ _initialX = _mockInitialX; }
 
             void public_evaluateInternal( ){ evaluateInternal( ); }
 
+            auto setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
             auto access_solver( ){ return solver; }
 
         protected:
@@ -4830,6 +4838,18 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
             }
 
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+    };
+
+    class SolverBaseMock : public tardigradeHydra::SolverBase{
+
+        public:
+
+            using tardigradeHydra::SolverBase::SolverBase;
+
+            unsigned int num_calls = 0;
+
             virtual void solveNonLinearProblem( ) override{
 
                 num_calls++;
@@ -4838,10 +4858,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
             }
 
-            using tardigradeHydra::hydraBase::setResidualClasses;
-
     };
-
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -4872,13 +4889,17 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    SolverBaseMock solver;
+    hydra.setSolver( &solver );
+    solver.hydra = &hydra;
+
     hydra.public_evaluateInternal( );
 
     BOOST_TEST( !hydra.access_solver( )->step->getUseLevenbergMarquardt( ) );
 
     BOOST_TEST( !hydra.access_solver( )->getRankDeficientError( ) );
 
-    BOOST_TEST( hydra.num_calls == 1 );
+    BOOST_TEST( solver.num_calls == 1 );
 
     BOOST_TEST( hydra.calledPerformRelaxedSolve );
 
@@ -5514,8 +5535,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
             unsigned int i3 = 3;
 
-            unsigned int numCallSolveNonLinearProblem = 0;
-
             unsigned int numCallInitializeUnknownVector = 0;
 
             unsigned int numCallUpdateUnknownVector = 0;
@@ -5566,13 +5585,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
             }
 
+            auto setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
+
         protected:
-
-            virtual void solveNonLinearProblem( ) override{
-
-                numCallSolveNonLinearProblem++;
-
-            }
 
             virtual void updateUnknownVector( const floatVector &X ){
 
@@ -5589,6 +5604,21 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
     };
 
+    class SolverBaseMock : public tardigradeHydra::SolverBase{
+
+        public:
+
+            using tardigradeHydra::SolverBase::SolverBase;
+
+            unsigned int numCallSolveNonLinearProblem = 0;
+
+            virtual void solveNonLinearProblem( ) override{
+
+                numCallSolveNonLinearProblem++;
+
+            }
+
+    };
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -5626,11 +5656,15 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    SolverBaseMock solver;
+    hydra.setSolver( &solver );
+    solver.hydra = &hydra;
+
     hydra.public_performRelaxedSolve( );
 
     std::vector< unsigned int > answer_1 = { 4, 4, 4 };
 
-    BOOST_TEST( hydra.numCallSolveNonLinearProblem == 4 );
+    BOOST_TEST( solver.numCallSolveNonLinearProblem == 4 );
 
     BOOST_TEST( hydra.numCallUpdateUnknownVector == 3 );
 
@@ -5703,8 +5737,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
             unsigned int i3 = 3;
 
-            unsigned int numCallSolveNonLinearProblem = 0;
-
             unsigned int numCallInitializeUnknownVector = 0;
 
             unsigned int numCallUpdateUnknownVector = 0;
@@ -5771,16 +5803,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
             }
 
+            void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
+
         protected:
-
-            virtual void solveNonLinearProblem( ) override{
-
-                numCallSolveNonLinearProblem++;
-                if ( numCallSolveNonLinearProblem <= 1 ){
-                    throw tardigradeHydra::convergence_error( "failure to converge" );
-                }
-
-            }
 
             virtual void updateUnknownVector( const floatVector &X ){
 
@@ -5797,6 +5822,24 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
     };
 
+    class SolverBaseMock : public tardigradeHydra::SolverBase{
+
+        public:
+
+            using tardigradeHydra::SolverBase::SolverBase;
+
+            unsigned int numCallSolveNonLinearProblem = 0;
+
+            virtual void solveNonLinearProblem( ) override{
+
+                numCallSolveNonLinearProblem++;
+                if ( numCallSolveNonLinearProblem <= 1 ){
+                    throw tardigradeHydra::convergence_error( "failure to converge" );
+                }
+
+            }
+
+    };
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -5834,6 +5877,10 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    SolverBaseMock solver;
+    hydra.setSolver( &solver );
+    solver.hydra = &hydra;
+
     hydra.public_performRelaxedSolve( );
 
     std::vector< unsigned int > answer_1 = { 4, 4, 4 };
@@ -5842,7 +5889,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
     std::vector< unsigned int > answer_3 = { 3, 3, 3 };
 
-    BOOST_TEST( hydra.numCallSolveNonLinearProblem == 4 );
+    BOOST_TEST( solver.numCallSolveNonLinearProblem == 4 );
 
     BOOST_TEST( hydra.numCallUpdateUnknownVector == 3 );
 
