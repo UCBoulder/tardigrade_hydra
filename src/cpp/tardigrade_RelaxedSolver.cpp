@@ -74,6 +74,22 @@ namespace tardigradeHydra{
 
         bool relaxedConverged = true;
 
+        hydra->setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual = std::begin( *( hydra->getResidualClasses( ) ) ); residual != std::end( *( hydra->getResidualClasses( ) ) ); ++residual ){
+            hydra->setCurrentResidualIndex( residual - std::begin( *( hydra->getResidualClasses( ) ) ) );
+
+            if ( !( *residual )->checkRelaxedConvergence( ) ){
+
+                relaxedConverged = false;
+                break;
+
+            }
+
+        }
+
+        hydra->setCurrentResidualIndexMeaningful( false );
+
         return relaxedConverged;
 
     }
