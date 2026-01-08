@@ -3593,9 +3593,9 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector, * boost::unit_test:
 
 }
 
-unsigned int test_hydraBase_solve_in_gradient_convergence = 0;
+unsigned int test_SolverBase_solve_in_gradient_convergence = 0;
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_solve, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
 
@@ -3761,7 +3761,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solve, * boost::unit_test::tolerance( DEFAU
 
                 unsigned int gradIteration = tardigradeHydra::unit_test::SolverStepBaseTester::get_gradientIteration( *( solver->step ) );
 
-                unsigned int subIteration = LSIteration + gradIteration + test_hydraBase_solve_in_gradient_convergence;
+                unsigned int subIteration = LSIteration + gradIteration + test_SolverBase_solve_in_gradient_convergence;
 
                 BOOST_TEST( expectedXVectors[ iteration ][ subIteration ] == newUnknownVector, CHECK_PER_ELEMENT );
 
@@ -3773,7 +3773,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solve, * boost::unit_test::tolerance( DEFAU
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, newUnknownVector );
 
-                test_hydraBase_solve_in_gradient_convergence = 0;
+                test_SolverBase_solve_in_gradient_convergence = 0;
 
             }
 
@@ -3841,7 +3841,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solve, * boost::unit_test::tolerance( DEFAU
 
                 unsigned int gradientIteration = tardigradeHydra::unit_test::SolverStepBaseTester::get_gradientIteration( *this );
 
-                test_hydraBase_solve_in_gradient_convergence = 1;
+                test_SolverBase_solve_in_gradient_convergence = 1;
 
                 solver->getResidual( );
 
@@ -3851,7 +3851,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solve, * boost::unit_test::tolerance( DEFAU
 
                 }
 
-                test_hydraBase_solve_in_gradient_convergence = 0;
+                test_SolverBase_solve_in_gradient_convergence = 0;
 
                 return true;
 
@@ -3859,7 +3859,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solve, * boost::unit_test::tolerance( DEFAU
 
             virtual void performGradientStep( const floatVector &X0 ) override{
 
-                test_hydraBase_solve_in_gradient_convergence = 1;
+                test_SolverBase_solve_in_gradient_convergence = 1;
 
                 tardigradeHydra::SolverStepBase::performGradientStep( X0 );
 
@@ -3965,7 +3965,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solve, * boost::unit_test::tolerance( DEFAU
 
     unsigned int dimension = 3;
 
-    test_hydraBase_solve_in_gradient_convergence = 0;
+    test_SolverBase_solve_in_gradient_convergence = 0;
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
@@ -4005,7 +4005,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solve, * boost::unit_test::tolerance( DEFAU
 
     BOOST_TEST( hydra.num_derivative_calls == 3 ); //3 because we initialize the jacobian
 
-    test_hydraBase_solve_in_gradient_convergence = 0;
+    test_SolverBase_solve_in_gradient_convergence = 0;
     hydraBaseMock hydra_pre( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                              { }, { },
                              previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension,
