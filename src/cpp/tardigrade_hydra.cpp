@@ -1609,8 +1609,7 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
         // END TEMP
 
-        unsigned int relaxedIteration = 0;
-        setRelaxedIteration( relaxedIteration );
+        local_solver->resetRelaxedIteration( );
 
         // Initialize the residuals
         setCurrentResidualIndexMeaningful( true );
@@ -1618,16 +1617,16 @@ namespace tardigradeHydra{
             setCurrentResidualIndexMeaningful( residual - getResidualClasses( )->begin( ) );
 
             // Prepare the residuals to take a relaxed step
-            ( *residual )->setupRelaxedStep( relaxedIteration );
+            ( *residual )->setupRelaxedStep( local_solver->getRelaxedIteration( ) );
 
         }
         setCurrentResidualIndexMeaningful( false );
 
-        while ( relaxedIteration < getMaxRelaxedIterations( ) ){
+        while ( local_solver->getRelaxedIteration( ) < getMaxRelaxedIterations( ) ){
 
             if ( getFailureVerbosityLevel( ) > 0 ){
                 addToFailureOutput( "\n\n###  relaxed iteration: " );
-                addToFailureOutput( relaxedIteration );
+                addToFailureOutput( local_solver->getRelaxedIteration( ) );
                 addToFailureOutput( "\n\n" );
             }
             // Solve the non-linear problem
@@ -1680,8 +1679,7 @@ namespace tardigradeHydra{
 
             }
 
-            relaxedIteration++;
-            setRelaxedIteration( relaxedIteration );
+            local_solver->incrementRelaxedIteration( );
 
             // Initialize the residuals
             setCurrentResidualIndexMeaningful( true );
@@ -1689,7 +1687,7 @@ namespace tardigradeHydra{
                 setCurrentResidualIndex( residual - getResidualClasses( )->begin( ) );
 
                 // Prepare the residuals to take a relaxed step
-                ( *residual )->setupRelaxedStep( relaxedIteration );
+                ( *residual )->setupRelaxedStep( local_solver->getRelaxedIteration( ) );
 
             }
             setCurrentResidualIndexMeaningful( false );
@@ -1700,7 +1698,7 @@ namespace tardigradeHydra{
 
         }
 
-        if ( relaxedIteration >= getMaxRelaxedIterations( ) ){
+        if ( local_solver->getRelaxedIteration( ) >= getMaxRelaxedIterations( ) ){
 
             throw convergence_error( "Failure in relaxed solve:\n  scale_factor: " + std::to_string( getScaleFactor( ) ) );
 

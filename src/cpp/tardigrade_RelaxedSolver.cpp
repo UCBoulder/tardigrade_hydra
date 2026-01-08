@@ -12,4 +12,41 @@
 
 namespace tardigradeHydra{
 
+    /*!
+     * Get the current relaxed iteration
+     */
+    const unsigned int RelaxedSolver::getRelaxedIteration( ){
+
+        return _relaxedIteration;
+    }
+
+    /*!
+     * Set the relaxed iteration number
+     *
+     * \param &value: The incoming value
+     */
+    void RelaxedSolver::setRelaxedIteration( const unsigned int &value ){
+
+        _relaxedIteration = value;
+
+    }
+
+    /*!
+     * Reset the relaxed iteration number
+     */
+    void RelaxedSolver::resetRelaxedIteration( ){
+
+        setRelaxedIteration( 0 );
+
+    }
+
+    /*!
+     * Increment the relaxed iteration number
+     */
+    void RelaxedSolver::incrementRelaxedIteration( ){
+
+        _relaxedIteration++;
+
+    }
+
 }

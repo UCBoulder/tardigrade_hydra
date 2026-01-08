@@ -492,14 +492,6 @@ namespace tardigradeHydra{
 
             }
 
-            const unsigned int getRelaxedIteration( ){
-                /*!
-                 * Get the current relaxed iteration
-                 */
-
-                return _relaxedIteration;
-            }
-
             // TEMP REMOVE THESE
 
             // END TEMP
@@ -773,8 +765,6 @@ namespace tardigradeHydra{
 
             DataStorage< floatVector > _flatdXdAdditionalDOF; //!< The total derivative of the unknown vector w.r.t. the additional DOF
 
-            unsigned int _relaxedIteration = 0; //!< The current relaxed iteration of the non-linear problem
-
             void setFirstConfigurationJacobians( );
 
             void setPreviousFirstConfigurationJacobians( );
@@ -782,15 +772,6 @@ namespace tardigradeHydra{
             void resetIterationData( );
 
             void resetNLStepData( );
-
-            void setRelaxedIteration( const unsigned int &value ){
-                /*! Set the relaxed iteration number
-                 * \param &value: The incoming value
-                 */
-
-                _relaxedIteration = value;
-
-            }
 
             unsigned int _failure_verbosity_level = 0; //!< The verbosity level for failure.
 

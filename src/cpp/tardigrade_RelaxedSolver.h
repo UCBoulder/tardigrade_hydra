@@ -23,6 +23,23 @@ namespace tardigradeHydra{
 
             using tardigradeHydra::SolverBase::solve;
 
+            const unsigned int getRelaxedIteration( );
+
+
+        protected:
+
+            void setRelaxedIteration( const unsigned int &value );
+
+            void resetRelaxedIteration( );
+
+            void incrementRelaxedIteration( );
+
+        private:
+
+            friend class tardigradeHydra::hydraBase; //!< The base class for hydra TEMP
+
+            unsigned int _relaxedIteration = 0; //!< The current relaxed iteration of the non-linear problem
+
     };
 
 }
