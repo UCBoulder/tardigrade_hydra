@@ -33,21 +33,23 @@
 
 namespace tardigradeHydra{
 
+    /*!
+     * Specialization for the DataStorage zero function of the residuals
+     */
     template <>
     inline void DataStorage< std::vector< ResidualBase<hydraBase>* > >::zero( ){
-                /*!
-                 * The function to set the value to zero
-                 */
 
         throw std::runtime_error( "Zeroing the ResidualBase pointer vector is not allowed" );
 
     }
 
+    /*!
+     * Specialization for the DataStorage function of the residuals
+     *
+     * \param size: The size of the DataStorage object
+     */
     template <>
     inline void DataStorage< std::vector< ResidualBase<hydraBase>* > >::zero( const unsigned int size ){
-                /*!
-                 * The function to set the value to zero
-                 */
 
         throw std::runtime_error( "Zeroing the ResidualBase pointer vector is not allowed" );
 
