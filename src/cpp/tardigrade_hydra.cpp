@@ -1687,24 +1687,12 @@ namespace tardigradeHydra{
             }
 
             // Use the current unknown vector as the initial estimate
-            if ( solver->getInitializeUnknownVector( ) ){
-
-                solver->setInitializeUnknownVector( false );
-
-            }
+            solver->setInitializeUnknownVector( false );
 
             local_solver->incrementRelaxedIteration( );
 
-            // Initialize the residuals
-            setCurrentResidualIndexMeaningful( true );
-            for ( auto residual = getResidualClasses( )->begin( ); residual != getResidualClasses( )->end( ); residual++ ){
-                setCurrentResidualIndex( residual - getResidualClasses( )->begin( ) );
-
-                // Prepare the residuals to take a relaxed step
-                ( *residual )->setupRelaxedStep( local_solver->getRelaxedIteration( ) );
-
-            }
-            setCurrentResidualIndexMeaningful( false );
+            // Re-initialize the residuals
+            local_solver->initializeResiduals( );
 
             // Reset hydra
             updateUnknownVector( *getUnknownVector( ) ); //This allows for the relaxed to change the projection and adjust the decomposition
