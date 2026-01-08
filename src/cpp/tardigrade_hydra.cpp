@@ -1598,23 +1598,10 @@ namespace tardigradeHydra{
 
     }
 
-    // SolverStepBase methods
-
-    // END SolverStepBase methods
-    // SolverBase methods
-
-    void SolverBase::solve( ){
-        /*!
-         * Solve the system of equations
-         */
-    }
-
-    // End SolverBase methods
-
     /*!
-     * Solve the non-linear problem
+     * Solve the problem
      */
-    void SolverBase::solveNonLinearProblem( ){
+    void SolverBase::solve( ){
 
         // Form the initial unknown vector
         if ( getInitializeUnknownVector( ) ){
@@ -1697,7 +1684,7 @@ namespace tardigradeHydra{
             // Solve the non-linear problem
             try{
 
-                solver->solveNonLinearProblem( );
+                solver->solve( );
 
                 // Check if the relaxation has converged
                 bool relaxedConverged = true;
@@ -1969,7 +1956,7 @@ namespace tardigradeHydra{
 
         try{
 
-            solver->solveNonLinearProblem( );
+            solver->solve( );
 
         }
         catch( const convergence_error &e ){
@@ -2019,7 +2006,7 @@ namespace tardigradeHydra{
     
                 try{
     
-                    solver->solveNonLinearProblem( );
+                    solver->solve( );
     
                 }
                 catch( const convergence_error &e ){

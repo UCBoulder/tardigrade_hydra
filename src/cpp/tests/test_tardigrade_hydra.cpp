@@ -3595,7 +3595,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_decomposeUnknownVector, * boost::unit_test:
 
 unsigned int test_hydraBase_solveNonlinearProblem_in_gradient_convergence = 0;
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_hydraBase_solve, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class hydraBaseMock : public tardigradeHydra::hydraBase {
 
@@ -3987,7 +3987,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     hydra.getSolver( )->step->setUseGradientDescent( true );
 
-    solver.solveNonLinearProblem( );
+    solver.solve( );
 
     BOOST_TEST( step.getNumNewton( ) == 2 );
 
@@ -4028,7 +4028,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_solveNonLinearProblem, * boost::unit_test::
 
     hydra_pre.getSolver( )->step->setUseGradientDescent( true );
 
-    solver_pre.solveNonLinearProblem( );
+    solver_pre.solve( );
 
     BOOST_TEST( step_pre.getNumNewton( ) == 2 );
 
@@ -4728,7 +4728,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
 
             unsigned int num_calls = 0;
 
-            virtual void solveNonLinearProblem( ) override{
+            virtual void solve( ) override{
 
                 num_calls++;
 
@@ -4850,7 +4850,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
             unsigned int num_calls = 0;
 
-            virtual void solveNonLinearProblem( ) override{
+            virtual void solve( ) override{
 
                 num_calls++;
 
@@ -5612,7 +5612,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
             unsigned int numCallSolveNonLinearProblem = 0;
 
-            virtual void solveNonLinearProblem( ) override{
+            virtual void solve( ) override{
 
                 numCallSolveNonLinearProblem++;
 
@@ -5830,7 +5830,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
             unsigned int numCallSolveNonLinearProblem = 0;
 
-            virtual void solveNonLinearProblem( ) override{
+            virtual void solve( ) override{
 
                 numCallSolveNonLinearProblem++;
                 if ( numCallSolveNonLinearProblem <= 1 ){

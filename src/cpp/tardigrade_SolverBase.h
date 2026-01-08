@@ -76,8 +76,6 @@ namespace tardigradeHydra{
 
             const floatVector* getTolerance( );
 
-            virtual void solveNonLinearProblem( );
-
             // END NONLINEAR FUNCTIONS
 
             // Pass-through functions
