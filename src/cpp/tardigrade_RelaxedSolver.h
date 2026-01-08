@@ -15,6 +15,16 @@
 
 namespace tardigradeHydra{
 
+    class RelaxedSolver : public SolverBase{
+
+        public:
+
+            using tardigradeHydra::SolverBase::SolverBase;
+
+            using tardigradeHydra::SolverBase::solve;
+
+    };
+
 }
 
 #endif
