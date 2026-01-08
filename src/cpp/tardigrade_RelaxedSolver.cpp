@@ -70,7 +70,7 @@ namespace tardigradeHydra{
     /*!
      * Check if the relaxation iterations have converged
      */
-    bool RelaxedSolver::checkRelaxedConverged( ){
+    bool RelaxedSolver::checkRelaxedConvergence( ){
 
         bool relaxedConverged = true;
 

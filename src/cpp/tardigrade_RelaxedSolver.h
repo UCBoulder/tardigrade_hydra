@@ -25,7 +25,7 @@ namespace tardigradeHydra{
 
             const unsigned int getRelaxedIteration( );
 
-            bool checkRelaxedConverged( );
+            bool checkRelaxedConvergence( );
 
         protected:
 
