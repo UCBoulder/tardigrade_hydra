@@ -559,8 +559,6 @@ namespace tardigradeHydra{
 
             virtual void formNonLinearDerivatives( );
 
-            virtual void solveNonLinearProblem( );
-
             virtual void initializeUnknownVector( );
 
             virtual void evaluateInternal( );

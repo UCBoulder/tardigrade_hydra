@@ -1614,37 +1614,37 @@ namespace tardigradeHydra{
     /*!
      * Solve the non-linear problem
      */
-    void hydraBase::solveNonLinearProblem( ){
+    void SolverBase::solveNonLinearProblem( ){
 
         // Form the initial unknown vector
-        if ( solver->getInitializeUnknownVector( ) ){
-            TARDIGRADE_ERROR_TOOLS_CATCH( solver->hydra->initializeUnknownVector( ) );
+        if ( getInitializeUnknownVector( ) ){
+            TARDIGRADE_ERROR_TOOLS_CATCH( hydra->initializeUnknownVector( ) );
         }
 
         _initialX = *getUnknownVector( );
 
         floatVector deltaX( getNumUnknowns( ), 0 );
 
-        solver->callResidualPreNLSolve( );
+        callResidualPreNLSolve( );
 
-        solver->step->resetLSIteration( );
+        step->resetLSIteration( );
 
-        solver->step->resetGradientIteration( );
+        step->resetGradientIteration( );
 
         if ( getFailureVerbosityLevel( ) > 0 ){
             addToFailureOutput( "Initial Unknown:\n" );
             addToFailureOutput( *getUnknownVector( ) );
         }
 
-        while( !solver->checkConvergence( ) && solver->checkIteration( ) ){
+        while( !checkConvergence( ) && checkIteration( ) ){
 
-            solver->step->incrementSolution( );
+            step->incrementSolution( );
 
             // Call residual end of a successful nonlinear step functions
-            solver->callResidualSuccessfulNLStep( );
+            callResidualSuccessfulNLStep( );
 
             // Increment the iteration count
-            solver->incrementIteration( );
+            incrementIteration( );
 
             // Reset the nonlinear step data
             resetNLStepData( );
@@ -1657,13 +1657,13 @@ namespace tardigradeHydra{
 
         }
 
-        if ( !solver->checkConvergence( ) ){
+        if ( !checkConvergence( ) ){
 
-            throw convergence_error( "Failure to converge main loop:\n  scale_factor: " + std::to_string( getScaleFactor( ) ) );
+            throw convergence_error( "Failure to converge main loop\n" );
 
         }
 
-        solver->callResidualPostNLSolve( );
+        callResidualPostNLSolve( );
 
     }
 
@@ -1697,7 +1697,7 @@ namespace tardigradeHydra{
             // Solve the non-linear problem
             try{
 
-                solveNonLinearProblem( );
+                solver->solveNonLinearProblem( );
 
                 // Check if the relaxation has converged
                 bool relaxedConverged = true;
@@ -1969,7 +1969,7 @@ namespace tardigradeHydra{
 
         try{
 
-            solveNonLinearProblem( );
+            solver->solveNonLinearProblem( );
 
         }
         catch( const convergence_error &e ){
@@ -2019,7 +2019,7 @@ namespace tardigradeHydra{
     
                 try{
     
-                    solveNonLinearProblem( );
+                    solver->solveNonLinearProblem( );
     
                 }
                 catch( const convergence_error &e ){

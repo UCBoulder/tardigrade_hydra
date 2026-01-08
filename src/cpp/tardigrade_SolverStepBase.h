@@ -161,6 +161,9 @@ namespace tardigradeHydra{
             //! Get the current gradient iteration
             const unsigned int getGradientIteration( ){ return _gradientIteration; }
 
+            //! Reset the number of gradient descent steps
+            void resetGradientIteration( ){ _gradientIteration = 0; }
+
             void setMaxGradientIterations( const unsigned int &value );
 
             bool checkGradientIteration( );
@@ -249,9 +252,6 @@ namespace tardigradeHydra{
 
             //! Increment the number of gradient descent steps
             void incrementGradientIteration( ){ _gradientIteration++; }
-
-            //! Reset the number of gradient descent steps
-            void resetGradientIteration( ){ _gradientIteration = 0; }
 
             //! Reset the number of gradient descent steps
             void resetNumGrad( ){ _NUM_GRAD = 0; }
