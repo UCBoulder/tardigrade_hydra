@@ -67,4 +67,14 @@ namespace tardigradeHydra{
         hydra->setCurrentResidualIndexMeaningful( false );
     }
 
+    /*!
+     * Check if the relaxation iterations have converged
+     */
+    bool RelaxedSolver::checkRelaxedConverged( ){
+
+        bool relaxedConverged = true;
+
+        return relaxedConverged;
+
+    }
 }
