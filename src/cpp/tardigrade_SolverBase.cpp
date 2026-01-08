@@ -227,6 +227,62 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Solve the problem
+     */
+    void SolverBase::solve( ){
+
+        // Form the initial unknown vector
+        if ( getInitializeUnknownVector( ) ){
+            TARDIGRADE_ERROR_TOOLS_CATCH( hydra->initializeUnknownVector( ) );
+        }
+
+        _initialX = *getUnknownVector( );
+
+        floatVector deltaX( getNumUnknowns( ), 0 );
+
+        callResidualPreNLSolve( );
+
+        step->resetLSIteration( );
+
+        step->resetGradientIteration( );
+
+        if ( getFailureVerbosityLevel( ) > 0 ){
+            addToFailureOutput( "Initial Unknown:\n" );
+            addToFailureOutput( *getUnknownVector( ) );
+        }
+
+        while( !checkConvergence( ) && checkIteration( ) ){
+
+            step->incrementSolution( );
+
+            // Call residual end of a successful nonlinear step functions
+            callResidualSuccessfulNLStep( );
+
+            // Increment the iteration count
+            incrementIteration( );
+
+            // Reset the nonlinear step data
+            resetNLStepData( );
+
+            if ( getFailureVerbosityLevel( ) > 0 ){
+                addToFailureOutput( "  final residual: " );
+                addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
+                addToFailureOutput( "\n" );
+            }
+
+        }
+
+        if ( !checkConvergence( ) ){
+
+            throw convergence_error( "Failure to converge main loop\n" );
+
+        }
+
+        callResidualPostNLSolve( );
+
+    }
+
 // NONLINEAR FUNCTIONS
 
     /*!
