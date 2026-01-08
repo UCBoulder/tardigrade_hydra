@@ -1598,11 +1598,16 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Solve the non-linear problem by relaxing difficult sub-problems
+     * to achieve a series of solutions.
+     */
     void hydraBase::performRelaxedSolve( ){
-        /*!
-         * Solve the non-linear problem by relaxing difficult sub-problems
-         * to achieve a series of solutions.
-         */
+
+        // TEMP: Remove when we extract this to RelaxedSolver.solve
+        auto local_solver = dynamic_cast<RelaxedSolver*>(solver);
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
+        // END TEMP
 
         unsigned int relaxedIteration = 0;
         setRelaxedIteration( relaxedIteration );

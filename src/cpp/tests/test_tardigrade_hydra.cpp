@@ -6,6 +6,7 @@
 
 #include<tardigrade_hydra.h>
 #include<tardigrade_SolverBase.h>
+#include<tardigrade_RelaxedSolver.h>
 #include<tardigrade_hydraLinearElasticity.h>
 #include<tardigrade_constitutive_tools.h>
 #include<sstream>
@@ -5130,11 +5131,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
     };
 
-    class SolverBaseMock : public tardigradeHydra::SolverBase{
+    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver{
 
         public:
 
-            using tardigradeHydra::SolverBase::SolverBase;
+            using tardigradeHydra::RelaxedSolver::RelaxedSolver;
 
             unsigned int numCallSolveNonLinearProblem = 0;
 
@@ -5182,7 +5183,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    SolverBaseMock solver;
+    RelaxedSolverMock solver;
     hydra.setSolver( &solver );
     solver.hydra = &hydra;
 
@@ -5348,11 +5349,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
     };
 
-    class SolverBaseMock : public tardigradeHydra::SolverBase{
+    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver{
 
         public:
 
-            using tardigradeHydra::SolverBase::SolverBase;
+            using tardigradeHydra::RelaxedSolver::RelaxedSolver;
 
             unsigned int numCallSolveNonLinearProblem = 0;
 
@@ -5403,7 +5404,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    SolverBaseMock solver;
+    RelaxedSolverMock solver;
     hydra.setSolver( &solver );
     solver.hydra = &hydra;
 
