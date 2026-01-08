@@ -1636,7 +1636,7 @@ namespace tardigradeHydra{
         // Initialize the residuals
         local_solver->initializeResiduals( );
 
-        while ( local_solver->getRelaxedIteration( ) < getMaxRelaxedIterations( ) ){
+        while ( local_solver->getRelaxedIteration( ) < local_solver->hydra->getMaxRelaxedIterations( ) ){
 
             if ( getFailureVerbosityLevel( ) > 0 ){
                 addToFailureOutput( "\n\n###  relaxed iteration: " );
