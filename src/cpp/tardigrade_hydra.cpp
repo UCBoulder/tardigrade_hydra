@@ -1648,29 +1648,8 @@ namespace tardigradeHydra{
 
                 solver->solve( );
 
-                // Check if the relaxation has converged
-                bool relaxedConverged = true;
-                local_solver->hydra->setCurrentResidualIndexMeaningful( true );
-
-                for ( auto residual = std::begin( *( local_solver->hydra->getResidualClasses( ) ) ); residual != std::end( *( local_solver->hydra->getResidualClasses( ) ) ); ++residual ){
-                    local_solver->hydra->setCurrentResidualIndex( residual - std::begin( *( local_solver->hydra->getResidualClasses( ) ) ) );
-
-                    if ( !( *residual )->checkRelaxedConvergence( ) ){
-
-                        relaxedConverged = false;
-                        break;
-
-                    }
-
-                }
-
-                local_solver->hydra->setCurrentResidualIndexMeaningful( false );
-
-                if ( relaxedConverged ){
-
-                    return;
-
-                }
+                // Exit if the relaxed solver has converged
+                if ( local_solver->checkRelaxedConvergence( ) ){ return; }
 
             }
             catch( convergence_error &e ){
