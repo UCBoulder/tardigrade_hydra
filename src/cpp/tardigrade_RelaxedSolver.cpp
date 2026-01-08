@@ -54,5 +54,17 @@ namespace tardigradeHydra{
      */
     void RelaxedSolver::initializeResiduals( ){
 
+        hydra->setCurrentResidualIndexMeaningful( true );
+
+        for ( auto residual = std::begin( *( hydra->getResidualClasses( ) ) ); residual != std::end( *( hydra->getResidualClasses( ) ) ); ++residual ){
+            hydra->setCurrentResidualIndex( residual - std::begin( *( hydra->getResidualClasses( ) ) ) );
+
+            // Prepare the residuals to take a relaxed step
+            ( *residual )->setupRelaxedStep( getRelaxedIteration( ) );
+
+        }
+
+        hydra->setCurrentResidualIndexMeaningful( false );
     }
+
 }

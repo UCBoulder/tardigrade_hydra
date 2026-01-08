@@ -88,6 +88,10 @@ namespace tardigradeHydra{
 
             // Setter functions
 
+            const void setCurrentResidualIndexMeaningful( const bool &value );
+
+            const void setCurrentResidualIndex( const unsigned int value );
+
             // Getter functions
             //! Get a reference to the number of unknowns in each configuration
             constexpr unsigned int getConfigurationUnknownCount( ){ return _configuration_unknown_count; }
@@ -502,28 +506,6 @@ namespace tardigradeHydra{
             SolverBase *solver = &_solver; //!< The class which performs the material point solve TODO: Make this an incoming pointer
 
             // Setters that the user may need to access but not override
-
-            const void setCurrentResidualIndexMeaningful( const bool &value ){
-                /*!
-                 * Set if the current residual index is meaningful
-                 * 
-                 * \param &value: Set if the current residual index is meaningful or not
-                 */
-
-                _current_residual_index_set = value;
-
-            }
-
-            const void setCurrentResidualIndex( const unsigned int value ){
-                /*!
-                 * Set if the current residual index is meaningful
-                 * 
-                 * \param value: Set the value of the current residual index
-                 */
-
-                _current_residual_index = value;
-
-            }
 
             const void resetToleranceScaleFactor( ){
                 /*!

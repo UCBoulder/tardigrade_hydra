@@ -1599,6 +1599,28 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Set if the current residual index is meaningful
+     * 
+     * \param &value: Set if the current residual index is meaningful or not
+     */
+    const void hydraBase::setCurrentResidualIndexMeaningful( const bool &value ){
+
+        _current_residual_index_set = value;
+
+    }
+
+    /*!
+     * Set if the current residual index is meaningful
+     * 
+     * \param value: Set the value of the current residual index
+     */
+    const void hydraBase::setCurrentResidualIndex( const unsigned int value ){
+
+        _current_residual_index = value;
+
+    }
+
+    /*!
      * Solve the non-linear problem by relaxing difficult sub-problems
      * to achieve a series of solutions.
      */
@@ -1613,15 +1635,6 @@ namespace tardigradeHydra{
 
         // Initialize the residuals
         local_solver->initializeResiduals( );
-        local_solver->hydra->setCurrentResidualIndexMeaningful( true );
-        for ( auto residual = std::begin( *( local_solver->hydra->getResidualClasses( ) ) ); residual != std::end( *( local_solver->hydra->getResidualClasses( ) ) ); ++residual ){
-            setCurrentResidualIndexMeaningful( residual - std::begin( *( local_solver->hydra->getResidualClasses( ) ) ) );
-
-            // Prepare the residuals to take a relaxed step
-            ( *residual )->setupRelaxedStep( local_solver->getRelaxedIteration( ) );
-
-        }
-        local_solver->hydra->setCurrentResidualIndexMeaningful( false );
 
         while ( local_solver->getRelaxedIteration( ) < getMaxRelaxedIterations( ) ){
 
