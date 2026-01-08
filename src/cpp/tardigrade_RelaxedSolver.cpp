@@ -49,4 +49,10 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Initialize the residuals for a relaxed solve
+     */
+    void RelaxedSolver::initializeResiduals( ){
+
+    }
 }

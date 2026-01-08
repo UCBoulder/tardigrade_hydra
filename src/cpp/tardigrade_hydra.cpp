@@ -1612,6 +1612,7 @@ namespace tardigradeHydra{
         local_solver->resetRelaxedIteration( );
 
         // Initialize the residuals
+        local_solver->initializeResiduals( );
         local_solver->hydra->setCurrentResidualIndexMeaningful( true );
         for ( auto residual = std::begin( *( local_solver->hydra->getResidualClasses( ) ) ); residual != std::end( *( local_solver->hydra->getResidualClasses( ) ) ); ++residual ){
             setCurrentResidualIndexMeaningful( residual - std::begin( *( local_solver->hydra->getResidualClasses( ) ) ) );

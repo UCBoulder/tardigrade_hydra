@@ -34,6 +34,8 @@ namespace tardigradeHydra{
 
             void incrementRelaxedIteration( );
 
+            void initializeResiduals( );
+
         private:
 
             friend class tardigradeHydra::hydraBase; //!< The base class for hydra TEMP
