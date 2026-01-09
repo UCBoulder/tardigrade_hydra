@@ -23,6 +23,9 @@ namespace tardigradeHydra{
 
         public:
 
+            /*!
+             * Default constructor of SolverBase
+             */
             SolverBase( ) : hydra(NULL){//, step(NULL){ ///!< TODO: Re-enable this
 
             }
