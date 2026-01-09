@@ -232,6 +232,7 @@ namespace tardigradeHydra{
      */
     void SolverBase::reset( ){
 
+        resetIterations( );
         step->reset( );
         preconditioner->reset( );
 
