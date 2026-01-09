@@ -1596,11 +1596,8 @@ namespace tardigradeHydra{
 
         while ( local_solver->getRelaxedIteration( ) < local_solver->getMaxRelaxedIterations( ) ){
 
-            if ( getFailureVerbosityLevel( ) > 0 ){
-                addToFailureOutput( "\n\n###  relaxed iteration: " );
-                addToFailureOutput( local_solver->getRelaxedIteration( ) );
-                addToFailureOutput( "\n\n" );
-            }
+            local_solver->logRelaxedIterationHeader( );
+
             // Solve the non-linear problem
             if ( local_solver->attemptInternalSolve( ) ){ return; }
 

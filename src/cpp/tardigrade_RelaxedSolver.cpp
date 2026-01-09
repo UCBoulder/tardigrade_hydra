@@ -233,4 +233,17 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Write the relaxed iteration to the failure string
+     */
+    void RelaxedSolver::logRelaxedIterationHeader( ){
+
+        if ( getFailureVerbosityLevel( ) > 0 ){
+            addToFailureOutput( "\n\n###  relaxed iteration: " );
+            addToFailureOutput( getRelaxedIteration( ) );
+            addToFailureOutput( "\n\n" );
+        }
+
+    }
+
 }
