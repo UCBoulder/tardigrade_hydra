@@ -1644,29 +1644,7 @@ namespace tardigradeHydra{
                 addToFailureOutput( "\n\n" );
             }
             // Solve the non-linear problem
-            local_solver->attemptInternalSolve( );
-            try{
-
-                local_solver->internal_solver->solve( );
-
-                // Exit if the relaxed solver has converged
-                if ( local_solver->checkRelaxedConvergence( ) ){ return; }
-
-            }
-            catch( convergence_error &e ){
-
-                if ( !local_solver->callResidualRelaxedStepFailure( ) ){
-
-                    throw;
-
-                }
-
-            }
-            catch( std::exception &e ){
-
-                throw;
-
-            }
+            if ( local_solver->attemptInternalSolve( ) ){ return; }
 
             // Use the current unknown vector as the initial estimate
             local_solver->setInitializeUnknownVector( false );
