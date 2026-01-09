@@ -39,6 +39,8 @@ namespace tardigradeHydra{
 
             virtual void reset( ) override;
 
+            floatVector initial_unknown;
+
 //            void performRelaxedSolve( );
 
         protected:
@@ -66,6 +68,8 @@ namespace tardigradeHydra{
             unsigned int _relaxedIteration = 0; //!< The current relaxed iteration of the non-linear problem
 
             unsigned int _maxRelaxedIterations = 5; //!< The number of allowed relaxed iterations
+
+            void logRelaxedIterationHeader( );
 
     };
 
