@@ -57,6 +57,8 @@ namespace tardigradeHydra{
 
             virtual bool callResidualRelaxedStepFailure( );
 
+            void setupNextRelaxedStep( );
+
         private:
 
             friend class tardigradeHydra::hydraBase; //!< The base class for hydra TEMP

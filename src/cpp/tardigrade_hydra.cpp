@@ -1577,6 +1577,25 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Setup the next relaxed step
+     */
+    void RelaxedSolver::setupNextRelaxedStep( ){
+
+        // Use the current unknown vector as the initial estimate
+        setInitializeUnknownVector( false );
+
+        incrementRelaxedIteration( );
+
+        // Re-initialize the residuals
+        initializeResiduals( );
+
+        // Reset hydra
+        updateUnknownVector( *getUnknownVector( ) ); //This allows for the relaxed to change the projection and adjust the decomposition
+        resetIterations( );
+
+    }
+
+    /*!
      * Solve the non-linear problem by relaxing difficult sub-problems
      * to achieve a series of solutions.
      */
@@ -1604,17 +1623,18 @@ namespace tardigradeHydra{
             // Solve the non-linear problem
             if ( local_solver->attemptInternalSolve( ) ){ return; }
 
-            // Use the current unknown vector as the initial estimate
-            local_solver->setInitializeUnknownVector( false );
-
-            local_solver->incrementRelaxedIteration( );
-
-            // Re-initialize the residuals
-            local_solver->initializeResiduals( );
-
-            // Reset hydra
-            updateUnknownVector( *getUnknownVector( ) ); //This allows for the relaxed to change the projection and adjust the decomposition
-            local_solver->resetIterations( );
+            local_solver->setupNextRelaxedStep( );
+//            // Use the current unknown vector as the initial estimate
+//            local_solver->setInitializeUnknownVector( false );
+//
+//            local_solver->incrementRelaxedIteration( );
+//
+//            // Re-initialize the residuals
+//            local_solver->initializeResiduals( );
+//
+//            // Reset hydra
+//            updateUnknownVector( *getUnknownVector( ) ); //This allows for the relaxed to change the projection and adjust the decomposition
+//            local_solver->resetIterations( );
 
         }
 
