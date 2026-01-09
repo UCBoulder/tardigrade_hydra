@@ -5131,11 +5131,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
     };
 
-    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver{
+    class SolverBaseMock : public tardigradeHydra::SolverBase{
 
         public:
 
-            using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+            using tardigradeHydra::SolverBase::SolverBase;
 
             unsigned int numCallSolveNonLinearProblem = 0;
 
@@ -5146,6 +5146,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
             }
 
     };
+
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -5183,7 +5184,12 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    RelaxedSolverMock solver;
+    // Form the relaxed solver
+    SolverBaseMock internal_solver;
+    tardigradeHydra::RelaxedSolver solver;
+    solver.setInternalSolver( &internal_solver );
+    internal_solver.hydra = &hydra;
+
     hydra.setSolver( &solver );
     solver.hydra = &hydra;
 
@@ -5191,7 +5197,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
     std::vector< unsigned int > answer_1 = { 4, 4, 4 };
 
-    BOOST_TEST( solver.numCallSolveNonLinearProblem == 4 );
+    BOOST_TEST( internal_solver.numCallSolveNonLinearProblem == 4 );
 
     BOOST_TEST( hydra.numCallUpdateUnknownVector == 3 );
 
@@ -5349,11 +5355,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
     };
 
-    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver{
+    class SolverBaseMock : public tardigradeHydra::SolverBase{
 
         public:
 
-            using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+            using tardigradeHydra::SolverBase::SolverBase;
 
             unsigned int numCallSolveNonLinearProblem = 0;
 
@@ -5404,7 +5410,12 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    RelaxedSolverMock solver;
+    // Form the relaxed solver
+    SolverBaseMock internal_solver;
+    tardigradeHydra::RelaxedSolver solver;
+    solver.setInternalSolver( &internal_solver );
+    internal_solver.hydra = &hydra;
+
     hydra.setSolver( &solver );
     solver.hydra = &hydra;
 
@@ -5416,7 +5427,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
     std::vector< unsigned int > answer_3 = { 3, 3, 3 };
 
-    BOOST_TEST( solver.numCallSolveNonLinearProblem == 4 );
+    BOOST_TEST( internal_solver.numCallSolveNonLinearProblem == 4 );
 
     BOOST_TEST( hydra.numCallUpdateUnknownVector == 3 );
 

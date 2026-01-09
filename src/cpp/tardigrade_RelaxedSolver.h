@@ -37,6 +37,8 @@ namespace tardigradeHydra{
 
             void setInternalSolver( SolverBase *_solver );
 
+//            void performRelaxedSolve( );
+
         protected:
 
             SolverBase *internal_solver = NULL; //!< A pointer to the solver which will be relaxed

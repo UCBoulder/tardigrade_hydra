@@ -1644,9 +1644,10 @@ namespace tardigradeHydra{
                 addToFailureOutput( "\n\n" );
             }
             // Solve the non-linear problem
+            local_solver->attemptInternalSolve( );
             try{
 
-                solver->solve( );
+                local_solver->internal_solver->solve( );
 
                 // Exit if the relaxed solver has converged
                 if ( local_solver->checkRelaxedConvergence( ) ){ return; }
@@ -1668,7 +1669,7 @@ namespace tardigradeHydra{
             }
 
             // Use the current unknown vector as the initial estimate
-            solver->setInitializeUnknownVector( false );
+            local_solver->setInitializeUnknownVector( false );
 
             local_solver->incrementRelaxedIteration( );
 
@@ -1677,7 +1678,7 @@ namespace tardigradeHydra{
 
             // Reset hydra
             updateUnknownVector( *getUnknownVector( ) ); //This allows for the relaxed to change the projection and adjust the decomposition
-            solver->resetIterations( );
+            local_solver->resetIterations( );
 
         }
 

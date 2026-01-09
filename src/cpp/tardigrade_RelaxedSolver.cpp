@@ -130,7 +130,9 @@ namespace tardigradeHydra{
      */
     bool RelaxedSolver::attemptInternalSolve( ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( internal_solver, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( internal_solver != nullptr, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
+
+        return false;
 
 //        try{
 //
