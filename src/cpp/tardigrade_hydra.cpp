@@ -1555,50 +1555,6 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Signal to the residuals that we have a failed relaxed solve step and
-     * determine if a new relaxed step should be taken
-     */
-    bool RelaxedSolver::callResidualRelaxedStepFailure( ){
-
-        bool attempt_relaxed_step = false;
-
-        hydra->setCurrentResidualIndexMeaningful( true );
-
-        for ( auto residual_ptr = std::begin( *( hydra->getResidualClasses( ) ) ); residual_ptr != std::end( *( hydra->getResidualClasses( ) ) ); ++residual_ptr ){
-
-            hydra->setCurrentResidualIndex( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) );
-
-            try{
-
-                auto val = ( *residual_ptr )->relaxedStepFailure( );
-
-                attempt_relaxed_step = attempt_relaxed_step || val;
-
-            }
-            catch( std::exception &e ){
-
-                if ( getFailureVerbosityLevel( ) > 0 ){
-
-                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) ) + "\n" );
-                    std::string message;
-                    tardigradeErrorTools::captureNestedExceptions( e, message );
-                    addToFailureOutput( message );
-
-                }
-
-                throw;
-
-            }
-
-        }
-
-        hydra->setCurrentResidualIndexMeaningful( false );
-
-        return attempt_relaxed_step;
-
-    }
-
-    /*!
      * Set if the current residual index is meaningful
      * 
      * \param &value: Set if the current residual index is meaningful or not
