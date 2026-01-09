@@ -533,8 +533,6 @@ namespace tardigradeHydra{
 
             virtual void callResidualPostSubcyclerFailure( );
 
-            virtual bool callResidualRelaxedStepFailure( );
-
             void unexpectedError( ){
                 /*!
                  * Function to throw for an unexpected error. A user should never get here!

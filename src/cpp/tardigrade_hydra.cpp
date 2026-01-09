@@ -1554,19 +1554,19 @@ namespace tardigradeHydra{
 
     }
 
-    bool hydraBase::callResidualRelaxedStepFailure( ){
-        /*!
-         * Signal to the residuals that we have a failed relaxed solve step and
-         * determine if a new relaxed step should be taken
-         */
+    /*!
+     * Signal to the residuals that we have a failed relaxed solve step and
+     * determine if a new relaxed step should be taken
+     */
+    bool RelaxedSolver::callResidualRelaxedStepFailure( ){
 
         bool attempt_relaxed_step = false;
 
-        setCurrentResidualIndexMeaningful( true );
+        hydra->setCurrentResidualIndexMeaningful( true );
 
-        for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); ++residual_ptr ){
+        for ( auto residual_ptr = std::begin( *( hydra->getResidualClasses( ) ) ); residual_ptr != std::end( *( hydra->getResidualClasses( ) ) ); ++residual_ptr ){
 
-            setCurrentResidualIndex( residual_ptr - getResidualClasses( )->begin( ) );
+            hydra->setCurrentResidualIndex( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) );
 
             try{
 
@@ -1579,7 +1579,7 @@ namespace tardigradeHydra{
 
                 if ( getFailureVerbosityLevel( ) > 0 ){
 
-                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - getResidualClasses( )->begin( ) ) + "\n" );
+                    addToFailureOutput( "Failure in residual " + std::to_string( residual_ptr - std::begin( *( hydra->getResidualClasses( ) ) ) ) + "\n" );
                     std::string message;
                     tardigradeErrorTools::captureNestedExceptions( e, message );
                     addToFailureOutput( message );
@@ -1592,7 +1592,7 @@ namespace tardigradeHydra{
 
         }
 
-        setCurrentResidualIndexMeaningful( false );
+        hydra->setCurrentResidualIndexMeaningful( false );
 
         return attempt_relaxed_step;
 
@@ -1654,7 +1654,7 @@ namespace tardigradeHydra{
             }
             catch( convergence_error &e ){
 
-                if ( !callResidualRelaxedStepFailure( ) ){
+                if ( !local_solver->callResidualRelaxedStepFailure( ) ){
 
                     throw;
 

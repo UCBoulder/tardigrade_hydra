@@ -5858,12 +5858,21 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualRelaxedStepFailure, * boost::un
 
             }
 
+            void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
+
+    };
+
+    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver {
+
+        public:
+
+            using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+
             virtual bool public_callResidualRelaxedStepFailure( ){
 
                 return callResidualRelaxedStepFailure( );
 
             }
-
     };
 
     floatType time = 1.1;
@@ -5903,13 +5912,18 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualRelaxedStepFailure, * boost::un
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
+    RelaxedSolverMock solver;
+
+    hydra.setSolver( &solver );
+    solver.hydra = &hydra;
+
     BOOST_TEST( hydra.r1.numRelaxedStepFailureCalls == 0 );
 
     BOOST_TEST( hydra.r2.numRelaxedStepFailureCalls == 0 );
 
     BOOST_TEST( hydra.r3.numRelaxedStepFailureCalls == 0 );
 
-    BOOST_TEST( !hydra.public_callResidualRelaxedStepFailure( ) );
+    BOOST_TEST( !solver.public_callResidualRelaxedStepFailure( ) );
 
     BOOST_TEST( hydra.r1.numRelaxedStepFailureCalls == 1 );
 
@@ -5917,7 +5931,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_callResidualRelaxedStepFailure, * boost::un
 
     BOOST_TEST( hydra.r3.numRelaxedStepFailureCalls == 1 );
 
-    BOOST_TEST( hydra.public_callResidualRelaxedStepFailure( ) );
+    BOOST_TEST( solver.public_callResidualRelaxedStepFailure( ) );
 
     BOOST_TEST( hydra.r1.numRelaxedStepFailureCalls == 2 );
 

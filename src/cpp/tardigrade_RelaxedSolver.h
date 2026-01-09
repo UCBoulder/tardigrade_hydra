@@ -15,6 +15,10 @@
 
 namespace tardigradeHydra{
 
+    /*!
+     * Class which controls a solve of a problem which may need to be
+     * systematically relaxed in order to achieve the solution
+     */
     class RelaxedSolver : public SolverBase{
 
         public:
@@ -31,7 +35,11 @@ namespace tardigradeHydra{
 
             bool checkRelaxedConvergence( );
 
+            void setInternalSolver( SolverBase *_solver );
+
         protected:
+
+            SolverBase *internal_solver = NULL; //!< A pointer to the solver which will be relaxed
 
             void setRelaxedIteration( const unsigned int &value );
 
@@ -40,6 +48,10 @@ namespace tardigradeHydra{
             void incrementRelaxedIteration( );
 
             void initializeResiduals( );
+
+            bool attemptInternalSolve( );
+
+            virtual bool callResidualRelaxedStepFailure( );
 
         private:
 

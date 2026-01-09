@@ -113,4 +113,50 @@ namespace tardigradeHydra{
         return relaxedConverged;
 
     }
+
+    /*!
+     * Set the internal solver which will attempt to solve the relaxed problem
+     *
+     * \param *_solver: The solver to relax
+     */
+    void RelaxedSolver::setInternalSolver( SolverBase *_solver ){
+
+        internal_solver = _solver;
+
+    }
+
+    /*!
+     * Attempt to perform a solve of the non-linear problem
+     */
+    bool RelaxedSolver::attemptInternalSolve( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( internal_solver, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
+
+//        try{
+//
+//            internal_solver->solve( );
+//
+//            // Exit if the relaxed solver has converged
+//            return checkRelaxedConvergence( );
+//
+//        }
+//        catch( convergence_error &e ){
+//
+//            if ( !hydra->callResidualRelaxedStepFailure( ) ){
+//
+//                throw;
+//
+//            }
+//
+//            return false;
+//
+//        }
+//        catch( std::exception &e ){
+//
+//            throw;
+//
+//        }
+
+    }
+
 }
