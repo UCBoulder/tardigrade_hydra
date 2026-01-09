@@ -37,6 +37,8 @@ namespace tardigradeHydra{
 
             void setInternalSolver( SolverBase *_solver );
 
+            virtual void reset( ) override;
+
 //            void performRelaxedSolve( );
 
         protected:

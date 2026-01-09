@@ -13,6 +13,17 @@
 namespace tardigradeHydra{
 
     /*!
+     * Reset the solver
+     */
+    void RelaxedSolver::reset( ){
+
+        resetRelaxedIteration( );
+        internal_solver->reset( );
+        tardigradeHydra::SolverBase::reset( );
+
+    }
+
+    /*!
      * Get the current relaxed iteration
      */
     const unsigned int RelaxedSolver::getRelaxedIteration( ){
