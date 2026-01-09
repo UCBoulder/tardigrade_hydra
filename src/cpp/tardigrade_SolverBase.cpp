@@ -228,6 +228,16 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Reset the solver
+     */
+    void SolverBase::reset( ){
+
+        step->reset( );
+        preconditioner->reset( );
+
+    }
+
+    /*!
      * Solve the problem
      */
     void SolverBase::solve( ){
