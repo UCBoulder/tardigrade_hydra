@@ -1587,6 +1587,8 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
         // END TEMP
 
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
+
         local_solver->resetRelaxedIteration( );
 
         // Initialize the residuals
@@ -1811,22 +1813,18 @@ namespace tardigradeHydra{
          */
 
         // Reset the counters for the number of steps being performed
-        solver->step->resetNumNewton( );
-
-        solver->step->resetNumLS( );
-
-        solver->step->resetNumGrad( );
+        solver->step->reset( );
 
         solver->setRankDeficientError( false );
 
-        try{
+        if ( getUseRelaxedSolve( ) ){
 
-            solver->solve( );
+            try{
 
-        }
-        catch( const convergence_error &e ){
+                solver->solve( );
 
-            if ( getUseRelaxedSolve( ) ){
+            }
+            catch( const convergence_error &e ){
 
                 if ( getFailureVerbosityLevel( ) > 0 ){
                     addToFailureOutput( "Failure in conventional solve. Starting relaxed solve.\n" );
@@ -1852,12 +1850,27 @@ namespace tardigradeHydra{
                 }
 
             }
-            else{
+            catch( std::exception &e ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+
+            }
+
+        }
+        else{
+
+            try{
+
+                solver->solve( );
+
+            }
+            catch( convergence_error &e ){
+
                 //Try a Levenberg-Marquardt solve if there is a convergence error
                 solver->setRankDeficientError( false );
-    
+        
                 solver->step->setUseLevenbergMarquardt( true );
-    
+        
                 // Turn on projection
                 setCurrentResidualIndexMeaningful( true );
                 for ( auto residual_ptr = getResidualClasses( )->begin( ); residual_ptr != getResidualClasses( )->end( ); residual_ptr++ ){
@@ -1865,37 +1878,36 @@ namespace tardigradeHydra{
                     ( *residual_ptr )->setUseProjection( true );
                 }
                 setCurrentResidualIndexMeaningful( false );
-    
+        
                 solver->resetIterations( );
                 updateUnknownVector( _initialX );
-    
+        
                 try{
-    
+        
                     solver->solve( );
-    
+        
                 }
                 catch( const convergence_error &e ){
-    
+        
                     throw;
-    
+        
                 }
                 catch( std::exception &e ){
-    
+        
                     solver->step->setUseLevenbergMarquardt( false );
-    
+        
                     TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
-    
+        
                 }
+
+            }
+            catch( std::exception &e ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
 
             }
 
         }
-        catch( std::exception &e ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
-
-        }
-
     }
 
     void hydraBase::computeTangents( ){
