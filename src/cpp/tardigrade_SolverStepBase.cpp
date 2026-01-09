@@ -15,6 +15,17 @@
 
 namespace tardigradeHydra{
 
+    /*!
+     * Reset the step back to an initial state
+     */
+    void SolverStepBase::reset( ){
+
+        resetNumNewton( );
+        resetNumLS( );
+        resetNumGrad( );
+
+    }
+
     void SolverStepBase::addIterationData( dataBase *data ){
         /*!
          * Add data to the vector of values which will be cleared after each iteration

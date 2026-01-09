@@ -35,6 +35,8 @@ namespace tardigradeHydra{
                  */
             }
 
+            virtual void reset( );
+
             void incrementSolution( );
 
             floatVector X0; //!< The initial value of the unknown vector
