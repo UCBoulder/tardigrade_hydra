@@ -1577,25 +1577,6 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Setup the next relaxed step
-     */
-    void RelaxedSolver::setupNextRelaxedStep( ){
-
-        // Use the current unknown vector as the initial estimate
-        setInitializeUnknownVector( false );
-
-        incrementRelaxedIteration( );
-
-        // Re-initialize the residuals
-        initializeResiduals( );
-
-        // Reset hydra
-        updateUnknownVector( *getUnknownVector( ) ); //This allows for the relaxed to change the projection and adjust the decomposition
-        resetIterations( );
-
-    }
-
-    /*!
      * Solve the non-linear problem by relaxing difficult sub-problems
      * to achieve a series of solutions.
      */
