@@ -38,6 +38,7 @@ namespace tardigradeHydra{
 
             };
 
+            virtual void reset( );
 
             //! Get whether to use a preconditioner
             constexpr bool getUsePreconditioner( ){ return _use_preconditioner; }

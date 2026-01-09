@@ -13,6 +13,13 @@
 namespace tardigradeHydra{
 
     /*!
+     * Reset the preconditioner back to an initial state
+     */
+    void PreconditionerBase::reset( ){
+
+    }
+
+    /*!
      * Add data to the vector of values which will be cleared after each iteration
      * 
      * \param *data: The dataBase object to be cleared
