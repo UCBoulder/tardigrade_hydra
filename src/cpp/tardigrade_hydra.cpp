@@ -1589,6 +1589,9 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
 
+        _prerelaxed_initialX = _initialX; // TEMP: We're going to replace this with the initial_unknown variable
+        updateUnknownVector( _initialX ); // This causes issues in the tests
+
         local_solver->resetRelaxedIteration( );
 
         // Initialize the residuals
@@ -1820,8 +1823,6 @@ namespace tardigradeHydra{
                 try{
 
                     solver->resetIterations( );
-                    _prerelaxed_initialX = _initialX;
-                    updateUnknownVector( _initialX );
                     performRelaxedSolve( );
 
                 }
