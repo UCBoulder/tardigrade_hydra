@@ -136,25 +136,12 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Set the base quantities prior to updating the unknown vector
+     */
     void SolverStepBase::setBaseQuantities( ){
-        /*!
-         * Set the base quantities required for gradient steps
-         */
 
-        set_baseResidualNorm( *get_residualNorm( ) );
-
-        set_basedResidualNormdX( *get_dResidualNormdX( ) );
-
-        if ( _mu_k < 0 ){
-
-            setMuk( 0.5 * getLMMu( ) * ( *get_baseResidualNorm( ) ) );
-
-        }
-        else{
-
-            setMuk( std::fmin( _mu_k, ( *get_baseResidualNorm( ) ) ) );
-
-        }
+        return;
 
     }
 
