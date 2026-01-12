@@ -482,6 +482,7 @@ namespace tardigradeHydra{
 
         protected:
 
+            SolverBase _internal_solver; //!< Default internal solver;
             RelaxedSolver _solver; //!< Default solver
             SolverBase *solver = &_solver; //!< The class which performs the material point solve TODO: Make this an incoming pointer
 

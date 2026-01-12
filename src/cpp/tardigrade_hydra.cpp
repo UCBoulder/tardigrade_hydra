@@ -75,7 +75,11 @@ namespace tardigradeHydra{
         setResidualClasses( );
 
         // TEMP
+        _internal_solver.hydra = this;
+
         _solver.hydra = this;
+        _solver.internal_solver = &_internal_solver;
+
         solver->setMaxIterations( maxIterations );
         solver->step->setSolver( solver );
         solver->step->setLSAlpha( lsAlpha );
@@ -1587,7 +1591,7 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
         // END TEMP
 
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver != nullptr, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
 
         _prerelaxed_initialX = solver->initial_unknown; // TEMP: We're going to replace this with the initial_unknown variable
         updateUnknownVector( solver->initial_unknown ); // This causes issues in the tests
@@ -1809,6 +1813,11 @@ namespace tardigradeHydra{
 
         if ( getUseRelaxedSolve( ) ){
 
+            // TEMP
+            auto local_solver = dynamic_cast<RelaxedSolver*>(solver);
+            TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
+            TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver != nullptr, "The internal solver points to a null pointer")
+            // END TEMP
             try{
 
                 solver->solve( );

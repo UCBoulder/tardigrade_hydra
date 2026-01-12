@@ -4369,6 +4369,24 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
     };
 
+    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver{
+
+        public:
+
+            using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+
+            unsigned int num_calls = 0;
+
+            virtual void solve( ) override{
+
+                num_calls++;
+
+                throw tardigradeHydra::convergence_error( "failure to converge" );
+
+            }
+
+    };
+
     class SolverBaseMock : public tardigradeHydra::SolverBase{
 
         public:
@@ -4386,6 +4404,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
             }
 
     };
+
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -4416,7 +4435,11 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    SolverBaseMock solver;
+    RelaxedSolverMock solver;
+    SolverBaseMock internal_solver;
+    solver.setInternalSolver( &internal_solver );
+    internal_solver.hydra = &hydra;
+
     hydra.setSolver( &solver );
     solver.hydra = &hydra;
 

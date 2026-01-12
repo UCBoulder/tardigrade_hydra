@@ -39,7 +39,7 @@ namespace tardigradeHydra{
 
             virtual void reset( ) override;
 
-//            void performRelaxedSolve( );
+//            virtual void performRelaxedSolve( );
 
         protected:
 
