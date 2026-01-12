@@ -570,8 +570,6 @@ namespace tardigradeHydra{
 
             virtual void resetProblem( );
 
-            virtual void performRelaxedSolve( );
-
             void setAllowModifyGlobalResidual( const bool value){
                 /*!
                  * Set a flag for if the global residual can be modified

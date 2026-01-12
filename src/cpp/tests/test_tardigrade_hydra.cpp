@@ -4324,7 +4324,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
 
 }
 
-BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+BOOST_AUTO_TEST_CASE( test_RelaxedSolver_evaluateInternal, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>{
 
@@ -4353,8 +4353,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
             using tardigradeHydra::hydraBase::hydraBase;
 
-            bool calledPerformRelaxedSolve = false;
-
             void setInitialX( ){ solver->initial_unknown = _mockInitialX; }
 
             void public_evaluateInternal( ){ evaluateInternal( ); }
@@ -4371,12 +4369,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
                 BOOST_TEST( solver->initial_unknown == newX, CHECK_PER_ELEMENT );
             }
 
-            virtual void performRelaxedSolve( ) override{
-
-                calledPerformRelaxedSolve = true;
-
-            }
-
             using tardigradeHydra::hydraBase::setResidualClasses;
 
     };
@@ -4389,11 +4381,21 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
             unsigned int num_calls = 0;
 
+            bool calledPerformRelaxedSolve = false;
+
             virtual void solve( ) override{
 
                 num_calls++;
 
                 throw tardigradeHydra::convergence_error( "failure to converge" );
+
+            }
+
+        protected:
+
+            virtual void performRelaxedSolve( ) override{
+
+                calledPerformRelaxedSolve = true;
 
             }
 
@@ -4463,7 +4465,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
     BOOST_TEST( internal_solver.num_calls == 1 );
 
-    BOOST_TEST( hydra.calledPerformRelaxedSolve );
+    BOOST_TEST( solver.calledPerformRelaxedSolve );
 
 }
 
@@ -4530,8 +4532,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate, * boost::unit_test::tolerance( DE
 }
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    std::cerr << "IN EVALUATE 2\n";
 
     class ResidualBaseMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>{
 
@@ -5173,12 +5173,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
             }
 
-            virtual void public_performRelaxedSolve( ){
-
-                performRelaxedSolve( );
-
-            }
-
             virtual std::vector< unsigned int > getNumSetupCalls( ){
 
                 std::vector< unsigned int > result = { r1.numSetupCalls, r2.numSetupCalls, r3.numSetupCalls };
@@ -5203,6 +5197,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
                 numCallInitializeUnknownVector++;
 
             }
+
+    };
+
+    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver{
+
+        public:
+
+            using tardigradeHydra::RelaxedSolver::RelaxedSolver;
 
     };
 
@@ -5261,14 +5263,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
     // Form the relaxed solver
     SolverBaseMock internal_solver;
-    tardigradeHydra::RelaxedSolver solver;
+    RelaxedSolverMock solver;
     solver.setInternalSolver( &internal_solver );
     internal_solver.hydra = &hydra;
 
     hydra.setSolver( &solver );
     solver.hydra = &hydra;
 
-    hydra.public_performRelaxedSolve( );
+    solver.performRelaxedSolve( );
 
     std::vector< unsigned int > answer_1 = { 4, 4, 4 };
 
@@ -5381,12 +5383,6 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
             }
 
-            virtual void public_performRelaxedSolve( ){
-
-                performRelaxedSolve( );
-
-            }
-
             virtual std::vector< unsigned int > getNumSetupCalls( ){
 
                 std::vector< unsigned int > result = { r1.numSetupCalls, r2.numSetupCalls, r3.numSetupCalls };
@@ -5430,6 +5426,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
     };
 
+    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver{
+
+        public:
+
+            using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+
+    };
+
     class SolverBaseMock : public tardigradeHydra::SolverBase{
 
         public:
@@ -5448,6 +5452,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
             }
 
     };
+
     floatType time = 1.1;
 
     floatType deltaTime = 2.2;
@@ -5487,14 +5492,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
     // Form the relaxed solver
     SolverBaseMock internal_solver;
-    tardigradeHydra::RelaxedSolver solver;
+    RelaxedSolverMock solver;
     solver.setInternalSolver( &internal_solver );
     internal_solver.hydra = &hydra;
 
     hydra.setSolver( &solver );
     solver.hydra = &hydra;
 
-    hydra.public_performRelaxedSolve( );
+    solver.performRelaxedSolve( );
 
     std::vector< unsigned int > answer_1 = { 4, 4, 4 };
 

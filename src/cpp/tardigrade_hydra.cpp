@@ -1593,42 +1593,37 @@ namespace tardigradeHydra{
      * Solve the non-linear problem by relaxing difficult sub-problems
      * to achieve a series of solutions.
      */
-    void hydraBase::performRelaxedSolve( ){
+    void RelaxedSolver::performRelaxedSolve( ){
 
-        // TEMP: Remove when we extract this to RelaxedSolver.solve
-        auto local_solver = dynamic_cast<RelaxedSolver*>(solver);
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
-        // END TEMP
-
-        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver != nullptr, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
 
         if ( getFailureVerbosityLevel( ) > 0 ){
             addToFailureOutput( "Failure in conventional solve. Starting relaxed solve.\n" );
         }
 
-        local_solver->internal_solver->resetIterations( );
-        local_solver->initial_unknown = local_solver->internal_solver->initial_unknown; // TEMP: We're going to replace this with the initial_unknown variable
-        updateUnknownVector( solver->initial_unknown ); // This causes issues in the tests
+        initial_unknown = internal_solver->initial_unknown;
+        internal_solver->reset( );
+        updateUnknownVector( initial_unknown ); // This causes issues in the tests
 
-        local_solver->resetRelaxedIteration( );
+        resetRelaxedIteration( );
 
         // Initialize the residuals
-        local_solver->initializeResiduals( );
+        initializeResiduals( );
 
-        while ( local_solver->getRelaxedIteration( ) < local_solver->getMaxRelaxedIterations( ) ){
+        while ( getRelaxedIteration( ) < getMaxRelaxedIterations( ) ){
 
-            local_solver->logRelaxedIterationHeader( );
+            logRelaxedIterationHeader( );
 
             // Solve the non-linear problem
-            if ( local_solver->attemptInternalSolve( ) ){ return; }
+            if ( attemptInternalSolve( ) ){ return; }
 
-            local_solver->setupNextRelaxedStep( );
+            setupNextRelaxedStep( );
 
         }
 
-        if ( local_solver->getRelaxedIteration( ) >= local_solver->getMaxRelaxedIterations( ) ){
+        if ( getRelaxedIteration( ) >= getMaxRelaxedIterations( ) ){
 
-            throw convergence_error( "Failure in relaxed solve:\n  scale_factor: " + std::to_string( getScaleFactor( ) ) );
+            throw convergence_error( "Failure in relaxed solve\n" );
 
         }
 
@@ -1846,7 +1841,12 @@ namespace tardigradeHydra{
 
                 try{
 
-                    performRelaxedSolve( );
+                    // TEMP: Remove when we extract this to RelaxedSolver.solve
+                    auto local_solver = dynamic_cast<RelaxedSolver*>(solver);
+                    TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
+                    // END TEMP
+
+                    local_solver->performRelaxedSolve( );
 
                 }
                 catch( const convergence_error &e ){
