@@ -45,7 +45,7 @@ namespace tardigradeHydra{
             PreconditionerBase _preconditioner; //!< Temporary object
             PreconditionerBase *preconditioner = &_preconditioner; //!< The object that defines the preconditioner TODO: Make this an incoming pointer
 
-            floatVector initial_unknown;
+            floatVector initial_unknown; //!< The initial unknown vector for the solver
 
             virtual void solve( );
 

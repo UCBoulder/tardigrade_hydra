@@ -60,6 +60,18 @@ namespace tardigradeHydra{
 
         };
 
+        class RelaxedSolverTester{
+
+            public:
+
+                static SolverBase *get_internal_solver( RelaxedSolver &solver ){
+
+                    return solver.internal_solver;
+
+                }
+
+        };
+
         class hydraBaseTester{
 
             public:
@@ -4449,7 +4461,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
     BOOST_TEST( !hydra.access_solver( )->getRankDeficientError( ) );
 
-    BOOST_TEST( solver.num_calls == 1 );
+    BOOST_TEST( internal_solver.num_calls == 1 );
 
     BOOST_TEST( hydra.calledPerformRelaxedSolve );
 
@@ -4519,6 +4531,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate, * boost::unit_test::tolerance( DE
 
 BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
+    std::cerr << "IN EVALUATE 2\n";
+
     class ResidualBaseMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>{
 
         using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
@@ -4538,6 +4552,30 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
             setStress( cauchyStress + ( *hydra->getDeformationGradient( ) ) );
 
         }
+
+    };
+
+    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver {
+
+        public:
+
+            using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+
+    };
+
+    class SolverBaseMock : public tardigradeHydra::SolverBase {
+
+        public:
+
+            using tardigradeHydra::SolverBase::SolverBase;
+
+            unsigned int ncalls_to_regular_solve = 0;
+
+            virtual void solve( ) override{
+
+                ncalls_to_regular_solve++;
+
+            }
 
     };
 
@@ -4613,6 +4651,8 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
                                                       1.  ,  0.  ,  0.  ,  0.  ,  1.  ,  0.  ,  0.  ,  0.  ,  1.  ,
                                                       0.1 ,  0.2 ,  0.3 ,  0.4 } };
 
+            void setSolver( tardigradeHydra::SolverBase *_solve ){ solver = &_solver; }
+
         protected:
 
             virtual void updateUnknownVector( const floatVector &newX ) override{
@@ -4627,9 +4667,13 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
             virtual void evaluateInternal( ) override{
 
-                _prerelaxed_initialX = *getUnknownVector( );
+                auto local_solver = dynamic_cast<tardigradeHydra::RelaxedSolver*>(solver);
+                TARDIGRADE_ERROR_TOOLS_CHECK(local_solver != nullptr, "solver cannot be converted to RelaxedSolver");
+                auto internal_solver = tardigradeHydra::unit_test::RelaxedSolverTester::get_internal_solver(*local_solver);
+                TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "internal solver not set");
 
-                solver->initial_unknown = *getUnknownVector( );
+                solver->initial_unknown = internal_solver->initial_unknown;
+                internal_solver->initial_unknown = *getUnknownVector( );
 
                 BOOST_TEST( getScaleFactor( ) == expected_scale_factors[ num_evaluateInternalCalls ] );
 
@@ -4698,6 +4742,14 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    RelaxedSolverMock solver;
+    SolverBaseMock internal_solver;
+    solver.setInternalSolver( &internal_solver );
+    internal_solver.hydra = &hydra;
+
+    hydra.setSolver( &solver );
+    solver.hydra = &hydra;
 
     hydra.evaluate( true );
 

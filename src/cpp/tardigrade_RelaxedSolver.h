@@ -15,6 +15,12 @@
 
 namespace tardigradeHydra{
 
+    namespace unit_test{
+
+        class RelaxedSolverTester; //!< Friend class for RelaxedSolver unit testing
+
+    }
+
     /*!
      * Class which controls a solve of a problem which may need to be
      * systematically relaxed in order to achieve the solution
@@ -62,6 +68,7 @@ namespace tardigradeHydra{
         private:
 
             friend class tardigradeHydra::hydraBase; //!< The base class for hydra TEMP
+            friend class tardigradeHydra::unit_test::RelaxedSolverTester; //!< The unit tester for the class
 
             unsigned int _relaxedIteration = 0; //!< The current relaxed iteration of the non-linear problem
 

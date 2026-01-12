@@ -87,6 +87,15 @@ namespace tardigradeHydra{
         solver->preconditioner->setSolver( solver );
         solver->preconditioner->_use_preconditioner = use_preconditioner;
         solver->preconditioner->_preconditioner_type = preconditioner_type;
+
+
+        _solver.internal_solver->setMaxIterations( maxIterations );
+        _solver.internal_solver->step->setSolver( solver );
+        _solver.internal_solver->step->setLSAlpha( lsAlpha );
+        _solver.internal_solver->step->setMaxLSIterations( maxLSIterations );
+        _solver.internal_solver->preconditioner->setSolver( solver );
+        _solver.internal_solver->preconditioner->_use_preconditioner = use_preconditioner;
+        _solver.internal_solver->preconditioner->_preconditioner_type = preconditioner_type;
         // END TEMP
 
     }
@@ -1593,7 +1602,8 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver != nullptr, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
 
-        _prerelaxed_initialX = solver->initial_unknown; // TEMP: We're going to replace this with the initial_unknown variable
+        local_solver->internal_solver->resetIterations( );
+        local_solver->initial_unknown = local_solver->internal_solver->initial_unknown; // TEMP: We're going to replace this with the initial_unknown variable
         updateUnknownVector( solver->initial_unknown ); // This causes issues in the tests
 
         local_solver->resetRelaxedIteration( );
@@ -1781,7 +1791,12 @@ namespace tardigradeHydra{
 
                     if ( getUseRelaxedSolve( ) ){
 
-                        solver->initial_unknown = _prerelaxed_initialX;
+                        // TEMP
+                        auto local_solver = dynamic_cast<RelaxedSolver*>(solver);
+                        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
+                        TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver != nullptr, "The internal solver has not been set" );
+                        // END TEMP
+                        solver->initial_unknown = local_solver->internal_solver->initial_unknown;
 
                     }
 
@@ -1820,7 +1835,7 @@ namespace tardigradeHydra{
             // END TEMP
             try{
 
-                solver->solve( );
+                local_solver->internal_solver->solve( );
 
             }
             catch( const convergence_error &e ){
@@ -1831,7 +1846,6 @@ namespace tardigradeHydra{
 
                 try{
 
-                    solver->resetIterations( );
                     performRelaxedSolve( );
 
                 }
