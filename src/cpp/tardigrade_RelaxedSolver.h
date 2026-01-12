@@ -39,8 +39,6 @@ namespace tardigradeHydra{
 
             virtual void reset( ) override;
 
-            floatVector initial_unknown;
-
 //            void performRelaxedSolve( );
 
         protected:
