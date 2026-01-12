@@ -1602,6 +1602,10 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver != nullptr, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
 
+        if ( getFailureVerbosityLevel( ) > 0 ){
+            addToFailureOutput( "Failure in conventional solve. Starting relaxed solve.\n" );
+        }
+
         local_solver->internal_solver->resetIterations( );
         local_solver->initial_unknown = local_solver->internal_solver->initial_unknown; // TEMP: We're going to replace this with the initial_unknown variable
         updateUnknownVector( solver->initial_unknown ); // This causes issues in the tests
@@ -1839,10 +1843,6 @@ namespace tardigradeHydra{
 
             }
             catch( const convergence_error &e ){
-
-                if ( getFailureVerbosityLevel( ) > 0 ){
-                    addToFailureOutput( "Failure in conventional solve. Starting relaxed solve.\n" );
-                }
 
                 try{
 
