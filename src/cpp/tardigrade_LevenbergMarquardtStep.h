@@ -10,18 +10,18 @@
 #define TARDIGRADE_LEVENBERGMARQUARDTSTEP_H
 
 #include"tardigrade_CoreDefinitions.h"
-#include"tardigrade_SolverBase.h"
+#include"tardigrade_GradientStep.h"
 
 namespace tardigradeHydra{
 
     /*!
-     * The Levenberg Marquardt solver class
+     * The Levenberg Marquardt step class
      */
-    class LevenbergMarquardtStep : public SolverStepBase {
+    class LevenbergMarquardtStep : public GradientStep {
 
         public:
 
-            using tardigradeHydra::SolverStepBase::SolverStepBase;
+            using tardigradeHydra::GradientStep::GradientStep;
 
             virtual const floatVector* getNonlinearRHS( ) override;
 
