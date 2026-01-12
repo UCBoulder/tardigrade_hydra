@@ -225,3 +225,148 @@ BOOST_AUTO_TEST_CASE( test_RelaxedSolver_callResidualRelaxedStepFailure, * boost
 
 
 }
+
+BOOST_AUTO_TEST_CASE( test_RelaxedSolver_evaluateInternal, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class residualMock : public tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>{
+
+        public:
+
+            bool project_called = false;
+
+            using tardigradeHydra::ResidualBase<tardigradeHydra::hydraBase>::ResidualBase;
+
+            virtual void projectSuggestedX( std::vector< double > &trialX,
+                                            const std::vector< double > &Xp ) override{
+
+                project_called = true;
+
+            }
+
+    };
+
+    class hydraBaseMock : public tardigradeHydra::hydraBase{
+
+        public:
+
+            residualMock r1;
+
+            residualMock r2;
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            void setInitialX( ){ solver->initial_unknown = _mockInitialX; }
+
+            void public_evaluateInternal( ){ evaluateInternal( ); }
+
+            auto setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
+            auto access_solver( ){ return solver; }
+
+        protected:
+
+            tardigradeHydra::floatVector _mockInitialX = {   1,  1,  1,  1,  1,  1,  1,  1,  1,
+                                            2,  2,  2,  2,  2,  2,  2,  2,  2 };
+
+            virtual void updateUnknownVector( const tardigradeHydra::floatVector &newX ) override{
+                BOOST_TEST( solver->initial_unknown == newX, CHECK_PER_ELEMENT );
+            }
+
+            using tardigradeHydra::hydraBase::setResidualClasses;
+
+    };
+
+    class RelaxedSolverMock : public tardigradeHydra::RelaxedSolver{
+
+        public:
+
+            using tardigradeHydra::RelaxedSolver::RelaxedSolver;
+
+            unsigned int num_calls = 0;
+
+            bool calledPerformRelaxedSolve = false;
+
+            virtual void solve( ) override{
+
+                num_calls++;
+
+                performRelaxedSolve( );
+
+            }
+
+        protected:
+
+            virtual void performRelaxedSolve( ) override{
+
+                calledPerformRelaxedSolve = true;
+
+            }
+
+    };
+
+    class SolverBaseMock : public tardigradeHydra::SolverBase{
+
+        public:
+
+            using tardigradeHydra::SolverBase::SolverBase;
+
+            unsigned int num_calls = 0;
+
+            virtual void solve( ) override{
+
+                num_calls++;
+
+                throw tardigradeHydra::convergence_error( "failure to converge" );
+
+            }
+
+    };
+
+    tardigradeHydra::floatType time = 1.1;
+
+    tardigradeHydra::floatType deltaTime = 2.2;
+
+    tardigradeHydra::floatType temperature = 5.3;
+
+    tardigradeHydra::floatType previousTemperature = 23.4;
+
+    tardigradeHydra::floatVector deformationGradient = { 1.05, 0, 0,
+                                        0.00, 1, 0,
+                                        0.00, 1, 1};
+
+    tardigradeHydra::floatVector previousDeformationGradient = { -0.21576496, -0.31364397,  0.45809941,
+                                                -0.12285551, -0.88064421, -0.20391149,
+                                                 0.47599081, -0.63501654, -0.64909649 };
+
+    tardigradeHydra::floatVector previousStateVariables = { 0, 0, 0, 0, 0, 0, 0, 0, 0 };
+
+    tardigradeHydra::floatVector parameters = { 123.4, 56.7 };
+
+    unsigned int numConfigurations = 2;
+
+    unsigned int numNonLinearSolveStateVariables = 0;
+
+    unsigned int dimension = 3;
+
+    hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
+                         { }, { },
+                         previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
+
+    RelaxedSolverMock solver;
+    SolverBaseMock internal_solver;
+    solver.setInternalSolver( &internal_solver );
+    internal_solver.hydra = &hydra;
+
+    hydra.setSolver( &solver );
+    solver.hydra = &hydra;
+
+    hydra.public_evaluateInternal( );
+
+    BOOST_TEST( !hydra.access_solver( )->step->getUseLevenbergMarquardt( ) );
+
+    BOOST_TEST( !hydra.access_solver( )->getRankDeficientError( ) );
+
+    BOOST_TEST( solver.num_calls == 1 );
+
+    BOOST_TEST( solver.calledPerformRelaxedSolve );
+
+}
