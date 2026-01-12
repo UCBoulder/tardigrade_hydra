@@ -277,10 +277,6 @@ namespace tardigradeHydra{
 
             // NONLINEAR DATA STORAGE
 
-            DataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
-
-            DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
-
             unsigned int _NUM_NEWTON = 0; //!< The number of Newton steps performed
 
             // END NONLINEAR DATA STORAGE
