@@ -141,6 +141,23 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::setBaseQuantities( ){
 
+        // TEMP
+        set_baseResidualNorm( *get_residualNorm( ) );
+
+        set_basedResidualNormdX( *get_dResidualNormdX( ) );
+
+        if ( _mu_k < 0 ){
+
+            setMuk( 0.5 * getLMMu( ) * ( *get_baseResidualNorm( ) ) );
+
+        }
+        else{
+
+            setMuk( std::fmin( _mu_k, ( *get_baseResidualNorm( ) ) ) );
+
+        }
+        // END TEMP
+
         return;
 
     }
