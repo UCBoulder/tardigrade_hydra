@@ -246,4 +246,44 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Solve the non-linear problem by relaxing difficult sub-problems
+     * to achieve a series of solutions.
+     */
+    void RelaxedSolver::performRelaxedSolve( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "The solver which is to be relaxed (i.e., the internal solver) has not been defined" );
+
+        if ( getFailureVerbosityLevel( ) > 0 ){
+            addToFailureOutput( "Failure in conventional solve. Starting relaxed solve.\n" );
+        }
+
+        initial_unknown = internal_solver->initial_unknown;
+        internal_solver->reset( );
+        updateUnknownVector( initial_unknown ); // This causes issues in the tests
+
+        resetRelaxedIteration( );
+
+        // Initialize the residuals
+        initializeResiduals( );
+
+        while ( getRelaxedIteration( ) < getMaxRelaxedIterations( ) ){
+
+            logRelaxedIterationHeader( );
+
+            // Solve the non-linear problem
+            if ( attemptInternalSolve( ) ){ return; }
+
+            setupNextRelaxedStep( );
+
+        }
+
+        if ( getRelaxedIteration( ) >= getMaxRelaxedIterations( ) ){
+
+            throw convergence_error( "Failure in relaxed solve\n" );
+
+        }
+
+    }
+
 }
