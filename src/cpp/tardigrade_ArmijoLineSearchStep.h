@@ -17,7 +17,7 @@ namespace tardigradeHydra{
     /*!
      * The Armijo line search step class
      */
-    class ArmijoLineSearchStep : public SolverStepBase {
+    class ArmijoLineSearchStep : virtual public SolverStepBase {
 
         public:
 

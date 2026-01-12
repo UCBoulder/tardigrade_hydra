@@ -17,7 +17,7 @@ namespace tardigradeHydra{
     /*!
      * The Gradient step class
      */
-    class GradientStep : public SolverStepBase {
+    class GradientStep : virtual public SolverStepBase {
 
         public:
 
