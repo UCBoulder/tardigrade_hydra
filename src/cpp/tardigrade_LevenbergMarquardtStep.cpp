@@ -2,7 +2,7 @@
   ******************************************************************************
   * \file tardigrade_LevenbergMarquardtStep.cpp
   ******************************************************************************
-  * A C++ library for the Levenberg Marquardt solver
+  * A C++ library for the Levenberg Marquardt step
   ******************************************************************************
   */
 
@@ -47,9 +47,6 @@ namespace tardigradeHydra{
      * Get the LHS matrix for the non-linear problem
      */
     const floatVector* LevenbergMarquardtStep::getFlatNonlinearLHS( ){
-        /*!
-         * Get the flat LHS matrix for the non-linear problem
-         */
 
         if ( !_flatNonlinearLHS.first ){
 
@@ -78,4 +75,6 @@ namespace tardigradeHydra{
         return &_flatNonlinearLHS.second;
 
     }
+
+
 }
