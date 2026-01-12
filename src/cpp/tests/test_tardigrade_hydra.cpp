@@ -4387,7 +4387,7 @@ BOOST_AUTO_TEST_CASE( test_RelaxedSolver_evaluateInternal, * boost::unit_test::t
 
                 num_calls++;
 
-                throw tardigradeHydra::convergence_error( "failure to converge" );
+                performRelaxedSolve( );
 
             }
 
@@ -4463,7 +4463,7 @@ BOOST_AUTO_TEST_CASE( test_RelaxedSolver_evaluateInternal, * boost::unit_test::t
 
     BOOST_TEST( !hydra.access_solver( )->getRankDeficientError( ) );
 
-    BOOST_TEST( internal_solver.num_calls == 1 );
+    BOOST_TEST( solver.num_calls == 1 );
 
     BOOST_TEST( solver.calledPerformRelaxedSolve );
 

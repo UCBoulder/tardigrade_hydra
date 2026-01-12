@@ -286,4 +286,43 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Solve the residual equation
+     */
+    void RelaxedSolver::solve( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK(internal_solver != nullptr, "The internal solver points to a null pointer")
+
+        try{
+
+            internal_solver->solve( );
+
+        }
+        catch( const convergence_error &e ){
+
+            try{
+
+                performRelaxedSolve( );
+
+            }
+            catch( const convergence_error &e ){
+
+                throw;
+
+            }
+            catch( std::exception *e ){
+
+                TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+
+            }
+
+        }
+        catch( std::exception &e ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
+
+        }
+
+    }
+
 }

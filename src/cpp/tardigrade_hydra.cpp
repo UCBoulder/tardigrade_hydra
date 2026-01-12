@@ -1787,45 +1787,7 @@ namespace tardigradeHydra{
 
         if ( getUseRelaxedSolve( ) ){
 
-            // TEMP
-            auto local_solver = dynamic_cast<RelaxedSolver*>(solver);
-            TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
-            TARDIGRADE_ERROR_TOOLS_CHECK(local_solver->internal_solver != nullptr, "The internal solver points to a null pointer")
-            // END TEMP
-            try{
-
-                local_solver->internal_solver->solve( );
-
-            }
-            catch( const convergence_error &e ){
-
-                try{
-
-                    // TEMP: Remove when we extract this to RelaxedSolver.solve
-                    auto local_solver = dynamic_cast<RelaxedSolver*>(solver);
-                    TARDIGRADE_ERROR_TOOLS_CHECK(local_solver,"The solver must be a relaxed solver");
-                    // END TEMP
-
-                    local_solver->performRelaxedSolve( );
-
-                }
-                catch( const convergence_error &e ){
-
-                    throw;
-
-                }
-                catch( std::exception *e ){
-
-                    TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
-
-                }
-
-            }
-            catch( std::exception &e ){
-
-                TARDIGRADE_ERROR_TOOLS_CATCH( throw; )
-
-            }
+            solver->solve( );
 
         }
         else{

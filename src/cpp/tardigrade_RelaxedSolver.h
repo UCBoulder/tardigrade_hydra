@@ -47,6 +47,8 @@ namespace tardigradeHydra{
 
             virtual void performRelaxedSolve( );
 
+            virtual void solve( ) override;
+
         protected:
 
             SolverBase *internal_solver = NULL; //!< A pointer to the solver which will be relaxed
