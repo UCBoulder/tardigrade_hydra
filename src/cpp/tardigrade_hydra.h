@@ -563,8 +563,6 @@ namespace tardigradeHydra{
 
             floatVector _prerelaxed_initialX; //!< The initial value of the unknown vector prior to a relaxed step
 
-            floatVector _initialX; //!< The initial value of the unknown vector
-
             virtual tardigradeHydra::hydraBase::SetDataStorageIteration<secondOrderTensor> get_SetDataStorage_stress( );
 
             virtual void setConstraints( );

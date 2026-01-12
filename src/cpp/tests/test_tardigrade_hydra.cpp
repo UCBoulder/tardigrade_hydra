@@ -4226,7 +4226,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
 
             using tardigradeHydra::hydraBase::hydraBase;
 
-            void setInitialX( ){ _initialX = _mockInitialX; }
+            void setInitialX( ){ solver->initial_unknown = _mockInitialX; }
 
             void public_evaluateInternal( ){ evaluateInternal( ); }
 
@@ -4240,7 +4240,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal, * boost::unit_test::toler
                                             2,  2,  2,  2,  2,  2,  2,  2,  2 };
 
             virtual void updateUnknownVector( const floatVector &newX ) override{
-                BOOST_TEST( _initialX == newX, CHECK_PER_ELEMENT );
+                BOOST_TEST( solver->initial_unknown == newX, CHECK_PER_ELEMENT );
             }
 
             using tardigradeHydra::hydraBase::setResidualClasses;
@@ -4343,7 +4343,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
 
             bool calledPerformRelaxedSolve = false;
 
-            void setInitialX( ){ _initialX = _mockInitialX; }
+            void setInitialX( ){ solver->initial_unknown = _mockInitialX; }
 
             void public_evaluateInternal( ){ evaluateInternal( ); }
 
@@ -4356,7 +4356,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluateInternal2, * boost::unit_test::tole
                                             2,  2,  2,  2,  2,  2,  2,  2,  2 };
 
             virtual void updateUnknownVector( const floatVector &newX ) override{
-                BOOST_TEST( _initialX == newX, CHECK_PER_ELEMENT );
+                BOOST_TEST( solver->initial_unknown == newX, CHECK_PER_ELEMENT );
             }
 
             virtual void performRelaxedSolve( ) override{
@@ -4606,7 +4606,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_evaluate2, * boost::unit_test::tolerance( D
 
                 _prerelaxed_initialX = *getUnknownVector( );
 
-                _initialX = *getUnknownVector( );
+                solver->initial_unknown = *getUnknownVector( );
 
                 BOOST_TEST( getScaleFactor( ) == expected_scale_factors[ num_evaluateInternalCalls ] );
 
@@ -5199,7 +5199,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve, * boost::unit_test::to
 
     BOOST_TEST( internal_solver.numCallSolveNonLinearProblem == 4 );
 
-    BOOST_TEST( hydra.numCallUpdateUnknownVector == 3 );
+    BOOST_TEST( hydra.numCallUpdateUnknownVector == 4 );
 
     BOOST_TEST( hydra.numCallInitializeUnknownVector == 1 );
 
@@ -5429,7 +5429,7 @@ BOOST_AUTO_TEST_CASE( test_hydraBase_performRelaxedSolve2, * boost::unit_test::t
 
     BOOST_TEST( internal_solver.numCallSolveNonLinearProblem == 4 );
 
-    BOOST_TEST( hydra.numCallUpdateUnknownVector == 3 );
+    BOOST_TEST( hydra.numCallUpdateUnknownVector == 4 );
 
     BOOST_TEST( hydra.numCallInitializeUnknownVector == 1 );
 

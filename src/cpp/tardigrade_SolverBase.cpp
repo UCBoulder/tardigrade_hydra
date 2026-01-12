@@ -248,7 +248,7 @@ namespace tardigradeHydra{
             TARDIGRADE_ERROR_TOOLS_CATCH( hydra->initializeUnknownVector( ) );
         }
 
-        _initialX = *getUnknownVector( );
+        initial_unknown = *getUnknownVector( );
 
         floatVector deltaX( getNumUnknowns( ), 0 );
 

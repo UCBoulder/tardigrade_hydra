@@ -145,8 +145,6 @@ namespace tardigradeHydra{
         protected:
 
             // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
-            floatVector _initialX; //!< The initial value of the unknown vector
-
             void setInitializeUnknownVector( const bool &value );
 
             virtual void callResidualSuccessfulNLStep( );
