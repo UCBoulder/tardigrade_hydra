@@ -32,6 +32,17 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Set the maximum number of line-search iterations
+     *
+     * \param &value: The incoming value
+     */
+    void StepDampingBase::setMaxLSIterations( const unsigned int &value ){
+
+        _maxLSIterations = value;
+
+    }
+
 
 // END LINE SEARCH FUNCTIONS
 

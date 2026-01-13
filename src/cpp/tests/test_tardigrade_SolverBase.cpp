@@ -981,7 +981,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     SolverBaseMock solver;
     SolverStepBaseMock step;
-    step.setMaxLSIterations( 5 );
+    step.damping->setMaxLSIterations( 5 );
     step.damping->setLSAlpha( 1e-4 );
     tardigradeHydra::PreconditionerBase preconditioner;
 
@@ -1022,7 +1022,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     SolverBaseMock solver_pre;
     SolverStepBaseMock step_pre;
-    step_pre.setMaxLSIterations( 5 );
+    step_pre.damping->setMaxLSIterations( 5 );
     step_pre.damping->setLSAlpha( 1e-4 );
     tardigradeHydra::PreconditionerBase preconditioner_pre;
 

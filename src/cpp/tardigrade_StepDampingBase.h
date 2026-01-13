@@ -60,10 +60,10 @@ namespace tardigradeHydra{
 
             void setLSAlpha( const floatType &value );
 
-//            //! Get the maximum number of line-search iterations
-//            constexpr unsigned int getMaxLSIterations( ){ return _maxLSIterations; }
-//
-//            void setMaxLSIterations( const unsigned int &value );
+            //! Get the maximum number of line-search iterations
+            constexpr unsigned int getMaxLSIterations( ){ return _maxLSIterations; }
+
+            void setMaxLSIterations( const unsigned int &value );
 
             //! Get the line-search alpha parameter
             constexpr floatType getLSAlpha( ){ return _lsAlpha; }
@@ -108,7 +108,7 @@ namespace tardigradeHydra{
 
             floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
 
-//            unsigned int _maxLSIterations; //!< The maximum number of line-search iterations
+            unsigned int _maxLSIterations; //!< The maximum number of line-search iterations
 
             unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
 

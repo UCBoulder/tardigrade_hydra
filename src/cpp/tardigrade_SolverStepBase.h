@@ -119,11 +119,6 @@ namespace tardigradeHydra{
 
             virtual bool checkLSConvergence( );
 
-            //! Get the maximum number of line-search iterations
-            constexpr unsigned int getMaxLSIterations( ){ return _maxLSIterations; }
-
-            void setMaxLSIterations( const unsigned int &value );
-
             virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
 
             //! Get the current value of the line-search iteration
@@ -322,8 +317,6 @@ namespace tardigradeHydra{
             // END SQP SOLVER FUNCTIONS
 
             // LS Functions (MOVE TO OWN CLASS)
-
-            unsigned int _maxLSIterations; //!< The maximum number of line-search iterations
 
             unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
 

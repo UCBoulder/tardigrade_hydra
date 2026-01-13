@@ -1439,7 +1439,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkLSConvergence, * boost::unit_test
 
     tardigradeHydra::SolverStepBase step;
     step.damping->setLSAlpha( 1e-4 );
-    step.setMaxLSIterations( 5 );
+    step.damping->setMaxLSIterations( 5 );
 
     hydra.getSolver( )->step = &step;
     step.setSolver( hydra.getSolver( ) );

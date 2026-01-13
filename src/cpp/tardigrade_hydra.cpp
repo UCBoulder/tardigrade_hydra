@@ -83,7 +83,7 @@ namespace tardigradeHydra{
         solver->setMaxIterations( maxIterations );
         solver->step->setSolver( solver );
         solver->step->damping->setLSAlpha( lsAlpha );
-        solver->step->setMaxLSIterations( maxLSIterations );
+        solver->step->damping->setMaxLSIterations( maxLSIterations );
         solver->preconditioner->setSolver( solver );
         solver->preconditioner->_use_preconditioner = use_preconditioner;
         solver->preconditioner->_preconditioner_type = preconditioner_type;
@@ -92,7 +92,7 @@ namespace tardigradeHydra{
         _solver.internal_solver->setMaxIterations( maxIterations );
         _solver.internal_solver->step->setSolver( solver );
         _solver.internal_solver->step->damping->setLSAlpha( lsAlpha );
-        _solver.internal_solver->step->setMaxLSIterations( maxLSIterations );
+        _solver.internal_solver->step->damping->setMaxLSIterations( maxLSIterations );
         _solver.internal_solver->preconditioner->setSolver( solver );
         _solver.internal_solver->preconditioner->_use_preconditioner = use_preconditioner;
         _solver.internal_solver->preconditioner->_preconditioner_type = preconditioner_type;
