@@ -76,7 +76,7 @@ namespace tardigradeHydra{
     void StepDampingBase::setLSResidualNorm( ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
-        _lsResidualNorm.second = tardigradeVectorTools::l2norm( *( step->getResidual( ) ) );
+        _lsResidualNorm.second = tardigradeVectorTools::l2norm( *getResidual( ) );
 
         _lsResidualNorm.first = true;
 
