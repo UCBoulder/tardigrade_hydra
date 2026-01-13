@@ -104,12 +104,6 @@ namespace tardigradeHydra{
 
             public:
 
-                static void checkLSAlpha( SolverStepBase &step ){
-
-                    BOOST_CHECK( step._lsAlpha == step.getLSAlpha( ) );
-
-                }
-
                 static void checkGradientRho( SolverStepBase &step ){
 
                     BOOST_CHECK( step._gradientRho == step.getGradientRho( ) );
@@ -191,15 +185,6 @@ namespace tardigradeHydra{
         };
 
     }
-
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_getLSAlpha, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-    step.setLSAlpha( 1.23 );
-
-    tardigradeHydra::unit_test::SolverStepBaseTester::checkLSAlpha( step );
 
 }
 
@@ -1453,7 +1438,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkLSConvergence, * boost::unit_test
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     tardigradeHydra::SolverStepBase step;
-    step.setLSAlpha( 1e-4 );
+    step.damping->setLSAlpha( 1e-4 );
     step.setMaxLSIterations( 5 );
 
     hydra.getSolver( )->step = &step;

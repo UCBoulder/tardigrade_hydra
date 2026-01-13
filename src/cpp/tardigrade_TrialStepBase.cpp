@@ -7,3 +7,15 @@
  */
 
 #include"tardigrade_TrialStepBase.h"
+
+namespace tardigradeHydra{
+
+
+    /*!
+     * Compute the trial step
+     */
+    void TrialStepBase::computeTrial( ){
+
+    }
+
+}

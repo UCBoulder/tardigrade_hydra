@@ -34,16 +34,12 @@ namespace tardigradeHydra{
              *
              * \param *_step: The containing step object
              */
-
             TrialStepBase( SolverStepBase *_step ) : step( _step ){
 
             }
 
             SolverStepBase *step; //!< The containing step class
 
-            /*!
-             * Compute the trial step
-             */
             void computeTrial( );
 
         protected:

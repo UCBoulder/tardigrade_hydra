@@ -16,8 +16,6 @@
 
 namespace tardigradeHydra{
 
-    class TrialStepBase; //!< Forward declaration of the trial step base class
-
     /*!
      * Base class for Solver Steps
      */
@@ -65,6 +63,10 @@ namespace tardigradeHydra{
 
             virtual void addNLStepData( dataBase *data ) override;
             // END CACHED DATA STORAGE OPERATIONS
+
+            // PASS-THROUGH functions
+
+            // END PASS-THROUGH FUNCTIONS
 
             // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
             virtual const floatVector* getNonlinearRHS( );
@@ -117,15 +119,10 @@ namespace tardigradeHydra{
 
             virtual bool checkLSConvergence( );
 
-            void setLSAlpha( const floatType &value );
-
             //! Get the maximum number of line-search iterations
             constexpr unsigned int getMaxLSIterations( ){ return _maxLSIterations; }
 
             void setMaxLSIterations( const unsigned int &value );
-
-            //! Get the line-search alpha parameter
-            constexpr floatType getLSAlpha( ){ return _lsAlpha; }
 
             virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
 
@@ -325,8 +322,6 @@ namespace tardigradeHydra{
             // END SQP SOLVER FUNCTIONS
 
             // LS Functions (MOVE TO OWN CLASS)
-
-            floatType _lsAlpha; //!< The line-search alpha value i.e., the term by which it is judged that the line-search is converging
 
             unsigned int _maxLSIterations; //!< The maximum number of line-search iterations
 

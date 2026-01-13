@@ -240,6 +240,8 @@ namespace tardigradeHydra{
 
         setBaseQuantities( );
 
+        trial_step->computeTrial( );
+
         if ( getUseSQPSolver( ) ){
 
             solveConstrainedQP( deltaX );
@@ -252,12 +254,14 @@ namespace tardigradeHydra{
         }
 
         if ( solver->getFailureVerbosityLevel( ) > 0 ){
-            solver->addToFailureOutput( "  deltaX:\n" );
+            solver->addToFailureOutput( "  trial deltaX:\n" );
             solver->addToFailureOutput( "  " );
             solver->addToFailureOutput( deltaX );
         }
 
         solver->updateUnknownVector( X0 + getLambda( ) * deltaX );
+
+        damping->applyDamping( );
 
         // Refine the estimate if the new point has a higher residual
         if ( !checkLSConvergence( ) ){
@@ -735,24 +739,13 @@ namespace tardigradeHydra{
      */
     bool SolverStepBase::checkLSConvergence( ){
 
-        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
+        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - damping->getLSAlpha( ) ) * ( *damping->step->getLSResidualNorm( ) ) ){
 
             return true;
 
         }
 
         return false;
-
-    }
-
-    /*!
-     * Set the value of the line-search alpha parameter
-     *
-     * \param &value: The incoming value of the line-search alpha parameter
-     */
-    void SolverStepBase::setLSAlpha( const floatType &value ){
-
-        _lsAlpha = value;
 
     }
 
