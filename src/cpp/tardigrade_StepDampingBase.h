@@ -52,6 +52,8 @@ namespace tardigradeHydra{
 
             // PASS-THROUGH functions
 
+            const floatVector *getResidual( );
+
             // END PASS-THROUGH FUNCTIONS
 
             // LINESEARCH FUNCTIONS (MOVE TO OWN CLASS)
@@ -82,8 +84,10 @@ namespace tardigradeHydra{
 //
 //            //! Get the number of line search steps performed
 //            unsigned int getNumLS( ){ return _NUM_LS; }
-//
-//            const floatType* getLSResidualNorm( );
+
+            const floatType* getLSResidualNorm( );
+
+            void setLSResidualNorm( ); //TODO: Move this to protected
             // END LINESEARCH FUNCTIONS
 
         protected:

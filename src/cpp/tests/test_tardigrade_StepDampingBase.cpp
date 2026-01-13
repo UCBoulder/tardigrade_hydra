@@ -190,4 +190,42 @@ BOOST_AUTO_TEST_CASE( test_StepDampingBase_getLSAlpha, * boost::unit_test::toler
 
 }
 
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_getLSResidualNorm, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
+    class hydraBaseMock : public tardigradeHydra::hydraBase {
+
+        public:
+
+            using tardigradeHydra::hydraBase::hydraBase;
+
+            void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
+            tardigradeHydra::SolverBase *getSolver( ){ return solver; }
+
+    };
+
+    hydraBaseMock hydra;
+    tardigradeHydra::SolverBase solver;
+    tardigradeHydra::SolverStepBase step;
+    tardigradeHydra::PreconditionerBase preconditioner;
+    tardigradeHydra::StepDampingBase damping;
+
+    hydra.setSolver( &solver );
+
+    solver.hydra = &hydra;
+    solver.step  = &step;
+    solver.preconditioner = &preconditioner;
+
+    step.setSolver( &solver );
+    preconditioner.setSolver( &solver );
+
+    step.damping = &damping;
+    damping.step = &step;
+
+    tardigradeHydra::floatVector residual = { 1, 2, 3 };
+
+    tardigradeHydra::floatType lsResidualNormAnswer = tardigradeVectorTools::l2norm( residual );
+      tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
+
+    BOOST_TEST( *damping.getLSResidualNorm( ) == lsResidualNormAnswer );
+
+}

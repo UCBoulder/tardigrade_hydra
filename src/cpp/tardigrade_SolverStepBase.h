@@ -66,6 +66,8 @@ namespace tardigradeHydra{
 
             // PASS-THROUGH functions
 
+            const floatVector *getResidual( );
+
             // END PASS-THROUGH FUNCTIONS
 
             // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
@@ -133,8 +135,6 @@ namespace tardigradeHydra{
 
             //! Get the number of line search steps performed
             unsigned int getNumLS( ){ return _NUM_LS; }
-
-            const floatType* getLSResidualNorm( );
             // END LINESEARCH FUNCTIONS
 
             // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
@@ -323,8 +323,6 @@ namespace tardigradeHydra{
             void incrementLSIteration( ){ _LSIteration++; }
 
             floatType _lambda = 1;
-
-            DataStorage< floatType > _lsResidualNorm; //!< The reference residual norm for the line-search convergence criteria
 
             unsigned int _NUM_LS = 0; //!< The number of line search steps performed
 

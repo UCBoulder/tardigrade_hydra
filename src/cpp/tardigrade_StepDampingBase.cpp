@@ -7,6 +7,8 @@
  */
 
 #include"tardigrade_StepDampingBase.h"
+#include"tardigrade_SolverStepBase.h"
+#include"tardigrade_vector_tools.h"
 
 namespace tardigradeHydra{
 
@@ -40,6 +42,43 @@ namespace tardigradeHydra{
     void StepDampingBase::setMaxLSIterations( const unsigned int &value ){
 
         _maxLSIterations = value;
+
+    }
+
+    /*!
+     * Get the residual vector
+     */
+    const floatVector *StepDampingBase::getResidual( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        return step->getResidual( );
+
+    }
+
+    /*!
+     * Get the residual norm for the line-search convergence criterion
+     */
+    const floatType* StepDampingBase::getLSResidualNorm( ){
+
+        if ( !_lsResidualNorm.first ){
+
+            TARDIGRADE_ERROR_TOOLS_CATCH( step->resetLSIteration( ) );
+
+        }
+
+        return &_lsResidualNorm.second;
+
+    }
+
+    /*!
+     * Set the line-search residual norm
+     */
+    void StepDampingBase::setLSResidualNorm( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        _lsResidualNorm.second = tardigradeVectorTools::l2norm( *( step->getResidual( ) ) );
+
+        _lsResidualNorm.first = true;
 
     }
 

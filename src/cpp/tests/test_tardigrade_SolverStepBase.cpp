@@ -1458,42 +1458,6 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkLSConvergence, * boost::unit_test
 
 }
 
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_getLSResidualNorm, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    class hydraBaseMock : public tardigradeHydra::hydraBase {
-
-        public:
-
-            using tardigradeHydra::hydraBase::hydraBase;
-
-            void setSolver( tardigradeHydra::SolverBase *_solver ){ solver = _solver; }
-            tardigradeHydra::SolverBase *getSolver( ){ return solver; }
-
-    };
-
-    hydraBaseMock hydra;
-    tardigradeHydra::SolverBase solver;
-    tardigradeHydra::SolverStepBase step;
-    tardigradeHydra::PreconditionerBase preconditioner;
-
-    hydra.setSolver( &solver );
-
-    solver.hydra = &hydra;
-    solver.step  = &step;
-    solver.preconditioner = &preconditioner;
-
-    step.setSolver( &solver );
-    preconditioner.setSolver( &solver );
-
-    tardigradeHydra::floatVector residual = { 1, 2, 3 };
-
-    tardigradeHydra::floatType lsResidualNormAnswer = tardigradeVectorTools::l2norm( residual );
-      tardigradeHydra::unit_test::hydraBaseTester::set_residual( hydra, residual );
-
-    BOOST_TEST( *step.getLSResidualNorm( ) == lsResidualNormAnswer );
-
-}
-
 BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkDescentDirection, * boost::unit_test::tolerance( 1e-5 ) ){
     /*!
      * Test checking the descent direction

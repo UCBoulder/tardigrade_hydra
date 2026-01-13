@@ -63,6 +63,16 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Get the residual vector
+     */
+    const floatVector *SolverStepBase::getResidual( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getResidual( );
+
+    }
+
     void SolverStepBase::setResidualNorm( ){
         /*!
          * Set the norm of the residual vector
@@ -759,7 +769,7 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The trial step has not been defined" );
-        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - damping->getLSAlpha( ) ) * ( *damping->step->getLSResidualNorm( ) ) ){
+        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - damping->getLSAlpha( ) ) * ( *damping->getLSResidualNorm( ) ) ){
 
             return true;
 
@@ -778,9 +788,7 @@ namespace tardigradeHydra{
 
         _lambda = 1.0;
 
-        _lsResidualNorm.second = tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) );
-
-        _lsResidualNorm.first = true;
+        damping->setLSResidualNorm( );
 
     };
 
@@ -790,21 +798,6 @@ namespace tardigradeHydra{
     bool SolverStepBase::checkLSIteration( ){
         TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The trial step has not been defined" );
         return getLSIteration( ) < damping->getMaxLSIterations( );
-    }
-
-    /*!
-     * Get the residual norm for the line-search convergence criterion
-     */
-    const floatType* SolverStepBase::getLSResidualNorm( ){
-
-        if ( !_lsResidualNorm.first ){
-
-            TARDIGRADE_ERROR_TOOLS_CATCH( resetLSIteration( ) );
-
-        }
-
-        return &_lsResidualNorm.second;
-
     }
 
     /*!
