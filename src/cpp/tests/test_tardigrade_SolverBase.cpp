@@ -718,7 +718,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
                 unsigned int iteration = solver->getIteration( );
 
-                unsigned int LSIteration = solver->step->getLSIteration( );
+                unsigned int LSIteration = solver->step->damping->getLSIteration( );
 
                 unsigned int gradIteration = solver->step->getGradientIteration( );
 
@@ -766,7 +766,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
                 unsigned int iteration = solver->getIteration( );
 
-                unsigned int LSIteration = solver->step->getLSIteration( );
+                unsigned int LSIteration = solver->step->damping->getLSIteration( );
 
                 unsigned int gradIteration = solver->step->getGradientIteration( );
 
@@ -816,7 +816,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
                 unsigned int iteration = solver->getIteration( );
 
-                unsigned int LSIteration = getLSIteration( );
+                unsigned int LSIteration = damping->getLSIteration( );
 
                 solver->getResidual( );
 

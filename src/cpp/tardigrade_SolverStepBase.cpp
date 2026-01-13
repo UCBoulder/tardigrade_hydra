@@ -277,7 +277,7 @@ namespace tardigradeHydra{
             solver->addToFailureOutput( deltaX );
         }
 
-        solver->updateUnknownVector( X0 + getLambda( ) * deltaX );
+        solver->updateUnknownVector( X0 + damping->getLambda( ) * deltaX );
 
         damping->applyDamping( );
 
@@ -779,24 +779,11 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Reset the line search iteration
-     */
-    void SolverStepBase::resetLSIteration( ){
-
-        _LSIteration = 0;
-
-        _lambda = 1.0;
-
-        damping->setLSResidualNorm( );
-
-    };
-
-    /*!
      * Check the current line search iteration
      */
     bool SolverStepBase::checkLSIteration( ){
         TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The trial step has not been defined" );
-        return getLSIteration( ) < damping->getMaxLSIterations( );
+        return damping->getLSIteration( ) < damping->getMaxLSIterations( );
     }
 
     /*!
@@ -808,26 +795,27 @@ namespace tardigradeHydra{
     void SolverStepBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
         while ( !checkLSConvergence( ) && checkLSIteration( ) ){
 
             if ( solver->getFailureVerbosityLevel( ) > 0 ){
                 solver->addToFailureOutput( "    lambda, |R|: " );
-                solver->addToFailureOutput( getLambda( ), false );
+                solver->addToFailureOutput( damping->getLambda( ), false );
                 solver->addToFailureOutput( ", " );
                 solver->addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
             }
 
-            updateLambda( );
+            damping->updateLambda( );
 
-            incrementLSIteration( );
+            damping->incrementLSIteration( );
 
-            solver->updateUnknownVector( X0 + getLambda( ) * deltaX );
+            solver->updateUnknownVector( X0 + damping->getLambda( ) * deltaX );
 
         }
 
         if ( solver->getFailureVerbosityLevel( ) > 0 ){
             solver->addToFailureOutput( "    lambda, |R|: " );
-            solver->addToFailureOutput( getLambda( ), false );
+            solver->addToFailureOutput( damping->getLambda( ), false );
             solver->addToFailureOutput( ", " );
             solver->addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
         }
@@ -844,7 +832,7 @@ namespace tardigradeHydra{
 
         incrementNumLS( );
 
-        resetLSIteration( );
+        damping->resetLSIteration( );
 
     }
 

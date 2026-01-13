@@ -123,15 +123,7 @@ namespace tardigradeHydra{
 
             virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
 
-            //! Get the current value of the line-search iteration
-            const unsigned int getLSIteration( ){ return _LSIteration; }
-
-            void resetLSIteration( );
-
             bool checkLSIteration( );
-
-            //! Get the linesearch lambda parameter
-            const floatType getLambda( ){ return _lambda; }
 
             //! Get the number of line search steps performed
             unsigned int getNumLS( ){ return _NUM_LS; }
@@ -256,9 +248,6 @@ namespace tardigradeHydra{
 
             // LINESEARCH PARAMETERS (MOVE TO OWN CLASS)
 
-            //! Update the line-search lambda parameter
-            virtual void updateLambda( ){ _lambda *= 0.5; }
-
             //! Reset the number of line search steps
             void resetNumLS( ){ _NUM_LS = 0; }
 
@@ -317,12 +306,6 @@ namespace tardigradeHydra{
             // END SQP SOLVER FUNCTIONS
 
             // LS Functions (MOVE TO OWN CLASS)
-
-            unsigned int _LSIteration = 0; //!< The current line search iteration of the non-linear problem
-
-            void incrementLSIteration( ){ _LSIteration++; }
-
-            floatType _lambda = 1;
 
             unsigned int _NUM_LS = 0; //!< The number of line search steps performed
 

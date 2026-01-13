@@ -62,7 +62,7 @@ namespace tardigradeHydra{
 
         if ( !_lsResidualNorm.first ){
 
-            TARDIGRADE_ERROR_TOOLS_CATCH( step->resetLSIteration( ) );
+            TARDIGRADE_ERROR_TOOLS_CATCH( resetLSIteration( ) );
 
         }
 
@@ -82,6 +82,18 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Reset the line search iteration
+     */
+    void StepDampingBase::resetLSIteration( ){
+
+        _LSIteration = 0;
+
+        _lambda = 1.0;
+
+        setLSResidualNorm( );
+
+    };
 
 // END LINE SEARCH FUNCTIONS
 

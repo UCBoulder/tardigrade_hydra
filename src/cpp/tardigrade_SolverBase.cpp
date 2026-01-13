@@ -278,7 +278,7 @@ namespace tardigradeHydra{
 
         callResidualPreNLSolve( );
 
-        step->resetLSIteration( );
+        step->damping->resetLSIteration( ); //TODO: Call a more generalized thing
 
         step->resetGradientIteration( );
 
@@ -347,7 +347,7 @@ namespace tardigradeHydra{
      */
     void SolverBase::incrementIteration( ){
         TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
-        _iteration++; step->resetLSIteration( );
+        _iteration++; step->damping->resetLSIteration( ); //TODO: Call a more generalized thing
     }
 
     /*!
