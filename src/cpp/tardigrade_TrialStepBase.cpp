@@ -10,6 +10,21 @@
 
 namespace tardigradeHydra{
 
+    /*!
+     * Reset the counters
+     */
+    void TrialStepBase::resetCounts( ){
+
+    }
+
+    /*!
+     * Reset the trial step class
+     */
+    void TrialStepBase::reset( ){
+
+        resetCounts( );
+
+    }
 
     /*!
      * Compute the trial step

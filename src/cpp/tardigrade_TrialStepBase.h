@@ -40,7 +40,11 @@ namespace tardigradeHydra{
 
             SolverStepBase *step; //!< The containing step class
 
-            void computeTrial( );
+            virtual void resetCounts( );
+
+            virtual void reset( );
+
+            virtual void computeTrial( );
 
         protected:
 
