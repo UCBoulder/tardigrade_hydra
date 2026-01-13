@@ -78,10 +78,9 @@ namespace tardigradeHydra{
          * Set the norm of the residual vector
          */
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         auto residualNorm = get_SetDataStorage_residualNorm( );
 
-        auto residual = solver->getResidual( );
+        auto residual = getResidual( );
 
         using residual_type = std::remove_reference_t<decltype( ( *residual )[ 0 ] )>;
 
@@ -101,7 +100,7 @@ namespace tardigradeHydra{
 
         dResidualNormdX.zero( xsize );
 
-        const floatVector *residual = solver->getResidual( );
+        const floatVector *residual = getResidual( );
 
         const floatVector *jacobian = solver->getFlatJacobian( );
 
@@ -227,7 +226,7 @@ namespace tardigradeHydra{
 
         unsigned int rank = linearSolver.rank( );
 
-        if ( solver->getRankDeficientError( ) && ( rank != solver->getResidual( )->size( ) ) ){
+        if ( solver->getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
             TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 
@@ -316,7 +315,7 @@ namespace tardigradeHydra{
     const floatVector* SolverStepBase::getNonlinearRHS( ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        return solver->getResidual( );
+        return getResidual( );
 
     }
 
@@ -361,7 +360,7 @@ namespace tardigradeHydra{
 
             unsigned int rank = linearSolver.rank( );
 
-            if ( solver->getRankDeficientError( ) && ( rank != solver->getResidual( )->size( ) ) ){
+            if ( solver->getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 
@@ -469,7 +468,7 @@ namespace tardigradeHydra{
 
         Eigen::Map< Eigen::Vector< floatType, -1 > > RHS( KKTRHSVector.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
 
-        Eigen::Map< const Eigen::Vector< floatType, -1 > > R( solver->getResidual( )->data( ), numUnknowns );
+        Eigen::Map< const Eigen::Vector< floatType, -1 > > R( getResidual( )->data( ), numUnknowns );
 
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( solver->getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 
@@ -769,7 +768,7 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The trial step has not been defined" );
-        if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - damping->getLSAlpha( ) ) * ( *damping->getLSResidualNorm( ) ) ){
+        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < solver->getToleranceScaleFactor( ) * ( 1 - damping->getLSAlpha( ) ) * ( *damping->getLSResidualNorm( ) ) ){
 
             return true;
 
@@ -815,7 +814,7 @@ namespace tardigradeHydra{
                 solver->addToFailureOutput( "    lambda, |R|: " );
                 solver->addToFailureOutput( getLambda( ), false );
                 solver->addToFailureOutput( ", " );
-                solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
+                solver->addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
             }
 
             updateLambda( );
@@ -830,7 +829,7 @@ namespace tardigradeHydra{
             solver->addToFailureOutput( "    lambda, |R|: " );
             solver->addToFailureOutput( getLambda( ), false );
             solver->addToFailureOutput( ", " );
-            solver->addToFailureOutput( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) );
+            solver->addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
         }
 
         if ( !checkLSConvergence( ) ){
