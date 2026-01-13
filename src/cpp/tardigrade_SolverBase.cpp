@@ -242,6 +242,7 @@ namespace tardigradeHydra{
      */
     const floatVector *SolverBase::getFlatNonlinearLHS( ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
         return step->getFlatNonlinearLHS( );
 
     }
@@ -251,6 +252,7 @@ namespace tardigradeHydra{
      */
     void SolverBase::reset( ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
         resetIterations( );
         step->reset( );
         preconditioner->reset( );
@@ -263,6 +265,7 @@ namespace tardigradeHydra{
     void SolverBase::solve( ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( hydra != nullptr, "Hydra has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
         // Form the initial unknown vector
         if ( getInitializeUnknownVector( ) ){
             TARDIGRADE_ERROR_TOOLS_CATCH( hydra->initializeUnknownVector( ) );
@@ -341,7 +344,10 @@ namespace tardigradeHydra{
     /*!
      * Increment the iteration
      */
-    void SolverBase::incrementIteration( ){ _iteration++; step->resetLSIteration( ); }
+    void SolverBase::incrementIteration( ){
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        _iteration++; step->resetLSIteration( );
+    }
 
     /*!
      * Reset all nonlinear step data
