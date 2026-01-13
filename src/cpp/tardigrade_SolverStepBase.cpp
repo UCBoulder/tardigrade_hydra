@@ -11,9 +11,22 @@
 #include"tardigrade_vector_tools.h"
 #include"tardigrade_CustomErrors.h"
 #include"tardigrade_SolverBase.h"
+#include"tardigrade_StepDampingBase.h"
 #include"tardigrade_hydra.h"
 
 namespace tardigradeHydra{
+
+    /*!
+     * Initialize the default damping and trial step classes
+     */
+    void SolverStepBase::initializeDefaults( ){
+
+        damping = &_damping;
+        damping->step = this;
+
+        trial_step = &_trial_step;
+        trial_step->step = this;
+    }
 
     /*!
      * Reset the step back to an initial state

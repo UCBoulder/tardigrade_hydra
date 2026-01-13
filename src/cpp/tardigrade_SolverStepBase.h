@@ -11,8 +11,12 @@
 
 #include"tardigrade_CoreDefinitions.h"
 #include"tardigrade_SetDataStorage.h"
+#include"tardigrade_TrialStepBase.h"
+#include"tardigrade_StepDampingBase.h"
 
 namespace tardigradeHydra{
+
+    class TrialStepBase; //!< Forward declaration of the trial step base class
 
     /*!
      * Base class for Solver Steps
@@ -21,18 +25,24 @@ namespace tardigradeHydra{
 
         public:
 
+            /*!
+             * Constructor for NonlinearStepBase
+             */
             SolverStepBase( ) : solver(NULL){
-                /*!
-                 * Constructor for NonlinearStepBase
-                 */
+
+                initializeDefaults( );
+
             }
 
+            /*!
+             * Constructor for NonlinearStepBase
+             *
+             * \param *_solver: The containing solver object
+             */
             SolverStepBase( SolverBase *_solver ) : solver(_solver){
-                /*!
-                 * Constructor for NonlinearStepBase
-                 *
-                 * \param *_solver: The containing solver object
-                 */
+
+                initializeDefaults( );
+
             }
 
             virtual void reset( );
@@ -61,7 +71,8 @@ namespace tardigradeHydra{
 
             virtual const floatVector* getFlatNonlinearLHS( );
 
-            unsigned int getNumNewton( ){ /*! Get the number of newton steps performed */  return _NUM_NEWTON; }
+            //! Get the number of Newton steps performed
+            unsigned int getNumNewton( ){ return _NUM_NEWTON; }
 
             // END NONLINEAR FUNCTIONS
 
@@ -76,7 +87,7 @@ namespace tardigradeHydra{
 
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
-            //!< Get the Newton step should be a LevenbergMarquardt step
+            //! Get if the Newton step should be a LevenbergMarquardt step
             const bool getUseLevenbergMarquardt( ){ return _use_LM_step; }
 
             void setUseLevenbergMarquardt( const bool &value );
@@ -95,7 +106,8 @@ namespace tardigradeHydra{
 
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
-            const bool getUseSQPSolver( ){ /*! Return a flag for whether to use the SQP solver */ return _useSQPSolver; }
+            //! Return a flag for whether to use the SQP solver
+            const bool getUseSQPSolver( ){ return _useSQPSolver; }
 
             // END SQP SOLVER FUNCTIONS
 
@@ -179,9 +191,17 @@ namespace tardigradeHydra{
 
             // END GRADIENT DESCENT FUNCTIONS
 
+            TrialStepBase *trial_step; //!< The trial step class which proposes a step to reduce the residual
+            StepDampingBase *damping; //!< The damping class which reduces the proposed step to improve stability
+
         protected:
 
             SolverBase *solver; //!< Pointer to the containing SolverBase object
+
+            StepDampingBase _damping; //!< The default step damping
+            TrialStepBase _trial_step; //!< The default trial step
+
+            void initializeDefaults( );
 
             // NONLINEAR FUNCTIONS (MOVE TO OWN CLASS)
 
@@ -223,7 +243,12 @@ namespace tardigradeHydra{
 
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
-            void setUseSQPSolver( const unsigned int &value ){ /*! Set whether to use the SQP solver \param &value: The updated value */ _useSQPSolver = value; }
+            /*!
+             * Set whether to use the SQP solver
+             *
+             * \param &value: The updated value
+             */
+            void setUseSQPSolver( const unsigned int &value ){ _useSQPSolver = value; }
 
             virtual void solveConstrainedQP( floatVector &dx, const unsigned int kmax=100 );
 
