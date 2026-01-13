@@ -253,6 +253,7 @@ namespace tardigradeHydra{
     void SolverBase::reset( ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( preconditioner != nullptr, "The preconditioner has not been defined" );
         resetIterations( );
         step->reset( );
         preconditioner->reset( );

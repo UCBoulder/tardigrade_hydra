@@ -187,6 +187,7 @@ namespace tardigradeHydra{
          */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver->preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
         tardigradeVectorTools::solverType< floatType > linearSolver;
 
         auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), solver->getNumUnknowns( ) );
@@ -230,6 +231,8 @@ namespace tardigradeHydra{
     void SolverStepBase::incrementSolution( ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( trial_step != nullptr, "The trial step has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
         if ( solver->getFailureVerbosityLevel( ) > 0 ){
             solver->addToFailureOutput( "\n\n  iteration: " );
             solver->addToFailureOutput( solver->getIteration( ) );
@@ -329,6 +332,7 @@ namespace tardigradeHydra{
          */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver->preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
         if ( solver->preconditioner->getUsePreconditioner( ) ){
 
             performPreconditionedSolve( deltaX_tr );
@@ -754,6 +758,7 @@ namespace tardigradeHydra{
     bool SolverStepBase::checkLSConvergence( ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The trial step has not been defined" );
         if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - damping->getLSAlpha( ) ) * ( *damping->step->getLSResidualNorm( ) ) ){
 
             return true;
@@ -783,6 +788,7 @@ namespace tardigradeHydra{
      * Check the current line search iteration
      */
     bool SolverStepBase::checkLSIteration( ){
+        TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The trial step has not been defined" );
         return getLSIteration( ) < damping->getMaxLSIterations( );
     }
 
