@@ -46,6 +46,7 @@ namespace tardigradeHydra{
          * \param *data: The dataBase object to be cleared
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         solver->addIterationData( data );
 
     }
@@ -57,6 +58,7 @@ namespace tardigradeHydra{
          * \param *data: The dataBase object to be cleared
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         solver->addNLStepData( data );
 
     }
@@ -66,6 +68,7 @@ namespace tardigradeHydra{
          * Set the norm of the residual vector
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         auto residualNorm = get_SetDataStorage_residualNorm( );
 
         auto residual = solver->getResidual( );
@@ -81,6 +84,7 @@ namespace tardigradeHydra{
          * Set the derivative of the residual norm w.r.t. the unknown vector
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int xsize = solver->getNumUnknowns( );
 
         auto dResidualNormdX = get_SetDataStorage_dResidualNormdX( );
@@ -182,6 +186,7 @@ namespace tardigradeHydra{
          * \param &deltaX_tr: The trial chcange in the unknown vector
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         tardigradeVectorTools::solverType< floatType > linearSolver;
 
         auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), solver->getNumUnknowns( ) );
@@ -224,6 +229,7 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::incrementSolution( ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         if ( solver->getFailureVerbosityLevel( ) > 0 ){
             solver->addToFailureOutput( "\n\n  iteration: " );
             solver->addToFailureOutput( solver->getIteration( ) );
@@ -296,6 +302,7 @@ namespace tardigradeHydra{
      */
     const floatVector* SolverStepBase::getNonlinearRHS( ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         return solver->getResidual( );
 
     }
@@ -305,6 +312,7 @@ namespace tardigradeHydra{
      */
     const floatVector* SolverStepBase::getFlatNonlinearLHS( ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         return solver->getFlatJacobian( );
 
     }
@@ -320,6 +328,7 @@ namespace tardigradeHydra{
          * \param &deltaX_tr: The trial change in the unknown vector
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         if ( solver->preconditioner->getUsePreconditioner( ) ){
 
             performPreconditionedSolve( deltaX_tr );
@@ -413,6 +422,7 @@ namespace tardigradeHydra{
          * \param &active_constraints: The current constraints that are active
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         active_constraints = std::vector< bool >( solver->getNumConstraints( ), false );
 
         for ( auto c = solver->getConstraints( )->begin( ); c != solver->getConstraints( )->end( ); c++ ){
@@ -434,6 +444,7 @@ namespace tardigradeHydra{
          * \param &active_constraints: The active constraint vector
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = solver->getNumUnknowns( );
 
         const unsigned int numConstraints = solver->getNumConstraints( );
@@ -476,6 +487,7 @@ namespace tardigradeHydra{
          * \param &active_constraints: The vector of currently active constraints.
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = solver->getNumUnknowns( );
 
         const unsigned int numConstraints = solver->getNumConstraints( );
@@ -524,6 +536,7 @@ namespace tardigradeHydra{
          * \param &active_constraints: The vector of currently active constraints.
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = solver->getNumUnknowns( );
 
         const unsigned int numConstraints = solver->getNumConstraints( );
@@ -566,6 +579,7 @@ namespace tardigradeHydra{
          * \param kmax: The maximum number of iterations (defaults to 100)
          */
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = solver->getNumUnknowns( );
 
         const unsigned int numConstraints = solver->getNumConstraints( );
@@ -739,6 +753,7 @@ namespace tardigradeHydra{
      */
     bool SolverStepBase::checkLSConvergence( ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         if ( tardigradeVectorTools::l2norm( *( solver->getResidual( ) ) ) < solver->getToleranceScaleFactor( ) * ( 1 - damping->getLSAlpha( ) ) * ( *damping->step->getLSResidualNorm( ) ) ){
 
             return true;
@@ -794,6 +809,7 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         while ( !checkLSConvergence( ) && checkLSIteration( ) ){
 
             if ( solver->getFailureVerbosityLevel( ) > 0 ){
@@ -889,6 +905,7 @@ namespace tardigradeHydra{
      */
     bool SolverStepBase::checkDescentDirection( const floatVector &dx ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int xsize = solver->getNumUnknowns( );
 
         const floatType RHS = -getGradientRho( ) * std::pow( tardigradeVectorTools::l2norm( dx ), getGradientP( ) );
@@ -934,6 +951,7 @@ namespace tardigradeHydra{
      */
     bool SolverStepBase::checkGradientConvergence( const floatVector &X0 ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int xsize = solver->getNumUnknowns( );
 
         floatVector dx = ( *( solver->getUnknownVector( ) ) ) - X0;
@@ -957,6 +975,7 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::performGradientStep( const floatVector &X0 ){
 
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const floatVector *dResidualNormdX = get_basedResidualNormdX( );
 
         unsigned int l                     = 0;
