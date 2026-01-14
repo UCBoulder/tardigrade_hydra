@@ -788,6 +788,50 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     };
 
+    class StepDampingBaseMock : public tardigradeHydra::StepDampingBase {
+
+        public:
+
+            using tardigradeHydra::StepDampingBase::StepDampingBase;
+
+            std::vector< std::vector< tardigradeHydra::floatVector > > residual = {
+                                                                     {
+                                                                       { 1, 2, 3 } 
+                                                                     },
+                                                                     { 
+                                                                       { 4, 5, 6 },
+                                                                       { 7, 8, 9 }
+                                                                     },
+                                                                     { 
+                                                                       { 10, 9, 8 }
+                                                                     },
+                                                                     { 
+                                                                       { 7, 6, 5 },
+                                                                       { 4, 3, 2 },
+                                                                       { 1, 1, 1 }
+                                                                     },
+                                                                 };
+
+            virtual bool checkLSConvergence( ) override{
+
+                unsigned int iteration = step->getIteration( );
+
+                unsigned int LSIteration = getLSIteration( );
+
+                getResidual( );
+
+                if ( LSIteration < residual[ iteration ].size( ) - 1 ){
+
+                    return false;
+
+                }
+
+                return true;
+
+            }
+
+    };
+
     class SolverStepBaseMock : public tardigradeHydra::SolverStepBase {
 
         public:
@@ -811,24 +855,6 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
                                                                        { 1, 1, 1 }
                                                                      },
                                                                  };
-
-            virtual bool checkLSConvergence( ) override{
-
-                unsigned int iteration = solver->getIteration( );
-
-                unsigned int LSIteration = damping->getLSIteration( );
-
-                solver->getResidual( );
-
-                if ( LSIteration < residual[ iteration ].size( ) - 1 ){
-
-                    return false;
-
-                }
-
-                return true;
-
-            }
 
             virtual bool checkDescentDirection( const tardigradeHydra::floatVector &dx ) override{
 
@@ -981,6 +1007,11 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     SolverBaseMock solver;
     SolverStepBaseMock step;
+    StepDampingBaseMock damping;
+
+    step.damping = &damping;
+    damping.step = &step;
+
     step.damping->setMaxLSIterations( 5 );
     step.damping->setLSAlpha( 1e-4 );
     tardigradeHydra::PreconditionerBase preconditioner;
@@ -1022,6 +1053,11 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     SolverBaseMock solver_pre;
     SolverStepBaseMock step_pre;
+    StepDampingBaseMock damping_pre;
+
+    step_pre.damping = &damping_pre;
+    damping_pre.step = &step_pre;
+
     step_pre.damping->setMaxLSIterations( 5 );
     step_pre.damping->setLSAlpha( 1e-4 );
     tardigradeHydra::PreconditionerBase preconditioner_pre;

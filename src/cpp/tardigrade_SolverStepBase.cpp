@@ -66,10 +66,30 @@ namespace tardigradeHydra{
     /*!
      * Get the residual vector
      */
+    const unsigned int SolverStepBase::getIteration( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getIteration( );
+
+    }
+
+    /*!
+     * Get the residual vector
+     */
     const floatVector *SolverStepBase::getResidual( ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         return solver->getResidual( );
+
+    }
+
+    /*!
+     * Get the scale factor for the tolerance
+     */
+    const floatType SolverStepBase::getToleranceScaleFactor( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "Hydra has not been defined" );
+        return solver->getToleranceScaleFactor( );
 
     }
 
@@ -244,7 +264,7 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
         if ( solver->getFailureVerbosityLevel( ) > 0 ){
             solver->addToFailureOutput( "\n\n  iteration: " );
-            solver->addToFailureOutput( solver->getIteration( ) );
+            solver->addToFailureOutput( getIteration( ) );
         }
 
         X0 = *solver->getUnknownVector( );
@@ -282,7 +302,7 @@ namespace tardigradeHydra{
         damping->applyDamping( );
 
         // Refine the estimate if the new point has a higher residual
-        if ( !checkLSConvergence( ) ){
+        if ( !damping->checkLSConvergence( ) ){
 
             if ( checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
 
@@ -762,23 +782,6 @@ namespace tardigradeHydra{
 // LINESEARCH FUNCTIONS (MOVE TO OWN CLASS)
 
     /*!
-     * Check the line-search convergence
-     */
-    bool SolverStepBase::checkLSConvergence( ){
-
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The trial step has not been defined" );
-        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < solver->getToleranceScaleFactor( ) * ( 1 - damping->getLSAlpha( ) ) * ( *damping->getLSResidualNorm( ) ) ){
-
-            return true;
-
-        }
-
-        return false;
-
-    }
-
-    /*!
      * Check the current line search iteration
      */
     bool SolverStepBase::checkLSIteration( ){
@@ -796,7 +799,7 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
-        while ( !checkLSConvergence( ) && checkLSIteration( ) ){
+        while ( !damping->checkLSConvergence( ) && checkLSIteration( ) ){
 
             if ( solver->getFailureVerbosityLevel( ) > 0 ){
                 solver->addToFailureOutput( "    lambda, |R|: " );
@@ -820,7 +823,7 @@ namespace tardigradeHydra{
             solver->addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
         }
 
-        if ( !checkLSConvergence( ) ){
+        if ( !damping->checkLSConvergence( ) ){
 
             solver->resetToleranceScaleFactor( );
 

@@ -58,7 +58,7 @@ namespace tardigradeHydra{
 
             // LINESEARCH FUNCTIONS (MOVE TO OWN CLASS)
 
-//            virtual bool checkLSConvergence( );
+            virtual bool checkLSConvergence( );
 
             void setLSAlpha( const floatType &value );
 

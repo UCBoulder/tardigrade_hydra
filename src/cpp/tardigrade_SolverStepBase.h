@@ -66,7 +66,11 @@ namespace tardigradeHydra{
 
             // PASS-THROUGH functions
 
+            const unsigned int getIteration( );
+
             const floatVector *getResidual( );
+
+            const floatType getToleranceScaleFactor( );
 
             // END PASS-THROUGH FUNCTIONS
 
@@ -118,8 +122,6 @@ namespace tardigradeHydra{
             void performPreconditionedSolve( floatVector &deltaX_tr ); // TEMP REMOVE THIS
 
             // LINESEARCH FUNCTIONS (MOVE TO OWN CLASS)
-
-            virtual bool checkLSConvergence( );
 
             virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
 

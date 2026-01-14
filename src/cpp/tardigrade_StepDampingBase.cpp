@@ -95,6 +95,22 @@ namespace tardigradeHydra{
 
     };
 
+    /*!
+     * Check the line-search convergence
+     */
+    bool StepDampingBase::checkLSConvergence( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        if ( tardigradeVectorTools::l2norm( *getResidual( ) ) < step->getToleranceScaleFactor( ) * ( 1 - getLSAlpha( ) ) * ( *getLSResidualNorm( ) ) ){
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
 // END LINE SEARCH FUNCTIONS
 
 }
