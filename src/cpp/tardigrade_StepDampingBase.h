@@ -86,8 +86,6 @@ namespace tardigradeHydra{
 //            unsigned int getNumLS( ){ return _NUM_LS; }
 
             const floatType* getLSResidualNorm( );
-
-            void setLSResidualNorm( ); //TODO: Move this to protected
             // END LINESEARCH FUNCTIONS
 
         protected:
@@ -96,6 +94,8 @@ namespace tardigradeHydra{
 
             //! Update the line-search lambda parameter
             virtual void updateLambda( ){ _lambda *= 0.5; }
+
+            void setLSResidualNorm( );
 
 //            //! Reset the number of line search steps
 //            void resetNumLS( ){ _NUM_LS = 0; }
