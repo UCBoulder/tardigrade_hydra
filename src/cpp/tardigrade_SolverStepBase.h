@@ -125,8 +125,6 @@ namespace tardigradeHydra{
 
             virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
 
-            bool checkLSIteration( );
-
             //! Get the number of line search steps performed
             unsigned int getNumLS( ){ return _NUM_LS; }
             // END LINESEARCH FUNCTIONS

@@ -77,7 +77,7 @@ namespace tardigradeHydra{
 
             void resetLSIteration( );
 
-//            bool checkLSIteration( );
+            bool checkLSIteration( );
 
             //! Get the linesearch lambda parameter
             const floatType getLambda( ){ return _lambda; }

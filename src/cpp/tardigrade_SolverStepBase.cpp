@@ -782,14 +782,6 @@ namespace tardigradeHydra{
 // LINESEARCH FUNCTIONS (MOVE TO OWN CLASS)
 
     /*!
-     * Check the current line search iteration
-     */
-    bool SolverStepBase::checkLSIteration( ){
-        TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The trial step has not been defined" );
-        return damping->getLSIteration( ) < damping->getMaxLSIterations( );
-    }
-
-    /*!
      * Perform an Armijo-type line search
      *
      * \param &X0: The base value of the unknown vector
@@ -799,7 +791,7 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
-        while ( !damping->checkLSConvergence( ) && checkLSIteration( ) ){
+        while ( !damping->checkLSConvergence( ) && damping->checkLSIteration( ) ){
 
             if ( solver->getFailureVerbosityLevel( ) > 0 ){
                 solver->addToFailureOutput( "    lambda, |R|: " );

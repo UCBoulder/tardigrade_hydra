@@ -111,6 +111,13 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Check the current line search iteration
+     */
+    bool StepDampingBase::checkLSIteration( ){
+        return getLSIteration( ) < getMaxLSIterations( );
+    }
+
 // END LINE SEARCH FUNCTIONS
 
 }
