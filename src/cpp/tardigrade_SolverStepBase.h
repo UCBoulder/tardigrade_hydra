@@ -98,15 +98,6 @@ namespace tardigradeHydra{
 
             // END NONLINEAR FUNCTIONS
 
-            // GRADIENT FUNCTIONS (MOVE TO OWN CLASS)
-
-            //!< Get whether Gradient descent is allowed
-            const bool getUseGradientDescent( ){ return _use_gradient_descent; }
-
-            void setUseGradientDescent( const bool &value );
-
-            // END GRADIENT FUNCTIONS
-
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
             //! Get if the Newton step should be a LevenbergMarquardt step
@@ -136,6 +127,11 @@ namespace tardigradeHydra{
             void performPreconditionedSolve( floatVector &deltaX_tr ); // TEMP REMOVE THIS
 
             // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
+
+            //!< Get whether Gradient descent is allowed
+            const bool getUseGradientDescent( ){ return _use_gradient_descent; }
+
+            void setUseGradientDescent( const bool &value );
 
             //! Get the gradient descent rho parameter
             const floatType getGradientRho( ){ return _gradientRho; }
@@ -283,12 +279,6 @@ namespace tardigradeHydra{
 
             // END NONLINEAR DATA STORAGE
 
-            // GRADIENT FUNCTIONS (MOVE TO OWN CLASS)
-
-            bool _use_gradient_descent = false; //!< Flag for whether to attempt a gradient descent step
-
-            // END GRADIENT FUNCTIONS
-
             // LM Functions (MOVE TO OWN CLASS)
 
             bool _use_LM_step = false; //!< Flag for whether to attempt a Levenberg-Marquardt step
@@ -302,6 +292,8 @@ namespace tardigradeHydra{
             // END SQP SOLVER FUNCTIONS
 
             // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
+
+            bool _use_gradient_descent = false; //!< Flag for whether to attempt a gradient descent step
 
             floatType _gradientRho   = 1e-8; //!< The rho parameter for the gradient descent step
 
