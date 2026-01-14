@@ -9,6 +9,7 @@
 #include"tardigrade_StepDampingBase.h"
 #include"tardigrade_SolverStepBase.h"
 #include"tardigrade_vector_tools.h"
+#include"tardigrade_CustomErrors.h"
 
 namespace tardigradeHydra{
 
@@ -118,6 +119,54 @@ namespace tardigradeHydra{
         return getLSIteration( ) < getMaxLSIterations( );
     }
 
+    /*!
+     * Perform an Armijo-type line search
+     *
+     * \param &X0: The base value of the unknown vector
+     * \param &deltaX: The proposed change in X
+     */
+    void StepDampingBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The solver has not been defined" );
+        while ( !checkLSConvergence( ) && checkLSIteration( ) ){
+
+            if ( step->getFailureVerbosityLevel( ) > 0 ){
+                step->addToFailureOutput( "    lambda, |R|: " );
+                step->addToFailureOutput( getLambda( ), false );
+                step->addToFailureOutput( ", " );
+                step->addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
+            }
+
+            updateLambda( );
+
+            incrementLSIteration( );
+
+            step->updateUnknownVector( X0 + getLambda( ) * deltaX );
+
+        }
+
+        if ( step->getFailureVerbosityLevel( ) > 0 ){
+            step->addToFailureOutput( "    lambda, |R|: " );
+            step->addToFailureOutput( getLambda( ), false );
+            step->addToFailureOutput( ", " );
+            step->addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
+        }
+
+        if ( !checkLSConvergence( ) ){
+
+            step->resetToleranceScaleFactor( );
+
+            throw convergence_error( "Failure in line search\n" );
+
+        }
+
+        step->resetToleranceScaleFactor( );
+
+        incrementNumLS( );
+
+        resetLSIteration( );
+
+    }
 // END LINE SEARCH FUNCTIONS
 
 }

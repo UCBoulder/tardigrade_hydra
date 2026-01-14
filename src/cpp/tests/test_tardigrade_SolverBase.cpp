@@ -1037,7 +1037,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     BOOST_TEST( solver.num_successful_nlstep_calls == 4 );
 
-    BOOST_TEST( step.getNumLS( ) == 1 );
+    BOOST_TEST( damping.getNumLS( ) == 1 );
 
     BOOST_TEST( step.getNumGrad( ) == 1 );
 
@@ -1083,7 +1083,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     BOOST_TEST( solver_pre.num_successful_nlstep_calls == 4 );
 
-    BOOST_TEST( step_pre.getNumLS( ) == 1 );
+    BOOST_TEST( damping.getNumLS( ) == 1 );
 
     BOOST_TEST( step_pre.getNumGrad( ) == 1 );
 

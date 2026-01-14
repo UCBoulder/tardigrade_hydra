@@ -70,7 +70,21 @@ namespace tardigradeHydra{
 
             const floatVector *getResidual( );
 
+            void updateUnknownVector( const floatVector &value );
+
             const floatType getToleranceScaleFactor( );
+
+            void resetToleranceScaleFactor( );
+
+            const unsigned int getFailureVerbosityLevel( );
+
+            void addToFailureOutput( const std::string &string );
+
+            void addToFailureOutput( const floatVector &value, bool add_endline = true );
+
+            void addToFailureOutput( const std::vector<bool> &value, bool add_endline = true );
+
+            void addToFailureOutput( const floatType &value, bool add_endline = true );
 
             // END PASS-THROUGH FUNCTIONS
 
@@ -120,14 +134,6 @@ namespace tardigradeHydra{
             // END SQP SOLVER FUNCTIONS
 
             void performPreconditionedSolve( floatVector &deltaX_tr ); // TEMP REMOVE THIS
-
-            // LINESEARCH FUNCTIONS (MOVE TO OWN CLASS)
-
-            virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
-
-            //! Get the number of line search steps performed
-            unsigned int getNumLS( ){ return _NUM_LS; }
-            // END LINESEARCH FUNCTIONS
 
             // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
 
@@ -246,16 +252,6 @@ namespace tardigradeHydra{
 
             // END SQP SOLVER FUNCTIONS
 
-            // LINESEARCH PARAMETERS (MOVE TO OWN CLASS)
-
-            //! Reset the number of line search steps
-            void resetNumLS( ){ _NUM_LS = 0; }
-
-            //! Increment the number of line search steps
-            void incrementNumLS( ){ _NUM_LS++; }
-
-            // END LINESEARCH PARAMETERS
-
             // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
 
             //! Increment the number of gradient descent steps
@@ -304,12 +300,6 @@ namespace tardigradeHydra{
             bool _useSQPSolver = false; //!< The flag for whether to use the SQP solver
 
             // END SQP SOLVER FUNCTIONS
-
-            // LS Functions (MOVE TO OWN CLASS)
-
-            unsigned int _NUM_LS = 0; //!< The number of line search steps performed
-
-            // END LS FUNCTIONS
 
             // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
 

@@ -34,7 +34,7 @@ namespace tardigradeHydra{
     void SolverStepBase::reset( ){
 
         resetNumNewton( );
-        resetNumLS( );
+        damping->resetNumLS( ); //TODO: Replace with general reset function
         resetNumGrad( );
 
     }
@@ -84,12 +84,95 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Update the unknown vector
+     *
+     * \param &value: The new value of the unknown vector
+     */
+    void SolverStepBase::updateUnknownVector( const floatVector &value ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        solver->updateUnknownVector( value );
+
+    }
+
+    /*!
      * Get the scale factor for the tolerance
      */
     const floatType SolverStepBase::getToleranceScaleFactor( ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "Hydra has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         return solver->getToleranceScaleFactor( );
+
+    }
+
+    /*!
+     * Reset the tolerance scale factor
+     */
+    void SolverStepBase::resetToleranceScaleFactor( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        solver->resetToleranceScaleFactor( );
+
+    }
+
+    /*!
+     * Get the failure verbosity level
+     */
+    const unsigned int SolverStepBase::getFailureVerbosityLevel( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getFailureVerbosityLevel( );
+
+    }
+
+    /*!
+     * Add the string to the failure output message
+     *
+     * \param &string: The string to add to the failure output message
+     */
+    void SolverStepBase::addToFailureOutput( const std::string &string ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        solver->addToFailureOutput( string );
+
+    }
+
+    /*!
+     * Add a floatVector to the failure output message
+     *
+     * \param &value: The floatVector to add to the failure output message
+     * \param add_endline: Whether to add an endline after the value or not
+     */
+    void SolverStepBase::addToFailureOutput( const floatVector &value, bool add_endline ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        solver->addToFailureOutput( value, add_endline );
+
+    }
+
+    /*!
+     * Add a vector of booleans to the failure output message
+     *
+     * \param &value: The vector of booleans to add to the failure output message
+     * \param add_endline: Whether to add an endline after the value or not
+     */
+    void SolverStepBase::addToFailureOutput( const std::vector<bool> &value, bool add_endline ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        solver->addToFailureOutput( value, add_endline );
+
+    }
+
+    /*!
+     * Add a floatType to the failure output message
+     *
+     * \param &value: The floatType to add to the failure output message
+     * \param add_endline: Whether to add an endline after the value or not
+     */
+    void SolverStepBase::addToFailureOutput( const floatType &value, bool add_endline ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        solver->addToFailureOutput( value, add_endline );
 
     }
 
@@ -307,7 +390,7 @@ namespace tardigradeHydra{
             if ( checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
 
                 // Perform an Armijo type line search when the search direction is aligned with the gradient
-                performArmijoTypeLineSearch( X0, deltaX );
+                damping->performArmijoTypeLineSearch( X0, deltaX );
 
             }
             else{
@@ -778,60 +861,6 @@ namespace tardigradeHydra{
     }
 
 // END SQP SOLVER FUNCTIONS
-
-// LINESEARCH FUNCTIONS (MOVE TO OWN CLASS)
-
-    /*!
-     * Perform an Armijo-type line search
-     *
-     * \param &X0: The base value of the unknown vector
-     * \param &deltaX: The proposed change in X
-     */
-    void SolverStepBase::performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX ){
-
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
-        while ( !damping->checkLSConvergence( ) && damping->checkLSIteration( ) ){
-
-            if ( solver->getFailureVerbosityLevel( ) > 0 ){
-                solver->addToFailureOutput( "    lambda, |R|: " );
-                solver->addToFailureOutput( damping->getLambda( ), false );
-                solver->addToFailureOutput( ", " );
-                solver->addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
-            }
-
-            damping->updateLambda( );
-
-            damping->incrementLSIteration( );
-
-            solver->updateUnknownVector( X0 + damping->getLambda( ) * deltaX );
-
-        }
-
-        if ( solver->getFailureVerbosityLevel( ) > 0 ){
-            solver->addToFailureOutput( "    lambda, |R|: " );
-            solver->addToFailureOutput( damping->getLambda( ), false );
-            solver->addToFailureOutput( ", " );
-            solver->addToFailureOutput( tardigradeVectorTools::l2norm( *getResidual( ) ) );
-        }
-
-        if ( !damping->checkLSConvergence( ) ){
-
-            solver->resetToleranceScaleFactor( );
-
-            throw convergence_error( "Failure in line search\n" );
-
-        }
-
-        solver->resetToleranceScaleFactor( );
-
-        incrementNumLS( );
-
-        damping->resetLSIteration( );
-
-    }
-
-// END LINESEARCH FUNCTIONS
 
 // GRADIENT DESCENT FUNCTIONS
 

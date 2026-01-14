@@ -70,7 +70,7 @@ namespace tardigradeHydra{
             //! Get the line-search alpha parameter
             constexpr floatType getLSAlpha( ){ return _lsAlpha; }
 
-//            virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
+            virtual void performArmijoTypeLineSearch( const floatVector &X0, const floatVector &deltaX );
 
             //! Get the current value of the line-search iteration
             const unsigned int getLSIteration( ){ return _LSIteration; }
@@ -82,8 +82,8 @@ namespace tardigradeHydra{
             //! Get the linesearch lambda parameter
             const floatType getLambda( ){ return _lambda; }
 
-//            //! Get the number of line search steps performed
-//            unsigned int getNumLS( ){ return _NUM_LS; }
+            //! Get the number of line search steps performed
+            unsigned int getNumLS( ){ return _NUM_LS; }
 
             const floatType* getLSResidualNorm( );
             // END LINESEARCH FUNCTIONS
@@ -97,13 +97,13 @@ namespace tardigradeHydra{
 
             void setLSResidualNorm( );
 
-//            //! Reset the number of line search steps
-//            void resetNumLS( ){ _NUM_LS = 0; }
-//
-//            //! Increment the number of line search steps
-//            void incrementNumLS( ){ _NUM_LS++; }
-//
-//            // END LINESEARCH PARAMETERS
+            //! Reset the number of line search steps
+            void resetNumLS( ){ _NUM_LS = 0; }
+
+            //! Increment the number of line search steps
+            void incrementNumLS( ){ _NUM_LS++; }
+
+            // END LINESEARCH PARAMETERS
 
         private:
 
