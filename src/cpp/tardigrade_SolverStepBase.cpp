@@ -387,7 +387,7 @@ namespace tardigradeHydra{
         // Refine the estimate if the new point has a higher residual
         if ( !damping->checkLSConvergence( ) ){
 
-            if ( checkDescentDirection( deltaX ) || !getUseGradientDescent( ) ){
+            if ( checkDescentDirection( deltaX ) || !damping->getUseGradientDescent( ) ){
 
                 // Perform an Armijo type line search when the search direction is aligned with the gradient
                 damping->performArmijoTypeLineSearch( X0, deltaX );
@@ -475,21 +475,6 @@ namespace tardigradeHydra{
 
 // END NEWTON SOLVER FUNCTIONS
 
-// BEGIN GRADIENT FUNCTIONS
-
-    void SolverStepBase::setUseGradientDescent( const bool &value ){
-        /*!
-         * Set whether to attempt a gradient descent step
-         * 
-         * \param &value: The value of the parameter
-         */
-
-        _use_gradient_descent = value;
-
-    }
-
-// END GRADIENT FUNCTIONS
-
 // BEGIN LM FUNCTIONS
 
     /*!
@@ -499,7 +484,7 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::setUseLevenbergMarquardt( const bool &value ){
     
-        setUseGradientDescent( value );
+        damping->setUseGradientDescent( value );
     
         _use_LM_step = value;
     

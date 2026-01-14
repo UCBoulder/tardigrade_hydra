@@ -169,4 +169,19 @@ namespace tardigradeHydra{
     }
 // END LINE SEARCH FUNCTIONS
 
+// BEGIN GRADIENT FUNCTIONS
+
+    void StepDampingBase::setUseGradientDescent( const bool &value ){
+        /*!
+         * Set whether to attempt a gradient descent step
+         * 
+         * \param &value: The value of the parameter
+         */
+
+        _use_gradient_descent = value;
+
+    }
+
+// END GRADIENT FUNCTIONS
+
 }

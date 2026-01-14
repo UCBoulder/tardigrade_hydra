@@ -156,13 +156,13 @@ namespace tardigradeHydra{
 //                    BOOST_CHECK( step._use_LM_step == step.getUseLevenbergMarquardt( ) );
 //
 //                }
-//
-//                static void checkUseGradientDescent( SolverStepBase &step ){
-//
-//                    BOOST_CHECK( step._use_gradient_descent == step.getUseGradientDescent( ) );
-//
-//                }
-//
+
+                static void checkUseGradientDescent( StepDampingBase &damping ){
+
+                    BOOST_CHECK( damping._use_gradient_descent == damping.getUseGradientDescent( ) );
+
+                }
+
 //                static void setMuk( SolverStepBase &step, const tardigradeHydra::floatType &value ){
 //
 //                    step.setMuk( value );
@@ -304,4 +304,23 @@ BOOST_AUTO_TEST_CASE( test_StepDampingBase_checkLSConvergence, * boost::unit_tes
     BOOST_CHECK( damping.checkLSConvergence( ) );
 
 }
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_getUseGradientDescent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    tardigradeHydra::unit_test::StepDampingBaseTester::checkUseGradientDescent( damping );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_setUseGradientDescent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    damping.setUseGradientDescent( true );
+
+    BOOST_TEST( true == damping.getUseGradientDescent( ) );
+
+}
+
 

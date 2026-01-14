@@ -1025,7 +1025,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
     step.setSolver( &solver );
     preconditioner.setSolver( &solver );
 
-    hydra.getSolver( )->step->setUseGradientDescent( true );
+    hydra.getSolver( )->step->damping->setUseGradientDescent( true );
 
     solver.solve( );
 
@@ -1071,7 +1071,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
     step_pre.setSolver( &solver_pre );
     preconditioner_pre.setSolver( &solver_pre );
 
-    hydra_pre.getSolver( )->step->setUseGradientDescent( true );
+    hydra_pre.getSolver( )->step->damping->setUseGradientDescent( true );
 
     solver_pre.solve( );
 

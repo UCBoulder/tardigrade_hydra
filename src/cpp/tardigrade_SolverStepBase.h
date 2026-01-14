@@ -128,11 +128,6 @@ namespace tardigradeHydra{
 
             // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
 
-            //!< Get whether Gradient descent is allowed
-            const bool getUseGradientDescent( ){ return _use_gradient_descent; }
-
-            void setUseGradientDescent( const bool &value );
-
             //! Get the gradient descent rho parameter
             const floatType getGradientRho( ){ return _gradientRho; }
 

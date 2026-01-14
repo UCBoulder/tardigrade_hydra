@@ -152,12 +152,6 @@ namespace tardigradeHydra{
 
                 }
 
-                static void checkUseGradientDescent( SolverStepBase &step ){
-
-                    BOOST_CHECK( step._use_gradient_descent == step.getUseGradientDescent( ) );
-
-                }
-
                 static void setMuk( SolverStepBase &step, const tardigradeHydra::floatType &value ){
 
                     step.setMuk( value );
@@ -292,14 +286,6 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_getUseLevenbergMarquardt, * boost::uni
 
 }
 
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_getUseGradientDescent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    tardigradeHydra::unit_test::SolverStepBaseTester::checkUseGradientDescent( step );
-
-}
-
 BOOST_AUTO_TEST_CASE( test_SolverStepBase_setMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
@@ -356,17 +342,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_setUseLevenbergMarquardt, * boost::uni
 
     BOOST_TEST( true == step.getUseLevenbergMarquardt( ) );
 
-    BOOST_TEST( true == step.getUseGradientDescent( ) );
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_setUseGradientDescent, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    step.setUseGradientDescent( true );
-
-    BOOST_TEST( true == step.getUseGradientDescent( ) );
-
+    BOOST_TEST( true == step.damping->getUseGradientDescent( ) );
 }
 
 BOOST_AUTO_TEST_CASE( test_SolverStepBase_setMaxGradientIterations, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
