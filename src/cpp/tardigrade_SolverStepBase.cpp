@@ -39,24 +39,24 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Add data to the vector of values which will be cleared after each iteration
+     * 
+     * \param *data: The dataBase object to be cleared
+     */
     void SolverStepBase::addIterationData( dataBase *data ){
-        /*!
-         * Add data to the vector of values which will be cleared after each iteration
-         * 
-         * \param *data: The dataBase object to be cleared
-         */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         solver->addIterationData( data );
 
     }
 
+    /*!
+     * Add data to the vector of values which will be cleared after each nonlinear step
+     * 
+     * \param *data: The dataBase object to be cleared
+     */
     void SolverStepBase::addNLStepData( dataBase *data ){
-        /*!
-         * Add data to the vector of values which will be cleared after each nonlinear step
-         * 
-         * \param *data: The dataBase object to be cleared
-         */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         solver->addNLStepData( data );
@@ -123,6 +123,7 @@ namespace tardigradeHydra{
         return solver->getFlatJacobian( );
 
     }
+
     /*!
      * Get the scale factor for the tolerance
      */
@@ -140,6 +141,16 @@ namespace tardigradeHydra{
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         solver->resetToleranceScaleFactor( );
+
+    }
+
+    /*!
+     * Get whether a rank-deficient matrix will throw an error
+     */
+    bool SolverStepBase::getRankDeficientError( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getRankDeficientError( );
 
     }
 
@@ -204,10 +215,10 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Set the norm of the residual vector
+     */
     void SolverStepBase::setResidualNorm( ){
-        /*!
-         * Set the norm of the residual vector
-         */
 
         auto residualNorm = get_SetDataStorage_residualNorm( );
 
@@ -219,10 +230,10 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Set the derivative of the residual norm w.r.t. the unknown vector
+     */
     void SolverStepBase::setdResidualNormdX( ){
-        /*!
-         * Set the derivative of the residual norm w.r.t. the unknown vector
-         */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int xsize = getNumUnknowns( );
@@ -243,10 +254,11 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Get the base value for the residual norm.
+     */
     const floatType *SolverStepBase::get_baseResidualNorm( ){
-        /*!
-         * Get the base value for the residual norm.
-         */
+
         if ( !_baseResidualNorm.first ){
 
             throw std::runtime_error( "The base residual norm must be set with set_baseResidualNorm before it can be called" );
@@ -257,10 +269,10 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Get the base value for the derivative of the residual norm w.r.t. the unknown vector
+     */
     const floatVector *SolverStepBase::get_basedResidualNormdX( ){
-        /*!
-         * Get the base value for the derivative of the residual norm w.r.t. the unknown vector
-         */
 
         if ( !_basedResidualNormdX.first ){
 
@@ -272,22 +284,22 @@ namespace tardigradeHydra{
 
     }
 
+    /*! Set the base value of the residual norm
+     *
+     * \param &value: The new value
+     */
     void SolverStepBase::set_baseResidualNorm( const floatType &value ){
-        /*! Set the base value of the residual norm
-         *
-         * \param &value: The new value
-         */
 
         setNLStepData( value, _baseResidualNorm );
 
     }
 
+    /*!
+     * Set the base derivative of the residual norm w.r.t. the unknown vector
+     *
+     * \param &value: The new value
+     */
     void SolverStepBase::set_basedResidualNormdX( const floatVector &value ){
-        /*!
-         * Set the base derivative of the residual norm w.r.t. the unknown vector
-         *
-         * \param &value: The new value
-         */
 
         setNLStepData( value, _basedResidualNormdX );
 
@@ -319,12 +331,12 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Perform a pre-conditioned solve
+     *
+     * \param &deltaX_tr: The trial chcange in the unknown vector
+     */
     void SolverStepBase::performPreconditionedSolve( floatVector &deltaX_tr ){
-        /*!
-         * Perform a pre-conditioned solve
-         *
-         * \param &deltaX_tr: The trial chcange in the unknown vector
-         */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( solver->preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
@@ -357,7 +369,7 @@ namespace tardigradeHydra{
 
         unsigned int rank = linearSolver.rank( );
 
-        if ( solver->getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
+        if ( getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
             TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 
@@ -464,12 +476,12 @@ namespace tardigradeHydra{
 
 // BEGIN NEWTON SOLVER FUNCTIONS
 
+    /*!
+     * Solve the Newton update returning the trial value of the unknown vector
+     *
+     * \param &deltaX_tr: The trial change in the unknown vector
+     */
     void SolverStepBase::solveNewtonUpdate( floatVector &deltaX_tr ){
-        /*!
-         * Solve the Newton update returning the trial value of the unknown vector
-         *
-         * \param &deltaX_tr: The trial change in the unknown vector
-         */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( solver->preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
@@ -491,7 +503,7 @@ namespace tardigradeHydra{
 
             unsigned int rank = linearSolver.rank( );
 
-            if ( solver->getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
+            if ( getRankDeficientError( ) && ( rank != getResidual( )->size( ) ) ){
 
                 TARDIGRADE_ERROR_TOOLS_CATCH( throw convergence_error( "The Jacobian is not full rank" ) );
 
@@ -544,12 +556,12 @@ namespace tardigradeHydra{
 
 // BEGIN SQP SOLVER FUNCTIONS
 
+    /*!
+     * Initialize the active constraint vector
+     * 
+     * \param &active_constraints: The current constraints that are active
+     */
     void SolverStepBase::initializeActiveConstraints( std::vector< bool > &active_constraints ){
-        /*!
-         * Initialize the active constraint vector
-         * 
-         * \param &active_constraints: The current constraints that are active
-         */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         active_constraints = std::vector< bool >( solver->getNumConstraints( ), false );
@@ -564,14 +576,14 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Assemble the right hand side vector for the KKT matrix
+     * 
+     * \param &dx: The delta vector being solved for
+     * \param &KKTRHSVector: The right hand size vector for the KKT matrix
+     * \param &active_constraints: The active constraint vector
+     */
     void SolverStepBase::assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints ){
-        /*!
-         * Assemble the right hand side vector for the KKT matrix
-         * 
-         * \param &dx: The delta vector being solved for
-         * \param &KKTRHSVector: The right hand size vector for the KKT matrix
-         * \param &active_constraints: The active constraint vector
-         */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = getNumUnknowns( );
@@ -608,13 +620,13 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Assemble the Karush-Kuhn-Tucker matrix for an inequality constrained Newton-Raphson solve
+     * 
+     * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
+     * \param &active_constraints: The vector of currently active constraints.
+     */
     void SolverStepBase::assembleKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints ){
-        /*!
-         * Assemble the Karush-Kuhn-Tucker matrix for an inequality constrained Newton-Raphson solve
-         * 
-         * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
-         * \param &active_constraints: The vector of currently active constraints.
-         */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = getNumUnknowns( );
@@ -657,13 +669,13 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Update the KKTMatrix if the active constraints have changed
+     * 
+     * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
+     * \param &active_constraints: The vector of currently active constraints.
+     */
     void SolverStepBase::updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints ){
-        /*!
-         * Update the KKTMatrix if the active constraints have changed
-         * 
-         * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
-         * \param &active_constraints: The vector of currently active constraints.
-         */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = getNumUnknowns( );
@@ -700,13 +712,13 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Solve the constrained QP problem to estimate the desired step size
+     * 
+     * \param &dx: The change in the unknown vector
+     * \param kmax: The maximum number of iterations (defaults to 100)
+     */
     void SolverStepBase::solveConstrainedQP( floatVector &dx, const unsigned int kmax ){
-        /*!
-         * Solve the constrained QP problem to estimate the desired step size
-         * 
-         * \param &dx: The change in the unknown vector
-         * \param kmax: The maximum number of iterations (defaults to 100)
-         */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = getNumUnknowns( );

@@ -82,6 +82,8 @@ namespace tardigradeHydra{
 
             void resetToleranceScaleFactor( );
 
+            bool getRankDeficientError( );
+
             const unsigned int getFailureVerbosityLevel( );
 
             void addToFailureOutput( const std::string &string );
