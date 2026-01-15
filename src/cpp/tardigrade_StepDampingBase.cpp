@@ -237,6 +237,15 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Check if the gradient hasn't exceeded the number of allowed iterations
+     */
+    bool StepDampingBase::checkGradientIteration( ){
+
+        return getGradientIteration( ) < getMaxGradientIterations( );
+
+    }
+
 // END GRADIENT FUNCTIONS
 
 }

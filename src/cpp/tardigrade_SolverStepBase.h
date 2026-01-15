@@ -130,8 +130,6 @@ namespace tardigradeHydra{
 
             virtual bool checkDescentDirection( const floatVector &dx );
 
-            bool checkGradientIteration( );
-
             virtual bool checkGradientConvergence( const floatVector &X0 );
 
             virtual void performGradientStep( const floatVector &X0 );
@@ -239,15 +237,6 @@ namespace tardigradeHydra{
 
             // END SQP SOLVER FUNCTIONS
 
-            // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
-
-            unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
-
-            unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
-
-            unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
-
-            // END GRADIENT DESCENT FUNCTIONS
     };
 
 }

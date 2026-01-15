@@ -876,16 +876,6 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Check if the gradient hasn't exceeded the number of allowed iterations
-     */
-    bool SolverStepBase::checkGradientIteration( ){
-
-        TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
-        return damping->getGradientIteration( ) < damping->getMaxGradientIterations( );
-
-    }
-
-    /*!
      * Check the convergence of a gradient step
      *
      * \param &X0: The initial value of the unknown vector
@@ -923,7 +913,7 @@ namespace tardigradeHydra{
 
         const unsigned int maxiter         = damping->getMaxGradientIterations( );
 
-        while( checkGradientIteration( ) ){
+        while( damping->checkGradientIteration( ) ){
 
             floatType t = std::pow( damping->getGradientBeta( ), l );
 

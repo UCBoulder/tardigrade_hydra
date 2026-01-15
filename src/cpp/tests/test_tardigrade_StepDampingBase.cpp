@@ -168,12 +168,6 @@ namespace tardigradeHydra{
 //                    step.setMuk( value );
 //
 //                }
-//
-//                static unsigned int get_gradientIteration( SolverStepBase &step ){
-//
-//                    return step._gradientIteration;
-//
-//                }
 
         };
 
