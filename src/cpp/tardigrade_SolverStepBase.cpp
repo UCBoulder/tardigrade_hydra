@@ -40,6 +40,26 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Get the relative tolerance value
+     */
+    const floatType SolverStepBase::getRelativeTolerance( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getRelativeTolerance( );
+
+    }
+
+    /*!
+     * Get the absolute tolerance value
+     */
+    const floatType SolverStepBase::getAbsoluteTolerance( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getAbsoluteTolerance( );
+
+    }
+
+    /*!
      * Add data to the vector of values which will be cleared after each iteration
      * 
      * \param *data: The dataBase object to be cleared
@@ -122,6 +142,33 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         return solver->getFlatJacobian( );
 
+    }
+
+    /*!
+     * Get the number of constraint equations
+     */
+    const unsigned int SolverStepBase::getNumConstraints( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getNumConstraints( );
+    }
+
+    /*!
+     * Get the current constraint values
+     */
+    const floatVector *SolverStepBase::getConstraints( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getConstraints( );
+    }
+
+    /*!
+     * Get the constraint Jacobians
+     */
+    const floatVector *SolverStepBase::getConstraintJacobians( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getConstraintJacobians( );
     }
 
     /*!
@@ -563,11 +610,11 @@ namespace tardigradeHydra{
     void SolverStepBase::initializeActiveConstraints( std::vector< bool > &active_constraints ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        active_constraints = std::vector< bool >( solver->getNumConstraints( ), false );
+        active_constraints = std::vector< bool >( getNumConstraints( ), false );
 
-        for ( auto c = solver->getConstraints( )->begin( ); c != solver->getConstraints( )->end( ); c++ ){
+        for ( auto c = getConstraints( )->begin( ); c != getConstraints( )->end( ); c++ ){
 
-            unsigned int index = ( unsigned int )( c - solver->getConstraints( )->begin( ) );
+            unsigned int index = ( unsigned int )( c - getConstraints( )->begin( ) );
 
             active_constraints[ index ] = ( ( *c ) < 0. );
 
@@ -587,7 +634,7 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = getNumUnknowns( );
 
-        const unsigned int numConstraints = solver->getNumConstraints( );
+        const unsigned int numConstraints = getNumConstraints( );
 
         KKTRHSVector = floatVector( numUnknowns + numConstraints, 0 );
 
@@ -605,11 +652,11 @@ namespace tardigradeHydra{
 
             if ( active_constraints[ i ] ){
 
-                KKTRHSVector[ numUnknowns + i ] = ( *( solver->getConstraints( ) ) )[ i ];
+                KKTRHSVector[ numUnknowns + i ] = ( *( getConstraints( ) ) )[ i ];
 
                 for ( unsigned int I = 0; I < numUnknowns; I++ ){
 
-                    KKTRHSVector[ numUnknowns + i ] += ( *( solver->getConstraintJacobians( ) ) )[ numUnknowns * i + I ] * dx[ I ];
+                    KKTRHSVector[ numUnknowns + i ] += ( *( getConstraintJacobians( ) ) )[ numUnknowns * i + I ] * dx[ I ];
 
                 }
 
@@ -630,7 +677,7 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = getNumUnknowns( );
 
-        const unsigned int numConstraints = solver->getNumConstraints( );
+        const unsigned int numConstraints = getNumConstraints( );
 
         KKTMatrix = floatVector( ( numUnknowns + numConstraints ) * ( numUnknowns + numConstraints ), 0 );
 
@@ -652,8 +699,8 @@ namespace tardigradeHydra{
 
                 for ( unsigned int I = 0; I < numUnknowns; I++ ){
 
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + I ];
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + I ];
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
 
                 }
 
@@ -679,7 +726,7 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = getNumUnknowns( );
 
-        const unsigned int numConstraints = solver->getNumConstraints( );
+        const unsigned int numConstraints = getNumConstraints( );
 
         Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > K( KKTMatrix.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
 
@@ -695,8 +742,8 @@ namespace tardigradeHydra{
 
                 for ( unsigned int I = 0; I < numUnknowns; I++ ){
 
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + I ];
-                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + I ];
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( I ) + numUnknowns + i ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
+                    KKTMatrix[ ( numUnknowns + numConstraints ) * ( numUnknowns + i ) + I ] = ( *getConstraintJacobians( ) )[ numUnknowns * i + I ];
 
                 }
 
@@ -722,7 +769,7 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int numUnknowns = getNumUnknowns( );
 
-        const unsigned int numConstraints = solver->getNumConstraints( );
+        const unsigned int numConstraints = getNumConstraints( );
 
         floatVector K;
 
@@ -735,13 +782,13 @@ namespace tardigradeHydra{
 
         assembleKKTMatrix( K, active_constraints );
 
-        floatType tol = solver->getRelativeTolerance( ) * ( tardigradeVectorTools::l2norm( RHS ) ) + solver->getAbsoluteTolerance( );
+        floatType tol = getRelativeTolerance( ) * ( tardigradeVectorTools::l2norm( RHS ) ) + getAbsoluteTolerance( );
 
         unsigned int k = 0;
 
         floatVector y( numUnknowns + numConstraints, 0 );
 
-        floatVector ck = *solver->getConstraints( );
+        floatVector ck = *getConstraints( );
 
         floatVector ctilde( numConstraints, 0 );
 
@@ -817,12 +864,12 @@ namespace tardigradeHydra{
             }
             else{
 
-                ck     = *solver->getConstraints( );
-                ctilde = *solver->getConstraints( );
+                ck     = *getConstraints( );
+                ctilde = *getConstraints( );
                 for ( unsigned int i = 0; i < numConstraints; i++ ){
                     for ( unsigned int j = 0; j < numUnknowns; j++ ){
-                        ck[ i ]     += ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + j ] * dx[ j ];
-                        ctilde[ i ] += ( *solver->getConstraintJacobians( ) )[ numUnknowns * i + j ] * ( dx[ j ] - negp[ j ] );
+                        ck[ i ]     += ( *getConstraintJacobians( ) )[ numUnknowns * i + j ] * dx[ j ];
+                        ctilde[ i ] += ( *getConstraintJacobians( ) )[ numUnknowns * i + j ] * ( dx[ j ] - negp[ j ] );
                     }
                 }
 
@@ -921,7 +968,6 @@ namespace tardigradeHydra{
      */
     bool SolverStepBase::checkGradientConvergence( const floatVector &X0 ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int xsize = getNumUnknowns( );
 
         floatVector dx = ( *getUnknownVector( ) ) - X0;
@@ -934,7 +980,7 @@ namespace tardigradeHydra{
 
         }
 
-        return ( *get_residualNorm( ) ) < solver->getToleranceScaleFactor( ) * RHS;
+        return ( *get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
 
     }
 

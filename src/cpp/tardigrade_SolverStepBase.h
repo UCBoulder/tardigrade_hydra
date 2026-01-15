@@ -66,6 +66,10 @@ namespace tardigradeHydra{
 
             // PASS-THROUGH functions
 
+            const floatType getRelativeTolerance( );
+
+            const floatType getAbsoluteTolerance( );
+
             const unsigned int getIteration( );
 
             const floatVector *getResidual( );
@@ -77,6 +81,12 @@ namespace tardigradeHydra{
             void updateUnknownVector( const floatVector &value );
 
             const floatVector *getFlatJacobian( );
+
+            const unsigned int getNumConstraints( );
+
+            const floatVector *getConstraints( );
+
+            const floatVector *getConstraintJacobians( );
 
             const floatType getToleranceScaleFactor( );
 
