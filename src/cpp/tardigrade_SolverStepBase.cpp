@@ -35,7 +35,7 @@ namespace tardigradeHydra{
 
         resetNumNewton( );
         damping->resetNumLS( ); //TODO: Replace with general reset function
-        damping->resetNumGrad( );
+        damping->resetNumGrad( ); //TODO: Replace with general reset function
 
     }
 
@@ -970,13 +970,13 @@ namespace tardigradeHydra{
 
         const unsigned int xsize = getNumUnknowns( );
 
-        floatVector dx = ( *getUnknownVector( ) ) - X0;
+        floatVector dx = *getUnknownVector( ) - X0;
 
         floatType RHS = *get_baseResidualNorm( );
 
         for ( unsigned int i = 0; i < xsize; ++i ){
 
-            RHS += damping->getGradientSigma( ) * ( *( get_basedResidualNormdX( ) ) )[ i ] * dx[ i ];
+            RHS += damping->getGradientSigma( ) * ( *get_basedResidualNormdX( ) )[ i ] * dx[ i ];
 
         }
 
