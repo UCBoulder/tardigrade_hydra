@@ -96,6 +96,15 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Get the unknown vector
+     */
+    const floatVector *SolverStepBase::getUnknownVector( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getUnknownVector( );
+    }
+
+    /*!
      * Get the scale factor for the tolerance
      */
     const floatType SolverStepBase::getToleranceScaleFactor( ){
@@ -345,18 +354,18 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( trial_step != nullptr, "The trial step has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
-        if ( solver->getFailureVerbosityLevel( ) > 0 ){
-            solver->addToFailureOutput( "\n\n  iteration: " );
-            solver->addToFailureOutput( getIteration( ) );
+        if ( getFailureVerbosityLevel( ) > 0 ){
+            addToFailureOutput( "\n\n  iteration: " );
+            addToFailureOutput( getIteration( ) );
         }
 
-        X0 = *solver->getUnknownVector( );
+        X0 = *getUnknownVector( );
         deltaX = floatVector( solver->getNumUnknowns( ), 0 );
 
-        if ( solver->getFailureVerbosityLevel( ) > 0 ){
-            solver->addToFailureOutput( "  X0:\n" );
-            solver->addToFailureOutput( "  " );
-            solver->addToFailureOutput( *solver->getUnknownVector( ) );
+        if ( getFailureVerbosityLevel( ) > 0 ){
+            addToFailureOutput( "  X0:\n" );
+            addToFailureOutput( "  " );
+            addToFailureOutput( *getUnknownVector( ) );
         }
 
         setBaseQuantities( );
@@ -374,10 +383,10 @@ namespace tardigradeHydra{
 
         }
 
-        if ( solver->getFailureVerbosityLevel( ) > 0 ){
-            solver->addToFailureOutput( "  trial deltaX:\n" );
-            solver->addToFailureOutput( "  " );
-            solver->addToFailureOutput( deltaX );
+        if ( getFailureVerbosityLevel( ) > 0 ){
+            addToFailureOutput( "  trial deltaX:\n" );
+            addToFailureOutput( "  " );
+            addToFailureOutput( deltaX );
         }
 
         solver->updateUnknownVector( X0 + damping->getLambda( ) * deltaX );
@@ -885,7 +894,7 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int xsize = solver->getNumUnknowns( );
 
-        floatVector dx = ( *( solver->getUnknownVector( ) ) ) - X0;
+        floatVector dx = ( *getUnknownVector( ) ) - X0;
 
         floatType RHS = *get_baseResidualNorm( );
 

@@ -70,6 +70,8 @@ namespace tardigradeHydra{
 
             const floatVector *getResidual( );
 
+            const floatVector *getUnknownVector( );
+
             void updateUnknownVector( const floatVector &value );
 
             const floatType getToleranceScaleFactor( );
@@ -130,9 +132,9 @@ namespace tardigradeHydra{
 
             virtual bool checkDescentDirection( const floatVector &dx );
 
-            virtual bool checkGradientConvergence( const floatVector &X0 );
-
             virtual void performGradientStep( const floatVector &X0 );
+
+            virtual bool checkGradientConvergence( const floatVector &X0 );
 
             // END GRADIENT DESCENT FUNCTIONS
 
