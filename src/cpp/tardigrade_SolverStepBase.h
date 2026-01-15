@@ -70,9 +70,13 @@ namespace tardigradeHydra{
 
             const floatVector *getResidual( );
 
+            const unsigned int getNumUnknowns( );
+
             const floatVector *getUnknownVector( );
 
             void updateUnknownVector( const floatVector &value );
+
+            const floatVector *getFlatJacobian( );
 
             const floatType getToleranceScaleFactor( );
 

@@ -96,6 +96,16 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Get the number of unknowns
+     */
+    const unsigned int SolverStepBase::getNumUnknowns( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getNumUnknowns( );
+
+    }
+
+    /*!
      * Get the unknown vector
      */
     const floatVector *SolverStepBase::getUnknownVector( ){
@@ -104,6 +114,15 @@ namespace tardigradeHydra{
         return solver->getUnknownVector( );
     }
 
+    /*!
+     * Get the Jacobian in row-major format
+     */
+    const floatVector *SolverStepBase::getFlatJacobian( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        return solver->getFlatJacobian( );
+
+    }
     /*!
      * Get the scale factor for the tolerance
      */
@@ -206,7 +225,7 @@ namespace tardigradeHydra{
          */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        const unsigned int xsize = solver->getNumUnknowns( );
+        const unsigned int xsize = getNumUnknowns( );
 
         auto dResidualNormdX = get_SetDataStorage_dResidualNormdX( );
 
@@ -214,7 +233,7 @@ namespace tardigradeHydra{
 
         const floatVector *residual = getResidual( );
 
-        const floatVector *jacobian = solver->getFlatJacobian( );
+        const floatVector *jacobian = getFlatJacobian( );
 
         for ( unsigned int i = 0; i < xsize; i++ ){
             for ( unsigned int j = 0; j < xsize; j++ ){
@@ -311,15 +330,15 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( solver->preconditioner != nullptr, "The preconditioner has not been defined" ); //TODO: Move to the trial_step class
         tardigradeVectorTools::solverType< floatType > linearSolver;
 
-        auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), solver->getNumUnknowns( ) );
+        auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), getNumUnknowns( ) );
 
-        auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), solver->getNumUnknowns( ), solver->getNumUnknowns( ) );
+        auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
 
-        auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), solver->getNumUnknowns( ) );
+        auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
 
         if( solver->preconditioner->getPreconditionerIsDiagonal( ) ){
 
-            auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), solver->getNumUnknowns( ) );
+            auto p_map = tardigradeHydra::getDynamicSizeVectorMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ) );
 
             linearSolver = tardigradeVectorTools::solverType< floatType >( p_map.asDiagonal( ) * J_map );
 
@@ -328,7 +347,7 @@ namespace tardigradeHydra{
         }
         else{
 
-            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), solver->getNumUnknowns( ), solver->getNumUnknowns( ) );
+            auto p_map = tardigradeHydra::getDynamicSizeMatrixMap( solver->preconditioner->getFlatPreconditioner( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
 
             linearSolver = tardigradeVectorTools::solverType< floatType >( p_map * J_map );
 
@@ -360,7 +379,7 @@ namespace tardigradeHydra{
         }
 
         X0 = *getUnknownVector( );
-        deltaX = floatVector( solver->getNumUnknowns( ), 0 );
+        deltaX = floatVector( getNumUnknowns( ), 0 );
 
         if ( getFailureVerbosityLevel( ) > 0 ){
             addToFailureOutput( "  X0:\n" );
@@ -461,11 +480,11 @@ namespace tardigradeHydra{
         }
         else{
 
-            auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), solver->getNumUnknowns( ) );
+            auto dx_map = tardigradeHydra::getDynamicSizeVectorMap( deltaX_tr.data( ), getNumUnknowns( ) );
 
-            auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), solver->getNumUnknowns( ), solver->getNumUnknowns( ) );
+            auto J_map = tardigradeHydra::getDynamicSizeMatrixMap( getFlatNonlinearLHS( )->data( ), getNumUnknowns( ), getNumUnknowns( ) );
 
-            auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), solver->getNumUnknowns( ) );
+            auto R_map = tardigradeHydra::getDynamicSizeVectorMap( getNonlinearRHS( )->data( ), getNumUnknowns( ) );
 
             tardigradeVectorTools::solverType< floatType > linearSolver( J_map );
             dx_map = -linearSolver.solve( R_map );
@@ -555,7 +574,7 @@ namespace tardigradeHydra{
          */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        const unsigned int numUnknowns = solver->getNumUnknowns( );
+        const unsigned int numUnknowns = getNumUnknowns( );
 
         const unsigned int numConstraints = solver->getNumConstraints( );
 
@@ -567,7 +586,7 @@ namespace tardigradeHydra{
 
         Eigen::Map< const Eigen::Vector< floatType, -1 > > R( getResidual( )->data( ), numUnknowns );
 
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( solver->getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 
         RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + getMuk( ) * _dx ).eval( );
 
@@ -598,7 +617,7 @@ namespace tardigradeHydra{
          */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        const unsigned int numUnknowns = solver->getNumUnknowns( );
+        const unsigned int numUnknowns = getNumUnknowns( );
 
         const unsigned int numConstraints = solver->getNumConstraints( );
 
@@ -606,7 +625,7 @@ namespace tardigradeHydra{
 
         Eigen::Map< Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > K( KKTMatrix.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
 
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( solver->getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
+        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 
         K.block( 0, 0, numUnknowns, numUnknowns ) = ( J.transpose( ) * J ).eval( );
 
@@ -647,7 +666,7 @@ namespace tardigradeHydra{
          */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        const unsigned int numUnknowns = solver->getNumUnknowns( );
+        const unsigned int numUnknowns = getNumUnknowns( );
 
         const unsigned int numConstraints = solver->getNumConstraints( );
 
@@ -690,7 +709,7 @@ namespace tardigradeHydra{
          */
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        const unsigned int numUnknowns = solver->getNumUnknowns( );
+        const unsigned int numUnknowns = getNumUnknowns( );
 
         const unsigned int numConstraints = solver->getNumConstraints( );
 
@@ -866,7 +885,7 @@ namespace tardigradeHydra{
     bool SolverStepBase::checkDescentDirection( const floatVector &dx ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        const unsigned int xsize = solver->getNumUnknowns( );
+        const unsigned int xsize = getNumUnknowns( );
 
         const floatType RHS = -damping->getGradientRho( ) * std::pow( tardigradeVectorTools::l2norm( dx ), damping->getGradientP( ) );
 
@@ -892,7 +911,7 @@ namespace tardigradeHydra{
     bool SolverStepBase::checkGradientConvergence( const floatVector &X0 ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        const unsigned int xsize = solver->getNumUnknowns( );
+        const unsigned int xsize = getNumUnknowns( );
 
         floatVector dx = ( *getUnknownVector( ) ) - X0;
 
