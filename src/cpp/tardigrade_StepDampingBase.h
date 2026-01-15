@@ -166,6 +166,10 @@ namespace tardigradeHydra{
             //! Increment the number of gradient descent steps
             void incrementNumGrad( ){ _NUM_GRAD++; }
 
+            virtual void setResidualNorm( );
+
+            virtual void setdResidualNormdX( );
+
             // END GRADIENT DESCENT FUNCTIONS
 
         private:
@@ -207,6 +211,10 @@ namespace tardigradeHydra{
             unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
 
             unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, residualNorm,       floatType,          setResidualNorm )
+
+            TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
 
             // END GRADIENT DESCENT FUNCTIONS
     };

@@ -246,6 +246,44 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Set the norm of the residual vector
+     */
+    void StepDampingBase::setResidualNorm( ){
+
+        auto residualNorm = get_SetDataStorage_residualNorm( );
+
+        auto residual = getResidual( );
+
+        using residual_type = std::remove_reference_t<decltype( ( *residual )[ 0 ] )>;
+
+        *residualNorm.value = std::inner_product( std::begin( *residual ), std::end( *residual ), std::begin( *residual ), residual_type( ) );
+
+    }
+
+    /*!
+     * Set the derivative of the residual norm w.r.t. the unknown vector
+     */
+    void StepDampingBase::setdResidualNormdX( ){
+
+        const unsigned int xsize = getNumUnknowns( );
+
+        auto dResidualNormdX = get_SetDataStorage_dResidualNormdX( );
+
+        dResidualNormdX.zero( xsize );
+
+        const floatVector *residual = getResidual( );
+
+        const floatVector *jacobian = getFlatJacobian( );
+
+        for ( unsigned int i = 0; i < xsize; i++ ){
+            for ( unsigned int j = 0; j < xsize; j++ ){
+                ( *dResidualNormdX.value )[ j ] += 2 * ( *jacobian )[ xsize * i + j ] * ( *residual )[ i ];
+            }
+        }
+
+    }
+
 // END GRADIENT FUNCTIONS
 
 }
