@@ -104,12 +104,6 @@ namespace tardigradeHydra{
 
             public:
 
-                static void checkMaxGradientIterations( SolverStepBase &step ){
-
-                    BOOST_CHECK( step._maxGradientIterations == step.getMaxGradientIterations( ) );
-
-                }
-
                 static void checkMuk( SolverStepBase &step ){
 
                     BOOST_CHECK( step._mu_k == step.getMuk( ) );
@@ -155,14 +149,6 @@ namespace tardigradeHydra{
         };
 
     }
-
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_getMaxGradientIterations, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    tardigradeHydra::unit_test::SolverStepBaseTester::checkMaxGradientIterations( step );
 
 }
 
@@ -247,16 +233,6 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_setUseLevenbergMarquardt, * boost::uni
     BOOST_TEST( true == step.getUseLevenbergMarquardt( ) );
 
     BOOST_TEST( true == step.damping->getUseGradientDescent( ) );
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_setMaxGradientIterations, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    step.setMaxGradientIterations( 123 );
-
-    BOOST_TEST( 123 == step.getMaxGradientIterations( ) );
-
 }
 
 BOOST_AUTO_TEST_CASE( test_setResidualNorm, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){

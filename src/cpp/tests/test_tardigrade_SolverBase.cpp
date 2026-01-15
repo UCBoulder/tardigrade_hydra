@@ -720,7 +720,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
                 unsigned int LSIteration = solver->step->damping->getLSIteration( );
 
-                unsigned int gradIteration = solver->step->getGradientIteration( );
+                unsigned int gradIteration = solver->step->damping->getGradientIteration( );
 
                 unsigned int iterationOffset = 0;
 
@@ -768,7 +768,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
                 unsigned int LSIteration = solver->step->damping->getLSIteration( );
 
-                unsigned int gradIteration = solver->step->getGradientIteration( );
+                unsigned int gradIteration = solver->step->damping->getGradientIteration( );
 
                 unsigned int subIteration = LSIteration + gradIteration + test_SolverBase_solve_in_gradient_convergence;
 
@@ -874,7 +874,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
                 unsigned int iteration = solver->getIteration( );
 
-                unsigned int gradientIteration = getGradientIteration( );
+                unsigned int gradientIteration = damping->getGradientIteration( );
 
                 test_SolverBase_solve_in_gradient_convergence = 1;
 
@@ -1039,7 +1039,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     BOOST_TEST( damping.getNumLS( ) == 1 );
 
-    BOOST_TEST( step.getNumGrad( ) == 1 );
+    BOOST_TEST( damping.getNumGrad( ) == 1 );
 
     BOOST_TEST( hydra.num_residual_calls == 8 ); //8 because we initialize the residual
 
@@ -1085,7 +1085,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     BOOST_TEST( damping.getNumLS( ) == 1 );
 
-    BOOST_TEST( step_pre.getNumGrad( ) == 1 );
+    BOOST_TEST( damping_pre.getNumGrad( ) == 1 );
 
     BOOST_TEST( hydra.num_residual_calls == 8 ); //8 because we initialize the residual
 

@@ -130,23 +130,9 @@ namespace tardigradeHydra{
 
             virtual bool checkDescentDirection( const floatVector &dx );
 
-            //! Get the max allowable number of gradient iterations
-            const unsigned int getMaxGradientIterations( ){ return _maxGradientIterations; }
-
-            //! Get the current gradient iteration
-            const unsigned int getGradientIteration( ){ return _gradientIteration; }
-
-            //! Reset the number of gradient descent steps
-            void resetGradientIteration( ){ _gradientIteration = 0; }
-
-            void setMaxGradientIterations( const unsigned int &value );
-
             bool checkGradientIteration( );
 
             virtual bool checkGradientConvergence( const floatVector &X0 );
-
-            //! Get the number of gradient descent steps performed
-            unsigned int getNumGrad( ){ return _NUM_GRAD; }
 
             virtual void performGradientStep( const floatVector &X0 );
 
@@ -222,19 +208,6 @@ namespace tardigradeHydra{
             virtual void updateKKTMatrix( floatVector &KKTMatrix, const std::vector< bool > &active_constraints );
 
             // END SQP SOLVER FUNCTIONS
-
-            // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
-
-            //! Increment the number of gradient descent steps
-            void incrementGradientIteration( ){ _gradientIteration++; }
-
-            //! Reset the number of gradient descent steps
-            void resetNumGrad( ){ _NUM_GRAD = 0; }
-
-            //! Increment the number of gradient descent steps
-            void incrementNumGrad( ){ _NUM_GRAD++; }
-
-            // END GRADIENT DESCENT FUNCTIONS
 
         private:
 

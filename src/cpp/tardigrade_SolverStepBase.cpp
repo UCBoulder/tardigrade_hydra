@@ -35,7 +35,7 @@ namespace tardigradeHydra{
 
         resetNumNewton( );
         damping->resetNumLS( ); //TODO: Replace with general reset function
-        resetNumGrad( );
+        damping->resetNumGrad( );
 
     }
 
@@ -876,22 +876,12 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Set the value of the maximum number of iterations for gradient descent steps
-     *
-     * \param &value: The value of the parameter
-     */
-    void SolverStepBase::setMaxGradientIterations( const unsigned int &value ){
-
-        _maxGradientIterations = value;
-
-    }
-
-    /*!
      * Check if the gradient hasn't exceeded the number of allowed iterations
      */
     bool SolverStepBase::checkGradientIteration( ){
 
-        return getGradientIteration( ) < getMaxGradientIterations( );
+        TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
+        return damping->getGradientIteration( ) < damping->getMaxGradientIterations( );
 
     }
 
@@ -926,18 +916,18 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::performGradientStep( const floatVector &X0 ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
+        TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
         const floatVector *dResidualNormdX = get_basedResidualNormdX( );
 
         unsigned int l                     = 0;
 
-        const unsigned int maxiter         = getMaxGradientIterations( );
+        const unsigned int maxiter         = damping->getMaxGradientIterations( );
 
         while( checkGradientIteration( ) ){
 
             floatType t = std::pow( damping->getGradientBeta( ), l );
 
-            solver->updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
+            updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
 
             if ( checkGradientConvergence( X0 ) ){
 
@@ -947,11 +937,11 @@ namespace tardigradeHydra{
 
             l++;
 
-            incrementGradientIteration( );
+            damping->incrementGradientIteration( );
 
         }
 
-        solver->resetToleranceScaleFactor( );
+        resetToleranceScaleFactor( );
 
         if ( l >= maxiter ){
 
@@ -959,9 +949,9 @@ namespace tardigradeHydra{
 
         }
 
-        incrementNumGrad( );
+        damping->incrementNumGrad( );
 
-        resetGradientIteration( );
+        damping->resetGradientIteration( );
 
     }
 

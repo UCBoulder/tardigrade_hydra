@@ -133,12 +133,12 @@ namespace tardigradeHydra{
 
                 }
 
-//                static void checkMaxGradientIterations( SolverStepBase &step ){
-//
-//                    BOOST_CHECK( step._maxGradientIterations == step.getMaxGradientIterations( ) );
-//
-//                }
-//
+                static void checkMaxGradientIterations( StepDampingBase &damping ){
+
+                    BOOST_CHECK( damping._maxGradientIterations == damping.getMaxGradientIterations( ) );
+
+                }
+
 //                static void checkMuk( SolverStepBase &step ){
 //
 //                    BOOST_CHECK( step._mu_k == step.getMuk( ) );
@@ -395,4 +395,21 @@ BOOST_AUTO_TEST_CASE( test_StepDampingBase_setGradientSigma, * boost::unit_test:
 
 }
 
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_getMaxGradientIterations, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    tardigradeHydra::unit_test::StepDampingBaseTester::checkMaxGradientIterations( damping );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_setMaxGradientIterations, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    damping.setMaxGradientIterations( 123 );
+
+    BOOST_TEST( 123 == damping.getMaxGradientIterations( ) );
+
+}
 

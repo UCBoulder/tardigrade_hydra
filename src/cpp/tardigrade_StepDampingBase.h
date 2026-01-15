@@ -116,25 +116,25 @@ namespace tardigradeHydra{
             void setGradientSigma( const floatType &value );
 
 //            virtual bool checkDescentDirection( const floatVector &dx );
-//
-//            //! Get the max allowable number of gradient iterations
-//            const unsigned int getMaxGradientIterations( ){ return _maxGradientIterations; }
-//
-//            //! Get the current gradient iteration
-//            const unsigned int getGradientIteration( ){ return _gradientIteration; }
-//
-//            //! Reset the number of gradient descent steps
-//            void resetGradientIteration( ){ _gradientIteration = 0; }
-//
-//            void setMaxGradientIterations( const unsigned int &value );
-//
+
+            //! Get the max allowable number of gradient iterations
+            const unsigned int getMaxGradientIterations( ){ return _maxGradientIterations; }
+
+            //! Get the current gradient iteration
+            const unsigned int getGradientIteration( ){ return _gradientIteration; }
+
+            //! Reset the number of gradient descent steps
+            void resetGradientIteration( ){ _gradientIteration = 0; }
+
+            void setMaxGradientIterations( const unsigned int &value );
+
 //            bool checkGradientIteration( );
 //
 //            virtual bool checkGradientConvergence( const floatVector &X0 );
-//
-//            //! Get the number of gradient descent steps performed
-//            unsigned int getNumGrad( ){ return _NUM_GRAD; }
-//
+
+            //! Get the number of gradient descent steps performed
+            unsigned int getNumGrad( ){ return _NUM_GRAD; }
+
 //            virtual void performGradientStep( const floatVector &X0 );
 
             // END GRADIENT DESCENT FUNCTIONS
@@ -157,14 +157,14 @@ namespace tardigradeHydra{
 
             // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
 
-//            //! Increment the number of gradient descent steps
-//            void incrementGradientIteration( ){ _gradientIteration++; }
-//
-//            //! Reset the number of gradient descent steps
-//            void resetNumGrad( ){ _NUM_GRAD = 0; }
-//
-//            //! Increment the number of gradient descent steps
-//            void incrementNumGrad( ){ _NUM_GRAD++; }
+            //! Increment the number of gradient descent steps
+            void incrementGradientIteration( ){ _gradientIteration++; }
+
+            //! Reset the number of gradient descent steps
+            void resetNumGrad( ){ _NUM_GRAD = 0; }
+
+            //! Increment the number of gradient descent steps
+            void incrementNumGrad( ){ _NUM_GRAD++; }
 
             // END GRADIENT DESCENT FUNCTIONS
 
@@ -202,11 +202,11 @@ namespace tardigradeHydra{
 
             floatType _gradientSigma = 1e-4; //!< The sigma parameter for the gradient descent step
 
-//            unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
-//
-//            unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
-//
-//            unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
+            unsigned int _gradientIteration = 0; //!< The current gradient iteration of the non-linear problem
+
+            unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
+
+            unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
 
             // END GRADIENT DESCENT FUNCTIONS
     };

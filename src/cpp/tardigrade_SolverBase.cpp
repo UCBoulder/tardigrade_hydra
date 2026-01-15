@@ -280,7 +280,7 @@ namespace tardigradeHydra{
 
         step->damping->resetLSIteration( ); //TODO: Call a more generalized thing
 
-        step->resetGradientIteration( );
+        step->damping->resetGradientIteration( ); //TODO: Call a more generalized thing
 
         if ( getFailureVerbosityLevel( ) > 0 ){
             addToFailureOutput( "Initial Unknown:\n" );

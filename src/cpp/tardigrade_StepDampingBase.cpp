@@ -226,6 +226,17 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Set the value of the maximum number of iterations for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setMaxGradientIterations( const unsigned int &value ){
+
+        _maxGradientIterations = value;
+
+    }
+
 // END GRADIENT FUNCTIONS
 
 }
