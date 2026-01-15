@@ -382,7 +382,6 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::incrementSolution( ){
 
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( trial_step != nullptr, "The trial step has not been defined" );
         TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
         if ( getFailureVerbosityLevel( ) > 0 ){
@@ -420,7 +419,7 @@ namespace tardigradeHydra{
             addToFailureOutput( deltaX );
         }
 
-        solver->updateUnknownVector( X0 + damping->getLambda( ) * deltaX );
+        updateUnknownVector( X0 + damping->getLambda( ) * deltaX );
 
         damping->applyDamping( );
 
@@ -443,7 +442,7 @@ namespace tardigradeHydra{
         }
         else{
 
-            solver->resetToleranceScaleFactor( );
+            resetToleranceScaleFactor( );
 
             incrementNumNewton( );
 
