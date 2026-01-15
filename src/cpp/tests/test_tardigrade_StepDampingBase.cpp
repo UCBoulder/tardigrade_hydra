@@ -109,30 +109,30 @@ namespace tardigradeHydra{
 
                 }
 
-//                static void checkGradientRho( SolverStepBase &step ){
-//
-//                    BOOST_CHECK( step._gradientRho == step.getGradientRho( ) );
-//
-//                }
-//
-//                static void checkGradientP( SolverStepBase &step ){
-//
-//                    BOOST_CHECK( step._gradientP == step.getGradientP( ) );
-//
-//                }
-//
-//                static void checkGradientBeta( SolverStepBase &step ){
-//
-//                    BOOST_CHECK( step._gradientBeta == step.getGradientBeta( ) );
-//
-//                }
-//
-//                static void checkGradientSigma( SolverStepBase &step ){
-//
-//                    BOOST_CHECK( step._gradientSigma == step.getGradientSigma( ) );
-//
-//                }
-//
+                static void checkGradientRho( StepDampingBase &damping ){
+
+                    BOOST_CHECK( damping._gradientRho == damping.getGradientRho( ) );
+
+                }
+
+                static void checkGradientP( StepDampingBase &damping ){
+
+                    BOOST_CHECK( damping._gradientP == damping.getGradientP( ) );
+
+                }
+
+                static void checkGradientBeta( StepDampingBase &damping ){
+
+                    BOOST_CHECK( damping._gradientBeta == damping.getGradientBeta( ) );
+
+                }
+
+                static void checkGradientSigma( StepDampingBase &damping ){
+
+                    BOOST_CHECK( damping._gradientSigma == damping.getGradientSigma( ) );
+
+                }
+
 //                static void checkMaxGradientIterations( SolverStepBase &step ){
 //
 //                    BOOST_CHECK( step._maxGradientIterations == step.getMaxGradientIterations( ) );
@@ -320,6 +320,78 @@ BOOST_AUTO_TEST_CASE( test_StepDampingBase_setUseGradientDescent, * boost::unit_
     damping.setUseGradientDescent( true );
 
     BOOST_TEST( true == damping.getUseGradientDescent( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_getGradientRho, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    tardigradeHydra::unit_test::StepDampingBaseTester::checkGradientRho( damping );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_getGradientP, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    tardigradeHydra::unit_test::StepDampingBaseTester::checkGradientP( damping );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_getGradientBeta, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    tardigradeHydra::unit_test::StepDampingBaseTester::checkGradientBeta( damping );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_getGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    tardigradeHydra::unit_test::StepDampingBaseTester::checkGradientSigma( damping );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_setGradientRho, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    damping.setGradientRho( 123.4 );
+
+    BOOST_TEST( 123.4 == damping.getGradientRho( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_setGradientP, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    damping.setGradientP( 123.4 );
+
+    BOOST_TEST( 123.4 == damping.getGradientP( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_setGradientBeta, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    damping.setGradientBeta( 123.4 );
+
+    BOOST_TEST( 123.4 == damping.getGradientBeta( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_setGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase damping;
+
+    damping.setGradientSigma( 123.4 );
+
+    BOOST_TEST( 123.4 == damping.getGradientSigma( ) );
 
 }
 

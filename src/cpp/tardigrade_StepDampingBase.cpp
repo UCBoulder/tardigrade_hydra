@@ -182,6 +182,50 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Set the value of the rho parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setGradientRho( const floatType &value ){
+ 
+        _gradientRho = value;
+
+    }
+
+    /*!
+     * Set the value of the p parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setGradientP( const floatType &value ){
+ 
+        _gradientP = value;
+
+    }
+
+    /*!
+     * Set the value of the beta parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setGradientBeta( const floatType &value ){
+ 
+        _gradientBeta = value;
+
+    }
+
+    /*!
+     * Set the value of the sigma parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setGradientSigma( const floatType &value ){
+
+        _gradientSigma = value;
+
+    }
+
 // END GRADIENT FUNCTIONS
 
 }

@@ -850,50 +850,6 @@ namespace tardigradeHydra{
 // GRADIENT DESCENT FUNCTIONS
 
     /*!
-     * Set the value of the rho parameter for gradient descent steps
-     *
-     * \param &value: The value of the parameter
-     */
-    void SolverStepBase::setGradientRho( const floatType &value ){
- 
-        _gradientRho = value;
-
-    }
-
-    /*!
-     * Set the value of the p parameter for gradient descent steps
-     *
-     * \param &value: The value of the parameter
-     */
-    void SolverStepBase::setGradientP( const floatType &value ){
- 
-        _gradientP = value;
-
-    }
-
-    /*!
-     * Set the value of the beta parameter for gradient descent steps
-     *
-     * \param &value: The value of the parameter
-     */
-    void SolverStepBase::setGradientBeta( const floatType &value ){
- 
-        _gradientBeta = value;
-
-    }
-
-    /*!
-     * Set the value of the sigma parameter for gradient descent steps
-     *
-     * \param &value: The value of the parameter
-     */
-    void SolverStepBase::setGradientSigma( const floatType &value ){
-
-        _gradientSigma = value;
-
-    }
-
-    /*!
      * Check if the search direction is a descent direction of the Jacobian
      * 
      * \param &dx: The proposed change in x
@@ -903,7 +859,7 @@ namespace tardigradeHydra{
         TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
         const unsigned int xsize = solver->getNumUnknowns( );
 
-        const floatType RHS = -getGradientRho( ) * std::pow( tardigradeVectorTools::l2norm( dx ), getGradientP( ) );
+        const floatType RHS = -damping->getGradientRho( ) * std::pow( tardigradeVectorTools::l2norm( dx ), damping->getGradientP( ) );
 
         floatType LHS = 0;
 
@@ -955,7 +911,7 @@ namespace tardigradeHydra{
 
         for ( unsigned int i = 0; i < xsize; ++i ){
 
-            RHS += getGradientSigma( ) * ( *( get_basedResidualNormdX( ) ) )[ i ] * dx[ i ];
+            RHS += damping->getGradientSigma( ) * ( *( get_basedResidualNormdX( ) ) )[ i ] * dx[ i ];
 
         }
 
@@ -979,7 +935,7 @@ namespace tardigradeHydra{
 
         while( checkGradientIteration( ) ){
 
-            floatType t = std::pow( getGradientBeta( ), l );
+            floatType t = std::pow( damping->getGradientBeta( ), l );
 
             solver->updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
 

@@ -104,30 +104,6 @@ namespace tardigradeHydra{
 
             public:
 
-                static void checkGradientRho( SolverStepBase &step ){
-
-                    BOOST_CHECK( step._gradientRho == step.getGradientRho( ) );
-
-                }
-
-                static void checkGradientP( SolverStepBase &step ){
-
-                    BOOST_CHECK( step._gradientP == step.getGradientP( ) );
-
-                }
-
-                static void checkGradientBeta( SolverStepBase &step ){
-
-                    BOOST_CHECK( step._gradientBeta == step.getGradientBeta( ) );
-
-                }
-
-                static void checkGradientSigma( SolverStepBase &step ){
-
-                    BOOST_CHECK( step._gradientSigma == step.getGradientSigma( ) );
-
-                }
-
                 static void checkMaxGradientIterations( SolverStepBase &step ){
 
                     BOOST_CHECK( step._maxGradientIterations == step.getMaxGradientIterations( ) );
@@ -179,78 +155,6 @@ namespace tardigradeHydra{
         };
 
     }
-
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_getGradientRho, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    tardigradeHydra::unit_test::SolverStepBaseTester::checkGradientRho( step );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_getGradientP, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    tardigradeHydra::unit_test::SolverStepBaseTester::checkGradientP( step );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_getGradientBeta, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    tardigradeHydra::unit_test::SolverStepBaseTester::checkGradientBeta( step );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_getGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    tardigradeHydra::unit_test::SolverStepBaseTester::checkGradientSigma( step );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_setGradientRho, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    step.setGradientRho( 123.4 );
-
-    BOOST_TEST( 123.4 == step.getGradientRho( ) );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_setGradientP, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    step.setGradientP( 123.4 );
-
-    BOOST_TEST( 123.4 == step.getGradientP( ) );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_setGradientBeta, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    step.setGradientBeta( 123.4 );
-
-    BOOST_TEST( 123.4 == step.getGradientBeta( ) );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_setGradientSigma, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    step.setGradientSigma( 123.4 );
-
-    BOOST_TEST( 123.4 == step.getGradientSigma( ) );
 
 }
 
