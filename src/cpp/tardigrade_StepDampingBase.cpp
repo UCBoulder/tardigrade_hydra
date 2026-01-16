@@ -23,7 +23,7 @@ namespace tardigradeHydra{
     /*!
      * Reset the internal count
      */
-    void StepDampingBase::resetCount( ){
+    void StepDampingBase::resetCounts( ){
 
         resetNumLS( );
         resetNumGrad( );

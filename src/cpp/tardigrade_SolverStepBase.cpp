@@ -34,7 +34,7 @@ namespace tardigradeHydra{
     void SolverStepBase::reset( ){
 
         resetNumNewton( );
-        damping->resetCount( );
+        damping->resetCounts( );
 
     }
 

@@ -47,7 +47,7 @@ namespace tardigradeHydra{
 
             virtual void setBaseQuantities( );
 
-            virtual void resetCount( );
+            virtual void resetCounts( );
 
             /*!
              * Apply the damping to the proposed step
