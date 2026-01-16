@@ -62,6 +62,8 @@ namespace tardigradeHydra{
 
             // PASS-THROUGH functions
 
+            const floatType getToleranceScaleFactor( );
+
             const floatVector *getResidual( );
 
             const unsigned int getNumUnknowns( );
@@ -148,7 +150,7 @@ namespace tardigradeHydra{
 
             bool checkGradientIteration( );
 
-//            virtual bool checkGradientConvergence( const floatVector &X0 );
+            virtual bool checkGradientConvergence( const floatVector &X0 );
 
             //! Get the number of gradient descent steps performed
             unsigned int getNumGrad( ){ return _NUM_GRAD; }

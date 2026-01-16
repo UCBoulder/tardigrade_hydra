@@ -138,8 +138,6 @@ namespace tardigradeHydra{
 
             virtual void performGradientStep( const floatVector &X0 );
 
-            virtual bool checkGradientConvergence( const floatVector &X0 );
-
             // END GRADIENT DESCENT FUNCTIONS
 
             TrialStepBase *trial_step; //!< The trial step class which proposes a step to reduce the residual

@@ -797,29 +797,6 @@ namespace tardigradeHydra{
 // GRADIENT DESCENT FUNCTIONS
 
     /*!
-     * Check the convergence of a gradient step
-     *
-     * \param &X0: The initial value of the unknown vector
-     */
-    bool SolverStepBase::checkGradientConvergence( const floatVector &X0 ){
-
-        const unsigned int xsize = getNumUnknowns( );
-
-        floatVector dx = *getUnknownVector( ) - X0;
-
-        floatType RHS = *damping->get_baseResidualNorm( );
-
-        for ( unsigned int i = 0; i < xsize; ++i ){
-
-            RHS += damping->getGradientSigma( ) * ( *damping->get_basedResidualNormdX( ) )[ i ] * dx[ i ];
-
-        }
-
-        return ( *damping->get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
-
-    }
-
-    /*!
      * Perform a gradient descent step
      *
      * \param &X0: The base value of the unknown vector
@@ -839,7 +816,7 @@ namespace tardigradeHydra{
 
             updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
 
-            if ( checkGradientConvergence( X0 ) ){
+            if ( damping->checkGradientConvergence( X0 ) ){
 
                 break;
 

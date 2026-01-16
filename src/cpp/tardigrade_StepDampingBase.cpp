@@ -78,6 +78,16 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Get the scale factor for the tolerance
+     */
+    const floatType StepDampingBase::getToleranceScaleFactor( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        return step->getToleranceScaleFactor( );
+
+    }
+
+    /*!
      * Get the residual vector
      */
     const floatVector *StepDampingBase::getResidual( ){
@@ -476,6 +486,29 @@ namespace tardigradeHydra{
         }
 
         return LHS <= RHS;
+
+    }
+
+    /*!
+     * Check the convergence of a gradient step
+     *
+     * \param &X0: The initial value of the unknown vector
+     */
+    bool StepDampingBase::checkGradientConvergence( const floatVector &X0 ){
+
+        const unsigned int xsize = getNumUnknowns( );
+
+        floatVector dx = *getUnknownVector( ) - X0;
+
+        floatType RHS = *get_baseResidualNorm( );
+
+        for ( unsigned int i = 0; i < xsize; ++i ){
+
+            RHS += getGradientSigma( ) * ( *get_basedResidualNormdX( ) )[ i ] * dx[ i ];
+
+        }
+
+        return ( *get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
 
     }
 
