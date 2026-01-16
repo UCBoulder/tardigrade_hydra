@@ -116,12 +116,6 @@ namespace tardigradeHydra{
 
             public:
 
-                static void checkLMMu( SolverStepBase &step ){
-
-                    BOOST_CHECK( step._lm_mu == step.getLMMu( ) );
-
-                }
-
                 static void checkUseLevenbergMarquardt( SolverStepBase &step ){
 
                     BOOST_CHECK( step._use_LM_step == step.getUseLevenbergMarquardt( ) );
@@ -146,43 +140,11 @@ namespace tardigradeHydra{
 
 }
 
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_getLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    tardigradeHydra::SolverStepBase step;
-
-    tardigradeHydra::unit_test::SolverStepBaseTester::checkLMMu( step );
-
-}
-
 BOOST_AUTO_TEST_CASE( test_SolverStepBase_getUseLevenbergMarquardt, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
 
     tardigradeHydra::SolverStepBase step;
 
     tardigradeHydra::unit_test::SolverStepBaseTester::checkUseLevenbergMarquardt( step );
-
-}
-
-BOOST_AUTO_TEST_CASE( test_SolverStepBase_setLMMu, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
-
-    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
-
-        using tardigradeHydra::SolverStepBase::SolverStepBase;
-
-        public:
-
-            void public_setLMMu( const tardigradeHydra::floatType &v ){
-
-                setLMMu( v );
-
-            }
-
-    };
-
-    SolverStepBaseMock step;
-
-    step.public_setLMMu( 123.4 );
-
-    BOOST_TEST( 123.4 == step.getLMMu( ) );
 
 }
 
