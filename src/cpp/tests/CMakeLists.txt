@@ -12,6 +12,11 @@ if(NOT cmake_build_type_lower STREQUAL "release")
                                ${constitutive_tools_SOURCE_DIR}/${CPP_SRC_PATH})
 endif()
 
+get_target_property(target_sources ${TEST_NAME} SOURCES)
+foreach(source ${target_sources})
+    set_property(GLOBAL APPEND PROPERTY CLANG_FORMAT_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
+endforeach(source)
+
 foreach(support_module ${INTERNAL_SUPPORT_LIBRARIES})
 
     set(TEST_NAME "test_${support_module}")
@@ -29,6 +34,11 @@ foreach(support_module ${INTERNAL_SUPPORT_LIBRARIES})
                                    ${constitutive_tools_SOURCE_DIR}/${CPP_SRC_PATH}
                                    ${stress_tools_SOURCE_DIR}/${CPP_SRC_PATH})
     endif()
+
+    get_target_property(target_sources ${TEST_NAME} SOURCES)
+    foreach(source ${target_sources})
+        set_property(GLOBAL APPEND PROPERTY CLANG_FORMAT_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
+    endforeach(source)
 
 endforeach(support_module)
 
@@ -48,5 +58,10 @@ foreach(support_module ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
                                    ${tardigrade_error_tools_SOURCE_DIR}/${CPP_SRC_PATH}
                                    ${tardigrade_hydra_SOURCE_DIR}/${CPP_SRC_PATH})
     endif()
+
+    get_target_property(target_sources ${TEST_NAME} SOURCES)
+    foreach(source ${target_sources})
+        set_property(GLOBAL APPEND PROPERTY CLANG_FORMAT_SOURCE_FILES "${CMAKE_CURRENT_SOURCE_DIR}/${source}")
+    endforeach(source)
 
 endforeach(support_module)

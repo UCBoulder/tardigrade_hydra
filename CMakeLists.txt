@@ -106,6 +106,14 @@ endif()
 enable_testing()
 
 #================================================================================================= FIND DEPENDENCIES ===
+
+#=============================================================================================== FIND PROGRAMS ===
+
+find_program(CLANG_FORMAT_EXECUTABLE NAMES clang-format REQUIRED)
+set_property(GLOBAL PROPERTY CLANG_FORMAT_SOURCE_FILES)
+
+#=============================================================================================== ADD PROJECT TARGETS ===
+
 # Find eigen
 find_package(Eigen3 3.3 REQUIRED NO_MODULE)
 include_directories(${EIGEN3_INCLUDE_DIR})
