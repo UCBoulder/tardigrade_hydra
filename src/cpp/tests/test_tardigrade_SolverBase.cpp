@@ -7,6 +7,7 @@
 #include<tardigrade_SolverBase.h>
 #include<tardigrade_ResidualBase.h>
 #include<tardigrade_hydra.h>
+#include<tardigrade_ArmijoGradientDamping.h>
 
 #define BOOST_TEST_MODULE test_tardigrade_SolverBase
 #include <boost/test/included/unit_test.hpp>
@@ -788,11 +789,11 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     };
 
-    class StepDampingBaseMock : public tardigradeHydra::StepDampingBase {
+    class ArmijoGradientDampingMock : public tardigradeHydra::ArmijoGradientDamping {
 
         public:
 
-            using tardigradeHydra::StepDampingBase::StepDampingBase;
+            using tardigradeHydra::ArmijoGradientDamping::ArmijoGradientDamping;
 
             std::vector< std::vector< tardigradeHydra::floatVector > > residual = {
                                                                      {
@@ -1007,7 +1008,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     SolverBaseMock solver;
     SolverStepBaseMock step;
-    StepDampingBaseMock damping;
+    ArmijoGradientDampingMock damping;
 
     step.damping = &damping;
     damping.step = &step;
@@ -1053,7 +1054,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
     SolverBaseMock solver_pre;
     SolverStepBaseMock step_pre;
-    StepDampingBaseMock damping_pre;
+    ArmijoGradientDampingMock damping_pre;
 
     step_pre.damping = &damping_pre;
     damping_pre.step = &step_pre;

@@ -13,6 +13,8 @@
 #include"tardigrade_SetDataStorage.h"
 #include"tardigrade_TrialStepBase.h"
 #include"tardigrade_StepDampingBase.h"
+//Default classes
+#include"tardigrade_ArmijoGradientDamping.h"
 
 namespace tardigradeHydra{
 
@@ -141,7 +143,7 @@ namespace tardigradeHydra{
 
             SolverBase *solver; //!< Pointer to the containing SolverBase object
 
-            StepDampingBase _damping; //!< The default step damping
+            ArmijoGradientDamping _damping; //!< The default step damping
             TrialStepBase _trial_step; //!< The default trial step
 
             void initializeDefaults( );

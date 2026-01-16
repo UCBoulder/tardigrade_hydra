@@ -22,6 +22,8 @@ namespace tardigradeHydra{
      */
     const bool StepDampingBase::applyDamping( ){
 
+        throw std::runtime_error( "derp" );
+
         updateUnknownVector( step->X0 + getLambda( ) * step->deltaX );
 
         // Refine the estimate if the new point has a higher residual
