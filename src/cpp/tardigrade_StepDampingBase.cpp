@@ -21,6 +21,30 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Set the base quantities prior to updating the unknown vector
+     */
+    void StepDampingBase::setBaseQuantities( ){
+
+        set_baseResidualNorm( *get_residualNorm( ) );
+
+        set_basedResidualNormdX( *get_dResidualNormdX( ) );
+
+        if ( getMuk( ) < 0 ){
+
+            setMuk( 0.5 * getLMMu( ) * ( *get_baseResidualNorm( ) ) );
+
+        }
+        else{
+
+            setMuk( std::fmin( getMuk( ), ( *get_baseResidualNorm( ) ) ) );
+
+        }
+
+        return;
+
+    }
+
+    /*!
      * Add data to the vector of values which will be cleared after each iteration
      * 
      * \param *data: The dataBase object to be cleared

@@ -166,12 +166,6 @@ namespace tardigradeHydra{
 
             // END NONLINEAR FUNCTIONS
 
-            // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
-
-            virtual void setBaseQuantities( );
-
-            // END LEVENBERG-MARQUARDT FUNCTIONS
-
             // NEWTON SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
             void solveNewtonUpdate( floatVector &deltaX_tr );

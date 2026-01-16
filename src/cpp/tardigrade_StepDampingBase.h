@@ -45,6 +45,8 @@ namespace tardigradeHydra{
 
             SolverStepBase *step; //!< The containing step class
 
+            virtual void setBaseQuantities( );
+
             /*!
              * Apply the damping to the proposed step
              */

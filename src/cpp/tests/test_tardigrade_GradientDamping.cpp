@@ -1,14 +1,14 @@
 /**
-  * \file test_tardigrade_GradientStep.cpp
+  * \file test_tardigrade_GradientDamping.cpp
   *
-  * Tests for tardigrade_GradientStep
+  * Tests for tardigrade_GradientDamping
   */
 
-#include"tardigrade_GradientStep.h"
+#include"tardigrade_GradientDamping.h"
 #include"tardigrade_ResidualBase.h"
 #include"tardigrade_hydra.h"
 
-#define BOOST_TEST_MODULE test_tardigrade_GradientStep
+#define BOOST_TEST_MODULE test_tardigrade_GradientDamping
 #include <boost/test/included/unit_test.hpp>
 #include <boost/test/tools/output_test_stream.hpp>
 
@@ -63,13 +63,13 @@ namespace tardigradeHydra{
 
     namespace unit_test{
 
-        class SolverStepBaseTester{
+        class GradientDampingTester{
 
             public:
 
-                static void setMuk( SolverStepBase &step, const floatType &value ){
+                static void setMuk( GradientDamping &damping, const floatType &value ){
 
-                    step.setMuk( value );
+                    damping.setMuk( value );
 
                 }
 
@@ -109,7 +109,7 @@ namespace tardigradeHydra{
 
 }
 
-BOOST_AUTO_TEST_CASE( test_GradientStep_setBaseQuantities, * boost::unit_test::tolerance( 1e-5 ) ){
+BOOST_AUTO_TEST_CASE( test_GradientDamping_setBaseQuantities, * boost::unit_test::tolerance( 1e-5 ) ){
     /*!
      * Test checking the gradient convergence
      */
@@ -147,7 +147,7 @@ BOOST_AUTO_TEST_CASE( test_GradientStep_setBaseQuantities, * boost::unit_test::t
 
     unsigned int dimension = 3;
 
-    class GradientStepMock : public tardigradeHydra::GradientStep{
+    class GradientDampingMock : public tardigradeHydra::GradientDamping{
 
         public:
 
@@ -157,15 +157,17 @@ BOOST_AUTO_TEST_CASE( test_GradientStep_setBaseQuantities, * boost::unit_test::t
 
             virtual void setResidualNorm( ) override{
 
-                solver->step->set_residualNorm( rnorm );
+                set_residualNorm( rnorm );
 
             }
 
             virtual void setdResidualNormdX( ) override{
 
-                solver->step->set_dResidualNormdX( dRNormdX );;
+                set_dResidualNormdX( dRNormdX );;
 
             }
+
+            void public_setMuk( const tardigradeHydra::floatType &value ){ setMuk( value ); }
 
             void runSetBaseQuantities( ){ setBaseQuantities( ); }
 
@@ -199,7 +201,15 @@ BOOST_AUTO_TEST_CASE( test_GradientStep_setBaseQuantities, * boost::unit_test::t
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_flatJacobian( *this, jacobian );
 
-                tardigradeHydra::unit_test::SolverStepBaseTester::setMuk( *(solver->step), mu_k );
+                auto local_damping = dynamic_cast<GradientDampingMock*>(solver->step->damping);
+
+                if ( local_damping == nullptr ){
+
+                    throw std::runtime_error( "dynamic cast failed" );
+
+                }
+
+                local_damping->public_setMuk( mu_k );
 
             }
 
@@ -214,28 +224,31 @@ BOOST_AUTO_TEST_CASE( test_GradientStep_setBaseQuantities, * boost::unit_test::t
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
-    GradientStepMock step;
+    GradientDampingMock damping;
+    tardigradeHydra::SolverStepBase step;
     tardigradeHydra::SolverBase solver;
     hydra.set_solver( &solver );
     solver.hydra = &hydra;
     solver.step = &step;
     step.setSolver( &solver );
+    step.damping = &damping;
+    damping.step = &step;
 
-    step.runSetBaseQuantities( );
+    damping.runSetBaseQuantities( );
 
-    BOOST_TEST( answer1 == step.getMuk( ) );
+    BOOST_TEST( answer1 == damping.getMuk( ) );
 
-    BOOST_TEST( step.rnorm == *step.get_baseResidualNorm( ) );
+    BOOST_TEST( damping.rnorm == *damping.get_baseResidualNorm( ) );
 
-    BOOST_TEST( step.dRNormdX == *step.get_basedResidualNormdX( ) );
+    BOOST_TEST( damping.dRNormdX == *damping.get_basedResidualNormdX( ) );
 
-    step.rnorm = 1e-9;
+    damping.rnorm = 1e-9;
 
-    step.setResidualNorm( );
+    damping.setResidualNorm( );
 
-    step.runSetBaseQuantities( );
+    damping.runSetBaseQuantities( );
 
-    BOOST_TEST( step.rnorm == step.getMuk( ) );
+    BOOST_TEST( damping.rnorm == damping.getMuk( ) );
 
 }
 

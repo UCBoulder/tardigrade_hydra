@@ -263,30 +263,6 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Set the base quantities prior to updating the unknown vector
-     */
-    void SolverStepBase::setBaseQuantities( ){
-
-        damping->set_baseResidualNorm( *damping->get_residualNorm( ) );
-
-        damping->set_basedResidualNormdX( *damping->get_dResidualNormdX( ) );
-
-        if ( damping->getMuk( ) < 0 ){
-
-            damping->setMuk( 0.5 * damping->getLMMu( ) * ( *damping->get_baseResidualNorm( ) ) );
-
-        }
-        else{
-
-            damping->setMuk( std::fmin( damping->getMuk( ), ( *damping->get_baseResidualNorm( ) ) ) );
-
-        }
-
-        return;
-
-    }
-
-    /*!
      * Perform a pre-conditioned solve
      *
      * \param &deltaX_tr: The trial chcange in the unknown vector
@@ -353,7 +329,7 @@ namespace tardigradeHydra{
             addToFailureOutput( *getUnknownVector( ) );
         }
 
-        setBaseQuantities( );
+        damping->setBaseQuantities( );
 
         trial_step->computeTrial( );
 

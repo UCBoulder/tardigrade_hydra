@@ -1,33 +1,41 @@
 /**
   ******************************************************************************
-  * \file tardigrade_GradientStep.h
+  * \file tardigrade_GradientDamping.h
   ******************************************************************************
-  * A C++ library for the gradient step
+  * A C++ library for gradient damping
   ******************************************************************************
   */
 
-#ifndef TARDIGRADE_GRADIENTSTEP_H
-#define TARDIGRADE_GRADIENTSTEP_H
+#ifndef TARDIGRADE_GRADIENTDAMPING_H
+#define TARDIGRADE_GRADIENTDAMPING_H
 
 #include"tardigrade_CoreDefinitions.h"
-#include"tardigrade_SolverBase.h"
+#include"tardigrade_StepDampingBase.h"
 
 namespace tardigradeHydra{
+
+    namespace unit_test{
+
+        class GradientDampingTester;
+
+    }
 
     /*!
      * The Gradient step class
      */
-    class GradientStep : virtual public SolverStepBase {
+    class GradientDamping : virtual public StepDampingBase {
 
         public:
 
-            using tardigradeHydra::SolverStepBase::SolverStepBase;
+            using tardigradeHydra::StepDampingBase::StepDampingBase;
 
         protected:
 
             virtual void setBaseQuantities( ) override;
 
         private:
+
+            friend tardigradeHydra::unit_test::GradientDampingTester;
 
     };
 
