@@ -844,6 +844,28 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
             }
 
+            virtual bool checkGradientConvergence( const tardigradeHydra::floatVector &X0 ) override{
+
+                unsigned int iteration = step->getIteration( );
+
+                unsigned int gradientIteration = getGradientIteration( );
+
+                test_SolverBase_solve_in_gradient_convergence = 1;
+
+                getResidual( );
+
+                if ( gradientIteration < residual[ iteration ].size( ) - 1 ){
+
+                    return false;
+
+                }
+
+                test_SolverBase_solve_in_gradient_convergence = 0;
+
+                return true;
+
+            }
+
     };
 
     class SolverStepBaseMock : public tardigradeHydra::SolverStepBase {
@@ -869,28 +891,6 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
                                                                        { 1, 1, 1 }
                                                                      },
                                                                  };
-
-            virtual bool checkGradientConvergence( const tardigradeHydra::floatVector &X0 ) override{
-
-                unsigned int iteration = solver->getIteration( );
-
-                unsigned int gradientIteration = damping->getGradientIteration( );
-
-                test_SolverBase_solve_in_gradient_convergence = 1;
-
-                solver->getResidual( );
-
-                if ( gradientIteration < residual[ iteration ].size( ) - 1 ){
-
-                    return false;
-
-                }
-
-                test_SolverBase_solve_in_gradient_convergence = 0;
-
-                return true;
-
-            }
 
             virtual void performGradientStep( const tardigradeHydra::floatVector &X0 ) override{
 
