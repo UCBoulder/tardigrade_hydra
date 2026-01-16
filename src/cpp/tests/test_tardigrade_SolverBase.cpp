@@ -830,6 +830,20 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
             }
 
+            virtual bool checkDescentDirection( const tardigradeHydra::floatVector &dx ) override{
+
+                unsigned int iteration = step->getIteration( );
+
+                if ( iteration == 1 ){
+
+                    return false;
+
+                }
+
+                return true;
+
+            }
+
     };
 
     class SolverStepBaseMock : public tardigradeHydra::SolverStepBase {
@@ -855,20 +869,6 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
                                                                        { 1, 1, 1 }
                                                                      },
                                                                  };
-
-            virtual bool checkDescentDirection( const tardigradeHydra::floatVector &dx ) override{
-
-                unsigned int iteration = solver->getIteration( );
-
-                if ( iteration == 1 ){
-
-                    return false;
-
-                }
-
-                return true;
-
-            }
 
             virtual bool checkGradientConvergence( const tardigradeHydra::floatVector &X0 ) override{
 

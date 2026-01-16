@@ -356,7 +356,7 @@ namespace tardigradeHydra{
         // Refine the estimate if the new point has a higher residual
         if ( !damping->checkLSConvergence( ) ){
 
-            if ( checkDescentDirection( deltaX ) || !damping->getUseGradientDescent( ) ){
+            if ( damping->checkDescentDirection( deltaX ) || !damping->getUseGradientDescent( ) ){
 
                 // Perform an Armijo type line search when the search direction is aligned with the gradient
                 damping->performArmijoTypeLineSearch( X0, deltaX );
@@ -795,32 +795,6 @@ namespace tardigradeHydra{
 // END SQP SOLVER FUNCTIONS
 
 // GRADIENT DESCENT FUNCTIONS
-
-    /*!
-     * Check if the search direction is a descent direction of the Jacobian
-     * 
-     * \param &dx: The proposed change in x
-     */
-    bool SolverStepBase::checkDescentDirection( const floatVector &dx ){
-
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        const unsigned int xsize = getNumUnknowns( );
-
-        const floatType RHS = -damping->getGradientRho( ) * std::pow( tardigradeVectorTools::l2norm( dx ), damping->getGradientP( ) );
-
-        floatType LHS = 0;
-
-        const floatVector *dResidualNormdX = damping->get_basedResidualNormdX( );
-
-        for ( unsigned int i = 0; i < xsize; i++ ){
-
-            LHS += ( *dResidualNormdX )[ i ] * dx[ i ];
-
-        }
-
-        return LHS <= RHS;
-
-    }
 
     /*!
      * Check the convergence of a gradient step

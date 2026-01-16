@@ -133,7 +133,7 @@ namespace tardigradeHydra{
 
             void setGradientSigma( const floatType &value );
 
-//            virtual bool checkDescentDirection( const floatVector &dx );
+            virtual bool checkDescentDirection( const floatVector &dx );
 
             //! Get the max allowable number of gradient iterations
             const unsigned int getMaxGradientIterations( ){ return _maxGradientIterations; }

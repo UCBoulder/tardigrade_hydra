@@ -136,8 +136,6 @@ namespace tardigradeHydra{
 
             // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
 
-            virtual bool checkDescentDirection( const floatVector &dx );
-
             virtual void performGradientStep( const floatVector &X0 );
 
             virtual bool checkGradientConvergence( const floatVector &X0 );
