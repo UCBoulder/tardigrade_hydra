@@ -63,18 +63,6 @@ namespace tardigradeHydra{
 
     namespace unit_test{
 
-        class SolverStepBaseTester{
-
-            public:
-
-                static void setMuk( SolverStepBase &step, const floatType &value ){
-
-                    step.setMuk( value );
-
-                }
-
-        };
-
         class hydraBaseTester{
 
             public:

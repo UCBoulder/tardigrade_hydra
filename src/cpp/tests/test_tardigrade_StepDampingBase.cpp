@@ -140,12 +140,12 @@ namespace tardigradeHydra{
 
                 }
 
-//                static void checkMuk( SolverStepBase &step ){
-//
-//                    BOOST_CHECK( step._mu_k == step.getMuk( ) );
-//
-//                }
-//
+                static void checkMuk( StepDampingBase &damping ){
+
+                    BOOST_CHECK( damping._mu_k == damping.getMuk( ) );
+
+                }
+
 //                static void checkLMMu( SolverStepBase &step ){
 //
 //                    BOOST_CHECK( step._lm_mu == step.getLMMu( ) );
@@ -405,6 +405,38 @@ BOOST_AUTO_TEST_CASE( test_StepDampingBase_setMaxGradientIterations, * boost::un
     damping.setMaxGradientIterations( 123 );
 
     BOOST_TEST( 123 == damping.getMaxGradientIterations( ) );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_getMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    tardigradeHydra::StepDampingBase step;
+
+    tardigradeHydra::unit_test::StepDampingBaseTester::checkMuk( step );
+
+}
+
+BOOST_AUTO_TEST_CASE( test_StepDampingBase_setMuk, * boost::unit_test::tolerance( DEFAULT_TEST_TOLERANCE ) ){
+
+    class StepDampingBaseMock : public tardigradeHydra::StepDampingBase{
+
+        using tardigradeHydra::StepDampingBase::StepDampingBase;
+
+        public:
+
+            void public_setMuk( const tardigradeHydra::floatType &v ){
+
+                setMuk( v );
+
+            }
+
+    };
+
+    StepDampingBaseMock damping;
+
+    damping.public_setMuk( 123.4 );
+
+    BOOST_TEST( 123.4 == damping.getMuk( ) );
 
 }
 

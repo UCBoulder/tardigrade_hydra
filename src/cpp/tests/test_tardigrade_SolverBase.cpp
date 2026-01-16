@@ -778,7 +778,7 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
                 BOOST_TEST( expectedBasedResidualNormdXs[ iteration ] == *solver->step->get_basedResidualNormdX( ), CHECK_PER_ELEMENT );
 
-                BOOST_TEST( expectedMuk[ iteration ] == solver->step->getMuk( ) );
+                BOOST_TEST( expectedMuk[ iteration ] == solver->step->damping->getMuk( ) );
 
                 tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( *this, newUnknownVector );
 
