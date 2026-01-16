@@ -127,9 +127,6 @@ namespace tardigradeHydra{
 
             const floatVector *get_basedResidualNormdX( );
 
-            //! Get the current value of mu_k
-            const floatType getMuk( ){ return _mu_k; }
-
             //! Get the Levenberg-Marquardt mu parameter
             const floatType getLMMu( ){ return _lm_mu; }
 
@@ -184,11 +181,7 @@ namespace tardigradeHydra{
 
             virtual void setBaseQuantities( );
 
-            void setMuk( const floatType &value );
-
             void setLMMu( const floatType &value );
-
-            floatType _mu_k = -1; //!< The Levenberg-Marquardt scaling parameter
 
             floatType _lm_mu = 1e-8; //!< The mu parameter for Levenberg-Marquardt iterations
 

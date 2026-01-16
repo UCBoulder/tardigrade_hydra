@@ -318,22 +318,20 @@ namespace tardigradeHydra{
      */
     void SolverStepBase::setBaseQuantities( ){
 
-        // TEMP
         set_baseResidualNorm( *damping->get_residualNorm( ) );
 
         set_basedResidualNormdX( *damping->get_dResidualNormdX( ) );
 
-        if ( _mu_k < 0 ){
+        if ( damping->getMuk( ) < 0 ){
 
-            setMuk( 0.5 * getLMMu( ) * ( *get_baseResidualNorm( ) ) );
+            damping->setMuk( 0.5 * getLMMu( ) * ( *get_baseResidualNorm( ) ) );
 
         }
         else{
 
-            setMuk( std::fmin( _mu_k, ( *get_baseResidualNorm( ) ) ) );
+            damping->setMuk( std::fmin( damping->getMuk( ), ( *get_baseResidualNorm( ) ) ) );
 
         }
-        // END TEMP
 
         return;
 
@@ -538,17 +536,6 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Set the value of the mu_k parameter for Levenberg-Marquardt steps
-     *
-     * \param &value: The value of the parameter
-     */
-    void SolverStepBase::setMuk( const floatType &value ){
- 
-        _mu_k = value;
-
-    }
-
-    /*!
      * Set the value of the mu parameter for Levenberg-Marquardt steps
      *
      * \param &value: The value of the parameter
@@ -607,7 +594,7 @@ namespace tardigradeHydra{
 
         Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
 
-        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + getMuk( ) * _dx ).eval( );
+        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + damping->getMuk( ) * _dx ).eval( );
 
         for ( unsigned int i = 0; i < numConstraints; i++ ){
 
@@ -650,7 +637,7 @@ namespace tardigradeHydra{
 
         for ( unsigned int I = 0; I < numUnknowns; I++ ){
 
-            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] += getMuk( );
+            KKTMatrix[ ( numUnknowns + numConstraints ) * I + I ] += damping->getMuk( );
 
         }
 

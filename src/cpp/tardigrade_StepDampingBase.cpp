@@ -348,6 +348,17 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Set the value of the mu_k parameter for gradient descent steps
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setMuk( const floatType &value ){
+ 
+        _mu_k = value;
+
+    }
+
 // END GRADIENT FUNCTIONS
 
 }

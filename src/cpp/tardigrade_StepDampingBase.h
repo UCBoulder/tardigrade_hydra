@@ -151,6 +151,9 @@ namespace tardigradeHydra{
 
 //            virtual void performGradientStep( const floatVector &X0 );
 
+            //! Get the current value of mu_k
+            const floatType getMuk( ){ return _mu_k; }
+
             // END GRADIENT DESCENT FUNCTIONS
         protected:
 
@@ -183,6 +186,8 @@ namespace tardigradeHydra{
             virtual void setResidualNorm( );
 
             virtual void setdResidualNormdX( );
+
+            void setMuk( const floatType &value );
 
             // END GRADIENT DESCENT FUNCTIONS
 
@@ -225,6 +230,8 @@ namespace tardigradeHydra{
             unsigned int _maxGradientIterations = 10; //!< The maximum number of gradient iterations
 
             unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
+
+            floatType _mu_k = -1; //!< The Gradient-descent scaling parameter
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, residualNorm,       floatType,          setResidualNorm )
 
