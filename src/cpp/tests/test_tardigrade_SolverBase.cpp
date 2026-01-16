@@ -866,6 +866,14 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
             }
 
+            virtual void performGradientStep( const tardigradeHydra::floatVector &X0 ) override{
+
+                test_SolverBase_solve_in_gradient_convergence = 1;
+
+                tardigradeHydra::StepDampingBase::performGradientStep( X0 );
+
+            }
+
     };
 
     class SolverStepBaseMock : public tardigradeHydra::SolverStepBase {
@@ -891,14 +899,6 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
                                                                        { 1, 1, 1 }
                                                                      },
                                                                  };
-
-            virtual void performGradientStep( const tardigradeHydra::floatVector &X0 ) override{
-
-                test_SolverBase_solve_in_gradient_convergence = 1;
-
-                tardigradeHydra::SolverStepBase::performGradientStep( X0 );
-
-            }
 
     };
 
