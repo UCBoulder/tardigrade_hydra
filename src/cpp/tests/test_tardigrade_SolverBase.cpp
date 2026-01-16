@@ -719,9 +719,11 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
                 unsigned int iteration = solver->getIteration( );
 
-                unsigned int LSIteration = solver->step->damping->getLSIteration( );
+                auto local_damping = dynamic_cast<tardigradeHydra::ArmijoGradientDamping*>(solver->step->damping);
 
-                unsigned int gradIteration = solver->step->damping->getGradientIteration( );
+                unsigned int LSIteration = local_damping->getLSIteration( );
+
+                unsigned int gradIteration = local_damping->getGradientIteration( );
 
                 unsigned int iterationOffset = 0;
 
@@ -767,9 +769,11 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
                 unsigned int iteration = solver->getIteration( );
 
-                unsigned int LSIteration = solver->step->damping->getLSIteration( );
+                auto local_damping = dynamic_cast<tardigradeHydra::ArmijoGradientDamping*>(solver->step->damping);
 
-                unsigned int gradIteration = solver->step->damping->getGradientIteration( );
+                unsigned int LSIteration = local_damping->getLSIteration( );
+
+                unsigned int gradIteration = local_damping->getGradientIteration( );
 
                 unsigned int subIteration = LSIteration + gradIteration + test_SolverBase_solve_in_gradient_convergence;
 
@@ -1013,8 +1017,8 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
     step.damping = &damping;
     damping.step = &step;
 
-    step.damping->setMaxLSIterations( 5 );
-    step.damping->setLSAlpha( 1e-4 );
+    damping.setMaxLSIterations( 5 );
+    damping.setLSAlpha( 1e-4 );
     tardigradeHydra::PreconditionerBase preconditioner;
 
     hydra.setSolver( &solver );
@@ -1059,8 +1063,8 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
     step_pre.damping = &damping_pre;
     damping_pre.step = &step_pre;
 
-    step_pre.damping->setMaxLSIterations( 5 );
-    step_pre.damping->setLSAlpha( 1e-4 );
+    damping_pre.setMaxLSIterations( 5 );
+    damping_pre.setLSAlpha( 1e-4 );
     tardigradeHydra::PreconditionerBase preconditioner_pre;
 
     hydra_pre.setSolver( &solver_pre );

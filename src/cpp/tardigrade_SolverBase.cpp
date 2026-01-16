@@ -278,9 +278,7 @@ namespace tardigradeHydra{
 
         callResidualPreNLSolve( );
 
-        step->damping->resetLSIteration( ); //TODO: Call a more generalized thing
-
-        step->damping->resetGradientIteration( ); //TODO: Call a more generalized thing
+        step->damping->reset( );
 
         if ( getFailureVerbosityLevel( ) > 0 ){
             addToFailureOutput( "Initial Unknown:\n" );
@@ -347,7 +345,7 @@ namespace tardigradeHydra{
      */
     void SolverBase::incrementIteration( ){
         TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
-        _iteration++; step->damping->resetLSIteration( ); //TODO: Call a more generalized thing
+        _iteration++; step->damping->reset( );
     }
 
     /*!
