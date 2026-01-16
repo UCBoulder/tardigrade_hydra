@@ -1101,6 +1101,8 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkDescentDirection, * boost::unit_t
 
                 set_residualNorm( residualNorm );
 
+                set_basedResidualNormdX( dResidualNormdX );
+
             }
 
 
@@ -1118,13 +1120,6 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkDescentDirection, * boost::unit_t
 
             }
 
-            tardigradeHydra::floatVector dResidualNormdX = { -1.17899799,  0.07843952, -0.01708813, -0.01779959, -0.06410942 };
-
-            void mockInitialize( ){
-
-                set_basedResidualNormdX( dResidualNormdX );
-
-            }
     };
 
     class hydraBaseMock : public tardigradeHydra::hydraBase{
@@ -1153,10 +1148,9 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkDescentDirection, * boost::unit_t
     step.damping = &damping;
     damping.step = &step;
 
-    tardigradeHydra::floatVector dx = step.dResidualNormdX;
+    tardigradeHydra::floatVector dx = damping.dResidualNormdX;
 
     damping.mockInitialize( );
-    step.mockInitialize( );
 
     BOOST_TEST( !step.runCheckDescentDirection( dx ) );
 
@@ -1246,11 +1240,11 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkGradientConvergence, * boost::uni
 
     };
 
-    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
+    class StepDampingBaseMock : public tardigradeHydra::StepDampingBase{
 
         public:
 
-            using tardigradeHydra::SolverStepBase::SolverStepBase;
+            using tardigradeHydra::StepDampingBase::StepDampingBase;
 
             tardigradeHydra::floatType baseResidualNorm = 0.4459139462561169;
 
@@ -1266,11 +1260,22 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkGradientConvergence, * boost::uni
 
     };
 
+    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase{
+
+        public:
+
+            using tardigradeHydra::SolverStepBase::SolverStepBase;
+
+    };
+
     hydraBaseMock hydra( time, deltaTime, temperature, previousTemperature, deformationGradient, previousDeformationGradient,
                          { }, { },
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     SolverStepBaseMock step;
+    StepDampingBaseMock damping;
+    damping.step = &step;
+    step.damping = &damping;
 
     hydra.getSolver( )->step = &step;
     step.setSolver( hydra.getSolver( ) );
@@ -1279,7 +1284,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkGradientConvergence, * boost::uni
 
     tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
 
-    step.mockInitialize( );
+    damping.mockInitialize( );
 
     BOOST_TEST( !step.checkGradientConvergence( hydra.X0 ) );
 
@@ -1288,13 +1293,16 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_checkGradientConvergence, * boost::uni
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     SolverStepBaseMock step2;
+    StepDampingBaseMock damping2;
 
     hydra2.getSolver( )->step = &step2;
     step2.setSolver( hydra2.getSolver( ) );
+    damping2.step = &step2;
+    step2.damping = &damping2;
 
     tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra2, 0.5 * hydra.X0 );
 
-    step2.mockInitialize( );
+    damping2.mockInitialize( );
 
     BOOST_TEST( step2.checkGradientConvergence( hydra2.X0 ) );
 
@@ -1388,11 +1396,11 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_performGradientStep, * boost::unit_tes
 
     };
 
-    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase {
+    class StepDampingBaseMock : public tardigradeHydra::StepDampingBase {
 
         public:
 
-            using tardigradeHydra::SolverStepBase::SolverStepBase;
+            using tardigradeHydra::StepDampingBase::StepDampingBase;
 
             tardigradeHydra::floatType baseResidualNorm = 0.2408779076031648;
 
@@ -1405,6 +1413,13 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_performGradientStep, * boost::unit_tes
                 set_basedResidualNormdX( basedResidualNormdX );
 
             }
+    };
+
+    class SolverStepBaseMock : public tardigradeHydra::SolverStepBase {
+
+        public:
+
+            using tardigradeHydra::SolverStepBase::SolverStepBase;
 
     };
 
@@ -1417,6 +1432,10 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_performGradientStep, * boost::unit_tes
                          previousStateVariables, parameters, numConfigurations, numNonLinearSolveStateVariables, dimension );
 
     SolverStepBaseMock step;
+    StepDampingBaseMock damping;
+
+    step.damping = &damping;
+    damping.step = &step;
 
     hydra.getSolver( )->step = &step;
     step.setSolver( hydra.getSolver( ) );
@@ -1425,7 +1444,7 @@ BOOST_AUTO_TEST_CASE( test_SolverStepBase_performGradientStep, * boost::unit_tes
 
     tardigradeHydra::unit_test::hydraBaseTester::set_unknownVector( hydra, unknownVector );
 
-    step.mockInitialize( );
+    damping.mockInitialize( );
 
     step.performGradientStep( X0 );
 

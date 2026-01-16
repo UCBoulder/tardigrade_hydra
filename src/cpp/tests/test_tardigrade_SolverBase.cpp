@@ -774,9 +774,9 @@ BOOST_AUTO_TEST_CASE( test_SolverBase_solve, * boost::unit_test::tolerance( DEFA
 
                 BOOST_TEST( expectedXVectors[ iteration ][ subIteration ] == newUnknownVector, CHECK_PER_ELEMENT );
 
-                BOOST_TEST( expectedBaseResidualNorms[ iteration ] == *solver->step->get_baseResidualNorm( ) );
+                BOOST_TEST( expectedBaseResidualNorms[ iteration ] == *solver->step->damping->get_baseResidualNorm( ) );
 
-                BOOST_TEST( expectedBasedResidualNormdXs[ iteration ] == *solver->step->get_basedResidualNormdX( ), CHECK_PER_ELEMENT );
+                BOOST_TEST( expectedBasedResidualNormdXs[ iteration ] == *solver->step->damping->get_basedResidualNormdX( ), CHECK_PER_ELEMENT );
 
                 BOOST_TEST( expectedMuk[ iteration ] == solver->step->damping->getMuk( ) );
 
