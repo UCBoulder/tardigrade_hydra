@@ -88,6 +88,16 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Reset the tolerance scale factor
+     */
+    void StepDampingBase::resetToleranceScaleFactor( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        step->resetToleranceScaleFactor( );
+
+    }
+
+    /*!
      * Get the residual vector
      */
     const floatVector *StepDampingBase::getResidual( ){
@@ -509,6 +519,51 @@ namespace tardigradeHydra{
         }
 
         return ( *get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
+
+    }
+
+    /*!
+     * Perform a gradient descent step
+     *
+     * \param &X0: The base value of the unknown vector
+     */
+    void StepDampingBase::performGradientStep( const floatVector &X0 ){
+
+        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
+
+        unsigned int l                     = 0;
+
+        const unsigned int maxiter         = getMaxGradientIterations( );
+
+        while( checkGradientIteration( ) ){
+
+            floatType t = std::pow( getGradientBeta( ), l );
+
+            updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
+
+            if ( checkGradientConvergence( X0 ) ){
+
+                break;
+
+            }
+
+            l++;
+
+            incrementGradientIteration( );
+
+        }
+
+        resetToleranceScaleFactor( );
+
+        if ( l >= maxiter ){
+
+            throw convergence_error( "Failure in gradient step" );
+
+        }
+
+        incrementNumGrad( );
+
+        resetGradientIteration( );
 
     }
 

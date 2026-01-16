@@ -64,6 +64,8 @@ namespace tardigradeHydra{
 
             const floatType getToleranceScaleFactor( );
 
+            void resetToleranceScaleFactor( );
+
             const floatVector *getResidual( );
 
             const unsigned int getNumUnknowns( );
@@ -155,7 +157,7 @@ namespace tardigradeHydra{
             //! Get the number of gradient descent steps performed
             unsigned int getNumGrad( ){ return _NUM_GRAD; }
 
-//            virtual void performGradientStep( const floatVector &X0 );
+            virtual void performGradientStep( const floatVector &X0 );
 
             //! Get the current value of mu_k
             const floatType getMuk( ){ return _mu_k; }

@@ -365,7 +365,7 @@ namespace tardigradeHydra{
             else{
 
                 // Perform gradient descent if the search direction is not aligned with the gradient
-                performGradientStep( X0 );
+                damping->performGradientStep( X0 );
 
             }
 
@@ -793,55 +793,5 @@ namespace tardigradeHydra{
     }
 
 // END SQP SOLVER FUNCTIONS
-
-// GRADIENT DESCENT FUNCTIONS
-
-    /*!
-     * Perform a gradient descent step
-     *
-     * \param &X0: The base value of the unknown vector
-     */
-    void SolverStepBase::performGradientStep( const floatVector &X0 ){
-
-        TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
-        const floatVector *dResidualNormdX = damping->get_basedResidualNormdX( );
-
-        unsigned int l                     = 0;
-
-        const unsigned int maxiter         = damping->getMaxGradientIterations( );
-
-        while( damping->checkGradientIteration( ) ){
-
-            floatType t = std::pow( damping->getGradientBeta( ), l );
-
-            updateUnknownVector( X0 - t * ( *dResidualNormdX ) );
-
-            if ( damping->checkGradientConvergence( X0 ) ){
-
-                break;
-
-            }
-
-            l++;
-
-            damping->incrementGradientIteration( );
-
-        }
-
-        resetToleranceScaleFactor( );
-
-        if ( l >= maxiter ){
-
-            throw convergence_error( "Failure in gradient step" );
-
-        }
-
-        damping->incrementNumGrad( );
-
-        damping->resetGradientIteration( );
-
-    }
-
-// END GRADIENT DESCENT FUNCTIONS
 
 }
