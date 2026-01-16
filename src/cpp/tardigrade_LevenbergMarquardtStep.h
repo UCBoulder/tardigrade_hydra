@@ -17,11 +17,11 @@ namespace tardigradeHydra{
     /*!
      * The Levenberg Marquardt step class
      */
-    class LevenbergMarquardtStep : public GradientStep {
+    class LevenbergMarquardtStep : public NonLinearStep {
 
         public:
 
-            using tardigradeHydra::GradientStep::GradientStep;
+            using tardigradeHydra::NonLinearStep::NonLinearStep;
 
             virtual const floatVector* getNonlinearRHS( ) override;
 
@@ -31,9 +31,9 @@ namespace tardigradeHydra{
 
         private:
 
-            DataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
-
-            DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
+//            DataStorage< floatVector > _nonlinearRHS; //!< The right hand side vector for the Newton solve
+//
+//            DataStorage< floatVector > _flatNonlinearLHS; //!< The left hand side vector for the Newton solve
 
 
     };
