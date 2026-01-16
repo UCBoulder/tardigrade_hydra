@@ -22,36 +22,9 @@ namespace tardigradeHydra{
      */
     const bool StepDampingBase::applyDamping( ){
 
-        throw std::runtime_error( "derp" );
+        updateUnknownVector( step->X0 + step->deltaX );
 
-        updateUnknownVector( step->X0 + getLambda( ) * step->deltaX );
-
-        // Refine the estimate if the new point has a higher residual
-        if ( !checkLSConvergence( ) ){
-
-            if ( checkDescentDirection( step->deltaX ) || !getUseGradientDescent( ) ){
-
-                // Perform an Armijo type line search when the search direction is aligned with the gradient
-                performArmijoTypeLineSearch( step->X0, step->deltaX );
-
-            }
-            else{
-
-                // Perform gradient descent if the search direction is not aligned with the gradient
-                performGradientStep( step->X0 );
-
-            }
-
-            return true;
-
-        }
-        else{
-
-            resetToleranceScaleFactor( );
-
-            return false;
-
-        }
+        return false;
 
     }
 
@@ -60,31 +33,12 @@ namespace tardigradeHydra{
      */
     void StepDampingBase::resetCounts( ){
 
-        resetNumLS( );
-        resetNumGrad( );
     }
 
     /*!
      * Set the base quantities prior to updating the unknown vector
      */
     void StepDampingBase::setBaseQuantities( ){
-
-        set_baseResidualNorm( *get_residualNorm( ) );
-
-        set_basedResidualNormdX( *get_dResidualNormdX( ) );
-
-        if ( getMuk( ) < 0 ){
-
-            setMuk( 0.5 * getLMMu( ) * ( *get_baseResidualNorm( ) ) );
-
-        }
-        else{
-
-            setMuk( std::fmin( getMuk( ), ( *get_baseResidualNorm( ) ) ) );
-
-        }
-
-        return;
 
     }
 
