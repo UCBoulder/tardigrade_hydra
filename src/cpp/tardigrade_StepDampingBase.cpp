@@ -360,6 +360,17 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Set the initializing scaling value of the mu parameter
+     *
+     * \param &value: The value of the parameter
+     */
+    void StepDampingBase::setLMMu( const floatType &value ){
+ 
+        _lm_mu = value;
+
+    }
+
+    /*!
      * Get the base value for the residual norm.
      */
     const floatType *StepDampingBase::get_baseResidualNorm( ){

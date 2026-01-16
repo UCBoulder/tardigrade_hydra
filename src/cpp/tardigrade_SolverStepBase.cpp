@@ -273,7 +273,7 @@ namespace tardigradeHydra{
 
         if ( damping->getMuk( ) < 0 ){
 
-            damping->setMuk( 0.5 * getLMMu( ) * ( *damping->get_baseResidualNorm( ) ) );
+            damping->setMuk( 0.5 * damping->getLMMu( ) * ( *damping->get_baseResidualNorm( ) ) );
 
         }
         else{
@@ -482,17 +482,6 @@ namespace tardigradeHydra{
     
         _use_LM_step = value;
     
-    }
-
-    /*!
-     * Set the value of the mu parameter for Levenberg-Marquardt steps
-     *
-     * \param &value: The value of the parameter
-     */
-    void SolverStepBase::setLMMu( const floatType &value ){
- 
-        _lm_mu = value;
-
     }
 
 // END LM FUNCTIONS

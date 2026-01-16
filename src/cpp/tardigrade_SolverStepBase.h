@@ -123,9 +123,6 @@ namespace tardigradeHydra{
 
             void setUseLevenbergMarquardt( const bool &value );
 
-            //! Get the Levenberg-Marquardt mu parameter
-            const floatType getLMMu( ){ return _lm_mu; }
-
             // END LEVENBERG-MARQUARDT FUNCTIONS
 
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
@@ -172,10 +169,6 @@ namespace tardigradeHydra{
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
             virtual void setBaseQuantities( );
-
-            void setLMMu( const floatType &value );
-
-            floatType _lm_mu = 1e-8; //!< The mu parameter for Levenberg-Marquardt iterations
 
             // END LEVENBERG-MARQUARDT FUNCTIONS
 

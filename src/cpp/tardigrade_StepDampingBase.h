@@ -154,6 +154,9 @@ namespace tardigradeHydra{
             //! Get the current value of mu_k
             const floatType getMuk( ){ return _mu_k; }
 
+            //! Get the Levenberg-Marquardt mu parameter
+            const floatType getLMMu( ){ return _lm_mu; }
+
             const floatType *get_baseResidualNorm( );
 
             const floatVector *get_basedResidualNormdX( );
@@ -192,6 +195,8 @@ namespace tardigradeHydra{
             virtual void setdResidualNormdX( );
 
             void setMuk( const floatType &value );
+
+            void setLMMu( const floatType &value );
 
             void set_baseResidualNorm( const floatType &value );
 
@@ -240,6 +245,8 @@ namespace tardigradeHydra{
             unsigned int _NUM_GRAD = 0; //!< The number of gradient descent steps performed
 
             floatType _mu_k = -1; //!< The Gradient-descent scaling parameter
+
+            floatType _lm_mu = 1e-8; //!< The mu parameter for Levenberg-Marquardt iterations
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, residualNorm,       floatType,          setResidualNorm )
 
