@@ -154,6 +154,10 @@ namespace tardigradeHydra{
             //! Get the current value of mu_k
             const floatType getMuk( ){ return _mu_k; }
 
+            const floatType *get_baseResidualNorm( );
+
+            const floatVector *get_basedResidualNormdX( );
+
             // END GRADIENT DESCENT FUNCTIONS
         protected:
 
@@ -188,6 +192,10 @@ namespace tardigradeHydra{
             virtual void setdResidualNormdX( );
 
             void setMuk( const floatType &value );
+
+            void set_baseResidualNorm( const floatType &value );
+
+            void set_basedResidualNormdX( const floatVector &value );
 
             // END GRADIENT DESCENT FUNCTIONS
 
@@ -237,6 +245,9 @@ namespace tardigradeHydra{
 
             TARDIGRADE_HYDRA_DECLARE_ITERATION_STORAGE( private, dResidualNormdX,    floatVector,        setdResidualNormdX )
 
+            DataStorage< floatType > _baseResidualNorm; //!< The base value of the norm of the residual
+
+            DataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
             // END GRADIENT DESCENT FUNCTIONS
     };
 

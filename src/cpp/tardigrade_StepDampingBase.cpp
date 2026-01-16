@@ -359,6 +359,57 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Get the base value for the residual norm.
+     */
+    const floatType *StepDampingBase::get_baseResidualNorm( ){
+
+        if ( !_baseResidualNorm.first ){
+
+            throw std::runtime_error( "The base residual norm must be set with set_baseResidualNorm before it can be called" );
+
+        }
+
+        return &_baseResidualNorm.second;
+
+    }
+
+    /*!
+     * Get the base value for the derivative of the residual norm w.r.t. the unknown vector
+     */
+    const floatVector *StepDampingBase::get_basedResidualNormdX( ){
+
+        if ( !_basedResidualNormdX.first ){
+
+            throw std::runtime_error( "The base residual norm must be set with set_dbaseResidualNormdX before it can be called" );
+
+        }
+
+        return &_basedResidualNormdX.second;
+
+    }
+
+    /*! Set the base value of the residual norm
+     *
+     * \param &value: The new value
+     */
+    void StepDampingBase::set_baseResidualNorm( const floatType &value ){
+
+        setNLStepData( value, _baseResidualNorm );
+
+    }
+
+    /*!
+     * Set the base derivative of the residual norm w.r.t. the unknown vector
+     *
+     * \param &value: The new value
+     */
+    void StepDampingBase::set_basedResidualNormdX( const floatVector &value ){
+
+        setNLStepData( value, _basedResidualNormdX );
+
+    }
+
 // END GRADIENT FUNCTIONS
 
 }

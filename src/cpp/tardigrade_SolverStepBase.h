@@ -123,10 +123,6 @@ namespace tardigradeHydra{
 
             void setUseLevenbergMarquardt( const bool &value );
 
-            const floatType *get_baseResidualNorm( );
-
-            const floatVector *get_basedResidualNormdX( );
-
             //! Get the Levenberg-Marquardt mu parameter
             const floatType getLMMu( ){ return _lm_mu; }
 
@@ -175,10 +171,6 @@ namespace tardigradeHydra{
 
             // LEVENBERG-MARQUARDT FUNCTIONS (MOVE TO OWN CLASS)
 
-            void set_baseResidualNorm( const floatType &value );
-
-            void set_basedResidualNormdX( const floatVector &value );
-
             virtual void setBaseQuantities( );
 
             void setLMMu( const floatType &value );
@@ -218,9 +210,6 @@ namespace tardigradeHydra{
 
             friend class tardigradeHydra::hydraBase; //!< TEMP REMOVE THIS
             friend class tardigradeHydra::unit_test::SolverStepBaseTester; //!< The unit tester for the class
-            DataStorage< floatType > _baseResidualNorm; //!< The base value of the norm of the residual
-
-            DataStorage< floatVector > _basedResidualNormdX; //!< The base value of the derivative of the norm of the residual w.r.t. the unknown vector
 
             // NONLINEAR DATA STORAGE
 

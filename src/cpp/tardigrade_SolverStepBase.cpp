@@ -263,73 +263,22 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Get the base value for the residual norm.
-     */
-    const floatType *SolverStepBase::get_baseResidualNorm( ){
-
-        if ( !_baseResidualNorm.first ){
-
-            throw std::runtime_error( "The base residual norm must be set with set_baseResidualNorm before it can be called" );
-
-        }
-
-        return &_baseResidualNorm.second;
-
-    }
-
-    /*!
-     * Get the base value for the derivative of the residual norm w.r.t. the unknown vector
-     */
-    const floatVector *SolverStepBase::get_basedResidualNormdX( ){
-
-        if ( !_basedResidualNormdX.first ){
-
-            throw std::runtime_error( "The base residual norm must be set with set_dbaseResidualNormdX before it can be called" );
-
-        }
-
-        return &_basedResidualNormdX.second;
-
-    }
-
-    /*! Set the base value of the residual norm
-     *
-     * \param &value: The new value
-     */
-    void SolverStepBase::set_baseResidualNorm( const floatType &value ){
-
-        setNLStepData( value, _baseResidualNorm );
-
-    }
-
-    /*!
-     * Set the base derivative of the residual norm w.r.t. the unknown vector
-     *
-     * \param &value: The new value
-     */
-    void SolverStepBase::set_basedResidualNormdX( const floatVector &value ){
-
-        setNLStepData( value, _basedResidualNormdX );
-
-    }
-
-    /*!
      * Set the base quantities prior to updating the unknown vector
      */
     void SolverStepBase::setBaseQuantities( ){
 
-        set_baseResidualNorm( *damping->get_residualNorm( ) );
+        damping->set_baseResidualNorm( *damping->get_residualNorm( ) );
 
-        set_basedResidualNormdX( *damping->get_dResidualNormdX( ) );
+        damping->set_basedResidualNormdX( *damping->get_dResidualNormdX( ) );
 
         if ( damping->getMuk( ) < 0 ){
 
-            damping->setMuk( 0.5 * getLMMu( ) * ( *get_baseResidualNorm( ) ) );
+            damping->setMuk( 0.5 * getLMMu( ) * ( *damping->get_baseResidualNorm( ) ) );
 
         }
         else{
 
-            damping->setMuk( std::fmin( damping->getMuk( ), ( *get_baseResidualNorm( ) ) ) );
+            damping->setMuk( std::fmin( damping->getMuk( ), ( *damping->get_baseResidualNorm( ) ) ) );
 
         }
 
@@ -897,7 +846,7 @@ namespace tardigradeHydra{
 
         floatType LHS = 0;
 
-        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
+        const floatVector *dResidualNormdX = damping->get_basedResidualNormdX( );
 
         for ( unsigned int i = 0; i < xsize; i++ ){
 
@@ -920,11 +869,11 @@ namespace tardigradeHydra{
 
         floatVector dx = *getUnknownVector( ) - X0;
 
-        floatType RHS = *get_baseResidualNorm( );
+        floatType RHS = *damping->get_baseResidualNorm( );
 
         for ( unsigned int i = 0; i < xsize; ++i ){
 
-            RHS += damping->getGradientSigma( ) * ( *get_basedResidualNormdX( ) )[ i ] * dx[ i ];
+            RHS += damping->getGradientSigma( ) * ( *damping->get_basedResidualNormdX( ) )[ i ] * dx[ i ];
 
         }
 
@@ -940,7 +889,7 @@ namespace tardigradeHydra{
     void SolverStepBase::performGradientStep( const floatVector &X0 ){
 
         TARDIGRADE_ERROR_TOOLS_CHECK( damping != nullptr, "The damping has not been defined" );
-        const floatVector *dResidualNormdX = get_basedResidualNormdX( );
+        const floatVector *dResidualNormdX = damping->get_basedResidualNormdX( );
 
         unsigned int l                     = 0;
 
