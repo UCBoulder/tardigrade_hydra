@@ -349,34 +349,7 @@ namespace tardigradeHydra{
             addToFailureOutput( deltaX );
         }
 
-        updateUnknownVector( X0 + damping->getLambda( ) * deltaX );
-
-        damping->applyDamping( );
-
-        // Refine the estimate if the new point has a higher residual
-        if ( !damping->checkLSConvergence( ) ){
-
-            if ( damping->checkDescentDirection( deltaX ) || !damping->getUseGradientDescent( ) ){
-
-                // Perform an Armijo type line search when the search direction is aligned with the gradient
-                damping->performArmijoTypeLineSearch( X0, deltaX );
-
-            }
-            else{
-
-                // Perform gradient descent if the search direction is not aligned with the gradient
-                damping->performGradientStep( X0 );
-
-            }
-
-        }
-        else{
-
-            resetToleranceScaleFactor( );
-
-            incrementNumNewton( );
-
-        }
+        if( !damping->applyDamping( ) ){ incrementNumNewton( ); }
 
     }
 // BEGIN NONLINEAR SOLVER FUNCTIONS

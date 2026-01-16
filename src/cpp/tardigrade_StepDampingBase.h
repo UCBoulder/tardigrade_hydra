@@ -49,10 +49,7 @@ namespace tardigradeHydra{
 
             virtual void resetCounts( );
 
-            /*!
-             * Apply the damping to the proposed step
-             */
-            void applyDamping( );
+            const bool applyDamping( );
 
             // CACHED DATA STORAGE OPERATIONS
             virtual void addIterationData( dataBase *data ) override;

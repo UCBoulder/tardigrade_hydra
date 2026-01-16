@@ -134,10 +134,6 @@ namespace tardigradeHydra{
 
             void performPreconditionedSolve( floatVector &deltaX_tr ); // TEMP REMOVE THIS
 
-            // GRADIENT DESCENT FUNCTIONS (MOVE TO OWN CLASS)
-
-            // END GRADIENT DESCENT FUNCTIONS
-
             TrialStepBase *trial_step; //!< The trial step class which proposes a step to reduce the residual
             StepDampingBase *damping; //!< The damping class which reduces the proposed step to improve stability
 

@@ -15,8 +15,41 @@ namespace tardigradeHydra{
 
     /*!
      * Apply the damping to the proposed step
+     *
+     * This function must call the updateUnknownVector function
+     *
+     * Returns true if any damping was applied
      */
-    void StepDampingBase::applyDamping( ){
+    const bool StepDampingBase::applyDamping( ){
+
+        updateUnknownVector( step->X0 + getLambda( ) * step->deltaX );
+
+        // Refine the estimate if the new point has a higher residual
+        if ( !checkLSConvergence( ) ){
+
+            if ( checkDescentDirection( step->deltaX ) || !getUseGradientDescent( ) ){
+
+                // Perform an Armijo type line search when the search direction is aligned with the gradient
+                performArmijoTypeLineSearch( step->X0, step->deltaX );
+
+            }
+            else{
+
+                // Perform gradient descent if the search direction is not aligned with the gradient
+                performGradientStep( step->X0 );
+
+            }
+
+            return true;
+
+        }
+        else{
+
+            resetToleranceScaleFactor( );
+
+            return false;
+
+        }
 
     }
 
