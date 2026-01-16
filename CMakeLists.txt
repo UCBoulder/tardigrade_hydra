@@ -1,7 +1,7 @@
 #===================================================================================================== PROJECT SETUP ===
-cmake_minimum_required(VERSION 3.19)
+cmake_minimum_required(VERSION 3.30)
 cmake_policy(SET CMP0110 NEW)
-project(tardigrade_hydra)
+project(tardigrade_hydra LANGUAGES CXX)
 
 # Set common project paths relative to project root directory
 set(CPP_SRC_PATH "src/cpp")
@@ -64,6 +64,10 @@ if(${not_conda_test} STREQUAL "true")
     foreach(package ${ADDITIONAL_HEADER_ONLY_LIBRARIES})
         add_library(${package} INTERFACE "${CPP_SRC_PATH}/${package}.cpp" "${CPP_SRC_PATH}/${package}.h")
     endforeach(package)
+endif()
+
+if(CMAKE_EXPORT_COMPILE_COMMANDS)
+    set(CMAKE_CXX_STANDARD_INCLUDE_DIRECTORIES ${CMAKE_CXX_IMPLICIT_INCLUDE_DIRECTORIES})
 endif()
 
 # Get version number from Git
@@ -204,4 +208,26 @@ if(${not_conda_test} STREQUAL "true")
         install(FILES ${CPP_SRC_PATH}/${package}.cpp
             DESTINATION ${CMAKE_INSTALL_INCLUDEDIR})
     endforeach(package)
+endif()
+
+#================================================================================== SETUP CLANG FORMATTING TARGETS ===
+
+if(CMAKE_PROJECT_NAME STREQUAL PROJECT_NAME)
+    get_property(CLANG_FORMAT_SOURCE_FILES_VALUE GLOBAL PROPERTY CLANG_FORMAT_SOURCE_FILES)
+
+    add_custom_target(
+        cpp-format-check
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file --dry-run -Werror ${CLANG_FORMAT_SOURCE_FILES_VALUE}
+        WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+        COMMENT "Check the C++ code format with clang-format"
+    )
+    set_target_properties(cpp-format-check PROPERTIES EXCLUDE_FROM_ALL TRUE)
+
+    add_custom_target(
+        cpp-format
+        COMMAND ${CLANG_FORMAT_EXECUTABLE} -style=file -i ${CLANG_FORMAT_SOURCE_FILES_VALUE}
+        WORKING_DIRECTORY ${PROJECT_SOURCE_DIR}
+        COMMENT "Format the C++ code with clang-format"
+    )
+    set_target_properties(cpp-format PROPERTIES EXCLUDE_FROM_ALL TRUE)
 endif()
