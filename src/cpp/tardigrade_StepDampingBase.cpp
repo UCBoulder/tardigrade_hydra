@@ -20,6 +20,80 @@ namespace tardigradeHydra{
 
     }
 
+    /*!
+     * Add data to the vector of values which will be cleared after each iteration
+     * 
+     * \param *data: The dataBase object to be cleared
+     */
+    void StepDampingBase::addIterationData( dataBase *data ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        step->addIterationData( data );
+
+    }
+
+    /*!
+     * Add data to the vector of values which will be cleared after each nonlinear step
+     * 
+     * \param *data: The dataBase object to be cleared
+     */
+    void StepDampingBase::addNLStepData( dataBase *data ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        step->addNLStepData( data );
+
+    }
+
+    /*!
+     * Get the residual vector
+     */
+    const floatVector *StepDampingBase::getResidual( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
+        return step->getResidual( );
+
+    }
+
+    /*!
+     * Update the unknown vector
+     *
+     * \param &value: The new value of the unknown vector
+     */
+    void StepDampingBase::updateUnknownVector( const floatVector &value ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The solver has not been defined" );
+        step->updateUnknownVector( value );
+
+    }
+
+    /*!
+     * Get the number of unknowns
+     */
+    const unsigned int StepDampingBase::getNumUnknowns( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The solver has not been defined" );
+        return step->getNumUnknowns( );
+
+    }
+
+    /*!
+     * Get the unknown vector
+     */
+    const floatVector *StepDampingBase::getUnknownVector( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The solver has not been defined" );
+        return step->getUnknownVector( );
+    }
+
+    /*!
+     * Get the Jacobian in row-major format
+     */
+    const floatVector *StepDampingBase::getFlatJacobian( ){
+
+        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The solver has not been defined" );
+        return step->getFlatJacobian( );
+
+    }
 
 // LINE SEARCH FUNCTIONS
 
@@ -43,16 +117,6 @@ namespace tardigradeHydra{
     void StepDampingBase::setMaxLSIterations( const unsigned int &value ){
 
         _maxLSIterations = value;
-
-    }
-
-    /*!
-     * Get the residual vector
-     */
-    const floatVector *StepDampingBase::getResidual( ){
-
-        TARDIGRADE_ERROR_TOOLS_CHECK( step != nullptr, "The step has not been defined" );
-        return step->getResidual( );
 
     }
 

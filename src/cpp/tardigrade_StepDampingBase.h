@@ -50,9 +50,23 @@ namespace tardigradeHydra{
              */
             void applyDamping( );
 
+            // CACHED DATA STORAGE OPERATIONS
+            virtual void addIterationData( dataBase *data ) override;
+
+            virtual void addNLStepData( dataBase *data ) override;
+            // END CACHED DATA STORAGE OPERATIONS
+
             // PASS-THROUGH functions
 
             const floatVector *getResidual( );
+
+            const unsigned int getNumUnknowns( );
+
+            const floatVector *getUnknownVector( );
+
+            void updateUnknownVector( const floatVector &value );
+
+            const floatVector *getFlatJacobian( );
 
             // END PASS-THROUGH FUNCTIONS
 
