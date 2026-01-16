@@ -21,6 +21,15 @@ namespace tardigradeHydra{
     }
 
     /*!
+     * Reset the internal count
+     */
+    void StepDampingBase::resetCount( ){
+
+        resetNumLS( );
+        resetNumGrad( );
+    }
+
+    /*!
      * Set the base quantities prior to updating the unknown vector
      */
     void StepDampingBase::setBaseQuantities( ){
