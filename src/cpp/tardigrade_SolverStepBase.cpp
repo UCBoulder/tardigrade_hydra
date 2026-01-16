@@ -319,9 +319,9 @@ namespace tardigradeHydra{
     void SolverStepBase::setBaseQuantities( ){
 
         // TEMP
-        set_baseResidualNorm( *get_residualNorm( ) );
+        set_baseResidualNorm( *damping->get_residualNorm( ) );
 
-        set_basedResidualNormdX( *get_dResidualNormdX( ) );
+        set_basedResidualNormdX( *damping->get_dResidualNormdX( ) );
 
         if ( _mu_k < 0 ){
 
@@ -941,7 +941,7 @@ namespace tardigradeHydra{
 
         }
 
-        return ( *get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
+        return ( *damping->get_residualNorm( ) ) < getToleranceScaleFactor( ) * RHS;
 
     }
 
