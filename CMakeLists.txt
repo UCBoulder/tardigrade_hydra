@@ -71,9 +71,10 @@ if(CMAKE_EXPORT_COMPILE_COMMANDS)
 endif()
 
 # Get version number from Git
+set(VERSION_UPDATE_FROM_GIT True)
 if(${not_conda_test} STREQUAL "true")
     if (DEFINED ENV{PREFIX})
-        set(Python_ROOT_DIR "$ENV{PREFIX}/bin")
+        set(Python_ROOT_DIR "$ENV{BUILD_PREFIX}/bin")
     endif()
     set(Python_FIND_STRATEGY LOCATION)
     find_package(Python COMPONENTS Interpreter REQUIRED)
