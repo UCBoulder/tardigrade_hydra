@@ -457,50 +457,6 @@ namespace tardigradeHydra{
     }
 
     /*!
-     * Assemble the right hand side vector for the KKT matrix
-     * 
-     * \param &dx: The delta vector being solved for
-     * \param &KKTRHSVector: The right hand size vector for the KKT matrix
-     * \param &active_constraints: The active constraint vector
-     */
-    void SolverStepBase::assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints ){
-
-        TARDIGRADE_ERROR_TOOLS_CHECK( solver != nullptr, "The solver has not been defined" );
-        const unsigned int numUnknowns = getNumUnknowns( );
-
-        const unsigned int numConstraints = getNumConstraints( );
-
-        KKTRHSVector = floatVector( numUnknowns + numConstraints, 0 );
-
-        Eigen::Map< const Eigen::Vector< floatType, -1 > > _dx( dx.data( ), numUnknowns );
-
-        Eigen::Map< Eigen::Vector< floatType, -1 > > RHS( KKTRHSVector.data( ), ( numUnknowns + numConstraints ), ( numUnknowns + numConstraints ) );
-
-        Eigen::Map< const Eigen::Vector< floatType, -1 > > R( getResidual( )->data( ), numUnknowns );
-
-        Eigen::Map< const Eigen::Matrix< floatType, -1, -1, Eigen::RowMajor > > J( getFlatJacobian( )->data( ), numUnknowns, numUnknowns );
-
-        RHS.head( numUnknowns ) = ( J.transpose( ) * ( R + J * _dx ) + damping->getMuk( ) * _dx ).eval( );
-
-        for ( unsigned int i = 0; i < numConstraints; i++ ){
-
-            if ( active_constraints[ i ] ){
-
-                KKTRHSVector[ numUnknowns + i ] = ( *( getConstraints( ) ) )[ i ];
-
-                for ( unsigned int I = 0; I < numUnknowns; I++ ){
-
-                    KKTRHSVector[ numUnknowns + i ] += ( *( getConstraintJacobians( ) ) )[ numUnknowns * i + I ] * dx[ I ];
-
-                }
-
-            }
-
-        }
-
-    }
-
-    /*!
      * Assemble the Karush-Kuhn-Tucker matrix for an inequality constrained Newton-Raphson solve
      * 
      * \param &KKTMatrix: The Karush-Kuhn-Tucker matrix
@@ -612,7 +568,7 @@ namespace tardigradeHydra{
         std::vector< bool > active_constraints;
         initializeActiveConstraints( active_constraints );
 
-        assembleKKTRHSVector( dx, RHS, active_constraints );
+        trial_step->assembleKKTRHSVector( dx, RHS, active_constraints );
 
         assembleKKTMatrix( K, active_constraints );
 
@@ -749,7 +705,7 @@ namespace tardigradeHydra{
 
             updateKKTMatrix( K, active_constraints );
 
-            assembleKKTRHSVector(  dx, RHS, active_constraints );
+            trial_step->assembleKKTRHSVector(  dx, RHS, active_constraints );
 
             for ( unsigned int i = 0; i < ( numUnknowns + numConstraints ); i++ ){
 

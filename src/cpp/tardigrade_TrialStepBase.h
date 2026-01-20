@@ -14,6 +14,12 @@
 
 namespace tardigradeHydra{
 
+    namespace unit_test{
+
+        class TrialStepBaseTester;
+
+    }
+
     /*!
      * The base class for step damping operations to improve
      * stability
@@ -46,6 +52,22 @@ namespace tardigradeHydra{
 
             virtual void computeTrial( );
 
+            // PASS-THROUGH FUNCTIONS
+
+            const floatVector *getResidual( );
+
+            const unsigned int getNumUnknowns( );
+
+            const floatVector *getFlatJacobian( );
+
+            const unsigned int getNumConstraints( );
+
+            const floatVector *getConstraints( );
+
+            const floatVector *getConstraintJacobians( );
+
+            // END PASS-THROUGH FUNCTIONS
+
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
             //! Return a flag for whether to use the SQP solver
@@ -62,12 +84,17 @@ namespace tardigradeHydra{
              *
              * \param &value: The updated value
              */
+
             void setUseSQPSolver( const unsigned int &value ){ _useSQPSolver = value; }
+
+            virtual void assembleKKTRHSVector( const floatVector &dx, floatVector &KKTRHSVector, const std::vector< bool > &active_constraints );
 
             // END SQP SOLVER FUNCTIONS
 
         private:
 
+            friend class tardigradeHydra::SolverStepBase; //!< TEMP REMOVE THIS
+            friend class tardigradeHydra::unit_test::TrialStepBaseTester; //!< The unit tester for the class
             // SQP SOLVER FUNCTIONS (MOVE TO OWN CLASS)
 
             bool _useSQPSolver = false; //!< The flag for whether to use the SQP solver
